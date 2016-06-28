@@ -1,0 +1,452 @@
+#set($layout="/layout/newdefaultS.vm")
+
+## 弹框登陆 注册
+#parse("/common/importInquiry.vm")
+
+<div class="price">
+	<div class="price-title">
+    	当前位置：
+		<a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a>
+        &gt;
+        <a href="#springUrl('/')">报价资讯中心</a>
+        &gt;
+        #if($!{code}=='metal')
+            <a href="http://jinshu.zz91.com/" target="_blank">废金属频道</a>
+        #elseif($!{code}=='plastic')
+            <a href="#springUrl('/channel/wastePlastic.htm')">废塑料频道</a>
+        #else
+            <a href="#springUrl('/channel/otherWaste.htm')">废纸废橡胶频道 </a>
+		#end
+		&gt;
+		<a href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm" target="_blank">$!{price.title}</a>
+    </div>
+    <!--end price-title-->
+    <table class="price-table">
+		#parse("/price/vm_price/detailTopLink.vm")
+    </table>
+    <!--end price-table-->
+    <div class="mainblock1">
+    	<div class="m1-left">
+        	<div class="m1-title">
+            	<div class="m1-title-page">
+                	<div class="w300 fl">
+						 <b>上一篇:</b>
+						#if($!{onPrice.id} && $!{onPrice.id}>0)
+							【
+							<a title="$!{onPrice.title}" href="#springUrl('/priceDetails_')$!{onPrice.id}.htm">$!{onPrice.title}</a>
+							】
+						#end
+					</div>
+					<div class="w300 fr">
+						<b>下一篇：:</b>
+						#if($!{downPrice.id} && $!{downPrice.id}>0)
+							【
+							<a title="$!{downPrice.title}" href="#springUrl('/priceDetails_')$!{downPrice.id}.htm">$!{downPrice.title}</a>
+							】
+						#end
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-title-page-->
+                <div class="m1-title-h1">
+                    <center>
+                        <h1>$!{price.title}</h1>
+                    </center>
+                </div>
+                <!--end m1-title-h1-->
+                <div class="m1-title-text">
+                	<center>
+                	<span class="m1-title-date">发布时间：$!date.format('yyyy-MM-dd',$!{price.gmtCreated})</span>
+					#foreach($a in $!tag)
+        				#if($velocityCount==1)
+        					#set($keyTag=$!{a})
+        				#end
+                        <a href="$!{address.tags}/s/$!encodeTagsMap.get($!{a})/" target="_blank" title="${a}">${a}</a>
+                    #end
+					<a target="_blank" href="$!{address.www}" title="$!{siteInfo.site_name}首页">$!{siteInfo.site_name} </a>
+                </div>
+                <!--end m1-title-text-->
+            </div>
+            <!--end m1-title-->
+            <div class="m1-aboutInfo">
+            	#if($!{code}=='metal')
+	                #parse("/price/vm_index/metalTable.vm")
+	            #elseif($!{code}=='plastic')
+	                #parse("/price/vm_index/plasticTable.vm")
+	            #elseif($!{code}=='paper')
+	                #parse("/price/vm_index/paperTable.vm")
+	            #end
+            </div>
+				
+            <!--end m1-aboutInfo-->
+			#if(!$!{sessionUser} && 3 >= ${daysInterval})
+				<div class="m1-left-weixin">
+					<div class="weixin_login">
+						<div class="weixin_login_click">
+							<input type="button" class="weixin_login_ok"/>
+						</div>
+    					<!--end weixin_login_click-->
+    					<div class="weixin_login_qq">
+    						<a href="http://china.zz91.com/accessToQQLogin.htm" target="_blank"></a>
+    					</div>
+    					<!--end weixin_login_qq-->
+    				</div>
+    				<!--end weixin_login-->
+				</div>
+			#else	
+    			#if($priceDataDOList.size()>0)
+                <table class="m1-product">
+                	<tr>
+                    	<td class="fb">品名</td>
+                        <td class="fb">地区</td>
+                        <td class="fb" colspan="1">价格（元/吨）</td>
+						<td class="fb">公司名称</td>
+                    </tr>
+    				#foreach($list in $priceDataDOList)
+                    <tr>
+                    	<td>
+    						#if($!{list.companyPriceId}=="0")
+								$!{list.productName}
+                            #else
+                                <a href="#springUrl('/companyprice/priceDetails.htm?id=')$!{list.companyPriceId}" title="$!{list.productName}">$!{list.productName}</a>
+                            #end
+    					</td>
+                        <td>$!{list.area}</td>
+                        <td>$!{list.quote}</td>
+                        <td>
+    						#if($!{list.companyId}=="0")
+								$!{list.companyName}
+							#else
+								<a href="$!{address.company}/compinfo.htm?id=$!{list.companyId}" title="$!{list.companyName}">$!{list.companyName}</a>
+                            #end
+    					</td>
+                    </tr>
+        			#end
+                </table>
+                <!--end m1-product-->
+				#end
+				
+				<div class="aboutContent">
+					$!{price.content}
+				</div>
+			#end
+			
+			<div class="m1-articles">
+				<div class="m1-articles-title">
+					相关文章
+				</div>
+				<!--end m1-articles-title-->
+				<div class="m1-articles-content">
+					<ul>
+						#foreach($obj in $similarList)
+							<li><a href="#springUrl('/priceDetails_')$!{obj.id}.htm" target="_blank">$!{obj.title}</a></li>
+						#end
+						<div class="cb"></div>
+					</ul>
+				</div>
+				<!--end m1-articles-content-->
+
+				<div class="m1-articles-label">
+					<ul>
+						<li>本文标签：</li>
+						#foreach($a in $!tag)
+							<li><a href="$!{address.tags}/s/$!encodeTagsMap.get($!{a})/" target="_blank" title="${a}">${a}</a></li>
+						#end
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m1-articles-label-->
+                </div>
+                <!--end m1-articles-->
+                <div class="m1-articles-img">
+                	<center>
+						<a href="$!{address.www}/xiazai/" target="_blank">
+							<img src="$!{address.img}/zz91/2014price/images/img1.jpg" />
+						</a>
+                    </center>
+                </div>
+                <!--end m1-articles-img-->
+                <div class="m1-statement">
+                    免责声明:本信息仅供参考，ZZ91再生网力求准确可靠，但不作为您投资决策的唯一因素!
+                </div>
+                <!--end m1-statement-->
+                <div class="m1-articles-text">
+    				<a href="$!{address.front}" target="_blank" title="$!{siteInfo.site_name}首页">$!{siteInfo.site_name}</a>
+    	            - 
+    	            <a href="#springUrl('/')" target="_blank" title="zz91再生网报价中心">报价中心</a>
+                </div>
+                <!--end m1-articles-text-->
+            </div>
+            <!--end m1-articles-->
+            
+        </div>
+        <!--end m1-left-->
+        <div class="m1-right">
+        	<div class="m1-right-weixin">
+            	<div class="m1-rightweixin-text">
+                	扫一扫二维码，精彩资讯跟您走
+                </div>
+                <!--end m1-rightweixin-text-->
+                <div class="m1-rightweixin-img">
+                	<img src="http://pyapp.zz91.com/app/qrcodeimg.html?id=$!{price.id}&type=price" />
+                </div>
+                <!--end m1-rightweixin-img-->
+            </div>
+            <!--end m1-right-weixin-->
+	    
+            
+            
+		<script type="text/javascript">
+		/*新闻最终页右边300*250，创建于2014-2-25*/
+		var cpro_id = "u1476030";
+		</script>
+		<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+
+
+            
+            <!--end m1-right-banner-->
+            <div class="m1-ranking">
+                <div class="m1-ranking-title">
+                    <div class="m1-ranking-caption">
+                        <a href="#" target="_blank">热门地区产品</a>
+                    </div>
+                    <!--end m1-ranking-caption-->
+                    <div class="m1-ranking-more">
+						#if($!{code}=='metal')
+                    	    <a href="#springUrl('/channel/wasteMetal.htm')" target="_blank">更多</a>
+						#elseif($!{code}=='plastic')
+							<a href="#springUrl('/channel/wastePlastic.htm')" target="_blank">更多</a>
+						#else
+						    <a href="#springUrl('/channel/otherWaste.htm')" target="_blank">更多</a>
+                        #end
+                    </div>
+                    <!--end m1-ranking-more-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-ranking-title-->
+                <div class="m1-ranking-content">
+					<div class="m1-ranking-div">
+						<div class="m1-div-left">
+							类别：
+						</div>
+						<div class="m1-div-right h70">
+							<ul>
+								#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=$!{cacheCode}", "", "", "")
+									#foreach($index in $!{list})
+										<li>
+											<a href="$!{address.price}/priceSearch.htm?title=$!{index.title}" style="$!{index.style}" target="_blank">$!{index.title}</a>
+										</li>
+									#end
+								#end
+							</ul>
+						</div>
+						<div class="cb"></div>
+					</div>
+					<!--end m1-rankind-div-->
+					<div class="m1-ranking-div mt10">
+						<div class="m1-div-left">
+							地区：
+						</div>
+						<div class="m1-div-right h105">
+							<ul>
+								#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=$!{cacheArea}", "", "", "")
+									#foreach($index in $!{list})
+										<li>
+											<a href="$!{address.price}/priceSearch.htm?title=$!{index.title}" style="$!{index.style}" target="_blank">$!{index.title}</a>
+										</li>
+									#end
+								#end
+							</ul>
+						</div>
+						<div class="cb"></div>
+					</div>
+					<!--end m1-rankind-div-->
+				</div>
+				<!--end m1-ranking-content-->
+			</div>
+            <!--end m1-ranking-->
+            
+			
+			<div class="m1-news">
+                <div class="m1-news-title">
+                    <div class="m1-news-caption">
+                        <a href="http://news.zz91.com" target="_blank">相关最新资讯</a>
+                    </div>
+                    <!--end m1-news-caption-->
+                    <div class="m1-news-more">
+                    	<a href="http://news.zz91.com" target="_blank">更多</a>
+                    </div>
+                    <!--end m1-news-more-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-news-title-->
+                <div class="m1-news-content">
+                    <ul>
+						$!{newsHtml}
+                    </ul>
+                </div>
+
+                <!--end m1-news-content-->
+            </div>
+            <!--end m1-news-->
+            
+            <div class="m1-24hour">
+            	<table class="m1-24hour-title">
+                	<tr>
+                    	<td class="m1-24hour-green m1-24hour-border1" id="24hour1">24小时热点问题</td>
+                        <td class="m1-24hour-border2" id="24hour2">24小时热贴</td>
+                    </tr>
+                </table>
+                <div class="m1-24hour-content">
+                	<ul id="24hour_ul1">
+						#cacheFragment("$!{address.fragment}/huzhu/hotAnswer.htm?size=6&categoryId=11" "" "" "")
+							#foreach($bbspost in $!{postDailylist})
+								<li><a href="$!{address.huzhu}/viewReply$!{bbspost.post.id}.htm" target="_blank" title="$!{bbspost.post.title}">$!{bbspost.post.title}</a></li>
+							#end
+						#end
+                    </ul>
+                    <ul id="24hour_ul2" style="display:none">
+						#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=6" "" "" "")
+							#foreach($postlist in $!{postDailylist})
+								<li><a href="$!{address.huzhu}/viewReply$!{postlist.id}.htm" target="_blank" title="$!{postlist.title}">$!{postlist.title}</a></li>
+							#end
+						#end
+                    	
+                    </ul>
+                </div>
+                <!--end m1-24hour-content-->
+            </div>
+            <!--end m1-24hour-->
+
+			
+			
+            <div class="m1-ranking">
+                <div class="m1-ranking-title">
+                    <div class="m1-ranking-caption">
+                        <a href="#" target="_blank">相关产品推荐</a>
+                    </div>
+                    <!--end m1-ranking-caption-->
+                    <div class="m1-ranking-more" id="change">
+                    	<a>换一换</a>
+                    </div>
+                    <!--end m1-ranking-more-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-ranking-title-->
+                <div class="m1-ranking-content">
+                    <div class="m1-recommended" id="change_main1">
+                    	<ul>
+							#foreach($obj in $recommendProList)
+								#if(4>=$velocityCount)
+									<li>
+										<div class="m1-recommended-img">
+											<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+												<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=115" />
+											</a>
+										</div>
+										<!--end m1-recommended-img-->
+										<div class="m1-recommended-text">
+											<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">$!{obj.products.title}</a>
+										</div>
+										<!--end m1-cecommended-text-->
+										<div class="m1-recommended-money">
+											#if($!{obj.products.minPrice}&&$!{obj.products.minPrice}!="0.0")
+                								$!{obj.products.minPrice}#if($!{obj.products.maxPrice}&&$!{obj.products.maxPrice}!="0.0")至 $!{obj.products.maxPrice}#end
+                								$!{obj.products.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+                							#else
+                								面议或电议
+                							#end
+										</div>
+										<!--end m1-cecommended-money-->
+									</li>
+								#end
+							#end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end m1-recommended-->
+                    <div class="m1-recommended" id="change_main2" style="display:none">
+                    	<ul>
+							#foreach($obj in $recommendProList)
+								#if($velocityCount>=5&&8>=$velocityCount)
+									<li>
+										<div class="m1-recommended-img">
+											<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=115" />
+										</div>
+										<!--end m1-recommended-img-->
+										<div class="m1-recommended-text">
+											<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">$!{obj.products.title}</a>
+										</div>
+										<!--end m1-cecommended-text-->
+										<div class="m1-recommended-money">
+											#if($!{obj.products.minPrice}&&$!{obj.products.minPrice}!="0.0")
+                								$!{obj.products.minPrice}#if($!{obj.products.maxPrice}&&$!{obj.products.maxPrice}!="0.0")至 $!{obj.products.maxPrice}#end
+                								$!{obj.products.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+                							#else
+                								面议或电议
+                							#end
+										</div>
+										<!--end m1-cecommended-money-->
+									</li>
+								#end
+							#end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end m1-recommended-->
+					<div class="m1-recommended" id="change_main3" style="display:none">
+                    	<ul>
+							#foreach($obj in $recommendProList)
+								#if($velocityCount>8)
+									<li>
+										<div class="m1-recommended-img">
+											<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=115" />
+										</div>
+										<!--end m1-recommended-img-->
+										<div class="m1-recommended-text">
+											<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">$!{obj.products.title}</a>
+										</div>
+										<!--end m1-cecommended-text-->
+										<div class="m1-recommended-money">
+											#if($!{obj.products.minPrice}&&$!{obj.products.minPrice}!="0.0")
+                								$!{obj.products.minPrice}#if($!{obj.products.maxPrice}&&$!{obj.products.maxPrice}!="0.0")至 $!{obj.products.maxPrice}#end
+                								$!{obj.products.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+                							#else
+                								面议或电议
+                							#end
+										</div>
+										<!--end m1-cecommended-money-->
+									</li>
+								#end
+							#end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end m1-recommended-->
+                </div>
+                <!--end m1-ranking-content-->
+            </div>
+            <!--end m1-ranking-->
+        </div>
+        <!--end m1-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end mainblock1-->
+</div>
+<!--end price-->
+<input type="hidden" id="changeId" value="1" />
+
+<script src="#springUrl('/countFlow.htm?id=')$!{id}&$date.getSystemTime()"></script>
+<script>
+	jQuery(document).ready(function(){
+	
+		## 点击登陆
+		jQuery(".weixin_login_ok").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				window.parent.location.reload();
+			});
+			openoverlay('$!{address.front}/mini/login.htm?destUrl=http://price.zz91.com/submitCallback.htm&regfrom=10031010&loginType=1','注册/登录',750,430,0);
+		});
+		
+	});
+</script>

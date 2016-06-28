@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmMember">
+	<typeAlias alias="member" type="com.zz91.ep.domain.crm.CrmMember" />
+	<typeAlias alias="right" type="com.zz91.ep.domain.crm.CrmRight"/>
+	
+	<resultMap id="memberResult" class="member">
+		<result property="id" column="id" />
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="details" column="details"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap id="rightResult" class="right">
+		<result property="id" column="id" />
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="sort" column="sort"/>
+		<result property="content" column="content"/>
+		<result property="menu" column="menu"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="menuCss" column="menu_css"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<!-- 通过会员code查询所有权限id列表 -->
+	<select id="queryCrmRightIdOfCrmMember" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select crm_right_id from crm_member_right where member_code=#value#
+	</select>
+	<!-- 更新会员信息 -->
+	<update id="updateCrmMember" parameterClass="member" >
+		update crm_member
+		set 
+		code=#code#,
+		name=#name#,
+		details=#details#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!-- 插入会员对象 -->
+	<insert id="insertCrmMember" parameterClass="member" >
+		insert into crm_member(`code`,`name`,`details`,`gmt_created`,`gmt_modified`)
+		values(#code#,#name#,#details#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<!-- 查询会员列表 -->
+	<select id="queryCrmMemberList" resultMap="memberResult" >
+		select 
+			cm.id,
+			cm.code,
+			cm.name,
+			cm.details,
+			cm.gmt_created,
+			cm.gmt_modified
+		from crm_member cm
+	</select>
+	<!-- 删除中间表记录crm_member_right -->
+	<delete id="deleteCrmMemberCrmRight" parameterClass="java.util.HashMap" >
+		delete from crm_member_right
+		where member_code=#crmMemberCode# and crm_right_id=#crmRightId#
+	</delete>
+	<!-- 通过会员code删除会员 -->
+	<delete id="deleteCrmMember" parameterClass="java.lang.String" >
+		delete from crm_member where code=#value#
+	</delete>
+	<!-- 插入中间表crm_member_right -->
+	<insert id="insertCrmMemberCrmRight" parameterClass="java.util.HashMap" >
+	insert into crm_member_right(member_code,crm_right_id,gmt_created,gmt_modified)
+		values(#crmMemberCode#,#crmRightId#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<!--通过会员code删除会员所拥有的权限 -->
+	<delete id="deleteCrmRightOfCrmMember" parameterClass="java.lang.String" >
+		delete from crm_member_right
+		where member_code =#value#
+	</delete>
+	<select id="countCrmMemberChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(0) from crm_member where code like concat(#value#, '_%')
+	</select>
+	<select id="queryCrmMemberChild" parameterClass="java.lang.String"
+		resultMap="memberResult">
+		select
+			cm.id,
+			cm.code,
+			cm.name,
+			cm.details,
+			cm.gmt_created,
+			cm.gmt_modified
+		from crm_member cm where cm.code like concat(#value#,'____')
+	</select>
+	
+	<select id="queryMaxCodeOfChild" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code) from crm_member
+		where code like concat(#value#,'____')
+	</select>
+	
+	<select id="queryOneCrmMember" parameterClass="java.lang.String" resultMap="memberResult">
+		select 
+			cm.id,
+			cm.code,
+			cm.name,
+			cm.details,
+			cm.gmt_created,
+			cm.gmt_modified
+		from crm_member cm where cm.code =#value#
+		limit 1
+	</select>
+	
+	<select id="queryNameByCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select name
+		from crm_member
+		where code=#memberCode#
+	</select>
+</sqlMap>

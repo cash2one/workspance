@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmOutLog">
+
+	<typeAlias alias="crmOutLogDO" type="com.ast.ast1949.domain.company.CrmOutLog" />
+	<typeAlias alias="crmOutLogDTO" type="com.ast.ast1949.dto.company.CrmOutLogDto" />
+
+	<resultMap class="crmOutLogDO" id="crmOutLogResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="oldCsAccount" column="old_csAccount" />
+		<result property="operator" column="operator" />
+		<result property="status" column="status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,company_id,old_csAccount,operator,status,gmt_created,gmt_modified
+	</sql>
+	
+	<resultMap class="crmOutLogDTO" id="crmOutLogDTOResult">
+		<result property="crmOutLog" resultMap="crmOutLog.crmOutLogResult" />
+		<result property="email" column="email" />
+		<result property="mobile" column="mobile" />
+		<result property="account" column="account" />
+	</resultMap>
+	
+	<sql id="dtoColumn">
+		c.id,c.company_id,c.old_csAccount,c.operator,c.status,c.gmt_created,c.gmt_modified,ca.account,ca.mobile,ca.email
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="crmOutLogResult">
+		select
+		<include refid="defaultColumn" />
+		from crm_out_log
+		where id = #id#
+	</select>
+
+	<insert id="insert" parameterClass="crmOutLogDO">
+		INSERT INTO crm_out_log
+		(
+			company_id,
+			old_csAccount,
+			operator,
+			status,
+			gmt_created,
+			gmt_modified
+		)
+		VALUES
+		(
+			#companyId#,
+			#oldCsAccount#,
+			#operator#,
+			#status#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<sql id="dtoWhere">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="crmOutLog.companyId">
+				c.company_id = #crmOutLog.companyId#
+			</isNotNull>
+			<isNotEmpty prepend="and" property="crmOutLog.email">
+				ca.email = #crmOutLog.email#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="crmOutLog.account">
+				ca.account = #crmOutLog.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="crmOutLog.mobile" >
+				ca.mobile = #crmOutLog.mobile#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryDtoList" parameterClass="java.util.Map" resultMap="crmOutLogDTOResult">
+		select 
+		<include refid="dtoColumn"/>
+		from crm_out_log c
+		left join company_account ca on ca.company_id = c.company_id
+		<include refid="dtoWhere"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryDtoCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from crm_out_log c
+		left join company_account ca on ca.company_id = c.company_id
+		<include refid="dtoWhere"/>
+	</select>
+	
+	<select id="queryCrmOutLogByCompanyId" parameterClass="java.lang.Integer" resultMap="crmOutLogResult">
+		select 
+		<include refid="defaultColumn"/>
+		from crm_out_log 
+		where company_id=#companyId# order by id desc limit 1
+	</select>	
+
+</sqlMap>

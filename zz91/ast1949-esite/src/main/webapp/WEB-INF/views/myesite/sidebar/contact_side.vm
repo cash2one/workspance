@@ -1,0 +1,49 @@
+<div id="category_nav" class="bodyCont moveChild mb">
+    <div class="bodyContTitle">
+        #set($navTitle="联系方式")
+        #foreach($sideBar in $!{sideBarConfig})
+            #if(${sideBar.id} == "contact_side")
+                #set($navTitle=${sideBar.title})
+            #end
+        #end
+        <span class="titleLinkColor titleName">$!{navTitle}</span>
+    </div>
+    <div class="bodyContContent">
+		#cacheFragment("$!{address.esiteFragment}/esite/companyInfo.htm?cid=$!{cid}&22","","1","")
+            <ul class="mainTextColor">
+                <li>$!{company.name}</li>
+                <li>联 系 人：$!{account.contact}#if($!{account.sex}==0)&nbsp;&nbsp;先生#elseif($!{account.sex}==1)&nbsp;&nbsp;女士#end</li>
+                #if($isOut==0&&(!$!{sessionUser}||$!{sessionUser.membershipCode}=="10051000"))
+					<li>电&nbsp;&nbsp;&nbsp; 话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+                    <li>移动电话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+                    <li>传&nbsp;&nbsp;&nbsp; 真：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+                    <li>地&nbsp;&nbsp;&nbsp; 址：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+				#elseif($isOut==1||($!{sessionUser}&&$!{sessionUser.membershipCode}!="10051000"))
+    				<li>电&nbsp;&nbsp;&nbsp; 话：<img src='#springUrl('/viewContactInfo.htm')?type=telKey2&key=$!{account.companyId}' /></li>
+                    <li>
+						<div style="padding-top:0px;float:left">移动电话：</div>
+						<div style="float:left">
+							<img src='#springUrl('/viewContactInfo.htm')?type=mobileKey&key=$!{account.companyId}&position=left&time=$time' />
+						</div>
+						<div style="clear:both"></div>
+                    </li>
+                    #if ($!{account.fax} && $!{account.fax}!="" && $!{account.fax}!=" ")
+                    <li>传&nbsp;&nbsp;&nbsp; 真：$!{account.faxCountryCode} $!{account.faxAreaCode} $!{account.fax}</li>
+                    #end
+                    #if($!{company.address} && $!{company.address}!="")
+                    <li>地&nbsp;&nbsp;&nbsp; 址：$!{company.address}</li>
+    				#end
+				#end
+				#if($!{company.website} && $!{company.website}!="")
+    				#set($website = "#printTitle($!{company.website} 7 '')")
+					#if($website!="http://")
+						#set($website ="http://"+$!{company.website})
+					#else
+						#set($website =$!{company.website})
+					#end
+					<li>企业网站：<a class="draft_no_link" href="$website" target="_blank">$!{company.website}</a></li>
+				#end
+            </ul>
+		#end
+    </div>
+</div>

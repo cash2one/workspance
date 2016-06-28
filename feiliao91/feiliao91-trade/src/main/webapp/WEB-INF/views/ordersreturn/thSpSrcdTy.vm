@@ -1,0 +1,130 @@
+#set($layout="/layout/ordersreturn.vm")
+    <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm-pop.css" />
+	<script src="http://img0.zz91.com/trade/comm/comm.js"></script>
+	
+<!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+	#parse("/common/buy_menu.vm")
+	   <div class="content clearfix">
+		 #if($!{orderReturn.logisticsNo})
+            <div class="pay-steps">
+                <ul class="pay-steps-list clearfix th-step">
+                    <li class="clearfix frist-step this-paystep old-step">
+                        <span>1<em class="stepname">买家申请退货</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==0) class="clearfix this-paystep" #elseif($!{orderReturn.status}==1||$!{orderReturn.status}==3||$!{orderReturn.status}==99) class="clearfix this-paystep old-step" #else class="clearfix" #end>
+                        <span>2<em class="stepname">卖家处理退货申请</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==3||$!{orderReturn.status}==1) class="clearfix this-paystep" #elseif($!{orderReturn.status}==99) class="clearfix this-paystep old-step" #else class="clearfix" #end >
+                        <span>3<em class="stepname">买家退货给卖家</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==99) class="clearfix this-paystep" #else class="clearfix" #end>
+						<span>4<em class="stepname">卖家确认收货，退款完成</em></span>
+                    </li>
+                </ul>
+            </div>
+		#else
+			  <div class="pay-steps">
+                <ul class="pay-steps-list clearfix th-step th-step2">
+                    <li class="clearfix frist-step this-paystep old-step">
+                        <span>1<em class="stepname">买家申请退款</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==0) class="clearfix this-paystep" #else class="this-paystep old-step" #end>
+                        <span>2<em class="stepname">卖家处理退款申请</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==99) class="clearfix this-paystep" #else class="clearfix" #end>
+                        <span>3<em class="stepname">退款完成</em></span>
+                    </li>
+                    <!-- <li class="clearfix">
+                        <span>4<em class="stepname">卖家确认收货，退款完成</em></span>
+                    </li> -->
+                </ul>
+            </div>
+		#end
+		    #if($!{orderReturn})
+		    #if(!$!{orderReturn.status}!=99)
+	        #parse("/common/returnTwo.vm")
+		    #else
+			#parse("/common/returnOne.vm")
+		    #end
+		    #end
+            #if(!$!{orderReturn})
+			#else
+				#if($!{orderReturn.status}==0)
+				#if($!{flag}==1)
+				#parse("/common/thsell/sell_2.vm")
+				#elseif($!{flag}==2)
+				#parse("/common/thsell/sell_5.vm")
+				#else
+				#parse("/common/thsell/sell_1.vm")
+			    #end
+				#elseif($!{orderReturn.status}==1)
+				#parse("/common/thsell/sell_3.vm")
+				#elseif($!{orderReturn.status}==2)
+				#parse("/common/thsell/sell_44.vm")
+				#elseif($!{orderReturn.status}==3)
+				#if($!{flag}==2)
+				#parse("/common/thsell/sell_5.vm")
+				#else
+				#parse("/common/thsell/sell_4.vm")
+				#end
+				#elseif($!{orderReturn.status}==66)
+				#if($!{detail.whoService}!=1)
+				#parse("/common/thsell/sell_66.vm")
+				#else
+				#parse("/common/thbuy/buy_66.vm")
+				#end
+				#elseif($!{orderReturn.status}==99)
+				#parse("/common/thsell/sell_99.vm")
+				#end
+				#end
+    </div>
+		
+    <script type="text/javascript">
+	    var refuse_html;
+		$(".j_refuse").bind("click",function(){
+        if($(".refuse").length!=0){
+            refuse_html = $(".refuse").clone();
+            $(".refuse").remove();
+        }
+        popHtml(refuse_html)
+    })
+	var ret="";
+	
+	jQuery("body").delegate(".refusemy","click",function(){
+	  if(ret==""||ret=="请选择拒绝理由"){
+	  alert("请选择拒绝理由");
+	  return false;
+	  }
+      $("#reason").val(ret);
+	  var text = $(".refuse-text").val();
+	  $("#text").val(text);
+	  var da=$("#form1").serialize();
+	  jQuery.ajax({
+	    url:"#springUrl('/ordersreturn/refused.htm')",
+	    type:'post',
+		dateType:'json',
+		data:da,
+		success:function(data){
+		ajaxob=eval("("+data+")");
+		var id=ajaxob.data;
+			if(ajaxob.success){
+			  window.location.href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId="+id;
+		}
+		}
+	  })
+	})
+	
+	function　fntt(obj){
+		ret=obj.attr("value");
+	}
+	
+    selectJr(fntt);
+    </script>

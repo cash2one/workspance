@@ -1,0 +1,104 @@
+#set( $layout = "/layout/default.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sincerity/css/authentication.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sincerity/js/authentication.js"></script>
+
+<div class="main">
+	<div class="mainblock1">
+    	<a href="#springUrl('/credit/creditbaseinfo/index.htm')">诚信档案</a> <span class="divider">/</span>基本信息
+    </div>
+    <!--end mainblock1-->
+    <div class="mainblock2">
+    	<div class="m2-title">
+        	<ul class="m2-button">
+            	<li>
+					<a href="#springUrl('/credit/creditbaseinfo/index.htm')">认证信息
+        				<span class="m-orange">
+        					#if($!{checkStatus} == "0")
+        						[认证中]
+        					#elseif($!{checkStatus} == "1")
+        						[已认证]
+        					#elseif($!{checkStatus} == "2")
+        						[认证不通过]
+							#else
+								[待认证]
+        					#end
+                        </span>
+    				</a>
+				</li>
+                <li style="background:url(http://img0.zz91.com/zz91/sincerity/images/botton_bg_click.jpg) repeat-x;font-weight:bold">
+					<a href="#springUrl('/credit/creditbaseinfo/indexQualification.htm')">企业自传资质</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end m2-title-->
+        <div class="companyList">
+			#if($!{emptyFlg} == "0")
+        	<div class="company-text">
+            	您暂时还未上传资质，为了增加您的诚信指数，请点击下方<a href="#springUrl('/credit/creditbaseinfo/createQualification.htm')" target="_blank"><span class="m-green">“新增”</span></a>按钮上传您的企业资质!
+            </div>
+			#end
+            <!--end company-text-->
+        	<div class="companyList-button">
+            	<a href="#springUrl('/credit/creditbaseinfo/createQualification.htm')" target="_blank">新增</a>
+            </div>
+            <!--end submit-botton-->
+            <table class="companyList-table">
+            	<tr>
+                	<td class="fb f14">证书名称</td>
+                    <td class="fb f14">发证机构</td>
+                    <td class="fb f14">生效日期</td>
+                    <td class="fb f14">截止日期</td>
+                    <td class="fb f14">状态</td>
+                    <td class="fb f14">操作</td>
+                </tr>
+				#foreach($credit in $!fileList)
+    				<tr>
+                    	<td>
+							<a #if($!{sessionUser.membershipCode}=="10051000") href="#springUrl('/credit/creditbaseinfo/editQualification.htm?id=')$!{credit.id}" #else href="javascript:void(0)" onClick= "goEsite($!{credit.checkStatus});" #end>
+                                $!{credit.fileName}
+                            </a>
+						</td>
+                        <td>$!{credit.organization}</td>
+                        <td>#printFragmentDate("yyyy-MM-dd" $!{credit.startTime})</td>
+                        <td>#printFragmentDate("yyyy-MM-dd" $!{credit.endTime})</td>
+                        <td>
+							#if($!{credit.checkStatus}=='0')
+                                <span class="grey">未审核</span>
+                            #elseif($!{credit.checkStatus}=='1')
+                                <span class="green">已审核</span>
+                            #else 
+                                <span class="red">未通过</span>
+    						#end
+						</td>
+                        <td>
+							<a href="#springUrl('/credit/creditbaseinfo/editQualification.htm?id=')$!{credit.id}" target="_blank" onclick="return confirm('您修改后的信息必须通过本站重新审核，确定要修改吗？')">修改</a>
+							<span class="submit-table-remove"><a href="#springUrl('/credit/creditbaseinfo/deleteQualification.htm?id=')$!{credit.id}" onclick="return confirm('确实要删除吗？')">删除</a></span>
+							<a href="javascript:void(0)" onClick="window.open('http://img3.zz91.com/800x450/$!{credit.picName}','_blank','')">图片（1）</a>
+						</td>
+    				</tr>
+				#end
+            </table>
+            
+        </div>
+        <!--end submit-->
+    </div>
+    <!--end mainblock2-->
+</div>
+<!--end main-->
+<script>
+		jQuery(function(){
+       		myrc.menu(8, 0);
+        });
+		//跳转到门市部
+		function goEsite(checkStatus){
+			if (checkStatus == "0") {
+				alert("对不起，您查看的证书还未审核！");
+			}
+			if (checkStatus == "2") {
+				alert("对不起，您查看的证书审核没有通过！");
+			}
+			if (checkStatus == "1") {
+				window.open("http://$!{domainZZ91}.zz91.com/cxda.htm?type=1","");
+			}
+		}
+</script>

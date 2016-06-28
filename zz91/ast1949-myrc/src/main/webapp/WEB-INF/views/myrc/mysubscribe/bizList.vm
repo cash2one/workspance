@@ -1,0 +1,129 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1503","30","30")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+	<div class="tishiWarn">
+			$!{myaccount.contact} #if($!{myaccount.sex} == 1) 女士 #else 先生 #end ， 您好！
+			<br />
+			以下是您在中国再生资源交易网订阅的最新商机，快去看看有没有合适的客户吧！
+	</div>
+			
+	#if($bizList.size()>0)
+		<div class="feedbackList">
+			<div class="feedbackSortsType">
+				#foreach($biz in $bizList)
+				<a href="#springUrl('/mysubscribe/bizList.htm?id=')$!{biz.id}" title="$!{biz.keywords} $!{biztype}" class="#if($!{ids}==$!{biz.id}) feedbackSortsTypeOn #else feedbackSortsTypeOff #end" onClick="logiing()">
+					#set($biztype="(供应+求购)")
+					#if($!{biz.productsTypeCode}=="10331000")
+						#set($biztype="(供应)")
+					#elseif($!{biz.productsTypeCode}=="10331001") 
+						#set($biztype="(求购)")
+					#end
+					#printTitle($!{biz.keywords} 6 "...")
+				</a>
+				#end
+                <div style="clear:both"></div>
+			</div>			
+			<div style="clear:both"></div>
+        </div>
+		#if($!{results.size()} == 0)
+			<div style="clear:both"></div>
+			<div class="tishiWarn">
+				暂时没有该关键词信息，请点击其他关键词查看相关信息！
+			</div>
+		#else
+    		<div class="subscribeList">
+    			<ul>
+    				##set($zebraFlag=0)
+    				#foreach($product in $!results)
+    				<li>
+    					<span class="offerlineLeft">
+    						<a href="$!{address.server}/trade/picshow.htm?pid=$!{product.productId}&psort=1" target="_blank">
+    							#if($!{product.picAddress}=="")
+    								<img src='$!{address.images}/global/noimage.gif' width='100' height='80' >
+    							#else
+    								<img src='$!{resourceUrl}/$!{product.picAddress}' width='100' height='80' >
+    							#end
+    						</a>
+    					</span>
+    					
+    					<span class="offerlineMiddle"> 
+    						<span class="sellOrBuyTit"> 
+                                <font style="color:#5F9410;">$!{product.buyOrSale}</font>
+    							<a target="_blank" href="$!{address.server}/trade/productdetails$!{product.productId}.htm" class="a1">
+    								$!{product.productsTitle}
+    							</a>
+                                <font style="font-size:12px; color:#999;font-weight:normal">$!{product.displayRefreshTime}</font>
+    						</span>
+                            <div style="clear:both"></div>
+    						<span class="sellOrBuyComp">$!{product.companyName}</span>
+    						<div style="clear:both"></div>
+    						<span class="sellOrBuyInfo">$!{details}</span>
+    					</span>
+    					
+    					<span class="offerlineRight">
+    						<a href='$!{address.server}/company/compinfo$!{product.companyId}.htm' target='_blank'>
+    								#if($!{product.membershipCode}=="10051001")
+    									<img src='$!{address.images}/common/recycle.gif'/>
+    								#elseif($!{product.membershipCode}=="100510021000")
+    									<img src='$!{address.images}/common/pptSilver.gif'/>
+    								#elseif($!{product.membershipCode}=="100510021001")
+    									<img src='$!{address.images}/common/pptGold.gif'/>
+    								#elseif($!{product.membershipCode}=="100510021002")
+    									<img src='$!{address.images}/common/pptDiamond.gif'/>
+    								#elseif($!{product.membershipCode}=="10051003")
+    									<img src='$!{address.images}/common/ppt_ldb.png'/>
+    								#end
+    								<br>
+    								#if($!{product.membershipCode}=="10051000")
+    									普通会员
+    								#elseif($!{product.membershipCode}=="10051001")
+    									再生通会员
+    								#elseif($!{product.membershipCode}=="100510021000")
+    									银牌品牌通
+    								#elseif($!{product.membershipCode}=="100510021001")
+    									金牌品牌通
+    								#elseif($!{product.membershipCode}=="100510021002")
+    									钻石品牌通
+    								#elseif($!{product.membershipCode}=="10051003")
+    								     来电宝会员
+    								#else
+    									普通会员
+    								#end
+    						</a>
+    					</span>
+    					
+    					<span class="offerlineRightRight">
+                            <span class="sellOrBuyArea">$!{product.province}|$!{product.area}</span>
+                            <div style="clear:both"></div>
+    						<span class="sellOrBuyLink">
+        						<a href="$!{address.server}/trade/productdetails$!{product.productId}.htm#message" target="_blank">
+    								<img src="$!{address.images}/global/icon/mail2.gif">给我留言</a>
+        						<a href="$!{address.server}/trade/productdetails$!{product.productId}.htm" target="_blank">
+    								<img src="$!{address.images}/global/icon/phone2.gif">联系方式</a>
+    						</span>
+                        </span>
+    				</li>
+    				##set($zebraFlag=$zebraFlag+1)
+    				#end
+    				
+    					
+    				<div style="clear:both"></div>
+        		</ul>
+    			<div class="pageNav" style="margin:10px 0;">
+            		#myrcPageNav($!{page} "#springUrl('/mysubscribe/bizList.htm')" "$!{suffixUrl}" "")
+            	</div>
+				<div style="clear:both"></div>
+    		</div>
+        #end	
+		#else
+        	<div class="tishiError">
+        		您还没有订阅在线商机信息，<img src="$!{address.images}/myrc/ind11_r8_c5.gif" width="15" height="15" /> <a href="$!{address.server}/subscribe/subscribeBiz.htm" target="_blank">点此订阅</a>
+        	</div>
+		#end
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".subscribeList","#EFF6EF","#FFF")
+	})
+</script>

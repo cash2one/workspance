@@ -1,0 +1,144 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/other/css/service.css" />
+        <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img');
+            DD_belatedPNG.fix('.flow-img');
+            </script>  
+        <![endif]-->
+   #parse("/common/buy_menu.vm")
+        <div class="content clearfix">
+            <div class="express-mail clearfix">
+                <div class="express-title">修改价格</div>
+                <div class="replace-old">
+                    <dl class="res-info">
+						## 计算总费用 运费
+						#set($totalFee=0)
+						#set($totalLoti=0)
+						#foreach($dto in $resultList)
+							#set($area = $dto.buyAddress)
+							#set($buyAddress = $dto.detailJson.get("Address"))
+							#set($sellName = $dto.sellCompany.name)
+							#set($totalFee = $totalFee + $!{dto.orders.buyPricePay} * $!{dto.orders.buyQuantity} + $!{dto.orders.buyPriceLogistics})
+							#set($totalLoti = $totalLoti + $!{dto.orders.buyPriceLogistics})
+							#set($orderNo = $dto.orders.orderNo)
+						#end
+						<dt class="clearfix">
+							<div class="res-seller fl">卖家：$!{sellName}</div>
+							<div class="res-color fl">&nbsp;</div>
+							<div class="res-unit fl">单价（元）</div>
+							<div class="res-number fl" >数量</div>
+							<div class="res-moery fl">小计（元）</div>
+							<div class="res-moery-lgs fl">物流费用 </div>
+						</dt>
+						#foreach($dto in $resultList)
+							<dd class="clearfix">
+								<div class="res-seller fl clearfix">
+									<img src="$!{address.img}/$!{dto.picAddress}" class="seller-img"/>
+									<p class="res-jj">$dto.goods.title</p>
+									<p class="res-icon">
+										#if($dto.bzjFlag)
+											<i class="res-iconimg1"></i>
+										#end
+										#if($dto.sevenDayFlag)
+											<i class="res-iconimg1 res-iconimg2"></i>
+										#end
+									</p>
+								</div>
+								<div class="res-color fl">
+									<p>$dto.detailJson.get("format")</p>
+								</div>
+								<div class="res-unit fl" >$!{dto.orders.buyPricePay}</div>
+								<div class="res-number fl" >$!{dto.orders.buyQuantity}</div>
+								#if($!{buyPriceLogistics})
+								#set($xiaoji=$!{cost} - $!{buyPriceLogistics})
+								#else
+								#set($xiaoji=$!{cost} - $!{yunfei})
+								#end
+								
+								#if($!{buyPriceLogistics})
+								#set($xiaoji2=$!{sumPrice} - $!{buyPriceLogistics})
+								#else
+								#set($xiaoji2=$!{sumPrice} - $!{yunfei})
+								#end
+								#if($velocityCount==1)
+									<div class="res-moery fl ">#if($!{cost}) $math.roundTo(2,$!{xiaoji}) #else $math.roundTo(2,$!{xiaoji2}) #end</div>
+									<div class="res-moery-lgs fl" >#if($!{buyPriceLogistics}) $!{buyPriceLogistics} #else $!{yunfei} #end</div>
+								#end
+							</dd>
+						#end
+                    </dl>
+                    <div class="address">
+                        收货地址：$area$buyAddress.address  <span class="i-fweight">联系人:$buyAddress.name  $buyAddress.mobile</span>
+                    </div>
+                    <div class="replace-main">
+						<form action="" method="post" id="form1">
+							<div class="replace-list clearfix">
+								<div class="fl old-moery">
+									<span>价格：</span>
+									<span class="old-moery-num " >#if($!{cost}) $math.roundTo(2,$!{xiaoji}) #else $math.roundTo(2,$!{xiaoji2}) #end 元</span>
+								</div>
+								<div class="fr">修改为：<input class="replace-ipt" name="pricePay" id="pricePayNum"/><br/><span id="errpricePay" style="color:red">
+								</span></div>
+								<input type="hidden" value="$!{orders.id}" name="id"/>
+							</div>
+							<div class="replace-list clearfix">
+								<div class="fl old-moery">
+									<span >运费：</span>
+									<span class="old-moery-num" id="updateyunfei">#if($!{buyPriceLogistics}) $!{buyPriceLogistics} #else $!{yunfei} #end元</span>
+									<input type="hidden" id="yunfeiPrice" name="yunfeiPrice"/>
+								</div>
+								<div class="fr">运费：<input class="replace-ipt" name="priceLogistics" id="priceLogisticsNum"/></div>
+							</div>
+							<input type="hidden" name="code" value="$!{orderNo}" />
+						</form>
+						<span class="replace-btn replace-all">确定修改</span>
+					</div>
+				</div>
+			</div>
+		</div>
+    </body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+##		$("#danjia").html(parseFloat($!{orders.buyPricePay}));
+##		$("#buyPriceLogistics").html(parseFloat($!{orders.buyPriceLogistics}));
+##		var a=$("#danjia").html();
+##		var b=$("#number").html();
+##		var c=parseFloat(a);
+##		var d=parseFloat(b);
+##		var e=c*d;
+##		var g=$("#buyPriceLogistics").html();
+##		$("#priceId").html(e);
+##		$("#updateprice").html(a+"元");
+##		$("#updateyunfei").html(g+"元");
+		});
+
+		$(".replace-all").click(function(){
+			if(isNaN($("#pricePayNum").val())){
+				alert("请输入数字");
+			}
+
+			if(isNaN($("#priceLogisticsNum").val())){
+				alert("请输入数字")
+				return false;
+			}
+			var yunfei =$("#updateyunfei").html();
+			$("#yunfeiPrice").val(parseFloat(yunfei));
+			var da = $("#form1").serialize();
+			jQuery.ajax({
+				url:"#springUrl('/service/updatePrice.htm')",
+				type:'post',
+				dateType:'json',
+				data:da,
+				success:function(data){
+					ajaxob=eval("("+data+")");
+					if(ajaxob.success){
+						window.location="#springUrl('/step')$!{orderNo}.htm";
+					}
+				}
+			});
+		});
+	</script>
+</html>

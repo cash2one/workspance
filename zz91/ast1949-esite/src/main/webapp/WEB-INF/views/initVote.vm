@@ -1,0 +1,159 @@
+#set( $layout = "/layout/blank.vm" )
+#parse("/common/context.vm")
+#parse("/common/import.vm")
+<style type="text/css" >
+	table {font-size:12px;}
+</style>
+<form id="voteForm" name="voteForm" method="post" onsubmit="return false;" style="margin:0px; padding:0px;">
+	<input type="hidden" id="toCompanyId" name="toCompanyId" value="$!{company.id}" />
+<table width="100%"  border="0" cellpadding="5" cellspacing="1" bgcolor="#71AB29">
+	<tr bgcolor="#ffffff">
+		<td width="120" align="right" >被评价者</td>
+		<td><a href="$!{address.company}/compinfo$!{company.id}.htm" target="_blank">$!{company.name}</a></td>
+	</tr>
+	<tr bgcolor="#ffffff">
+		<td width="120" align="right" >
+			<span style="color:red" >*</span>
+			评价：
+		</td>
+		<td>
+			<div style="float:left;">
+			<label>
+				<input type="radio" name="status" value="0" checked="true"/>
+				<img height=16 src="$!{address.images}/myrc/good.gif" width="16" align="absMiddle" title="好评" />
+				<span style="color:#197b30;">好评</span>
+			</label>
+			<label>
+				<input type="radio" name="status" value="1"/>
+				<img height=16 src="$!{address.images}/myrc/common.gif" width="16" align="absMiddle" title="中评"/>
+				<span style="color:#ff9900;">中评</span>
+			</label>
+			<label>
+				<input type="radio" name="status" value="2"/>
+				<img height=16 src="$!{address.images}/myrc/bad.gif" width="16" align="absMiddle" title="差评"/>
+				<span style="color:#ff0000;">差评</span>
+			</label>
+			</div>
+			<div style="float:left;">请谨慎评价，并写清评价的内容，对于虚假的评价内容我们将对其进行严肃处理！</div>
+		</td>
+	</tr>
+	<tr bgcolor="#ffffff">
+		<td width="120" align="right" >评价内容：<br />(限制250字)</td>
+		<td><textarea id="content" name="content" cols="50" rows="5" maxlength="250"></textarea></td>
+	</tr>
+	<tr bgcolor="#ffffff">
+		<td width="120" align="right" >您的账户/邮箱：</td>
+		<td>
+			#if($!{sessionUser})
+				<input name="email" type="text" id="email" value="$!{sessionUser.email}" size="30" maxlength="48" disabled='true' style='color:red;'>
+			#else
+				<input name="email" type="text" id="email" value="" size="30" maxlength="48" > 
+			#end
+			<span id="lb_email" ></span>
+		</td>
+	</tr>
+	#if(!$!{sessionUser})
+	<tr bgcolor="#ffffff" id="pwdtr" style="display:;">
+		<td width="120" align="right" >密码：</td>
+		<td><input name="pwd" type="password" id="pwd" value="" maxlength="48" size="30"></td>
+	</tr>
+	#end
+	<tr bgcolor="#ffffff" id="registerDiv" style="display:none;">
+		<td></td>
+		<td>
+			只有本站付费会员才允许给客户评价，如果您还不是本站付费会员，请先到<a href="$!{address.front}/register/register.htm" >这里注册会员</a>
+		</td>
+	</tr>
+</table>
+<div style="text-align:center;">
+	<input type="submit" id="submitBtn" name="submitBtn" value="写好了，评价" />
+</div>
+</form>
+	
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	
+		jQuery("#voteForm").submit(function(){
+			
+    		if(!chkfrm()){
+    			return false;
+    		}
+			
+			#if($!{sessionUser})
+				voteToCompany();
+			#else
+				zz91Util.login({
+    				username:jQuery("#email").val(),
+    				password:jQuery("#pwd").val(),
+    				url:"",
+    				contextpath:"#springUrl('/user')",
+					success:function(){
+						voteToCompany();
+					}
+				});
+			#end
+			return false;
+		});
+	
+		jQuery("#email").blur(function(){
+    		if(!isEmail(this.value)){
+				jQuery("#lb_email").html("电子邮箱格式不正确");
+				jQuery("#lb_email").css("color","red");
+        		return false;
+    		}
+			jQuery("#lb_email").html("");
+			jQuery.ajax({
+				url:'#springUrl("user/isemailregist.htm")',
+				data:{email:jQuery("#email").val()},
+				cache:false,
+				dataType:"json",
+				type:"post",
+				success:function(data){
+					if(data.success){
+						jQuery("#pwdtr").css("display","");
+						jQuery("#registerDiv").css("display","none");
+					}else{
+						jQuery("#pwdtr").css("display","none");
+						jQuery("#registerDiv").css("display","");
+					}
+				}
+			});
+		});
+	});
+	
+	function voteToCompany(){
+    	jQuery.ajax({
+    		url:"#springUrl('/voteToCompany.htm')",
+    		data:jQuery("#voteForm").serialize(),
+    		cache:false,
+    		dataType:"json",
+    		type:"post",
+    		success:function(req){
+    			if(req.success){
+    				//保存成功后给出提示 或 跳转到提示页面
+    				parent.voteSuccess();
+    			}else{
+    				zz91Util.showmsg(req.data);
+    				if(req.data="sessionTimeOut"){
+    					window.open("$!{address.front}/login.htm");
+    				}
+    			}
+    		}
+    	});
+	}
+	
+	function isEmail(s){
+    	var patrn = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i
+    //	if (!patrn.exec(s)) return false;
+    	return patrn.test(s);
+    }
+	
+	function chkfrm(){
+		if(jQuery("#content").val().length<=0){
+    		alert("请填写评价内容！");
+    		jQuery("#content").focus();
+    		return false;
+    	}
+		return true;
+	}
+</script>

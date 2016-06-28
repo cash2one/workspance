@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <title>$!{seoTitle}</title>
+    <meta name="keywords" content="$!{seoKeywords}" />
+    <meta name="description" content="$!{seoDescription}" />
+	<link rel="shortcut icon" href="$!{address.img}/huanbao/images/logo/favicon.ico">
+    <link rel="stylesheet" style="text/css" href="$!{address.img}/lib/asto/asto.hack-1.0.0.css" />
+    <link rel="stylesheet" href="$!{address.img}/huanbao/css/hb.comm.css" />
+    <link rel="stylesheet" href="$!{address.img}/huanbao/css/hb.myesite.css" />
+	<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/jquery-ui/1.8.16/south-street/jquery-ui-1.8.16.custom.css" />
+    <!--[if lt IE 9]>
+    <script src="$!{address.img}/huanbao/js/global/html5forIE.js"></script>
+    <![endif]-->	
+	
+    <script src="$!{address.img}/huanbao/js/jquery/jquery-1.6.4.min.js"></script>
+	<script type="text/javascript" src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+	<script type="text/javascript" src="$!{address.img}/lib/jquery-ui/1.8.16/jquery-ui-1.8.16.custom.min.js"></script>
+	<script src="$!{address.img}/huanbao/js/hb.comm.js"></script>
+	<script src="$!{address.img}/huanbao/js/hb.myesite.menu.js"></script>
+	<script type="text/javascript">
+	jQuery(document).ready(function(data){	
+		jQuery.getJSON("$!{address.myesite}/common/getCompproName.htm?scoke="+new Date().getTime(),function(data){
+			if(data.incomplete){
+				if(jQuery("#companyForm").length>0){
+                            jQuery("#companyForm").before("  <h1 style='font-size: 18px; font-family: Arial; color: red;'> 尊敬的客户您目前的信息未完善，为了您能更好的发布和查看供求信息，请您及时完善您的公司名称、公司介绍等信息。有任何问题可以拨打我们的客服热线:0571-56633090</h6> ");
+							return false;
+				}else{
+							window.location.href = "$!{address.myesite}/company/updateCompany.htm";
+				}
+			}
+				jQuery("#comname").append(data.compProfile.name);
+				
+				if (data.compProfile.domainTwo ==""){
+				  	jQuery("#hDomain").append("$!{address.esite}/index$!{epAuthUser.cid}.htm");
+				}else{
+					jQuery("#hDomain").append(data.compProfile.domainTwo+".huanbao.com");
+					jQuery("#hDomain").attr("href","http://"+data.compProfile.domainTwo+".huanbao.com")
+				}
+				jQuery.each(data.list,function(i,v){
+				jQuery("#gong").append("<a href="+v.value+"/>"+v.name+"</a>");
+		});
+	});
+});
+    </script>
+</head>
+<body>
+    #cacheFragment("$!{address.fragment}/fragment/page/topbar.htm?loginName=$!{epAuthUser.account}", "", "", "")
+            $!{fragmentContext}
+    #end
+
+    <div style="width:1000px;margin:0 auto;">
+        #parse('/common/header.vm')
+        $screen_content
+		#parse('/common/footer.vm')
+    </div>
+</body>
+</html>

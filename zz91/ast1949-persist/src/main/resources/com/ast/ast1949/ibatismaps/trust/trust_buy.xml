@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustBuy">
+	<typeAlias alias="trustBuyDO" type="com.ast.ast1949.domain.trust.TrustBuy" />
+
+	<typeAlias alias="trustBuySearchDO" type="com.ast.ast1949.dto.trust.TrustBuySearchDto" />
+	<resultMap class="trustBuyDO" id="trustBuyResult">
+		<result property="id" column="id" />
+		<result property="buyNo" column="buy_no" />
+		<result property="companyId" column="company_id" />
+		<result property="status" column="status" />
+		<result property="detail" column="detail" />
+		<result property="title" column="title" />
+		<result property="code" column="code" />
+		<result property="color" column="color" />
+		<result property="price" column="price" />
+		<result property="unit" column="unit" />
+		<result property="level" column="level" />
+		<result property="quantity" column="quantity" />
+		<result property="areaCode" column="area_code" />
+		<result property="useful" column="useful" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="companyName" column="companyName" />
+		<result property="companyContact" column="companyContact" />
+		<result property="mobile" column="mobile" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="isPause" column="is_pause" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		buy_no,
+		company_id,
+		status,
+		detail,
+		title,
+		code,
+		color,
+		price,
+		unit,
+		level,
+		quantity,
+		area_code,
+		useful,
+		gmt_created,
+		gmt_modified,
+		companyName,
+		companyContact,
+		mobile,
+		gmt_refresh,
+		is_pause
+	</sql>
+	
+	<sql id="joinColumn">
+		tb.id,
+		tb.buy_no,
+		tb.company_id,
+		tb.status,
+		tb.detail,
+		tb.title,
+		tb.code,
+		tb.color,
+		tb.price,
+		tb.unit,
+		tb.level,
+		tb.quantity,
+		tb.area_code,
+		tb.useful,
+		tb.gmt_created,
+		tb.gmt_modified,
+		tb.companyName,
+		tb.companyContact,
+		tb.mobile,
+		tb.gmt_refresh,
+		tb.is_pause
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="trustBuyResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_buy
+		where id = #value#
+	</select>
+	
+	<select id="queryMaxId" resultClass="java.lang.Integer">
+		select max(id) from trust_buy
+	</select>
+
+	<insert id="insert" parameterClass="trustBuyDO">
+		INSERT INTO trust_buy
+		(
+		buy_no,
+		company_id,
+		status,
+		detail,
+		title,
+		code,
+		color,
+		price,
+		unit,
+		level,
+		quantity,
+		area_code,
+		useful,
+		gmt_created,
+		gmt_modified,
+		companyName,
+		companyContact,
+		mobile,
+		gmt_refresh
+		)
+		VALUES
+	    (	
+		#buyNo#,
+		#companyId#,
+		#status#,
+		#detail#,
+		#title#,
+		#code#,
+		#color#,
+		#price#,
+		#unit#,
+		#level#,
+		#quantity#,
+		#areaCode#,
+		#useful#,
+		now(),
+		now(),
+		#companyName#,
+		#companyContact#,
+		#mobile#,
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="trustBuyDO" >
+		update trust_buy 
+		set gmt_modified = now(),
+		gmt_refresh = now()
+		<isNotEmpty prepend="," property="status">
+			status = #status#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail = #detail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="code">
+			code = #code#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="color">
+			color = #color#
+		</isNotEmpty>
+		<isNotNull prepend="," property="price">
+			price = #price#
+		</isNotNull>
+		<isNotEmpty prepend="," property="unit">
+			unit = #unit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="level">
+			level = #level#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="areaCode">
+			area_code = #areaCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="useful">
+			useful =#useful#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyName">
+			companyName =#companyName#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyContact">
+			companyContact =#companyContact#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="mobile">
+			mobile =#mobile#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<update id="updateForRefresh" parameterClass="java.lang.Integer" >
+		update trust_buy 
+		set
+		gmt_modified = now(),
+		gmt_refresh = now()
+		where id = #id#
+	</update>
+	
+	<update id="updateStatusByAdmin" parameterClass="java.util.Map" >
+		update trust_buy 
+		set gmt_modified = now(),
+		status = #status#
+		where id = #id#
+	</update>
+	
+	<update id="updateIsDelByAdmin" parameterClass="java.lang.Integer" >
+		update trust_buy 
+		set gmt_modified = now(),
+		is_del = 1
+		where id = #value#
+	</update>
+	
+	<sql id="whereCaluse">
+		where tb.is_del = 0
+		<isNotNull prepend="and" property="trustBuySearchDto.isFront">
+			 tb.status!='00' and tb.status !='99'
+		</isNotNull>
+		<isNotNull prepend="and" property="trustBuySearchDto.companyId">
+			tb.company_id = #trustBuySearchDto.companyId#
+		</isNotNull>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.from">
+			<isNotEmpty property="trustBuySearchDto.dateType">
+				$trustBuySearchDto.dateType$ >=  #trustBuySearchDto.from#
+			</isNotEmpty>
+			<isEmpty property="trustBuySearchDto.dateType">
+				tb.gmt_created >=  #trustBuySearchDto.from#
+			</isEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.to">
+			<isNotEmpty property="trustBuySearchDto.dateType">
+				#trustBuySearchDto.to# >= $trustBuySearchDto.dateType$
+			</isNotEmpty>
+			<isEmpty property="trustBuySearchDto.dateType">
+				#trustBuySearchDto.to# >= tb.gmt_created
+			</isEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.status">
+			tb.status = #trustBuySearchDto.status#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.buyNo">
+			tb.buy_no = #trustBuySearchDto.buyNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.title">
+			tb.detail like concat('%',#trustBuySearchDto.title#,'%') 
+		</isNotEmpty>
+		<isNotNull property="trustBuySearchDto.isLogin">
+			<isNotEmpty prepend="and" property="trustBuySearchDto.mobile">
+				ca.mobile = #trustBuySearchDto.mobile#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="trustBuySearchDto.companyName">
+				c.name like concat('',#trustBuySearchDto.companyName#,'%')
+			</isNotEmpty>
+		</isNotNull>
+		<isNull property="trustBuySearchDto.isLogin">
+			<isNotEmpty prepend="and" property="trustBuySearchDto.mobile">
+				tb.mobile = #trustBuySearchDto.mobile#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="trustBuySearchDto.companyName">
+				tb.companyName like concat('',#trustBuySearchDto.companyName#,'%')
+			</isNotEmpty>
+		</isNull>
+		<isNotEmpty prepend="and" property="trustBuySearchDto.dealerId">
+			exists(select id from trust_relate_dealer where tb.buy_no = buy_no and dealer_id = #trustBuySearchDto.dealerId#)
+		</isNotEmpty>
+		
+		<!-- 今日第一次发布 -->
+		<isNotNull prepend="and" property="trustBuySearchDto.isFirst">
+			exists ( select a1.id from trust_buy a1 where tb.company_id = a1.company_id and TO_DAYS(now()) = TO_DAYS(gmt_created) )
+			and not exists ( select a2.id from trust_buy a2 where tb.company_id = a2.company_id and TO_DAYS(now()) > TO_DAYS(gmt_created) )
+		</isNotNull>
+		
+		<!-- 登录 -->
+		<isNotNull prepend="and" property="trustBuySearchDto.loginFlag">
+			tb.company_id > 0
+		</isNotNull>
+		<!-- 未登录 -->
+		<isNotNull prepend="and" property="trustBuySearchDto.noLoginFlag">
+			tb.company_id = 0
+		</isNotNull>
+		<isNotNull prepend="and" property="trustBuySearchDto.isPause">
+			tb.is_pause = #trustBuySearchDto.isPause#
+		</isNotNull>
+		
+	</sql>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="trustBuyResult">
+		select
+		<include refid="joinColumn"/>
+		from trust_buy tb
+		<isNotNull property="trustBuySearchDto.isLogin">
+			<isNotEmpty property="trustBuySearchDto.mobile">
+				left join company_account ca on ca.company_id = tb.company_id
+			</isNotEmpty>
+			<isNotEmpty property="trustBuySearchDto.companyName">
+				left join company c on c.id = tb.company_id
+			</isNotEmpty>
+		</isNotNull>
+		<include refid="whereCaluse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0)
+		from trust_buy tb
+		<isNotNull property="trustBuySearchDto.isLogin">
+			<isNotEmpty property="trustBuySearchDto.mobile">
+				inner join company_account ca on ca.company_id = tb.company_id
+			</isNotEmpty>
+			<isNotEmpty property="trustBuySearchDto.companyName">
+				inner join company c on c.id = tb.company_id
+			</isNotEmpty>
+		</isNotNull>
+		<include refid="whereCaluse"/>
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_buy 
+		where company_id = #value# and is_del = 0
+	</select>
+	
+	<update id="relateCompanyByMobile" parameterClass="java.util.Map">
+		update trust_buy 
+		set 
+		gmt_modified = now(),
+		company_id =#companyId#
+		where mobile = #mobile# and company_id = 0
+	</update>
+	
+	<update id="updatePauseById" parameterClass="java.util.Map">
+		update trust_buy 
+		set 
+		gmt_modified = now(),
+		is_pause =#status#
+		where id = #id#
+	</update>
+	
+
+</sqlMap>

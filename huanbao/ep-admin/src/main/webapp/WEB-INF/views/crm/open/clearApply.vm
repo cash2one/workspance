@@ -1,0 +1,125 @@
+<script type="text/javascript" src="#springUrl('/app/crm/open.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/crm/svr.js')" ></script>
+
+    <script type="text/javascript">
+    	Ext.onReady(function() {
+			var svrGrid=new com.zz91.ep.crm.svr.Grid({
+				region:"west",
+				width:250,
+				split:true,
+				layout:"fit",
+				autoload:true
+			});
+			
+			var companyGrid= new com.zz91.ep.crm.open.OpenHistoryGrid({
+				id:OPEN.HISTORY_GRID,
+				toolbar:[{
+					iconCls : "play16",
+					text:"开通申请单",
+					handler:function(btn){
+						var applyGroup=companyGrid.getSelectionModel().getSelected();
+						if(typeof(applyGroup)=="object"){
+    						window.open(Context.ROOT + "/crm/open/detail.htm?applyGroup="+applyGroup.get("applyGroup")+"&cid="+applyGroup.get("id"));
+						}
+					}
+				},{
+				iconCls : "pictures16",
+					text:"客户信息",
+					handler:function(btn){
+						var applyGroup=companyGrid.getSelectionModel().getSelected();
+						if(typeof(applyGroup)=="object"){
+    						window.open(Context.ROOT + "/comp/comp/details.htm?id="+applyGroup.get("id"));
+						}
+					}
+				},{
+					text:"分配给客服",
+					id:"assign",
+					iconCls:"foldermove16",
+					handler:function(btn){
+						var rows=companyGrid.getSelectionModel().getSelections();
+						var adArr=new Array();
+						for(var i=0;i<rows.length;i++){
+							if(rows[i].get("sale_staff")!=""){
+								alert("确定要将已分配客户重新进行分配,请确认正确选择,再进行分配操作!");
+							}
+		
+							adArr.push(rows[i].get("id"))
+						}
+						com.zz91.ep.crm.open.assignCsWin(adArr,function(){
+							_store.reload();
+						});
+						
+					}
+				},"->",{
+					xtype:"combo",
+					mode:"local",
+					triggerAction:"all",
+					id:"applystatuscombo",
+					hiddenId:"applystatus",
+					store:[
+						["","全部"],
+					    ["0",com.zz91.ep.crm.open.ApplyStatus["0"]],
+					    ["1",com.zz91.ep.crm.open.ApplyStatus["1"]],
+					    ["2",com.zz91.ep.crm.open.ApplyStatus["2"]],
+						["3",com.zz91.ep.crm.open.ApplyStatus["3"]]
+					],
+					listeners:{
+						"blur":function(field){
+							if(Ext.get("applystatuscombo").dom.value==""){
+								field.setValue("");
+							}
+							companyGrid.getStore().baseParams["applyStatus"]=field.getValue();
+							var rows=svrGrid.getSelectionModel().getSelections();
+							if(rows.length>0){
+    							companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+							}
+						}
+					}
+				}],
+				region:"center"
+			});
+			
+			#if($!{flag}==1)
+				Ext.getCmp("assign").setVisible(false);
+			#end
+			
+			var companySvrGrid = new com.zz91.ep.crm.open.Step1CompanySvrGrid({
+				region:"south",
+				title:"开通的服务",
+				height:200,
+				split:true
+			});
+			
+			svrGrid.on("rowclick",function(g,rowIndex,e){
+				var svrcode=g.getStore().getAt(rowIndex).get("code");
+    			var B=companyGrid.getStore().baseParams;
+				B=B||[];
+    			B["svrCode"]=svrcode;
+				#if($!{account})
+				B["account"]="${account}";
+				#end
+    			companyGrid.getStore().baseParames=B;
+    			companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+			});
+			
+			companyGrid.on("rowclick",function(g,rowIndex,e){
+        		var B=companySvrGrid.getStore().baseParams;
+				B=B||{};
+        		B["cid"]=g.getStore().getAt(rowIndex).get("id");
+        		companySvrGrid.getStore().baseParams=B;
+        		companySvrGrid.getStore().reload({});
+        	});
+			
+			var viewport=new Ext.Viewport({
+    			layout:"border",
+    			items:[svrGrid,{
+    				region:"center",
+    				layout:"border",
+    				items:[companyGrid,companySvrGrid]
+    			}]
+    		});
+			
+			companyGrid.getStore().baseParams["applyStatus"]="0";
+			Ext.getCmp("applystatuscombo").setValue("0");
+    	});
+    </script>

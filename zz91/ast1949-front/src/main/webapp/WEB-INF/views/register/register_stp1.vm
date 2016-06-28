@@ -1,0 +1,305 @@
+#set($layout="/layout/registerLayout.vm")
+<style>
+    .passqd li{
+    float: left;
+    height: 15px;
+    width: 40px;
+    margin-right: 3px;
+    line-height:15px;
+    text-align:center;
+    color:#fff;
+    font-size:12px;
+    background-color:#CCC;
+    }
+</style>
+
+<div class="bg">
+    <div id="center">
+        <div class="registered">
+            <h2 class="bg">欢迎加入ZZ91，开启废料生意网上之旅!</h2>
+            <div id="left">
+                <form action="#springUrl('/register/register_stp2.htm')" method="post" id="form_register">
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            手机号：
+                        </div>
+                        <div class="item-content">
+                        	<input type="text" class="item-content-text"  id="js_register_account_phone" name="mobile"  value="#if($!{account.mobile})$!{account.mobile}#end"   tabindex="1"/>
+                            <span class="post_error"></span>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+                    
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            密码：
+                        </div>
+                        <div class="item-content">
+                        	<input type="password" class="item-content-text" id="js_register_password" name="password" tabindex="1"/>
+                            <span class="post_error"></span>
+							<ul class="passqd">
+                                    <li id="weak"></li>
+                                    <li id="middle"></li>
+                                    <li id="strength"></li>
+                            </ul>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+                    
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            确认密码：
+                        </div>
+                        <div class="item-content">
+                        	<input type="password" class="item-content-text" id="js_register_password_confirm" name="passwordConfirm" tabindex="1" />
+                            <span class="post_error"></span>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            姓名：
+                        </div>
+                        <div class="item-content">
+                        	<input type="text" class="item-content-text2" id="js_register_name" tabindex="1" name="contact"  value="#if($!{account.contact})$!{account.contact}#end"/>
+							<input name="sex" type="radio" class="item-content-radio" value="0" #if(!$!{account.sex}||$!{account.sex}==0) checked="checked" #end />先生
+							<input name="sex" type="radio" class="item-content-radio" value="1" #if($!{account.sex}==1) checked="checked" #end />女士
+                            <span class="post_error"></span>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+                    <input type="hidden" id="gongsi_hidden" value="0" />
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            注册身份：
+                        </div>
+                        <div class="item-content2">
+							#if($!{regiestType})
+    							<input type="radio" name="regiestType" class="item-content-radio" value="公司" id="gongsi_radio"#if($!{regiestType} && $!{regiestType}=='公司') checked="checked" #end/>公司
+                                <input type="radio" name="regiestType" class="item-content-radio" value="个人" id="geren_radio"  #if($!{regiestType} && $!{regiestType}=='个人') checked="checked"#end/>个人<span class="post_error">无营业执照请选择“个人”</span>
+							#else
+                            	<input type="radio" name="regiestType" class="item-content-radio" value="公司" id="gongsi_radio" checked="checked" />公司
+                                <input type="radio" name="regiestType" class="item-content-radio" value="个人" id="geren_radio" />个人<span class="post_error">无营业执照请选择“个人”</span>
+							#end
+                        </div>
+                        
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+						
+                    <div id="gongsi" #if($!{regiestType} && $!{regiestType}=="个人") style="display:none;" #end>
+                    	<div class="gongsi-title">
+                        	公司基本信息
+                        </div>
+                        <!--end gongsi-title-->
+                    	<div class="item">
+                            <div class="item-title">
+                                <span class="red">*</span>
+                                邮箱：
+                            </div>
+                            <div class="item-content">
+                                <input type="text" class="item-content-text" id="js_register_email" name="email" tabindex="1" value= "#if($!{account.email})$!{account.email}#end"/>
+                                <span class="post_error"></span>
+                            </div>
+                            <div class="cb"></div>
+                        </div>
+                        <!--end item-->
+                        <div class="item">
+                            <div class="item-title">
+                                <span class="red">*</span>
+                                公司名称：
+                            </div>
+                            <div class="item-content">
+                                <input type="text" class="item-content-text" id="js_register_company" tabindex="1" name="name" value="#if($!{company.name})$!{company.name}#end"/>
+                                <span class="post_error"></span>
+                            </div>
+                            <div class="cb"></div>
+                        </div>
+                        <!--end item-->
+                        <div class="item">
+                            <div class="item-title">
+                                <span class="red">*</span>
+                                主营产品：
+                            </div>
+                            <div class="item-content">
+                                <input type="text" class="item-content-text" id="js_register_business" tabindex="1" name="business" value="#if($!{company.business})$!{company.business}#end"/>
+                                <span class="post_error"></span>
+                            </div>
+                            <div class="cb"></div>
+                        </div>
+                        <!--end item-->
+                        
+                        <div class="item">
+                            <div class="item-title">
+                                <span class="red">*</span>
+                                国家/地区：
+                            </div>
+                            <div class="item-content">
+                                <div class="area_blue" id="area_blue" style="float:left">
+									----国家/地区----
+								</div>
+                                <input type="hidden" name="areaCode" id="areacode" />
+                                <span class=post_error>&nbsp;</span>
+                            </div>
+                            <div id="school-box">
+                                <h1>国家/地区</h1>
+                                <div id="country">
+                                    <a id="1" href="javascript:getprovince('','10011000',1)">中国</a>
+                                    <a href="javascript:getprovince('','1001',1)">其他国家</a>
+                                </div>
+                                <div id="school"></div>
+                            </div>
+                            <div class="cb"></div>
+                        </div>
+                        <!--end item-->
+                    </div>
+                    <!--end gongsi-->
+                    <div class="item">
+                    	<div class="item-title">
+                        	<span class="red">*</span>
+                            验证码：
+                        </div>
+                        <div class="item-content2">
+							<input type="text" id="verifyCode" name="verifyCode" class="item-content-text2" tabindex="1" value="" size="16" />
+							<span id="vtip">点击输入框显示验证码</span>
+							<span id="vspan" style="display:none;">
+								<img id="vcodeimg" src="$!{address.img}/front/images/global/loading.gif" width="80" height="24" title="看不清楚？点击图片换一张"/>
+								<a id="changeImg" href="javascript:void(0);" >看不清楚？换一张</a>
+							</span>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end item-->
+                     <div class="item" style="margin-top:10px;">
+                        <span class="label">快捷登录：</span>
+                        <div class="fl" >
+                            <a href="$!{address.china}/accessToQQLogin.htm" target="_blank">
+                                <img src="$!{address.img}/zz91/china/images/qq_login_common.gif" width="124" height="24" alt="使用QQ号码登录" />
+                            </a>
+                        </div>
+                    </div>         
+                    <div class="item" style="margin-top:10px;">
+                        <span class="label">&nbsp;&nbsp;</span>
+                        <div class="fl" >
+                            <a href="javascript:openoverlay('firstview.htm','服务条款',800,400,0);">点击阅读服务条款</a>
+                        </div>
+                    </div>
+                    <input class="submit" type="submit"  value=""/>
+					<input type="hidden" name="token" value="$!{token}" />
+					<input type="hidden" id="iscode" value="" />
+                </form>
+            </div>
+            <div id="right2" style="display:none">
+            	<img src="http://img0.zz91.com/zz91/css/image/icon.png" style="float:left;margin-top:5px;margin-right:5px" />
+                <p class="f14">
+                    <b>注册普通会员，您可以：</b>
+                    <div class="right2-text">
+                    1.无限量查看资讯报价，<Br />&nbsp;&nbsp;&nbsp;时刻掌握废料动态
+                    </div>
+                    <!--end right2-text-->
+                    <div class="right2-text">
+                    2.收藏产品，积累供求信息
+                    </div>
+                    <!--end right2-text-->
+                    <div class="right2-info">
+                    	想获得发布信息的权利，请选择<br />
+						<a id="regiestCompany">注册身份为公司</a>或注册后继续完善公司信息.
+                    </div>
+                    <!--end right2-info-->
+                    <div class="right2-help">如需帮助，请拨打：<span class="red">0571-56612345</span></div>
+                </p>
+				## 注册广告位
+				<script type="text/javascript" src="http://gg.zz91.com/show?p=585"></script>
+            </div>
+            <!--end right2-->
+            <div id="right">
+                <img src="http://img0.zz91.com/zz91/css/image/icon.png" />
+                <p class="f14">
+                    <b>注册普通会员，可获得：</b>
+                    <br />
+                    1. 发布信息，让买家/卖家找到您<br />
+                    供求信息：10条/天<br />
+                    企业报价：10条/天<br />
+                    2. 无限量查看资讯报价<br />
+                    时刻掌握废料动态 <br />
+                    3. 客户询盘，线上交谈，把握商机<br />
+                    <b>如需帮助，请拨打：</b><span class="red">0571-56612345</span>
+                </p>
+				## 注册广告位
+				<script type="text/javascript" src="http://gg.zz91.com/show?p=585"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+	jQuery(document).ready(function(){
+    	## 验证码错误
+		
+		#if($!{error}=="1")
+            alert("验证码填写错误！");
+        #end
+
+		#if($!{company.areaCode})
+			getprovince('$!{addressLabel}','$!{company.areaCode}',0)
+		#end
+
+		#if($!{regiestType} && $!{regiestType}=='个人')
+			getprovince('', '10011000', 1);
+			jQuery("#gongsi").css("display","none");
+			jQuery(".box").css("width","510px");
+			jQuery(".box-content").css("width","410px");
+			jQuery(".box-text").css("width","282px");
+			jQuery(".box-text2").css("width","182px");
+			jQuery("#gongsi_hidden").val("0");
+		#end
+		
+		
+	});
+
+	 //refresh vcode
+    jQuery("#vcodeimg").click(function(){
+        jQuery(this).attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+    });
+	
+	jQuery("#changeImg").click(function(){
+        jQuery("#vcodeimg").attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+    });
+	
+	
+	jQuery("#verifyCode").click(function(){
+		jQuery("#vtip").hide();
+		jQuery("#vspan").show();
+		
+		if(jQuery("#vcodeimg").attr("src")=="$!{address.img}/front/images/global/loading.gif"){
+			jQuery("#vcodeimg").attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+		}
+	});
+	function validCode(){
+		var code=jQuery("#verifyCode").val();
+	 	jQuery.ajax({
+    			url:'#springUrl("/register/validateCode.htm")',
+    			data:{"verifyCode":code},
+				type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+					if(!reg.isTrue){
+						jQuery("#iscode").val(reg.isTrue);
+						alert("验证码错误");
+					}else{
+					    jQuery("#iscode").val("");
+					}
+				}
+		 });
+	}
+</script>

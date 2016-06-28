@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subnetCategory">
+
+	<typeAlias alias="subnetCategory" type="com.zz91.ep.domain.trade.SubnetCategory"/>
+	
+	<resultMap class="subnetCategory" id="simpColumnMap">
+		<result property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+	</resultMap>
+
+	<sql id="simpColumn">
+		`id`,
+		`parent_id`,
+		`code`,
+		`name`
+	</sql>
+	
+	<select id="queryCategoryByParentId" parameterClass="java.util.HashMap" resultMap="simpColumnMap">
+		select 
+		<include refid="simpColumn"/>
+		from subnet_category
+		where parent_id=#parentId#
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryCategoryByCode" parameterClass="java.lang.String" resultMap="simpColumnMap">
+		select
+		<include refid="simpColumn"/>
+		from subnet_category
+		where code=#code#
+	</select>
+	
+	<select id="querySubCateById" parameterClass="java.lang.Integer" resultMap="simpColumnMap">
+		select
+		<include refid="simpColumn"/>
+		from subnet_category
+		where id=#value#
+	</select>
+</sqlMap>

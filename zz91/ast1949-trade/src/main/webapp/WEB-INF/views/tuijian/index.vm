@@ -1,0 +1,234 @@
+#set($layout="/layout/tuijianLayout.vm")
+<div class="wrapper mt">
+    <div class="zz91leader">
+    当前位置：<a href="$!{address.www}" target="_blank">ZZ91再生网</a> &gt; <a href="$!{address.trade}" target="_blank">交易中心</a> &gt; <span>企业产品推荐</span>
+    </div>
+</div>
+
+<div class="wrapper mt clearfix">
+    <div class="mainCol">
+    	<div class="typeWrap">
+    		<dl class="clearfix" >##id="J_type"
+    			<dt>类目：</dt>
+    			<dd>
+    				<a href="#springUrl('/tuijian.htm')" #if($!{mainCode}==""||!$!{mainCode}) class="on" #end >不限</a>
+    				<a href="#springUrl('/tuijian')-a-c100310081000-p.htm" #if($!{mainCode}=="100310081000") class="on" #end>废金属</a>
+    				<a href="#springUrl('/tuijian')-a-c100310081001-p.htm" #if($!{mainCode}=="100310081001") class="on" #end>废塑料</a>
+    				<a href="#springUrl('/tuijian')-a-c100310081002-p.htm" #if($!{mainCode}=="100310081002") class="on" #end>综合废料</a>
+    			</dd>
+    		</dl>
+			#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=$!{mainCode}&$!{date.getSystemTime()}", "", "", "")
+			#if($!{list}&&$!{list}!="null")
+    		<dl class="clearfix" >##id="J_subType"
+    			<dt>二级类目：</dt>
+				<dd data-subType="metal">
+					<a href="#springUrl('/tuijian')-a-c$!{mainCode}-p.htm">不限</a>
+						#foreach($index in $!{list})
+							<a href="#springUrl('/tuijian-a-c')$!{mainCode}-p-$!{index.link}.htm" #if($!{index.title}==$!{keywords}) class="on"  #end>$!{index.title}</a>
+						#end
+				</dd>
+    		</dl>
+			#end
+			#end
+    	</div>
+    	<div class="list-cont mt">
+    		<div class="tab-head">
+    			<ul class="tab-trigger clearfix">
+    				<li #if(!$!{isSellOrBuy}||$!{isSellOrBuy}=="") class="on" #end><a href="#springUrl('tuijian-a-c')$!{mainCode}-p.htm">全部信息</a></li>
+    				<li #if($!{isSellOrBuy}==1) class="on" #end><a href="#springUrl('tuijian-a1-c')$!{mainCode}-p.htm">供应信息</a></li>
+    				<li #if($!{isSellOrBuy}==2) class="on" #end><a href="#springUrl('tuijian-a2-c')$!{mainCode}-p.htm">求购信息</a></li>
+    			</ul>
+    		</div>
+    		<div class="tab-content" id="J_content">
+				#foreach($dto in $page.records)
+        			<div class="item">
+        				<div class="details">
+        					<h3 class="title"><a href="http://$!{dto.company.domainZz91}.zz91.com/products$!{dto.products.id}.htm" target="_blank">#printProductType($!{dto.products.productsTypeCode} '' $!{dto.products.title})</a></h3>
+        					<p class="date">#printFragmentDate("yyyy.MM.dd" $!{dto.products.refreshTime})</p>
+        					<p class="intro">#printTitle($!{dto.products.details} 100 "")<a href="http://$!{dto.company.domainZz91}.zz91.com" target="_blank">查看详细</a></p>
+        					<p class="company">
+        						$!{dto.company.name}
+								#if($!{dto.companyContacts.qq}&&$!{dto.companyContacts.qq}!=""&&$!{dto.companyContacts.qq.length()}>5)
+									<a rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=$!{dto.companyContacts.qq}&amp;site=www.zz91.com&amp;menu=yes" title="请注明您是在ZZ91与我洽谈！"><img border="0" src="http://wpa.qq.com/pa?p=2:1161744665:4" alt="请注明您是在ZZ91与我洽谈！" onerror="this.src='http://img0.zz91.com/zz91/china/images/qq.gif'"></a>
+								#end
+        					</p>
+        					<p class="tags">
+        						标签：
+								#foreach($!{tag} in $!{dto.tagsMap.keySet()})
+									#set($keytag=$!{tag})
+									<a href="$!{address.tags}/s/${dto.tagsMap.get($!{tag})}/" target="_blank" title="$!{tag}">$!{tag}</a>
+								#end
+##    	    					<a href="" target="_blank">废铝</a>
+    	    				</p>
+        				</div>
+        				<div class="info">
+        					<p>
+								报价：#priceAndUnit($!{dto.products} "/")
+							</p>
+        					<p>地区：$!{dto.areaLabel}</p>
+        					<p>联系方式：<a href="http://$!{dto.company.domainZz91}.zz91.com" target="_blank">联系方式查看</a></p>
+        					<p>
+								会员：
+								<img src="http://img.zz91.com/zz91images/recycle.gif" alt="再生通" width="20" height="21" />
+								#if($!{dto.company.membershipCode}=="10051000")
+									普通会员
+								#elseif($!{dto.company.membershipCode}=="10051001")
+									再生通
+								#elseif($!{dto.company.membershipCode}=="100510021000")
+									银牌品牌通
+								#elseif($!{dto.company.membershipCode}=="100510021001")
+									金牌品牌通
+								#elseif($!{dto.company.membershipCode}=="100510021002")
+									钻石品牌通
+								#end
+								#if($!{dto.company.zstYear}>1)，第$!{dto.company.zstYear}年#else &nbsp; #end
+							</p>
+        				</div>
+        			</div>
+				#end
+							
+    		</div>
+			#if($!{keywords}&&$!{keywords}!="")
+				#set($key="-"+$!{keywords})
+			#end
+			#tradeSPPageNav($!{page} "#springUrl('/tuijian')-a$!{isSellOrBuy}-c$!{mainCode}-p" "$!{key}" "")
+    	</div>
+    </div>
+    <div class="rightCol">
+    	<div class="ad-wrap">
+			<script type="text/javascript">
+			/*高会SEO优化页面 230*200，创建于2013-2-28*/
+				var cpro_id = "u1222177";
+			</script>
+			<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+		</div>
+    	<div class="sider-wrap mt">
+    		<div class="head">
+    			<h3 class="t">废金属最热门信息</h3>
+    		</div>
+    		<div class="cont">
+    			<ul>
+					#foreach($obj in $gyList)
+						<li>
+							<span class="addon">#printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})</span>
+							<a href="http://$!{obj.company.domainZz91}.zz91.com/products$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} '' )#printTitle($!{obj.products.title} 10 "")</a>
+						</li>
+					#end
+					#foreach($obj in $qgList)
+						<li>
+							<span class="addon">#printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})</span>
+							<a href="http://$!{obj.company.domainZz91}.zz91.com/products$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} '' )#printTitle($!{obj.products.title} 10 "")</a>
+						</li>
+					#end
+##    				<li><span class="addon">2013-2-22</span><a href="" target="_blank">求购废铜铁一切</a></li>
+    			</ul>
+    		</div>
+    	</div>
+    	<div class="sider-wrap mt">
+    		<div class="head">
+    			<h3 class="t">废金属最新报价</h3>
+    		</div>
+    		<div class="cont">
+    			<ul>
+					#foreach($obj in $priceList)
+						<li>
+							<a href="$!{address.price}/priceDetails_$!{obj.id}_metal.htm" target="_blank">#printTitle($!{obj.title} 19 "")</a>
+						</li>
+					#end
+##    				<li><a href="" target="_blank">1月25日最新报价</a></li>
+    			</ul>
+    		</div>
+    	</div>
+    	<div class="sider-wrap mt">
+    		<div class="head">
+    			<h3 class="t">废金属最新供求信息</h3>
+    		</div>
+    		<div class="cont">
+    			<ul>
+					#foreach($obj in $gyTradeList)
+						<li>
+							<span class="addon">#printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})</span>
+							<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} '' '')#printTitle($!{obj.products.title} 10 "")</a>
+						</li>
+					#end
+					#foreach($obj in $qgTradeList)
+						<li>
+							<span class="addon">#printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})</span>
+							<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} '' '')#printTitle($!{obj.products.title} 10 "")</a>
+						</li>
+					#end
+    			</ul>
+    		</div>
+    	</div>
+    	<div class="sider-wrap mt">
+    		<div class="head">
+    			<h3 class="t">相关公司最新资讯</h3>
+    		</div>
+    		<div class="cont">
+    			<ul>
+					#cacheFragment("$!{address.fragment}/esite/newsList.htm?xggszxzxd1","","","")
+						#foreach($esiteNewsList in $!{list})
+							<li>
+								<span class="addon">
+									#printFragmentDate('yyyy-MM-dd',$!{esiteNewsList.postTime})
+								</span>
+								<a href="http://$!{esiteNewsList.domain}.zz91.com/news$!{esiteNewsList.id}.htm" class="topicLink" target="_blank">#printTitle(${esiteNewsList.title} 12 "")</a>
+							</li>
+						#end
+					#end
+    			</ul>
+    		</div>
+    	</div>
+    	<div class="sider-wrap mt">
+    		<div class="head">
+    			<h3 class="t">相关产品推荐</h3>
+    		</div>
+    		<div class="cont">
+				<div id="J_scroll">
+    			<ul>
+					#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=100310081003&size=24&dfjss", "", "", "")
+						#foreach($index in $!{list})
+							<li>
+								<a href="$!{index.link}" target="_blank">
+									$!{index.title}
+								</a>
+							</li>
+						#end
+					#end
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+##    				<li><a href="" target="_blank">供应UPS</a></li>
+    			</ul>
+				</div>
+    		</div>
+    	</div>
+    </div>
+</div>
+
+<div class="wrapper mt bottom-search">
+	<fieldset id="J_b_s">
+		<legend>ZZ91搜索</legend>
+		<ul class="s-tab clearfix">
+			<li class="cur" id="search1"><a href="#">供应</a></li>
+			<li id="search2"><a href="#">求购</a></li>
+			<li id="search3"><a href="#">报价</a></li>
+		</ul>
+		<div class="s-area">
+			<form id="bottom_form" method="get" onsubmit="return false;">
+				<input name="search" id="b-search" type="text" value="" class="field">
+				<input type="submit" value="" class="submit">
+				<input type="hidden" value="1" name="TopSeaType" id="b-topSeaType">
+			</form>
+		</div>
+		<p>
+			热点搜索词：
+			#foreach($obj in $hotTags.keySet())
+				<a href="http://tags.zz91.com/s/$!hotTags.get($!{obj})/" target="_blank">$obj</a>
+			#end	
+		</p>
+	</fieldset>
+</div>

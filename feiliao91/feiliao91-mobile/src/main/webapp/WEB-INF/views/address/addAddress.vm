@@ -1,0 +1,228 @@
+<header data-am-widget="header" class="am-header am-header-default">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:void(0)" class="" onClick="javascript :history.back(-1)">
+                <i class="am-header-icon am-icon-chevron-left"></i>
+            </a>
+        </div>
+
+        <h1 class="am-header-title">
+            添加#if($!{addressType}==0)收货#else发货#end地址
+        </h1>
+    </header>
+    <div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+        <a href="#top" title="">
+            <img class="am-gotop-icon-custom" src="http://img0.zz91.com/trade/assets/images/goTop.gif" />
+        </a>
+    </div>
+
+<form method="post" id="address-form" action='#springUrl("/address/saveAddress.htm")' data-am-validator>
+    <ul class="am-list am-list-static am-list-border am-list-striped am-margin-xs">
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">#if($!{addressType}==0)收货#else 发货 #end人：</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="请输入姓名" name="name" #if($!{add}) value="$!{add.name}" #else value="" #end required/>
+            </div>
+        </li>
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">手机号码：</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="请输入收货人手机号码" name="mobile" #if($!{add}) value="$!{add.mobile}" #else value="" #end required/>
+            </div>
+        </li>
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">所在区域：</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <div class="am-address-btn" data-am-modal="{target: '#doc-modal-1'}">
+					#if($!{addStr})
+						$!{addStr}
+					#else
+						请选择地区
+					#end
+					<i class="am-icon-sort-desc am-fr"></i>
+				</div>
+            </div>
+        </li>
+		<input type="hidden" name="areaCode" value="" id="area"/>##收货地区
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">详细地址：</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="请输入详细地址" name="address" #if($!{add}) value="$!{add.address}" #else value="" #end required/>
+            </div>
+        </li>
+
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">邮政编码：</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="请输入邮政编码" name="zipCode" #if($!{add}) value="$!{add.zipCode}" #else value="" #end required/>
+            </div>
+        </li>
+
+        <li class="am-form-group am-padding-left-0 am-padding-right-0 am-cf">
+            <label for="doc-ipt-4" class="am-u-sm-5 am-form-label am-text-sm am-padding-right-0 am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">设置成默认#if($!{addressType}==0)收货#else发货#end地址：</label>
+            <div class="am-u-sm-7 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <label class="am-checkbox">
+                    <!--<input type="checkbox" checked="checked" value="" data-am-ucheck checked>-->
+					<input type="checkbox" id="rememberme" name="isDefaultFlag" data-am-ucheck value="1" checked>
+                </label>
+            </div>
+        </li>
+    </ul>
+        <div class="am-padding-sm">
+			#if($!{aid})
+				<input type="hidden" name="aid" value=$!{aid}>
+			#end
+				<input type="hidden" name="addressType" value=$!{addressType}>
+            <button type="button" class="am-btn am-btn-primary am-btn-block am-radius" id="getBtn">保存并使用</button>
+        </div>
+</form>
+        <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+            <div class="am-modal-dialog">
+                <div class="am-modal-hd am-header-default am-text-white">请选择城市
+                    <a href="javascript: void(0)" class="am-close am-close-spin am-text-white" data-am-modal-close>&times;</a>
+                </div>
+                <div class="am-modal-bd am-padding-0">
+                    <div class="am-g am-address">
+                        <div class="am-u-sm-3 am-padding-0 am-city">
+                            <ul class="am-list am-text-sm am-top-bordor-0 am-margin-0 am-cityList" id="area-1">
+                                <!--<li class="thisCity">北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>
+                                <li>北京</li>-->
+                            </ul>
+                        </div>
+                        <div class="am-u-sm-9 am-city-small am-padding-0" id="sq">
+                            <div class="am-padding-0 am-text-left">
+                                <div class="am-text-sm am-padding-sm">北京市辖</div>
+                                <ul class="am-smcity-name am-padding-0 am-margin-0 am-smcity">
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                </ul>
+                            </div>
+                            <hr class="am-padding-bottom-0">
+                            <div class="am-padding-0 am-text-left">
+                                <div class="am-text-sm am-padding-sm">北京市辖</div>
+                                <ul class="am-smcity-name am-padding-0 am-margin-0 am-smcity">
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                    <li>东城区</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+  <!--在这里编写你的代码-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/comm.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        init()
+    })
+	
+    function init(){
+        _reqajax({
+			type:"post",
+			url:"#springUrl('/register/catChild.htm')",
+			data:{parentCode:10011000}
+		},getArea);
+        main();
+    }
+	
+    function main(){
+        $("#getBtn").on("click",function(){
+             //location.href = "weituo-success.html"
+			 if($("input[type='checkbox']").is(':checked')==true){
+			}else{
+				$("#isDefaultFlag").val("0");
+			}
+			 $('#address-form').submit();
+        })
+
+        //选择城市直辖
+        //stObj("am-cityList li","thisCity","click","",getSmCity);
+		
+		$(".am-cityList").on("click","li",function(){
+			$(".thisCity").removeClass("thisCity");
+			$(this).addClass("thisCity");
+			getSmCity($(this).attr("code"));//获得当前省份的市和区
+		});
+		
+		$("#sq").on("click","li",function(){ //点击直辖市
+				var big_cityname = $(".thisCity").text();
+                var ct_cityname =$(this).parent().prev().text();
+                var sm_cityname = $(this).text();
+                var cityAll = big_cityname + ">" + ct_cityname + ">" + sm_cityname + '<i class="am-icon-sort-desc am-fr"></i>';
+                $(".am-address-btn").html(cityAll);
+				console.log($(this).attr("code"));
+				$("#area").val($(this).attr("code"));//设置area的值
+                $("#doc-modal-1").modal('close');
+            })
+	}
+	
+	//填充地区(省份)数据
+	function getArea(data){
+		if(data.length>0){
+			for(var i = 0; i < data.length; i++){
+				if(i==0){
+					jQuery("#area-1").append("<li class='thisCity' code='"+data[i].code+"'>"+data[i].label+"</li>");
+				}else{
+					jQuery("#area-1").append("<li code='"+data[i].code+"'>"+data[i].label+"</li>");
+				}
+			}
+		}
+		getSmCity($("#area-1 li:first").attr("code"));
+	}
+	
+    function getSmCity(parentCode){
+		_reqajax({
+				type:"post",
+				url:"#springUrl('/register/getSq.htm')",
+				data:{parentCode:parentCode}
+			},fillSq);//请求数据并填充市区
+    }
+	
+	function fillSq(data){
+	//填充市区
+	if(data.length>0){
+		$("#sq").empty();//清空id为‘sq’的div的内容
+		for(var i = 0; i < data.length; i++){
+			html = "<div class='am-padding-0 am-text-left'><div class='am-text-sm am-padding-sm'>"+data[i].label+"</div><ul class='am-smcity-name am-padding-0 am-margin-0 am-smcity'>";
+			if(data[i].category.length>0){
+				for(var j = 0;j<data[i].category.length;j++ ){
+					//console.log(data[i].category[j].label);
+					html1 = "<li code='"+data[i].category[j].code+"'>"+data[i].category[j].label+"</li>";
+					html=html+html1;
+				}
+			}
+			end = "</ul></div><hr class='am-padding-bottom-0'>"
+			$("#sq").append(html+end);
+		}
+	}
+}
+</script>

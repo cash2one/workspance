@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="market">
+
+	<typeAlias alias="market" type="com.ast.ast1949.domain.market.Market" />
+	<resultMap id="marketResult" class="market">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="area" column="area" />
+		<result property="industry" column="industry" />
+		<result property="category" column="category" />
+        <result property="business" column="business" />
+        <result property="introduction" column="introduction" />
+        <result property="address" column="address" />
+        <result property="companyNum" column="company_num" />
+        <result property="productNum" column="product_num" />
+        <result property="isDel" column="is_del" />
+        <result property="words" column="words" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="companyId" column="company_id" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkTime" column="check_time" />
+	</resultMap>
+	
+	<sql id="allColumn">
+		id,name,area,industry,category,business,introduction,address,company_num,product_num,is_del,words,gmt_created,gmt_modified,company_id,check_status,check_person,check_time
+	</sql>
+	
+	<sql id="defaultColumn">
+		m.id,
+		m.name,
+		m.area,
+		m.industry,
+		m.category,
+		m.business,
+		m.introduction,
+		m.address,
+		m.company_num,
+		m.product_num,
+		m.is_del,
+		m.words,
+		m.gmt_created,
+		m.gmt_modified,
+		m.company_id,
+		m.check_status,
+		m.check_person,
+		m.check_time
+	</sql>
+	
+	<!--市场数（总数，某地区总数、某类目总数）-->
+	<select id="countMarketByCondition" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from market
+		where is_del='0' and check_status='1'
+		<isNotEmpty prepend="and" property="area">
+			area like concat('%',#area#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="industry">
+			industry=#industry#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="category">
+			category=#category#
+		</isNotEmpty>
+	</select>
+	
+	<!--添加市场-->
+	<insert id="insertMarket" parameterClass="market">
+		insert into market
+		(
+		name,
+		area,
+		industry,
+		category,
+		business,
+		introduction,
+		address,
+		words,
+		gmt_created,
+		gmt_modified,
+		company_id,
+		check_status
+		)
+		values
+		(
+		#name#,
+		#area#,
+		#industry#,
+		#category#,
+		#business#,
+		#introduction#,
+		#address#,
+		#words#,
+		now(),
+		now(),
+		#companyId#,
+		#checkStatus#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!--该市场信息-->
+	<select id="queryMarketById" parameterClass="java.lang.Integer" resultMap="marketResult">
+		select 
+		<include refid="market.allColumn" />
+		from market
+		where id=#id#
+	</select>
+	<!--该市场信息-->
+	<select id="queryMarketByWords" parameterClass="java.lang.String" resultMap="marketResult">
+		select 
+		<include refid="market.allColumn" />
+		from market
+		where words=#words#
+	</select>
+	
+	<!--同行业市场推荐,临近市场，弹框中的市场-->
+	<select id="queryMarketByCondition" parameterClass="java.util.HashMap" resultMap="marketResult">
+		 select
+		 <include refid="market.allColumn" />
+		 from market
+		 where is_del='0' and check_status='1'
+         <isNotEmpty prepend="and" property="industry">
+         	industry=#industry#
+         </isNotEmpty>
+         <isNotEmpty prepend="and" property="area">
+         	area=#area#
+         </isNotEmpty>
+		 order by company_num desc
+		 Limit #size#
+	</select>
+
+	<select id="queryAllMarket" parameterClass="java.util.HashMap" resultMap="marketResult">
+		select 
+		<include refid="market.allColumn" />
+		from market
+		where is_del='0'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<sql id="whereClause">
+		<dynamic >
+			<isNotEmpty prepend="and" property="market.name">
+				m.name like concat('%',#market.name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="market.area">
+				m.area = #market.area#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="market.industry">
+				m.industry = #market.industry#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="market.category">
+				m.category = #market.category#
+			</isNotEmpty>
+			<isEqual property="market.companyId" compareValue="1" prepend="and">
+			   	m.company_id > 0
+			</isEqual>
+			<isEqual property="market.companyId" compareValue="0" prepend="and">
+			    m.company_id = 0
+			</isEqual>
+			<isNotEmpty prepend="and" property="market.companyAccount">
+				 m.company_id = #market.companyAccount#
+			</isNotEmpty>
+			<isEqual property="hasPic" compareValue="1" prepend="and">
+			    exists(select 0 from market_pic mp where mp.market_id=m.id)
+			</isEqual>
+			<isEqual property="hasPic" compareValue="0" prepend="and">
+			  not exists(select 0 from market_pic mp where mp.market_id=m.id)
+			</isEqual>
+		</dynamic>
+	</sql>
+	
+	<select id="pageQueryMarket" parameterClass="java.util.HashMap" resultMap="marketResult">
+		select 
+		<include refid="market.defaultColumn" />
+		from market m
+		where is_del='0'
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countAllMarket" resultClass="java.lang.Integer">
+		select count(0)
+		from market
+		where is_del='0'
+	</select>
+	
+	<select id="countMarketByProvice" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(0)
+		from market
+		where is_del='0' and area like concat('%',#area#,'%')
+	</select>
+	
+	<select id="countCompanyByProvice" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select sum(company_num)
+		from market
+		where is_del='0' and area like concat('%',#area#,'%')
+	</select>
+	
+	<select id="countProductByProvice" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select sum(product_num)
+		from market
+		where is_del='0' and area like concat('%',#area#,'%')
+	</select>
+	<select id="queryMarketByProOrCate" parameterClass="java.util.HashMap" resultMap="marketResult">
+		select
+		<include refid="market.allColumn" />
+		from market
+		where is_del='0'
+		<isNotEmpty prepend="and" property="area">
+			area like concat('%',#area#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="category">
+			category=#category#
+		</isNotEmpty>
+		order by company_num desc
+	</select>
+	<select id="pageQueryMarketCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from market m
+		where m.is_del='0'
+		<include refid="whereClause"/>
+	</select>
+	<update id="updateMarkt" parameterClass="market">
+	update market set gmt_modified = now()
+		 <isNotEmpty prepend="," property="industry">
+         	industry=#industry#
+         </isNotEmpty>
+         <isNotEmpty prepend="," property="checkStatus">
+         	check_status=#checkStatus#
+         </isNotEmpty>
+		 <isNotEmpty prepend="," property="category">
+         	category=#category#
+         </isNotEmpty>
+		 <isNotEmpty prepend="," property="introduction">
+         	 introduction=#introduction#
+         </isNotEmpty>
+		  <isNotEmpty prepend="," property="name">
+         	 name=#name#
+         </isNotEmpty>
+		  <isNotEmpty prepend="," property="area">
+         	 area=#area#
+         </isNotEmpty>
+		 <isNotEmpty prepend="," property="isDel">
+         	 is_del=#isDel#
+         </isNotEmpty>
+         <isNotEmpty prepend="," property="address">
+         	 address=#address#
+         </isNotEmpty>
+          <isNotEmpty prepend="," property="business">
+         	 business=#business#
+         </isNotEmpty>
+     where id=#id#
+	</update>
+	<update id="updateCompanyByMarketId" parameterClass="java.util.HashMap">
+		update market set company_num=#companyNum#
+		where id=#id#
+	</update>
+	<select id="sumProductNum" resultClass="java.lang.Integer">
+		select sum(product_num)
+		from market
+	</select>
+</sqlMap>

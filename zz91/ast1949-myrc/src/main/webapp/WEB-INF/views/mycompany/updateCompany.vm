@@ -1,0 +1,683 @@
+#set( $layout = "/layout/default.vm" )
+<script type="text/javascript" src="http://img0.zz91.com/zz91/industrial/js/openoverlay.js"></script>
+<script>
+
+   function openEnter(){ 
+   	if($flag==0){
+   		openoverlay('#springUrl("/mycompany/enterMarket.htm")','入驻产业带',615,280,0);
+	}
+   }
+</script>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/business/css/index.css"/>
+
+<div class="container mt clearfix">
+    <div class="grid_12" style="width:650px">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/index.htm')">我的管家</a> <span class="divider">/</span>
+            </li>
+            <li class="active">公司资料</li>
+        </ul>
+		#if($!{firstLogin}==1)
+			<div class="alert alert-info"> 
+				<strong>提示：</strong>
+				欢迎您使用生意管家，为了确保信息的准确，请完善您的公司信息。
+			</div>
+		#end
+		#if($!{firstLogin}==2)
+			<div class="alert">
+				<span style="color:#ff0000">
+					<strong>提示：</strong>
+					为了让客户快速的找到您，请您尽快完善您的公司信息！
+				</span>
+			</div>
+			<script type="text/javascript">
+				alert("为了让客户快速的找到您，请您尽快完善您的公司信息！");
+			</script>
+		#end
+		<div class="well mt">
+			<form id="form2" name="form2" method="post" action="#springUrl('/mycompany/update.htm')" >
+				<div class="well-head">修改联系方式(打<span class="red">*</span>为必填项)</div>
+				<div class="well-content">
+					<input type="hidden" name="id" id="id" value="$!{company.id}"/>
+					<div class="control-group">
+						<label for="contact" class="control-label"><span class="red">*</span>联系人姓名：</label>
+						<div class="controls">
+							<input name="contact" type="text" id="contact" value="$!{companyAccount.contact}" maxlength="48" class="field input-large validate[required]" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"><span class="red">*</span>性别：</label>
+						<div class="controls">
+							<label class="radio"><input type="radio" id="sex0" name="sex" value="0" #if($!{companyAccount.sex}=='0') checked #end class="validate[required]" />先生</label>
+							<label class="radio"><input type="radio" id="sex1" name="sex" value="1" #if($!{companyAccount.sex}=='1') checked #end class="validate[required]" />女士</label>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="telCountryCode" class="control-label">固定电话：</label>
+						<div class="controls">
+							<input name="telCountryCode" type="text" id="telCountryCode" value="$!{companyAccount.telCountryCode}" class="field input-mini" />-
+							<input name="telAreaCode" type="text" id="telAreaCode" size="5" value="$!{companyAccount.telAreaCode}" class="field input-mini" />-
+							<input name="tel" type="text" id="tel" value="$!{companyAccount.tel}" class="field" />
+							<span class="grey">如:86-0571-56612345</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="faxCountryCode" class="control-label">传真：</label>
+						<div class="controls">
+							<input name="faxCountryCode" type="text" id="faxCountryCode" value="$!{companyAccount.faxCountryCode}" value="86" class="field input-mini" />-
+							<input name="faxAreaCode" type="text" id="faxAreaCode" value="$!{companyAccount.faxAreaCode}" class="field input-mini" />-
+							<input name="fax" type="text" id="fax" value="$!{companyAccount.fax}" maxlength="96" class="field" />
+							<span class="grey">如:86-0571-56637777</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="mobile" class="control-label"><span class="red">*</span>手机：</label>
+						<div class="controls">
+							<input name="mobile" type="text" id="mobile" value="$!{companyAccount.mobile}" maxlength="96" class="field input-large validate[required]" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="isUseBackEmail" class="control-label"><span class="red">*</span>电子邮箱：</label>
+						<div class="controls">
+							<input name="isUseBackEmail" type="radio" value="0"  #if($!{companyAccount.isUseBackEmail}=='0') checked #end />
+								#if($!{companyAccount.email} && $!{companyAccount.email}!="")		
+									<input name="email" type="text" id="cemail" value="$!{companyAccount.email}" maxlength="48" readonly class="field input-large" />
+									<span class="grey">（不能修改）</span>
+								#else
+									<input name="regEmail" type="text" id="cemail"  maxlength="48"  class="field input-large validate[required,custom[email]]" />
+									<span class="grey" id='grey' style='color:red'>（请填写邮箱）</span>
+								#end
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="isUseBack" class="control-label">备用电子邮箱：</label>
+						<div class="controls">
+							<input type="radio" id="isUseBack" name="isUseBackEmail" value="1" #if($!{companyAccount.isUseBackEmail}=='1') checked #end />
+							<input name="backEmail" type="text" id="backEmail" value="$!{companyAccount.backEmail}" maxlength="48" class="field input-large" />
+							<span class="grey">（该Email必须有效）</span>
+							<p><span class="grey">选择一个备用邮箱，该邮箱可以接收所有客户对你的询盘</span></p>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="website" class="control-label">网站：</label>
+						<div class="controls">
+							<input name="website" type="text" id="website" value="$!{company.website}" maxlength="255" class="field input-xlarge" />
+						</div>
+					</div>
+				</div>
+				<div class="well-head">修改公司信息(打<span class="red">*</span>为必填项)</div>
+				<div class="well-content">
+					<div class="control-group">
+						<label for="name" class="control-label"><span class="red">*</span>公司名称：</label>
+						<div class="controls">
+							#if($!{company.membershipCode}=='10051000' && $!{key}=="false")
+								<input name="name" type="text" id="name" size="30" value="$!{company.name}" class="field input-large validate[required]" />
+							#else
+								<input name="name" type="text" id="name" size="30" value="$!{company.name}" class="field input-large" readonly="true" />
+							#end
+						</div>
+					</div>
+					<script>
+						function selectOption(menuname,value){
+							var menu = document.getElementById(menuname);
+							if (menu){
+								for(var i=0;i<=menu.options.length;i++){
+									if(menu.options[i].value==value){
+									menu.options[i].selected = true;
+									break;
+									}
+								}
+							}
+						}
+					</script>
+					<div class="control-group">
+						<label for="industryCode" class="control-label"><span class="red">*</span>主营行业：</label>
+						<div class="controls">
+							<select name="industryCode" id="industryCode1" class="validate[required]" >
+								<option value="">请选择</option><option value="10001010">塑料原料</option><option value="10001003">废旧轮胎与废橡胶</option><option value="10001004">废纺织品与废皮革</option><option value="10001005">废电子电器</option><option value="10001006">废玻璃</option><option value="10001007">废旧二手设备</option><option value="10001008">其他废料</option><option value="10001009">服务</option><option value="10001000">废塑料</option><option value="10001001">废金属</option><option value="10001002">废纸</option>
+							</select>
+							<script>selectOption("industryCode1","$!{company.industryCode}")</script>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="serviceCode" class="control-label"><span class="red">*</span>公司类型：</label>
+						<div class="controls">
+							<select name="serviceCode" id="serviceCode1" class="validate[required]" >
+								<option value="">请选择</option>
+								<option value="10201001">国外供货商</option><option value="10201002">国外回收贸易商</option><option value="10201003">码头，仓库储存商</option><option value="10201004">国内供应商</option><option value="10201005">国内回收贸易商</option><option value="10201006">国内加工，拆解商</option><option value="10201007">利废企业</option><option value="10201008">设备，技术，服务提供商</option><option value="10201009">冶炼厂</option><option value="10201010">电子厂</option><option value="10201011">造粒厂</option>
+							</select>
+							<script>selectOption("serviceCode1","$!{company.serviceCode}")</script>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="reg-area-0" class="control-label"><span class="red">*</span>国家/地区：</label>
+						<div class="controls">
+							<select id='reg-area-0' class="validate[required]">
+								<option value="">请选择国家</option>
+							</select>
+							<select id='reg-area-1'>
+								<option value="">请选择省份</option>
+							</select>
+							<select id='reg-area-2'>
+								<option value="">请选择城市</option>
+							</select>
+							<select id='reg-area-3' >
+								<option value="">请选择区县</option>
+							</select>
+							<input type="hidden" name="areaCode" id="areaCode" value="$!{company.areaCode}" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="reg-garden" class="control-label">园区、集散地、市场：</label>
+						<div class="controls">
+							<!--select id='reg-garden' name="categoryGardenId">
+								<option value="">请选择集散地</option>
+							</select-->
+							<div class="zs-market2 posi" id="marketShow">
+							入驻再生市场，随时随地了解市场货源信息、提升公司知名度，获得更多商机。
+							<p>
+								点击<a href="javascript:onclick=openEnter()" id="market" #if($flag==0)style="color:#009944;"#end>马上入驻产业带</a>（再生产业带目前只支持废金属、废塑料和二手设备商家入驻）
+								#if($flag==1||$flag==3)<span>您需要完善公司信息才能入驻。完善公司资料后，点击“提交”刷新后即可选择入驻市场</span>#end
+							</p>
+							</div>
+							<div class="zs-market posi" id="marketAdd">
+								<ul id="selected">
+									#foreach($li in $!{market})
+										<li><a href="javascript:;" id="$!{li.id}"><h5>$!{li.name}</h5><span></span></a><em>确认点击后,您将退出该市场！</em></li>
+									#end
+								</ul><span id="result"></span>
+								<div class="add" style="clear:both;"><a href="javascript:onclick=openEnter()" id="market" #if($flag==0)style="color:#009944;"#end>添加/修改</a></div>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="address" class="control-label"><span class="red">*</span>地址：</label>
+						<div class="controls">
+							<input name="address" type="text" id="address" value="$!{company.address}" maxlength="255" class="field input-large validate[required]" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="addressZip" class="control-label">邮编：</label>
+						<div class="controls">
+							<input name="addressZip" type="text" id="addressZip" value="$!{company.addressZip}" maxlength="20" class="field input-large" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="qq" class="control-label">QQ：</label>
+						<div class="controls">
+							<input name="qq" type="text" id="qq" value="$!{companyAccount.qq}" maxlength="20" class="field input-large" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="weixin" class="control-label">微信ID：</label>
+						<div class="controls">
+							<input name="weixin" type="text" id="weixin" value="$!{companyAccount.weixin}" maxlength="20" class="field input-large" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="msn" class="control-label">MSN：</label>
+						<div class="controls">
+							<input name="msn" type="text" id="msn" value="$!{companyAccount.msn}" maxlength="20" class="field input-large" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="introduction" class="control-label"><span class="red">*</span>公司简介：</label>
+						<div class="controls">
+							<textarea name="introduction" id="introduction" cols="60" rows="5" class="validate[required]">$!{company.introduction}</textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="business" class="control-label"><span class="red">*</span>主营业务：</label>
+						<div class="controls">
+							<textarea name="business" id="business" cols="60" rows="5" class="validate[required]">$!{company.business}</textarea>
+						</div>
+					</div>
+					<div class="form-actions">
+						<input type="submit" id="buttonSub" value="确认无误，提交" class="btn btn-primary" />
+					</div>
+				</div>
+				
+				<input type="hidden" id="introductionFlag" name="introductionFlag" value="0" />
+				<input type="hidden" id="businessFlag" name="businessFlag" value="0" />
+			</form>
+		</div>
+	</div>
+	<!-- 修改部分-->
+	<div class="perfect-right">
+    	<div class="perfect-right-title">
+        	资料完整度
+        </div>
+        <!--end perfect-right-title-->
+        <div class="perfect-right-bar">
+        	<div class="perfect-right-textinfo">
+            	对于分数
+            </div>
+            <div class="perfect-right-textcontent">
+            	<div class="m1-item-text mr10 m1-bar">
+                    <img src="http://img0.zz91.com/zz91/business/images/bar.jpg"  style="width:$!{countInfo}%" />
+                </div>
+            </div>
+            <div class="cb"></div>
+            <div class="perfect-right-speed">
+            	$!{countInfo}%
+            </div>
+        </div>
+        <!--end perfect-right-bar-->
+        <table class="perfect-right-table">
+        	<tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">联系人：<span class="perfect-right-red" id="span_name">#if($!{companyAccount.contact}&&$!{companyAccount.contact}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">固定电话：<span class="perfect-right-red" id="span_telephone">#if($!{companyAccount.tel}&&$!{companyAccount.tel}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">传真：<span class="perfect-right-red" id="span_fax">#if($!{companyAccount.fax}&&$!{companyAccount.fax}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">手机：<span class="perfect-right-red" id="span_mobile">#if($!{companyAccount.mobile}&&$!{companyAccount.mobile}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">公司名称：<span class="perfect-right-red" id="span_company_name">#if($!{company.name}&&$!{company.name}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">主营行业：<span class="perfect-right-red" id="span_industry">#if($!{company.industryCode}&&$!{company.industryCode}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">公司类型：<span class="perfect-right-red" id="span_company_type">#if($!{company.serviceCode}&&$!{company.serviceCode}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">国家/地区：<span class="perfect-right-red" id="span_country">#if($!{company.areaCode}&&$!{company.areaCode}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">地址：<span class="perfect-right-red" id="span_address">#if($!{company.address}&&$!{company.address}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">邮编：<span class="perfect-right-red" id="span_zip_code">#if($!{company.addressZip}&&$!{company.addressZip}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">QQ号码：<span class="perfect-right-red" id="span_qq">#if($!{companyAccount.qq}&&$!{companyAccount.qq}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">公司简介：<span class="perfect-right-red" id="span_company_introduction">#if($!{company.introduction}&&$!{company.introduction}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">主营业务：<span class="perfect-right-red" id="span_business">#if($!{company.business}&&$!{company.business}!="")已填写#else未填写#end</span></td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">企业图片：<span id="span_company_pic">#if($!{haveCompPic})已上传</span>#else<span class="perfect-right-red">未上传</span>#end</td>
+            </tr>
+            <tr>
+            	<td class="perfect-right-info">10分</td>
+                <td class="perfect-right-info2">供求信息：<span id="span_supply_info">#if($!{havePro})已发布</span>#else<span class="perfect-right-red">未发布</span>#end</td>
+            </tr>
+        </table>
+    </div>
+    <!--end perfect-right-->
+	<div class="cb"></div>
+</div>
+
+
+#parse("/common/importValidate.vm")
+#parse("/common/importCkeditor.vm")
+<script>
+
+	## 检验是否存在公司地址修改
+	#if($error=="1")
+		alert("请完善公司 ”国家/地区“ 至城市 ")
+	#end
+
+	var REG_EMAIL = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i;
+
+	var Const = new function(){
+		this.Address = {images:"$!{address.images}"};
+	}
+	
+	jQuery(document).ready(function(){
+		email = $("#cemail"),
+		registerChecked=true,
+		
+		email.blur(function() {
+			var self = $(this);
+			var selfTrim=jQuery.trim(self.val());
+			
+			if(selfTrim === ""){
+    			jQuery("#grey").html("请输入邮箱");
+    			jQuery("#grey").css("color", "#ff0000");
+				registerChecked=false;
+    		} else if (!REG_EMAIL.test(email.val())) {
+    			jQuery("#grey").html("E-mail格式不正确");
+    			jQuery("#grey").css("color", "#ff0000")
+				registerChecked=false;
+    		} else {
+    			checkEmail(self.val(),
+    			function(isReg) {
+    				if (isReg) {
+    					jQuery("#grey").html("邮箱可以使用");
+    					jQuery("#grey").css("color", "#278747")
+						registerChecked=true;
+    				} else {
+    					jQuery("#grey").html("邮箱重复或邮箱错误");
+    					jQuery("#grey").css("color", "#ff0000")
+    					registerChecked=false;
+    				}
+    			});
+    
+    			jQuery("#grey").html("");
+    		}
+			
+		});
+		
+		myrc.menu(1, 4);
+		jQuery("#form2").validationEngine("attach");
+		CKEDITOR.replace('introduction',{
+			toolbar:"Basic",
+			height:150
+		});
+		
+		## 绑定 change事件
+		CKEDITOR.instances["introduction"].on("instanceReady", function () {  
+			this.document.on("keydown", introductionChange);
+        });
+		
+    	var regarea = new Asto.util.Selector({
+    		selects:["#reg-area-0","#reg-area-1","#reg-area-2","#reg-area-3"],
+    		assistSelects:["#reg-garden"],
+    		url:"#springUrl('/category/areaChild.htm')",
+    		assistUrl:"#springUrl('/category/gardenChild.htm')",
+    		changeCallback:function(c,idx){
+    			setAreaCode();
+    			setAddress();
+    		}
+    	});
+    
+    	regarea.init({
+    		rootCode:"1001",
+    		#if($!{company.areaCode}&&$!{company.areaCode}!="")
+    			initCode:"$!{company.areaCode}",
+    			initAssistCode:"$!{company.categoryGardenId}"
+    		#else
+    			initCode:"1001",
+    			initAssistCode:""
+    		#end
+    	});
+    
+    	var industry = new Asto.util.Selector({
+    		selects:["#industryCode"],
+    		url:"#springUrl('/category/categoryChild.htm')"
+    	});
+    	
+    	industry.init({
+    		rootCode:"1000",
+    		#if($!{company.industryCode}&&$!{company.industryCode}!="")
+    			initCode:"$!{company.industryCode}"
+    		#else
+    			initCode:"1000"
+    		#end
+    	});
+    	
+    	var service=new Asto.util.Selector({
+    		selects:["#serviceCode"],
+    		url:"#springUrl('/category/categoryChild.htm')"
+    	});
+    	
+    	service.init({
+    		rootCode:"1020",
+    		#if($!{company.serviceCode}&&$!{company.serviceCode}!="")
+    			initCode:"$!{company.serviceCode}"
+    		#else
+    			initCode:"1020"
+    		#end
+    	});
+		
+	});
+	
+	function setAreaCode(){
+		var areacode=jQuery("#reg-area-0").val();
+		if(jQuery("#reg-area-1").val()!=""){
+			areacode=jQuery("#reg-area-1").val();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			areacode=jQuery("#reg-area-2").val();
+		}
+		if(jQuery("#reg-area-3").val()!=""){
+			areacode=jQuery("#reg-area-3").val();
+		}
+		jQuery("#areaCode").val(areacode);
+		
+	}
+	
+	#########组装地址
+	function setAddress(){
+		var address ="";
+			if(jQuery("#reg-area-0").val()!=""){
+				address = jQuery("#reg-area-0").find("option:selected").text();
+			}
+			if(jQuery("#reg-area-1").val()!=""){
+				address =address+ jQuery("#reg-area-1").find("option:selected").text();
+			}
+			if(jQuery("#reg-area-2").val()!=""){
+				address = address+jQuery("#reg-area-2").find("option:selected").text();
+			}
+			if(jQuery("#reg-area-3").val()!=""){
+				address = address+jQuery("#reg-area-3").find("option:selected").text();
+			}
+			jQuery("#address").val(address);
+	}
+	
+	var labDisp =  function(obj){
+    	var ctrObj = $(obj)
+    	if(typeof(ctrObj)!="undefined"){
+    		ctrObj.each(function(){
+    			if($(this).val()==""){
+    				$(this).focus(function(){
+				    	$(this).prev().fadeOut(500)
+    				});
+    			} else {
+    				$(this).prev().fadeOut(3000);
+    			}
+    		});
+    	}
+    };
+	
+	
+	// 验证email是否注册过
+	function checkEmail(email, callBack) {
+    	if (typeof(callBack) !== "function") {
+    		callBack = function() {};
+    	}
+    	jQuery.ajax({
+    		"type": "GET",
+    		"url": "/validate/regEmail.htm",
+    		"dataType": "json",
+    		"data": {
+    			"email": email
+    		},
+    		"success": function(json) {
+    			if (json.success == true) {
+    				callBack(true);
+    			} else {
+    				callBack(false);
+    			}
+    		},
+    		"error": function() {
+    			// alert("服务不可用!");
+    		}
+		});
+	}
+	
+	// 公司简介修改 
+	function introductionChange(){
+		jQuery("#introductionFlag").val("1");
+	}
+	// 主营业务修改
+	jQuery("#business").change(function(){
+		jQuery("#businessFlag").val("1");
+	});
+	
+</script>
+<script>
+
+var popWin = {
+    scrolling: 'no',
+    //是否显示滚动条 no,yes,auto
+
+int: function() {
+        this.mouseClose();
+        this.closeMask();
+        //this.mouseDown();
+
+    },
+
+showWin: function(width, height, title, src) {
+        var iframeHeight = height - 52;
+        var marginLeft = width / 2;
+        var marginTop = height / 2;
+        var inntHtml = '';
+        
+        inntHtml += '<div id="maskTop" style="width: ' + width + 'px; height: ' + height + 'px; border: #999999 1px solid; background: #fff; color: #333; position: fixed; top: 50%; left: 50%; margin-left: -' + marginLeft + 'px; margin-top: -' + marginTop + 'px; z-index: 2999; filter: progid:DXImageTransform.Microsoft.Shadow(color=#909090,direction=120,strength=4); -moz-box-shadow: 2px 2px 10px #909090; -webkit-box-shadow: 2px 2px 10px #909090; box-shadow: 2px 2px 10px #909090;">'
+        inntHtml += '<div id="maskTitle" style="height: 34px; line-height: 34px;color:#fff; font-weight:bold; padding:0 10px; background:#009944; border-bottom: 1px solid #999999; position: relative;">'
+        inntHtml += '' + title + ''
+        inntHtml += '<a id="popWinClose" href="javascript:;" style="color:#fff;text-decoration:none;font-weight:bold;float:right;">关闭</a>'
+        inntHtml += '</div>'
+        inntHtml += '<iframe width="' + width + '" height="' + iframeHeight + '" frameborder="0" scrolling="' + this.scrolling + '" src="' + src + '"></iframe>';
+
+        $("body").append(inntHtml);
+        this.int();
+
+
+    },
+
+mouseClose: function() {
+       
+
+    },
+
+closeMask: function() {
+        $("#popWinClose").on('click', 
+        function() {
+            $("#maskTop").fadeOut(function() {
+				parent.location.reload();
+                $(this).remove();
+            });
+        });
+
+    }
+
+/*mouseDown : function(){
+		var dragging = false;
+		var iX, iY;
+		//var elmen = $("div#maskTop");
+		$("#maskTop").on('mousedown' , function(e){
+			dragging = true;
+                iX = e.clientX - this.offsetLeft;
+                iY = e.clientY - this.offsetTop;
+                this.setCapture && this.setCapture();
+                return false;
+		});
+		document.onmousemove = function(e) {
+                if (dragging) {
+                var e = e || window.event;
+                var oX = e.clientX - iX;
+                var oY = e.clientY - iY;
+                $("#maskTop").css({"left":oX + "px", "top":oY + "px"});
+                return false;
+                }
+            };
+            $(document).mouseup(function(e) {
+                dragging = false;
+                $("#maskTop")[0].releaseCapture();
+                e.cancelBubble = true;
+            })
+	},*/
+
+};
+function deletemarket(a){
+		jQuery.ajax({
+    			url:'#springUrl("/mycompany/deleteMarket.htm?")'+"marketId="+a,
+				type:"post",
+				dataType:"json"
+		});
+	}
+
+$(document).ready(function(){
+    #if($!market.size()==0)
+		$("#marketShow").css("display","block");
+		$("#marketAdd").css("display","none");
+	#else
+		$("#marketShow").css("display","none");
+		$("#marketAdd").css("display","block");
+	#end
+//	$("#selected span").over(function(){
+//  		$(this).parent().parent().find("em").css("display","block");
+// 	},function(){
+ // 		$(this).parent().parent().find("em").css("display","none");
+// 	});
+	$("#selected span").click(function(){
+		var numi=$(this).parent().parent().find("a")[0].id;
+		deletemarket(numi);
+		var val=$("#selected span").length;
+		if(val==1){
+			$("#marketAdd").css("display","none");
+			$("#marketShow").css("display","block");
+		}
+	});
+	$(".zs-market2").hover(function(){
+  		$(this).find("span").show();
+ 	},function(){
+  		$(this).find("span").hide();
+ 	});	 
+	$("#add").click(function () {
+    	popSuccess();
+    });
+});
+
+$("#selected span").live({
+	mouseenter:
+		function(){
+			$(this).parent().parent().find("em").css("display","block");
+		},
+	mouseleave:
+		function(){
+			$(this).parent().parent().find("em").css("display","none");
+		}
+}); 
+
+$("#selected span").live("click",function(){
+var numi=$(this).parent().parent().find("a")[0].id;
+		deletemarket(numi);
+	$(this).parent().parent().remove();
+	var val=$("#selected span").length+1;
+		if(val==1){
+			$("#marketAdd").css("display","none");
+			$("#marketShow").css("display","block");
+		}
+});
+ 
+$(function() {
+    $("input[type=checkbox]").on("click", function () {
+ 		var vIds = "";
+ 		$("input:checked").each(function() {
+     		vIds += $(this).attr('value') + " ";
+ 		});
+ 		if (vIds.length > 0) {
+     		vIds = vIds.substring(2, vIds.length - 1);
+ 		}
+ 		$('#result').text(vIds);
+    });
+});
+</script>

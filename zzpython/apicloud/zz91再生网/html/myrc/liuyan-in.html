@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的询盘-收到留言</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/myrc/liuyan-in.css"/>
+</head>
+<body>
+	<ul class="hufu-info">
+		<!-- <li>
+			<div class="hufu-title">您好，我对你的产品感兴趣！</div>
+			<div class="hufu-xq">你好，我想进一步了解：产品规格、型号.我想了解产品规格、型号，能否发一份详细资料给我参考，谢谢！我公司有意购买此产品，可否提供此产品的报价单和最小起订量？
+			</div>
+			<div class="hufu-loat"><span>留言者：</span>个体经营（测试）</div>
+			<div class="hufu-loat"><span>留言时间：</span>2014-11-27 23:51:8</div>
+			<span class="btn">我要回复</span>
+		</li> -->
+	</ul>
+</body>
+<script id="info-list" type="text/html">
+	<li>
+		<div class="hufu-title">{{ d.title }}</div>
+		<div class="hufu-xq">{{ d.content }}</div>
+		<div class="hufu-loat"><span>留言者：</span>{{ d.companyarray.companyname }}</div>
+		<div class="hufu-loat"><span>留言时间：</span>{{ d.stime }}</div>
+		<span class="btn" inquired_id="{{ d.id }}" sendcom_id="{{ d.companyarray.company_id }}">我要回复</span>
+	</li>
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+var currPage = 1;
+apiready = function () {
+	$(".hufu-info").on("click",".btn",function(){
+		var inquired_id = $(this).attr("inquired_id");
+		var sendcom_id = $(this).attr("sendcom_id")
+		var pageParam = {
+	      wintitle:"回复成功",
+	      type:"liuyan-in-hf",
+	      inquired_id:inquired_id,
+	      sendcom_id:sendcom_id
+	    };
+	    openWin("liuyan-in-hf","../myrc/liuyan-in-hf.html",pageParam);
+	})
+	api.showProgress({title:'加载中',modal:false});
+	ajaxInfo();
+	api.addEventListener({
+		name : 'scrolltobottom'
+	}, function(ret, err) {
+		currPage += 1;
+		if($(".mui-spinner").length==0){
+			$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+		}
+		
+		setTimeout(function(){
+			ajaxInfo();
+		},1000)
+	});
+	//页面刷新
+	api.setRefreshHeaderInfo({
+		visible : true,
+		// bgColor: '#F2F2F2',
+		bgColor : '#E6E6E6',
+		textColor : '#000000',
+		textDown : '下拉刷新',
+		textUp : '释放刷新',
+	}, function(ret, err) {
+		currPage = 1;
+		ajaxInfo();
+		api.refreshHeaderLoadDone();
+		api.hideProgress();
+		api.toast({
+			msg : '数据已是最新！',
+			duration : 3000,
+			location : 'bottom'
+		});
+	});
+}
+function ajaxInfo(){
+	var company_id =  UserInfo.memberID();
+	var usertoken = UserInfo.token();
+	api.ajax({
+	    url : hosturl + 'myrc_leavewords/?company_id='+ company_id +'&sendtype=0&usertoken='+ usertoken +'&appsystem='+ api.systemType +'&datatype=json&page='+ currPage,
+	    method : 'get',
+	    timeout : 30,
+	    dataType : 'json',
+	    returnAll : false
+	}, function(ret, err) {
+	    if (ret) {
+	    	// alert(JSON.stringify(ret))
+	        var pageHtml = "";
+	        $.each(ret.list, function(index, item) {
+		        var getTpl = $api.html($api.byId("info-list"));
+		        laytpl(getTpl).render(item, function(html) {
+		            pageHtml = pageHtml + html;
+		        });
+	        })
+	        if(currPage == 1){
+	        	if(ret.list.length == 0){
+	    			pageHtml = "<li style='text-align:center'>暂无数据</li>"
+	    		}
+	        	$(".hufu-info").html(pageHtml);
+				var numberList = {
+					step:0,
+					number:ret.count
+				}
+				numberList = JSON.stringify(numberList);
+	        	api.execScript({
+				    name: 'infomation-heart-2',
+				    frameName:'infomation-heart-2_',
+				    script: "getXp("+ numberList +")"
+				});
+	        }else{
+	        	$(".hufu-info").append(pageHtml)
+	        }
+	        api.hideProgress();
+	        $(".mui-spinner").remove();
+	    } else {
+	    	api.hideProgress();
+	    };
+	});
+}
+</script>
+</html>

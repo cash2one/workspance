@@ -1,0 +1,314 @@
+#set($layout='/layout/promptLayout.vm')
+<style >
+#filedrag
+{
+	display: none;
+	font-weight: bold;
+	text-align: center;
+	padding: 3em 0;
+	margin: 1em 0;
+	color: #555;
+	border: 2px dashed #555;
+	border-radius: 7px;
+	cursor: default;
+}
+
+#filedrag.hover
+{
+	color: #f00;
+	border-color: #f00;
+	border-style: solid;
+	box-shadow: inset 0 3px 4px #888;
+}
+
+</style>
+<div>
+
+	##左侧导航
+##	<section class="breadcrumb">
+##		<input type="button" class="btn btn-primary btn-large" value="本地上传" />
+##		<input type="button" class="btn btn-large" value="从相删选取" />
+##	</section>
+	
+	<section class="pd">
+		<div class="alert alert-info" >
+			<strong>注意：</strong>
+			请等待上传结束，出现可<strong>删除</strong>或<strong>移除</strong>连接后再点击<strong>确定</strong>按钮
+		</div>
+		
+		<div class="well mt" id="uploadWell" >
+			<div class="well-head">
+				上传文件
+				注意：请不要上传超过2M大小的文件
+			</div>
+			<div class="well-content">
+				<form  id="uploadForm" action="#springUrl('/photo/ieupload.htm')" method="post" enctype="multipart/form-data" target="uploadActionForm" >
+					<div>
+						选择文件：<input type="file" name="uploadfile" id="uploadfile" />
+						##<input type="submit" name="uploadBtn" value="上传" />
+					</div>
+					<div class="mt">
+						<div id="filedrag">或者把要上传的文件拖到这里</div>
+					</div>
+					<input type="hidden" name="targetType" value="$!{targetType}" />
+					<input type="hidden" name="targetId" value="$!{targetId}" />
+					<input type="hidden" name="albumId" value="$!{albumId}" />
+					<input type="hidden" name="resultid" id="resultid" value="" />
+					<iframe id="uploadActionForm" name="uploadActionForm" style="display: none;"></iframe>
+				</form>
+##				<form id="uploadForm" action="#springUrl('/photo/doUploadPhoto.htm')" enctype="multipart/form-data" method="post" target="uploadActionForm" onsubmit="return upload()">
+##    						<input name="uploadfile" type="file" class="upload_btn" value="上传图片" onchange="submitFile()"/>
+##							<input name="targetType" type="hidden" value="$!{photoType}" />
+##							<input name="albumId" type="hidden" value="" id = "id"/>
+##						</form>
+			</div>
+		</div>
+
+		<div class="well mt mb hidden" id="resultListWell">
+			<div class="well-head">
+				已上传的文件
+				<input type="button" id="continueUploadBtn" value="继续上传" class="btn btn-primary btn-mini"/>
+			</div>
+			<div class="well-content" id="uploadedListContent">
+			</div>
+		</div>
+
+		
+
+		
+	</section>
+		<div class="mt breadcrumb stick" style="width:100%;">
+			<input type="button" id="yesBtn" value="确定" class="btn btn-primary btn-large"/>
+		</div>
+	
+##	<section class="mt pd">
+##		从相册读取
+##	</section>
+</div>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+
+	jQuery("#continueUploadBtn").click(function(){
+		jQuery("#uploadWell").show();
+	});
+	
+	jQuery("#yesBtn").click(function(){
+		
+		//parent.uploadCallback("$!{success}",uploadedFile);
+		window.parent.Asto.util.Callback.submit("true", uploadedFile);
+	});
+
+});
+
+var uploadedFile = {};
+var uploadedNum=0;
+
+//处理托拽上传
+(function(){
+
+	function fileSelectHandler(e){
+		fileDragHover(e);
+		var files=e.target.files || e.dataTransfer.files;
+		if(files.length > 10){
+			alert("您一次最多只能上传10个文件，请不要一次选择过多文件！");
+			return ;
+		}
+		
+		//控制上传数量
+		var max=parseInt("$!{max}");
+		var uploadedSize=Object.keys(uploadedFile).length;
+		
+		if( (uploadedSize+files.length) > max ){
+			alert("您最多只能上传"+max+"个文件，已上传"+uploadedSize+"个，请重新选择！");
+			return ;
+		}
+		
+		for(var i=0, f; f=files[i]; i++){
+			parseFile(f);
+		}
+	}
+
+	function parseFile(file){
+		//alert(file.name + " " +file.type+ " "+ file.size);
+		//过滤大小
+		var formData = new FormData();
+		if(file.size > 2048000){
+			Asto.util.Message.show({ 
+			    msg:"请不要上传超过2M的文件",
+            	msgType:Asto.util.Message.INFO,
+             	autoClose:5000 
+            });
+			//alert("请不要上传超过2M的文件");
+			//页面提示不要超过2M的文件
+			return ;
+		}
+
+		formData.append("uploadfile",file);
+		formData.append("targetType", "$!{targetType}");
+		formData.append("targetId", "$!{targetId}");
+		formData.append("albumId", "$!{albumId}");
+
+		//初始化
+		var fileView = jQuery('<div class="mt"></div>');
+		var progress = jQuery('<div class="progress"  style="width:50%;float:left;" ></div>');
+		var bar=jQuery('<div class="bar" ></div>');
+		var info=jQuery('<div>&nbsp;&nbsp;'+file.name+'('+parseInt(file.size/1024)+'k)</div>');
+
+		progress.append(bar);
+		fileView.append(progress);
+		fileView.append(info);
+
+		jQuery.ajax({
+			cache:false,
+			//contentType:"multipart/form-data",
+			contentType:false,
+			processData:false,
+			url:"#springUrl('/photo/doPromptUpload.htm')",
+			type:"POST",
+			dataType:"json",
+			data:formData,
+			xhr:function(){
+				xhr = jQuery.ajaxSettings.xhr();
+
+      			if (xhr.upload) {
+				
+		            xhr.upload.addEventListener('progress', function (e){
+		              	var p = parseInt(e.loaded/e.total*100);
+		              	//设置上传进度
+		              	bar.html(p+"%");
+		              	bar.css("width",p+"%");
+						
+		            }, false);
+	        	}
+
+	        	return xhr;
+			},
+			beforeSend:function(jqXHR){
+				//准备显示上传进度和上传的文件
+				//默认不能删除
+				jQuery("#resultListWell").show();
+				jQuery("#uploadWell").hide();
+				jQuery("#uploadedListContent").append(fileView);
+
+			},
+			success:function(output){
+				//上传成功，显示删除按钮
+				//设置确定按钮要返回的数据 photoID, path
+				if(output.success){
+					uploadedFile[output.data.id]=output.data.path;
+
+					info.append("&nbsp;&nbsp;<a href='javascript:void(0);' onclick='deleteUploadedPhoto(this,"+output.data.id+")' >删除</a>");
+
+				}else{
+					info.append("&nbsp;&nbsp;<span style='color:red;' >上传失败</span>，<a href='javascript:void(0);' onclick='deleteUploadedPhoto(this,null)' >移除</a>");
+				}
+				
+				bar.html("100%");
+              	bar.css("width","100%");
+			},
+			error:function(jqXHR, textStatus, errorThrown){
+				info.append("&nbsp;&nbsp;<span style='color:red;' >上传出错</span>，<a href='javascript:void(0);' onclick='deleteUploadedPhoto(this,null)' >移除</a>");
+			}
+		});
+	}
+
+	function fileDragHover(e){
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.className = (e.type == "dragover" ? "hover":"");
+	}
+
+	function init(){
+		
+		var filedrag=jQuery("#filedrag");
+		jQuery.event.props.push('dataTransfer');
+
+		filedrag.bind("dragover", fileDragHover);
+		filedrag.bind("dragleave", fileDragHover);
+		filedrag.bind("drop",fileSelectHandler);
+
+		jQuery("#uploadfile").bind("change",fileSelectHandler);
+
+		filedrag.show();
+	}
+
+	
+	if (window.File && window.FileList && window.FileReader) {
+		init();
+	}else{
+		jQuery("#uploadfile").bind("change",function(){
+			jQuery("#uploadForm").submit();
+		});
+		
+		jQuery("#uploadForm").submit(function(e){
+		
+			var max=parseInt("$!{max}");
+    		
+    		if( (uploadedNum + 1 ) > max ){
+    			alert("您最多只能上传"+max+"个文件，已上传"+uploadedNum+"个，请重新选择！");
+    			return false;
+    		}
+		
+			//显示上传进度页面
+			var eid=Date.parse(new Date());
+			jQuery("#resultid").val(eid);
+			var fileView = jQuery('<div class="mt"></div>');
+    		var progress = jQuery('<div class="progress"  style="width:50%;float:left;" ></div>');
+    		var bar=jQuery('<div class="bar" id="bar'+eid+'">1%</div>');
+			
+    		var info=jQuery('<div id="info'+eid+'">&nbsp;&nbsp;'+jQuery("#uploadfile").val()+'</div>');
+    
+    		progress.append(bar);
+    		fileView.append(progress);
+    		fileView.append(info);
+    		
+			jQuery("#resultListWell").show();
+			jQuery("#uploadWell").hide();
+			
+			jQuery("#uploadedListContent").append(fileView);
+			
+			return true;
+		});
+	}
+})();
+
+function ieuploadresult(eid, pid, path){
+	//alert(eid+" "+pid+" "+path)
+	var bar = jQuery("#bar"+eid);
+	var info = jQuery("#info"+eid);
+	bar.html("100%");
+	bar.css("width","100%");
+	if(pid!="" && path!=""){
+		//成功
+		info.append("&nbsp;&nbsp;<a href='javascript:void(0);' onclick='deleteUploadedPhoto(this,"+pid+")' >删除</a>");
+		uploadedFile[pid]=path;
+		uploadedNum++;
+	}else{
+		info.append("&nbsp;&nbsp;<span style='color:red;' >上传失败</span>，<a href='javascript:void(0);' onclick='deleteUploadedPhoto(this,null)' >移除</a>");
+	}
+}
+
+function deleteUploadedPhoto(node,id){
+
+	jQuery(node).parent().parent().fadeOut();
+	
+	if(id!=null){
+		delete uploadedFile[id];
+		if(uploadedNum>0){
+			uploadedNum--;
+		}
+		jQuery.ajax({
+			url:"#springUrl('/photo/doAjaxRemove.htm')",
+			data:{"id":id},
+			dataType:"json",
+			success:function(output){
+			}
+		});
+	}
+
+}
+
+</script>
+

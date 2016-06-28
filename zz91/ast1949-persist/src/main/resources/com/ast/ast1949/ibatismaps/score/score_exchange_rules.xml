@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE sqlMap
+ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+ "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="scoreExchangeRules">
+    <typeAlias alias="scoreExchangeRulesDo" type="com.ast.ast1949.domain.score.ScoreExchangeRulesDo"/>
+ 	<typeAlias alias="scoreExchangeRulesDo" type="com.ast.ast1949.domain.score.ScoreExchangeRulesDo"/>
+    
+	<resultMap id="fullResult" class="scoreExchangeRulesDo">
+		<result property="id" column="id" />
+		<result property="rulesCode" column="rules_code" />
+		<result property="name" column="name" />
+		<result property="score" column="score" />
+		<result property="scoreMax" column="score_max" />
+		<result property="cycleDay" column="cycle_day" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,rules_code,name,score,score_max,cycle_day,remark,gmt_created,gmt_modified
+	</sql>
+	
+	<select id="queryRulesByCode" parameterClass="java.lang.String" resultMap="fullResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM score_exchange_rules
+		WHERE rules_code=#value#
+	</select>
+	
+	<select id="queryRulesByPreCode" parameterClass="java.lang.String" resultMap="fullResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM score_exchange_rules
+		WHERE rules_code LIKE CONCAT(#value#,'%')
+	</select>
+	
+	<select id="queryRules" parameterClass="java.util.HashMap" resultMap="fullResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM score_exchange_rules
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryRulesCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM score_exchange_rules
+	</select>
+</sqlMap>

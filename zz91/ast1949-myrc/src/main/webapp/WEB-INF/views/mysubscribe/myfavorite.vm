@@ -1,0 +1,53 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/bizList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">我的篮子</li>
+        </ul>
+		<div class="alert alert-info">
+			<p>我的篮子已升级为<a href="#springUrl('/mysubscribe/favorites.htm')" style="text-decoration:none"><b class="green">我的收藏夹</b></a></p>
+		</div>
+        <div class="table-select">
+##			<a #if(!${favoriteTypeCode}) class="label label-success" #else class="label" #end href="?">全部信息</a>
+##			<a #if($!{favoriteTypeCode}=='10091001') class="label label-success" #else class="label" #end  href="?favoriteTypeCode=10091001">求购信息</a>
+##			<a #if($!{favoriteTypeCode}=='10091000') class="label label-success" #else class="label" #end  href="?favoriteTypeCode=10091000">供应信息</a>
+		</div>
+		<table class="table table-bordered table-condensed">
+			<thead>
+##				<tr>
+##					<th width="50%">标题</th>
+##					<th width="25%" class="tac">信息更新时间</th>
+##					<th width="20%" class="tac">加入篮子时间</th>
+##					<th width="5%" class="tac">操作</th>
+##				</tr>
+			</thead>
+			<tbody>
+##			#foreach($m in $mList)
+##	    		<tr>
+##	    			<td>
+##						$!{m.favoriteType}
+##	    				<a target="_blank" href="$!{address.trade}/productdetails.htm?productsId=$!{m.contentId}">$!{m.title}</a>
+##					</td>
+##	    			<td class="tac">$!date.format("yyyy-MM-dd",$!{m.updateTime})</td>
+##	    			<td class="tac">$!date.format("yyyy-MM-dd",$!{m.addTime})</td>
+##					<td class="tac">
+##						<a href="#springUrl('/mysubscribe/deleteMyfavorite.htm?ids=')$!{m.id}">删除</a>
+##					</td>
+##	    		</tr>
+##			#end
+			</tbody>
+		</table>
+	#if(${mList.size()} ==0)
+		<div class="alert alert-error">没有收藏的供求信息！</div>
+	#end
+	##myrcPageNav($!{page} "#springUrl('/mysubscribe/myfavorite.htm')" "$!{suffixUrl}" "")
+	</div>
+</div>
+<script> 
+jQuery(function(){
+	myrc.menu(5, 7);
+});
+</script> 

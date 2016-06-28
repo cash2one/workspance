@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="tradegroup">
+
+	<typeAlias alias="tradeGroup" type="com.zz91.ep.domain.trade.TradeGroup"/>
+	
+    <resultMap class="tradeGroup" id="simpleColumnMap">
+        <result property="id" column="id"/>
+        <result property="cid" column="cid"/>
+        <result property="uid" column="uid"/>
+        <result property="name" column="name"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+	
+	<resultMap class="tradeGroup" id="columnMap" extends="simpleColumnMap">
+		<result property="parentId" column="parent_id"/>
+	</resultMap>
+
+    <sql id="simpleColumn">
+        id,
+        uid,
+        cid,
+        name,
+        sort
+    </sql>
+    
+    <select id="queryTradeGroupById" resultMap="simpleColumnMap" parameterClass="java.util.Map">
+        select
+            <include refid="simpleColumn"/> 
+        from trade_group 
+        where cid=#cid#
+        <isNotEmpty property="parentId">
+        	and parent_id = #parentId# 
+        </isNotEmpty>
+        order by sort asc
+    </select>
+    
+    <select id="queryNameById" resultClass="java.lang.String" parameterClass="java.lang.Integer">
+        select
+            name
+        from trade_group 
+        where id=#id#
+    </select>
+     
+    <insert id="insertTradeGroup" parameterClass="tradeGroup">
+        insert into trade_group
+            (
+             uid,
+             cid,
+             name,
+             sort,
+             parent_id,
+             details,
+             gmt_created,
+             gmt_modified)
+       VALUES
+            (
+            #uid#,
+            #cid#,
+            #name#,
+            #sort#,
+            #parentId#,
+            #details#,
+            now(),
+            now()
+            );
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+    </insert>
+    
+    <update id="updateTradeGroup" parameterClass="tradeGroup">
+        update trade_group set
+        	<isNotEmpty property="parentId">
+        	parent_id=#parentId#,
+        	</isNotEmpty>
+        	<isNotEmpty property="name">
+        	name=#name#,
+        	</isNotEmpty>
+        	<isNotEmpty property="sort">
+        	sort=#sort#,
+        	</isNotEmpty>
+            gmt_modified=now()
+        where id = #id# and cid=#cid#
+    </update>
+    
+    <delete id="deleteTradeGroup" parameterClass="java.util.Map">
+        delete from trade_group where id = #gid# and cid=#cid#
+    </delete>
+    
+    <select id="queryTradeGroup" parameterClass="java.lang.Integer" resultMap="columnMap">
+    	select 
+    		<include refid="simpleColumn"/>,parent_id
+    	from trade_group where id = #value#
+    </select>
+    
+    <select id="queryChildCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        select count(*) from trade_group
+        where cid=#cid#
+        and parent_id=#parentId#
+    </select>
+</sqlMap>

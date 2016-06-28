@@ -1,0 +1,520 @@
+#set($layout="/layout/defaultS.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/companyprice/css/CompaniesOffer.css"/>
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/companyprice/js/CompaniesOffer.js"></script>
+<script language="javascript" type="text/javascript" src="http://img0.zz91.com/zz91/companyprice/js/calendar.js"></script>
+
+<div class="main_box">
+	<div class="zz91leader">当前位置:
+			<a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a> &gt;
+			<a href="#springUrl('/companyprice/index.htm')">企业报价</a>
+	</div>
+</div>
+
+<div class="CompaniesOffer">
+	<div class="co-m1">
+    	<div class="m1-left fl">
+        	<div class="m1-left-title f14 fb">
+            	<a href="http://myrc.zz91.com/mycompanyprice/createPrice.htm" target="_blank">我要发布企业报价</a>
+            </div>
+            <!--end m1-left-title-->
+            <div class="m1-left-login">
+            	<div class="m1-login-left fl">
+                	<a href="http://china.zz91.com/login.htm" target="_blank">登录</a>
+                </div>
+                <div class="m1-login-right fr">
+                	<a href="http://china.zz91.com/register/register_stp1.htm" target="_blank">注册</a>
+                </div>
+                <!--end m1-login-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-left-login-->
+			<div class="m1-left-content">
+				<form method="post" name="form1" id="form1">
+					<div class="f14">
+						精确搜索
+					</div>
+					<div class="mt5">
+						##<input type="text" class="m1-text" value="输入产品关键字" id="keywords" name="keywords"/>
+						<input type="text" class="m1-text" id="keywords" name="keywords"/>
+					</div>
+					<div class="mt5">
+						<select name="province" id="province" class="m1-select mr10">
+							<option value="">选择省份</option>
+						</select>
+						<select name="city" id="city" class="m1-select">
+							<option  value="">选择市区</option>
+						</select>
+					</div>
+					<div class="mt5">
+						<input type="text" class="m1-text2" value="请选择日期" name="clickTime" id="clickTime"/>
+					</div>
+					<div class="mt5">
+						<a class="m1-left-search" id="clickToSearch" ></a>
+					</div>
+					</form>
+				</div>
+				<!--end m1-left-content-->
+			</div>
+			<!--end m1-left-->
+			<div class="m1-center fl">
+				<div class="m1-center-title">
+					<div class="fl f14 fb">
+						最新企业报价
+					</div>
+					<div class="cb"></div>
+				</div>
+				<!--end m1-center-title-->
+				<div class="m1-center-content">
+					<div class="fb fl w192">产品名称</div>
+					<div class="fb fl w192">产品价格</div>
+					<div class="fb fl w60">所在地区</div>
+					<div class="cb"></div>
+					<div id="m1-table">
+						<ul>
+							#foreach($l in $!{dtoList} )
+								<li>
+									<div class="w192 fl"><a href="#springUrl('/companyprice/priceDetails')$!{l.id}.htm"  title="$!{l.title}" target="_blank">#printTitle($!{l.title} 11 "")</a></div>
+									<div class="w192 fl">
+										#if($!{l.minPrice} && $!{l.minPrice} != "" && $!{l.minPrice} !="None")
+											$!{l.minPrice}
+											#if($!{l.maxPrice}&&$!{l.maxPrice}!="" && $!{l.maxPrice} != "0.0")
+												至$!{l.maxPrice}
+											#end
+											$!{l.priceUnit}
+										#elseif($!{l.price} && $!{l.price} != ""  && $!{l.price} != "None")
+											$!{l.price}
+										#end
+									</div>
+									<div class="w60 fr">
+										#if($!{l.province}&&$!{l.province}!="")
+											#printTitle($!{l.province}  2 "")
+											#if($!{l.city}&&$!{l.city}!="")
+												#printTitle($!{l.city}  2 "")
+											#end
+										#else
+											#if($!{l.countryName})
+												#printTitle($!{l.countryName}  2 "")
+											#end
+										#end
+									</div>
+									<div class="cb"></div>
+								</li>
+							#end
+						</ul>
+					</div>
+					<!--end m1-table-->
+				</div>
+				<!--end m1-center-content-->
+			</div>
+			<!--end m1-center-->
+			<div class="m1-right fr">
+				<div class="m1-right-title">
+					<div class="f14 fb">
+						企业报价排名
+					</div>
+				</div>
+				<!--end m1-center-title-->
+				<div>
+					<ul class="m1-right-ul">
+						#foreach($c in $cList)
+							<li><a href="$!{address.company}/compinfo$!{c.companyId}.htm" target="_blank" title="$!{c.companyName}">#printTitle($!{c.companyName} 17 "")</a></li>
+						#end
+					</ul>
+				</div>
+			</div>
+        <!--end m1-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end co-m1-->
+    <div class="co-m2">
+    	<div class="co-m2-title fl f14 fb">
+        	热门地区
+        </div>
+        <!--end co-m2-title-->
+        <div class="co-m2-content fl">
+        	<ul>
+            	<li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010101001">宁波</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001008">上海</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001014">山东</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001012">福建</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001009">江苏</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001015">河南</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010181016">东莞</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001001">天津</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010181005">佛山</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001023">贵州</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001022">四川</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010221000">成都</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001013">江西</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001016">湖北</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001002">河北</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001011">安徽</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001003">山西</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001019">广西</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001000">北京</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001004">内蒙古</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010101009">台州</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001001">天津</a></li>
+				<li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001018">广东</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001021">重庆</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001024">云南</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001026">陕西</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001005">辽宁</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')100110001017">湖南</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010141012">临沂</a></li>
+                <li><a href="#springUrl('/companyprice/list.htm?areaCode=')1001100010181015">清远</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end co-m2-content-->
+        <div class="cb"></div>
+    </div>
+    <!--end co-m2-->
+    <div class="co-m3">
+   		<div class="m3-left fl">
+        	<div class="m3-left-title f14 fb">
+            	行业类别
+            </div>
+            <!--end m3-left-title-->
+            <div class="m3-box">
+            	<div class="m3-box-block1 f14 fb">
+                	<a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1000">废塑料</a>
+                </div>
+                <!--end m3-box-block1-->
+                <ul class="m3-box-ul">
+                	<li class="fb"><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')10001000">废料：</a></li>
+					#foreach($category in $plasticList)
+						<li><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}" >$!{category.label}</a></li>
+					#end
+                    <div class="cb"></div>
+                </ul>
+                <ul class="m3-box-ul">
+                	<li class="fb"><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')10001001">再生塑料：</a></li>
+					#foreach($category in $zsplasticList)
+						<li><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}" >$!{category.label}</a></li>
+					#end
+                    <div class="cb"></div>
+                </ul>
+            </div>
+            <!--end m3-box-->
+            <div class="m3-box">
+            	<div class="m3-box-block1 f14 fb">
+                	<a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1001">废金属</a>
+                </div>
+                <!--end m3-box-block1-->
+                <ul class="m3-box-ul">
+					#foreach($category in $metalList)
+						<li><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}" >$!{category.label}</a></li>
+					#end
+                </ul>
+            </div>
+            <!--end m3-box-->
+            <div class="m3-box">
+            	<div class="m3-box-block1 f14 fb">
+                	<a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1002">废纸</a>
+                </div>
+                <!--end m3-box-block1-->
+                <ul class="m3-box-ul">
+					#foreach($category in $wasteList)
+						<li><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}">$!{category.label}</a></li>
+					#end
+                </ul>
+            </div>
+            <!--end m3-box-->
+            <div class="m3-box" style="border:none;margin-bottom:10px">
+            	<div class="m3-box-block1 f14 fb">
+                	<a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1003" >综合废料</a>
+                </div>
+                <!--end m3-box-block1-->
+                <ul class="m3-box-ul">
+					#foreach($category in $otherWasteList)
+						<li><a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}">$!{category.label}</a></li>
+					#end
+                </ul>
+            </div>
+            <!--end m3-box-->
+        </div>
+        <!--end m3-left-->
+        <div class="m3-right fr">
+        	<div class="m3-item fl mr10">
+            	<div class="m3-item-title">
+                    <div class="fl f14 fb">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1000">废塑料</a>
+                    </div>
+                    <div class="fr">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1000">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m3-item-title-->
+                <table class="m3-item-table">
+					#foreach($companyPrice in $!{plasticPage.records} )
+                	<tr>
+                    	<td class="w135"><a href="#springUrl('/companyprice/priceDetails')$!{companyPrice.id}.htm" title="$!{companyPrice.title}" target="_blank">#printTitle($!{companyPrice.title} 11 "")</a></td>
+                        <td class="w135">
+					   		#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice} != ""
+								&&$!{companyPrice.minPrice} !="None")
+								$!{companyPrice.minPrice}
+								#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="" && $!{companyPrice.maxPrice} != "0.0")
+									至$!{companyPrice.maxPrice}
+								#end
+								$!{companyPrice.priceUnit}
+							#elseif($!{companyPrice.price} && $!{companyPrice.price} != ""
+								&& $!{companyPrice.price} != "None")
+								$!{companyPrice.price}
+							#end
+						</td>
+                        <td class="w70">$!date.format('yyyy-MM-dd ',$!{companyPrice.refreshTime})</td>
+                    </tr>
+					#end
+                </table>
+            </div>
+            
+            <div class="m3-item fl">
+            	<div class="m3-item-title">
+                    <div class="fl f14 fb">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1001" >废金属</a>
+                    </div>
+                    <div class="fr">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1001" >更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m3-item-title-->
+                <table class="m3-item-table">
+					#foreach($companyPrice in $!{metalPage.records})
+                	<tr>
+                    	<td class="w135"><a href="#springUrl('/companyprice/priceDetails')$!{companyPrice.id}.htm" title="$!{companyPrice.title}" target="_blank">#printTitle($!{companyPrice.title} 11 "")</a></td>
+                        <td class="w135">
+							#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice} != ""
+								&&$!{companyPrice.minPrice} !="None")
+								$!{companyPrice.minPrice}
+								#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="" && $!{companyPrice.maxPrice} != "0.0")
+									至$!{companyPrice.maxPrice}
+								#end
+								$!{companyPrice.priceUnit}
+							#elseif($!{companyPrice.price} && $!{companyPrice.price} != ""
+								&& $!{companyPrice.price} != "None")
+								$!{companyPrice.price}
+							#end
+						</td>
+                        <td class="w70">$!date.format('yyyy-MM-dd ',$!{companyPrice.refreshTime})</td>
+                    </tr>
+					#end
+                </table>
+            </div>
+            
+            <div class="m3-item fl mr10 mt10">
+            	<div class="m3-item-title">
+                    <div class="fl f14 fb">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1003">综合废料</a>
+                    </div>
+                    <div class="fr">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1003">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m3-item-title-->
+                <table class="m3-item-table">
+					#foreach($!{companyPrice} in $!{otherWasteDtoPage.records})
+                	<tr>
+                    	<td class="w135"><a href="#springUrl('/companyprice/priceDetails')$!{companyPrice.id}.htm" title="$!{companyPrice.title}" target="_blank">#printTitle($!{companyPrice.title} 11 "")</a></td>
+                        <td class="w135">
+							#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice} != ""
+								&&$!{companyPrice.minPrice} !="None")
+								$!{companyPrice.minPrice}
+								#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="" && $!{companyPrice.maxPrice} != "0.0")
+									至$!{companyPrice.maxPrice}
+								#end
+								$!{companyPrice.priceUnit}
+							#elseif($!{companyPrice.price} && $!{companyPrice.price} != ""
+								&& $!{companyPrice.price} != "None")
+								$!{companyPrice.price}
+							#end
+						</td>
+                        <td class="w70">$!date.format('yyyy-MM-dd ',$!{companyPrice.refreshTime})</td>
+                    </tr>
+					#end
+                </table>
+            </div>
+            <!--end m3-item-->
+            <div class="m3-item fl mt10">
+            	<div class="m3-item-title">
+                    <div class="fl f14 fb">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1002">废纸</a>
+                    </div>
+                    <div class="fr">
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')1002">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m3-item-title-->
+                <table class="m3-item-table">
+					#foreach($!{companyPrice} in $!{wastePaperPage.records})
+                	<tr>
+                    	<td class="w135"><a href="#springUrl('/companyprice/priceDetails')$!{companyPrice.id}.htm" title="$!{companyPrice.title}" target="_blank">#printTitle($!{companyPrice.title} 11 "")</a></td>
+                        <td class="w135">
+							#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice} != ""
+								&&$!{companyPrice.minPrice} !="None")
+								 $!{companyPrice.minPrice}
+								#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="" && $!{companyPrice.maxPrice} != "0.0")
+								 至$!{companyPrice.maxPrice}
+								#end
+								$!{companyPrice.priceUnit}
+							#elseif($!{companyPrice.price} && $!{companyPrice.price} != ""
+								&& $!{companyPrice.price} != "None")
+								$!{companyPrice.price}
+							#end
+						</td>
+                        <td class="w70">$!date.format('yyyy-MM-dd ',$!{companyPrice.refreshTime})</td>
+                    </tr>
+					#end
+                </table>
+            </div>
+            <!--end m3-item-->
+            <div class="cb"></div>
+        </div>
+        <!--end m3-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end co-m3-->
+    <div class="co-m4">
+    	<div class="m4-item fl mr8">
+        	<div class="m4-item-title">
+                <div class="fl f14 fb">
+                    <a href="http://price.zz91.com/">废料资讯</a>
+                </div>
+                <div class="fr">
+                    <ul class="m4-title-ul">
+                    	<li><a href="http://price.zz91.com/channel/wasteMetal.htm" target="_blank">废金属</a></li>
+                        <li>|</li>
+                        <li><a href="http://price.zz91.com/channel/wastePlastic.htm" target="_blank">废塑料</a></li>
+                        <li>|</li>
+                        <li><a href="http://price.zz91.com/channel/otherWaste.htm" target="_blank">综合废料</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end m4-item-title-->
+            <ul class="m4-item-ul">
+				#cacheFragment("$!{address.fragment}/price/newHotPrice.htm?code=price_comment&size=8&8d" "" "" "")
+					#foreach($tn in $!{list})
+						<li>
+							<a href="$!{address.price}/priceDetails_$!{tn.id}.htm" target="_blank" title="$!{tn.title}">
+								$!{tn.title}
+							</a>
+						</li>
+					#end
+				#end
+            </ul>
+        </div>
+        <!--end m4-item-->
+        <div class="m4-item fl">
+        	<div class="m4-item-title">
+                <div class="fl f14 fb" id="m4_hot1">
+                    热门废料供应
+                </div>
+                <div class="fr f14 fb gray" id="m4_hot2">
+                    热门废料求购
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end m4-item-title-->
+            <ul class="m4-item-ul2" id="m4_hot_ul1">
+				#foreach($obj in $gyProductList)
+					#if($velocityCount <=8)
+				##	<li class="terightgew"><span></span><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" class="te_classotwo" target="_blank" title="$!{obj.products.title}" >#printTitle($!{obj.products.title} 10 "")</a></li>
+					<li><div class="fl w230"><a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" >#printTitle($!{obj.products.title} 10 "")</a></div><div class="fr">$!date.format('MM-dd',$!{obj.products.refreshTime})</div></li>
+					#end
+				#end
+            </ul>
+            <ul class="m4-item-ul2" style="display:none" id="m4_hot_ul2">
+				#foreach($obj in $qgProductList)
+					#if($velocityCount <=8)
+			##		<li class="terightgew"><span>$!date.format('MM-dd',$!{obj.products.refreshTime})</span><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" class="te_classotwo" target="_blank" title="$!{obj.products.title}" >#printTitle($!{obj.products.title} 10 "")</a></li>
+					<li><div class="fl w230"><a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" >#printTitle($!{obj.products.title} 10 "")</a></div><div class="fr">$!date.format('MM-dd',$!{obj.products.refreshTime})</div></li>
+					#end
+				#end
+             
+            </ul>
+        </div>
+        <!--end m4-item-->
+    	<div class="m4-item fr">
+        	<div class="m4-item-title">
+                <div class="fl f14 fb">
+                    <a href="http://price.zz91.com/moreList_p64_metal.htm" target="_blank">期货价格</a>
+                </div>
+                <div class="fr">
+                    $!{date.format("yyyy-MM-dd", $!{date})}
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end m4-item-title-->
+            <table class="m4-item-table">
+           		<tr>
+                	<td class="fb">品名</td>
+                    <td class="fb">价格元/吨</td>
+                    <td class="fb">涨跌</td>
+                </tr>
+				#foreach($chart in $charts)
+                <tr>
+					<td><a href="$!{address.server}/charts/index.htm?id=$!{chart.id}" target="_blank">$!{chart.name}</a></td>
+					<td>$!{chart.value}</td>
+					<td>#if($!{chart.diff}>0)+#end$!{chart.diff}</td>
+                </tr>
+                 #end
+            </table>
+        </div>
+        <!--end m4-item-->
+        <div class="cb"></div>
+    </div>
+    <!--end co-m4-->
+    <div class="co-m5">
+    	<div class="m5-title">
+            <div class="fl f14 fb">
+                <a href="http://trade.zz91.com/" target="_blank">热门推荐</a>
+            </div>
+            <div class="fr">
+                <a href="http://subject.zz91.com/400Treasure/index.html" target="_blank">我也要出现在这里</a>
+            </div>
+            <div class="cb"></div>
+        </div>
+        <!--end m5-title-->
+##		<script type="text/javascript" src="http://gg.zz91.com/show?p=77"></script>
+	    <script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=6&amp;padding=8&amp;w=959&amp;num=6"></script>
+        <!--end n5-item-->
+        <div class="cb"></div>
+    </div>
+    <!--end co-m5-->
+    <div class="co-line"></div>
+</div>
+<!--end CompaniesOffer-->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	jQuery("#clickToSearch").click(function(){
+		var areaval=jQuery("#city").val();
+		if(areaval.length<4){
+			areaval=jQuery("#province").val();
+		}
+		window.location.href = "/companyprice/list--"+jQuery("#keywords").val()+"--pc$!{categoryCompanyPriceCode}--area"+areaval+"--t"+Date.parse(jQuery("#clickTime").val()).toString()+"--pr.htm";
+	});
+});
+
+
+
+
+jQuery(document).ready(function(){
+			var areaSelector = new Asto.util.Selector({
+    			url:"#springUrl('/category/areaChild.htm')",
+				selects:["#province","#city"]
+    		});
+			areaSelector.init({
+				rootCode:"10011000",
+    			initCode:"$!{areaCode}"
+    		});
+		});
+</script>
+

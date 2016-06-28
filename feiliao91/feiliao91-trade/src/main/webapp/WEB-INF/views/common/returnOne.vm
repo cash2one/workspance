@@ -1,0 +1,90 @@
+  <div class="confirm_order clearfix">
+                <div class="orderleft fl">
+                    <div class="odr-title clearfix">
+                        <h3 class="fl">退货退款商品</h3>
+                    </div>
+                    <div class="goods-info clearfix">
+                        #if($!{goodsDto.picAddress})
+                        <a href="$!{address.www}/goods$!{goodsDto.goods.id}.htm" target="_blank"><img src="$!{address.img}$!{goodsDto.picAddress}" width="80" height="80" /></a>
+						#else
+						<img src="" width="80" height="80" />
+						#end
+                        <p>$!{goodsDto.goods.title}</p>
+                        <p class="goods-color">颜色分类：$!{goodsDto.goods.color}</p>
+                    </div>
+                    <div class="seller">
+                        <ul class="seller-ul">
+                            <li><span class="seller-tt">订单编号：</span>$!{order.orderNo}</li>
+                            <li>
+                                <span class="seller-tt">小&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计：</span>
+								#if($!{cost})
+                                <span class="anred">$!{cost}</span>元
+								#else
+								<span class="anred">$!{sumPirce}</span>元
+								#end
+                            </li>
+                            <li>
+                                <span class="seller-tt">成交时间：#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{order.gmtCreated})</span>
+                            </li>
+                            <li>
+                                <span class="seller-tt">商&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;家：</span>
+                                <span class="blue">$!{goodsDto.companyInfo.name}</span>
+                            </li>
+                            <li class="see-nowwp j_seller">
+                                <span class="seller-tt">发货物流信息 <i class="sh-img"></i></span>
+                                <div class="hide-div">
+                                    <i class="hide-zb"></i>
+                                    <div class="hide-th">
+                                        <div class="hide-title">联邦物流：$!{order.logisticsNo}</div>
+                                        <ul class="newdata j_ndata" id="ull">
+											#if($!{logistics})
+												#foreach($li in ${logistics.list.keySet()})
+											    #foreach($ob in ${logistics.list.get($li)})
+                                            <li>
+                                                <i></i>$!{ob.context}<br>
+                                                $!{li}  $!{ob.hour}
+                                            </li>
+											 #end
+											 #end
+											#end
+                                        </ul>
+										<ul>
+											<i></i>&nbsp;&nbsp;&nbsp; 以上为最新跟踪消息
+                                        </ul>
+                                        <div class="see-all"><a class="j-sbtn" href="#springUrl('/logistics/logistics.htm')?logisticsCode=$!{order.logisticsNo}&type=1">查看全部</a></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="odr-title clearfix">
+                        <h3 class="fl">订单信息</h3>
+                    </div>
+                     <div class="seller">
+                        <ul class="seller-ul">
+                            <li><span class="seller-tt">订单编号：</span>$!{order.orderNo}</li>
+                            <li>
+                                <span class="seller-tt">运&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费：</span>
+								#if($!{orderFreightPay})
+                                $!{orderFreightPay}元
+								#else
+								$!{yunfei}元
+								#end
+                            </li>
+                            <li>
+								#if($!{orderTotalPay})
+                                <span class="seller-tt">总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计：<span class="anred" id="zongji">$!{orderTotalPay}</span>元</span>
+                                #else
+								<span class="seller-tt">总&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计：<span class="anred" id="zongji">$!{zongji}</span>元</span>
+								#end
+							</li>
+                            <li>
+                                <span class="seller-tt">成交时间：#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{order.gmtCreated})</span>
+                            </li>
+                        </ul>
+					 </div>
+		 </div>
+		 <script >
+		 	var li_index = $(".j_ndata li").length - 2;
+ 			 $(".j_ndata li:lt("+ li_index +")").hide();
+         </script>

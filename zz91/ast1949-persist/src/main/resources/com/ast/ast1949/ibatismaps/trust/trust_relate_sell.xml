@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustRelateSell">
+	<typeAlias alias="trustRelateSellDO" type="com.ast.ast1949.domain.trust.TrustRelateSell" />
+
+	<resultMap class="trustRelateSellDO" id="trustRelateSellResult">
+		<result property="id" column="id" />
+		<result property="buyId" column="buy_id" />
+		<result property="sellId" column="sell_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<!--供货与采购信息的保存-->
+	<insert id="insert" parameterClass="trustRelateSellDO">
+		INSERT INTO trust_relate_sell
+		(
+		buy_id,
+		sell_id,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#buyId#,
+		#sellId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+	<!--根据采购id获取所有的供应信息-->	
+	<select id="querySellsByBuyId" parameterClass="java.lang.Integer" resultMap="trustRelateSellResult">
+		select id,buy_id,sell_id,gmt_created,gmt_modified
+		from trust_relate_sell
+		where buy_id=#buyId# and exists(select id from trust_sell where id=sell_id and status="01")
+	</select>
+	
+	<select id="queryBySellId" parameterClass="java.lang.Integer" resultMap="trustRelateSellResult">
+		select 
+		id,buy_id,sell_id,gmt_created,gmt_modified
+		from trust_relate_sell
+		where sell_id=#value#
+		limit 0,1
+	</select>
+	
+	<select id="queryByCompanyIdAndBuyId" parameterClass="java.util.Map" resultClass="java.util.HashMap" >
+		select id from trust_relate_sell
+		where buy_id = #buyId# and exists (select p.id from trust_sell p where company_id=#companyId# and p.id=sell_id)
+	</select>
+	
+</sqlMap>

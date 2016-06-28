@@ -1,0 +1,54 @@
+/**
+ * fastclick(only for radio,checkbox)
+ */
+(function(window,name){
+    var aui = {};
+    var target = {};
+    var handle = function(event) {
+        //alert(target.type);
+        if (target && (target.type === 'radio' || target.type === 'checkbox')) {
+            if (!target.disabled) { //disabled
+                return target;
+            }
+        }
+        return false;
+    };
+    var dispatchEvent = function(event) {
+        console.log(event.detail);
+        var targetElement = 'click';
+        if (targetElement) {
+            var clickEvent, touch;
+            // On some Android devices activeElement needs to be blurred otherwise the synthetic click will have no effect
+            if (document.activeElement && document.activeElement !== targetElement) {
+                document.activeElement.blur();
+            }
+            //touch = event.detail.gesture.changedTouches[0];
+            // Synthesise a click event, with an extra attribute so it can be tracked
+            clickEvent = document.createEvent('MouseEvents');
+            clickEvent.initMouseEvent('click', true, true, window, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, false, false, false, false, 0, null);
+            clickEvent.forwardedTouchEvent = true;
+            targetElement.dispatchEvent(clickEvent);
+            event.detail && event.detail.gesture.preventDefault();
+        }
+    };
+    window.addEventListener('click', function(event) {
+        
+        target.type=event.target.type;
+        if (event.type=='click') {
+            dispatchEvent(event);
+            /*if (!event.forwardedTouchEvent) {
+                if (event.stopImmediatePropagation) {
+                    event.stopImmediatePropagation();
+                } else {
+                    event.propagationStopped = true;
+                }
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            }*/
+        }
+
+    }, true);
+    handle();
+    window.$aui = aui;
+})(window,'click');

@@ -1,0 +1,75 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>买家申请退货</title>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/common.css">
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/index.css">
+	
+ <script language="javascript">
+	function isOnSubmit()
+	{
+	 	if (document.all.refundReson.value == '' )
+	    {	
+			alert("请选择退款原因！");
+	        return false;
+	    }
+		
+		return true;
+	}
+</script>	
+	
+<style type="text/css">  
+.comments {  
+ width:80%;/*自动适应父布局宽度*/  
+ overflow:auto;  
+ word-break:break-all;   
+}  
+</style>	
+</head>
+
+<body style="padding:10px;">
+<form id="form1" name="form1" method="post" action="#springUrl('/mngr/applayRefund.htm')"    onsubmit="return isOnSubmit();">
+<input type="hidden"   name="id"  value="${id}"/>
+<div style="margin-bottom:10px;">您确定申请退货吗？</div>
+
+<div style="margin-bottom:10px;">申请服务：
+<select name="refundType">
+<option selected value="1">仅退款不退货</option>
+<option  value="2">退款退货</option>
+</select>
+</div>
+
+<div style="margin-bottom:10px;">是否收到货：
+<input type="radio"   checked   name="isflag" value="0" /> 未收到货  <input type="radio" name="isflag" value="1" /> 已收到货
+</div>
+
+<div style="margin-bottom:10px;">退款原因：
+<select id="refundReson" name="refundReson">
+<option selected value="">请选择退款原因</option>
+<option  value="虚假发货">虚假发货</option>
+<option  value="快递问题">快递问题</option>
+<option  value="空包裹/少货">空包裹/少货</option>
+<option  value="未按约定时间发货">未按约定时间发货</option>
+<option  value="卖家发错货">卖家发错货</option>
+<option  value="多拍/拍错/不想要">多拍/拍错/不想要</option>
+<option  value="其他">其他</option>
+</select>
+</div>
+
+<div style="margin-bottom:10px;">退款金额：
+<input type="text"  name="refundAmount" value="${bill.amount}" /> 
+<input type="hidden"   name="refundNum" value="${bill.number}" /> 
+</div>
+
+<div class="cb"></div>
+<div class="bwmainleft">退款说明：</div>
+<div class="mainbody">
+<textarea name="refundDes"  class='comments' id="textarea" cols="30" rows="7" placeholder="退款说明"> </textarea>
+</div>
+<br>
+<div class="bwsubmit" style="margin-top:5px"><center><button type="submit">确认</button> &nbsp; <button type="button" onclick="javascript:parent.closefrme()">取消</button></center></div>
+</form>
+</body>
+</html>

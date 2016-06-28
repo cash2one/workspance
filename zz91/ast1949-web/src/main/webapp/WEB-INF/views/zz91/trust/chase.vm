@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.index</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/chase.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/tradelog.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/buylog.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+	<script type="text/javascript" src="#springUrl('/js/trust/FileUploadField.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/js/trust/UploadWin.js')" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		var svrHistoryGrid = new ast.ast1949.crm.open.Step1CompanySvrGrid({
+			//查看会员服务到期时间zhujq
+			title:"公司已开通的服务",
+			columnWidth:1,
+			height:150,
+			collapsible:true,
+			titleCollapse:true,
+		});
+		svrHistoryGrid.getColumnModel().setHidden(5,true);//隐藏5，6，7列
+		svrHistoryGrid.getColumnModel().setHidden(6,true);
+		svrHistoryGrid.getColumnModel().setHidden(7,true);
+		svrHistoryGrid.loadByCompany("$!{companyId}");
+		
+		var buyDetailForm= new ast.ast1949.trust.buy.detail.BuyDetailForm({
+			buyId:"$!{id}",
+			#if($!{companyId}==0)
+				noLoginPub:false,
+			#else
+				noLoginPub:true,
+			#end
+			region:"center",
+			layout:"fit",
+			height:100,
+		});
+		
+//		Ext.getCmp('useful').getEl().up('.x-form-item').setDisplayed(false);
+
+		var logGrid = new ast.ast1949.trust.LogGrid({
+			title:"小记情况",
+			buyId:$!{id},
+			companyId:$!{companyId},
+			id:"loggrid",
+			layout:"fit",
+			columnWidth:1,
+			height:400,
+			region:"center",
+			collapsible:true,
+			titleCollapse:true
+		});
+		
+		logGrid.loadLog("$!{id}");
+		var tradeGrid = new ast.ast1949.trust.buy.trade.BuyDetailForm({
+			buyId:$!{id},
+			title:"交易记录",
+			layout:"fit",
+			columnWidth:1,
+			height:300,
+			region:"center",
+			collapsible:true,
+			titleCollapse:true
+		});
+##		tradeGrid.loadTrustTrade("$!{trade.id}","$!{trade.buyId}","$!{trade.picAddress}","$!{trade.gmtTrade}","$!{trade.unit}","$!{trade.source}","$!{trade.contact}","$!{trade.quantity}","$!{trade.price}","$!{trade.companyName}","$!{trade.detail}","$!{trade.companyId}");
+		tradeGrid.loadTrustTrade("$!{id}");
+		var logForm = new ast.ast1949.trust.LogForm({
+			title:"新增小记",
+			id:"logform",
+			buyId:$!{id},
+			columnWidth:1,
+			height:240,
+			region:"center",
+			loggrid:"loggrid",
+			collapsible:true,
+			titleCollapse:true
+		});
+		
+		##logForm.initLogForm("$!{id}")
+		
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[{
+				region:"center",
+				layout:"column",
+				autoScroll:true,
+				items:[svrHistoryGrid,{
+					columnWidth:1,
+					layout:"border",
+					height:450,
+					collapsible:true,
+					titleCollapse:true,
+					items:[buyDetailForm]
+				},logGrid,logForm,tradeGrid]
+			}]
+
+		});
+		buyDetailForm.loadTrustBuy($!{id});
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

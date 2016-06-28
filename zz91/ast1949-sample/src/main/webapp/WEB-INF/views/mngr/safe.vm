@@ -1,0 +1,224 @@
+#set($layout="/layout/defaultSample.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/account.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/finace.css" />
+<script>
+	function undo()
+	{
+		alert("正在开发中......");
+	}
+</script>
+<body class="gbody1000">
+#parse("mngr/include/nav.vm")
+#parse("mngr/include/head.vm")
+#parse("mngr/include/lm.vm")
+<div class="gm1-5 gw-bcrumb">
+    <span><a href="#springUrl('/mngr/managerIndex.htm')">会员中心</a></span>
+            <strong>
+        <a href="#">安全中心</a>
+    </strong>
+</div>
+<div class="gMain clearfix">
+        
+<!--leftmenu  -->    
+<div class="gMenu">
+            <a href="#springUrl('/mngr/managerIndex.htm')" class="gHome">会员中心</a>
+            <div class="gMenuBox">
+                <div class="gMenuItem">
+                    <h3 class="helper">采购管理</h3>
+                    <ul>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')">全部订单</a> </li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=00">待付款订单</a> <font color=red>#if($!{bc_00})($!{bc_00})#end</font></li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=11">待确认收货</a> <font color=red>#if($!{bc_11})($!{bc_11})#end</font></li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{bc_13})($!{bc_13})#end</font></li>
+                    </ul>
+                </div>
+                <div class="gMenuItem">
+                    <h3 class="order">供应管理</h3>
+                    <ul>
+                    	<li><a href="#springUrl('/mngr/saleAll.htm')">全部订单</a> </li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=03">待发货订单</a> <font color=red>#if($!{sc_})($!{sc_03})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=06">提醒发货订单</a> <font color=red>#if($!{sc_})($!{sc_06})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=11">等待买家收货</a> <font color=red>#if($!{sc_})($!{sc_11})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=14">退货中订单</a> <font color=red>#if($!{sc_})($!{sc_14})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{sc_})($!{sc_13})#end</font></li>
+                    </ul>
+                </div>
+				
+                <div class="gMenuItem">
+                    <h3 class="order">积分管理</h3>
+                    <ul>
+                        <li class="">
+                            <a href="#springUrl('/score.htm')"  target="_blank">积分兑换</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreIncome.htm')">积分收入</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreConvert.htm')">积分支出</a>
+                        </li>
+                    </ul>
+                </div>
+								
+                <div class="gMenuItem">
+                    <h3 class="account">账户管理</h3>
+                    <ul>
+                        
+                        <li class="">
+                            <a href="#springUrl('/mngr/finance.htm')">财务概况</a>
+                            <!--收支明细  加  提现记录-->
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/record.htm')">收支记录</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/address.htm')?flag=B">收货地址</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/address.htm')?flag=S">发货地址</a>
+                        </li>
+                        <li class="current">
+                            <a href="#springUrl('/mngr/safe.htm')">安全中心</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="gift"><a href="http://myrc.zz91.com/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0" target="_blank">样品管理</a></h3>
+                  
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="msg">消息管理</h3>
+                    <ul>
+						<li class=""><a href="#springUrl('/mngr/msgset.htm')">消息提醒设置</a></li>	
+                        <li class=""><a href="http://myrc.zz91.com/mymessage/inbox.htm" target="_blank">询盘管理</a></li>	
+                        <li class=""> <a href="http://myrc.zz91.com/myfeedback/vip.htm" target="_blank">客服留言</a></li>
+                    </ul>
+                </div>
+            </div>
+</div>
+ <!--leftmenu  end --> 
+ 
+        <div class="gContainer">
+        <div class="gwTopic clearfix">
+			<h2>安全中心</h2>
+        </div>
+        <div class="safeLeTip clearfix">
+				<p>你好，$!{sessionUser.account} ，您的账户安全等级为：</p>
+				<div class="safeLevel ">
+				    #set($level=$safeLevel / 2)
+				    #if(${level} && ${level}==3)
+					<div class="lHigh"><div class="sLBox"></div><strong> 高 </strong></div>
+					#elseif(${level} && ${level}==2)
+					<div class="lMedium"><div class="sLBox"></div><strong> 中 </strong></div>
+					#else
+					<div class=""><div class="sLBox"></div><strong> 低 </strong></div>
+					#end
+				</div>
+        </div>
+        <div class="safeTBox">
+            <ul class="sAvailable">
+                <li class="sAvaiBox clearfix">
+                    <dl class="">
+                        <dt>登录密码</dt>
+                        <dd>
+                            <p>建议您定期更改密码以保护账户安全。</p>
+                            <span class="pass">已设置</span>
+                            <div class="sAvaiReset">
+                                <a href="http://myrc.zz91.com/changepassword.htm">修改</a>
+                            </div>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>交易密码</dt>
+                        <dd>
+                            <p>启用交易密码后，在订单完成提现时，需输入交易密码。</p>
+								<span class="pass ">#if(${account.payPasswd}  && $!{account.payPasswd} != "") 已设置  #else <span class="noPass">未设置</span> #end </span>
+                                <div class="sAvaiReset">
+									#if(${account.payPasswd}  && $!{account.payPasswd} != "")
+									<a href="javascript:jIframe('passwd.htm ', '交易密码','450','220');">修改</a>
+									#else
+									<a href="javascript:jIframe('passwd.htm ', '交易密码','450','220');" class="availBtn">设置密码</a>
+									#end
+								</div>
+						</dd>
+                    </dl>
+                </li>				
+				
+                <li>
+                    <dl>
+                        <dt>手机验证</dt>
+						<dd>
+							<p>验证后，第一时间接收样品订单最新信息。</p>
+							#if($au.mobile && $au.mobile !="")
+							<span class="pass">已验证</span>
+                            <div class="sAvaiReset"> 
+								<a href="#springUrl('/mngr/checkmobile.htm')" class="availBtn" >修改</a>
+							</div>
+							#else
+							<span class="noPass">未验证</span>
+                            <div class="sAvaiReset"> 
+								<a href="#springUrl('/mngr/checkmobile.htm')" class="availBtn" >立即验证</a>
+							</div>
+							#end
+						</dd>
+                    </dl>
+                </li>
+                <li class="sAvaiBox">
+                    <dl>
+                        <dt>邮箱验证</dt>
+                        <dd>
+                            <p>验证后，可用于快速找回登录密码及交易密码。</p>
+							#if($!{myaccount.email} && $!{myaccount.email} !="")
+							<span class="pass">已验证</span>
+							<div class="sAvaiReset"> 
+								<a href="#springUrl('/mngr/checkemail.htm')" class="availBtn" >修改</a>
+							</div>
+							#else
+							<span class="noPass">未验证</span>
+							<div class="sAvaiReset"> 
+								<a href="#springUrl('/mngr/checkemail.htm')" class="availBtn" >立即验证</a>
+							</div>
+							#end
+						</dd>
+                    </dl>
+                </li>
+
+                <li class="sAvaiBox">
+                    <dl>
+                        <dt>实名认证</dt>
+                        <dd>
+                            <p>验证后，可进行账户提现操作</p>
+							 #if($!{idnt} && $!{idnt.state}=='00') 
+								 <span class="pass">认证审核中</span>
+							#elseif($!{idnt} && $!{idnt.state}=='01')
+								 <span class="pass">已认证</span>
+							#elseif($!{idnt} && $!{idnt.state}=='02')
+								 <span class="pass">认证失败</span>
+							#else
+                                <span class="pass noPass">未认证</span>
+							#end
+							
+										
+                            <div class="sAvaiReset">
+							#if($!{idnt} && $!{idnt.state}=='00') 
+								
+							#elseif($!{idnt} && $!{idnt.state}=='01')
+                                <a href="#springUrl('/mngr/checkname.htm')" class="availBtn">修改</a>
+							#elseif($!{idnt} && $!{idnt.state}=='02')
+                                <a href="#springUrl('/mngr/checkname.htm')" class="availBtn">重新认证</a>
+							#else
+                                <a href="#springUrl('/mngr/checkname.htm')" class="availBtn">立即认证</a>
+							#end
+                            </div>
+                       </dd>
+					</dl>
+                </li>
+            </ul>
+			</div>
+</div>
+</div>
+#parse("mngr/include/bottom.vm")
+</body>

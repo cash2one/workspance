@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="compAccount">
+
+    <typeAlias alias="compAccount" type="com.zz91.ep.domain.comp.CompAccount" />
+    <typeAlias alias="resetPwd" type="com.zz91.ep.domain.comp.ResetPwd"/>
+    <sql id="fullColumn" >
+        ca.id, ca.cid, ca.account, ca.email, ca.password, ca.password_clear, ca.name, ca.sex, ca.mobile,ca.qq, ca.phone_country, 
+        ca.phone_area, ca.phone, ca.fax_country, ca.fax_area, ca.fax, ca.dept, ca.contact, ca.position, ca.login_count, ca.login_ip ,
+        ca.gmt_login, ca.gmt_register, ca.gmt_created, ca.gmt_modified
+    </sql>
+    
+    <resultMap class="compAccount" id="fullColumnResult">
+	    <result property="id" column="id" />
+	    <result property="cid" column="cid" />
+	    <result property="account" column="account" />
+	    <result property="email" column="email" />
+	    <result property="password" column="password" />
+	    <result property="passwordClear" column="password_clear" />
+	    <result property="name" column="name" />
+	    <result property="sex" column="sex" />
+	    <result property="mobile" column="mobile" />
+	    <result property="qq" column="qq"/>
+	    <result property="phoneCountry" column="phone_country" />
+	    <result property="phoneArea" column="phone_area" />
+	    <result property="phone" column="phone" />
+	    <result property="faxCountry" column="fax_country" />
+	    <result property="faxArea" column="fax_area" />
+	    <result property="fax" column="fax" />
+	    <result property="dept" column="dept" />
+	    <result property="contact" column="contact" />
+	    <result property="position" column="position" />
+	    <result property="loginCount" column="login_count" />
+	    <result property="loginIp" column="login_ip" />
+	    <result property="gmtLogin" column="gmt_login" />
+	    <result property="gmtRegister" column="gmt_register" />
+	    <result property="gmtCreated" column="gmt_created" />
+	    <result property="gmtModified" column="gmt_modified" />
+    </resultMap>
+    
+    <!-- 
+     <resultMap id="resetPwdResult" class="resetPwd" >
+	    <result property="id" column="id"/>
+	    <result property="account" column="account"/>
+	    <result property="uid" column="uid"/>
+	    <result property="email" column="email"/>
+	    <result property="authKey" column="auth_key"/>
+	    <result property="gmtCreated" column="gmt_created"/>
+	    <result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+     -->
+   
+    <sql id="loginInfoColumn">
+    	ca.id,ca.cid,ca.account,ca.email,ca.name
+    </sql>
+    <resultMap class="compAccount" id="loginInfoColumnResult">
+	    <result property="id" column="id" />
+	    <result property="cid" column="cid" />
+	    <result property="account" column="account" />
+	    <result property="email" column="email" />
+	    <result property="name" column="name" />
+    </resultMap>
+    <resultMap class="compAccount" id="phoneAndMobileResultMap">
+    	<result property="mobile" column="mobile" />
+	    <result property="phone" column="phone" />
+    </resultMap>
+    
+    <select id="getAccountIdByAccount" parameterClass="java.lang.String"
+        resultClass="java.lang.Integer">
+        select 
+            id   
+        from comp_account
+        where account = #account#
+    </select>
+    
+    <!-- 
+     <select id="getCompanyIdByAccountId" parameterClass="java.lang.Integer"
+        resultClass="java.lang.Integer">
+        select cid
+        from comp_account
+        where id = #id#
+    </select>
+     -->
+    
+     <select id="queryCompAccountByAccount" parameterClass="java.lang.String"
+        resultMap="loginInfoColumnResult">
+        select 
+        	<include refid="compAccount.loginInfoColumn"/>
+        from comp_account ca
+        where ca.account = #account#
+    </select>
+    
+    <!-- 
+     <select id="queryCountCompAcountByEmail" parameterClass="java.lang.String"
+        resultClass="java.lang.Integer">
+        select 
+            count(*)
+        from comp_account
+        where email = #email#
+    </select>
+    
+    <select id="queryCountCompAcountByAccount" parameterClass="java.lang.String"
+        resultClass="java.lang.Integer">
+        select 
+            count(*)
+        from comp_account
+        where account = #account#
+    </select>
+     -->
+    
+    <select id="queryCompAccountByMobile" parameterClass="java.lang.String"
+        resultClass="java.lang.Integer">
+        select 
+            count(0)
+        from comp_account
+        where mobile = #mobile#
+    </select>
+	<select id="queryCompAccountByEmail" parameterClass="java.lang.String"
+        resultMap="loginInfoColumnResult">
+        select 
+           <include refid="compAccount.loginInfoColumn"/>
+        from comp_account ca
+        where ca.email = #email#
+    </select>
+    <update id="updateCompAccount" parameterClass="compAccount">
+        update comp_account
+        set 
+        login_ip = #loginIp#,
+        login_count = login_count+1,
+        gmt_login=now(),
+        gmt_modified=now()
+        where id=#id#
+    </update>
+    <insert id="insertCompAccount" parameterClass="compAccount">
+    	insert into comp_account
+    	(
+    	cid,
+    	account,
+    	email,
+    	password,
+    	password_clear,
+    	name,
+    	mobile,
+    	phone_area,
+    	phone,
+    	phone_country,
+    	fax_country,
+    	fax_area,
+    	fax,
+    	gmt_login,
+    	gmt_register,
+    	gmt_created,
+    	gmt_modified,
+    	position
+    	) values (
+    	#cid#,
+    	#account#,
+    	#email#,
+    	#password#,
+    	#passwordClear#,
+    	#name#,
+    	#mobile#,
+    	#phoneArea#,
+    	#phone#,
+    	#phoneCountry#,
+    	#faxCountry#,
+    	#faxArea#,
+    	#fax#,
+    	#gmtLogin#,
+    	#gmtRegister#,
+    	now(),
+    	now(),
+    	#position#
+    	)
+    	
+    	<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+    </insert>
+    <!-- 通过cid查询公司账户信息 -->
+    <select id="queryCompAccountByCid" parameterClass="java.lang.Integer"
+        resultMap="fullColumnResult">
+        select 
+            <include refid="compAccount.fullColumn" />
+        from comp_account ca
+        where ca.cid = #cid#
+        limit 1
+    </select>
+
+    <update id="updateBaseCompAccount" parameterClass="compAccount">
+        update comp_account
+        set 
+        name = #name#,
+        sex = #sex#,
+        email = #email#,
+        mobile = #mobile#,
+        phone_country = #phoneCountry#,
+        phone_area = #phoneArea#,
+        phone = #phone#,
+        fax_country = #faxCountry#,
+        fax_area = #faxArea#,
+        fax = #fax#,
+        dept = #dept#,
+        contact = #contact#,
+        position = #position#,
+        gmt_modified = now()
+        where id=#id#
+    </update>
+    
+    <select id="countUser" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(*) from comp_account 
+    	where (account=#account# or email=#account#) and password=#password#
+    </select>
+    
+    <select id="queryAccountDetails" parameterClass="java.lang.String" resultMap="fullColumnResult">
+    	select 
+            <include refid="compAccount.fullColumn" />
+        from comp_account ca
+        where account=#value#
+        limit 1
+    </select>
+    
+    <select id="queryCidByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+    	select cid from comp_account where account=#value# limit 1
+    </select>
+    
+    <!-- 
+    <update id="updateAccountPwd" parameterClass="java.util.Map">
+        update comp_account
+        set password = #newPassword#
+        ,password_clear = #newPasswordClear#
+        where id = #uid#
+            and password = #password#
+    </update>
+    
+    <select id="queryAccountNameByCid" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    	select name from comp_account where cid=#cid# limit 1
+    </select>
+    
+    <select id="queryNameByUid"  parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    	select name from comp_account where id=#value# limit 1
+    </select>
+    
+    <select id="queryUidByCid"  parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    	select id from comp_account where cid=#value# limit 1
+    </select>
+    
+    <select id="queryWeekAddAccount" resultClass="java.lang.Integer">
+		select count(*) from comp_account
+		where WEEK(gmt_created) = WEEK(now())
+    </select>
+    
+    <select id="queryAllAddAccount" resultClass="java.lang.Integer">
+		select count(*) from comp_account
+    </select>
+    
+     <select id="queryAccountById" resultClass="java.lang.String" parameterClass="java.lang.Integer">
+		select account from comp_account where id=#value#
+    </select>
+    
+   	<insert id="generateResetPwdKey" parameterClass="resetPwd">
+  		insert into reset_pwd(uid,account,email,gmt_created,auth_key,gmt_modified)
+  		values(#uid#,#account#,#email#,now(),#authKey#,now());
+  		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+  	</insert>
+  	
+	<delete id="deleteResetPwdByKey" parameterClass="java.lang.String">
+		delete from reset_pwd
+		where auth_key=#value#
+	</delete>
+	
+	<select id="listResetPwdByKey" parameterClass="java.lang.String"  resultMap="resetPwdResult">
+  		select id,account,uid,email,auth_key,gmt_created,gmt_modified
+  		from reset_pwd
+  		where auth_key=#value#
+  		limit 1
+	</select>
+	
+	<update id="resetPassword" parameterClass="java.util.HashMap">
+		update comp_account 
+		set password=#password#,
+		password_clear=#passwordClear#,
+		gmt_modified=now()
+		where account=#account#
+	</update>
+	
+     -->
+    
+    <update id="updateAccount" parameterClass="compAccount">
+    	update comp_account
+        set
+        account= #account#,
+        password= #password#,
+        password_clear= #passwordClear#,
+        name = #name#,
+        sex = #sex#,
+        email = #email#,
+        mobile = #mobile#,
+        phone_country = #phoneCountry#,
+        phone_area = #phoneArea#,
+        phone = #phone#,
+        fax_country = #faxCountry#,
+        fax_area = #faxArea#,
+        fax = #fax#,
+        dept = #dept#,
+        contact = #contact#,
+        qq = #qq#,
+        position = #position#,
+        gmt_modified = now()
+        where id=#id#
+    </update>
+    
+    <select id="countUserByEmail" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+    	select count(0) from comp_account
+    	where email=#email#
+    </select>
+
+  	<update id="updateEmailByAccount" parameterClass="java.util.HashMap">
+  		update comp_account 
+  		set email=#email#,
+  		gmt_modified=now()
+  		where account=#account#
+  	</update>
+  	<update id="updateEmailToBlank" parameterClass="java.util.HashMap">
+  		update comp_account 
+  		set email=#tmpEmail#,
+  		gmt_modified=now()
+  		where email=#email#
+  	</update>
+  	<select id="countUserByEmailAndAccount"  parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+  	select count(0) from comp_account
+    	where email=#email# and account=#account#
+  	</select>
+
+	<select id="queryMobileAndPhoneByCid" parameterClass="java.lang.Integer" resultMap="phoneAndMobileResultMap">
+		select mobile,phone
+		from comp_account
+		where cid=#id#
+	</select>
+	   <select id="queryMaxId" resultClass="java.lang.Integer">
+       select max(id) from comp_account where 10000000 > id
+    </select>
+    <select id="queryLoginCountByCid" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+        select login_count from comp_account where cid=#value#
+    </select>
+    
+    <select id="queryPasswordClearByCid" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    	select password_clear 
+    	from comp_account
+    	where cid=#value#
+    </select>
+    
+    <resultMap class="compAccount" id="simplyAccountResultMap">
+	    <result property="id" column="id" />
+	    <result property="cid" column="cid" />
+	</resultMap>
+	
+    <select id="queryAccountByEmail" parameterClass="java.lang.String" resultMap="simplyAccountResultMap">
+    	select id,cid from comp_account where email=#value# limit 1
+    </select>
+</sqlMap>

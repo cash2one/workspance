@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyPrice">
+	<typeAlias alias="companyPriceDO"
+		type="com.ast.ast1949.domain.company.CompanyPriceDO" />
+	<typeAlias alias="companyPriceDTO"
+		type="com.ast.ast1949.dto.company.CompanyPriceDTO" />
+	<typeAlias alias="companyPriceWithSearchDTO"
+		type="com.ast.ast1949.dto.company.CompanyPriceSearchDTO" />
+
+	<resultMap class="companyPriceWithSearchDTO" id="companyPriceSearchDTOResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="title" column="title" />
+		<result property="price" column="price" />
+		<result property="categoryName" column="categoryName" />
+		<result property="areaCode" column="area_code" />
+		<result property="isChecked" column="is_checked" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="companyName" column="companyName" />
+		<result property="membershipCode" column="membershipCode" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="categoryCompanyPriceCode" column="category_company_price_code" />
+	</resultMap>
+
+	<resultMap class="companyPriceDO" id="companyPriceResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="productId" column="product_id" />
+		<result property="account" column="account" />
+		<result property="title" column="title" />
+		<result property="categoryCompanyPriceCode" column="category_company_price_code" />
+		<result property="price" column="price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="areaCode" column="area_code" />
+		<result property="details" column="details" />
+		<result property="isChecked" column="is_checked" />
+		<result property="postTime" column="post_time" />
+		<result property="checkTime" column="check_time" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="companyPriceDO" id="minCompanyPriceResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="title" column="title" />
+		<result property="productId" column="product_id" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="isChecked" column="is_checked" />
+		<result property="postTime" column="post_time" />
+		<result property="refreshTime" column="refresh_time" />
+	</resultMap>
+	<resultMap class="companyPriceDTO" id="minCompanyPriceDTO">
+		<result property="categoryName" column="categoryName" />
+		<result property="companyName" column="company_name" />
+		<result property="areaName" column="area_name" />
+		<result property="companyPriceDO" resultMap="companyPrice.minCompanyPriceResult" />
+	</resultMap>
+	<resultMap class="companyPriceDTO" id="companyPriceForAdmin">
+		<result property="companyName" column="companyName" />
+		<result property="categoryName" column="categoryName" />
+		<result property="areaName" column="areaName" />
+		<result property="companyPriceDO" resultMap="companyPrice.companyPriceResult" />
+	</resultMap>
+	<resultMap class="companyPriceDTO" id="mycompanyPriceDTOResult">
+		<result property="categoryName" column="categoryName" />
+		<result property="areaName" column="areaName" />
+		<result property="companyPriceDO" resultMap="companyPrice.companyPriceResult" />
+	</resultMap>
+
+	<resultMap class="companyPriceDTO" id="companyPriceDTOResultForFront">
+		<result property="companyName" column="companyName" />
+		<result property="categoryName" column="categoryName" />
+		<result property="areaName" column="areaName" />
+		<result property="companyPriceDO" resultMap="companyPrice.companyPriceResult" />
+	</resultMap>
+
+	<resultMap class="companyPriceDTO" id="companyPriceForRank">
+		<result property="companyId" column="companyId" />
+		<result property="companyName" column="companyName" />
+	</resultMap>
+	<select id="queryCompanyPriceById" parameterClass="int"
+		resultMap="companyPriceResult">
+		select id,
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		check_time,
+		expired_time,
+		gmt_created,
+		gmt_modified,
+		refresh_time
+		from
+		company_price
+		where id=#id#
+		<!--and is_checked='1' -->
+	</select>
+	<select id="queryCompanyPriceByCompanyId" parameterClass="java.util.Map"
+		resultMap="companyPriceResult">
+	<![CDATA[SELECT
+		cp.id,
+		cp.company_id,
+		cp.account,
+		cp.product_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.price_unit,
+		cp.min_price,
+		cp.max_price,
+		cp.area_code,
+		cp.details,
+		cp.is_checked,
+		cp.post_time,
+		cp.check_time,
+		cp.expired_time,
+		cp.refresh_time,
+		cp.gmt_created,
+		cp.gmt_modified
+		FROM company_price cp
+		where
+		cp.is_checked='1'
+		and cp.company_id=#companyId#
+		limit 0,10
+	]]>
+	</select>
+	<!-- myrc下查询报价 <select id="queryCompanyPriceByCondition" parameterClass="companyPriceDTO" 
+		resultMap="mycompanyPriceDTOResult"> SELECT cp.id, cp.company_id, cp.account, 
+		cp.product_id, cp.title, cp.category_company_price_code, cp.price, cp.price_unit, 
+		cp.min_price, cp.max_price, cp.area_code, cp.details, cp.is_checked, cp.post_time, 
+		cp.check_time, cp.expired_time, cp.refresh_time, cp.gmt_created, cp.gmt_modified, 
+		ccp.label AS categoryName, c.label as areaName FROM company_price cp left 
+		JOIN category_company_price ccp on ccp.code=cp.category_company_price_code 
+		left join category c on c.code=cp.area_code WHERE cp.company_id=#companyId# 
+		and cp.product_id=0 order by cp.id desc <dynamic prepend="limit"> #page.startIndex#,#page.pageSize# 
+		</dynamic> </select> -->
+
+	<!-- <select id="queryMyCompanyPriceRecordCount" parameterClass="companyPriceDTO" 
+		resultClass="int"> SELECT count(cp.id) FROM company_price cp left JOIN category_company_price 
+		ccp on ccp.code=cp.category_company_price_code left join category c on c.code=cp.area_code 
+		WHERE cp.company_id=#companyId# and cp.product_id=0 <dynamic prepend="limit"> 
+		#page.startIndex#,#page.pageSize# </dynamic> </select> -->
+
+	<!-- 未使用 -->
+	<select id="queryCompanyPricePagiationList" parameterClass="map"
+		resultMap="companyPriceDTOResultForFront">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.account,
+		cp.product_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.price_unit,
+		cp.min_price,
+		cp.max_price,
+		cp.area_code,
+		cp.details,
+		cp.is_checked,
+		cp.post_time,
+		cp.check_time,
+		cp.expired_time,
+		cp.refresh_time,
+		cp.gmt_created,
+		cp.gmt_modified,
+		ccp.label AS categoryName,
+		co.name as companyName,
+		c.label as areaName
+		FROM company_price cp
+		INNER JOIN company co ON
+		co.id=cp.company_id
+		left JOIN category_company_price ccp ON
+		ccp.code=cp.category_company_price_code
+		left JOIN category c ON
+		c.code=cp.area_code
+		where cp.is_checked='1'
+		<dynamic prepend="">
+			<isNotEmpty property="queryParam.keywords" prepend="and">
+				cp.title like concat('%',#queryParam.keywords#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="queryParam.areaCode" prepend="and">
+				cp.area_code like concat(#queryParam.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="queryParam.pricefrom" prepend="and">
+				<![CDATA[ cp.price >= #queryParam.pricefrom#]]>
+			</isNotEmpty>
+			<isNotEmpty property="queryParam.priceto" prepend="AND">
+				<![CDATA[ cp.price < #queryParam.priceto#]]>
+			</isNotEmpty>
+			<isNotEmpty property="queryParam.refreshTime" prepend="AND">
+				<![CDATA[ cp.refresh_time >= #queryParam.refreshTime#]]>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY cp.refresh_time desc
+		LIMIT #firstResult#,#maxResult#
+	</select>
+	<!-- 未使用 -->
+	<select id="queryCompanyPricePagiationListCount" parameterClass="companyPriceDTO"
+		resultClass="int">
+		SELECT count(1)
+		FROM company_price cp
+		where cp.is_checked='1'
+		<dynamic prepend="">
+			<isNotEmpty property="keywords" prepend="and">
+				cp.title like
+				concat('%',#keywords#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="areaCode" prepend="and">
+				cp.area_code like
+				concat(#areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="pricefrom" prepend="and">
+				<![CDATA[ cp.price >= #pricefrom#]]>
+			</isNotEmpty>
+			<isNotEmpty property="priceto" prepend="AND">
+				<![CDATA[ cp.price < #priceto#]]>
+			</isNotEmpty>
+			<isNotEmpty property="refreshTime" prepend="AND">
+				<![CDATA[ cp.price >= #refreshTime#]]>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<!-- 未使用 -->
+	<select id="queryCompanyPriceRecordCount" parameterClass="companyPriceDTO"
+		resultClass="int">
+		select count(*)
+		FROM company_price cp
+		inner JOIN company co
+		ON
+		co.id=cp.company_id
+		where cp.is_checked='1'
+		<dynamic prepend="">
+			<isNotEmpty property="province" prepend="and">
+				cp.area_code like
+				concat(#province#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.categoryCompanyPriceCode"
+				prepend="and">
+				cp.category_company_price_code like
+				concat(#companyPriceDO.categoryCompanyPriceCode#,'%')
+			</isNotEmpty>
+			<isNotNull property="zhFlag" prepend="and">
+				substring(cp.category_company_price_code,1,4) &lt;> '1000%'
+				and
+				substring(cp.category_company_price_code,1,4) &lt;> '1001%'
+			</isNotNull>
+			<isNotEmpty property="title" prepend="and">
+				cp.title like
+				concat('%',#title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.areaCode" prepend="and">
+				cp.area_code like concat(#companyPriceDO.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.refreshTime" prepend="and">
+			<![CDATA[#companyPriceDO.refreshTime#< cp.refresh_time]]>
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.refreshTime" prepend="and">
+			<![CDATA[cp.refresh_time<=now()]]>
+			</isNotEmpty>
+			<isNotEmpty property="pricefrom" prepend="AND">
+			<![CDATA[ cp.price >= #pricefrom#]]>
+			</isNotEmpty>
+			<isNotEmpty property="priceto" prepend="AND">
+			<![CDATA[ cp.price < #priceto#]]>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<!-- 企业报价列表查询 未使用 -->
+	<select id="queryCompanyPriceForFront" parameterClass="companyPriceDTO"
+		resultMap="companyPriceDTOResultForFront">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.account,
+		cp.product_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.price_unit,
+		cp.min_price,
+		cp.max_price,
+		cp.area_code,
+		cp.details,
+		cp.is_checked,
+		cp.post_time,
+		cp.check_time,
+		cp.expired_time,
+		cp.refresh_time,
+		cp.gmt_created,
+		cp.gmt_modified,
+		ccp.label AS categoryName,
+		co.name as companyName,
+		c.label as areaName
+		FROM company_price cp
+		inner JOIN company co ON
+		co.id=cp.company_id
+		left JOIN category_company_price ccp ON
+		ccp.code=cp.category_company_price_code
+		left JOIN category c ON
+		c.code=cp.area_code
+		where cp.is_checked='1'
+		<dynamic prepend="">
+			<isNotEmpty property="companyPriceDO.categoryCompanyPriceCode"
+				prepend="and">
+				cp.category_company_price_code like
+				concat(#companyPriceDO.categoryCompanyPriceCode#,'%')
+			</isNotEmpty>
+			<!-- 综合废料检索 -->
+			<isNotNull prepend="and" property="zhFlag">
+				substring(cp.category_company_price_code,1,4) &lt;> '1000'
+				and
+				substring(cp.category_company_price_code,1,4) &lt;> '1001'
+			</isNotNull>
+			<isNotEmpty property="title" prepend="and">
+				cp.title like
+				concat('%',#title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="province" prepend="and">
+				cp.area_code like
+				concat(#province#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.areaCode" prepend="and">
+				cp.area_code like concat(#companyPriceDO.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.refreshTime" prepend="and">
+			<![CDATA[#companyPriceDO.refreshTime#< cp.refresh_time]]>
+			</isNotEmpty>
+			<isNotEmpty property="companyPriceDO.refreshTime" prepend="and">
+			<![CDATA[cp.refresh_time<=now()]]>
+			</isNotEmpty>
+			<isNotEmpty property="pricefrom" prepend="AND">
+			<![CDATA[ cp.price >= #pricefrom#]]>
+			</isNotEmpty>
+			<isNotEmpty property="priceto" prepend="AND">
+			<![CDATA[ cp.price < #priceto#]]>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY cp.gmt_modified desc
+		<dynamic prepend="limit">
+			#page.startIndex#,#page.pageSize#
+		</dynamic>
+	</select>
+
+	<sql id="dynmicCompanyPriceSearch">
+		<dynamic prepend="">
+			<isNotEmpty property="dto.categoryCompanyPriceCode"
+				prepend="and">
+				cp.category_company_price_code like concat(#dto.categoryCompanyPriceCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.keywords" prepend="and">
+				cp.title like
+				concat('%',#dto.keywords#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.province" prepend="and">
+				cp.area_code like
+				concat(#dto.province#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.areaCode" prepend="and">
+				cp.area_code like concat(#dto.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.refreshTime" prepend="and">
+				<![CDATA[#dto.refreshTime#< cp.refresh_time]]>
+			</isNotEmpty>
+			<isNotEmpty property="dto.refreshTime" prepend="and">
+				<![CDATA[cp.refresh_time<=now()]]>
+			</isNotEmpty>
+			<isNotEmpty property="dto.pricefrom" prepend="and">
+				<![CDATA[ cp.price >= #dto.pricefrom#]]>
+			</isNotEmpty>
+			<isNotEmpty property="dto.priceto" prepend="and">
+				<![CDATA[ cp.price < #dto.priceto#]]>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryCompanyPriceSearchByFront" parameterClass="java.util.HashMap"
+		resultMap="companyPriceSearchDTOResult">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.min_price,
+		cp.max_price,
+		cp.price_unit,
+		cp.area_code,
+		cp.is_checked,
+		cp.refresh_time,
+		ccp.label AS categoryName,
+		co.name as
+		companyName,
+		co.membership_code as membershipCode
+		FROM company_price cp
+		inner JOIN company co ON co.id=cp.company_id
+		left JOIN
+		category_company_price ccp ON ccp.code=cp.category_company_price_code
+		where cp.is_checked='1'
+		<include refid="companyPrice.dynmicCompanyPriceSearch" />
+		ORDER BY cp.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanyPriceList" parameterClass="java.util.HashMap"
+		resultMap="companyPriceSearchDTOResult">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.min_price,
+		cp.max_price,
+		cp.price_unit,
+		cp.area_code,
+		cp.is_checked,
+		cp.refresh_time,
+		ccp.label AS
+		categoryName,
+		co.name as companyName,
+		co.membership_code as
+		membershipCode
+		FROM company_price cp
+		inner JOIN company co ON
+		co.id=cp.company_id
+		left JOIN category_company_price ccp ON
+		ccp.code=cp.category_company_price_code
+		where cp.is_checked='1'
+		and(cp.category_company_price_code like concat(1000,'%') or
+		cp.category_company_price_code like concat(1001,'%')
+		or cp.category_company_price_code like concat(1002,'%') or
+		cp.category_company_price_code like concat(1003,'%')
+		)
+		and
+		co.membership_code = '10051001'
+		ORDER BY cp.refresh_time desc
+		limit
+		#size#
+	</select>
+
+
+
+
+	<!--搜索出全部的当天的信息 -->
+	<select id="queryCompanyPriceDtoSearchByFront" parameterClass="java.util.HashMap"
+		resultMap="companyPriceSearchDTOResult">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.min_price,
+		cp.max_price,
+		cp.price_unit,
+		cp.area_code,
+		cp.is_checked,
+		cp.refresh_time,
+		ccp.label AS categoryName,
+		co.name as
+		companyName,
+		co.membership_code as membershipCode
+		FROM company_price cp
+		inner JOIN company co ON co.id=cp.company_id
+		left JOIN
+		category_company_price ccp ON ccp.code=cp.category_company_price_code
+		where cp.is_checked='1'
+		<include refid="companyPrice.dynmicCompanyPriceSearch" />
+		ORDER BY cp.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanypriceCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		FROM company_price cp
+		left JOIN category_company_price ccp ON
+		ccp.code=cp.category_company_price_code
+		where cp.is_checked='1'
+		<include refid="companyPrice.dynmicCompanyPriceSearch" />
+	</select>
+
+	<!-- 企业报价排名 -->
+	<select id="queryCompanyPriceByCompanyIdCount" parameterClass="java.lang.Integer"
+		resultMap="companyPriceForRank">
+		SELECT cp.company_id as companyId,
+		c.name as companyName
+		FROM company_price cp,company c
+		where is_checked='1' and
+		cp.company_id=c.id and c.is_block = '0'
+		GROUP BY company_id
+		ORDER BY
+		COUNT(company_id) DESC
+		limit #Size#
+	</select>
+	<select id="queryCompanyPriceByRefreshTime" parameterClass="java.util.Map"
+		resultMap="companyPriceResult">
+		SELECT id,
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		check_time,
+		expired_time,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+		FROM company_price
+		where
+		is_checked='1'
+		<isNotEmpty property="title" prepend="and">
+			title like
+			concat(#title#,'%')
+		</isNotEmpty>
+		ORDER BY
+		refresh_time desc
+		LIMIT 0,#size#
+
+	</select>
+	<insert id="insertCompanyPrice" parameterClass="companyPriceDO">
+		INSERT INTO company_price
+		(
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		expired_time,
+		gmt_created,
+		gmt_modified,
+		check_time,
+		refresh_time
+		)
+		VALUES
+		(
+		#companyId#,
+		#account#,
+		#productId#,
+		#title#,
+		#categoryCompanyPriceCode#,
+		#price#,
+		#priceUnit#,
+		#minPrice#,
+		#maxPrice#,
+		#areaCode#,
+		#details#,
+		#isChecked#,
+		now(),
+		#expiredTime#,
+		now(),
+		now(),
+		now(),
+		#refreshTime#
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<update id="updateCompanyPrice" parameterClass="companyPriceDO">
+		update
+		company_price set
+		title = #title# ,
+		category_company_price_code =
+		#categoryCompanyPriceCode#,
+		price = #price#,
+		price_unit = #priceUnit# ,
+		min_price = #minPrice# ,
+		max_price = #maxPrice# ,
+		area_code = #areaCode#
+		,
+		details = #details# ,
+		expired_time = #expiredTime# ,
+		is_checked=#isChecked#,
+		gmt_modified = now(),
+		refresh_time =
+		#refreshTime#
+		where id=#id:Integer#
+	</update>
+
+	<update id="updateCompanyPriceByAdmin" parameterClass="companyPriceDO">
+		update company_price set
+		title = #title# ,
+		price = #price#,
+		min_price =
+		#minPrice# ,
+		max_price = #maxPrice# ,
+		area_code = #areaCode# ,
+		details =
+		#details# ,
+		gmt_modified = now()
+		<isNotEmpty property="priceUnit" prepend=",">
+			price_unit =
+			#priceUnit#
+		</isNotEmpty>
+		<isNotEmpty property="categoryCompanyPriceCode" prepend=",">
+			category_company_price_code = #categoryCompanyPriceCode#
+		</isNotEmpty>
+		where id=#id:Integer#
+	</update>
+
+	<delete id="deleteCompanyPriceById" parameterClass="int">
+		delete from
+		company_price
+		where id=#id:Integer#
+	</delete>
+	<!-- 企业报价后台 -->
+	<select id="selectCompanyPriceById" parameterClass="java.lang.Integer"
+		resultMap="companyPriceForAdmin">
+		SELECT
+		cp.id,
+		cp.company_id,
+		cp.account,
+		c.name as companyName,
+		c1.label AS categoryName,
+		c2.label AS areaName,
+		cp.product_id,
+		cp.title,
+		cp.category_company_price_code,
+		cp.price,
+		cp.price_unit,
+		cp.min_price,
+		cp.max_price,
+		cp.area_code,
+		cp.details,
+		cp.is_checked,
+		cp.post_time,
+		cp.check_time,
+		cp.expired_time,
+		cp.refresh_time,
+		cp.gmt_created,
+		cp.gmt_modified
+		FROM
+		company_price cp
+		left JOIN company c
+		ON
+		cp.company_id=c.id
+		LEFT JOIN category_company_price c1 ON
+		cp.category_company_price_code=c1.code
+		LEFT JOIN category c2 ON
+		cp.area_code=c2.code
+		where cp.id=#id#
+	</select>
+
+	<update id="updateCompanyPriceCheckStatus" parameterClass="java.util.Map">
+		update company_price
+		set is_checked=#isChecked#,
+		check_time=now()
+		where
+		id=#id#	</update>
+
+	<update id="refreshCompanyPriceByProductId" parameterClass="java.lang.Integer">
+		update company_price
+		set
+		gmt_modified = now(),
+		refresh_time = now()
+		where product_id = #value# and product_id
+		&lt;&gt; 0
+	</update>
+
+	<update id="updateCompanyPriceCheckStatusByProductId"
+		parameterClass="java.util.Map">
+		update company_price
+		set is_checked=#isChecked#,
+		check_time=now() ,
+		gmt_modified = now()
+		where product_id = #productId#
+		and product_id &lt;&gt; 0
+	</update>
+
+	<insert id="insertCompanyPriceByAdmin" parameterClass="companyPriceDO">
+		insert company_price(company_id,account,product_id,title,
+		category_company_price_code,price,price_unit,min_price,
+		max_price,area_code,details,is_checked,post_time,
+		check_time,expired_time,gmt_created,gmt_modified,refresh_time)
+		values(#companyId#,#account#,#productId#,#title#,
+		#categoryCompanyPriceCode#,#price#,#priceUnit#,#minPrice#,
+		#maxPrice#,#areaCode#,#details#,#isChecked#,now(),
+		now(),'9999-12-31 23:59:59',now(),now(),now())
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<select id="queryCompanyPriceByProductId" parameterClass="java.util.Map"
+		resultMap="companyPriceResult">
+		select id,
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		check_time,
+		expired_time,
+		gmt_created,
+		gmt_modified,
+		refresh_time
+		from
+		company_price
+		where
+		product_id=#productId# and category_company_price_code=#code#
+		and
+		is_checked='1'
+		limit 1
+	</select>
+	<typeAlias alias="companyPriceDtoForMyrc"
+		type="com.ast.ast1949.dto.company.CompanyPriceDtoForMyrc" />
+
+	<select id="queryCompanyPriceListByCompanyId" parameterClass="map"
+		resultClass="companyPriceDtoForMyrc">
+		SELECT
+		cp.id,
+		cp.company_id as companyId,
+		cp.category_company_price_code as companyPriceCategoryCode,
+		ccp.label as companyPriceCategory,
+		cp.title,
+		cp.price,
+		cp.min_price as minPrice,
+		cp.max_price as maxPrice,
+		cp.price_unit as priceUnit,
+		cp.is_checked as isChecked,
+		cp.area_code as areaCode,
+		cp.expired_time as expiredTime,
+		to_days(cp.expired_time)- to_days(cp.refresh_time) as validTime
+		FROM company_price cp
+		LEFT JOIN category_company_price ccp on
+		cp.category_company_price_code=ccp.code
+		WHERE
+		cp.company_id=#queryParam.companyId#
+		ORDER BY cp.id desc
+		LIMIT
+		#firstResult#,#maxResult#
+	</select>
+
+	<select id="queryCompanyPriceListByCompanyIdCount"
+		parameterClass="companyPriceDtoForMyrc" resultClass="int">
+		SELECT count(1)
+		FROM company_price
+		WHERE company_id=#companyId#
+	</select>
+
+	<select id="queryCompanyPriceForAdmin" parameterClass="java.util.HashMap"
+		resultMap="minCompanyPriceResult">
+		select
+		cp.id,
+		cp.company_id,
+		cp.product_id,
+		cp.account,
+		cp.title,
+		cp.min_price,
+		cp.max_price,
+		cp.price_unit,
+		cp.is_checked,
+		cp.post_time,
+		cp.refresh_time
+		from company_price cp
+		<dynamic prepend="where">
+			<isNotEmpty property="title" prepend="and">
+				cp.title like
+				concat(#title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="isChecked" prepend="and">
+				cp.is_checked=#isChecked#
+			</isNotEmpty>
+			<isNotEmpty property="categoryCode" prepend="and">
+				cp.category_company_price_code like concat(#categoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="isVip" prepend="and">
+				<isEqual compareValue="1" property="isVip">
+					exists(select id
+					from company where id = cp.company_id and membership_code &lt;&gt;
+					'10051000' and membership_code &lt;&gt; '10051003')
+				</isEqual>
+				<isEqual compareValue="2" property="isVip">
+					exists( select id from
+					company where id = cp.company_id and membership_code = '10051000' )
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="searchDto.timeType" prepend="and">
+				cp.$searchDto.timeType$ >= #searchDto.from#
+				and #searchDto.to# > cp.$searchDto.timeType$
+			</isNotEmpty>
+		</dynamic>
+		order by cp.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanyPriceCountForAdmin" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from company_price cp
+		<dynamic prepend="where">
+			<isNotEmpty property="title" prepend="and">
+				cp.title like
+				concat(#title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="isChecked" prepend="and">
+				cp.is_checked=#isChecked#
+			</isNotEmpty>
+			<isNotEmpty property="categoryCode" prepend="and">
+				cp.category_company_price_code like concat(#categoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="isVip" prepend="and">
+				<isEqual compareValue="1" property="isVip">
+					exists(select id
+					from company where id = cp.company_id and membership_code &lt;&gt;
+					'10051000' and membership_code &lt;&gt; '10051003')
+				</isEqual>
+				<isEqual compareValue="2" property="isVip">
+					exists( select id from
+					company where id = cp.company_id and membership_code = '10051000' )
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="searchDto.timeType" prepend="and">
+				cp.$searchDto.timeType$ >= #searchDto.from#
+				and #searchDto.to# > cp.$searchDto.timeType$
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<update id="updateCategoryCode" parameterClass="java.util.HashMap">
+		update
+		company_price set
+		category_company_price_code = #categoryCode#,
+		gmt_modified=now()
+		where id = #id#
+	</update>
+
+	<select id="queryNewestVipCompPrice" parameterClass="java.util.Map"
+		resultMap="minCompanyPriceResult">
+		select
+		cp.id,company_id,title,product_id,min_price,max_price,price_unit,is_checked,refresh_time,post_time
+		from company_price cp
+		left join company c on c.id = cp.company_id
+		where
+		c.membership_code &lt;&gt; '10051000'
+		and cp.is_checked = 1
+		<isNotNull prepend="and" property="code">
+			cp.category_company_price_code like concat(#code#,'%')
+		</isNotNull>
+		order by refresh_time desc
+		limit #size#
+	</select>
+	<select id="companyPrice" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select distinct company_id
+		from company_price
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="companyPriceCount" resultClass="java.lang.Integer">
+		select
+		count(distinct company_id)
+		from company_price
+	</select>
+	<!--针对塑料原料的企业报价搜索 -->
+	<select id="queryCompanyPriceByCondition" parameterClass="java.util.Map"
+		resultMap="companyPriceResult">
+		SELECT id,
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		check_time,
+		expired_time,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+		FROM company_price y1
+		where
+		is_checked='1' and now() &lt; expired_time and price is not null
+		order by id desc
+		limit #size#
+	</select>
+	
+	<select id="queryByCode" parameterClass="java.util.Map" resultMap="companyPriceResult">
+		SELECT id,
+		company_id,
+		account,
+		product_id,
+		title,
+		category_company_price_code,
+		price,
+		price_unit,
+		min_price,
+		max_price,
+		area_code,
+		details,
+		is_checked,
+		post_time,
+		check_time,
+		expired_time,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+		FROM company_price y1
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="code">
+				category_company_price_code like #code#
+			</isNotEmpty>
+		</dynamic>
+		order by refresh_time desc limit 0,#size#
+	</select>
+</sqlMap>

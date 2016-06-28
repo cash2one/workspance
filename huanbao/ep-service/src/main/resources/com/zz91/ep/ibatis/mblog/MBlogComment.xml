@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogComment">
+	<typeAlias alias="mblogComment" type="com.zz91.ep.domain.mblog.MBlogComment" />	
+	<typeAlias alias="mblogCommentDto" type="com.zz91.ep.dto.mblog.MBlogCommentDto" />
+	
+    <resultMap class="mblogComment" id="mblogCommentMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="mblogId" column="mblog_id"/>
+    	<result property="targetType" column="target_type"/>
+    	<result property="targetId" column="target_id"/>
+    	<result property="content" column="content"/>
+    	<result property="isDelete" column="is_delete"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <resultMap class="mblogCommentDto" id="mblogCommentDtoMap">
+    	<result property="comment" resultMap="mblogComment.mblogCommentMap"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	mblog_id,
+    	target_id,
+    	target_type,
+    	content,
+    	is_delete,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+    <update id="updateIsDeleteStstus" parameterClass="java.util.Map">
+    	update mblog_comment 
+    	set
+    	is_delete = #isDelete#,
+    	gmt_modified = now()
+    	where id = #id#
+    </update>
+    
+    <select id="queryCommentBymblogId" parameterClass="java.util.Map" resultMap="mblogCommentDtoMap">
+    	select
+    	<include refid="defaultColumn"/> 
+        from mblog_comment
+    	where mblog_id=#mblogId#
+    	and is_delete = 0
+    	order by gmt_created desc
+    	<include refid="common.pageLimit"/>
+    </select>
+    
+     <select id="queryCommentCountBymblogId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    	select
+    	count(0) 
+        from mblog_comment
+    	where mblog_id=#mblogId#
+    	and is_delete = 0
+    </select>
+    
+    <insert id="insert" parameterClass="mblogComment">
+		insert into mblog_comment
+		(
+		info_id,
+		mblog_id,
+		target_id,
+		target_type,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#infoId#,
+		#mblogId#,
+		#targetId#,
+		#targetType#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryMblogCommentBymblogId" parameterClass="java.util.Map" resultMap="mblogCommentDtoMap">
+    	select
+    	<include refid="defaultColumn"/> 
+        from mblog_comment 
+    	where mblog_id=#mblogId#
+    	and is_delete = 0
+    	order by gmt_created desc
+    </select>
+    
+    <select id="queryOneCommentById" parameterClass="java.util.Map" resultMap="mblogCommentMap">
+       select
+    	<include refid="defaultColumn"/> 
+        from mblog_comment
+    	where id=#id#
+    	and is_delete = 0
+    	limit 1
+    </select>
+</sqlMap>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>ZZ91再生网</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css">
+		<script type="text/javascript" charset="utf-8" src="../../js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/zepto.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl/common.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl/DBapi.js"></script>
+		<link href="../../media/trust/css/caigou.m.css" rel="stylesheet" type="text/css" />
+		<script>
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				company_id = self.company_id;
+				loadcompanyid(company_id);
+			});
+
+			function readydo() {
+				$(".tip-layer-error").css("display", "none")
+			}
+
+			function supplyPubsmt(frm) {
+				if (frm.title.value==""){
+					alert("请输入产品！");
+					frm.title.focus();
+					return false;
+				}
+				if (frm.detail.value==""){
+					alert("请输入求购详情！");
+					frm.detail.focus();
+					return false;
+				}
+				var nWaiting;
+				if (window.plus) {
+					nWaiting = plus.nativeUI.showWaiting("数据加载中，请稍候......");
+				}
+				var arg = getFormQueryString(frm);
+				mui.ajax(zzweburl + "/trust/supplyPubok.html", {
+					data: arg,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					success: function(data) {
+						var ret = data;
+						if (ret.error_code == 0) {
+							if (nWaiting) {
+								nWaiting.close();
+							}
+							openwindow("supplyPubok.html",defaultqueryString);
+							//closewindow();
+						} else {
+							mui.toast('网络错误,请检查网络是否正常！');
+							return false;
+						}
+						if (nWaiting) {
+							nWaiting.close();
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						mui.toast('网络错误,请检查网络是否正常！');
+						if (nWaiting) {
+							nWaiting.close();
+						}
+					}
+				});
+				return false;
+			}
+		</script>
+	</head>
+
+	<body onclick="readydo()">
+		<header class="mui-bar mui-bar-nav" id="apptop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="closewindow()"></a>
+			<a id="rightbutton" class="mui-icon mui-icon-close mui-pull-right" onclick="closewindow()"></a>
+			<h1 class="mui-title" id="apptopname">发布采购信息</h1>
+		</header>
+		<div class="supply mui-content" style="background: #ededed;">
+			<div class="supply-publish" id="form_pub_01">
+				<form action="supplyPubok.html" method="get" onsubmit="return supplyPubsmt(this)">
+					<div class="mc">
+						<div class="block">
+							<ul class="form_lst">
+								<li class="form_lstw">
+									<span class="tit">产&nbsp;&nbsp;&nbsp;品：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="title" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入产品" />
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">采购量：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="quantity" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入采购量"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">价&nbsp;&nbsp;&nbsp;格：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="price" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入价格"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">颜&nbsp;&nbsp;&nbsp;色：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="color" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入产品颜色"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">用&nbsp;&nbsp;&nbsp;途：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="useful" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入产品用途"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">级&nbsp;&nbsp;&nbsp;别：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text" name="level" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入产品级别"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<span class="tit">所在地：</span>
+									<span>
+                                	<span class="form_input common-input">
+                                		<input type="text"  name="area_code" class="htl-input common-input" notblank="notBlank" autocomplete="off" placeholder="请输入所在地"/>
+                                	</span>
+									</span>
+								</li>
+								<li class="form_lstw">
+									<p class="tit" style="margin-bottom: 10px;">求购详情：</p>
+									<p>
+										<textarea class="common-textarea" rows="4" name="detail" placeholder="请输入求购详情"></textarea>
+									</p>
+									<p class="mt15">注：目前免费委托采购只限<font class="red bold">塑料再生颗粒</font></p>
+									<p class="step"><em>1</em>采购清单&nbsp;&nbsp;>&nbsp;&nbsp;<em>2</em>买家报价&nbsp;&nbsp;>&nbsp;&nbsp;<em>3</em>下单成交</p>
+								</li>
+							</ul>
+							<div style="width: 100%;">
+								<input type="submit" class="sub_btn" id="" style="width: 100%;font-size: 16px;" name="" value="点此免费发布" />
+							</div>
+							<br />
+							<br />
+							<br />
+							<br />
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+		<div class="tip-layer tip-layer-error" style="width: 300px; margin-left: -150px;display: none;">{{errtext}}</div>
+	</body>
+
+</html>

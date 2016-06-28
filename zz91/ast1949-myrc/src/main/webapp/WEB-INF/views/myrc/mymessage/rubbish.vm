@@ -1,0 +1,205 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1103","20","10")
+<div class="myrcNormalFrame">
+	<!--begin-->
+	<div class="commTip" >
+		<span class="commTipRight">
+			<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=226" class="commHowDo">如何管理已收到的留言</a>
+			<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=227" class="commHowDo">如何回复已收到的留言</a>
+		</span>
+	<div style="clear:both"></div>
+	</div>
+	<form action="#" method="post" id="sForm" name="sForm">
+		<div class="listApplicationBtn">
+			<span class="listApplicationBtnLeft">
+				<input type="checkbox" id="checkAllToggle1" name="checkAllToggle1"/>
+				<input type="hidden" value="0" id="waste" name="waste"/>
+				<input type="button" value="全选" onclick="buttonCheckedAll()" class="buttonMinGray" name="Submit"/> 
+				<input type="button" onclick="deleteInquiryInfos()" value="永久删除" class="buttonMinGray" name="Submit4"/>
+				<input type="button" onclick="setInquiryToUnRubbish()" value="转为收到留言" class="buttonMinGray" name="Submit42"/>
+			</span>
+			<span class="listApplicationBtnRight">
+				<a href="#springUrl('/mymessage/rubbish.htm?isViewed=0')" class="commNoRead">未读</a> 
+				<a href="#springUrl('/mymessage/rubbish.htm?isViewed=1')" class="commRead">已读</a> 
+			</span>
+			<div style="clear:both"></div>
+		</div>
+		<div class="commList">
+			<div class="commListTit">
+				<span class="feedbackSelect">&nbsp;</span>
+				<span class="feedbackBody">发件人</span>
+				<span class="feedbackCont">内容</span>
+				<span class="feedbackTime">时间</span>
+				<span class="feedbackInfo">询盘目标信息</span>
+                <div style="clear:both"></div>
+            </div>
+			<ul>
+				#foreach($inquiry in ${page.records})
+					<!--tr bgcolor="#if(($!{velocityCount}%2)==1) #f9f9f9 #else #ffffff #end"-->
+						<li>
+							<span class="feedbackSelect">
+								<input type="checkbox" id="id$!{inquiry.inquiry.id}" name="cbb" value="$!{inquiry.inquiry.id}" onclick="return highlight(this, '$!{inquiry.inquiry.id}')" class="radioPositionFix"/>
+							</span>
+							<span class="feedbackBody">
+							#if($!{inquiry.inquiry.isViewed}=="0")
+								<img src="$!{address.images}/global/icon/mail2.gif" align="absmiddle"/>
+							#else
+								<img src="$!{address.images}/global/icon/mailopen2.gif" align="absmiddle"/>
+							#end
+							<a target="_blank" href="$!{address.server}/company/compinfo.htm?account=$!{inquiry.inquiry.senderAccount}">
+								#if($!{inquiry.senderContact}!="")
+									$!{inquiry.senderContact}
+								#else
+									$!{inquiry.inquiry.senderAccount}
+								#end
+							</a>
+							</span>
+							<span class="feedbackCont">
+    							<a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}"><b >$!{inquiry.inquiry.title}</b></a>
+    							
+    							<span class="gray">$!{inquiry.inquiry.content}</span>
+    						</span>
+    						<span class="feedbackTime">
+    							$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})
+    						</span>
+    						<span class="feedbackInfo">	
+    							#if($!{inquiry.inquiry.beInquiredType}=="0")
+    								<a href="$!{address.server}/trade/productdetails$!{inquiry.inquiry.beInquiredId}.htm" target="_blank">查看被询盘的供求</a>
+    							#elseif($!{inquiry.inquiry.beInquiredType}=="1")
+    								通过公司详细页面询盘
+    							#end
+                            </span>
+						</li>
+				#end
+				<div style="clear:both"></div>
+            </ul>
+            <div style="clear:both"></div>
+        </div>
+		<div class="listApplicationBtn">
+			<input type="checkbox" id="checkAllToggle2" name="checkAllToggle2" />
+			<input type="button" value="全选" onclick="buttonCheckedAll()" class="buttonMinGray" name="Submit"/> 
+			<input type="button" onclick="deleteInquiryInfos()" value="永久删除" class="buttonMinGray" name="Submit4"/>
+			<input type="button" onclick="setInquiryToUnRubbish()" value="转为收到留言" class="buttonMinGray" name="Submit42"/>														
+		</div>
+		<div style="clear:both"></div>
+		<div class="pageNav">
+			#myrcPageNav($!{page} "#springUrl('/mymessage/rubbish.htm')" "&isViewed=$!{isViewed}" "")
+		</div>
+	</form>
+</div>
+	<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#checkAllToggle1").attr("checked",false);
+	    jQuery("#checkAllToggle2").attr("checked",false);
+		//toggle checked all
+    	jQuery("#checkAllToggle1").click(function(){
+    		var chk=jQuery(this).attr("checked");
+			jQuery("#checkAllToggle2").attr("checked",chk);
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+		jQuery("#checkAllToggle2").click(function(){
+    		var chk=jQuery(this).attr("checked");
+			jQuery("#checkAllToggle1").attr("checked",chk);
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+	});
+	
+	//点击全选按钮
+	function buttonCheckedAll(){
+		//alert ("点击全选按钮");
+		jQuery("#checkAllToggle1").attr("checked",true);
+	    jQuery("#checkAllToggle2").attr("checked",true);
+		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=true;
+    	});
+	}
+	
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name=cbb]"),function(index,obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+	
+	//删除信息
+	function deleteInquiryInfos(){
+		var inquiryIds=getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length==0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中"+inquiryIds.length+"条留言,确实要删除这些信息?")){
+			jQuery.ajax({
+				url:"#springUrl('/mymessage/removeReceiveInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+	
+	//设置为垃圾询盘
+	function setInquiryToUnRubbish(){
+		var inquiryIds=getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length==0){
+			alert ("请选择需要恢复的留言！")
+			return false;
+		}
+		if (confirm("确定要将所选垃圾留言恢复到收件箱?")){
+    		jQuery.ajax({
+    			url:Context.ROOT+"/myrc/mymessage/spamInquiry.htm",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{isRubbish:"0",ids:inquiryIds.join(',')},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				alert('设置失败！');
+    			}
+    		});
+		}
+	}
+	
+	function onselectpdt(pdtid){
+        var obj=document.getElementById("id"+pdtid)
+        var objtr=document.getElementById(pdtid)
+        if (obj.checked==true){
+            obj.checked=false
+            objtr.style.background = "#ffffff";
+		}else{
+            obj.checked=true
+            objtr.style.background = "#D1FAB4";
+    	}
+    }
+
+jQuery(document).ready(function(){
+	new turnLiBgcolor(".feedbackList","#EFF6EF","#FFF")
+	});
+</script> 

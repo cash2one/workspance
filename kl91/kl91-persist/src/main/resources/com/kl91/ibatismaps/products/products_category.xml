@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsCategory">
+	<typeAlias alias="productsCategory" type="com.kl91.domain.products.ProductsCategory" />
+	
+	<resultMap  class="productsCategory" id="categoryProductsResult">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="orderby" column="orderby" />
+		<result property="tags" column="tags" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<select id="queryMaxCodeBypreCode" parameterClass="String"
+		resultClass="String">
+		select
+		max(code)
+		from
+		products_category
+		where code like
+		concat(#preCode#,'____')
+	</select>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from products_category where id=#value#
+	</delete>
+	
+	<insert id="insert" parameterClass="productsCategory">
+		insert into products_category(
+			code,name,orderby,tags,gmt_created,gmt_modified)
+			values(#code#,#name#,#orderby#,#tags#,#gmtCreated#,#gmtModified#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByCode" parameterClass="java.lang.String" resultMap="categoryProductsResult">
+		select
+			id,name,code,orderby,tags,gmt_created,gmt_modified
+		from
+		products_category
+		where code like concat(#code#,'____')
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="categoryProductsResult">
+		select 
+			id,name,code,orderby,tags,gmt_created,gmt_modified
+		from products_category
+			where id=#value#
+	</select>
+	
+	<update id="update" parameterClass="productsCategory">
+		update products_category
+			set
+				code=#code#,
+				name=#name#,
+				orderby=#orderby#,
+				tags=#tags#,
+				gmt_modified=now(),
+				gmt_created=now()
+			where id=#id#
+ 	</update>
+ 	
+ 	<select id="queryAllCategoryProducts"  resultMap="categoryProductsResult">
+		select
+			id,name,code,orderby,tags,gmt_created,gmt_modified
+		from
+		products_category
+		where is_del=0
+		order by sort
+	</select>
+</sqlMap>

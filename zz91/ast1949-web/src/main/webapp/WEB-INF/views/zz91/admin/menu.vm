@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>menu</title>
+<link rel="stylesheet" type="text/css" href="$!{address.css}/admin/style.css" />
+<link rel="stylesheet" type="text/css" href="$!{address.js}/yui/fonts/fonts-min.css" />
+<link rel="stylesheet" type="text/css" href="$!{address.js}/yui/treeview/assets/skins/sam/treeview.css" />
+<script type="text/javascript" src="$!{address.js}/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="$!{address.js}/yui/treeview/treeview-min.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.js}/yui/treeview/assets/css/folders/tree.css">
+<style>
+body {
+	margin:0;
+	padding:0;
+	background-color: #fff;
+}
+#expandcontractdiv {border:1px dotted #dedede; background-color:#EBE4F2; margin:0 0 .1em 0; padding:1px;}
+#treeDiv1 { background: #fff; padding:2px; margin-top:2px; }
+</style>
+</head>
+<body class="yui-skin-sam">
+<div id="treeDiv1"></div>
+
+<script type="text/javascript">
+(function() {
+	var tree;
+	function treeInit() {
+		buildRandomTextNodeTree();
+	}
+	function buildRandomTextNodeTree() {
+	#foreach ($menu in $topMenus)
+		tree = new YAHOO.widget.TreeView("treeDiv1");
+		var tmpNode = new YAHOO.widget.TextNode({label: "${menu.label}",code:"${menu.code}"}, tree.getRoot(), false);
+		buildRandomTextBranch(tmpNode);
+		tree.draw();
+	#end
+	}
+	function buildRandomTextBranch(node) {
+		var menuCode=node.data.code;
+		#foreach ($menu in $subMenus)
+    		if("${menu.code}".indexOf(menuCode)==0&&"${menu.code}".length==menuCode.length+2){
+    			var tmpNode = new YAHOO.widget.TextNode({label: "${menu.label}",code:"${menu.code}",expanded: false, href: "${menu.link}", target: "main"},node);
+				buildRandomTextBranch(tmpNode);
+    		}
+		#end
+	}
+	YAHOO.util.Event.onDOMReady(treeInit);
+	
+})();
+</script>
+
+</body>
+</html>

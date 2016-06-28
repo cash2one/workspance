@@ -1,0 +1,113 @@
+ <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img,i');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+  #parse("/common/return.vm") 
+                <div class="orderright fl">
+                    <div class="odr-h">等待卖家确认收货</div>
+                    <div class="odr-tellus">
+                        <p>如果卖家<span class="close-time anred">
+								<span id="times_day"></span>&nbsp;天 
+								<span id="times_hour"></span>&nbsp;时  
+								<span id="times_minute"></span>&nbsp;分    
+								<span id="second"></span>&nbsp;秒   
+							</span>内未处理，系统将自动同意退款</p>
+                    </div>
+                    <div class="remove-form">您还可以：<a class="rm-a j_rma" href="#springUrl('/logistics/logistics.htm')?logisticsCode=$!{orderReturn.logisticsNo}&type=2">查看物流</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="estopDiv j_close"></div>
+        <div class="pop-main">
+            <div class="pop-page-buy clearfix">
+                <div class="pop-top clearfix">
+                    <div class="pop-tltle fl">
+                        <i class="icon-jg iconfont">&#xe60d;</i>
+                        <span>您确定要取消该订单吗？取消订单后，不能恢复。</span>
+                    </div>
+                    <a class="fr close-pay j_close" href="javascript:vide(0)">x</a>
+                </div>
+                <div class="reason-rm">
+                    请选择取消订单的理由：
+                    <select class="reason-set"><option>请选择取消理由</option></select>
+                </div>
+                <span class="rm-btn">确 定</span>
+            </div>
+        </div>
+    <script type="text/javascript">
+		$(document).ready(function(){
+            var obj = document.getElementById("ull");
+            var lis = obj.getElementsByTagName("li");
+            for(var i = lis.length-1; i > -1; i--){
+                obj.appendChild(lis[i]);
+            }
+	})
+	
+     $(".j_ndata li:last").addClass("this-data")
+     $(".j_seller").bind("hover",function(){
+        $(this).toggleClass("seller-tt2");
+        $(".hide-div").stop().slideToggle();
+     })
+	 
+	 
+	 	function getNextDay(d,day){
+        d = new Date(d);
+        d = +d + 1000*60*60*24*day;
+        d = new Date(d);
+        //return d;
+        //格式化
+        return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate() +" "+ d.getHours() + ":" + d.getMinutes() +":" +d.getSeconds();
+         
+    }
+	//根据天，时，分，秒的ID找到相对应的元素
+	var time_day = document.getElementById("times_day");
+	var time_hour = document.getElementById("times_hour");
+	var time_minute = document.getElementById("times_minute");
+	var time_second = document.getElementById("second");
+	var time_end =new Date(getNextDay("$!out.get("logistics").get(0).get(0)",10));  // 设定活动结束结束时间
+	time_end = time_end.getTime();
+	count_down();
+	function count_down(){ 
+		 var time_now = new Date();  // 获取当前时间
+   		 time_now = time_now.getTime();
+   		 var time_distance = time_end - time_now;  // 时间差：活动结束时间减去当前时间   
+   		 var int_day, int_hour, int_minute, int_second;   
+		 if(time_distance >= 0){   
+		 	 // 相减的差数换算成天数   
+    		 int_day = Math.floor(time_distance/86400000)
+     		 time_distance -= int_day * 86400000; 
+     		 // 相减的差数换算成小时
+            int_hour = Math.floor(time_distance/3600000) 
+        	time_distance -= int_hour * 3600000;  
+        	// 相减的差数换算成分钟   
+     		int_minute = Math.floor(time_distance/60000)    
+    		time_distance -= int_minute * 60000; 
+    		// 相减的差数换算成秒数  
+      		int_second = Math.floor(time_distance/1000)    
+			// 判断小时小于10时，前面加0进行占位
+        	if(int_hour < 10) {
+        		int_hour = "0" + int_hour;  
+        	}
+        	// 判断分钟小于10时，前面加0进行占位      
+  			if(int_minute < 10){    
+   				int_minute = "0" + int_minute;  
+   			}
+   			 // 判断秒数小于10时，前面加0进行占位 
+      		if(int_second < 10) {
+      			int_second = "0" + int_second;  
+      		} 
+      		// 显示倒计时效果       
+			time_day.innerHTML = int_day;
+			time_hour.innerHTML = int_hour; 
+			time_minute.innerHTML = int_minute; 
+			time_second.innerHTML = int_second;	
+			setTimeout("count_down()",1000);    
+		 }else{
+		 }
+	}
+	 
+	 
+    </script>

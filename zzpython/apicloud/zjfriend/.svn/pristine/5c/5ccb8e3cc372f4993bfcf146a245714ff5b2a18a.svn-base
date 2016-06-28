@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="chs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>App</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+<body>
+    <div id="wrap">
+        <div id="main">
+                <div id="buttons" style='text-align:center;line-height:80px;padding:50px;'>
+                    <input id="hidden" value='1' hidden/>
+                    <div onclick="startRanging();">Beacon配置</div>
+                    <div onclick="document.getElementById('hidden').value='2';startRanging();">Beacon通知</div>
+                    <div onclick="startAdvertising(this);">Beacon模拟</div>
+                    <div id="monitorRegions" style="line-height:20px;"></div>
+                </div>
+                <div id = "content" hidden>
+                <input type="button" class =mybtn id = "home" onclick="home()" value="返回首页"/>
+                <table id="table"  border="1" cellpadding="3" cellspacing="0" width="100%" align="center" style="font-size:15px;magin-top:20px;">
+                    <tr><td>正在启动...</td></tr>
+                </table>
+                </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var BBSDK = null;
+    apiready = function(){
+        BBSDK = api.require('brightBeacon');
+        BBSDK.registerAppKey({key:"00000000000000000000000000000000"});
+        
+        //启动初始化monitorBack，使已监听区域有效
+        BBSDK.startMonitoring(monitorBack);
+        //BBSDK.stopMonitoring();
+        monitorRegions();
+    };
+
+function monitorBack(ret,err){
+    if(ret.status){
+        if(ret.state){
+            var param = {"msg":(ret.state==1?"进入区域通知":"离开区域通知"),"action":"立即查看","userInfo":"自定义传输参数"};
+            BBSDK.sendLocalNotification(param,function(ret1,err1){
+                                        if(ret1.status){
+                                        alert(JSON.stringify(ret1));
+                                        }else{
+                                        alert(err1.error);
+                                        }
+                                        });
+        }
+    }else{
+        alert(err.error);
+    }
+}
+function home(){
+    BBSDK.stopRanging();
+    window.location.reload();
+}
+//开启扫描BrightBeacon
+function startRanging(){
+        var param = {uuids:["E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"]};
+        BBSDK.startRanging(param, rangingBack);
+}
+function rangingBack(ret, err){
+        if (ret.status) {
+            var html='';
+            for(var i=0;i<ret.list.length;i++){
+                var obj = ret.list[i];
+                var btn = "<input type=button class=mybtn value='连接' onclick=\"connectBeacon('"+obj.mac+"')\">";
+                if(hidden.value==2){
+                    btn = "<input type=button class=mybtn value='通知' onclick=\"notifyClicked('"+obj.uuid+"','"+obj.major+"','"+obj.minor+"','"+obj.mac+"')\">";
+                }
+                html += "<tr><td>rssi:"+obj.rssi+"<br/>"+obj.distance.toFixed(2)+"m</td><td>"+obj.name+"  电量："+obj.battery+"% 温度："+obj.temperature+"℃<br/>Major："+obj.major+" Minor:"+obj.minor+"<br/>MAC:"+obj.mac+"<br/>UUID:"+(obj.uuid?obj.uuid:"(未监听该设备uuid)")+"</td><td>"+btn+"</td></tr>";
+            }
+            table.innerHTML = html;
+            content.hidden = false;
+            buttons.hidden = true;
+        }else{
+            alert(err.error);
+        }
+}
+//连接BrightBeacon
+function connectBeacon(mac){
+    BBSDK.stopRanging();
+    BBSDK.connectBeacon({"mac":mac},connectBack);
+}
+function connectBack(ret,err){
+    if(ret.status){
+        var data =ret.beacon;
+        var html = '';
+        for(var key in data){
+            if(key=='pMode'){
+                html += "<tr><td>"+key+"</td><td><input id="+key+" type='CHECKBOX'"+(data[key]==1?" checked":"")+"/></td></tr>";
+            }else if(key=='txPower'){
+                html += "<tr><td>"+key+"</td><td><select id=txPower>\
+                <option value=0"+(data[key]==0?" selected":"")+">-23dbm</option>\
+                <option value=1"+(data[key]==1?" selected":"")+">-6dbm</option>\
+                <option value=2"+(data[key]==2?" selected":"")+">0dbm</option>\
+                <option value=3"+(data[key]==3?" selected":"")+">+4dbm</option></select></td></tr>";
+            }else if(key =='battery'||key== 'mac'||key == 'rssi'||key=='distance'||key=='temperature'){
+                html += "<tr><td>"+key+"</td><td><p>"+data[key]+"</p></td></tr>";
+            }else{
+                html += "<tr><td>"+key+"</td><td><input style='width:100%;' id='b_"+key+"' value="+data[key]+"></input></td></tr>";
+            }
+        }
+        html += "<tr><td><input type=button class=mybtn value='保存' onclick=\"writeBeaconValues('"+data.mac+"')\"/></td>";
+        html += "<td><input type=button class=mybtn value='断开连接并返回' onclick=\"disconnectBeacon('"+data.mac+"')\"/></td></tr>";
+        html += "<tr><td><input type=button class=mybtn value='检查连接状态' onclick=\"isBeaconConnected('"+data.mac+"')\"/></td>";
+        html += "<td><input id='progress' type=button class=mybtn value='检查固件并更新' onclick=\"checkBeaconFirmwareUpdate('"+data.mac+"',this)\"/></td></tr>";
+        html += "<tr><td><input type=button class=mybtn value='初始化Beacon' onclick=\"resetBeacon('"+data.mac+"')\"/></td>";
+        html += "<td><input type=button class=mybtn value='重置AppKey' onclick=\"resetBeaconAppKey('"+data.mac+"')\"/></td></tr>";
+        table.innerHTML = html;
+    }else{
+        alert(err.error?err.error:"连接失败"+err.code);
+    }
+}
+//断开连接并重新扫描
+function disconnectBeacon(mac){
+    BBSDK.disconnectBeacon({"mac":mac});
+    startRanging();
+}
+//检查连接
+function isBeaconConnected(mac){
+    BBSDK.isBeaconConnected({"mac":mac},function(ret,err){
+                            if(ret.status)alert("已连接");
+                            else alert("已断开");
+    });
+}
+//写入BrightBeacon
+function writeBeaconValues(mac){
+    var param = {"mac":mac,"uuid":b_uuid.value,"major":b_major.value,"minor":b_minor.value,"name":b_name.value,"txInterval":b_txInterval.value,"mPower":b_mPower.value,"pMode":pMode.checked,"txPower":txPower.value};
+    BBSDK.writeBeaconValues(param,function(ret,err){
+                            if(ret.status){
+                                alert("保存成功！");
+                              }else{
+                                alert(err.error);
+                              }
+                              });
+}
+//检查固件更新
+function checkBeaconFirmwareUpdate(mac){
+    progress.disabled=true;
+    
+    var param = {"mac":mac};
+    BBSDK.checkBeaconFirmwareUpdate(param,function(ret,err){
+                                    if(ret.status&&ret.update){
+                                            BBSDK.updateBeaconFirmwareWithProgress(param,updateBack);
+                                        }else{
+                                            alert(err.error);
+                                        }
+                                });
+}
+function updateBack(ret,err){
+    if(ret.status){
+        progress.value = "正在更新"+ret.progress+"%...";
+        if(ret.progress=='100'){
+            progress.disabled=false;
+        }
+    }else{
+        alert(err.error);
+    }
+}
+//重置Beacon默认参数
+function resetBeacon(mac){
+    BBSDK.resetBeacon({"mac":mac},function(ret,err){if(!ret.status)alert(err.error);});
+}
+//重置Beacon的AppKey
+function resetBeaconAppKey(mac){
+    BBSDK.resetBeaconAppKey({"mac":mac},function(ret,err){if(!ret.status)alert(err.error);});
+}
+
+function notifyClicked(uuid,major,minor,mac){
+        BBSDK.stopRanging();
+        var html = "";
+        html += "<tr><td>当前设备<br/>区域标识</td><td colspan=4>UUID:"+uuid+"<br/>Major:"+major+" Minor:"+minor+"<br/>Mac:"+mac+"</td></tr>";
+        html += "<tr><td>区域限定</td><td>UUID</td><td>Major</td><td>Minor</td><td>Mac</td></tr>";
+        if(uuid){
+            html += "<tr><td>IOS</td>\
+            <td rowspan='2'><input name='iosuuid' type='checkbox' value='1' onclick=\"checkall(this)\" checked/></td>\
+            <td rowspan='2'><input name='major' type='checkbox' value='2' onclick=\"checkall(this)\"/></td>\
+            <td rowspan='2'><input name='minor' type='checkbox' value='3' onclick=\"checkall(this)\"/></td>\
+            <td>×</td></tr>";
+            html += "<tr><td>Android　</td><td><input name='mac' type='checkbox' value='4' /></td></tr>";
+        }else{
+            html +="<tr><td>IOS</td><td colspan=4>未获取到UUID，无法区域通知</td></tr>";
+            html += "<tr><td>Android</td>\
+            <td><input name='uuid' type='checkbox' value='1' onclick=\"checkall(this)\" checked/></td>\
+            <td><input name='major' type='checkbox' value='2'  onclick=\"checkall(this)\"/></td>\
+            <td><input name='minor' type='checkbox' value='3'  onclick=\"checkall(this)\"/></td>\
+            <td><input name='mac' type='checkbox' value='4' /></td></tr>";
+        }
+        html += "<tr><td colspan=5>*区域是一组有共同区域标识的设备所在范围<br/>*周边某个设备符合区域限定可以产生一条通知<br/>*只有Android设备支持限定Mac标识；<br/>*IOS启动区域监听须限定UUID<br/>（如未获取到该设备UUID请检查：1、IOS7以上系统 2、已打开定位服务 3、已在startRanging中传人该设备UUID）</td></tr>";
+        html += "<tr><td colspan=5><input type=button class=mybtn value = '立即体验' onclick=\"startMonitor('"+uuid+"','"+major+"','"+minor+"','"+mac+"');\"/></td></tr>";
+        html += "<tr><td colspan=5 text-align=center>点击立即体验，现在锁屏，离开beacon直到您收到‘离开区域通知’，然后再走回来，您将收到‘进入区域通知’</td></tr>";
+        table.innerHTML = html;
+        //alert("未获取到该设备UUID。1、请打开本机定位 2、在startRanging中传人该设备UUID");
+}
+function checkall(obj){
+        var coll = document.getElementsByName(obj.name)
+        if (obj.checked){
+            var uuids = document.getElementsByName('iosuuid')
+            if(uuids.length)uuids[0].checked = true;
+            
+            var majors = document.getElementsByName('major')
+            if(obj.name=='minor')majors[0].checked = true;
+            
+            coll[0].checked = true;
+        }else{
+            if(obj.name=='iosuuid'){
+                var majors = document.getElementsByName('major')
+                var minors = document.getElementsByName('minor')
+                majors[0].checked = false;
+                minors[0].checked = false;
+            }else if(obj.name == 'major'){
+                var uuids = document.getElementsByName('iosuuid')
+                var minors = document.getElementsByName('minor')
+                if(uuids.length)minors[0].checked = false;
+            }
+            coll[0].checked = false;
+        }
+}
+function startMonitor(_uuid,_major,_minor,_mac){
+    var uuids = document.getElementsByName('uuid')
+    var majors = document.getElementsByName('major')
+    var minors = document.getElementsByName('minor')
+    var macs = document.getElementsByName('mac')
+    if(uuids.length&&!uuids[0].checked) _uuid = "";
+    if(!majors[0].checked) _major = "";
+    if(!minors[0].checked) _minor = "";
+    if(!macs[0].checked) _mac = "";
+
+    var param = {"uuid":_uuid,"major":_major,"minor":_minor,"mac":_mac,"in":"1","out":"1","display":"1"};
+    BBSDK.startMonitoring(param,function(ret,err){if(!ret.status)alert(err.error);});
+}
+function monitorRegions(){
+    BBSDK.monitorRegions(function(ret,err){
+                         if(ret.status){
+                         var html  = "<hr/>监听中的区域通知：<br/>";
+                         for(var i=0;i<ret.regions.length;i++){
+                         var region = ret.regions[i];
+                         html += "<br/>UUID:"+region.uuid+"<br/>Major:"+region.major+" Minor:"+region.minor+"<br/>Mac:"+region.mac+"<br/><input type=button class=mybtn value='停止监听' onclick='stopMonitor("+JSON.stringify(region)+")'/>";
+                         }
+                         if(ret.regions.length)document.getElementById("monitorRegions").innerHTML = html;
+                         else document.getElementById("monitorRegions").innerHTML = "";
+                         }
+    });
+}
+function stopMonitor(jsonstr){
+    var obj = eval(jsonstr);
+    var param = {"uuid":obj.uuid,"major":obj.major,"minor":obj.minor,"mac":obj.mac,"identifier":obj.identifier};
+    BBSDK.stopMonitoring(param,function(ret,err){if(ret.status)monitorRegions(); else alert(err.error);});
+}
+function startAdvertising(obj){
+    var param = {"uuid":"","major":"0","minor":"0","mPower":"0","identifier":"virtualBeacon"};
+    BBSDK.startAdvertising(param,function(ret,err){
+                                            if(ret.status){
+                                                alert("请使用其他设备开始扫描，您将看到当前设备模拟的beacon");
+                                                obj.innerHTML = "停止模拟";
+                                                obj.onclick=function(){stopAdvertising(obj);};
+                                            }else{
+                                                alert(err.error);
+                                            }
+                                        });
+}
+function stopAdvertising(obj){
+    BBSDK.stopAdvertising(function(ret,err){
+                                            if(ret.status){
+                                                obj.innerHTML = "Beacon模拟";
+                                                obj.onclick=function(){startAdvertising(obj);};
+                                            }else{
+                                                alert(err.error);
+                                            }
+                                        });
+}
+</script>
+</html>

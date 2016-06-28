@@ -1,0 +1,160 @@
+   <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+   <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+   <link rel="stylesheet" href="http://img0.zz91.com/trade/logistics/css/logistics.css" />
+   #parse("/common/buy_menu.vm")
+        <div class="content clearfix">
+            <div class="express-mail">
+                <div class="express-title">包裹信息</div>
+
+                <div class="express-flow">
+                    <div class="flow-list clearfix">
+                        <div class="flow-now">
+                            <div class="flow-name fr">  
+                                <i class="flow-img flow-img1"></i>
+                                <span class="flow-name-font">待发货</span>
+                            </div>
+                        </div>
+                        <div class="flow-now">
+                            <div class="flow-name fr">  
+                                <i class="flow-img flow-img2"></i>
+                                <span class="flow-name-font">运输</span>
+                            </div>
+                            <span class="color-xian"></span>
+                        </div>
+                        <div class="flow-now">
+                            <div class="flow-name fr">  
+                                <i class="flow-img flow-img3"></i>
+                                <span class="flow-name-font">派送</span>
+                            </div>
+                            <span class="color-xian"></span>
+                        </div>
+                        <div class="flow-now">
+                            <div class="flow-name fr">  
+                                <i class="flow-img flow-img4"></i>
+                                <span class="flow-name-font">签收</span>
+                            </div>
+                            <span class="color-xian"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="express-datail">
+					#if($!{logistics.obj}==0)
+                    <div class="datail-now">您的货物运输中  （在途）</div>
+					#set($sell="2")
+					#elseif($!{logistics.obj}==1)
+					<div class="datail-now">您的货物已揽件  （揽件）</div>
+					#set($sell="1")
+					#elseif($!{logistics.obj}==2)
+					<div class="datail-now">您的货物运输中  （在途）</div>
+					#set($sell="2")
+					#elseif($!{logistics.obj}==3)
+					<div class="datail-now">您的货物已签收  （签收）</div>
+					#set($sell="4")
+					#elseif($!{logistics.obj}==4)
+					<div class="datail-now">您的货物已退签  （退签）</div>
+					#set($sell="0")
+					#elseif($!{logistics.obj}==5)
+					<div class="datail-now">您的货物已派件  （派件）</div>
+					#set($sell="3")
+					#elseif($!{logistics.obj}==5)
+					<div class="datail-now">您的货物已退回  （退回）</div>
+					#set($sell="0")
+					#end
+                    <div class="datail-all">
+                        <ul class="datail-all-ul">
+							#if(${logistics.list})
+								#foreach($li in ${logistics.list.keySet()})
+									#set($ibb="c"+$li)
+									#foreach($ob in ${logistics.list.get($li)})
+										<li >
+											<div class="info-dt clearfix">
+												<i class="icon-dian iconfont fl">&#xe605;</i>
+												#if(${ibb}=="c"+$li)
+													#set($ibb="c")
+													<span class="timeday i-fweight">$!{li}</span>
+												#else
+													<span class="timeday i-fweight"></span>
+												#end
+												<span class="timeweed i-fweight">$!{ob.week}</span>
+												<span class="timeclock">$!{ob.hour}</span>
+												<span>$!{ob.context}</span>
+											</div>
+											<div class="shuxian"></div>
+										</li>
+									#end
+								#end
+							#else
+								$!{logistics.erro}
+							#end
+                        </ul>
+                    </div>
+                    <div class="datail-address">
+                        <div class="address-mo">
+							#if($!{logistics.detailAll.sum})
+                            <span>运单号码：$!{logistics.detailAll.sum}</span>
+							#end
+							#if($!{logistics.detailAll.company})
+                            <span>物流公司：$!{logistics.detailAll.company}</span>
+                            <span>客服电话：$!{logistics.detailAll.logisticsCompanyPhone}</span>
+							#end
+							
+							#if($!{logistics.code})
+                            <span>运单号码：$!{logistics.code}</span>
+							#end
+							#if($!{logistics.logisticsCompany})
+                            <span>物流公司：$!{logistics.logisticsCompany}</span>
+							#end
+							#if($!{logistics.logisticsPhone})
+                            <span>客服电话：$!{logistics.logisticsPhone}</span>
+							#end
+                        </div>
+                        <div class="address-mo">
+							#if($!{logistics.companyInfo.name})
+                            <span>卖家公司：$!{logistics.companyInfo.name}</span>
+							#end
+                        </div>
+						#if($!{logistics.selladdress})
+                        <div class="address-mo">
+                            <span>
+                                发货地址：$!{logistics.selladdress.areaCode} $!{logistics.selladdress.address}  
+                                <i class="i-fweight">$!{logistics.selladdress.name}</i>  
+                                <i class="i-fweight">$!{logistics.selladdress.mobile}</i>
+                            </span>
+                        </div>
+						#end
+						
+						#if($!{logistics.detailAll})
+                        <div class="address-mo">
+                            <span>
+                                收货地址：$!{logistics.detailAll.areaCode} $!{logistics.detailAll.address} 
+                                <i class="i-fweight">$!{logistics.detailAll.name}</i>  
+                                <i class="i-fweight">$!{logistics.detailAll.mobile}</i>
+                            </span>
+                        </div>
+						#end
+						
+						#if($!{logistics.detailAll2})
+                        <div class="address-mo">
+                            <span>
+                                收货地址：$!{logistics.detailAll2}  
+                                <i class="i-fweight">$!{logistics.name}</i>  
+                                <i class="i-fweight">$!{logistics.mobile}</i>
+                            </span>
+                        </div>
+						#end
+                    </div>
+                    <div class="datail-img">
+                        <img src="$!{logistics.picAddress}">
+                    </div>
+                </div>
+            </div>
+        </div>  
+    <script type="text/javascript">
+        $(".shuxian:last").hide();
+        $(".icon-dian:last").addClass("color-rus","#c40000");
+        var step =${sell};
+        for(var i = 1;i<=step;i++){
+            var index = i-1;
+            $(".flow-now").eq(index).addClass("thistep")
+        }
+    </script>

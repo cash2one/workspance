@@ -1,0 +1,120 @@
+	    #set($layout="/layout/yuanliaoLayout.vm")
+		#set($inflag=3)
+		#set($in=4)
+		<style >
+			a {
+				cursor:pointer;
+			}
+		</style>
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script>  		
+        <div class="pagecenter clearfix">
+            <div class="fl hq-view-left">
+                <h2 class="view-seat">
+                    当前位置：<a href="#springUrl('/price/')">行情报价首页</a>  >  
+                    <span class="crent-seat">$!{word}</span>
+                </h2>
+                <div class="viewcnt">
+					#if($page)
+                    <ul class="market-list">
+						#set($ss = 1)
+						#foreach($in in $page.records)
+                        <li>
+                            <a onclick="locationhref('$!{keyword}$!{endCode}$!{word}',$!{in.id})"  target="_blank" class="fl">$!{in.title}</a>
+                            <span class="fr">#printFragmentDate('yyyy-MM-dd' $!{in.gmtCreated})</span>
+                        </li>
+                        #if($ss % 5 == 0)<li class="dianbt"></li>#end
+						#set($ss = $ss + 1)
+						#end
+                    </ul>
+					#end
+					
+					
+					#if($page&&$page.totalRecords>0)
+						<div class="pagenum">
+								#pageYuanliao4($page)
+						</div>
+					#end
+                </div>
+            </div>
+            <div class="fr hq-view-right">
+                <div class="hq-price-nav">
+                    <h2 class="titletop">价格行情导航</h2>
+					#parse("/common/daohang.vm")
+				<input type="hidden" id="falg" value="$!{falg}"/>
+				<input type="hidden" id="code" value="$!{code}"/>
+                <div class="xguan-type-list xguan-type-list2">
+                    <h2 class="titletop">最新企业报价</h2>
+                    <ul class="xguan-list-ul">
+						#foreach($in in $!{list})
+                        <li>
+							<span class="f1">
+							<a href="#springUrl('/price/detail')$!{in.id}.html" target="_blank">#printTitle($!{in.title} 12 '...')</a>
+                            </span>
+							<span class="fr">
+							#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else  #substr($!{in.price} $!{in.priceUnit})  #end
+                            </span>
+						</li>
+						#end
+                    </ul>
+                </div>
+                <div class="xguan-type-list">
+                    <h2 class="titletop">最新资讯</h2>
+                    <ul class="xguan-list-ul">
+						#foreach($in in ${js})
+                        <li><a href="${in.weburl}" target="_blank">#printTitle($!{in.title} 20 '...')</a></li>
+						#end
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+	   
+	    jQuery(".tip").click(function(){
+    	var currentPage = '';
+    	if(jQuery(this).attr("class") == "tip other"){
+    		currentPage = jQuery(this).attr("name");
+    	}
+    	if(jQuery(this).attr("class")=="tip gobtn"){
+    		var num = Number(jQuery(".gopage").val());
+			if(num==""){
+			alert("请输入页码")
+			}
+			if(isNaN(num)){
+				alert("请输入数字")
+				return false;
+			}
+    		if(num<0){
+    			alert("页码不能小于零");
+    			return false;
+    		}
+    		if(num>$totalPage){
+    			num = $totalPage;
+    		}
+    		if(num > 0){
+    			currentPage = num ;
+    		}
+    	}
+    	//跳转链接
+		var url = "#springUrl('/price/list')";
+	   	var code=$("#code").val();
+		if(code!=""){
+		keyWords=encodeURI(code);
+			url=url+"-"+code;
+		}else{
+		return false;
+		}
+		url=url+"-"+currentPage+".html";
+		location.href=url;
+    });
+	
+	function locationhref(obj,id){
+	   if(obj==""||id==""){
+	    return false;
+	   }
+	   var keyword=encodeURI(obj);
+	   window.open("#springUrl('/price/cdetail')"+id+".html?keyword="+keyword);
+	}
+    </script>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneCostSvr">
+	<typeAlias alias="PhoneCostSvrDO" type="com.ast.ast1949.domain.phone.PhoneCostSvr" />
+	<resultMap class="PhoneCostSvrDO" id="PhoneCostSvrResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="crmCompanyServiceId" column="crm_company_service_id" />
+		<result property="fee" column="fee" />
+		<result property="lave" column="lave" />
+		<result property="clickFee" column="click_fee" />
+		<result property="telFee" column="tel_fee" />
+		<result property="isLack" column="is_lack" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="gmtZero" column="gmt_zero" />
+		<result property="gmtRenew" column="gmt_renew" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		crm_company_service_id,
+		fee,
+		lave,
+		click_fee,
+		tel_fee,
+		is_lack,
+		gmt_created,
+		gmt_modified,
+		gmt_zero,
+		gmt_renew
+	</sql>
+	<!-- <select id="queryByCallSn" parameterClass="java.lang.String" resultMap="phoneLogResult"> 
+		select <include refid="defaultColumn" /> from phone_log where call_sn = #callSn# 
+		limit 1 </select> -->
+	<insert id="insert" parameterClass="PhoneCostSvrDO">
+		INSERT INTO `phone_cost_service`
+		(
+		`company_id`,
+		`crm_company_service_id`,
+		`fee`,
+		`lave`,
+		`click_fee`,
+		`tel_fee`,
+		`is_lack`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#companyId#,
+		#crmCompanyServiceId#,
+		#fee#,
+		#lave#,
+		#clickFee#,
+		#telFee#,
+		#isLack#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="PhoneCostSvrResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_cost_service
+		where id = #value#
+	</select>
+
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneCostSvr.companyId">
+				company_id =
+				#phoneCostSvr.companyId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryListByAdmin" parameterClass="java.util.Map"
+		resultMap="PhoneCostSvrResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_cost_service
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListCountByAdmin" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_cost_service
+		<include refid="whereClause" />
+	</select>
+
+	<select id="queryListByCost" parameterClass="java.lang.Integer"
+		resultMap="PhoneCostSvrResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_cost_service
+		where
+		is_lack = '0' and company_id = #companyId#
+		order by id asc
+	</select>
+	
+	<select id="queryGmtZeroByCompanyId" parameterClass="java.lang.Integer" resultMap="PhoneCostSvrResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_cost_service
+		where company_id = #companyId#
+		order by gmt_zero desc
+	</select>
+
+	<select id="countFeeByCompanyId" parameterClass='java.lang.Integer'
+		resultClass="java.lang.String">
+		SELECT
+		sum(fee)
+		From phone_cost_service
+		where
+		company_id=#companyId#
+	</select>
+
+	<update id="updateSvr" parameterClass="PhoneCostSvrDO">
+		UPDATE phone_cost_service
+		SET
+		gmt_modified = now()
+		<isNotNull prepend="," property="lave">
+			lave = #lave#
+		</isNotNull>
+		<isNotNull prepend="," property="clickFee">
+			click_fee = #clickFee#
+		</isNotNull>
+		<isNotNull prepend="," property="telFee">
+			tel_fee = #telFee#
+		</isNotNull>
+		<isNotEmpty prepend="," property="isLack">
+			is_lack = #isLack#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="fee">
+			fee = #fee#
+		</isNotEmpty>
+		WHERE id = #id# and company_id = #companyId#
+	</update>
+	<!--计算某公司的余额 -->
+	<select id="sumLaveByCompanyId" parameterClass='java.lang.Integer'
+		resultClass="java.lang.String">
+		select sum(lave)
+		from phone_cost_service
+		where company_id=#companyId#
+	</select>
+	<!--获取某公司开通服务的时间 -->
+	<select id="queryPhoneService" parameterClass='java.lang.Integer'
+		resultMap="PhoneCostSvrResult">
+		select
+		<include refid="defaultColumn" />
+		from phone_cost_service
+		where company_id=#companyId#
+		order by gmt_created asc
+		limit 1
+	</select>
+
+	<update id="updateLaveFull" parameterClass="java.lang.Integer">
+    	update phone_cost_service
+		SET
+		gmt_modified = now(),
+		lave = fee,
+		is_lack = '0'
+		WHERE company_id = #value#
+	</update>
+</sqlMap>

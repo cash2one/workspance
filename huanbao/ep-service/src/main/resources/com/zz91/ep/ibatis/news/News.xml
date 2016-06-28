@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="news">
+
+	<typeAlias alias="news" type="com.zz91.ep.domain.news.News" />
+	<typeAlias alias="common" type="com.zz91.ep.dto.CommonDto" />
+	<typeAlias alias="newsSearchDto" type="com.zz91.ep.dto.news.NewsSearchDto" />
+	<typeAlias alias="newsDto" type="com.zz91.ep.dto.news.NewsDto"/>
+	
+	
+	<resultMap class="news" id="simpleResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title"/>
+	</resultMap>
+	<resultMap class="common" id="commonResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="description" column="description"/>
+		<result property="code" column="category_code"/>
+		<result property="details" column="details"/>
+	</resultMap>
+	
+	<resultMap class="news" id="someResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="details" column="details"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="description" column="description"/>
+		<result property="categoryCode" column="category_code"/>
+	</resultMap>
+	
+	<resultMap class="newsSearchDto" id="newsSearchDtoResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="viewCount" column="view_count"/>
+		<result property="details" column="details"/>
+		<result property="description" column="description"/>
+	</resultMap>
+	
+	<resultMap class="news" id="fullResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="description" column="description"/>
+		<result property="details" column="details"/>
+		<result property="detailsQuery" column="details_query"/>
+		<result property="tags" column="tags"/>
+		<result property="htmlPath" column="html_path"/>
+		<result property="adminAccount" column="admin_account"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="newsSource" column="news_source"/>
+		<result property="newsSourceUrl" column="news_source_url"/>
+		<result property="viewCount" column="view_count"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap class="news" id="newsSearchResultMap">
+	     <result property="id" column="id"/>
+		 <result property="title" column="title"/>
+		 <result property="categoryCode" column="category_code"/>
+		 <result property="gmtPublish" column="gmt_publish"/>
+	</resultMap>
+	
+	<resultMap class="newsDto" id="newsDtoMap">
+	  <result property="news" resultMap="news.someResultMap"/>
+	</resultMap>
+	
+	<select id="queryNewsByRecommend" resultMap="commonResultMap" parameterClass="java.util.Map">
+		select
+			n.id,n.title,n.title_index,details,description,category_code
+		from `news` n 
+		inner join news_recommend nr on nr.news_id=n.id 
+		where 
+		not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0')
+		and
+		n.pause_status = 1 and nr.type=#code#
+		order by nr.gmt_created desc
+		limit #size#
+	</select>
+	
+  	<select id="queryNewsByCategory" resultMap="someResultMap" parameterClass="java.util.Map">
+		select
+			id,title,title_index,details,category_code,gmt_publish,description
+		from `news` n   
+		where
+		not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0') 
+		and		 
+		pause_status = 1 
+		<isNotEmpty property="code">
+			and category_code like concat(#code#,'%')
+		</isNotEmpty>
+		order by gmt_publish desc
+		limit #size#
+	</select>
+	
+	<select id="queryTopNews" resultMap="someResultMap" parameterClass="java.lang.Integer">
+		select
+			id,title,title_index,category_code,gmt_publish,description
+		from `news`
+		where pause_status = 1
+		order by view_count desc
+		limit #value#
+	</select>
+	
+	<select id="queryNewsByCategoryKey" parameterClass="java.util.HashMap" resultMap="newsSearchDtoResultMap">
+		select 
+			n.id,n.title,n.title_index,n.category_code,n.gmt_publish,n.view_count,n.details,n.description
+		from news_recommend nr,news n
+		where 
+		not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0')
+		and 
+		n.pause_status=1 and nr.news_id=n.id and nr.type=#categoryKey#
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryNewsByCategoryKeyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from news_recommend nr,news n
+		where 
+		not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0')
+		and
+		nr.news_id=n.id and nr.type=#categoryKey#
+	</select>
+	
+	<select id="queryPrevNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        gmt_publish > (select gmt_publish from news where id = #id#)
+        and category_code=#categoryCode#
+		and pause_status=1
+        order by gmt_publish asc limit 1;
+	</select>
+	
+	<select id="queryNextNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        (select gmt_publish from news where id = #id#) > gmt_publish
+        and category_code=#categoryCode#
+		and pause_status=1
+        order by gmt_publish desc limit 1;
+	</select>
+	
+	<select id="queryNewDetailsById" parameterClass="java.lang.Integer" resultMap="fullResultMap">
+		select 
+			`id`,
+			`title`,
+			`title_index`,
+			`category_code`,
+			`description`,
+			`details`,
+			`details_query`,
+			`tags`,
+			`html_path`,
+			`admin_account`,
+			`admin_name`,
+			`news_source`,
+			`news_source_url`,
+			`view_count`,
+			`pause_status`,
+			`gmt_publish`,
+			`gmt_created`,
+			`gmt_modified`
+		from news
+		where id=#id#
+	</select>
+
+	<update id="updateViewCountById" parameterClass="java.lang.Integer">
+		update news set view_count = view_count+1 where id=#value#
+	</update>
+	
+	<select id="queryNewsByCategoryCode" parameterClass="java.util.HashMap" resultMap="newsSearchDtoResultMap">
+		select 
+			id,title,title_index,category_code,gmt_publish,view_count,description,details
+		from news n
+		where  not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0') and pause_status=1 and category_code like concat(#categoryCode#,'%')
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryNewsByCategoryCodeCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from news n 
+		where not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0') and category_code like concat(#categoryCode#,'%')
+	</select>
+	
+	<select id="queryNewsByCode"  parameterClass="java.util.HashMap"   resultMap="newsSearchResultMap">
+	    select n.id,n.title,n.category_code,n.gmt_publish 
+	    from news n
+	    where not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0')
+	    and n.pause_status=1 
+	    and n.category_code=#categoryCode# 
+	    order by n.gmt_publish desc 
+	    limit #size#
+	</select>
+	
+	<select id="queryNewsAndUrlByCode" resultMap="newsDtoMap" parameterClass="java.util.Map">
+		select
+			id,title,title_index,details,category_code,gmt_publish,description
+		from `news` n   
+		where
+		not exists (select * from hide_info hd where n.id=hd.target_id and hd.target_type='0') 
+		and		 
+		pause_status = 1 
+		<isNotEmpty property="code">
+			and category_code like concat(#code#,'%')
+		</isNotEmpty>
+		order by gmt_publish desc
+		limit #size#
+	</select>	
+</sqlMap>

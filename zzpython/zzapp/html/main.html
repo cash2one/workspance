@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+		<meta name="HandheldFriendly" content="true"/>
+		<meta name="MobileOptimized" content="320"/>
+		<title>Hello H5+</title>
+		<script type="text/javascript" charset="utf-8" src="../js/mui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css">
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" charset="utf-8">
+var ws=null,list=null;
+function loadcompanyid(cid) {
+	//company_id = cid.toString();
+	//UserInfo.companyid(company_id);
+}
+function reloadloginall(j,username,pwd_hash,company_id){
+	//alert(1)
+	//list.evalJS("UserInfo.onSuccess("+j+","+username+","+pwd_hash+","+company_id+")");
+}
+// 扩展API加载完毕，现在可以正常调用扩展API 
+function plusReady(){
+	ws=plus.webview.currentWebview();
+	wo=ws.opener();
+	list=plus.webview.create("index.html","load.html",{top:"45px",bottom:"0px",bounce:"vertical"});
+	ws.append(list);
+	var nWaitingindex;
+	if (window.plus) {
+		nWaitingindex = plus.nativeUI.showWaiting("数据加载中，请稍候......");
+	}
+	if(!ws.preate){
+		list.addEventListener("loaded",function(){//叶面加载完成后才显示
+			//ws.show("pop-in");
+			//wo.evalJS("closeWaiting()");
+		},false);
+		
+	}
+	ws.append(list);
+	// 实现列表可下拉刷新
+	list.addEventListener("dragBounce",onPullStateChange,false);
+	list.setBounce({position:{top:"100px"},changeoffset:{top:"50px"}});
+	if (nWaitingindex) {
+		nWaitingindex.close();
+	}
+}
+if(window.plus){
+	plusReady();
+}else{
+	document.addEventListener("plusready",plusReady,false);
+}
+// DOMContentLoaded事件处理
+var etext=null,eicon=null;
+document.addEventListener("DOMContentLoaded",function(){
+	etext=document.getElementById("text");
+	eicon=document.getElementById("icon");
+},false);
+
+// 下拉状态改变
+function onPullStateChange(e){
+	switch(e.status){
+		case "beforeChangeOffset"://下拉可刷新状态
+		pull1();
+		break;
+		case "afterChangeOffset"://松开可刷新状态
+		pull2();
+		break;
+		case "dragEndAfterChangeOffset"://正在刷新状态
+		list.evalJS("onRefresh();");
+		pull3();
+		break;
+		default:
+		break;
+	}
+}
+function pull1(){
+	document.getElementById("reflashid").style.display="block";
+	etext.textContent="下拉可刷新";
+	eicon.style.webkitTransition="all 0.3s ease-in";
+	eicon.style.webkitTransform="rotate(0deg)";
+}
+function pull2(){
+	etext.textContent="松开可刷新";
+	eicon.style.webkitTransition="all 0.3s ease-in";
+	eicon.style.webkitTransform="rotate(180deg)";
+}
+function pull3(){
+	etext.textContent="正在刷新...";
+	eicon.src="../images/pull_fresh.png";
+	eicon.style.webkitAnimation="spin 1s infinite linear";
+}
+function pullReset(){
+	document.getElementById("reflashid").style.display="block";
+	etext.textContent="下拉可刷新";
+	eicon.src="../images/pull_arrow.png";
+	eicon.style.webkitTransition="";
+	eicon.style.webkitTransform="";
+	eicon.style.webkitAnimation="";
+}
+function openset(url){
+	list.evalJS("gotourl('/set.html','blank');");
+}
+function messagesupdate(num){
+	list.evalJS("messages.showviewnum("+num.toString()+");");
+}
+
+		</script>
+		<link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8"/>
+		<style type="text/css">
+#pull{
+	width:24px;
+	height:100%;
+	display:inline-block;
+	margin:0 1em;
+}
+#icon{
+	height:24px;
+	vertical-align:middle;
+}
+@-webkit-keyframes spin{
+    0% {
+        -webkit-transform:rotate(0deg);
+    }
+    100% {
+        -webkit-transform:rotate(360deg);
+    }
+}
+		</style>
+		
+	</head>
+	<body style="background:#EAEAEA;">
+		<header class="mui-bar mui-bar-nav" style="position:static;">
+			<a class="mui-pull-left"><img src="../images/logo.png"></a>
+			<a class="mui-icon mui-icon-gear mui-pull-right" href="javascript:openset('set.html')" target="local"></a>
+		</header>
+		<div style="text-align:center;height:20px;line-height:20px;width: 100%;clear: both;display: none;" id="reflashid">
+			<div id="pull"><img id="icon" src="../images/pull_arrow.png"/></div><font id="text">下拉可刷新</font>
+		</div>
+	</body>
+</html>

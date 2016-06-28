@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subnetTradeRecommend">
+
+	<typeAlias alias="supply" type="com.zz91.ep.domain.trade.TradeSupply"/>
+	
+	<resultMap class="supply" id="simpResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="photoCover" column="photo_cover"/>
+	</resultMap>
+	
+	<select id="querySupplyBySubRec" parameterClass="java.util.Map" resultMap="simpResultMap">
+		select ts.id,ts.title,ts.photo_cover from trade_supply ts
+		inner join subnet_trade_recommend str on str.supply_id=ts.id
+		where str.subnet_category=#subnetCategory# 
+		and ts.check_status = 1 and ts.pause_status = 0 and ts.del_status = 0
+		order by str.gmt_created desc
+		limit #size#
+	</select>
+</sqlMap>

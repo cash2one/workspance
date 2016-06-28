@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户中心</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%; 
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	.calendar{
+		display: -webkit-box;
+		border-bottom: 1px solid #CCCCCC;
+		padding: 10px 10px;
+	}
+	#left{
+		-webkit-box-flex: 1;
+		width: 100%;
+		display: -webkit-box;
+		-webkit-box-align: center;
+	}
+	#right{
+		width: 25px;
+		display: -webkit-box;
+		background: url(../image/forward.png) no-repeat center;
+		-webkit-background-size: 10px 17px;
+	}
+	.calendarActive{
+		background-color: #CCCCCC !important;
+	}
+	#center{
+		height:260px;
+		width:100%;
+		background: url(../image/home/default_blur.png) no-repeat;
+		-webkit-background-size: 100% 100%;
+	}
+</style>
+</head>
+
+<body>
+	<div id="main">
+		<section id="center">
+			
+		</section>
+		<section class="calendar" tapmode="calendarActive" onclick="toCalendar()">
+			<div id="left">培训日历</div>
+			<a id="right"></a>
+		</section>
+	</div>
+</body>
+<script>
+	var dmg = null;
+	var pc = null;
+	var pageParam = null;
+	var downloadNum = 0;
+	
+	apiready = function() {
+		pc = api.require('personalCenter');
+		dmg = api.require('downloadManager');
+		pageParam = api.pageParam;
+		
+		defaultOpen();
+		getDownloadNums();//得到下载数
+	    loadData();
+
+		//页面显示，更新数据
+		api.addEventListener({name:'viewappear'}, function(){
+			getDownloadNums();//得到下载数
+	        loadData();
+	    });
+	};
+	
+	function createParam(usr){
+		var imgPath = 'widget://res/default.png';
+		var icon = usr.icon;
+		if(icon){
+			imgPath = serverUrl + icon;
+		}
+		
+		var param = {
+			x: 0, 
+			y: pageParam.y,  
+			height: 260, 
+			imgPath: imgPath,
+			placeHoldImg: 'widget://res/default.png',
+			username: usr.account,
+			count: usr.points?usr.points:0,		//得分
+			collect: usr.favorites?usr.favorites:0,		//收藏个数
+			browse: usr.browse?usr.browse:0,		//浏览个数
+			dwonload: usr.download?usr.download:downloadNum,		//下载个数
+			activity: usr.activitys?usr.activitys:0,		//活动个数
+			showLeftBtn: false,	//显示左边按钮
+			showRightBtn: false	//显示右边边按钮
+		};
+		return param;
+	}
+	
+	function defaultOpen(){
+		var usr = $api.getStorage('usr');
+		pc.open(createParam(usr), pcenterClick);
+	}
+	
+	function getDownloadNums(){
+		dmg.query(function(ret, err){
+			if(ret.data){
+				downloadNum = ret.data.length;
+			}else{
+				downloadNum = 0;
+			}
+		});
+		var usr = $api.getStorage('usr');
+		usr.download = downloadNum;
+		$api.setStorage('usr', usr);
+	}
+	
+	function loadData(){
+		api.ajax({
+	    	url:serverUrl + '/user/User?uid=' + $api.getStorage('usr').uid,
+		    method: 'get',
+		    cache: false,
+		    timeout: 15,
+		    dataType: 'json'
+	    }, ajaxBack);
+	}
+	
+	function ajaxBack(ret, err){
+		if(ret && ret.status){
+			openPcenter(ret.body);//打开个人中心		
+			updateUsr(ret.body);//更新缓存
+		}
+	}
+
+	function openPcenter(usr){
+		pc.updateValue(createParam(usr));
+	}
+	
+	function updateUsr(body){
+		var usr = $api.getStorage('usr');
+		usr.icon = body.icon;
+		usr.uid = body.uid;
+		usr.account = body.account;
+		usr.fid = body.fid;
+		usr.gender = body.gender;
+		usr.age = body.age;
+		usr.marriageStatus = body.marriageStatus;
+		usr.education = body.education;
+		usr.fertilityStatus = body.fertilityStatus;
+		usr.caddress = body.caddress;
+		usr.phone = body.phone;
+		usr.points = body.points;
+    	usr.favorites = body.favorites;
+    	usr.activitys = body.activitys;
+    	usr.browse = body.browse;
+    	usr.downloads = downloadNum;
+		
+		$api.setStorage('usr', usr);
+	}
+	
+	function pcenterClick(ret, err){
+		var winUrl = null;
+		var winName = null;
+		var index = ret.click;
+		switch (index) {
+		case 0://头像
+			winName = 'personInfo';
+			winUrl = 'personInfo.html';
+			break;
+		case 1://收藏
+			winName = 'favorite';
+			winUrl = 'favorite.html';
+			break;
+		case 2://浏览
+			winName = 'browse';
+			winUrl = 'browse.html';
+			break;
+		case 3://下载
+			openDownloadManager();
+			break;
+		case 4://活动
+			winName = 'activity';
+			winUrl = 'activity.html';
+			break;
+		}
+		if(winUrl){
+			api.openWin({name:winName, url:winUrl});
+		}
+	}
+	
+	function openDownloadManager(){
+		api.execScript({name: 'person', script: 'openDownloadManager()'});			
+	}
+	
+	function closePersonalCenter(){	
+		pc.close();
+	}
+	
+	function toCalendar(){
+		
+		api.openWin({name:'calendar',url:'calendar.html', delay:250});
+	}
+</script>
+</html>

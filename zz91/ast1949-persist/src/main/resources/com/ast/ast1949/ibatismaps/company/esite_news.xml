@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="esiteNews">
+	<typeAlias alias="esiteNewsDo" type="com.ast.ast1949.domain.company.EsiteNewsDo" />
+	<resultMap class="esiteNewsDo" id="esiteNewsResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="title" column="title" />
+		<result property="postTime" column="post_time" />
+	</resultMap>
+
+	<resultMap class="esiteNewsDo" id="esiteNewsWithContentResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="postTime" column="post_time" />
+	</resultMap>
+
+	<sql id="columnWithoutContent">
+		id,company_id,account,title,post_time
+	</sql>
+
+	<select id="queryNewsByCompany" parameterClass="java.util.HashMap"
+		resultMap="esiteNewsResult">
+		select
+		<include refid="columnWithoutContent" />
+		from esite_news
+		<dynamic prepend="where">
+			<isNotNull property="companyId" prepend="and">
+				company_id=#companyId#
+			</isNotNull>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryNewsByCompanyIdCount" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(*) from esite_news
+		where company_id=#value#
+	</select>
+
+	<select id="queryOneNewsById" parameterClass="java.lang.Integer"
+		resultMap="esiteNewsWithContentResult">
+		select
+		<include refid="columnWithoutContent" />
+		,content
+		from esite_news
+		where id=#value#
+	</select>
+	
+	<select id="queryLastNewsById" parameterClass="java.util.HashMap"
+		resultMap="esiteNewsWithContentResult">
+		select
+		<include refid="columnWithoutContent" />
+		,content
+		from esite_news
+		where company_id=#companyId#
+		and
+		id&gt;#id# 
+		ORDER BY id
+		ASC limit 0,1
+	</select>
+	
+	<select id="queryNextNewsById" parameterClass="java.util.HashMap"
+		resultMap="esiteNewsWithContentResult">
+		select
+		<include refid="columnWithoutContent" />
+		,content
+		from esite_news
+		where company_id=#companyId# and id&lt;#id#
+		ORDER BY id
+		DESC limit 0,1
+	</select>
+
+	<insert id="insertNews" parameterClass="esiteNewsDo">
+		insert into
+		esite_news(company_id, account, title,
+		post_time, content,
+		gmt_created, gmt_modified)
+		values(#companyId#,
+		#account#, #title#,
+		#postTime#, #content#, now(), now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<delete id="deleteNewsByCompany" parameterClass="java.util.HashMap">
+		delete from
+		esite_news
+		where company_id=#companyId# and id=#id#
+	</delete>
+
+	<update id="updateNewsById" parameterClass="esiteNewsDo">
+		update esite_news set
+		title=#title#,
+		content=#content#,
+		post_time=#postTime#,
+		gmt_modified=now()
+		where id=#id# and company_id=#companyId#
+	</update>
+	
+	<select id="queryList" parameterClass="java.lang.Integer" resultMap="esiteNewsResult">
+		select 
+		<include refid="columnWithoutContent" />
+		from esite_news
+		order by id desc
+		limit #size#
+	</select>
+
+	<select id="querybyCompanyAll" parameterClass="java.lang.Integer" resultMap="esiteNewsWithContentResult">
+	  select
+	  id,company_id,account,title,content,post_time
+	  from esite_news
+	  where company_id=#companyId#
+	</select>
+</sqlMap>

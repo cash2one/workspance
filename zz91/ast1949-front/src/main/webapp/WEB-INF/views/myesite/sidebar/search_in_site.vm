@@ -1,0 +1,47 @@
+<div id="search_in_site" class="bodyCont moveChild" style="margin-bottom:7px;">
+    <div class="clr"></div>
+    <div class="bodyContTitle">
+        #set($navTitle="站内搜索")
+        #foreach($sideBar in $!{sideBarConfig})
+            #if(${sideBar.id} == "search_in_site")
+                #set($navTitle=${sideBar.title})
+            #end
+        #end
+        <span class="fl b titleLinkColor titleName"  onclick="Move.editTitle(this.parentNode.parentNode);">$!{navTitle}</span>
+    </div>
+    <div class="bodyContContent">
+        <input class="ml10px" type="text" name="keywords_text_1" id="keywords_text_1" size="13" onFocus="javascript:funcFocus(this)" onkeypress="javascript:funcEnter()"  />
+        <input class="ml5" type="button" value="搜索" onmousedown="return aliclick(this,'?tracelog=website_search')" onclick="javascript:funcSearch($!{companyDO.id})"  />
+    </div>
+</div>
+
+<script language="javascript">
+function funcSearch(cd) {
+    var keywords = document.getElementById("keywords_text_1").value;
+    if (keywords == null || Trim(keywords) == "" || keywords == "输入产品关键字") {
+        alert("请输入要查找信息的关键字！");
+        document.getElementById("keywords_text_1").focus();
+        return false;
+    } else {
+        parent.window.location.href="$!{address.server}/myesite/zxgq.htm?kw="+keywords;
+    }
+}
+
+function funcEnter() {
+}
+
+function funcFocus(text) {
+    if (text.value=="输入产品关键字" || Trim(text.value)=="") {
+        text.value="";
+    }
+}
+
+function Trim(str){
+    if(str.charAt(0) == " "){
+        str = str.slice(1);
+        str = Trim(str);
+    }
+    return str;
+}
+
+</script>

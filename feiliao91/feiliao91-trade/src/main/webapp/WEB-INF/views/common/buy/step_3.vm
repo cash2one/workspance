@@ -1,0 +1,102 @@
+<div class="orderright fl">
+	<div class="state-main">
+		<div class="state-now">
+			<i class="icon-big-ts iconfont">&#xe60d;</i>订单状态：商家已发货，等待买家确认收货
+		</div>
+		#if($!{state})
+				#if($!{state}==3)
+		<div class="state-cando">
+			还有  
+			<span class="red">
+				<span id="times_day">9</span>天 
+				<span id="times_hour">23</span>时  
+				<span id="times_minute">4</span>分    
+				<span id="second">7</span>秒   
+			</span>  
+			来确认收货，超时订单自动确认收货
+		</div>
+				#end
+		#end
+		#foreach($obj in $logisticsMap.get("data"))
+			#if($velocityCount==1)
+				#set($newtime=$obj.time)
+				#set($context=$obj.context)
+			#end
+		#end
+		#if($!{logisticsNo})
+		<p class="wuliuxx">物流： $!{logisticsCompany}   运单号：$!{logisticsNo}</p>
+		<p class="wuliuxx text-index">
+			$!newtime
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<span class="orange">$!context</span>
+		</p>
+		#end
+		<div class="state-cando">
+			您可以<a href="#springUrl('/order/recetion.htm')?orderNo=$!{orderNo}" class="go-givemy">确认收货</a>
+			<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderNo=')$!{orderNo}" class="blue-a" target="_blank">申请退款</a>
+		</div>
+	</div>
+</div>
+<script>
+#if($!{state})
+				#if($!{state}==3)
+	function getNextDay(d,day){
+        d = new Date(d);
+        d = +d + 1000*60*60*24*day;
+        d = new Date(d);
+        //return d;
+        //格式化
+        return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate() +" "+ d.getHours() + ":" + d.getMinutes() +":" +d.getSeconds();
+         
+    }
+	//根据天，时，分，秒的ID找到相对应的元素
+	var time_day = document.getElementById("times_day");
+	var time_hour = document.getElementById("times_hour");
+	var time_minute = document.getElementById("times_minute");
+	var time_second = document.getElementById("second");
+	var time_end =new Date(getNextDay("$!{ntime}",10));  // 设定活动结束结束时间
+	time_end = time_end.getTime();
+	count_down();
+	function count_down(){ 
+		 var time_now = new Date();  // 获取当前时间
+   		 time_now = time_now.getTime();
+   		 var time_distance = time_end - time_now;  // 时间差：活动结束时间减去当前时间   
+   		 var int_day, int_hour, int_minute, int_second;   
+		 if(time_distance >= 0){   
+		 	 // 相减的差数换算成天数   
+    		 int_day = Math.floor(time_distance/86400000)
+     		 time_distance -= int_day * 86400000; 
+     		 // 相减的差数换算成小时
+            int_hour = Math.floor(time_distance/3600000) 
+        	time_distance -= int_hour * 3600000;  
+        	// 相减的差数换算成分钟   
+     		int_minute = Math.floor(time_distance/60000)    
+    		time_distance -= int_minute * 60000; 
+    		// 相减的差数换算成秒数  
+      		int_second = Math.floor(time_distance/1000)    
+			// 判断小时小于10时，前面加0进行占位
+        	if(int_hour < 10) {
+        		int_hour = "0" + int_hour;  
+        	}
+        	// 判断分钟小于10时，前面加0进行占位      
+  			if(int_minute < 10){    
+   				int_minute = "0" + int_minute;  
+   			}
+   			 // 判断秒数小于10时，前面加0进行占位 
+      		if(int_second < 10) {
+      			int_second = "0" + int_second;  
+      		} 
+      		// 显示倒计时效果       
+			time_day.innerHTML = int_day;
+			time_hour.innerHTML = int_hour; 
+			time_minute.innerHTML = int_minute; 
+			time_second.innerHTML = int_second;	
+			setTimeout("count_down()",1000);    
+		 }else{
+			//确认收获的操作
+		 }
+		
+	}
+			#end
+#end
+</script>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="sample_accountseq">
+	<resultMap class="com.ast.ast1949.domain.sample.Accountseq"
+		id="sampleAccountseqResult">
+		<result column="id"  property="id" />
+		<result column="account_id"  property="accountId" />
+		<result column="seqflag"  property="seqflag" />
+		<result column="change_type"  property="changeType" />
+		<result column="preamount"  property="preamount" />
+		<result column="amount"  property="amount" />
+		<result column="change_amount"  property="changeAmount" />
+		<result column="refsn"  property="refsn" />
+		<result column="gmt_created"  property="createTime" />
+		<result column="gmt_modified"  property="gmtModified" />
+		<result column="note" property="note" />
+		<result column="orderid" property="orderid" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id, account_id, seqflag, change_type, preamount, amount,
+		change_amount,
+		refsn, gmt_created,gmt_modified, note, orderid
+	</sql>
+	
+	<select id="selectByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Accountseq"
+		resultMap="sampleAccountseqResult">
+		select id, account_id, seqflag, change_type, preamount, amount,
+		change_amount, refsn,
+		gmt_created,gmt_modified, note, orderid
+		from
+		sample_accountseq
+		where id = #id#
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Accountseq">
+		delete from sample_accountseq
+		where id = #id#
+	</delete>
+	
+	<insert id="insert" parameterClass="com.ast.ast1949.domain.sample.Accountseq">
+		insert into sample_accountseq (account_id,company_id, seqflag, change_type,
+		preamount, amount,
+		change_amount, refsn, gmt_created,gmt_modified,
+		note, orderid)
+		values (#accountId#,#companyId#,
+		#seqflag#,
+		#changeType#,
+		#preamount#,
+		#amount#, #changeAmount#, #refsn#,
+		now(),now(), #note#, #orderid#)
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Accountseq">
+		update sample_accountseq
+		set account_id = #accountId#,
+		seqflag =
+		#seqflag#,
+		change_type = #changeType#,
+		preamount =
+		#preamount#,
+		amount = #amount#,
+		change_amount =
+		#changeAmount#,
+		refsn = #refsn#,
+		gmt_modified = now(),
+		note = #note#,
+		orderid = #orderid#
+		where id =
+		#id#
+	</update>
+	
+	<update id="updateByPrimaryKeySelective"	parameterClass="com.ast.ast1949.domain.sample.Accountseq">
+		update sample_accountseq
+		set gmt_modified = now()
+		<isNotNull prepend="," property="accountId">
+			account_id =
+			#accountId#
+		</isNotNull>
+		<isNotNull prepend="," property="seqflag">
+			seqflag = #seqflag#
+		</isNotNull>
+		<isNotNull prepend="," property="changeType">
+			change_type =
+			#changeType#
+		</isNotNull>
+		<isNotNull prepend="," property="preamount">
+			preamount =
+			#preamount#
+		</isNotNull>
+		<isNotNull prepend="," property="amount">
+			amount = #amount#
+		</isNotNull>
+		<isNotNull prepend="," property="changeAmount">
+			change_amount =
+			#changeAmount#
+		</isNotNull>
+		<isNotNull prepend="," property="refsn">
+			refsn = #refsn#
+		</isNotNull>
+		<isNotNull prepend="," property="note">
+			note = #note#
+		</isNotNull>
+		<isNotNull prepend="," property="orderid">
+			orderid = #orderid#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<sql id="dynamicSearch">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and " property="orderid">
+				orderid = #orderid#
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and " property="changeType">
+				change_type  = #changeType#
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and " property="accountId">
+				account_id = #accountId#
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and " property="from">
+				gmt_created >= #from#
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and " property="to">
+				#to# > gmt_created
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="companyName">
+				exists(select id from company where s.company_id = id and name = #companyName# )
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+
+	<!-- queryListByFilter start -->
+	<select id="queryListByFilter" parameterClass="java.util.Map"
+		resultMap="sampleAccountseqResult">
+		select
+		<include refid="defaultColumn" />
+		from sample_accountseq s
+		<include refid="dynamicSearch"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListByFilterCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from sample_accountseq s
+		<include refid="dynamicSearch"/>
+	</select>
+	<!-- queryListByFilter end -->
+
+</sqlMap>

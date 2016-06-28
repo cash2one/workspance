@@ -1,0 +1,240 @@
+    <header data-am-widget="header" class="am-header am-header-default">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:void(0)" class="" onClick="javascript :history.back(-1)">
+                <i class="am-header-icon am-icon-chevron-left"></i>
+            </a>
+        </div>
+
+        <h1 class="am-header-title">
+            登录
+        </h1>
+    </header>
+    <div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+        <a href="#top" title="">
+            <img class="am-gotop-icon-custom" src="http://img0.zz91.com/trade/assets/images/goTop.gif" />
+        </a>
+    </div>
+
+    <div class="get-login-type am-u-sm-12">
+        <div class="login-type-name am-u-sm-6 am-text-center this-login">账号登录</div>
+        <div class="login-type-name am-u-sm-6 am-text-center">手机登录</div>
+    </div>
+    <form method="post" class="am-form am-form-horizontal" id="login-form" action='#springUrl("/doLogin.htm")'>
+        <div class="login-type am-block">
+            <div class="am-form-group">
+                <div class="am-u-sm-12">
+                    <div class="am-form-icon">
+                        <i class="am-icon-mobile-phone"></i>
+                        <input type="text" name="account" id="account" class="am-form-field" placeholder="手机号/邮箱/用户名">
+                    </div>
+                </div>
+            </div>
+            <div class="am-form-group">
+                <div class="am-u-sm-12">
+                    <div class="am-form-icon">
+                        <i class="am-icon-lock"></i>
+                        <input type="password" name="password" id="password" class="am-form-field" placeholder="输入密码">
+                    </div>
+                </div>
+            </div>
+            <div class="am-form-group">
+                <div class="am-u-sm-12">
+                    <div class="checkbox">
+                        <label class="am-checkbox am-login-data">
+                            <input type="checkbox" id="rememberme" name="rememberme" data-am-ucheck="" class="am-ucheck-checkbox" >
+                            7天内自动登录
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="am-form-group am-margin-bottom-sm">
+                <div class="am-u-sm-12">
+					<input type="hidden" name="url" value="$!{url}"/>
+                    <input type="button" id="loginsubmit" value="登 录" class="am-btn-block am-btn am-btn-primary am-btn-sm am-radius">
+                </div>
+            </div>
+            <div class="am-cf am-u-sm-12 am-text-xs">
+                <a class="am-fl am-text-primary" href="#springUrl('/register/step1.htm')">立即注册</a>
+                <div class="am-fr">忘记密码?</div>
+            </div>
+        </div>
+
+
+        <div class="login-type">
+            <div class="am-form-group">
+                <div class="am-u-sm-12">
+                    <div class="am-form-icon">
+                        <i class="am-icon-mobile-phone"></i>
+                        <input type="tel" name="mobile" id="mobile" class="am-form-field" placeholder="请输入手机号">
+                    </div>
+                </div>
+            </div>
+            <div class="am-form-group">
+                <div class="am-u-sm-7">
+                    <div class="am-form-icon">
+                        <i class="am-icon-check"></i>
+                            <input type="number" name="verify" id="verify" class="am-form-field" placeholder="请输入验证码">
+                        </div>
+                    </div>
+                <div class="am-u-sm-5" >
+                    <button type="button" class="am-btn am-btn-primary am-btn-block am-radius j_getyz" id="send-captcha">发送验证码</button>
+                </div>
+            </div>
+            <div class="am-form-group">
+                <div class="am-u-sm-12">
+                    <button id="getCodeBtn" type="button" class="am-btn-block am-btn am-btn-primary am-btn-sm">确认</button>
+                </div>
+            </div>
+        </div>
+    </form>
+	
+	<!-- 帐号登录提示框start,用于showMessage方法-->
+	<button type="button" style="visibility:hidden;" data-am-modal="{target: '#vcode-fail-modal'}" id="message">
+	</button>
+	<div class="am-modal am-modal-no-btn" tabindex="-1" id="vcode-fail-modal">
+		<div class="am-modal-dialog">
+			<div class="am-modal-hd">
+				<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+			</div>
+			<div class="am-modal-bd" id="msg-text">
+				帐号或密码错误，请重试！
+			</div>
+		</div>
+	</div>
+	<!-- 帐号登录提示框end,用于showMessage方法-->
+	
+  <!--在这里编写你的代码-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="http://img0.zz91.com/trade/assets/js/comm.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.min.js"></script>
+#if($!{account})
+    <script type="text/javascript">
+    	jQuery("#message").click();
+    </script>
+#end
+<script type="text/javascript">
+    $(function(){
+        init();
+    })
+    function init(){
+        $(".login-type-name").on("click",function(){
+            var index = $(this).index();
+            $(".this-login").removeClass("this-login");
+            $(this).addClass("this-login");
+            $(".am-block").removeClass("am-block");
+            $(".login-type").eq(index).addClass("am-block");
+        })
+    }
+</script>
+<script type="text/javascript">
+	//提交前修改，用于帐号登录
+	$("#loginsubmit").click(function(){
+		if($("input[type='checkbox']").is(':checked')==true){
+			$("#rememberme").val(1);
+		}else{
+			$("#rememberme").val(0);
+		}
+		$('#login-form').submit();
+	});
+	//用于手机验证码登录
+	//点击验证码判断手机格式
+	$("#send-captcha").click(function(){
+		getClick($(this))
+	});
+	
+	function getClick(clickBtn){
+		var mobile=$("#mobile").val();
+		var ph3 =/^\d{11}$/;
+		if(!ph3.test(mobile)){
+			showMessage("手机格式错误，请重试！");
+			return false;
+		}else{
+			clickBtn.unbind("click");//取消点击事件
+			sendCode(mobile);//发送验证码
+			settime();
+		}
+	}
+	
+	//发送验证码
+	function sendCode(mobile){
+		if(!mobile){
+			alert("号码不能为空");
+			return false;
+		}
+		jQuery.ajax({
+			url:'#springUrl("/validationcode/sendMobile.htm")',
+			data:{"mobile":mobile},
+			type:"post",
+			async:false,
+			dataType:"json",
+			success:function(reg){
+			}
+		});
+	}
+	
+	##验证码倒计时
+	function settime(){
+		var j_getyz = $(".j_getyz")
+		var alltime = 5;
+		j_getyz.html(alltime+"s")
+		var clockTime = setInterval(function(){
+			alltime -=1;
+			j_getyz.html(alltime+"s");
+			if(alltime == 0){
+				clearInterval(clockTime)
+				j_getyz.html("发送验证码");
+				j_getyz.on("click",function(){
+					getClick(j_getyz);
+				})
+			}
+		},1000)
+	}
+	
+	//消息展示通用函数
+	function showMessage(text){
+		var msg;
+		if(!text){
+			msg="";
+		}else{
+			msg=text;
+		}
+		$("#msg-text").text(msg);
+		$("#message").click();
+	}
+	
+	//手机登录确认时的操作
+	$("#getCodeBtn").click(function(){
+		var mobile = $("#mobile").val();
+		var verify = $("#verify").val();
+		if(!mobile || !verify){
+			showMessage("请完善您的登录信息！");
+			return false;
+		}
+		//验证码是否正确，正确则登录，否则弹出验证码错误信息
+		_reqajax({
+				type:"post",
+				url:"#springUrl('/doLoginByMobile.htm')",
+				data:{mobile:mobile,vcode:verify}
+			},doLoginByMobile);
+	});
+	 
+	function doLoginByMobile(data){
+		var mobile = $("#mobile").val();
+		var verify = $("#verify").val();
+		if(data.isTrue){
+			//验证成功，执行登录
+			location.href = "$!{address.mobile}/home/index.htm"
+		}else{
+			showMessage("验证码错误");
+		}
+	}
+	
+</script>

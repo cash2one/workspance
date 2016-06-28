@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="inquiryGroup">
+	<typeAlias alias="inquiryGroup" type="com.ast.ast1949.domain.company.InquiryGroup" />
+
+	<resultMap id="inquiryGroupResult" class="inquiryGroup">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="companyId" column="company_id"/>
+		<result property="account" column="account"/>
+	</resultMap>
+	
+	<sql id="fullColumn" >
+		iq.id,iq.name,iq.gmt_created,iq.gmt_modified,iq.account,iq.company_id
+	</sql>
+	
+	<select id="queryGroupOfCompany" parameterClass="java.util.HashMap" resultMap="inquiryGroupResult" >
+		select 
+		<include refid="inquiryGroup.fullColumn" />
+		from inquiry_group iq
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="account">
+				account=#account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyId">
+				iq.company_id=#companyId#
+			</isNotEmpty>
+		</dynamic>
+		limit 20
+	</select>
+	
+	<select id="querySystemGroup" resultMap="inquiryGroupResult" >
+		select 
+		<include refid="inquiryGroup.fullColumn" />
+		from inquiry_group iq
+		where company_id=0
+		limit 5
+	</select>
+	
+	<insert id="insertGroup" parameterClass="inquiryGroup">
+		insert into inquiry_group
+			(name,
+			gmt_created,
+			gmt_modified,
+			company_id,
+			account
+			)
+			values
+			(#name#,
+			now(),
+			now(),
+			#companyId#,
+			#account#
+			)
+	    <selectKey resultClass="java.lang.Integer" keyProperty="id">
+	    	select last_insert_id()
+	    </selectKey>
+	</insert>
+	
+	<update id="updateGroup" parameterClass="inquiryGroup">
+  		update inquiry_group
+		set name = #name#,
+			gmt_modified = now()
+		where id = #id# and account=#account#
+  	</update>
+  	
+  	<delete id="deleteGroup" parameterClass="java.util.HashMap" >
+  		delete from inquiry_group
+  		where id=#id# and account=#account#
+  	</delete>
+  	
+  	<select id="queryName" resultClass="java.lang.String" parameterClass="java.lang.Integer">
+  		select name from inquiry_group where id=#value#
+  	</select>
+  	
+	<!-- 
+
+	<insert id="updateGroup" parameterClass="inquiryGroupDO">
+		insert into inquiry_group
+			(name,
+			gmt_created,
+			gmt_modified,
+			company_id,
+			account
+			)
+			values
+			(#name#,
+			#gmtCreated#,
+			#gmtModified#,
+			#companyId#,
+			#account#
+			)
+	    <selectKey resultClass="java.lang.Integer" keyProperty="id">
+	    	select last_insert_id()
+	    </selectKey>
+	</insert>
+
+	<delete id="deleteInquiryGroupById" parameterClass="java.lang.Integer">
+		delete from inquiry_group
+		where id = #id#
+  	</delete>
+
+  	<update id="updateInquiryGroup" parameterClass="inquiryGroupDO">
+  		update inquiry_group
+		set name = #name#,
+		  gmt_modified = #gmtModified#,
+		  company_id = #companyId#,
+		  account = #account#
+		where id = #id#
+  	</update>
+	 -->
+<!-- 
+	<select id="queryInquiryGroupById" resultMap="inquiryGroupResult" parameterClass="java.lang.Integer">
+		select
+		  ig.id,
+		  ig.name,
+		  ig.gmt_created,
+		  ig.gmt_modified,
+		  ig.company_id,
+		  ig.account
+		from inquiry_group ig
+		where ig.id=#value#
+  	</select>
+ -->
+<!-- 
+
+  	<select id="queryInquiryGroupListByCompanyId" resultMap="inquiryGroupResult" parameterClass="java.lang.Integer">
+		select
+		  ig.id,
+		  ig.name,
+		  ig.gmt_created,
+		  ig.gmt_modified,
+		  ig.company_id,
+		  ig.account
+		from inquiry_group ig
+		where ig.company_id=0 or ig.company_id=#value#
+		order by company_id,id desc
+  	</select>
+  	
+  	<select id="queryCustomizecInquiryGroupListByCompanyId" resultMap="inquiryGroupResult" parameterClass="java.lang.Integer">
+		select
+		  ig.id,
+		  ig.name,
+		  ig.gmt_created,
+		  ig.gmt_modified,
+		  ig.company_id,
+		  ig.account
+		from inquiry_group ig
+		where ig.company_id=#value#
+		order by id desc
+  	</select>
+ -->
+  	<!-- 设置分组 
+	<update id="batchSetInquiryGroup" parameterClass="java.util.Map">
+		update inquiry
+		set group_id = #inquiryGroupId#
+		where id = #id#
+	</update>
+  	-->
+
+</sqlMap>

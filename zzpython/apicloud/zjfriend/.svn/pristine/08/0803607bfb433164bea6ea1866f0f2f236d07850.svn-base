@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" href="../css/main.min.css" type="text/css">
+		<style>
+			.mui-bar-nav{background-color: #B63798;color:#fff;}
+			.mui-bar-nav a,.mui-title{color:#fff;}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="api.closeWin();"></a>
+			<h1 class="mui-title">正文</h1>
+		</header>
+		<div class="box">
+		<div id="detail"></div>	
+        
+        <nav class="mui-bar mui-bar-tab" id="newsnav">
+			<a tapmode="mui-active" id="defaultTab" class="mui-tab-item" href="javascript:shareSystem()">
+				<span class="mui-icon mui-icon-upload"></span>
+				<span class="mui-tab-label">分享</span>
+			</a>
+			<a tapmode="mui-active" class="mui-tab-item" href="javascript:favorite('&content_id={{id}}&favorite_type_code=10091012&title={{content.title}}')">
+				<span class="mui-icon mui-icon-star"></span>
+				<span class="mui-tab-label">收藏</span>
+			</a>
+			<a tapmode="mui-active" class="mui-tab-item" href="javascript:openpinlun(1)">
+				<span class="mui-icon mui-icon-chat"></span>
+				<span class="mui-tab-label">评论</span>
+			</a>
+		</nav>
+        <script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../script/iscroll.js"></script>
+		<script>
+			function sliding() {
+				api.openSlidPane({
+					type : 'left'
+				});
+			}
+			function openpinlun(id){
+				var pageParam={id:id,t:(new Date()).getTime().toString()};
+		        api.openWin({
+		            name: 'pinlun'+id.toString(),
+		            pageParam:pageParam,
+		            url: 'pinlun.html'
+		        })
+			}
+			function toDetail(id) {
+				var pageParam={id:id,t:(new Date()).getTime().toString()};
+		        api.openWin({
+		            name: 'detail'+id.toString(),
+		            pageParam:pageParam,
+		            url: 'detail.html'
+		        })
+		    }
+
+			apiready = function() {
+				$api.fixIos7Bar($api.dom('.mui-action-back'));
+				var id = api.pageParam.id;
+				api.addEventListener({
+					name : 'keyback'
+				}, function(ret, err) {
+					api.closeWin();
+				});
+				api.showProgress();
+				api.ajax({
+					url : hosturl+'/sex/newsdetail'+id.toString()+'.html',
+					method : 'get',
+					timeout : 30,
+					dataType : 'text',
+					returnAll : false
+				}, function(ret, err) {
+					if (ret) {
+						$("#detail").html(ret);
+						api.hideProgress();
+					} else {
+					};
+				});
+				
+			};
+		</script>
+	</body>
+</html>

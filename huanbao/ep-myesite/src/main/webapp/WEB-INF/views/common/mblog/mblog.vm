@@ -1,0 +1,528 @@
+	#if($!{info})
+	
+             <dl style="padding-left:50px;">
+				<dd >
+					<div class="bc-session">
+						<textarea class="bc-session-textarea" onClick="TextWeibo(this);" onkeyup="doHideAnte(this);"></textarea>
+					</div>	
+					<div class="bc-session-box1">
+    					<ul class="bc-session-ul fl">
+                        	<li class="bc-icon4"><a  id="face">表情</a></li>
+                            <li class="bc-icon5"><a  id="picture">图片</a></li>
+                            <li class="bc-icon6"><a  onclick="topic(this);">话题</a></li>
+							<div style="clear:both"></div>
+    					</ul>
+						<div class="bc-session-140 fl">最多输入140个字</div>
+						<div class="bc-session-send fr" id="send"></div>
+						<div class="bc-picture" id="bc-picture">
+							<div class="bc-picture-top">
+								<div class="bc-close2 fr" id="close"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+								<div class="cb"></div>
+							</div>
+							<div class="bc-picture-content">
+								<div class="bc-picture-title">
+									共<span id="show-count"></span>张，还能上传<span id="show-count2"></span>张
+								</div>
+								<!--end bc-picture-title-->
+								<input type="hidden" value="" id="photos" name="photos"/>
+								<ul class="bc-picture-img" id="showImg">
+									<li><img src="http://img0.huanbao.com/huanbao/mblog/images/updata_add.jpg"  id="updateMblogPhoto"/></li>
+									
+								</ul>
+								<div style="clear:both"></div>
+							</div>
+							<!--end bc-picture-content-->
+						</div>
+						
+						<div class="bc-face" id="bc-face">
+							<div class="bc-face-top">
+								<div class="bc-close3 fr"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+								<div class="cb"></div>
+							</div>
+							#parse("/common/showface.vm")
+						<!--end bc-face-box-->
+						</div>
+						<div style="clear:both"></div>
+					</div>
+                </dd>
+            </dl>		
+        
+		<div class="demopage-1">
+           <div id="s2">
+		<ul>
+		#foreach(${l} in $!{page})
+			#if($!{l.tragetBlog})
+			<li>	
+            <div class="bc-Forward" style="height:232px;overflow:hidden">
+                <div class="bc-Forward-img"  >
+                    <a href="$!{address.mblog}/ublog$!{l.sentInfo.id}.htm" target="_blank">
+						#if($!{l.sentInfo.headPic})
+            			<img src="$!{address.thumb}$!{address.resource}$!{l.sentInfo.headPic}" style="width:50px;height:50px;"/>
+            			#else
+            			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+            			#end
+					</a>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="bc-Forward-box">
+                	<div class="bc-Forward-title2">
+                    	<a class="bc-Forward-name" href="$!{address.mblog}/ublog$!{l.sentInfo.id}.htm" target="_blank">
+							#if($!{l.noteName})
+								$!{l.noteName}
+						    #else
+								$!{l.sentInfo.name}	
+							#end
+							:
+						</a>$!{l.mBlog.content}
+                    </div>
+                    <!--end bc-Forward-title2-->
+                	<div class="bc-Forward-top">
+                        <img src="http://img0.huanbao.com/huanbao/mblog/images/Forward_top1.jpg" />
+                    </div>
+                    <!--end bc-Forward-top-->
+                    <div class="bc-Forward-block">
+                        <div class="bc-Forward-title">
+                            <a class="bc-Forward-name" href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">$!{l.info.name}:</a>
+							$!{l.tragetBlog.content}
+                        </div>
+                        <!--end bc-Forward-title-->
+                        <div class="bc-Forward-content">
+        						#if($!{l.tragetBlog.photoPath} && $!{l.tragetBlog.photoPath}!="")
+        						<div class="sm-item-images">
+        							<ul>
+        							#foreach(${l} in $!{l.mbList})
+                                        <li onclick="img_change(this);">
+        							
+                                     <img src="$!{address.resource}$!{l.photoPath}"/>
+        						   </li>
+        						   #end
+        
+        							</ul>
+        							<div style="clear:both"></div>
+        						</div>
+        						
+        						<div class="sm-item-images2" onclick="img_changeb(this);">
+        							<img src="">
+        						</div>
+        						#end
+                        </div>
+                        <!--end bc-Forward-content-->
+                        <div class="bc-Forward-box2">
+                            <div class="bc-Forward-date">
+                                #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forward-right">
+								#if($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} != 0)
+                                <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.tragetBlog.discussCount}）</a></span>
+							    #elseif($!{l.tragetBlog.sentCount} == 0  && $!{l.tragetBlog.discussCount} != 0)
+								<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.tragetBlog.discussCount}）</a></span>	
+							   #elseif($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} == 0)
+								<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">评论</a></span>
+							   #else
+								<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.tragetBlog.id}"style="color:#006633;" target="_blank">评论</a></span>
+							   #end
+                            </div>
+                        </div>
+                        <!--end bc-Forward-block-->
+                        <div style="clear:both"></div>
+					</div>
+                       <!--end bc-Forward-block-->
+                </div>
+                <div style="clear:both"></div>
+                <!--end bc-Forward-box-->
+				<div class="bc-Forward2">
+					<div class="bc-Forward-box2">
+                            <div class="bc-Forward-date">
+                             #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forward-right">
+							<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>	
+                            #if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank"> 转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+							<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+                            </div>
+                        </div>
+                </div>
+				<div style="clear:both"></div>
+            </div>	
+			</li>
+			#else
+			<li>	
+			<div class="bc-item" style="height:222px;overflow:hidden">
+                <div class="bc-item-img">
+                    <a href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">
+            			#if($!{l.info.headPic})
+            			<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:50px;height:50px;"/>
+            			#else
+            			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+            			#end
+            		</a>
+                    <div style="clear:both"></div>
+                </div>
+				<div class="bc-item-box">
+                    <div class="bc-item-title">
+                        <a class="bc-item-name" href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">
+								$!{l.info.name}	
+							:</a>
+            			$!{l.mBlog.content}
+                    </div>
+					<div class="bc-item-content">
+					#if($!{l.mBlog.photoPath})
+					<div class="sm-item-images">
+						<ul>
+							
+						#foreach(${l} in $!{l.mbList})
+                            <li onclick="img_change(this);">
+						
+                         <img src="$!{address.resource}$!{l.photoPath}"/>
+					   </li>
+					   #end
+
+						</ul>
+						<div style="clear:both"></div>
+					</div>
+					#end
+                    </div>
+
+                </div>	
+				                     <!--end bc-item-content-->
+				<div class="bc-item-box2">
+                    <div class="bc-item-date">
+                       #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                    </div>
+                    <div class="bc-item-right">
+						<input type="hidden" id="show$!{l.mBlog.id}" value="0"/> 
+                            #if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank"> 转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+							<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                            <span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}"style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+                    </div>
+                </div>
+                    <!--end bc-item-box2-->
+				<div style="clear:both"></div>
+            </div>	
+			</li>
+		  #end
+		#end
+		</ul>
+		</div>
+	</div>
+			
+	#else		
+	
+        <div class="bc-h3"><h3>看看微交流里面大家都在讨论什么</h3></div>
+		<div class="demopage-1">
+           <div id="s2">
+		<ul>
+		#foreach(${l} in $!{page})
+			#if($!{l.tragetBlog})
+			<li>	
+            <div class="bc-Forward" style="height:222px;overflow:hidden">
+                <div class="bc-Forward-img"  >
+                    <a href="$!{address.mblog}/ublog$!{l.sentInfo.id}.htm" target="_blank">
+						#if($!{l.sentInfo.headPic})
+            			<img src="$!{address.thumb}$!{address.resource}$!{l.sentInfo.headPic}" style="width:50px;height:50px;"/>
+            			#else
+            			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+            			#end
+					</a>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="bc-Forward-box">
+                	<div class="bc-Forward-title2">
+                    	<a class="bc-Forward-name" href="$!{address.mblog}/ublog$!{l.sentInfo.id}.htm" target="_blank">
+							#if($!{l.noteName})
+								$!{l.noteName}
+						    #else
+								$!{l.sentInfo.name}	
+							#end
+							:
+						</a>$!{l.mBlog.content}
+                    </div>
+                    <!--end bc-Forward-title2-->
+                	<div class="bc-Forward-top">
+                        <img src="http://img0.huanbao.com/huanbao/mblog/images/Forward_top1.jpg" />
+                    </div>
+                    <!--end bc-Forward-top-->
+                    <div class="bc-Forward-block">
+                        <div class="bc-Forward-title">
+                            <a class="bc-Forward-name" href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">$!{l.info.name}:</a>
+							$!{l.tragetBlog.content}
+                        </div>
+                        <!--end bc-Forward-title-->
+                        <div class="bc-Forward-content">
+        						#if($!{l.tragetBlog.photoPath} && $!{l.tragetBlog.photoPath}!="")
+        						<div class="sm-item-images">
+        							<ul>
+        							#foreach(${l} in $!{l.mbList})
+                                        <li onclick="img_change(this);">
+        							
+                                     <img src="$!{address.resource}$!{l.photoPath}"/>
+        						   </li>
+        						   #end
+        
+        							</ul>
+        							<div style="clear:both"></div>
+        						</div>
+        						
+        						<div class="sm-item-images2" onclick="img_changeb(this);">
+        							<img src="">
+        						</div>
+        						#end
+                        </div>
+                        <!--end bc-Forward-content-->
+                        <div class="bc-Forward-box2">
+                            <div class="bc-Forward-date">
+                                #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forward-right">
+								#if($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} != 0)
+                                <span><a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">评论（$!{l.tragetBlog.discussCount}）</a></span>
+							    #elseif($!{l.tragetBlog.sentCount} == 0  && $!{l.tragetBlog.discussCount} != 0)
+								<span><a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">转发</a></span>|<a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">评论（$!{l.tragetBlog.discussCount}）</a></span>	
+							   #elseif($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} == 0)
+								<span><a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">评论</a></span>
+							   #else
+								<span><a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">转发</a></span>|<a href="$!{address.mblog}/index.htm"style="color:#006633;" target="_blank">评论</a></span>
+							   #end
+                            </div>
+                        </div>
+                        <!--end bc-Forward-block-->
+                        <div style="clear:both"></div>
+					</div>
+                       <!--end bc-Forward-block-->
+                </div>
+                <div style="clear:both"></div>
+                <!--end bc-Forward-box-->
+				<div class="bc-Forward2">
+					<div class="bc-Forward-box2">
+                            <div class="bc-Forward-date">
+                             #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forward-right">
+							<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>	
+                            #if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank"> 转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+							<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+                            </div>
+                        </div>
+                </div>
+				<div style="clear:both"></div>
+            </div>	
+			</li>
+			#else
+			<li>
+			<div class="bc-item" style="height:222px;overflow:hidden">
+                <div class="bc-item-img">
+                    <a href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">
+            			#if($!{l.info.headPic})
+            			<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:50px;height:50px;"/>
+            			#else
+            			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+            			#end
+            		</a>
+                    <div style="clear:both"></div>
+                </div>
+				<div class="bc-item-box">
+                    <div class="bc-item-title">
+                        <a class="bc-item-name" href="$!{address.mblog}/ublog$!{l.info.id}.htm" target="_blank">
+								$!{l.info.name}	
+							:</a>
+            			$!{l.mBlog.content}
+                    </div>
+					<div class="bc-item-content">
+					#if($!{l.mBlog.photoPath})
+					<div class="sm-item-images">
+						<ul>
+							
+						#foreach(${l} in $!{l.mbList})
+                            <li onclick="img_change(this);">
+						
+                         <img src="$!{address.resource}$!{l.photoPath}"/>
+					   </li>
+					   #end
+
+						</ul>
+						<div style="clear:both"></div>
+					</div>
+					#end
+                    </div>
+
+                </div>	
+				                     <!--end bc-item-content-->
+				<div class="bc-item-box2">
+                    <div class="bc-item-date">
+                       #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                    </div>
+                    <div class="bc-item-right">
+						<input type="hidden" id="show$!{l.mBlog.id}" value="0"/> 
+                            #if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank"> 转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论（$!{l.mBlog.discussCount}）</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+							<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发（$!{l.mBlog.sentCount}）</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                            <span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">转发</a></span>|<span><a href="$!{address.mblog}/index.htm" style="color:#006633;" target="_blank">评论</a></span>		
+							#end
+                    </div>
+                </div>
+                    <!--end bc-item-box2-->
+				<div style="clear:both"></div>
+            </div>	
+			</li>
+		  #end
+		#end
+		</ul>
+		</div>
+	</div>
+##	         #cacheFragment("$!{address.fragment}/fragment/trade/ibdCategory.htm?categoryCode=1001&myesite","","","43200")
+##            <dl class="info-wrap">
+##                <dt>
+##                	<img src="$!{address.img}/huanbao/images/myesite/hbmem_20.jpg" width="15" height="15" />
+##                	最新资料下载：
+##                </dt>
+##                <dd>
+##                    #foreach($ibd in $!{list})
+##                    	<a href="$!{ibd.downloadPath}" target="_blank">$!{ibd.name}</a>
+##                    	#if( 3 > $velocityCount )<span class="red">new</span>#end
+##                    	<br />
+##                    #end
+##                </dd>
+##            </dl>
+##            #end
+			
+	#end	
+	
+	
+	
+##	
+##             <dl style="padding-left:50px;">
+##				<dd >
+##					<div class="bc-session">
+##						<textarea class="bc-session-textarea" onClick="TextWeibo(this);" onkeyup="doHideAnte(this);"></textarea>
+##					</div>	
+##					<div class="bc-session-box1">
+##    					<ul class="bc-session-ul fl">
+##                        	<li class="bc-icon4"><a  id="face">表情</a></li>
+##                            <li class="bc-icon5"><a  id="picture">图片</a></li>
+##                            <li class="bc-icon6"><a  onclick="topic(this);">话题</a></li>
+##							<div style="clear:both"></div>
+##    					</ul>
+##						<div class="bc-session-140 fl">最多输入140个字</div>
+##						<div class="bc-session-send fr" id="send"></div>
+##						<div class="bc-picture" id="bc-picture">
+##							<div class="bc-picture-top">
+##								<div class="bc-close2 fr" id="close"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+##								<div class="cb"></div>
+##							</div>
+##							<div class="bc-picture-content">
+##								<div class="bc-picture-title">
+##									共<span id="show-count"></span>张，还能上传<span id="show-count2"></span>张
+##								</div>
+##								<!--end bc-picture-title-->
+##								<input type="hidden" value="" id="photos" name="photos"/>
+##								<ul class="bc-picture-img" id="showImg">
+##									<li><img src="http://img0.huanbao.com/huanbao/mblog/images/updata_add.jpg"  id="updateMblogPhoto"/></li>
+##									
+##								</ul>
+##								<div style="clear:both"></div>
+##							</div>
+##							<!--end bc-picture-content-->
+##						</div>
+##						
+##						<div class="bc-face" id="bc-face">
+##							<div class="bc-face-top">
+##								<div class="bc-close3 fr"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+##								<div class="cb"></div>
+##							</div>
+##							#parse("/common/showface.vm")
+##						<!--end bc-face-box-->
+##						</div>
+##						<div style="clear:both"></div>
+##					</div>
+##                </dd>
+##            </dl>
+##			<dl class="info-wrap">
+##				<dt>微交流全网动态：</dt>
+##				<dd style="height:120px;background:none">
+##							<div class="demopage">
+##                            	<div class="scrollDiv" id="s1">
+##                            		<ul>
+##                    					#foreach($l in $!{page})
+##                    						#if($!{l.sentInfo})
+##												<li>
+##                    							<div class="showheadPic">
+##													<a href="#springUrl('/ublog')$!{l.sentInfo.id}.htm" target="_blank">
+##                    								#if($!{l.sentInfo.headPic})
+##                    									<img src="$!{address.thumb}$!{address.resource}$!{l.sentInfo.headPic}" style="width:30px;height:30px;"/>
+##                    								#else
+##                    									<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img4.jpg" />	
+##                    								#end
+##                    								</a>
+##                    							</div>																		
+##                    							<div class="showtext">
+##                    								<a class="greed" href="#springUrl('/ublog')$!{l.l.sentInfo.id}.htm" target="_blank">$!{l.sentInfo.name}</a>:
+##													<span class="showContent">
+##														<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}" style="color:#08c;" target="_blank">$!{l.mBlog.content}</a>
+##													</span>
+##                    							</div>
+##                    							<div style="clear:both"></div>
+##												</li>
+##                    						#else	
+##											<li>	
+##                                            <div class="showheadPic">
+##												<a href="#springUrl('/ublog')$!{l.info.id}.htm" target="_blank">
+##                    							#if($!{l.info.headPic})
+##                    								<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:30px;height:30px;"/>
+##                    							#else
+##                    								<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img4.jpg" />	
+##												#end
+##												</a>
+##                    						</div>
+##                    						<div class="showtext">
+##												<a class="greed" href="#springUrl('/ublog')$!{l.info.id}.htm" target="_blank">$!{l.info.name}</a>:
+##												<span class="showContent">
+##													<a href="$!{address.mblog}/originalMblog.htm?mblogId=$!{l.mBlog.id}" style="color:#08c;" target="_blank">$!{l.mBlog.content}</a>
+##												</span>
+##											</div>
+##											<div style="clear:both"></div>
+##                                            </li>	
+##                    					 	#end
+##                    					#end										
+##                            		</ul>
+##                            	</div><!--scrollDiv end-->
+##                            </div>
+##                            <!--demopage end-->	
+##                </dd>
+##            </dl>
+	

@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>公司简介</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/trade/firm.css"/>
+</head>
+<body>
+<div class="box">
+	<script id="info-list" type="text/html">
+		<h2 class="firm-name">{{ d.compname }}</h2>
+		<div class="member-type">
+			<span class="color-green">会员类型：</span>{{ d.viptype.vipname }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">经营范围：</span>{{ d.business }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">公司简介：</span>{{ d.introduction }}
+		</div>
+		<div class="member-type">{{ d.compname }}</div>
+		<div class="member-type">联系人：{{ d.contact }}</div>
+		<div class="member-type">地&nbsp;&nbsp;&nbsp;&nbsp;址：{{ d.address }}</div>
+		<div class="member-type color-red">
+			联系方式：<span class="tell-num"><i></i>{{ d.mobile }}</span>
+		</div>
+	</div>
+	<div class="firm-do clear">
+		<span class="shouc"><i></i>收藏信息</span><span class="liuy"><i></i>给我留言</span><span class="gongq"><i></i>查看供求</span>
+	</div>
+	</script>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+apiready = function(){
+	$(".box").on("click",".gongq",function(){
+		var id = api.pageParam.id;
+		var label_hex = $(this).attr("label_hex")
+		var pageParam = {
+			type : "firm-gongqiu",
+			label_hex:id
+		};
+		openWin("firm-gongqiu", "../trade/firm-gongqiu.html", pageParam);
+	})
+	ajaxInfo();
+}
+function ajaxInfo(){
+	var id = api.pageParam.id;
+	var type = api.pageParam.type;
+	var url = hosturl + 'detail/?id='+ id +'&datatype=json'
+	if(type == "firm"){
+		url = hosturl + 'companyinfo/?forcid='+ id +'&datatype=json'
+	}
+	api.showProgress({title:'加载中',modal:false});
+	api.ajax({
+        url : url,
+        method : 'get',
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false
+    }, function(ret, err) {
+        if (ret) {
+        	var item = ret.list;
+        	if(type == "firm"){
+        		 ret.compname = ret.name;
+        		 item = ret;
+        	}
+        	var getTpl = $api.html($api.byId("info-list"));
+        	laytpl(getTpl).render(item, function(html){
+    			$(".box").html(html)
+			});
+         	api.hideProgress();
+        } else {
+        };
+    });
+}
+</script>
+</html>

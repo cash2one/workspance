@@ -1,0 +1,44 @@
+<script type="text/javascript" src="#springUrl('/app/zhuanti/category.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/zhuanti/zhuanti.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/photo/FileUploadField.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/photo/UploadWin.js')" ></script>
+
+<script type="text/javascript">
+Ext.onReady(function(){
+	
+	#foreach($rt in $!{recommendType.keySet()})
+		com.zz91.ep.zhuanti.FILTER_RECOMMEND.push({
+			name:"$!{recommendType.get($!{rt})}",
+			value:"$!{rt}"
+		});
+	#end
+	
+	var tree=new com.zz91.zhuanti.category.TreePanel({
+		id:CATEGORY.TREE,
+		region:"west",
+		width:200
+	});
+
+	var grid=new com.zz91.ep.zhuanti.grid({
+		id:ZHUANTI.COLLECTION_GRID,
+		region:"center",
+	});
+	
+	var viewport=new Ext.Viewport({
+		layout:"border",
+		items:[tree,grid]	
+	});
+	
+	tree.on('click',function(node,event){
+		var code = node.attributes['data'];
+		grid.getStore().baseParams["recommandStatus"]=null;
+		grid.getStore().baseParams["attentionStatus"]=null;
+		if(code!=""){
+			grid.getStore().baseParams["category"]=code;
+		}else{
+			grid.getStore().baseParams["category"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+})
+</script>

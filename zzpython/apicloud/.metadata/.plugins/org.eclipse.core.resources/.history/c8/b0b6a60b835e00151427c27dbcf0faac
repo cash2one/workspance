@@ -1,0 +1,692 @@
+/*用于自动生成演示页面.*/
+var Demo = {
+	
+	/**a
+	* 构造方法
+	* 
+	* @param	jsonPath		用来初始化测试页面的json文件.默认为网页同名同目录json文件.
+	* @param	targetElement	目标元素.demo界面将被添加为此元素的子节点.默认为body元素.
+	*
+	* @return	实例对象.
+	*
+	*/
+	createNew: function(jsonPath, targetElement){
+		
+		/*jsonPath文件的路径.默认未网页同名同目录json文件.*/
+		var jsonPath = jsonPath || (function(){
+			var a = location.href;
+			var b = a.split("/");
+			var c = b.slice(b.length-1, b.length).toString(String).split(".");
+			var pageName = c.slice(0, 1);
+			var jsonPath =  pageName + '.json';
+			return jsonPath;
+		}());
+		
+		/* demo 模块添加到哪个元素下. */
+		var targetElement = targetElement || $('body')[0];
+
+		
+		// ------------------------------------------------
+		
+		/**
+		* 生成包含代码块的行
+		*
+		* @code	string	要高亮显示的代码.
+		*
+		* @return string	包含代码块的html字符串.
+		*/
+		function createCodeBlockRow(code){
+			var code = code || '';
+			var codeStr = "<div class='row'><div class='col-xs-12'><pre><code class='javascript'>" + code + "</code></pre></div></div>";
+			return codeStr;
+		};
+		
+		// -----------------------------------------------
+		
+		/**
+		* 生成包含按钮组的行
+		* 
+		* 可选的按钮类型: default(默认), primary, success, info, warning, danger, link.
+		*
+		* @buttonGroupInfo	array	包含按钮组各个按钮的配置信息:如按钮类型, 事件响应函数等.事件响应函数仅需提供函数名.按钮组信息结构类似于:
+		[{"text": "按钮1", "type": "success","click" : "函数名1"}, 
+		  {"text": "按钮2", "type": "info","click" : "函数名2"}, 
+		  {"text": "按钮3", "type": "warning","click" : "函数名3"}]
+		
+		* @return	string	包含按钮组的html字符串.
+		*/
+		function createButtonGroupRow(buttonGroupInfo){
+			var buttonGroupInfo = buttonGroupInfo || [];
+			var buttonGroupStr = "<div class='row'><div class='col-xs-12 btn-group btn-group-justified diy-btn-group-test'>";
+			$.each(buttonGroupInfo, function(index, buttonInfo){
+				var text = buttonInfo.text || "按钮" + index;
+				var type = buttonInfo.type || "default";
+				var click = buttonInfo.click || ""; 
+				
+				var buttonStr = "<div class='btn-group'><button type='button' onclick='" + click + "()' class='btn btn-" + type + "'>" + text + "</button></div>";
+				
+				buttonGroupStr += buttonStr;
+			});
+			buttonGroupStr += "</div></div>";
+			
+			return buttonGroupStr;
+		};
+		
+		// ------------------------------------------------------
+		
+		/**
+		* 生成包含输入框组的行.
+		*
+		* 可选的输入框类型: text(默认), nunber.
+		*
+		* @inputGroupInfo	array	包含各个输入框组的信息.按钮组信息的结构类似于:
+			[{"label":"标签1",
+			  "type": "text",
+			  "id" : "id1",
+			  "placeholder": "占位符1",
+			  "disabled": "disabled",
+			  "value": "值1"},
+			{"label":"标签2",
+			  "type": "number",
+			  "id" : "id2",
+			  "placeholder": "占位符2",
+			  "value": "2"}
+			] 
+		* @return string	包含输入框组的html字符串.
+		*
+		*/
+		function createInputGroupRow(inputGroupInfo){
+			var inputGroupInfo = inputGroupInfo || [];
+			var inputGroupCount = inputGroupInfo.length || 1;
+			var inputGroupWidth = 12 / inputGroupCount;
+			
+			var inputGroupStr = "<div class='row'>";
+			
+			$.each(inputGroupInfo, function(index, inputInfo){
+				var label = inputInfo.label || "标签" + index;
+				var type = inputInfo.type || "text";
+				var id = inputInfo.id || "";
+				var placeholder = inputInfo.placeholder || "";
+				var disabled = (inputInfo.disabled) ? "disabled" : "";
+				var value = inputInfo.value || "";
+				
+				var inputStr = "<div class='col-xs-" + inputGroupWidth + "'><div class='input-group'><span class='input-group-addon'>" + label + "</span><input type='" + type + "' class='form-control' placeholder='" + placeholder + "' id='" + id + "' " + disabled + " value='" +value+ "' /></div></div>";
+				inputGroupStr += inputStr;
+			});
+			
+			inputGroupStr += '</div>';
+			
+			return inputGroupStr;
+		};
+		
+		// ---------------------------------------------------------
+		
+		/**
+		* 生成一个内容块.
+		*
+		* @blockInfo    object	存储标题和内容块内各个行的数据.目前支持的行类型包括:codeBlock,buttonGroup,inputGroup.一个blocKInfo结构类似于:
+			{
+			"title": "内容",
+			"data":[{"type": "codeBlock",
+					"data": "int a = 42; // 代码如诗"},
+					{"type": "buttonGroup",
+			 		"data": [{"text": "按钮1", "type": "success","click" : "函数名1"}, 
+		  					{"text": "按钮2", "type": "info","click" : "函数名2"}, 
+		  					{"text": "按钮3", "type": "warning","click" : "函数名3"}]},
+					{"type": "inputGroup",
+			 		"data": [{"label":"标签1",
+			 	 			"type": "text",
+			  				"id" : "id1",
+			  				"placeholder": "占位符1",
+			  				"disabled": "disabled",
+			 	 			"value": "值1"},
+							{"label":"标签2",
+			  				"type": "number",
+			  				"id" : "id2",
+			  				"placeholder": "占位符2",
+			  				"value": "2"}
+			] }]}
+		*
+		* @return	string	包含内容块的html字符串.
+		*/
+		function createContentBlock(blockInfo){
+			var title = blockInfo.title || "内容块";
+			var blockData = blockInfo.data || [];
+			
+		    var contentBlockStr = "<div class='row'><div class='col-xs-12'><h3>" + title + "</h3>";
+			
+			$.each(blockData, function(index, rowInfo){
+				var rowType = rowInfo.type || "";
+				var rowData = rowInfo.data || false; 
+				
+				var rowStr = "";
+				
+				if("codeBlock" === rowType)
+				{	
+					// rowStr = createCodeBlockRow(rowData);
+					rowStr = createCodeBlockRow(rowData);
+				}	
+				
+				if("buttonGroup" === rowType)
+				{
+					rowStr = createButtonGroupRow(rowData);
+				}
+				
+				if("inputGroup" === rowType)
+				{
+					rowStr = createInputGroupRow(rowData);
+				}
+				
+				contentBlockStr += rowStr;
+			});
+			
+			contentBlockStr += "</div></div>";
+			
+			return contentBlockStr;
+		};
+		
+		// ----------------------------------------------------------
+		
+		/**
+		* 生成一个完整的demo模块.
+		*  
+		* @demoData	object	demo模块的数据,包含标题和各内容模块的数据.示例如下:
+		{"title":"日历演示",
+		"data": [{
+			"title": "内容",
+			"data":[{"type": "codeBlock",
+					"data": "int a = 42; // 代码如诗"},
+					{"type": "buttonGroup",
+			 		"data": [{"text": "按钮1", "type": "success","click" : "函数名1"}, 
+		  					{"text": "按钮2", "type": "info","click" : "函数名2"}, 
+		  					{"text": "按钮3", "type": "warning","click" : "函数名3"}]},
+					{"type": "inputGroup",
+			 		"data": [{"label":"标签1",
+			 	 			"type": "text",
+			  				"id" : "id1",
+			  				"placeholder": "占位符1",
+			  				"disabled": "disabled",
+			 	 			"value": "值1"},
+							{"label":"标签2",
+			  				"type": "number",
+			  				"id" : "id2",
+			  				"placeholder": "占位符2",
+			  				"value": "2"}
+			] }]}]}
+		* 
+		* @return	string	包含完整demo内容的字符串.
+		*/
+		function createDemoBlock(demoData){
+			var title = demoData.title || "演示";
+			var contentBlockData = demoData.data || [];
+			
+			var demoBlockStr = "<div class='container-fluid'><div class='page-header'><h2>" + title + "</h2></div>";
+			
+			$.each(contentBlockData, function(index, contentBlockInfo){
+				var contentBlockStr = createContentBlock(contentBlockInfo);
+				
+				demoBlockStr += contentBlockStr;
+			});
+			
+			demoBlockStr += "</div>";
+			
+			return demoBlockStr;
+		};
+		
+		// ---------------------------------------------------------
+		
+		/**
+		* 显示完整示例模块.
+		*
+		* @callback	function	显示示例模块之后执行的回调方法.
+		*
+		*/
+		function show(callback){
+			$.getJSON(jsonPath, function(data){
+				var demoStr = createDemoBlock(data);
+				var demoNode = $(demoStr);
+				
+				demoNode.appendTo(targetElement);
+				
+				hljs.initHighlightingOnLoad();
+				
+				callback();
+			});
+		}
+		
+		// -------------------------------------------------------
+
+		/* 返回自定义的实例对象.可以在此处控制函数或属性的访问权限.*/
+		
+		var demo = {
+			'createCodeBlockRow': createCodeBlockRow,
+			'createButtonGroupRow': createButtonGroupRow,
+			'createInputGroupRow': createInputGroupRow,
+			'createContentBlock': createContentBlock,
+			'createDemoBlock' : createDemoBlock,
+			'show': show
+		};
+			
+		return demo;
+	}
+};
+
+/*JS调试.*/
+
+/**
+* dlog,一个自定义日志方法.当debug属性为true时,可以输出调试信息;为false时,不做任何操作.
+*/
+var dlog = function(content){
+	if(true === dlog.debug){
+		if(undefined === dlog.console){
+			dlog.console = Console.createNew();
+		}
+		dlog.console.log(content);
+	}
+};
+dlog.debug = false;
+
+/*控制台输出类,用于模拟出一个控制台.*/
+var Console = {
+	/**
+	* 构造方法
+	* 
+	* @return	实例对象.
+	*/
+	"createNew": function() {
+	/**
+	 * 给日期原型加上toString
+	 */
+	Date.prototype.toString = function() {
+		var args = {
+		    "d" : 'getDate',
+		    "h" : 'getHours',
+		    "m" : 'getMinutes',
+		    "s" : 'getSeconds'
+		}, rDate = /(yy|M|d|h|m|s)\1?/g, toString = Date.prototype.toString;
+
+		return function(format) {
+			var me = this;
+
+			if (!format)
+				return toString.call(me);
+
+			return format.replace(rDate, function replace(key, reg) {
+				var l = key != reg, t;
+				switch (reg) {
+				case 'yy':
+					t = me.getFullYear();
+					return l && t || (t % 100);
+				case 'M':
+					t = me.getMonth() + 1;
+					break;
+				default:
+					t = me[args[reg]]();
+				}
+				return l && t <= 9 && ("0" + t) || t;
+			});
+		}
+	}()
+	//
+	function Console() {
+		var self = this;
+		// 外围wrapper
+		var dom = document.createElement('div');
+		document.body.appendChild(dom);
+		var domStyle = {
+		    'background' : '#000',
+		    'position' : 'fixed',
+		    'top' : 0,
+		    'left' : 0,
+		    'color' : '#fff',
+		    'width' : '90%',
+		    'height' : '90%',
+		    'z-index' : 9999999,
+		    'font-size' : '12px',
+		    'line-height' : '18px',
+		    'text-align' : 'left'
+		}
+		for ( var p in domStyle) {
+			dom.style[p] = domStyle[p]
+		}
+		// 最小化bar
+		var bar = document.createElement('div');
+		document.body.appendChild(bar);
+		var barStyle = {
+		    'background' : '#000',
+		    'position' : 'fixed',
+		    'top' : 0,
+		    'left' : 0,
+		    'color' : '#fff',
+		    'width' : '50%',
+		    'min-height' : '36px',
+		    'max-height' : '30%',
+		    'overflow' : 'hidden',
+		    'z-index' : 9999999,
+		    'font-size' : '12px',
+		    'line-height' : '18px',
+		    'word-wrap' : 'break-word'
+		}
+		for ( var p in barStyle) {
+			bar.style[p] = barStyle[p]
+		}
+		dom.style.display = 'none';
+		bar.innerHTML = '<div style="line-height: 36px;text-align: center">DEBUG</div>';
+		self.fullView = false;
+		bar.addEventListener('click', function() {
+			if (self.fullView == false) {
+				bar.style.display = 'none';
+				self.fullView = true;
+				dom.style.display = 'block';
+				logDom.childNodes[logDom.childNodes.length - 1].scrollIntoView();
+			}
+		}, false);
+		self.barCanMove = false;
+		bar.addEventListener('touchstart', function(e) {
+			e.preventDefault();
+			self.timeoutBarCanMove = setTimeout(function() {
+				self.timeoutBarCanMove = null;
+				self.bar.style.opacity = 0.5;
+				self.barCanMove = true;
+			}, 500);
+			self.touchStartInitPos = {
+			    x : e.touches[0].clientX,
+			    y : e.touches[0].clientY
+			}
+		}, false);
+		bar.addEventListener('touchmove', function(e) {
+			e.preventDefault();
+			self.touchMoveLastPos = self.touchMoveLastPos || self.touchStartInitPos;
+			if (self.timeoutBarCanMove) {
+				clearTimeout(self.timeoutBarCanMove);
+				self.timeoutBarCanMove = null;
+			} else {
+				if (self.barCanMove) {
+					var nowPos = {
+					    x : e.touches[0].clientX,
+					    y : e.touches[0].clientY
+					}
+					var move = {
+					    x : nowPos.x - self.touchMoveLastPos.x,
+					    y : nowPos.y - self.touchMoveLastPos.y,
+					}
+					var fixedPosStyle = {
+					    left : parseInt(bar.style.left) + move.x,
+					    top : parseInt(bar.style.top) + move.y
+					}
+					if (fixedPosStyle.left >= 0 && fixedPosStyle.left + bar.offsetWidth <= window.innerWidth) {
+						bar.style.left = fixedPosStyle.left + 'px';
+					}
+					if (fixedPosStyle.top >= 0 && fixedPosStyle.top + bar.offsetHeight <= window.innerHeight) {
+						bar.style.top = fixedPosStyle.top + 'px';
+					}
+				}
+			}
+			self.touchMoveLastPos = {
+			    x : e.touches[0].clientX,
+			    y : e.touches[0].clientY
+			}
+		}, false);
+		bar.addEventListener('touchend', function(e) {
+			if (self.timeoutBarCanMove) {
+				clearTimeout(self.timeoutBarCanMove);
+				self.timeoutBarCanMove = null;
+			}
+			self.bar.style.opacity = 1;
+			self.barCanMove = false;
+			self.touchMoveLastPos = self.touchStartInitPos = null;
+		});
+		// 日志列表区
+		var logDom = document.createElement('div');
+		logDom.className = 'J_logDom';
+		var logDomStyle = {
+		    'height' : '100%',
+		    'margin-bottom' : '36px',
+		    'overflow-y' : 'scroll',
+		    'word-wrap' : 'break-word'
+		}
+		for ( var p in logDomStyle) {
+			logDom.style[p] = logDomStyle[p]
+		}
+		dom.appendChild(logDom);
+		// 按钮区
+		var btnsDom = document.createElement('div');
+		btnsDom.className = 'J_btnsDom';
+		var btnsDomStyle = {
+		    'height' : '36px',
+		    'position' : 'absolute',
+		    'width' : '100%',
+		    'background-color' : 'orange',
+		    'overflow-x' : 'auto',
+		    'bottom' : '-36px',
+		    'clear' : 'both'
+		}
+		for ( var p in btnsDomStyle) {
+			btnsDom.style[p] = btnsDomStyle[p]
+		}
+		dom.appendChild(btnsDom);
+		var btnsConfig = [ {
+		    name : '关闭',
+		    className : 'J_btn_close',
+		    fn : function() {
+			    bar.style.display = 'block';
+			    dom.style.display = 'none';
+			    self.fullView = false;
+		    }
+		}, {
+		    name : 'LOG',
+		    className : 'J_btn_log',
+		    fn : function() {
+			    self.switchLogType('log');
+		    }
+		}, {
+		    name : 'DEBUG',
+		    className : 'J_btn_debug',
+		    fn : function() {
+			    self.switchLogType('debug');
+		    }
+		}, {
+		    name : 'WARN',
+		    className : 'J_btn_warn',
+		    fn : function() {
+			    self.switchLogType('warn');
+		    }
+		}, {
+		    name : 'ERROR',
+		    className : 'J_btn_error',
+		    fn : function() {
+			    self.switchLogType('error');
+		    }
+		}, {
+		    name : 'ALL',
+		    className : 'J_btn_all',
+		    style : {
+		        'background-color' : '#fff',
+		        'color' : '#000'
+		    },
+		    fn : function() {
+			    self.switchLogType('all');
+		    }
+		} ];
+		btnsConfig.forEach(function(o) {
+			var btn = document.createElement('div');
+			var style = {
+			    'display' : 'inline-block',
+			    'line-height' : '36px',
+			    'padding' : '0px 3px',
+			    'color' : '#fff'
+			}
+			for ( var p in style) {
+				btn.style[p] = style[p];
+			}
+			btn.addEventListener('click', o.fn, false);
+			if (o.className) {
+				btn.className = o.className;
+			}
+			if (o.style) {
+				for ( var p in o.style) {
+					btn.style[p] = o.style[p];
+				}
+			}
+			btn.innerHTML = o.name;
+			btnsDom.appendChild(btn);
+		})
+		// 存储区
+		this.memory = [];
+		this.memory.push = function(o) {
+			Array.prototype.push.apply(this, arguments);
+			var tips = document.createElement('div');
+			tips.innerHTML = [ '[' + o.date.toString('yyyy-MM-dd hh:mm:ss') + ']', '[' + o.type + ']', o.msg ].join(' ');
+			var tipsColor = 'white';
+			switch (o.type) {
+			case 'debug':
+				tipsColor = 'yellow';
+				break;
+			case 'warn':
+				tipsColor = 'orange';
+				break;
+			case 'error':
+				tipsColor = 'red';
+				break;
+			}
+			tips.style.color = tipsColor;
+			logDom.appendChild(tips);
+			self.updateBar('<div style="text-align:left;color:' + tipsColor + '">' + o.msg + '</div>');
+			tips.scrollIntoView();
+		}
+		this.dom = dom;
+		this.bar = bar;
+		this.logDom = logDom;
+		this.btnsDom = btnsDom;
+		this.GLOBAL_SCOPE = new Function('return this')();
+		this.sysConsole = this.GLOBAL_SCOPE.console;
+	}
+	Console.prototype = {
+	    _stringify : function(o) {
+		    var out;
+		    if (o != null) {
+			    out = '{';
+			    var i = 0;
+			    for ( var p in o) {
+				    if (i > 0) {
+					    out += ','
+				    }
+				    out += '"' + p + '":'
+				    try {
+					    out += JSON.stringify(o[p]);
+				    } catch (e) {
+					    try {
+						    out += '"' + o[p].toString() + '"'
+					    } catch (e1) {
+						    out += '"[Object]"'
+					    }
+				    }
+				    i++;
+			    }
+			    out += '}';
+		    } else {
+			    out = 'null';
+		    }
+		    return out;
+	    },
+	    _translateLog : function(o) {
+		    var msg;
+		    if (typeof (o) == 'object') {
+			    try {
+				    msg = this._stringify(o);
+			    } catch (e) {
+				    msg = o.toString();
+			    }
+		    } else {
+			    var i = 0;
+			    var args = arguments;
+			    msg = typeof (o) == 'string' ? arguments[0].replace(/(%s|%d|%i|%f|%o)/ig, function(o) {
+				    i++;
+				    var re = args[i];
+				    //
+				    return re;
+			    }) : o;
+		    }
+		    return msg;
+	    },
+	    log : function() {
+		    var msg = this._translateLog.apply(this, arguments);
+		    var sysConsole = this.sysConsole;
+		    sysConsole && sysConsole.log.apply(sysConsole, arguments);
+		    this.memory.push({
+		        type : 'log',
+		        msg : msg,
+		        date : new Date()
+		    })
+	    },
+	    warn : function() {
+		    var msg = this._translateLog.apply(this, arguments);
+		    var sysConsole = this.sysConsole;
+		    sysConsole && sysConsole.warn.apply(sysConsole, arguments);
+		    this.memory.push({
+		        type : 'warn',
+		        msg : msg,
+		        date : new Date()
+		    })
+	    },
+	    debug : function() {
+		    var msg = this._translateLog.apply(this, arguments);
+		    var sysConsole = this.sysConsole;
+		    sysConsole && sysConsole.debug.apply(sysConsole, arguments);
+		    this.memory.push({
+		        type : 'debug',
+		        msg : msg,
+		        date : new Date()
+		    })
+	    },
+	    error : function() {
+		    var msg = this._translateLog.apply(this, arguments);
+		    var sysConsole = this.sysConsole;
+		    sysConsole && sysConsole.error.apply(sysConsole, arguments);
+		    this.memory.push({
+		        type : 'error',
+		        msg : msg,
+		        date : new Date()
+		    })
+	    },
+	    updateBar : function(msg) {
+		    this.bar.innerHTML = msg;
+	    },
+	    switchLogType : function(type) {
+		    var self = this;
+		    Array.prototype.forEach.call(self.logDom.childNodes, function(el) {
+			    if (type != 'all') {
+				    if (el.innerHTML.indexOf('[' + type + ']') > 0) {
+					    el.style.display = 'block';
+				    } else {
+					    el.style.display = 'none';
+				    }
+			    } else {
+				    el.style.display = 'block';
+			    }
+		    });
+		    Array.prototype.forEach.call(self.btnsDom.childNodes, function(el) {
+			    var resetStyle = {
+			        'background-color' : 'inherit',
+			        'color' : 'inherit'
+			    }
+			    var choseStyle = {
+			        'background-color' : '#fff',
+			        'color' : '#000'
+			    }
+			    for ( var p in resetStyle) {
+				    el.style[p] = resetStyle[p];
+			    }
+			    if (new RegExp(type, 'i').test(el.innerHTML)) {
+				    for ( var p in choseStyle) {
+					    el.style[p] = choseStyle[p];
+				    }
+			    }
+		    });
+	    }
+	}
+	var console = new Console();
+	
+	return console;
+}
+};

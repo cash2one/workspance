@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.admin.products.listExportInquiry</title>
+
+<script type="text/javascript">
+	var P = new function(){
+		this.imageServer = "$!{imageServer}";
+		this.front_SERVER="$!{address.frontServer}";
+		this.model="$!{model}";
+	}
+</script>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/jquery.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/ext-jquery-adapter.js" ></script>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<!--new import S-->
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/RowExpander.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/yuanliao/yuanliaoListExportInquiry.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/dataIndex/index.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/yuanliao/tree.js" ></script>
+	<!--new import E-->
+	<script type="text/javascript">
+		Ext.onReady(function() {
+    	
+		Ext.Ajax.timeout = 180000;
+		if($!{companyId}==0){	
+    		var tree = new ast.ast1949.admin.yuanliao.treePanel({
+        		//title : "供求类别",
+    			collapsible: true,
+        		region : "west",
+    			autoScroll:true,
+        		layout:"fit",
+        		split : true,
+        		width : 300,
+        		rootData:"",
+        	});
+		}
+		var grid = new ast.ast1949.admin.yuanliao.yuanliaoListExportInquiry.resultGrid({
+    		region:"center",
+    		layout:"fit"
+    	});
+		if($!{companyId}==0){
+		var form = new ast.ast1949.admin.yuanliao.yuanliaoListExportInquiry.searchForm({
+    			title:"供求高级信息",
+				collapsible:true, //点击title控制折叠或展开
+           		animCollapse: false,
+				region : "bottom",
+           		//collapsed:true, //默认是折叠的
+            	frame:true,
+           		 titleCollapse:true,
+            	style: 'right:6;height:50;bottom:30;z-index:101',  //left:0;
+            	height:230,
+           		width:300,
+            	targetGrid:grid
+    		});
+    
+    		form.render(Ext.getBody());
+    
+    		form.resizer = new Ext.Resizable(form.el, {
+           		minHeight:50,
+          		 minWidth:100,
+           		 handles: "n",
+           		 pinned: true,
+            	 transparent:true,
+           		 resizeElement : function(){
+                	var box = this.proxy.getBox();
+                	this.proxy.hide();
+                	form.setHeight(box.height);
+                	return box;
+           		 }
+        	});
+    		tree.on("click", function(node, event) {
+    			var B=grid.getStore().baseParams;
+    			B = B||{};
+    			B["categoryYuanliaoCode"] = node.attributes["data"];
+    			grid.getStore().baseParams = B ;
+    			grid.getStore().reload({
+    				params : {
+    					"startIndex" : 0,
+    					"pageSize" : Context.PAGE_SIZE
+    				}
+    			});
+    		});
+		}
+		
+		if($!{companyId}==0){
+			var viewport = new Ext.Viewport({
+    			layout:"border",
+				border : true,
+				items:[{
+					split:true,
+					region:"west",
+					width:300,
+					items:[tree,form]
+				},{
+					split:true,
+					region:"center",
+					layout:"border",
+					items:[grid]
+				}]
+    		});
+		}else{
+			var viewport = new Ext.Viewport({
+    			layout:"border",
+				border : true,
+				items:[{
+					split:true,
+					region:"center",
+					layout:"border",
+					items:[grid]
+				}]
+    		});
+		}
+		
+		grid.searchByCheckStatus();
+    });
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

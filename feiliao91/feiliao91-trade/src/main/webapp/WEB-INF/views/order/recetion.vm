@@ -1,0 +1,103 @@
+        <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            $(function(){
+                $(".allgoods dd").height($(".allgoods dd").height())
+            })
+            DD_belatedPNG.fix('img');
+            </script>  
+        <![endif]-->
+		
+	#if($!{status}=='0'||$!{status}=='1')
+		#set($step=1)
+	#elseif($!{status}=='2')
+		#set($step=2)
+	#elseif($!{status}=='3')
+		#set($step=3)
+	#elseif($!{status}=='66')
+		#if($hasJudge)
+			#set($step=5)
+		#else
+			#set($step=4)
+		#end
+	#end
+		#parse("/common/buy_menu.vm")
+	    <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/buypay/css/pay-list.css" />
+        <div class="content clearfix">
+            #parse("/common/buy_status.vm")
+            <div class="secetion-main">
+                <h3 class="secetion-h3">我已收到货，同意付款</h3>
+                <div class="setitle">订单信息</div>
+                <dl class="allgoods allgoods-st">
+                    <dt class="clearfix">
+                        <div class="algtle-one fchilde">产品</div>
+                        <div class="algtle-two fchilde">单价(元)</div>
+                        <div class="algtle-three fchilde">数量</div>
+                        <div class="algtle-three fchilde">状态</div>
+                        <div class="algtle-three fchilde">运费(元)</div>
+                    </dt>
+                    <dd class="clearfix">
+                        <div class="fl clearfix one-cpif">
+							
+							#foreach($in in $list)
+                            <div class="algtle-one fchilde">
+                                <div class="algtle-one-main">
+                                    <img src="$!{address.img}/$!{in.picAddress}" width="80" height="80" />
+                                    <p>$!{in.goods.title}</p>
+                                    <p class="algtle-color">颜色分类：$!{in.goods.color}</p>
+                                </div>
+                            </div>
+                            <div class="algtle-two fchilde">$!{in.goods.price}</div>
+                            <div class="algtle-three fchilde">$!{in.orders.buyQuantity} $!{in.goods.unit}</div>
+                            #end
+                        </div>
+						#if($!{status}=='0')
+						<div class="algtle-four3 fchilde"><span>等待卖家审核</span></div>
+						#elseif($!{status}=='1')
+						<div class="algtle-four3 fchilde"><span>待付款</span></div>
+						#elseif($!{status}=='2')
+						<div class="algtle-four3 fchilde"><span>待发货</span></div>
+						#elseif($!{status}=='3')
+						<div class="algtle-four3 fchilde"><span>物流中</span></div>
+						#elseif($!{status}=='66')
+						<div class="algtle-four3 fchilde"><span>交易成功</span></div>
+						#elseif($!{status}=='99')
+						<div class="algtle-four3 fchilde"><span>交易关闭</span></div>
+						#end
+                        <div class="algtle-five3 fchilde"><span>$!{orderFreightPay}</span></div>
+                    </dd>
+                </dl>
+                <div class="allmoery clearfix retion-my">
+                    <div class="fl retion-xx">
+                        <p>订单编号：$!{dto.orders.orderNo}</p>
+                        <p>卖家公司：$!{dto.sellCompany.name}</p>
+                        <p>收货信息：$!{ad},$!{addr},$!{name},$!{mobile},$!{zipCode}</p>
+                        <p>成交时间：#printFragmentDate('yyyy-MM-dd HH:mm:ss' $!{dto.orders.gmtCreated})</p>
+                    </div>
+                    实付款：<span class="allmoery-num">$!{price}</span> 元
+                </div>
+                <div class="payoff">
+                    <p class="payoff-p payoff-red"><i></i>请收到货后，再确认收货！否则您可能钱货两空！</p>
+                    <p class="payoff-p"><i></i>如果您想申请退款，<a href="#springUrl('/order/buy.htm?status=3')" class="blue">请点击这里</a></p>
+                    <div class="payoff-tit">支付密码：</div>
+						<form action="#springUrl('/order/confirm.htm')" method="post" id="form1">
+                    <div class="payoff-do">
+                        <input type="password" class="payoff-password" name="pwd"/>
+						#if($!i==1)<a href="#springUrl('/security/resetPayPwdStp_1.htm')" class="blue">忘记密码?</a>#else <a href="#springUrl('/security/setPayPassword.htm')" class="blue">没有支付密码？点此设置</a>#end
+						#if($!{flag})<span style="color:red">支付密码错误</span> #end
+                        <input type="hidden" value="$!{dto.orders.orderNo}" name="orderNo"/>
+                    </div>
+                    <div class="payoff-btn">确认收货</div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+	   $(".payoff-btn").click(function(){
+	      $("#form1").submit();
+	   })
+    </script>
+</html>

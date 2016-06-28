@@ -1,0 +1,51 @@
+<header class="container mt mt50">
+	<div class="grid_8" >
+        <div class="larger" id="headName">
+			Loading...
+        </div>
+		<div class="mt" id="headEsiteUrl">
+			
+		</div>
+    </div>
+    <div class="fr account" >
+        <b class="large">
+			&nbsp;
+		</b>
+        <p>
+			<i class="icon"></i>
+			欢迎您，$!{epAuthUser.account}
+			##<a href="#springUrl('/message')" class="red">(0)</a>
+			<a href="#springUrl('/logout.htm')">退出</a>
+			&nbsp;
+		</p>
+    </div>
+</header>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+	
+		jQuery.ajax({
+			url:"#springUrl('/common/getCompproName.htm')",
+			cached:false,
+			dataType:"json",
+			success:function(resp){
+				jQuery("#headName").html(resp.name);
+				
+				var url="$!{address.esite}/index"+resp.id+".htm";
+				if (resp.domainTwo !=""){
+					url="http://"+resp.domainTwo+".huanbao.com";
+				}
+				
+				jQuery("#headEsiteUrl").html("门市部地址：<a href='"+url+"' target='_blank' >"+url+"</a>");
+				
+##				#if("$!{compulsiveUpdate}" != "1" )
+##				if(resp.industryCode==""){
+##					// 跳转到更新页面
+##					alert("为了让客户快速的找到您，请您尽快完善您的公司信息！");
+##					window.location.href="#springUrl('/company/updateCompany.htm')?info=3&basePath=$!{request.requestURI}";
+##				}
+##				#end
+			}
+		});
+		
+	});
+</script>

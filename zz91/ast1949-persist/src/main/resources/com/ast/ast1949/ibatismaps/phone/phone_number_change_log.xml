@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneNumberChangeLog">
+	<typeAlias alias="phoneNumberChangeLogDO"
+		type="com.ast.ast1949.domain.phone.PhoneNumberChangeLog" />
+	<resultMap class="phoneNumberChangeLogDO" id="phoneNumberChangeLogResult">
+		<result property="id" column="id" />
+		<result property="telFrom" column="tel_from" />
+		<result property="telTo" column="tel_to" />
+		<result property="operator" column="operator" />
+		<result property="status" column="status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		tel_from,
+		tel_to,
+		operator,
+		status,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="phoneNumberChangeLogDO">
+		INSERT INTO phone_number_change_log
+		(
+		tel_from,
+		tel_to,
+		operator,
+		status,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#telFrom#,
+		#telTo#,
+		#operator#,
+		#status#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateForStatus" parameterClass="java.util.Map">
+		update phone_number_change_log
+		set 
+		gmt_modified = now(),
+		status = #status#
+		where id=#id#
+	</update>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="search.telFrom">
+				tel_from = #search.telFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.telTo">
+				tel_to = #search.telTo#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.status">
+				status = #search.status#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="phoneNumberChangeLogResult">
+		select 
+		<include refid="defaultColumn"/>
+		FROM phone_number_change_log
+		where id = #value#
+	</select>
+
+	<select id="queryByAdmin" parameterClass="java.util.Map"
+		resultMap="phoneNumberChangeLogResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM phone_number_change_log
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryByAdminCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_number_change_log
+		<include refid="whereClause" />
+	</select>
+
+</sqlMap>

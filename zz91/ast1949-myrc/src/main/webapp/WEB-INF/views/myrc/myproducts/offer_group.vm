@@ -1,0 +1,200 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#pageNavStyle()
+<script src="$!{address.js}/zz91.myrc.dialog.js" type="text/javascript"></script>
+<script>
+function hiddentisi(n,geturl){
+    if (n==1){
+    	//jQuery("#alerttitlen").html("创建新供求系列");
+		//jQuery("#d_click_text").attr("src",geturl);
+		dialog("创建新供求系列", "iframe:"+geturl, "450", "350", "iframe");
+    }else{
+    	dialog("编辑供求系列", "iframe:"+geturl, "450", "350", "iframe");
+    }
+}
+
+function groupclose() {
+    document.getElementById("regform").style.display='none';
+    document.getElementById("page_cover").style.display='none';
+}
+
+function changeOrder(id, number) {
+	if (id=="") {
+        alert ("系列编号不能为空！");
+        return false;
+    }
+	jQuery.ajax({
+		url:Context.ROOT+"/myrc/myproducts/updateProductsSeriesOrder.htm",
+    	type:"POST",
+    	cache:false,
+    	async:false,
+    	dataType:"json",
+    	data:{"id":id,"seriesOrder":number},
+    	success:function(msg){
+    		if(msg!=null&&msg.success==true){
+                parent.groupclose();
+                parent.document.location.reload();
+    		} else {
+    			alert(msg.data);
+    		}
+    	},
+    	error:function(e){
+    		alert("修改失败！");
+    	}
+	});
+}
+function showSeriesProductsInfo(seriesName){
+	//alert(seriesName);
+	// window.location.href="login.jsp?backurl="+window.location.href; 
+	window.location="#springUrl('/myproducts/offer_group.htm?showSeriesName=')"+seriesName+"&currentPage=1"
+}
+
+function joinGroup(urlStr,productsSeriesContactsId,productsId,productsSeriesId){
+	//alert(urlStr)
+	jQuery.ajax({
+		url:urlStr,
+    	type:"POST",
+    	cache:false,
+    	async:false,
+    	dataType:"json",
+    	data:{"id":productsSeriesContactsId,"productsId":productsId,"productsSeriesId":productsSeriesId},
+    	success:function(msg){
+    		if(msg!=null&&msg.success==true){
+				var trId="#product_"+productsId;
+				//window.location.reload();
+				jQuery(trId).hide();
+    		}
+    	}
+	});
+}
+jQuery(document).ready(function(){
+		new turnLiBgcolor(".seriesSortListNext","#EFF6EF","#FFF")
+	})
+</script> 
+#leftMenu("100103","","20")
+<div class="myrcNormalFrame">
+    <div id="editSorts">
+		<div id="page_cover" class="page_cover"></div> 
+		<div id="regform" class="regform" > 
+			<h3 class="alerttitle">
+                <span class="alerttitlen" id="alerttitlen"></span>
+				<span class="closeeditSorts" onclick="jQuery('#editSorts').fadeOut(500)"></span>
+			</h3>
+			<div class="alerttitle_kuang">
+				<IFRAME border=0 name="d_click_text" id="d_click_text"  marginWidth=0 frameSpacing=0 marginHeight=0 src="about:blank"   frameBorder=0 noResize width="100%" scrolling=no  height="220px" vspale="0"></IFRAME>
+			</div>
+		</div>
+		<div style="clear:both"></div>
+    </div>
+	
+	<div class="seriesSortList">
+			<div class="seriesSortListHead">
+                <h3 class="seriesSortListTit">按系列分类的供求信息</h3>
+				<span class="seriesSortListNew">
+					<a href="javascript:void(0)" id="creatNewSortsBtn" onclick="hiddentisi(1,'#springUrl('/myproducts/alert_group_create.htm')')" class="commArrowNews">创建新供求系列</a> 
+				</span>
+			</div>
+					
+            <div style="clear:both"></div>
+			##如果用户创建了自己的系列
+			<ul>
+				#if($!{userSeriesList.size()}>0)
+					#foreach( ${userSeries} in $!{userSeriesList})
+						<li>##系列名称
+								<h4 class="seriesSortListSubTit">
+									<span class="seriesSortsTit" onclick="javascript:showSeriesProductsInfo('$!{userSeries.name}')">
+									<img src="$!{address.images}/global/icon/open-folder2.gif"  align="absmiddle"/>
+										$!{userSeries.name}
+									</span>
+									<span class="seriesSortsMod">##修改系列
+										<a href="javascript:void(0)" onclick="hiddentisi(2,'#springUrl('/myproducts/queryProductsSeriesById.htm?id=')$!{userSeries.id}')" target="d_click_text">
+											<img src="$!{address.images}/global/icon/edit2.gif"/>
+											修改
+										</a>
+									</span>
+									<span class="seriesSortsDel">##删除系列
+										<a href="#springUrl('/myproducts/deleteProductsSeries.htm?id=')$!{userSeries.id}" onClick="return confirm('确实要删除吗？')">
+											<img src="$!{address.images}/global/icon/trash2.gif" />
+											删除
+										</a>
+									</span>
+									<span class="seriesSortsOrder">##修改系列顺序
+													<input name="id" type="hidden" id="id" value="2832"/>
+                                                    <label>系列顺序</label>
+													<select name="ord" id="ord" onChange="changeOrder('$!{userSeries.id}',this.value)">
+														<option value="$!{userSeries.seriesOrder}">$!{userSeries.seriesOrder}</option>
+														#foreach(${order} in [1..$!{userSeriesList.size()}])
+															$!{userSeries.seriesOrder}
+															#if(${order}!=$!{userSeries.seriesOrder})
+															<option value="${order}">${order}</option>
+															#end
+														#end
+													</select>
+									</span>
+								</h4>
+                                <div style="clear:both"></div>
+								#if($!{userSeries.name}==$!{showSeriesName})##如果系列名称和显示的系列名称相同，则显示该系列下的产品列表
+									<ul class="seriesSortListNext">
+									#foreach(${product} in $!{productInfoShowList})
+										<li id="product_$!{product.productsId}"> 
+											<span class="seriesSortProdName">
+												<a href="$!{address.server}/trade/productdetails$!{product.id}.htm" target="_blank">
+													$!{product.title}
+												</a>
+											</span>
+											<span class="seriesSortProdOpera">转移到 
+												<select name="gotoGroup" onChange="joinGroup('#springUrl('/myproducts/editProductsSeriesContacts.htm')',$!{product.productsSeriesContactsId},$!{product.productsId},this.value)"> 
+													<option value="">选择系列</option>
+													#foreach( ${userSeriesChoice} in $!{userSeriesList})
+														#if($!{userSeries.id}!=$!{userSeriesChoice.id})
+														<option value="${userSeriesChoice.id}"> ${userSeriesChoice.name}</option>
+														#end
+													#end
+												</select> 
+											</span>
+										</li> 
+									#end
+									<div style="clear:both"></div>
+                                    </ul>
+								#end
+                        </li>
+					#end
+				#end
+				<li> 
+					<h4 onclick="javascript:showSeriesProductsInfo('')" class="seriesSortListSubTit">
+						<img src="$!{address.images}/global/icon/open-folder2.gif"  align="absmiddle"/>
+						未分类系列
+					</h4>
+    				#if($!{showSeriesName}=="")
+    					<ul class="seriesSortListNext">
+    					#foreach(${product} in $!productInfoShowList)
+    						<li id="product_$!{product.productsId}"> 
+    							<span class="seriesSortProdName">
+    								<a href="$!{address.server}/trade/productdetails$!{product.productsId}.htm" target="_blank">
+    									$!{product.title}
+    								</a>
+    							</span> 
+    							<span class="seriesSortProdOpera">
+    								转移到 
+    								<select name="gotoGroup" onChange="joinGroup('#springUrl('/myproducts/addProductsSeriesContacts.htm')','',$!{product.productsId},this.value)"> 
+    									<option value="">选择系列</option> 
+    									#if($!{userSeriesList.size()}>0)
+    										#foreach( ${userSeries} in $!{userSeriesList})
+    											##$!{userSeries.id}$!{userSeries.name}$!{userSeries.seriesOrder}
+    											<option value="${userSeries.id}">${userSeries.name}</option>
+    										#end
+    									#end
+    								</select> 
+    							</span>
+    						</li>
+    					#end
+                        </ul>
+					#end
+                </li>
+				<div style="clear:both"></div>
+			</ul>
+            <div style="clear:both"></div>
+    		<div class="pageNav">
+				#myrcPageNav($!{page} "#springUrl('/myproducts/offer_group.htm')" $!{suffixUrl} "")
+			</div>
+	</div>
+</div>

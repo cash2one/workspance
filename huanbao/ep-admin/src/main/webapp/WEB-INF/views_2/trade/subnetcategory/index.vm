@@ -1,0 +1,70 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app_2/trade/category.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+	
+		var childGrid=Ext.create("com.zz91.ep.subnetCategory.ChildGrid",{
+			id:"childGrid",
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				childGrid2.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var childGrid2=Ext.create("com.zz91.ep.subnetCategory.ChildGrid2",{
+			id:"childGrid2"
+		});
+		
+		var mainGrid=Ext.create("com.zz91.ep.subnetCategory.MainGrid",{
+			id:"mainGrid",
+    		split:true,
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				childGrid.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var _left = {
+	    	title: "第一大类",
+			region : "west",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 350,
+			items : [mainGrid]
+		} ;
+
+		var _right = {
+			title: "第二子类",
+			region : "center",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 400,
+			items : [childGrid]
+		} ;
+		
+		var _right2 = {
+			title: "第三子类",
+			region : "east",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 400,
+			items : [childGrid2]
+		} ;
+		
+		Ext.create("Ext.container.Viewport",{
+			layout : "border",
+			border : true,
+			items:[_left,_right,_right2]
+		});
+		
+	});
+</script>

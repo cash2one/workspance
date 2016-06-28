@@ -1,0 +1,141 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+		#parse("/common/import_fancybox_js.vm")
+<div id="content2" class="bodyRight filterDom">
+	#foreach($!{obj} in $!{navColumnConfig})
+		#if($!{obj.id}==$!{myposition.code})
+			#set($label=$!{obj.t})
+		#end
+	#end
+    <div id="company_index" class="bodyCont moveChild mb">
+        <div class="bodyContTitle"> 
+            <span class="titleLinkColor titleName t">
+				##公司介绍
+				您所在的位置： <a href="#springUrl('index.htm')" target="_blank" class="titleLinkColor">首页</a> &gt; $label
+			</span>
+        </div>
+        <div class="bodyContContent rightConteWidth">
+            <div class="bodyContContentRightCont mainTextColor clearfix">
+				#if($!{cid}=="693468")
+				<br><IFRAME border="0" name"=aaaa" marginWidth="0" frameSpacing="0" marginHeight="0" src="http://jiny.zz91.com/vedio/flash.html" frameBorder="0" noResize width="320" scrolling="no" height="240" vspale="0"></IFRAME>
+				#end
+                #cacheFragment("$!{address.esiteFragment}/esite/companyPic.htm?cid=$!{cid}","","","")
+					<div class="comany_pic" id="Js_show">
+						#if(1>$!{list.size()})
+							<br/>
+        					<p>
+        						此公司没有上传公司图片
+        					</p>
+        					<br/>
+        				#else
+    						#foreach($pic in $!{list})
+                                ##<div class="product" id="slideshow">
+									<span>
+										<a class="group" href="$!{address.resource}/${pic.filepath}${pic.filename}">
+											<img src="$!{address.thumb}$!{address.resource}/${pic.filepath}${pic.filename}&width=200&height=200"/>
+										</a>
+									</span>
+								##</div>
+							#end
+						#end
+					</div>
+			    #end
+				#cacheFragment("$!{address.esiteFragment}/esite/companyDetails.htm?cid=$!{cid}","","","")
+					##set($details = $details.replaceAll("\n", "<br />"))
+					$!{details}
+	            #end
+				#if($!{cid}=="760523")
+				<div style="text-align:center"><IFRAME border="0" name="aaaa"  marginWidth="0" frameSpacing="0" marginHeight="0" src="http://ajlong.zz91.com/vedio/flash2.html" frameBorder="0" noResize width="320px" scrolling="no"  height="240px" vspale="0"></IFRAME>
+				<br>安晶龙公司宣传片</div>
+				#end
+            </div>
+            <h3 class="mt10px mb10px">荣誉证书</h3>
+			<div class="honor_pic clearfix" id="Js_marquee">
+				<div class="cont">
+			#foreach($credit in $!fileList)
+				#if($velocityCount == 0)
+					暂无
+				#else
+					#if(${credit.checkStatus} == "1")
+					     <div class="honor_item">
+							<span><a class="group" href="$!{resourceUrl}/$!{credit.picName}" ><img src="$!{address.thumb}$!{address.resource}/$!{credit.picName}"></a></span>
+							<p><a href="#" onClick="window.open('$!{resourceUrl}/$!{credit.picName}','_blank','width=800,height=450')">$!{credit.fileName} </a></p>
+						</div>
+					#end
+				#end
+			#end
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+<script type="text/javascript">
+ jQuery(document).ready(function(){
+        $("a.group").fancybox({
+		'transitionIn': 'elastic',
+            'transitionOut': 'elastic',
+            'speedIn': 450,
+            'speedOut': 320
+		});
+    })
+</script>
+
+<script>
+jQuery(function(){
+	Asto.util.imgSize();
+	scroll();
+	picShow();
+});
+function picShow() {
+	var c = jQuery("#Js_show"),
+		item = c.find("img"),
+		num = item.length,
+		cur = 0;
+		if (num === 1) {
+			return
+		}
+		item.each(function(i){
+			if (i !== 0) {
+				$(this).hide();
+			}
+		});
+	var loop = setTimeout(fader, 2000);
+	function fader() {
+		var m = cur - 1 < 0 ? num - 1 : cur - 1;
+		item.eq(m).fadeOut("slow");
+		item.eq(cur).fadeIn("slow");
+		cur = cur + 1 === num ? 0 : cur + 1;
+		setTimeout(fader, 2000);
+	}
+}
+function scroll() {
+	var m = jQuery("#Js_marquee"),
+		item = m.find(".honor_item"),
+		c = m.find(".cont"),
+		w = item.outerWidth(true),
+		W = w * item.length;
+	if (item.length > 740/w){
+		var c2, left = 0;
+		item2 = item.clone();
+		item2.appendTo(c);
+		c.css("width", W * 2);
+		function move(){
+			if (m.scrollLeft() > W) {
+				m.scrollLeft(0);
+			} else {
+				left = m.scrollLeft() + 2;
+				m.scrollLeft(left);
+			}
+			loop = setTimeout(move, 100);
+		}
+		var loop = setTimeout(move, 100);
+		m.bind({
+			"mouseover" : function(){
+				clearTimeout(loop);
+			},
+			"mouseout" : function(){
+				loop = setTimeout(move, 100);
+			}
+		})
+	}
+}
+</script>

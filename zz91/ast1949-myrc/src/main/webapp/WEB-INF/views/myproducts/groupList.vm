@@ -1,0 +1,55 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">管理供求系列</li>
+        </ul>
+        <button id="Js_create" class="btn btn-mini">新增</button>
+	    <table class="table table-bordered table-condensed mt">
+            <thead>
+                <tr>
+                    <th width="5%" class="tac">排序</th>
+                    <th width="30%" class="tac">类别名称</th>
+                    <th width="55%">类别描述</th>
+        			<th width="10%" class="tac">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach($group in $!{groupList})
+                <tr>
+                    <td class="tac">$!{group.seriesOrder}</td>
+                    <td class="tac">$!{group.name}</td>
+                    <td>$!{group.seriesDetails}</td>
+                    <td class="tac">
+                        <a href="#springUrl('/myproducts/editGroup.htm?id=')$!{group.id}">编辑</a>
+                        <a href="#springUrl('/myproducts/deleteGroup.htm?id=')$!{group.id}">删除</a>
+                    </td>
+                </tr>
+                #end
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(2, 3);
+	jQuery("#Js_create").click(function(){
+    	var groupWin = new Asto.util.PopupBox({
+    		title:"创建供求系列",
+    		url:"#springUrl('/myproducts/createGroup.htm')",
+    		destUrl:Asto.DEST_URL,
+    		width:500,
+    		height:270,
+    		modal:true,
+    		callbackFn:function(success, data){
+    			groupWin.close();
+    			window.location.reload();
+    		}
+    	});
+    	groupWin.show();
+    });
+});
+</script>

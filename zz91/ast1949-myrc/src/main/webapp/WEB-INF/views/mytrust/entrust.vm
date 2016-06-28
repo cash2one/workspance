@@ -1,0 +1,168 @@
+#set( $layout = "/layout/default.vm" )
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/business/css/index.css" />
+<div class="container mt clearfix">
+	<div class="grid_12">    
+		##<div class="business">
+			##<div class="mainblock1"></div>
+		##</div>
+		<div class="cb"></div>
+		<!--end business-->
+		<div class="purchase_title">厂家直购-委托采购</div>
+		<!--end purchase_title-->
+		<div class="purchase_title2">
+        	<div class="fl f14">您的委托采购内容</div>
+        	<div class="fr f12">目前免费委托采购只限<font>塑料再生颗粒</font>，发布其它产品信息将被系统自动屏蔽，如有疑问可咨询0571-56600066</div>
+            <div class="cb"></div>
+        </div>
+        <form  method="post">
+        	<div class="purchase_box">
+        		<label for="pro">产&nbsp;&nbsp;&nbsp;品：</label>
+            	<input type="text" name="detail" id="pro" class="p2_txt" value="" /><br />
+            	<label for="amount">采购量：</label>
+            	<input type="text" name="detail" id="amount" class="p2_txt" value="" /><br />
+            	<label for="price">价&nbsp;&nbsp;&nbsp;格：</label>
+            	<input type="text" name="detail" id="price" class="p2_txt" value="" /><br />
+            	<label for="color">颜&nbsp;&nbsp;&nbsp;色：</label>
+            	<input type="text" name="detail" id="color" class="p2_txt" value="" /><br />
+            	<label for="useful">用&nbsp;&nbsp;&nbsp;途：</label>
+            	<input type="text" name="detail" id="useful" class="p2_txt" value="" /><br />
+            	<label for="level">级&nbsp;&nbsp;&nbsp;别：</label>
+            	<input type="text" name="detail" id="level" class="p2_txt" value="" /><br />
+            	<label for="source">所在地：</label>
+            	<input type="text" name="detail" id="source" class="p2_txt" value="" /><br />
+				<label for="source">求购详情：</label>
+            	<input type="text" name="detail" id="details" class="p2_txt" value="" /><br />
+        	</div>
+        	<!--end purchase_box-->
+        	<div class="purchase_btn tr">
+				<input type="button" id="trustForm" value="发布委托" />
+			</div>
+        </form>
+    </div>
+    <!--end grid_12-->
+</div>
+##<script language="javascript" src="$!{address.img}/zz91/business/js/jquery.Sonline.js"></script> 
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	myrc.menu(3, 1);
+	
+##	jQuery(".business").Sonline({
+##		Position:"right",//left或right
+##		Top:-110,//顶部距离，默认200px
+##		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+##		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+##		Qqlist:""
+##	});
+	
+});
+
+## 发布采购
+jQuery("#trustForm").click(function(){
+	var pro = $("#pro").val().replace(/\s/g,'');
+	if(pro!=""){
+		pro = "产品:"+pro;
+	}
+	var amount = $("#amount").val().replace(/\s/g,'');
+	if(amount!=""){
+		amount = "采购量:" + amount;
+	}
+	var price = $("#price").val().replace(/\s/g,'');
+	if(price!=""){
+		price = "价格:" + price;
+	}
+	var color = $("#color").val().replace(/\s/g,'');
+	if(color!=""){
+		color = "颜色:" + color;
+	}
+	var useful = $("#useful").val().replace(/\s/g,'');
+	if(useful!=""){
+		useful = "用途:" + useful;
+	}
+	var level = $("#level").val().replace(/\s/g,'');
+	if(level!=""){
+		level = "级别:" + level;
+	}
+	var source = $("#source").val().replace(/\s/g,'');
+	if(source!=""){
+		source = "所在地:" + source;
+	}
+	var details = $("#details").val().replace(/\s/g,'');
+	if(details!=""){
+		details = "求购详情:" + details;
+	}
+	if(details.length>300){
+		alert("求购详情要求少于300个字");
+	}
+	if(pro=="" && amount=="" && price=="" && color=="" && useful=="" && level=="" && source=="" && details==""){
+		alert("请输入要采购的信息内容");
+		return false;
+	}else if(details.length<301&&(pro!="" || amount!="" || price!="" || color!="" || useful!="" || level!="" || source!="" || details!="")){
+		var a="";
+			if(pro!=""){
+				a=pro;
+			}
+			if(amount!=""){
+				if(a!=""){
+					a=a+","+amount;
+				}else{
+					a=amount;
+				}
+			}
+			if(price!=""){
+				if(a!=""){
+					a=a+","+price;
+				}else{
+					a=price;
+				}
+			}
+			if(color!=""){
+				if(a!=""){
+					a=a+","+color;
+				}else{
+					a=color;
+				}
+			}
+			if(useful!=""){
+				if(a!=""){
+					a=a+","+useful;
+				}else{
+					a=useful;
+				}
+			}
+			if(level!=""){
+				if(a!=""){
+					a=a+","+level;
+				}else{
+					a=level;
+				}
+			}
+			if(source!=""){
+				if(a!=""){
+					a=a+","+source;
+				}else{
+					a=source;
+				}
+			}
+			if(details!=""){
+				if(a!=""){
+					a=a+","+details;
+				}else{
+					a=details;
+				}
+			}
+			jQuery.ajax({
+				url:'$!{address.myrc}/mytrust/doEntrust.htm',
+				type:"post",
+				data:{"detail":a},
+				dataType:"json",
+				success:function(reg){
+					if(reg.sw>0){
+						window.location.href="$!{address.myrc}/mytrust/purchase.htm";
+					}
+				}
+			});
+	}
+
+});
+
+</script>

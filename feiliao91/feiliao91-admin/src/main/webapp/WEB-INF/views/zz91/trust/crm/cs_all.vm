@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.index</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/crm/cs.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		#if($!{trustMap})
+			ast.ast1949.trust.crm.TRUSTMAP=$!{trustMap};
+		#end
+	
+		#if($!{csMap})
+			ast.ast1949.trust.crm.CSMAP=$!{csMap};
+		#end
+		
+		var grid=new ast.ast1949.trust.crm.Grid({
+			id:"csgrid",
+			region:"center",
+			layout:"fit",
+			contextmenu:new Ext.menu.Menu({
+				items:[
+				#if($!{asignFlag}=="1")
+				{
+					text: '分配给',
+					menu:[
+					#foreach($cs in $!{trustMap.keySet()})
+					#if($velocityCount > 1),#end
+					{
+						text:"${allTrustCS.get($!{cs})}",
+						handler:function(){
+							var rows=grid.getSelectionModel().getSelections();
+							var oldassignArr=new Array();
+							for(var i=0;i<rows.length;i++){
+								oldassignArr.push({
+									csAccount:rows[i].get("csAccount"),
+									companyId:rows[i].get("company_id")
+								})
+							}
+							ast.ast1949.trust.crm.assign(grid, oldassignArr, "${cs}", "$!{trustMap.get($!{cs})}");
+						}
+					}
+					#end
+					]
+				},'-',
+				#end
+				{
+					text:"丢公海",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var ids=new Array();
+						for(var i=0;i<rows.length;i++){
+							ids.push(rows[i].get("company_id"));
+						}
+						if(ids.length<=0){
+							return false;
+						}
+						ast.ast1949.trust.crm.dropUser(grid, ids)
+					}
+				},{
+					text:"捞给自己",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var oldassignArr=new Array();
+						for(var i=0;i<rows.length;i++){
+							oldassignArr.push({
+								csAccount:rows[i].get("crmAccount"),
+								companyId:rows[i].get("company_id")
+							})
+						}
+						ast.ast1949.trust.crm.reassignByHighSea(grid, oldassignArr, "${cs}", "$!{allcs.get(${cs})}");
+					}
+				},{
+					text:"丢废品池",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var ids=new Array();
+						for(var i=0;i<rows.length;i++){
+							ids.push(rows[i].get("company_id"));
+						}
+						if(ids.length<=0){
+							return false;
+						}
+						ast.ast1949.trust.crm.destory(grid, ids)
+					}
+				}
+				]
+			}),
+			loadDefault:function(){
+				var B=grid.getStore().baseParams;
+				B["crmAccount"]="$!{cs}";
+				#if($!{svrCode})
+				B["svrCode"]="$!{svrCode}";
+				#end
+				#if($!{svrEndFrom})
+				B["svrEndFromStr"]="$!date.format('yyyy-MM-dd',$!{svrEndFrom})"
+				#end
+				#if($!{svrEndTo})
+				B["svrEndToStr"]="$!date.format('yyyy-MM-dd',$!{svrEndTo})"
+				#end
+				#if($!{nextVisitPhoneFrom})
+				B["nextVisitPhoneFromStr"]="$!date.format('yyyy-MM-dd',$!{nextVisitPhoneFrom})"
+				#end
+				#if($!{nextVisitPhoneTo})
+				B["nextVisitPhoneToStr"]="$!date.format('yyyy-MM-dd',$!{nextVisitPhoneTo})"
+				#end
+				grid.getStore().baseParames=B;
+				grid.getStore().reload();
+			}
+		});
+		
+		grid.isAll("$!{cs}",$!{star});
+		
+		var viewport=new Ext.Viewport({
+			layout : "border",
+    		border : true,
+			items:[grid]
+		});
+		
+    	var form = new ast.ast1949.trust.crm.SearchForm({
+    		title:"搜索公司信息",
+    		collapsible: true,
+            animCollapse: false,
+            frame:true,
+            titleCollapse:true,
+            style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+            height:350,
+            width:300,
+            targetGrid:grid
+    	});
+    
+    	form.render(Ext.getBody());
+    
+    	form.resizer = new Ext.Resizable(form.el, {
+            minHeight:50,
+            minWidth:100,
+            handles: "n",
+            pinned: true,
+            transparent:true,
+            resizeElement : function(){
+                var box = this.proxy.getBox();
+                this.proxy.hide();
+                form.setHeight(box.height);
+                return box;
+            }
+        });
+		
+		Ext.get("crmAccount").dom.value="$!{cs}";
+		Ext.get("cs").dom.value="$!{trustMap.get($!cs)}";
+		
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

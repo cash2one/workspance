@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head>
+<script type="text/javascript" src="#springUrl('/js/analysis/jscharts_mb.js')" ></script>
+<script type="text/javascript" src="#springUrl('/js/analysis/jquery-1.4.2.js')"></script>
+<script type="text/javascript" src="#springUrl('/js/analysis/jquery.min.js')"></script>
+<link rel="stylesheet" type="text/css" href="#springUrl('/css/index.css')" media="all" />
+<script language="javascript" type="text/javascript" src="$!{address.img}/zz91/myrc/js/My97DatePicker/WdatePicker.js"></script>
+
+<title>广告位统计</title>
+<script type="text/javascript">
+$(function(){
+  var arr = document.getElementsByName("adposition");
+  var array=$!{key};
+  for(var i=0;i<arr.length;i++){
+    for(var j=0;j<array.length;j++){
+	   if(array[j]==arr[i].value){
+    	 arr[i].checked = true;
+	}
+	}
+  }
+});
+</script>
+<script type="text/javascript">
+  function $(id){return document.getElementById(id)}
+  window.onload = function(){
+   $("left0").onclick = function(e){
+  		var src = e?e.target:event.srcElement;
+  		if(src.tagName == "P"){
+  			var next = src.nextElementSibling || src.nextSibling;
+  			next.style.display = (next.style.display =="block")?"none":"block";
+ 		 }
+ 	}
+}
+</script>
+<script type="text/javascript">
+$(function(){	
+	$('.left ul li').click(function(){
+		$(this).addClass('hit').siblings().removeClass('hit');
+		$('.left4>div:eq('+$(this).index()+')').show().siblings().hide();	
+	})
+});
+$(function(){
+$("#show").click();
+});
+function  check(){
+	 var array = document.getElementsByName("adposition");
+	 var val=document.getElementById("search").value;
+	 if(document.getElementById("check").getAttribute('value')=="check"){
+	 for(var i=0;i<array.length;i++){
+		 if(array[i].nextSibling.nodeValue.indexOf(val)>-1){
+		 }else{
+			   document.getElementById(array[i].value).style.display="none";
+		 }
+	 }
+		jQuery("#check").attr("value", "checks");
+	 }else{
+	 	 for(var i=0;i<array.length;i++){
+			 document.getElementById(array[i].value).style.display="block";
+		 }
+	 	jQuery("#check").attr("value", "check");
+	 }
+}
+</script>
+</head>
+ 
+<body>
+<div id="Container">
+    <div id="Upside">
+		<form method="post" action="#springUrl('/zz91/analysis/ads/time.htm')">
+        <div id="Upside-Left">
+			<div class="left" style="position:relative">
+				<ul>
+					<li class="hit">
+						<img src="#springUrl('/images/item2_u0.png')"/>
+						<span style="position:absolute;left:20px;top:7px" id="show">
+							广告位
+						</span>
+                    </li>
+					<li style="position:absolute;right:0px;">
+						<img src="#springUrl('/images/item2_u0.png')"/>
+						<span style="position:absolute;right:35px;top:7px;">
+							展示位
+						</span>
+					</li>
+                </ul>
+			</div>
+			<div id="left1">
+				<div class="left2" style="position:relative">
+				<input type="text" style="border-radius:8px;position:absolute;right:50px;" name="search" value="请输入关键字搜索" id="search">
+                <div class="left3" id="check" value="check">
+					<img src="#springUrl('/images/u6.png')" onclick="check()">
+					</img>
+				</div>
+				</div>
+				<div class="left4" id="left0" style="overflow-x:auto;overflow-y:auto;">
+					#foreach($!{obj} in $!{map.get("0")})
+						#if($!{map.get($!{obj}).size()}>1)
+                        <p style="font-weight:900;" id=$!{obj}><input type="checkbox" name="adposition" value=$!{obj} class="a_$!{obj}" onclick="selt('a_$!{obj}')">$!{mapM.get($!{obj})}</p>
+						<div class="key">
+							#foreach($!{li} in $!{map.get($!{obj})})
+								#if($!{map.get($!{li}).size()}>1)
+								<p style="font-weight:900;" id=$!{li}><input type="checkbox" name="adposition" value=$!{li} class="a_$!{obj} b_$!{li}" onclick="selt('a_$!{obj} b_$!{li}')">$!{mapM.get($!{li})}</p>
+								<div class="key">
+									#foreach($!{ob} in $!{map.get($!{li})})
+									#if($!{map.get($!{ob}).size()}>1)
+									<p style="font-weight:900;" id=$!{ob}><input type="checkbox" name="adposition" value=$!{ob} class="a_$!{obj} b_$!{li} c_$!{ob}" onclick="selt('a_$!{obj} b_$!{li} c_$!{ob}')">$!{mapM.get($!{ob})}</p>									<div class="key">
+									</div>
+									#else
+										<p id=$!{ob}><input type="checkbox" name="adposition" value=$!{ob} class="a_$!{obj} b_$!{li} c_$!{ob}" onclick="selt('a_$!{obj} b_$!{li} c_$!{ob}')">$!{mapM.get($!{ob})}</p>
+									#end
+									#end
+								</div>
+							  #else
+								 <p id=$!{li}><input type="checkbox" name="adposition" value=$!{li} class="a_$!{obj} b_$!{li}" onclick="selt('a_$!{obj} b_$!{li}')">$!{mapM.get($!{li})}</p>	
+							  #end
+							#end
+						</div>
+						#else
+							<p id=$!{obj}><input type="checkbox" name="adposition" value=$!{obj} class="a_$!{obj}" onclick="selt('a_$!{obj}')">$!{mapM.get($!{obj})}</p>	
+						#end
+					#end
+				</div>
+				<div class="left2">
+				<input type="text" name="tel" value="${tel}" >
+                <div class="left3">
+					<img src="#springUrl('/images/u6.png')">
+					</img>
+				</div>
+				</div>
+				<div id="left5">
+                <input type="submit" value="确定"></button>
+				</div>
+            </div>
+		</div>
+        <div id="Upside-Main">
+             <div id="um">
+                <div id="um1">
+					<span>开始时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;结束时间</span>
+				</div>
+				<div id="um2">
+					<input class="Wdate" style="width:100px;height:17px;" name="from" value=${from} onClick="WdatePicker()" />
+					<input class="Wdate" style="width:100px;height:17px;" name="to" value=${to} onClick="WdatePicker()" />
+				</div>
+				<div id="um3">
+					<a href="#springUrl('/zz91/analysis/ads')/exportTime.htm?id=$!{adposition}&amp;from=$!{from}&amp;to=$!{to}&amp;tel=$!{tel}" style="text-decoration:none" target="_blank">下载源数据</a>
+				</div>
+				<div onclick="city()">
+				<input type="radio" name="data" value="展现量" checked>展现量
+				<input type="radio" name="data" value="点击量">点击量
+				<input type="radio" name="data" value="点击率">点击率
+				<input type="radio" name="data" value="电话量">电话量
+				<input type="radio" name="data" value="转化率">转化率
+				</div>
+             </div>
+			 <hr />
+             <div id="main">展现量</div>
+			 <div id="graph" onclick="show()">Loading graph...</div>
+		</div>
+		<div id="Downside">
+			<table>
+				<tr>
+					<td width="200px" align="center" height="30">总展现量</td>
+					<td width="200px" align="center" height="30">总点击量</td>
+					<td width="200px" align="center" height="30">总点击率</td>
+					<td width="200px" align="center" height="30">总电话量</td>
+					<td width="200px" align="center" height="30">转化率</td>
+				</tr>
+				<tr>
+					<td width="200px" align="center" height="30">$!{adslogA.showcount}</td>
+					<td width="200px" align="center" height="30">$!{adslogA.checkcount}</td>
+					<td width="200px" align="center" height="30">$!{adslogA.clickRate}%</td>
+					<td width="200px" align="center" height="30">$!{adslogA.telCount}</td>
+					<td width="200px" align="center" height="30">$!{adslogA.changeRate}%</td>
+				</tr>
+				<tr>
+					<td width="200px" align="center" height="30">平均每天展现量：$!{adslogAve.showcount}</td>
+					<td width="200px" align="center" height="30">平均每天点击量：$!{adslogAve.checkcount}</td>
+					<td width="200px" align="center" height="30">平均每天点击率：$!{adslogAve.clickRate}%</td>
+					<td width="200px" align="center" height="30">平均每天电话量：$!{adslogAve.telCount}</td>
+					<td width="200px" align="center" height="30">平均每天转化率：$!{adslogAve.changeRate}%</td>
+				</tr>
+				<tr>
+					<td width="200px" align="center" height="30">平均展现量：$!{adslogAveC.showcount}</td>
+					<td width="200px" align="center" height="30">平均点击量：$!{adslogAveC.checkcount}</td>
+					<td width="200px" align="center" height="30">平均点击率：$!{adslogAveC.clickRate}%</td>
+					<td width="200px" align="center" height="30">平均电话量：$!{adslogAveC.telCount}</td>
+					<td width="200px" align="center" height="30">平均转化率：$!{adslogAveC.changeRate}%</td>
+				</tr>
+				<hr>
+			</table>
+		</div>
+		<div id="down">
+			<table border="1">
+				<tr>
+					<td width="200px" height="30" align="center">
+						推广位  
+					</td>
+					<td width="200px" height="30" align="center">
+						展现量 
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=showcount&amp;dir=desc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↑</span>
+						</a>
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=showcount&amp;dir=asc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↓</span>
+                        </a>
+                    </td>
+					<td width="200px" height="30" align="center">
+						点击量  
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=checkcount&amp;dir=desc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↑</span>
+						</a>
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=checkcount&amp;dir=asc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↓</span>
+                        </a>
+					</td>
+					<td width="200px" height="30" align="center">
+						点击率
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=clickRate&amp;dir=desc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↑</span>
+						</a>
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=clickRate&amp;dir=asc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↓</span>
+                        </a>
+					</td>
+					<td width="200px" height="30" align="center">
+						电话量  
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=telCount&amp;dir=desc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↑</span>
+						</a>
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=telCount&amp;dir=asc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↓</span>
+                        </a>
+					</td>
+					<td width="200px" height="30" align="center">
+						转化率  
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=changeRate&amp;dir=desc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↑</span>
+						</a>
+						<a href="#springUrl('/zz91/analysis/ads')/time.htm?from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=changeRate&amp;dir=asc&amp;tel=$!{tel}">
+							<span style="font-size:25px">↓</span>
+                        </a>
+					</td>
+				</tr>
+			</table>
+			<table>
+				#foreach($!{li} in $!{page.records})
+				<tr>
+					<td width="200px" height="24" align="center">$!{li.time}&nbsp;&nbsp;$!{li.date}</td>
+					<td width="200px" height="24" align="center">$!{li.showcount}</td>
+					<td width="200px" height="24" align="center">$!{li.checkcount}</td>
+					<td width="200px" height="24" align="center">$!{li.clickRate}%</td>
+					<td width="200px" height="24" align="center">$!{li.telCount}</td>
+					<td width="200px" height="24" align="center">$!{li.changeRate}%</td>
+				</tr>
+				#end
+			</table>
+		</div>
+		</form>
+    </div>
+    <div class="Clear"><!--如何你上面用到float,下面布局开始前最好清除一下。--></div>
+    <div id="Footer">
+		#myrcPageNav($!{page} "#springUrl('/zz91/analysis/ads/time.htm')" "from=$!{from}&amp;to=$!{to}&amp;adposition=$!{adposition}&amp;sort=$!{sort}&amp;dir=$!{dir}&amp;tel=$!{tel}" "")
+	</div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+$(function (){
+	$("input.jcDate").jcDate({					       
+		IcoClass : "jcDateIco",
+		Event : "click",
+		Speed : 100,
+		Left : 0,
+		Top : 28,
+		format : "-",
+		Timeout : 100
+	});
+});
+</script>
+<script type="text/javascript">
+function selt(aa){
+	var arr = document.getElementsByName("adposition");
+	var ind=0;
+	for(var i=0;i<arr.length;i++){
+		var val=arr[i].className;
+	    if(val==aa){
+		   ind=i;
+		}
+	}
+	if(arr[ind].checked){
+		for(var i=0;i<arr.length;i++){
+			var val=arr[i].className;
+				if(val.indexOf(aa)>-1){
+					arr[i].checked = true;
+			}
+		}
+	}else{
+		for(var i=0;i<arr.length;i++){
+			var val=arr[i].className;
+				if(val.indexOf(aa)>-1){
+					arr[i].checked = false;
+			}
+		}
+	}
+}
+</script>
+<script type="text/javascript">
+	var myData =new Array($!{listP.get(0)});
+	var myd=new Array($!{listP.get(5)});
+	var myChart = new JSChart('graph', 'line');
+	myChart.patchMbString();
+	myChart.setDataArray(myData);
+	myChart.setTitle('表');
+	myChart.setAxisNameX('');
+	myChart.setAxisNameY('');
+	myChart.setAxisColor('#330000');
+	myChart.setAxisValuesColor('#330000');
+	myChart.setAxisPaddingBottom(50);
+	myChart.setAxisPaddingLeft(50);
+	myChart.setAxisPaddingRight(40);
+	myChart.setAxisValuesNumberX(myData.length);
+	myChart.setIntervalStartY(0);
+	myChart.setShowXValues(false);
+	for(var i=0;i<myd.length;i++){
+	 myChart.setLabelX(myd[i]);
+	}
+	myChart.setGridColor('#330000');
+	myChart.setLineColor('#330000');
+	myChart.setSize(616, 300);
+	myChart.setBackgroundImage('/web/images/chart_bg.jpg');
+	myChart.draw();
+function city(){
+    var myData =new Array();
+	var myd=new Array();
+	var array=document.getElementsByName("data");
+	var val="";
+	for(var i=0;i<array.length;i++){
+		if(array[i].checked==true){
+	 	 	 val=array[i].value;
+		}
+	}
+	if(val=="展现量"){
+		myData=new Array($!{listP.get(0)});
+		myd=new Array($!{listP.get(5)});
+	}else if(val=="点击量"){
+		myData=new Array($!{listP.get(1)});
+		myd=new Array($!{listP.get(5)});
+	}else if(val=="点击率"){
+		myData=new Array($!{listP.get(2)});
+		myd=new Array($!{listP.get(5)});
+	}else if(val=="电话量"){
+		myData=new Array($!{listP.get(3)});
+		myd=new Array($!{listP.get(5)});
+	}else{
+		myData=new Array($!{listP.get(4)});
+		myd=new Array($!{listP.get(5)});
+	}
+	var myChart = new JSChart('graph', 'line');
+	myChart.patchMbString();
+	myChart.setDataArray(myData);
+	myChart.setTitle('表');
+	myChart.setAxisNameX('');
+	myChart.setAxisNameY('');
+	myChart.setAxisColor('#330000');
+	myChart.setAxisValuesColor('#330000');
+	myChart.setAxisPaddingBottom(50);
+	myChart.setAxisPaddingLeft(50);
+	myChart.setAxisPaddingRight(40);
+	myChart.setAxisValuesNumberX(10);
+	myChart.setIntervalStartY(0);
+	myChart.setShowXValues(false);
+	for(var i=0;i<myd.length;i++){
+	 myChart.setLabelX(myd[i]);
+	}
+	myChart.setGridColor('#330000');
+	myChart.setLineColor('#330000');
+	myChart.setSize(616, 300);
+	myChart.setBackgroundImage('/web/images/chart_bg.jpg');
+	myChart.draw();
+	jQuery("#main").html(val);
+	}
+</script>
+

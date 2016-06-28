@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="authAutoLogin">
+	<typeAlias alias="authAutoLoginDO" type="com.ast.ast1949.domain.auth.AuthAutoLogin" />
+
+	<resultMap id="authAutoLoginResult" class="authAutoLoginDO">
+		<result property="id" column="id" />
+		<result property="companyAccount" column="company_account" />
+		<result property="password" column="password"/>
+		<result property="companyId" column="company_id" />
+		<result property="cookie" column="cookie" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		company_account,
+		password,
+		cookie,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryByCookie" resultMap="authAutoLoginResult" parameterClass="java.lang.String">
+		select 
+		<include refid="defaultColumn" />
+		from auth_auto_login
+		where cookie = #value#
+		limit 1
+	</select>
+
+	<insert id="insert"  parameterClass="authAutoLoginDO">
+		INSERT INTO auth_auto_login
+		(
+		company_id,
+		company_account,
+		password,
+		cookie,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#companyAccount#,
+		#password#,
+		#cookie#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="authAutoLoginDO">
+		update auth_auto_login
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="cookie">
+			cookie = #cookie#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="password">
+			password = #password#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyAccount">
+			company_account = #companyAccount#
+		</isNotEmpty>
+	</update>
+	
+	<delete id="delete" parameterClass="java.lang.Integer" >
+		delete from auth_auto_login 
+		where id = #value#
+	</delete>
+
+</sqlMap>

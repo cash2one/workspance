@@ -1,0 +1,185 @@
+#set($layout="/layout/default.vm")
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/producttitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_blank">发布供应信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/supply.htm">管理供应信息</a></li>
+            <li class="hbnylefts"><a href="$!{address.myesite}/supply/tradeGroup.htm">管理供应信息类别</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/buy/publish_StpOne.htm" target="_blank">发布求购信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/buy/buy.htm">管理求购信息</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table>
+    </td>
+    <td valign="top" class="hbnycon">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">管理供应信息类别</td>
+      </tr>
+    </table>
+	<table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+        <td height="30">
+        </td>
+        </tr>
+    </table>
+    <table width="600" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+          <div class="top_menu">
+          	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		     	 <tr>
+		            <td>父类别:
+		            <select id="parentId" style= "width:100px">
+		          		<option value="0">一级类别</option>
+		            	#foreach($groups in $!{list})
+	                    <option value="$!{groups.id}">
+	                        $!{groups.name}
+	                    </option>
+	                	#end
+		            </select>
+		            </td>
+		            <td style="padding-left:5px;">
+		            	名称:<input id="groupName" type="text" size='20' maxlength='20'/>
+		            </td>
+		            <td>排序:
+			            <input id="sort" type="text" size='4' maxlength='2'/>
+		            </td>
+		            <td width="100" align="center"><a href="javascript:addGroup()">添加</a></td>
+		          </tr>
+	        </table>
+          </div> 
+          #foreach($item in $!{list})
+          <div class="top_menu" id="topMenuDiv$!{item.id}">
+          	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		          <tr id="groupDiv$!{item.id}">
+		            <td style="padding-left:5px;">$!{item.name}</td>
+		            <td width="100">$!{item.sort}</td>
+		            <td width="120" align="center">
+		            	<a href="javascript:editTextGroup($!{item.id},'$!{item.name}','$!{item.sort}')">修改</a>
+		            	#if($!{item.childs.size()} == 0)
+		            	<a href="javascript:deleteGroups($!{item.id})">删除</a>
+		            	#end
+		            </td>
+		          </tr>
+	          </table>
+          </div>
+          <div class="sub_meuu">
+	          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+		          #foreach($item2 in $!{item.childs})
+		          <tr id="groupDiv$!{item2.id}">
+		            <td style="padding-left:25px;">$!{item2.name}</td>
+		            <td width="100">$!{item2.sort}</td>
+		            <td width="120" align="center">
+			            <a href="javascript:editTextGroup($!{item2.id},'$!{item2.name}','$!{item2.sort}')">修改</a>
+			            <a href="javascript:deleteGroup($!{item2.id})">删除</a>
+		            </td>
+		          </tr>
+		          #end
+	          </table>
+          </div>
+          #end
+          </td>
+        </tr>
+    </table>
+    <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50">&nbsp;</td>
+        </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+<script language="javascript">
+function editTextGroup(id,name,sort) {
+	jQuery("#groupDiv"+id).html("<td style='padding-left:5px;'>类别名称:<input id='groupName"+id+"' type='text' size='28' maxlength='20' value='"+name+"'/></td><td>排序:"
+			            + "<input id='sort"+id+"' type='text' size='4' maxlength='2' value='"+sort+"'/>"
+			            + "<input id='parentId"+id+"' type='hidden' value='"+id+"'/></td>"
+		            	+ "<td width='120' align='center'><a href='javascript:updateGroup("+id+")'>保存</a></td>");
+}
+function deleteGroup(id) {
+    jQuery.ajax({
+        url:'#springUrl("/supply/deleteGroup.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#groupDiv"+id).remove();
+				    hb.util.Message.show({
+				        msg:"删除成功！",
+				        autoClose:10000
+					 });
+                }
+            },
+        failure:function(){
+		    hb.util.Message.show({
+		        msg:"删除失败！",
+		        autoClose:10000
+			 });
+        }
+    });
+}
+function addGroup() {
+    jQuery.ajax({
+        url:'#springUrl("/supply/addGroup.htm")',
+        data:{"name":jQuery("#groupName").val(),"sort":jQuery("#sort").val(),"parentId":jQuery("#parentId").val()},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+	              window.location = "#springUrl("/supply/tradeGroup.htm")";
+                }
+            },
+        failure:function(){
+		    hb.util.Message.show({
+		        msg:"添加失败！",
+		        autoClose:10000
+			 });
+        }
+    });
+}
+
+function updateGroup(id) {
+    jQuery.ajax({
+        url:'#springUrl("/supply/updateGroup.htm")',
+        data:{"id":id,"name":jQuery("#groupName"+id).val(),"sort":jQuery("#sort"+id).val()},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+            if(req.success){
+				window.location = "#springUrl("/supply/tradeGroup.htm")";
+            }
+        },
+        failure:function(){
+		    hb.util.Message.show({
+		        msg:"修改失败！",
+		        autoClose:10000
+			 });
+        }
+    });
+}
+function deleteGroups(id) {
+	deleteGroup(id);
+    jQuery("#topMenuDiv"+id).remove();
+    window.location = "#springUrl("/supply/tradeGroup.htm")";
+}
+</script>

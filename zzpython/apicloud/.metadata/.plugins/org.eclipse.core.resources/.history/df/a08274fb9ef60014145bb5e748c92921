@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>性情中人</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link href="../css/main.min.css" rel="stylesheet" type="text/css" />
+		<style>
+			* {
+				outline: 0;
+			}
+			html, body {
+				height: 100%;
+				width: 100%;
+			}
+			/*header*/
+			
+			.header {
+				display: -webkit-box;
+				display: -webkit-flex;
+				background-color: #f2f2f2;
+				border-bottom: 1px solid #ebebeb;
+				width:100%;
+				position: fixed;
+				z-index: 90000;
+				top:0px;
+				left:0px;
+			}
+			.topmove{height:45px;width:100%}
+			.header a {
+				display: block;
+				background-size: 30px;
+				background-repeat: no-repeat;
+				background-position: center;
+				padding: 20px;
+			}
+			.header .title {
+				line-height: 40px;
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: left;
+				font-size:18px;
+			}
+			.header .menu {
+				background-image: url("../image/menu.png");
+			}
+			.list {
+				border-top: solid 1px #F0F0F0;
+				padding: 10px;
+				text-align: left;
+				line-height: 20px;
+				background-color: #fff;
+			}
+			.list .title {
+				font-size: 20px;
+				color: #000000;
+				font-weight: 700;
+				text-align: left;
+				line-height: 25px;
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+			.list .description {
+				font-size: 14px;
+				color: #999;
+				font-weight: normal;
+				text-align: left;
+				line-height: 20px;
+				padding-top: 10px;
+			}
+			.liActive {
+				background-color: #3ABA63;
+			}
+			/*header*/
+		</style>
+	</head>
+	<body>
+			<div class="index header ">
+				<a class="menu" tapmode="" onclick="sliding()"></a>
+				<div class="title" >
+					性情中人
+				</div>
+				<a></a>
+			</div>
+		<div class="topmove"></div>
+		<!--新闻列表-->
+		<div class="newslist">
+			
+		</div>
+		<div class="jzmore" style="border: 0;">
+			更多新闻加载中...
+		</div>
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../script/iscroll.js"></script>
+		<script type="text/javascript" src="../script/swipe.min.js"></script>
+		<script>
+			function sliding() {
+				api.openSlidPane({
+					type : 'left'
+				});
+			}
+			var currPage = 1;
+			var stoploading = false;
+			apiready = function() {
+				$api.fixIos7Bar($api.dom('.title'));
+				api.addEventListener({
+					name : 'keyback'
+				}, function(ret, err) {
+					api.closeWidget();
+				});
+				
+				api.addEventListener({
+				    name:'scrolltobottom'
+				},function(ret,err){
+				    loadmorelist('http://app.zz91.com/sex/list.html',currPage+1);
+				});
+				
+				api.showProgress();
+				api.ajax({
+					url : 'http://app.zjfriend.com/sex/list.html',
+					method : 'get',
+					timeout : 30,
+					pageParam : {
+						t : (new Date()).getTime().toString()
+					},
+					dataType : 'text',
+					returnAll : false
+				}, function(ret, err) {
+					if (ret) {
+						$(".newslist").html(ret);
+						api.hideProgress();
+					} else {
+						api.alert({
+							//msg : ('错误码：' + err.code + '；错误信息：' + err.msg + '网络状态码：' + err.statusCode)
+						});
+					};
+				});
+			};
+			function toDetail(id) {
+				var pageParam = {
+					id : id,
+					t : (new Date()).getTime().toString()
+				};
+				api.openWin({
+					name : 'detail',
+					pageParam : pageParam,
+					url : 'newsDetail.html'
+				})
+			}
+			function loadmorelist(url,page){
+				if (stoploading == false) {
+					stoploading = true;
+					
+					$(".jzmore").html("更多新闻加载中");
+					api.ajax({
+						url : 'http://app.zjfriend.com/sex/list.html?page='+page.toString(),
+						method : 'get',
+						timeout : 30,
+						pageParam : {
+							t : (new Date()).getTime().toString()
+						},
+						dataType : 'text',
+						returnAll : false
+					}, function(ret, err) {
+						if (ret) {
+							$(".newslist").append(ret);
+							stoploading = false;
+							currPage=page;
+							api.hideProgress();
+							$(".jzmore").html("点击加载更多信息");
+						} else {
+							stoploading = false;
+							api.alert({
+								//msg : ('错误码：' + err.code + '；错误信息：' + err.msg + '网络状态码：' + err.statusCode)
+							});
+						};
+					});
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,155 @@
+#set($layout = "/layout/compnews/defaultS.vm")
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/tech/css/JiShuZhongXin.css"/>
+
+
+
+<div class="main">
+#parse("/common/compnews/menu.vm")
+	<div class="m-list">
+    	<ul>
+        	<li><a href="#springUrl('/compnews/technicalarticles/list').htm">公司技术文章</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041000.htm">环保百科</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041001.htm">技术参数</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041002.htm">前沿技术</a></li>
+        </ul>
+    </div>
+    <!--m-list-->
+	<div class="m-title">
+    	中国环保网 > 技术中心 > 公司技术文章  
+    </div>
+    <div class="mainblock2">
+    	<div class="m2-left2">
+        	<div class="m2-left2-info">
+            	公司技术文章|Technical Articles
+            </div>
+			
+        	<div class="list">
+				#foreach($l in  $!{page.records})
+                <div class="list-item">
+                	<div class="list-item-title">
+                    	<span class="list-title-text">
+                        	<a href="#springUrl('/compnews/technicalarticles/details')$!{l.compNews.id}.htm">$!{l.compNews.title}</a>
+                        </span>
+						#if($!{l.memberCode}=='10011001')
+                        <img src="http://img0.huanbao.com/huanbao/tech/images/icon.jpg" class="i1" />
+                        #end
+						<span class="list-title-date">
+                        	#printFragmentDate("yyy-MM-dd" $!{l.compNews.gmtPublish})
+                        </span>
+                    </div>
+                    <!--end list_zi1-->
+                    <div class="list-item-content">
+                    	    <a href="#springUrl('/compnews/technicalarticles/details')$!{l.compNews.id}.htm">#printTitle($!{l.compNews.details}  82 " ")</a>
+                    </div>
+                    <!--end list_zi2-->
+                    <div class="list-item-text">
+                    	<span class="list-text-pages">
+                        	<a href="$!{address.esite}/index$!{l.compNews.cid}.htm">#printTitle($!{l.compName} 15 " ")</a>
+                        </span>
+                    	<span class="list-text-pages">
+                        	游览量：$!{l.compNews.viewCount} 
+                        </span>
+                        <span class="list-text-label">
+							#if($!{l.keyTags.keySet().size()} >= 1 &&  $!{l.keyTags.keySet()}!="")
+    							  标签：
+    							#foreach($v in $!{l.keyTags.keySet()})
+    							    <a href="#springUrl('list.htm')?keywords=$v">$v</a>
+    							#end
+							#end	
+						</span>
+                    </div>
+                    <!--end list_zi3-->
+                    <div class="list-item-img">
+                    	##<img src="http://img0.huanbao.com/huanbao/tech/images/img1.jpg"/>
+                        
+                    </div>
+                    <!--end list_img-->
+                    <div style="clear:both"></div>
+                </div>
+                <!--end LieBiaoYe list-->
+                #end
+                
+                <div class="list-page">
+                	  #staticPageNavs(${page} "#springUrl('/compnews/technicalarticles/list')" "" "")
+                </div>
+                <!--end page-->
+                <div style="clear:both"></div>
+            </div>
+            <!--end LieBiaoYe-->
+        </div>
+        <!--end mainblock2 left-->
+        <div class="m2-right2">
+        	<div class="m2-right2-technology">
+                <a href="#springUrl('/compnews/technicalarticles/publish.htm')"><img src="http://img0.huanbao.com/huanbao/tech/images/technology2.jpg" /></a>
+            </div>
+        	<div class="m2-right2-item">
+				
+            	<div class="m2-right2-title">
+                	相关技术文章
+                </div>
+				#cacheFragment("$!{address.fragment}/fragment/company/queryNewsInTechnical.htm?size=7&so","","","600")
+                <div class="m2-right2-content">
+                	<ul>
+				      #foreach($l  in $!newsDtoList)
+						#if($velocityCount <=7)
+                        <li>
+							#if($!{l.type} !='1001')
+								<a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a>
+						    #else
+							   <a href="#springUrl('/compnews/technicalarticles/details')$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a>	
+							#end
+							
+						</li>
+						#end
+					  #end
+					</ul>
+                </div>
+				#end
+            </div>
+            <!--mainblock2 right item-->
+            <div class="m2-right2-item">
+            	<div class="m2-right2-title">
+                	<a href="$!{address.trade}/newb.htm">推荐求购信息</a>
+                </div>
+				#cacheFragment("$!{address.fragment}/fragment/trade/recommendBuy.htm?size=7&wwwdIex","","","600")
+                <div class="m2-right2-content">
+                	<ul>
+						#foreach($l in $list)
+                    	<li><a href="$!{address.trade}/buy/detail$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a></li>
+						#end
+                    </ul>
+                </div>
+				#end
+            </div>
+            <!--mainblock2 right item-->
+            <div class="m2-right2-item">
+            	<div class="m2-right2-title">
+                	<a href="$!{address.trade}/newg.htm">最新产品</a>
+                </div>
+				#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?size=7&dsu","","","600")
+                <div class="m2-right2-content">
+                	<ul>
+						#foreach($l in $!{list})
+                    	<li><a href="$!{address.trade2}/supply/detail$!{l.id}.htm">#printTitle($!{l.title} 15 "")</a></li>
+						#end
+                    </ul>
+                </div>
+				#end
+            </div>
+            <!--mainblock2 right item-->
+        </div>
+        <!--end mainblock2 right-->
+    </div>
+    <!--end mainblock2-->
+</div>
+<!--end main-->
+
+
+<div style="clear:both"></div>
+<!--end main-->
+<!--底部 start-->
+
+
+
+

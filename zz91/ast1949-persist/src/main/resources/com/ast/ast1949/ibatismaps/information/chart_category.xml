@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="chartCategory">
+	<typeAlias alias="chartCategoryDO" type="com.ast.ast1949.domain.information.ChartCategoryDO" />
+	<typeAlias alias="chartCategoryDTO" type="com.ast.ast1949.dto.information.ChartCategoryDTO" />
+	
+	<resultMap class="chartCategoryDO" id="resultChartCategoryDO">
+		<result property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="setting" column="setting" />
+		<result property="showIndex" column="show_index" />
+		<result property="showInHome" column="show_in_home" />
+		<result property="relevanceId" column="relevance_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="chartCategoryDTO" id="resultChartCategoryDTO">
+		<result property="chartCategory" resultMap="chartCategory.resultChartCategoryDO" />
+	</resultMap>
+	
+	<resultMap class="chartCategoryDTO" id="resultFullChartCategoryDTO">
+		<result property="chartCategory" resultMap="chartCategory.resultChartCategoryDO" />
+		<result property="relevanceName" column="relevance_name" />
+	</resultMap>
+	
+	<insert id="insertChartCategory" parameterClass="chartCategoryDO">
+		INSERT INTO chart_category 
+		(
+			parent_id, 
+			name, 
+			setting, 
+			show_index, 
+			show_in_home,
+			relevance_id,
+			gmt_created, 
+			gmt_modified
+		)
+		VALUES
+		(
+			#parentId#, 
+			#name#, 
+			#setting#, 
+			#showIndex#,
+			#showInHome#,
+			#relevanceId#, 
+			now(), 
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteChartCategoryById" parameterClass="java.lang.Integer">
+		DELETE
+		FROM chart_category
+		WHERE id = #value#
+	</delete>
+	
+	<update id="updateChartCategoryById" parameterClass="chartCategoryDO">
+		UPDATE chart_category
+		SET 
+		  parent_id = #parentId#,
+		  name = #name#,
+		  setting = #setting#,
+		  show_index = #showIndex#,
+		  show_in_home = #showInHome#,
+		  relevance_id=#relevanceId#,
+		  gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<select id="queryChartCategoryById" parameterClass="java.lang.Integer" resultMap="resultChartCategoryDO">
+		SELECT
+		  cc.id,
+		  cc.parent_id,
+		  cc.name,
+		  cc.setting,
+		  cc.show_index,
+		  cc.show_in_home,
+		  cc.relevance_id,
+		  cc.gmt_created,
+		  cc.gmt_modified
+		FROM chart_category cc
+		WHERE cc.id = #value#
+	</select>
+	
+	<select id="queryChartCategoryCanShowInHome" parameterClass="java.lang.Integer" resultMap="resultChartCategoryDO">
+		SELECT
+		  cc.id,
+		  cc.parent_id,
+		  cc.name,
+		  cc.setting,
+		  cc.show_index,
+		  cc.show_in_home,
+		  cc.relevance_id,
+		  cc.gmt_created,
+		  cc.gmt_modified
+		FROM chart_category cc
+		WHERE cc.show_in_home = 1
+		ORDER BY cc.id DESC
+		LIMIT 0,#max#
+	</select>
+	
+	<select id="queryChartCategoryByParentId" parameterClass="java.lang.Integer" resultMap="resultChartCategoryDO">
+		SELECT
+		  cc.id,
+		  cc.parent_id,
+		  cc.name,
+		  cc.setting,
+		  cc.show_index,
+		  cc.show_in_home,
+		  cc.relevance_id,
+		  cc.gmt_created,
+		  cc.gmt_modified
+		FROM chart_category cc
+		WHERE cc.parent_id = #value#
+		ORDER BY cc.show_index ASC
+	</select>
+	
+	<select id="queryChartCategoryDtoById" parameterClass="java.lang.Integer" resultMap="resultFullChartCategoryDTO">
+		SELECT
+		  cc.id,
+		  cc.parent_id,
+		  cc.name,
+		  cc.setting,
+		  cc.show_index,
+		  cc.show_in_home,
+		  cc.relevance_id,
+		  cc.gmt_created,
+		  cc.gmt_modified,
+		  pc.name AS relevance_name
+		FROM chart_category cc
+		LEFT JOIN price_category pc 
+			ON pc.id=cc.relevance_id
+		WHERE cc.id = #value#
+	</select>
+	
+	<select id="queryChartCategoryListByParentId" parameterClass="chartCategoryDTO" resultMap="resultChartCategoryDTO">
+		SELECT
+		  cc.id,
+		  cc.parent_id,
+		  cc.name,
+		  cc.setting,
+		  cc.show_index,
+		  cc.show_in_home,
+		  cc.relevance_id,
+		  cc.gmt_created,
+		  cc.gmt_modified
+		FROM chart_category cc
+		<dynamic prepend="where">
+			<isNotEmpty property="chartCategory.parentId" prepend="and">
+				cc.parent_id = #chartCategory.parentId#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<!-- 
+	<select id="countChartCategoryListByParentId" parameterClass="chartCategoryDTO" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM chart_category cc
+		<dynamic prepend="where">
+			<isNotEmpty property="chartCategory.parentId" prepend="and">
+				cc.parent_id = #chartCategory.parentId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	 -->
+	
+	
+</sqlMap>

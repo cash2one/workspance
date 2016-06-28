@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subnetCategory">
+
+	<typeAlias alias="subnetCategory" type="com.zz91.ep.domain.trade.SubnetCategory"/>
+	
+	<resultMap class="subnetCategory" id="fullColumnMap">
+		<result property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="keyword" column="keyword"/>
+		<result property="sort" column="sort"/>
+		<result property="showIndex" column="show_index"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+
+	<resultMap class="subnetCategory" id="simpResultMap">
+		<result property="code" column="code"/>
+		<result property="keyword" column="keyword"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		`id`,
+		`parent_id`,
+		`code`,
+		`name`,
+		`keyword`,
+		`sort`,
+		`show_index`,
+		`gmt_created`,
+		`gmt_modified`
+	</sql>
+	
+	<insert id="insertSubnetCategory" parameterClass="subnetCategory">
+		insert into `subnet_category`
+		(
+		`parent_id`,
+		`code`,
+		`name`,
+		`keyword`,
+		`sort`,
+		`show_index`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#parentId#,
+		#code#,
+		#name#,
+		#keyword#,
+		#sort#,
+		#showIndex#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateSubnetCategory" parameterClass="subnetCategory">
+		update `subnet_category`
+		set
+		`parent_id` = #parentId#,
+		`code` = #code#,
+		`name` = #name#,
+		`keyword` = #keyword#,
+		`sort` = #sort#,
+		`show_index` = #showIndex#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<select id="queryCategoryByParentId" parameterClass="java.lang.Integer" resultMap="fullColumnMap">
+		select 
+		<include refid="fullColumn"/>
+		from subnet_category
+		where parent_id=#value#
+	</select>
+	
+	<select id="queryChildCountByParentId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) 
+		from subnet_category
+		where parent_id=#id#
+	</select>
+	
+	<delete id="deleteCategoryByIdOrParentId" parameterClass="java.util.HashMap">
+		delete from subnet_category
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				id=#id#
+			</isNotNull>
+			<isNotNull prepend="and" property="parentId">
+				parent_id=#parentId#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	
+	<select id="queryAllCategory" resultMap="simpResultMap">
+		select code,keyword
+		from subnet_category
+	</select>
+</sqlMap>

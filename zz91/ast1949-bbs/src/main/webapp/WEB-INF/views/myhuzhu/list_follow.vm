@@ -1,0 +1,188 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+#set($headName="follow")
+#parse("/common/myhuzhu/head.vm")
+<div class="huzhu">
+    <div class="hz-left fl">
+        <div class="mainblock">
+            <div class="m5-tab f16">
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/dongtai.html')" #if($type==4) class="up" #end>关注动态</a>
+                </div>
+                <!--end m5t-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/lingyu.html')" #if(!$type) class="up" #end>我的关注领域</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/huida.html')" #if($type==2) class="up" #end>关注的回答</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/tiezi.html')" #if($type==1) class="up" #end>关注的帖子</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="cb"></div>
+            </div>
+            <!--end m5-tab-->
+        </div>
+        <!--end mainblock-->
+		#if($type==1||$type==2)
+			<div class="mainblock">
+				<ul class="item5">
+					#foreach($obj in $page.records)
+						<li>
+							<div class="m5-item">
+								<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="f14 blue" target="_blank">$!{obj.post.title}</a>
+							</div>
+							<!--end m5-item-->
+							<div class="m5-box">
+								<div class="m5b-lt fl">
+									<p>
+										#printTitle($!{obj.post.content} 100 "...")
+										<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="" target="_blank">[查看全文]</a>
+									</p>
+								</div>
+								<!--end m5b-info-->
+								<div class="m5b-gt fr">
+									<span>$!{obj.post.visitedCount}</span>
+								</div>
+								<!--end m5b-info-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+							<div class="m5-box">
+								<div class="m5b-dire fl">
+									<span>$!{obj.replyName}</span>
+								</div>
+								<!--end m5b-dire fl-->
+								<div class="m5b-reply fl">
+									<span>最后回复 $date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.replyTime})</span>
+								</div>
+								<!--end m5b-reply fr-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+						</li>
+					#end
+				</ul>
+				## 分页
+				#pageViewQA($page "#springUrl('/myhuzhu/')" "$!{path}" "")
+			</div>
+			<!--end mainblock-->
+		#elseif($type==3)
+			<div class="mainblock m5-block">
+                <ul class="m2-item">
+					#foreach($obj in $tagList)
+						<li><a href="#springUrl('/viewTags-')$!{obj.contentId}.htm" target="_blank" title="$!{obj.contentTitle}">$!{obj.contentTitle}</a></li>
+					#end
+                    <li><a href="#springUrl('/myhuzhu/guanzhu/lingyu.html')" class="add"><em>+</em>添加关注领域</a></li>
+                </ul>
+            </div>
+            <!--end mainblock-->
+		#else
+    		<div class="mainblock m5-block">
+                <ul class="m2-item">
+					#foreach($obj in $tagList)
+						<li><a href="#springUrl('/viewTags-')$!{obj.contentId}.htm" target="_blank" title="$!{obj.contentTitle}">$!{obj.contentTitle}</a></li>
+					#end
+                    <li><a href="#springUrl('/myhuzhu/guanzhu/lingyu.html')" class="add"><em>+</em>添加关注领域</a></li>
+                </ul>
+            </div>
+            <!--end mainblock-->
+            <div class="mainblock m5_borcor">
+                <div class="bor_b1 bold f14 tc">关注的回答</div>
+                <!--end bor_b1-->
+                <ul class="item5">
+    				#foreach($obj in $qaList)
+						<li>
+							<div class="m5-item">
+								<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="f14 blue" target="_blank">$!{obj.post.title}</a>
+							</div>
+							<!--end m5-item-->
+							<div class="m5-box">
+								<div class="m5b-lt fl">
+									<p>
+										#printTitle($!{obj.post.content} 100 "...")
+										<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="" target="_blank">[查看全文]</a>
+									</p>
+								</div>
+								<!--end m5b-info-->
+								<div class="m5b-gt fr">
+									<span>$!{obj.post.visitedCount}</span>
+								</div>
+								<!--end m5b-info-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+							<div class="m5-box">
+								<div class="m5b-dire fl">
+									<span>$!{obj.replyName}</span>
+								</div>
+								<!--end m5b-dire fl-->
+								<div class="m5b-reply fl">
+									<span>最后回复 $date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.replyTime})</span>
+								</div>
+								<!--end m5b-reply fr-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+						</li>
+					#end
+                </ul>
+            </div>
+    		
+    		<div class="mainblock m5_borcor1">
+            	<div class="bor_b2 bold f14 tc">关注的帖子</div>
+                <!--end bor_b2-->
+            	<ul class="item5">
+					#foreach($obj in $postList)
+						<li>
+							<div class="m5-item">
+								<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="f14 blue" target="_blank">$!{obj.post.title}</a>
+							</div>
+							<!--end m5-item-->
+							<div class="m5-box">
+								<div class="m5b-lt fl">
+									<p>
+										#printTitle($!{obj.post.content} 100 "...")
+										<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="" target="_blank">[查看全文]</a>
+									</p>
+								</div>
+								<!--end m5b-info-->
+								<div class="m5b-gt fr">
+									<span>$!{obj.post.visitedCount}</span>
+								</div>
+								<!--end m5b-info-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+							<div class="m5-box">
+								<div class="m5b-dire fl">
+									<span>$!{obj.replyName}</span>
+								</div>
+								<!--end m5b-dire fl-->
+								<div class="m5b-reply fl">
+									<span>最后回复 $date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.replyTime})</span>
+								</div>
+								<!--end m5b-reply fr-->
+								<div class="cb"></div>
+							</div>
+							<!--end m5-box-->
+						</li>
+					#end
+                </ul>
+            </div>
+            <!--end mainblock-->
+		#end
+    </div>
+    <!--end hz-left-->
+    ## 右边个人信息
+    #parse("/common/myhuzhu/right.vm")
+</div>
+<!--end huzhu-->

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogInfo">
+	<typeAlias alias="mblogInfo" type="com.zz91.ep.domain.mblog.MBlogInfo" />	
+    <resultMap class="mblogInfo" id="mblogInfoResultMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="realName" column="real_name"/>
+		<result property="headPic" column="head_pic"/>
+		<result property="name" column="name" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code"/>
+		<result property="isDelete" column="is_delete" />
+		<result property="sex" column="sex"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="mblogInfo" id="someMblogInfoResultMap">
+		<result property="id" column="id" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		cid,
+		account,
+		real_name,
+		head_pic,
+		name,
+		province_code,
+		area_code,
+		is_delete,
+		sex,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="mblogInfo">
+	    INSERT INTO mblog_info
+	    (
+	    cid,
+		account,
+		real_name,
+		head_pic,
+		name,
+		province_code,
+		area_code,
+		sex,
+		gmt_created,
+		gmt_modified
+	    )
+	    VALUES
+	    (
+	    #cid#,
+	    #account#,
+	    #realName#,
+	    #headPic#,
+	    #name#,
+	    #provinceCode#,
+	    #areaCode#,
+	    #sex#,
+	    now(),
+	    now()
+	    )
+	    <selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="mblogInfo">
+	    update mblog_info
+	    set
+	    real_name = #realName#,
+	    head_pic = #headPic#,
+	    name = #name#,
+	    province_code = #provinceCode#,
+	    area_code = #areaCode#,
+	    sex = #sex#,
+	    gmt_modified = now()
+	    where id=#id#
+	</update>
+	
+	<update id="updateIsDeleteStatus" parameterClass="java.util.Map">
+	    update mblog_info
+	    set
+	    is_delete = #isDelete#,
+	    gmt_modified = now()
+	    where account = #account#
+	</update>
+	
+	<select id="queryInfoById" parameterClass="java.util.HashMap" resultMap="mblogInfoResultMap">
+		select 
+		<include refid="defaultColumn" />
+		from mblog_info
+		where id = #id#
+		and is_delete = 0 
+		limit 1
+	</select>
+	
+	<select id="queryInfoByInfoIdorCid" parameterClass="java.util.HashMap" resultMap="mblogInfoResultMap">
+		select 
+		<include refid="defaultColumn" />
+		from mblog_info
+		where 
+		is_delete = 0
+		<isNotEmpty property="infoId">
+		and id = #infoId#
+        </isNotEmpty>
+        <isNotEmpty property="cid">
+        and cid = #cid#
+        </isNotEmpty> 
+		limit 1
+	</select>
+	
+	<select id="queryInfobyAreaCode" parameterClass="java.util.HashMap" resultMap="mblogInfoResultMap">
+		select
+		<include refid="defaultColumn"/>
+		from mblog_info
+		where 
+		province_code = #provinceCode#
+	    and area_code = #areaCode#
+	    and is_delete = 0
+	</select>
+	
+	<select id="queryInfoByInfoByName" parameterClass="java.util.HashMap" resultMap="mblogInfoResultMap">
+		select 
+		<include refid="defaultColumn" />
+		from mblog_info
+		where 
+		is_delete = 0
+		and name = #name#
+		limit 1
+	</select>
+	<select id="queryInfoByCid" parameterClass="java.util.HashMap" resultMap="mblogInfoResultMap">
+		select 
+		<include refid="defaultColumn" />
+		from 
+		mblog_info
+		where cid=#cid#
+	</select>
+</sqlMap>

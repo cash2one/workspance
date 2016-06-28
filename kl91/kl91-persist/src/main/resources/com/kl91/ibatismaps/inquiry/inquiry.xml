@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="inquiry">
+	<typeAlias alias="inquiry" type="com.kl91.domain.inquiry.Inquiry" />
+	<typeAlias alias="inquiryDto" type="com.kl91.domain.inquiry.InquiryDto" />
+
+	<resultMap class="inquiry" id="resultCompany">
+		<result property="id" column="id" />
+		<result property="fromCid" column="from_cid" />
+		<result property="toCid" column="to_cid" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_type" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="contentReply" column="content_reply" />
+		<result property="isFromTrash" column="is_from_trash" />
+		<result property="isToTrash" column="is_to_trash" />
+		<result property="isFromView" column="is_from_view" />
+		<result property="isToView" column="is_to_view" />
+		<result property="gmtPost" column="gmt_post" />
+		<result property="gmtReply" column="gmt_reply" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="inquiryDto" id="resultCompanyDto">
+		<result property="id" column="id" />
+		<result property="fromCid" column="from_cid" />
+		<result property="toCid" column="to_cid" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_type" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="contentReply" column="content_reply" />
+		<result property="isFromTrash" column="is_from_trash" />
+		<result property="isToTrash" column="is_to_trash" />
+		<result property="isFromView" column="is_from_view" />
+		<result property="isToView" column="is_to_view" />
+		<result property="gmtPost" column="gmt_post" />
+		<result property="gmtReply" column="gmt_reply" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<insert id="insert" parameterClass="inquiry">
+		INSERT INTO 
+		inquiry (
+		from_cid,to_cid,target_id,target_type,title,content,content_reply,
+		is_from_trash,is_to_trash,is_from_view,is_to_view,gmt_post,gmt_created,gmt_modified)
+		VALUES (
+		#fromCid#,#toCid#,#targetId#,#targetType#,#title#,#content#,#contentReply#,
+		#isFromTrash#,#isToTrash#,#isFromView#,#isToView#,now(),now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<update id="update" parameterClass="inquiry">
+		update inquiry
+		set
+		gmt_modified=now()
+		<isNotNull prepend="," property="contentReply">
+			content_reply = #contentReply#
+		</isNotNull>
+		<isNotNull prepend="," property="isFromTrash">
+			is_from_trash = #isFromTrash#
+		</isNotNull>
+		<isNotNull prepend="," property="isToTrash">
+			is_to_trash = #isToTrash#
+		</isNotNull>
+		<isNotNull prepend="," property="isFromView">
+			is_from_view = #isFromView#
+		</isNotNull>
+		<isNotNull prepend="," property="isToView">
+			is_to_view = #isToView#
+		</isNotNull>
+		<isNotNull prepend="," property="gmtReply">
+			gmt_reply = #gmtReply#
+		</isNotNull>
+		where id=#id#
+	</update>
+
+	<update id="batchDelete" parameterClass="java.util.Map">
+		update inquiry
+		set
+		gmt_modified=now()
+		<isNotNull prepend="," property="isDeleteByFrom">
+			is_from_trash = #deleteType#
+		</isNotNull>
+		<isNotNull prepend="," property="isDeleteByTo">
+			is_to_trash = #deleteType#
+		</isNotNull>
+		where 
+		<iterate prepend="id in" conjunction="," open="(" close=")" property="ids">
+			#ids[]:INTEGER#
+		</iterate>
+	</update>
+
+	<sql id="all_column">
+		i.id,i.from_cid,i.to_cid,i.target_id,i.target_type,i.title,i.content,i.content_reply,
+		i.is_from_trash,i.is_to_trash,i.is_from_view,i.is_to_view,i.gmt_post,i.gmt_reply,i.gmt_created,i.gmt_modified
+	</sql>
+	
+	<sql id="where_clause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="searchDto.fromCid">
+				from_cid = #searchDto.fromCid#
+				<isNotNull prepend="and" property="searchDto.trashFlag">
+					is_from_trash = #searchDto.trashFlag#
+				</isNotNull>
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.toCid">
+				to_cid = #searchDto.toCid#
+				<isNotNull prepend="and" property="searchDto.trashFlag">
+					is_to_trash = #searchDto.trashFlag#
+				</isNotNull>
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.trashCid">
+				(from_cid = #searchDto.trashCid# and is_from_trash = 1)
+				or
+				(to_cid = #searchDto.trashCid# and is_to_trash = 1 )
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryInquiry" parameterClass="java.util.HashMap"
+		resultMap="resultCompanyDto">
+		select
+		<include refid="all_column" />
+		from inquiry i
+		<include refid="where_clause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryInquiryCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from inquiry
+		<include refid="where_clause" />
+	</select>
+	
+	<select id="countNoViewedInquiry" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0) 
+		from inquiry
+		where to_cid= #id# and is_to_view = 0
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="resultCompany">
+		select 
+		<include refid="all_column"/>
+		from inquiry i
+		where id = #id#
+	</select>
+	
+	<update id="updateViewed" parameterClass="java.lang.Integer">
+		update inquiry
+		set gmt_modified = now(),is_to_view = 1
+		where id = #id#
+	</update>
+
+</sqlMap>

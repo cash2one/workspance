@@ -1,0 +1,352 @@
+#set($layout="/layout/defaultSample.vm")
+<style>
+caption, th {
+text-align: center;
+}
+
+a:hover {text-decoration:none} 
+</style>
+	
+  <script language="javascript">
+	function p_confirm() {
+	var msg = "是否确认发货？";  
+	if (confirm(msg)==true){  return true;  }else{   return false;  }  
+	}
+	
+function isOnSubmit()
+	{
+	 	if (document.all.keyword.value == '关键字或者订单编号查找' )
+	    {	
+		document.all.keyword.value = '';
+	    }
+		document.form1.submit();
+	}
+	
+</script>
+<body class="gbody1000">
+	#parse("mngr/include/nav.vm")
+	#parse("mngr/include/head.vm")
+	#parse("mngr/include/lm.vm")
+	<div class="gm1-5 gw-bcrumb">
+		<span><a href="#springUrl('/mngr/managerIndex.htm')">会员中心</a></span>
+		<strong>
+			<a href="#springUrl('/mngr/orderAll.htm')">采购管理</a>
+		</strong>
+	</div>
+	<div class="gMain clearfix">
+		<div class="gMenu">
+			<a href="#springUrl('/mngr/managerIndex.htm')" class="gHome">会员中心</a>
+            <div class="gMenuBox">
+                <div class="gMenuItem">
+                    <h3 class="helper">采购管理</h3>
+                    <ul>
+                        <li   #if($!{state}!="00" && $!{state}!="11" && $!{state}!="13")   class="current"   #end><a href="#springUrl('/mngr/orderAll.htm')">全部订单</a> </li>
+                        <li   #if($!{state}=="00") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=00">待付款订单</a> <font color=red>#if($!{bc_00})($!{bc_00})#end</font></li>
+                        <li   #if($!{state}=="11") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=11">待确认收货</a> <font color=red>#if($!{bc_11})($!{bc_11})#end</font></li>
+                        <li   #if($!{state}=="13") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{bc_13})($!{bc_13})#end</font></li>
+                    </ul>
+                </div>
+                <div class="gMenuItem">
+                    <h3 class="order">供应管理</h3>
+                    <ul>
+                    	<li><a href="#springUrl('/mngr/saleAll.htm')">全部订单</a> </li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=03">待发货订单</a> <font color=red>#if($!{sc_})($!{sc_03})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=06">提醒发货订单</a> <font color=red>#if($!{sc_})($!{sc_06})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=11">等待买家收货</a> <font color=red>#if($!{sc_})($!{sc_11})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=14">退货中订单</a> <font color=red>#if($!{sc_})($!{sc_14})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{sc_})($!{sc_13})#end</font></li>
+                    </ul>
+                </div>
+				
+                <div class="gMenuItem">
+                    <h3 class="order">积分管理</h3>
+                    <ul>
+                        <li class="">
+                            <a href="#springUrl('/score.htm')"  target="_blank">积分兑换</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreIncome.htm')">积分收入</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreConvert.htm')">积分支出</a>
+                        </li>
+                    </ul>
+                </div>
+								
+                <div class="gMenuItem">
+                    <h3 class="account">账户管理</h3>
+                    <ul>
+                        
+                        <li class="">
+                            <a href="#springUrl('/mngr/finance.htm')">财务概况</a>
+                            <!--收支明细  加  提现记录-->
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/record.htm')">收支记录</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/address.htm')?flag=B">收货地址</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/address.htm')?flag=S">发货地址</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/safe.htm')">安全中心</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="gift"><a href="http://myrc.zz91.com/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0" target="_blank">样品管理</a></h3>
+                  
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="msg">消息管理</h3>
+                    <ul>
+                        <li class=""><a href="#springUrl('/mngr/msgset.htm')">消息提醒设置</a></li>	
+                        <li class=""><a href="http://myrc.zz91.com/mymessage/inbox.htm" target="_blank">询盘管理</a></li>	
+                        <li class=""> <a href="http://myrc.zz91.com/myfeedback/vip.htm" target="_blank">客服留言</a></li>
+                    </ul>
+                </div>
+            </div>
+		</div>
+
+		<div class="gContainer">
+			<div class="messages">
+				<b>【注意事项】</b><br />
+				<b>
+					1.下单后，3日之内未付款，系统将取消订单。
+					2.收货之后，未确认收货，将在15天后系统自动确认收货。
+				</b>
+				<br />
+			</div>
+			<div class="gcTopic">
+				<h2>采购订单</h2>
+			</div>
+			<div class="gTab">
+				<ul class="clearfix">
+					<li #if($!{state} && $!{state}!="")   #else  class="current"   #end ><a href="#springUrl('/mngr/orderAll.htm')">全部订单 </a></li>
+					<li #if($!{state}=="00") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=00">待付款订单 <font color=red>$!{bc_00}</font></a></li>
+					<li #if($!{state}=="11") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=11">待确认收货 <font color=red>$!{bc_11}</font></a></li>
+					<li #if($!{state}=="13") class="current"  #else #end ><a href="#springUrl('/mngr/orderAll.htm')?state=13">已完成订单 <font color=red>$!{bc_13}</font></a></li>
+					#if($!{state} && $!{state}!="" &&  $!{state}!="00" && $!{state}!="11" && $!{state}!="13" ) 
+    					<li class="current">
+    						<a href="#">
+    							#if(${state}=="03")
+    								卖家待发货
+    							#elseif(${state}=="06") 
+    								已提醒发货
+    							#elseif(${state}=="14") 
+    								已申请退货
+    							#elseif(${state}=="15")
+    								卖家同意退货
+    							#elseif(${state}=="16") 
+    								退货已发货
+    							#elseif(${state}=="17")
+    								退货成功
+    							#elseif(${state}=="20")
+    								交易关闭
+    							#end	
+    						</a>
+    					</li>
+					#end
+				</ul>
+			</div>
+            <form id="form1" name="form1"    method="post" action="#springUrl('/mngr/orderAll.htm')">
+				<div class="optBar clearfix">
+					<div class="listFilter clearfix">
+						<input type="hidden" class="pin" name="status" value="1" />
+						<select id="u71" class="u71" name="state"   onchange="return isOnSubmit();">
+							<option selected  value="">订单状态</option>
+							<option #if($!{state}=="00")  selected #end  value="00">等待买家付款</option>
+							<option #if($!{state}=="02")  selected #end  value="02">等待买家提交订单</option>
+							<option #if($!{state}=="03")  selected #end  value="03">等待卖家发货</option>
+							<option #if($!{state}=="06")  selected #end  value="06">买家提醒发货</option>
+							<option #if($!{state}=="11")  selected #end  value="11">等待买家收货</option>
+							<option #if($!{state}=="13")  selected #end  value="13">交易成功</option>
+							<option #if($!{state}=="20")  selected #end  value="20">交易关闭</option>
+							<option #if($!{state}=="14")  selected #end value="14">买家申请退货</option>
+							<option #if($!{state}=="15")  selected #end  value="15">卖家同意退货</option>
+							<option #if($!{state}=="16")  selected #end  value="16">等待卖家收货</option>
+							<option #if($!{state}=="17")  selected #end  value="17">退货成功</option>
+						</select>
+						<input type="text" class="pin" name="keyword"  style="color:gray"     onclick="if(this.value=='关键字或者订单编号查找') this.value=''; this.style.color=''  " onblur="if(this.value=='') this.value='关键字或者订单编号查找'; this.style.color='gray'  "     #if($!{keyword} && $!{keyword}!='')   value="$!{keyword}"   #else    value="关键字或者订单编号查找"   #end />
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						成交日期
+						<input type="text" id="datefrom"  name="datefrom"  value="$!{datefrom}"   class="datetext"  />
+						<input type="text" id="dateto"  name= "dateto" value="$!{dateto}"  class="datetext" />&nbsp;&nbsp;
+						<button type="button"   onclick="return isOnSubmit();">搜索</button>
+					</div>
+				</div>
+			</form>
+            <script type="text/javascript">
+			onload = function () {
+				new DatePicker('_datefrom', {
+					inputId: 'datefrom',
+					className: 'date-picker-wp',
+					seprator: '-'
+				});
+				new DatePicker('_dateto', {
+					inputId: 'dateto',
+					className: 'date-picker-wp',
+					seprator: '-'
+				});
+			}
+			</script>
+			<div class="tableList">
+				<table class="tableListTit">
+					<tr>
+						<th class="w200">产品名称</th>
+						<th class="w100">单价（元/件）</th>
+						<th class="w50">数量（件）</th>
+						<th class="w50">总重量（千克）</th>
+						<th class="w100">订单状态</th>
+						<th class="w100">实付款（元）</th>
+						<th class="w100">交易操作</th>
+						<th>其他操作</th>
+					</tr>
+				</table>
+				#foreach($obj in $page.records)
+					<table class="tableListItem">
+						<tr>
+							<th colspan="8"><span>订单编号：${obj.orderid}</span><span>下单时间：$!date.format('yyyy-MM-dd HH:mm:ss',$!{obj.createTime})</span> 
+								<span>卖家：
+									#if($!{map.get($!{obj.sellerId})}=="10051000")
+										<a href="$!{address.company}/compinfo$!{obj.sellerId}.htm" target="_blank">$!{obj.sellerName}</a>
+									#else
+										<a href="http://$!{maps.get($!{obj.sellerId})}.zz91.com" target="_blank">$!{obj.sellerName}</a>
+									#end
+								</span>
+							</th>
+						</tr>
+						<tr>
+							<td class="w200">
+								<div class="infoListPrd clearfix">
+									<div class="infoListPrdImg">
+										<a href="#springUrl('/sale/')$!{obj.snapProductId}.htm" target="_blank"> 
+											<img src="$!{address.img3}/227x227/$!{obj.snapPic}&width=75&height=75" width="75" height="63" alt="${obj.snapTitle}"/>
+										</a>
+									</div>
+									<p><a target="_blank" href="#springUrl('/sale/')$!{obj.snapProductId}.htm" class="prdName">$!{obj.snapTitle}</a></p>
+								</div>
+							</td>
+							<td class="w100">
+								<div class="prdPrice">
+									#if($!{obj.unitPrice})
+										$!{obj.unitPrice}元
+									#end
+								</div>
+							</td>
+							<td class="w50">$!{obj.number}</td>
+							<td class="w50">$!{obj.weight}</td>
+							<td class="w100">
+								<div class="tradeListState">
+									<p>
+										#if(${obj.state}=="00")
+											等待付款
+										#elseif(${obj.state}=="01")
+											付款中
+										#elseif(${obj.state}=="02")
+											等待买家提交订单
+										#elseif(${obj.state}=="03")
+											卖家待发货
+                                        #elseif(${obj.state}=="04")
+											付款失败
+    									#elseif(${obj.state}=="06")
+											已提醒发货
+                                        #elseif(${obj.state}=="11")
+											等待收货
+                                        #elseif(${obj.state}=="12")
+											交易成功
+                                        #elseif(${obj.state}=="13")
+											交易成功
+                                        #elseif(${obj.state}=="14")
+											已申请退货
+                                        #elseif(${obj.state}=="15")
+											卖家同意退货
+                                        #elseif(${obj.state}=="16")
+											退货已发货
+                                        #elseif(${obj.state}=="17") 
+											退货成功
+                                        #elseif(${obj.state}=="18")
+											卖家不同意退货
+                                        #elseif(${obj.state}=="20") 
+											交易关闭
+                                        #else 
+											其他
+										#end
+									</p>
+								</div>
+							</td>
+							<td class="w100">$!{obj.amount}<br />(#if($!{obj.isCashDelivery}==1) 不#end含运费：$!{obj.trafficFee} 元)</td>
+							<td class="w100">
+								#if(${obj.state}=="00" || ${obj.state}=="01")
+									<a href="#springUrl('/mngr/payToChannel.htm')?orderid=$!{obj.orderid}"><b>付款</b></a> <br/>  <a href="javascript:jIframe('cancelOrderBybuyerPro.htm?id=$!{obj.id} ', '取消订单','350','240');">取消订单</a>  <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+								#elseif(${obj.state}=="02")
+									<a href="#springUrl('/mngr/createOrderPro.htm')?id=${obj.sampleId}&orderSeq=$!{obj.orderid}"><b>付款</b></a>
+									<br/>
+									<a href="javascript:jIframe('cancelOrderBybuyerPro.htm?id=$!{obj.id} ', '取消订单','350','240');">取消订单</a>
+									<br/>
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="03")
+									<a href="javascript:jIframe('remindSendGoods.htm?id=$!{obj.id} ', '提醒卖家发货','350','110');">提醒卖家发货</a>    <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="04")
+									<br/>
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="06")
+									<br/>
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="11")
+									<a href="javascript:jIframe('confirmRecvGoods.htm?id=$!{obj.id} ', '确认收货','350','110');"><b>确认收货</b></a>  <br/>   <a href="javascript:jIframe('applayRefundPro.htm?id=$!{obj.id} ', '退货','350','340');">退货</a> <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="12")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="13")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="14")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="15")
+									<a href="javascript:jIframe('confirmRefundSendGoods.htm?id=$!{obj.id} ', '确认发货','350','110');"    onclick="javascript:return p_confirm()"><b>退货发货</b></a>  <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="16")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="17")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="18")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #elseif(${obj.state}=="20")
+									<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                #else  
+									其他
+								#end
+							</td>
+							<td>
+								<a href="javascript:jIframe('bw.htm?flag=B&id=$!{obj.id} ', '编辑备忘','350','210');">
+									#if($!{obj.buyerMemo}=="4")
+										<font  color="#FFDC81" >备忘</font>
+									#elseif($!{obj.buyerMemo}=="3" )
+										<font  color="#A1DD98" >备忘</font>
+									#elseif($!{obj.buyerMemo}=="2" )
+										<font  color="#8AA9E1" >备忘</font>
+									#elseif($!{obj.buyerMemo}=="1" )
+										<font  color="#E18860" >备忘</font>
+									#else
+										<font  color="#2953a6" >备忘</font>
+									#end
+								</a>
+								<br />
+								#if($!{obj.custominfoId} && $!{obj.custominfoId}!= "") 
+									<a href="javascript:jIframe('leavewords.htm?custominfoId=$!{obj.custominfoId}', '订单留言','500','300');" class="aBtn" >查看留言</a> 
+								#end
+							</td>
+						</tr>
+					</table>
+				#end
+				<div class="gPageBar clearfix">
+					<div class="gPage">
+						#myrcPageNav($!{page} "#springUrl('/mngr/orderAll.htm')" "state=$!{state}&datefrom=$!{datefrom}&dateto=$!{dateto}" "")
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>

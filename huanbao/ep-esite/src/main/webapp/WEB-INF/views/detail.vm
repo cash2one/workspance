@@ -1,0 +1,414 @@
+#set($layout="/layout/defaultS.vm")
+<style>
+.m3-left{width:280px;border:1px solid #ccc}
+.m3-left-img{width:275px;margin:0 auto;margin-top:2px}
+.m3-left-img img{width:275px;height:187px}
+.m3-left-imgUl{width:280px;height:37px;margin:10px auto;position:relative;overflow:hidden;padding-left:2px}
+.m3-left-imgUl ul li{width:50px;height:37px;margin-right:6px;float:left;cursor:pointer}
+.m3-left-imgUl ul li img{width:50px;height:37px}
+
+.m3-right{width:310px;margin-left:25px}
+.m3-right-box{margin:5px 0}
+.m3-right-box a{margin:0 2px}
+.m3-right-box img{vertical-align:middle;margin-right:8px}
+.m3-right-box2{margin-top:10px;width:400px}
+.mb-page{width:230px;height:16px;margin:20px auto}
+.mb-page ul li{margin:0 5px;float:left}
+</style>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/tradedetails/js/details_style.js"></script>
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.6.2.min.js"></script>
+<div class="contain">
+
+	<div class="location">
+		#parse('/common/esitenavigation.vm')
+		>
+		#foreach($category in $!{categoryPath})
+			<a href="$!{address.trade}/supply/index--$!{category.code}--.htm" target="_blank">$!{category.name}</a> 
+			>
+		#end
+
+        <a href="#springUrl('/detail')$!{id}.htm">#printTitle("$!{tradeSupply.supply.title}" 15 "")</a>
+	</div>
+	<div class="mainblock">
+		#parse("/common/detailesiteleft.vm")
+		<div class="mk-body">
+			<div class="panel">
+					<h1 class="pshow_h4">$!{tradeSupply.supply.title}</h1>
+				<div class="panel-body">
+					<div style="float:left; width:280px;">
+						<div class="m3-left fl">
+							<div class="m3-left-img"> 
+								<a href="#"  target="_blank"> 
+									<img src="" alt="" />
+								</a>
+							</div>
+							<!--end m3-left-img-->
+							<div class="m3-left-imgUl">
+								<ul id="ImgDemo">
+									#if(${picList.size()}>0)	
+										#foreach($pic in $!{picList})
+											#if(5>$velocityCount )		
+												<li onclick="ImgDemo(${velocityCount},this,'$!{address.resource}$!{pic.path}')"> 
+													<a href="javascript:showdefaultPic('$!{pic.id}','${velocityCount}')"> 
+														<img src="$!{address.thumb}$!{address.resource}$!{pic.path}&width=280&height=230"  /> 
+													</a> 
+													<img src="$!{address.thumb}$!{address.resource}$!{pic.path}&width=280&height=230"   style="display: none;" /> 
+												</li>
+											#end
+										#end
+									#else
+										<li onclick="ImgDemo(1,this,'$!{address.img}/huanbao/images/trade/tradelist/noprod.gif')"> 
+											<a href="javascript:showdefaultPic('1','1')"> 
+												<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif"  />
+											</a> 
+											<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif"   style="display: none;" /> 
+										</li>
+									#end
+									<div class="cb"></div>
+								</ul>
+							</div>
+							#if(${picList.size()}>0)
+								#set($firstPic= $!{address.resource}+${picList.get(0).path})
+							#else
+								#set($firstPic=" ")
+							#end
+							<script>ImgDemo(1,$("#ImgDemo li")[0],'$!{firstPic}');</script> 
+							<!--end m3-left-imgUl--> 
+						</div>
+					</div>
+					<div class="pshow_p"  style="float:right; width:364px;">
+						<p>产品名称： #printTitle($!{tradeSupply.supply.title} 15 "")</p>
+						<p>所 在 地： $!{tradeSupply.provinceName} $!{tradeSupply.areaName}</p>
+						<p>数&nbsp;&nbsp;&nbsp;    量：#if($!{tradeSupply.supply.totalNum}!=0)
+						                                        $!{tradeSupply.supply.totalNum}$!{tradeSupply.supply.totalUnits}
+						                                        #else
+						                                                                                 不限
+						                                        #end</li></p>
+						<p>价&nbsp;&nbsp;&nbsp;    格： 
+							#if("$!{tradeSupply.supply.priceFrom}" != "" && "$!{tradeSupply.supply.priceTo}" != "" && "$!{tradeSupply.supply.priceTo}" != "0")
+								$!{tradeSupply.supply.priceFrom}至$!{tradeSupply.supply.priceTo}
+								#if("$!{tradeSupply.supply.priceUnits}"=="")
+									元
+								#else
+									$!{tradeSupply.supply.priceUnits}
+								#end
+							#else
+								#if("$!{tradeSupply.supply.priceNum}"=="" || "$!{tradeSupply.supply.priceNum}"=="0")
+									面议
+								#else
+									$!{tradeSupply.supply.priceNum}
+									#if("$!{tradeSupply.supply.priceUnits}"=="")
+										元
+									#else
+										$!{tradeSupply.supply.priceUnits}
+									#end
+								#end
+							#end
+						</p>
+						<p>发布时间： #printFragmentDate("yyyy年MM月dd日" $!{tradeSupply.supply.gmtRefresh})</p>
+						<P>有 效 期： #if("$!{tradeSupply.supply.validDays}"=="0") 长期有效 #else $!{tradeSupply.supply.validDays}天#end</P>
+						<table>
+							<tbody>
+								<tr>
+									<td><button><a href="#sendMessage">点此询盘</a></button></td>
+									<td><button><a href="#springUrl('/companyContact')$!{mid}.htm">查看联系方式</a></button></td>
+									<td class="collmess"></td>
+									<td>
+									#if("$!{account.qq}" != "")
+										<a rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=$!{qq}&amp;site=www.zz91.com&amp;menu=yes" title="qq:$!{qq}">
+										<img border="0" src="http://wpa.qq.com/pa?p=2:$!{qq}:4" alt="qq:$!{qq}" onerror="this.src='http://img0.zz91.com/zz91/china/images/qq.gif'" />
+										</a>
+									#end
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			<div class="panel mt8px">
+			    <h3>
+					<table>
+						<tr id="slider">
+							<td class="panelssbjn"><p>详细介绍</p></td>
+							<td class="panelssbj"><p>产品专业属性</p></td>
+						</tr>
+					</table>
+				</h3>
+				<div id="sliderList">
+				<div id="ltbc_1" class="paneldis">
+					<p>
+						$!{tradeSupply.supply.details}
+					</p>
+					$!{compProfile.compProfile.name}是$!{compProfile.industryName}专业供应最好的$!{tradeSupply.supply.title}的公司，欢迎来电洽谈合作
+					#if($!compProfile.compProfile.id<50000000)
+						#if($!compProfile.compProfile.mainProductSupply!="")
+    						</br>
+    						该公司主营产品：${compProfile.compProfile.mainProductSupply}
+						#end
+					#end
+				</div>
+				<div id="ltbc_2" class="panelundis">
+					<p>
+					<table border="1" class="bordergrey">
+						#foreach($item in $!{tradeProperty})
+                          <tr>
+                             <td class="compy_r_otherprods_l backgroundgrey txtcenter">$!{item.name}</td>
+                             <td>$!propertyValueMap.get($!{item.id})</td>
+                          </tr>
+						#end
+						<tr>
+                             <td class="compy_r_otherprods_l backgroundgrey txtcenter">产品说明:</td>
+                             <td>$!{tradeSupply.supply.useTo}</td>
+                        </tr>
+					 </table>
+					</p>
+				</div>
+                <div style="clear:both"></div>
+				</div>
+                <div style="clear:both"></div>
+			</div>
+            <script type="text/javascript">
+            	jQuery(document).ready(function(){
+            		jQuery("#slider td").mouseover(function(e){
+            			jQuery("#slider td").not("eq("+(jQuery(this).index())+")").attr("class","panelssbj");
+            			jQuery(this).attr("class","panelssbjn");
+            			
+            			jQuery("#sliderList > div").not("eq("+(jQuery(this).index())+")").hide();
+            			jQuery("#sliderList > div").eq(jQuery(this).index()).show();
+            		});
+            	});
+            </script>
+            <script type="text/javascript">
+/*700*50，创建于2013-10-17*/
+var cpro_id = "u1389479";
+</script>
+<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+			<div class="panel mt8px">
+				<h3>
+					<table>
+						<tr>
+							<td>交易条件</td>
+						</tr>
+					</table>
+				</h3>
+				<div class="panel-body">
+					<table class="jytj_tb">
+						<tbody>
+							<tr>
+								<td width="90" align="right">数&nbsp;&nbsp;&nbsp;&nbsp;量:</td>
+							    <td>$!{tradeSupply.supply.totalNum}$!{tradeSupply.supply.totalUnits}</td>
+								<td width="90" align="right">运费说明:</td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td align="right">有效期:</td>
+							  <td>#if("$!{tradeSupply.supply.validDays}"=="0") 长期有效 #else $!{tradeSupply.supply.validDays}天#end</td>
+								<td align="right">价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格:</td>
+								<td>
+								#if("$!{tradeSupply.supply.priceNum}"=="" || "$!{tradeSupply.supply.priceNum}"=="0")
+		                        	面议
+		                        #else
+		                        	$!{tradeSupply.supply.priceNum}
+		                        	#if("$!{tradeSupply.supply.priceUnits}"=="")
+		                        		元
+		                            #else
+		                        	    $!{tradeSupply.supply.priceUnits}
+		                            #end
+		                        #end
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<button class="jytj_btn"><a href="#springUrl('/companyContact')${cid}.htm">点击查看联系方式</a></button>			
+				</div>
+			</div>
+			<div class="panel mt8px" id="sendMessage">
+				<h3>
+					<table>
+						<tr>
+							<td>我要询价</td>
+						</tr>
+					</table>
+				</h3>
+
+                <form id="messageForm" name="messageForm" method="post" action="$!{address.myesite}/message/sendInquiry.htm" >
+				<div class="panel-body">
+					<table class="xunjia_tb">
+						<tbody>
+							<tr>
+								<td width="90px">主&nbsp; &nbsp;&nbsp;题：</td>
+								<td><input id="title" name="title" value="我对贵公司的 $!{tradeSupply.supply.title} 很感兴趣"/></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><p>建议您修改主题，吸引对方注意，得到优先回复！</p></td>
+							</tr>
+							<tr>
+								<td>主要内容：</td>
+								<td><textarea id="details" name="details"></textarea></td>
+							</tr>
+						</tbody>
+					</table>
+					<input type="hidden" id="targetId" name="targetId" value="$!{tradeSupply.supply.id}" />
+					<input type="hidden" id="targetType" name="targetType" value="0" />
+					<input type="hidden" id="targetUid" name="targetUid" value="$!{tradeSupply.supply.uid}" />
+					<input type="hidden" id="targetCid" name="targetCid" value="$!{tradeSupply.supply.cid}"/>
+					<input type="hidden" id="categoryName" name="categoryName" value="$!{tradeSupply.categoryName}"/>
+					<input type="hidden" name="refurl" value="$!{address.esite}/detail$!{tradeSupply.supply.id}.htm"/>
+					<input type="submit" class="xunjia_btn" value="发送" />
+				</div>
+				</form>
+			</div>
+			#if("$!{compProfile.compProfile.memberCode}" == "10011001")
+			#cacheFragment("$!{address.fragment}/fragment/esite/recommendSupply.htm?cid=$!{cid}&size=4", "", "", "")
+			<div class="panel mt8px">
+				<h3>
+					<table>
+						<tr>
+							<td>推荐产品</td>
+						</tr>
+					</table>
+				</h3>
+				<div class="panel-body">
+					<ul class="pb-lidl">
+						#foreach($supply in $!{list})
+						<li style="width:170px;">
+							<dl>
+								<dt>
+									#if("$!{supply.photoCover}" == "")
+										<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif"  style=" width:154px;height:124px;"/>
+									#else
+										<img src="$!{address.thumb}$!{address.resource}$!{supply.photoCover}&width=154&height=124" style=" width:154px;height:124px;" />
+									#end
+								</dt>
+								<dd><a href="$!{address.esite}/detail$!{supply.id}.htm">#printTitle($!{supply.title} 12 "")</a></a><br />
+									<em style="color:#f00;">
+										#if("$!{supply.priceNum}"=="" || "$!{supply.priceNum}"=="0")
+					                        面议
+				                        #else
+				                        	$!{supply.priceNum}
+				                        	#if("$!{list.supply.priceUnits}"=="")
+				                        	元
+				                            #else
+				                        	    $!{supply.priceUnits}
+				                            #end
+				                        #end
+				                    </em>
+		                        </dd>
+							</dl>
+						</li>
+						#end
+					</ul>
+					<div class="clear"></div>
+				</div>
+			</div>
+			#end
+			#else
+			<div class="panel mt8px">
+				<h3>
+					<table>
+						<tr>
+							<td>相关产品推荐</td>
+						</tr>
+					</table>
+				</h3>
+				#cacheFragment("$!{address.fragment}/fragment/trade/hotSupply.htm?keywords=$!{categoryName}&limit=4","","","600")
+				<div class="panel-body">
+					<ul class="pb-lidl">
+						#foreach($supply in $!{list})
+						<li style="width:170px;">
+							<dl>
+								<dt>
+									#if("$!{supply.supply.photoCover}" == "")
+										<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif"  style=" width:154px;height:124px;"/>
+									#else
+										<img src="$!{address.thumb}$!{address.resource}$!{supply.supply.photoCover}&width=154&height=124" style=" width:154px;height:124px;" />
+									#end
+								</dt>
+								<dd><a href="$!{address.esite}/detail$!{supply.supply.id}.htm">#printTitle($!{supply.supply.title} 12 "")</a></a><br />
+									<em style="color:#f00;">
+										#if("$!{supply.supply.priceNum}"=="" || "$!{supply.supply.priceNum}"=="0")
+					                        面议
+				                        #else
+				                        	$!{supply.supply.priceNum}
+				                        	#if("$!{supply.supply.priceUnits}"=="")
+				                        	元
+				                            #else
+				                        	    $!{supply.supply.priceUnits}
+				                            #end
+				                        #end
+				                    </em>
+		                        </dd>
+							</dl>
+						</li>
+						#end
+					</ul>
+					<div class="clear"></div>
+				</div>
+				#end
+			</div>
+			#end
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+	
+
+
+<script language="JavaScript">
+
+ if($!{show}==1){
+   Asto.util.Message.show({
+		msg:"询价成功！",
+		autoClose:5000
+	});
+ }
+
+
+jQuery(document).ready(function(){
+
+	jQuery("#messageForm").submit(function(){
+	if (jQuery("#title").val()=="") {
+    		Asto.util.Message.show({
+				msg:"请输入标题！",
+				autoClose:10000
+			});
+			jQuery("#title").focus();
+			return false;
+    	}
+    	if (jQuery("#details").val()==""){
+    	    Asto.util.Message.show({
+				msg:"请输入内容！",
+				autoClose:10000
+			});
+			jQuery("#details").focus();
+			return false;
+    	}
+	
+		//提交
+		if(jQuery("#loginstatus").val()!="1" ){
+			
+			var loginbox=new Asto.util.PopupBox({
+    			url:Asto.MINI_LOGIN_URL,
+    	  		destUrl:Asto.DEST_URL,
+    	  		callbackFn:function(success, data){
+    	  			loginbox.close();
+    	  			jQuery("#loginstatus").val("1");
+    				jQuery("#messageForm").submit();
+    	 		},
+				modal:true,
+				title:"请先登录后再留言",
+    	  		width:510,
+    	  		height:400
+      		});
+			
+    	  	loginbox.show();
+			return false;
+		}
+
+	});
+	
+});
+</script>

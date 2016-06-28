@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ZZ91再生网</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="css/zz91app.css">
+		<link rel="stylesheet" type="text/css" href="css/floatlay.css"/>
+		<link rel="stylesheet" type="text/css" href="css/pindao.css" />
+		<script type="text/javascript" src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/floatlay.js"></script>
+		<script type="text/javascript" src="js/blank.js"></script>
+		<script type="text/javascript" src="js/submit.js"></script>
+		<script type="text/javascript" src="js/pay.js"></script>
+		<script type="text/javascript" src="js/jquery.lightbox_me.js"></script>
+		<script>
+		
+			mui.init();
+			var request = {
+				QueryString: function(val) {
+					var uri = window.location.search;
+					var re = new RegExp("" + val + "=([^&?]*)", "ig");
+					return ((uri.match(re)) ? (uri.match(re)[0].substr(val.length + 1)) : null);
+				}
+			}
+			var rt = request.QueryString("url2");
+			winflag=2;
+			rt = rt.replace("TandT", "&").replace("wenhao", "?")
+			
+			var wintype = request.QueryString("wintype");
+			var company_id = request.QueryString("company_id");
+			var clientid = request.QueryString("clientid");
+			var appsystem = request.QueryString("appsystem");
+			visitoncode=request.QueryString("visitoncode");
+			//设置为可以返回
+			nowurl=null;
+			
+			url = rt
+			
+			if ((url=="/info.html" || url=="/huzhupost/" || url=="/order/price.html" || url=="/order/business.html") && company_id==0){
+				url="/login/?tourl="+rt;
+			}
+			if (url.indexOf("http://app.zz91.com") < 0) {
+				if (url.indexOf("?") < 0) {
+					url = "http://app.zz91.com/" + url + "?t=" + (new Date()).getTime().toString() + "&company_id=" + company_id.toString()+"&clientid="+clientid+"&appsystem="+appsystem+"&visitoncode="+visitoncode;
+				} else {
+					url = "http://app.zz91.com/" + url + "&t=" + (new Date()).getTime().toString() + "&company_id=" + company_id.toString()+"&clientid="+clientid+"&appsystem="+appsystem+"&visitoncode="+visitoncode;
+				}
+			}
+			url=url.replace(".com//",".com/");
+			//winarr.unshift(url);
+			var nowherf = url;
+			loaddata(url);
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="apptop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a id="rightbutton" style="display: none;" class="mui-icon mui-icon-star mui-pull-right" style="color: #999;"></a>
+			<h1 class="mui-title" id="apptopname">ZZ91再生网</h1>
+		</header>
+		<div class="mui-content">
+		<div id="dcontent" style="padding-bottom: 50px;">
+			<center class="midload" style="height: 200px; margin-top: -100px;"><img src=images/96R.gif><br>数据正在加载中......
+					
+					<br />若长时间未能进入App
+					<br />
+					<br /><a onclick="loaddata(url);" class="mui-btn">点此重新加载</a>
+				</center>
+		</div>
+		</div>
+		
+		<div id="downloadwindow" class="tipp" align="center">
+			<p style="color: #000000;" id="downloadwindowjindu">正在下载数据: <span id="dsize"></span>/</p>
+		</div>
+		<div id="popover" class="popover" onclick="shareHide()"></div>
+		<div id="menu" class="menu">
+			<div id="weixinSession" class="button" onclick="shareAction('weixin','WXSceneSession');">发送给微信好友</div>
+			<div id="weixinTimeline" class="button" onclick="shareAction('weixin','WXSceneTimeline');">分享到微信朋友圈</div>
+			<div id="sinaweibo" class="button" onclick="shareAction('sinaweibo')">分享到新浪微博</div>
+			<div id="tencentweibo" class="button" onclick="shareAction('tencentweibo')">分享到腾讯微博</div>
+			<div class="button button-waring" onclick="shareHide()">取 消</div>
+		</div>
+		<input type="hidden" id="sharehref" value="http://www.zz91.com">
+		<input type="hidden" id="sharehrefTitle" value="ZZ91再生网">
+		<input type="hidden" id="sharehrefDes" value="ZZ91再生网">
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				swipeBack: false
+			});
+		</script>
+		<script type="text/javascript" src="js/myrc.js"></script>
+		<script type="text/javascript" src="js/camera.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/pullup.js"></script>
+		<script>
+		(function(d, t) {
+		    var r = d.createElement(t), s = d.getElementsByTagName(t)[0];
+		    r.async = 1;
+		    r.src = 'http://app.zz91.com/js/appindex.js?' + (new Date()).getTime().toString()
+		    s.parentNode.insertBefore(r, s);
+		})(document, 'script');
+		
+		document.getElementById('rightbutton').addEventListener('tap', function() {
+			var content_id=document.getElementById("postform").bbs_post_id.value;
+			var title=document.getElementById("postform").title.value;
+			favorite('&content_id='+content_id+'&favorite_type_code=10091005&title='+title)
+		});
+		</script>
+		<div class="arrtop" id="arrtop" onclick="scrolltop()" style="display: none;"><a><span class="mui-icon mui-icon-arrowup"></span></a></a>
+	</body>
+
+</html>

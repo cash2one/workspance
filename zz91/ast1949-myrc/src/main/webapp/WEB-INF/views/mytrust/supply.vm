@@ -1,0 +1,90 @@
+#set( $layout = "/layout/default.vm" )
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/business/css/index.css" />	
+<div class="container mt clearfix">
+	<div class="grid_12">    
+		<div class="business"><div class="mainblock1"></div></div>
+		<div class="cb"></div>
+		<!--end business-->
+    	<div class="purchase_title">厂家直购-我的供货</div>
+        <!--end purchase_title-->
+		<form action="#springUrl('/mytrust/supply.htm')" method="post">
+			<div class="purchase_search">
+				<label for="state">状态</label>&nbsp;&nbsp;
+				<select id="state" name="status">
+					<option value="">全部</option>
+					<option #if($!{sell.status}=="00") selected  #end value="00">已报价</option>
+					<option #if($!{sell.status}=="01") selected  #end value="01">报价被采纳</option>
+					<option #if($!{sell.status}=="99") selected  #end value="99">报价被否决</option>
+				</select>
+				<input type="submit" class="ps_btn" name="" value="搜索" />
+			</div>
+			<!--end purchase_search-->
+		</form>
+		<div class="purchase_box2">
+			<table class="pb_tab" cellpadding="0" cellspacing="0">
+				<tr>
+					<th width="12%">采购单流水号</th>
+					<th width="32%">供货内容</th>
+					<th width="20%">采购内容</th>
+					<th width="12%" class="tc">状态</th>
+					<th width="12%" class="tc">跟进交易员</th>
+					<th width="12%" class="tc">发布时间</th>
+				</tr>
+				#foreach($li in $!{page.records})
+					<tr>
+						<td width="12%">&nbsp;&nbsp;No.$!{li.buy.buyNo}</td>
+						<td width="32%">$!{li.sell.content}</td>
+						<td width="20%"><span title="$!{li.buy.detail}">$!{li.buy.detail}</span></td>
+						<td width="12%" class="tc">
+							#if($!{li.sell.status}=="00")
+								已报价
+							#elseif($!{li.sell.status}=="01")
+								报价被采纳
+							#elseif($!{li.sell.status}=="99")
+								报价被否决
+							#end
+						</td>
+						<td width="12%" class="tc">$!{li.dealer.name}<br />$!{li.dealer.tel}</td>
+						<td width="12%" class="tc">$!date.format('yyyy-MM-dd HH:mm:ss',$!{li.sell.gmtCreated})</td>
+					</tr>
+				#end
+			</table>
+			#myrcPageNav($!{page} "#springUrl('/mytrust/supply.htm')" "status=$!{sell.status}" "" )	
+		</div>
+		<!--end purchase_box2-->
+	</div>
+	<!--end grid_12-->
+</div>
+##<script language="javascript" src="http://img0.zz91.com/zz91/business/js/jquery.Sonline.js"></script> 
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	myrc.menu(3, 3);
+	var search="";
+	jQuery("#state").click(function(){
+		var v=jQuery(this).val();
+	    if(v=="已报价"){
+			search="00";
+		}else if(v=="报价被采纳"){
+			search="01";
+		}else if(v=="报价被否决"){
+			search="99";
+		}
+	});
+	jQuery(".ps_btn").click(function(){
+		if(search==""){
+			window.location.href="$!{address.myrc}/mytrust/supply.htm"
+		}
+		window.location.href="$!{address.myrc}/mytrust/supply.htm?status="+search
+	});
+	
+});
+##jQuery(function(){
+##	jQuery(".business").Sonline({
+##		Position:"right",//left或right
+##		Top:-110,//顶部距离，默认200px
+##		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+##		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+##		Qqlist:""
+##	});
+##})	
+</script>

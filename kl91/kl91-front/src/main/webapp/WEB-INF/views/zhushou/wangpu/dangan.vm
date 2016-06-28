@@ -1,0 +1,134 @@
+#set($layout="/layout/zhushou.vm")
+#set($row="dangan")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper domain-wrap">
+	#if(${result}==1)
+		<p>添加成功！</p>
+	#elseif(${result}==2)
+		<p>添加失败！</p>
+	#elseif(${result}==3)
+		<p>删除成功！</p>
+	#elseif(${result}==4)
+		<p>删除失败！</p>
+	#end
+	#if(5>$list.size())
+	<form id="form3" method="post" action="createDangan.htm">
+		<section>
+			<label for="" class="t">您的诚信档案：</label>
+			<input type="text" name="fileName" placeholder="档案名称" class="field" />
+			<input type="text" name="fileAgency" placeholder="发证机构" class="field" />
+			##<input type="Date" name="gmtEnd" placeholder="有效期限" class="field" />
+			##<a href="#" title="上传证书图片" onclick="return false" class="uploadBtn">上传证书图片</a>
+			<input type="button" class="uploadBtn" value="上传图片"/>
+			<a href="#" class="add" id="addfile"><s></s>添加</a>
+		</section>
+		<input type="hidden" name="cid" value="$!{companyId}" />
+		<input type="hidden" name="fid" id="fid" />
+		<input type="hidden" name="filePicUrl" id="filePicUrl" />
+	</form>
+	#end
+	<section>
+		<table class="item-table">
+			<tbody>
+				<tr>
+					<td width="200">证书名称</td>
+					<td width="170">发证机构</td>
+					<td width="170">有效期限</td>
+					<td>操作</td>
+				</tr>
+				#foreach($obj in $list)
+					<tr>
+						<td width="200">
+							<a href="$!{address.resource}/$!{obj.filePicUrl}" title="点击查看图片" target="blank">$!{obj.fileName}</a>
+						</td>
+						<td width="170">
+							$!{obj.fileAgency}
+						</td>
+						<td width="170">
+							-
+						</td>
+						<td>
+							<a href="doDeleteFile.htm?id=$!{obj.id}">删除</a>
+						</td>
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</section>
+	<section>
+		<div class="tip">
+			<h4><s></s>提示：</h4>
+			<div style="float: left">
+				<p>1. 友情链接最多可以放置5条。</p>
+				<p>2. 友情链接每一条字数不超过10个字。</p>
+				<p>3. 按照添加顺序放置友情链接，即不断往后添加。</p>
+				<p>4. 删除友情链接时，后面一条提前，替代被删除的链接，以此类推。</p>
+			</div>
+		</div>
+	</section>
+</div>
+#parse("/common/login/footer.vm")
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>
+<script type="text/javascript">
+	kl91.util.tabs("J-tab","click", false);
+	##kl91.util.placeholder();
+	jQuery(document).ready(function(){
+		var upload=new Asto.util.PopupBox({
+			url:"#springUrl('/sys/upload/file.htm')",
+			title:"上传产品图片",
+			width:450,
+			height:230,
+			modal:true
+		});
+		
+		jQuery("#addfile").click(function(){
+			jQuery("#form3").submit();
+		});
+		
+		jQuery(".uploadBtn").click(function(obj){
+			var btn=jQuery(this);
+			if(btn.val()=="上传图片"){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					
+					$("#fid").attr("value",data.id);
+					$("#filePicUrl").attr("value",data.filePath);
+					
+					btn.val("删除");
+					upload.close();
+				});
+				upload.show("#springUrl('/sys/upload/file.htm')");
+			}else{
+				deletePic(btn);
+			}
+		});
+		
+		function deletePic(btn){
+		jQuery.ajax({
+			type:"post",
+			url:"#springUrl('/sys/upload/deleteOnlyPic.htm')",
+			data:{"id":jQuery("#fid").val()},
+			dataType:"json",
+			success:function(req){
+				jQuery("#previewImg").attr("src","$!{address.img}/front/images/global/noimage.gif");
+				jQuery("#previewId").val("");
+				btn.val("上传");
+			},
+			failure:function(){
+				Asto.util.Message.show({
+					msg:"发生错误，图片没有被删除，请过一会再试一下！",
+					msgType:Asto.util.Message.ERROR,
+					autoClose:5000
+				});
+			}
+		});
+		
+	}
+		var previewImg=new Asto.util.PopupBox({
+			url:"#",
+			width:850,
+			height:450,
+			modal:true,
+			title:"大图预览"
+		});
+	});
+</script>

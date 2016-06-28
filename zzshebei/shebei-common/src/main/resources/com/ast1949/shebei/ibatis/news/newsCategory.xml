@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="newsCategory">
+	
+	<typeAlias alias="newsCategory" type="com.ast1949.shebei.domain.NewsCategory"/>
+	
+	<resultMap class="newsCategory" id="fullColumnMap">
+		<result property="id" column="id"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="name" column="name"/>
+		<result property="keywords" column="keywords"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap class="newsCategory" id="simpMap">
+		<result property="name" column="name"/>
+		<result property="keywords" column="keywords"/>
+	</resultMap>
+	
+	<select id="queryAllNewsCategory" resultMap="fullColumnMap">
+		select
+		id,
+		category_code,
+		name,
+		keywords,
+		gmt_created,
+		gmt_modified
+		from news_category
+		where category_code like concat('1000','____')
+	</select>
+	
+	<select id="queryNameAndKeywordsByCode" parameterClass="java.lang.String" resultMap="simpMap">
+		select name,keywords from news_category
+		where category_code=#category#
+	</select>
+	
+</sqlMap>

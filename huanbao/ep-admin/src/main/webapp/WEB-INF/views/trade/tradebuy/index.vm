@@ -1,0 +1,47 @@
+<script type="text/javascript" src="#springUrl('/app/trade/tradebuy/category.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/trade/tradebuy/buy.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+	var recommendMenu=new Array();
+	
+	com.zz91.trade.buy.FILTER_RECOMMEND.push({name : "全部",  value: ''});
+	com.zz91.trade.buy.FILTER_RECOMMEND.push({
+		name:"推荐信息",
+		value:"1"
+	});
+	recommendMenu.push({ 
+		text:"推荐信息",
+		handler:function(){
+			com.zz91.trade.buy.recommend("1");
+		}
+	});
+	
+	var tree=new com.zz91.trade.buy.category.TreePanel({
+		id:CATEGORY.TREE,
+		region:"west",
+		width:230
+	});
+	
+	var grid=new com.zz91.trade.buy.grid({
+		id:BUY.COLLECTION_GRID,
+		region:"center",
+		recommendMenu:recommendMenu
+	});
+	
+	new Ext.Viewport({
+		layout:"border",
+		items:[tree,grid]	
+	});
+	
+	tree.on('click',function(node,event){
+		var code = node.attributes['data'];
+		if(code!=""){
+			grid.getStore().baseParams["categoryCode"]=code;
+		}else{
+			grid.getStore().baseParams["categoryCode"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+})
+</script>

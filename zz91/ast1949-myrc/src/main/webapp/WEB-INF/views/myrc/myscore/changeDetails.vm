@@ -1,0 +1,55 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1802","","00")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+    <div class="commTip">
+		<span class="commTipLeft">
+			您现在拥有的积分：<b>$!{scoreSummary.score}</b>
+		</span>
+        <span class="commTipRight">
+			<a href="#springUrl('/myscore/conversionHistory.htm')" class="commHowDo" >点击这里查看您的积分兑换历史</a>
+			<a href="$!{address.server}/score/" class="commHowDo" target="_blank">什么是积分？获得积分的途径？</a>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+	
+	##<div class="officetitle">积分变更历史</div>
+	<div class="commList" >
+		<div class="commListTit">
+			<span class="myscroeProj">变更项目</span>
+			<span class="myscroeIntegral">积分花费</span>
+			<span class="myscroeRemark">备注</span>
+			<span class="myscroeExchgDate">变更时间</span>
+			<div style="clear:both"></div>
+		</div>
+		#if(${pageContext.records.size()}==0)
+			<div class="tishiError">暂时没有变更</div>
+		#else
+			<ul>
+				#foreach($!{details} in $!{pageContext.records})
+					<li>
+						<span class="myscroeProj">$!{details.name}</span>
+						<span class="myscroeIntegral">#if($!{details.score}>0)+#end$!{details.score}</span>
+						<span class="myscroeRemark">
+							#if($!{details.remark}) 
+								$!{details.remark}
+							#else
+                                <font style="color:#AAA">无备注</font>
+							#end
+						</span>
+						<span class="myscroeExchgDate">$!date.format('yyyy-MM-dd',$!{details.gmtCreated})</span>
+					</li>
+				#end
+                <div style="clear:both"></div>
+			</ul>
+		#end
+	</div>
+	<div class="pageNav">
+		#myrcPageNav($!{pageContext} "#springUrl('/myscore/changeDetails.htm')" "" "")
+	</div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	});
+</script> 

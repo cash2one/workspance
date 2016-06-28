@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="crmRight">
+	
+	<typeAlias alias="right" type="com.zz91.ep.domain.crm.CrmRight"/>
+	<typeAlias alias="compSvr" type="com.zz91.ep.domain.crm.CrmCompSvr"/>
+
+	<sql id="fullColumn" >
+		cr.`id`,
+		cr.`code`,
+		cr.`name`,
+		cr.`sort`,
+		cr.`content`,
+		cr.`menu`,
+		cr.`menu_url`,
+		cr.`menu_css`,
+		cr.`gmt_created`,
+		cr.`gmt_modified`
+	</sql>
+
+	<resultMap id="rightResult" class="right">
+		<result property="id" column="id" />
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="sort" column="sort"/>
+		<result property="content" column="content"/>
+		<result property="menu" column="menu"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="menuCss" column="menu_css"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<resultMap id="compSvrResult" class="compSvr">
+		<result property="id" column="id" />
+		<result property="cid" column="cid"/>
+		<result property="crmSvrId" column="crm_svr_id"/>
+		<result property="memberCode" column="member_code"/>
+	</resultMap>
+	<!-- 查询父类所属子节点总数 -->
+	<select id="countChildRight" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from crm_right where code like concat(#value#,'_%')
+	</select>
+	<!-- 根据父权限code查询子节点 -->
+	<select id="queryChildRight" parameterClass="java.lang.String" resultMap="rightResult" >
+		select 
+			<include refid="crmRight.fullColumn" />
+		from crm_right cr
+		where code like concat(#value#,'____')
+		order by sort asc, code asc
+	</select>
+	<!-- 删除自己及其所有子类别 -->
+	<delete id="deleteRightByCode" parameterClass="java.lang.String" >
+		delete from crm_right where code like concat(#value#,'%')
+	</delete>
+	<!-- 查询单个权限节点 -->
+	<select id="queryOneRight" parameterClass="java.lang.String" resultMap="rightResult" >
+		select 
+			<include refid="crmRight.fullColumn" />
+		from crm_right cr
+		where code = #value#
+		limit 1
+	</select>
+	<!-- 查询子节点最大code值 -->
+	<select id="queryMaxCodeOfChild" parameterClass="java.lang.String" resultClass="java.lang.String" >
+		select max(code) from crm_right
+		where code like concat(#value#,'____')
+	</select>
+	
+	<insert id="insertRight" parameterClass="right" >
+		
+		insert into `crm_right`
+		(
+		`code`,
+		`name`,
+		`sort`,
+		`content`,
+		`menu`,
+		`menu_url`,
+		`menu_css`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#code#,
+		#name#,
+		#sort#,
+		#content#,
+		#menu#,
+		#menuUrl#,
+		#menuCss#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateRight" parameterClass="right" >
+		update `crm_right`
+		set
+		`code` = #code#,
+		`name` = #name#,
+		`sort` = #sort#,
+		`content` = #content#,
+		`menu` = #menu#,
+		`menu_url` = #menuUrl#,
+		`menu_css` = #menuCss#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<delete id="deleteCrmSvrRightByCode" parameterClass="java.lang.String">
+		delete from crm_svr_right 
+		where crm_right_id in
+		(select r.id from crm_right r where r.code like concat(#value#,'%') )
+	</delete>
+	
+	<delete id="deleteMemberRightByCode" parameterClass="java.lang.String">
+		delete from crm_member_right where crm_right_id in 
+		(select r.id from crm_right r where r.code like concat(#value#,'%'))
+	</delete>
+	
+	<select id="queryIdByCode"  parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from crm_right where code = #value#;
+	</select>
+	
+	<select id="queryNameByCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select name from crm_right
+		where code=#value#
+		limit 1
+	</select>
+	<!-- 通过公司ID查询公司所拥有服务的权限 -->
+	<select id="queryCrmRightListBycompanyId" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+	select cr.content from crm_right cr
+	inner join crm_svr_right csr on cr.id=csr.crm_right_id
+	inner join crm_svr cs on csr.crm_svr_id=cs.id
+	inner join crm_comp_svr ccs on cs.id=ccs.crm_svr_id
+	where ccs.cid=#cid# and ccs.apply_status=1 and now()>ccs.gmt_start and ccs.gmt_end>now()
+	and cr.code like concat(#parentRight#,'%')
+	</select>
+	<!-- 通过会员code查询会员所拥有的所有权限 -->
+	<select id="queryCrmRightListByMemberCode" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+	select cr.content from crm_right cr
+	inner join crm_member_right cmr on cr.id=cmr.crm_right_id
+	where cmr.member_code=#memberCode# and cr.code like concat(#parentRight#,'%')
+	</select>
+</sqlMap>

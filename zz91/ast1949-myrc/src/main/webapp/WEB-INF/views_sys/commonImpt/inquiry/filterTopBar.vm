@@ -1,0 +1,49 @@
+<div class="table-select mt clearfix">
+    <div class="group">
+		#if($!{isRubbish}=="0")
+		<select class="groupSelView">
+			${isViewed}
+            <option value="">询价状态</option>
+            <option value="0" #if($!{isViewed}=="0") selected #end>未读</option>
+            <option value="1" #if($!{isViewed}=="1") selected #end>已读</option>
+            <option value="2" #if($!{isReplyed}=="1") selected #end>已回复</option>
+            <option value="">全部</option>
+        </select>
+        <select class="groupSel">
+            <option value="" #if(!$!{groupId} || $!{groupId}=="") selected #end>全部询价</option>
+            <optgroup label="系统分类">
+            #foreach($sg in $systemGroupList)
+                ###springUrl('/mymessage/inbox.htm?groupId=')$!{sg.id}
+                <option value="$!{sg.id}" #if($!{groupId}==$!{sg.id})selected#end>$!{sg.name}</option>
+            #end
+            </optgroup> 
+            <optgroup label="自定义分类">
+            #foreach($sg in $myGroupList)
+                <option value="$!{sg.id}" #if($!{groupId}==$!{sg.id})selected#end>$!{sg.name}</option>
+            #end
+            </optgroup> 
+        </select>
+		<input type="text" class="field input-large" id="searchLabel" value="$!{keywords}" placeholder="输入询价标题搜索" />
+        <button class="btn btn-small" style="width:80px;" id="subToSearch">搜索</button>
+		#end
+	</div>
+	##左边导航
+    <div class="btn-toolbar">
+        <input type="checkbox" class="Js_checkAll">
+        <div class="btn-group">
+			<a href="#springUrl('/mymessage/inbox.htm')" #if(!$inquiredType&&$isRubbish=="0") class="btn btn-small btn_active" #else class="btn btn-small"  #end>全部询价</a>
+			<a href="#springUrl('/mymessage/inbox.htm?inquiredType=0')" #if($inquiredType=="0") class="btn btn-small btn_active" #else class="btn btn-small" #end>客户询价</a>
+			<a href="#springUrl('/mymessage/inbox.htm?isRubbish=1')" #if($isRubbish=="1") class="btn btn-small btn_active" #else class="btn btn-small" #end>垃圾询价</a>
+			<a href="#springUrl('/mymessage/inbox.htm?inquiredType=1')" #if($inquiredType=="1") class="btn btn-small btn_active" #else class="btn btn-small" #end>系统消息</a>
+			
+##            <a href="javascript:void(0)" onclick="deleteInfo()" class="btn btn-small">永久删除</a>
+##            #if($!{isRubbish}=="1")
+##            <a href="javascript:void(0)" onclick="toInbox()" class="btn btn-small">移到收件箱</a>
+##            #else
+##            <a href="javascript:void(0)" onclick="setInquiryToRubbish()" class="btn btn-small">垃圾留言</a>
+##            <a href="javascript:void(0)" onclick="groupInquiry()" class="btn btn-small">分组</a>
+##            <a href="javascript:void(0)" onclick="unGroupInquiry()" class="btn btn-small">从分组中移除</a>
+##            #end
+        </div>
+    </div>
+</div>

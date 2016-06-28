@@ -1,0 +1,58 @@
+#set($layout="/layout/zhushou.vm")
+#set($row="huishou")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper mt list-wrap">
+	#set($pageName="huishou")
+	#parse("/common/zhushou/liuyan/listType.vm")
+	<form id="form1" action="cpdeleteById.htm" method="post">
+	<table class="list-table">
+		<thead>
+			<tr>
+				<td class="nobdr"><input type="checkbox" class="chooseAll" /></td>
+				<td class="nobdl" width="500">留言标题</td>
+				<td>发布时间</td>
+				<td>操作</td>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach($obj in $page.records)
+			<tr>
+				<td>
+					<input type="checkbox" id="$!{obj.id}" #if($!{obj.fromCname}) name="fromId" #elseif($!{obj.toCname}) name="toId" #end value="$!{obj.id}"/>
+				</td>
+				<td>$!{obj.title}</td>
+				<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtPost})</td>
+				<td>
+				<a #if($!{obj.fromCname}) href="cpdeleteById.htm?fromId=$!{obj.id}" #elseif($!{obj.toCname}) href="cpdeleteById.htm?toId=$!{obj.id}" #end >永久删除</a>
+				</td>
+			</tr>
+			#end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td class="nobdr" align="center"><input type="checkbox" class="chooseAll" /></td>
+				<td class="nobdl" colspan="6">
+					##<a href="">全选</a>
+					<a href="#" class="delBtn">永久删除</a>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+	</form>
+	#zhushouPageNav($!{page} "#springUrl('/zhushou/liuyan/huishou.htm')" "" "")
+</div>
+#parse("/common/login/footer.vm")
+<script type="text/javascript">
+	kl91.util.tabs("J-tab","click", false);
+	
+	jQuery(".chooseAll").click(function(){
+		var chk=jQuery(this).attr("checked");
+		jQuery(":checkbox").each(function(index, obj){
+			obj.checked=chk;
+		});
+	});
+	jQuery(".delBtn").click(function(){
+		jQuery("#form1").submit();
+	});
+</script>
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>

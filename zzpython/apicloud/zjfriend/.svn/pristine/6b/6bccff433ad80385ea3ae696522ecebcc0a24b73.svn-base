@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <title>聊天盒子</title>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+		<link rel='stylesheet' href='../css/github.css'>
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+		</style>
+		
+    </head>
+    <body>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/demo.js'></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script>
+	var demo = Demo.createNew();
+	demo.show(function(){
+				$('pre code').each(function(i, block) {
+				    hljs.highlightBlock(block);
+				  });});
+	</script>
+	
+    <script type='text/javascript' src='../script/api.js'></script>
+    <script type='text/javascript'>
+function openInputView()
+{
+    var addButtonAry = new Array();
+    for (var i = 0; i < 3; i++) {
+        addButtonAry[i]={
+            normal:document.getElementById("cameral1").value,
+            highlight:document.getElementById("cameral2").value,
+            title:document.getElementById("cameral1title").value,
+            titleSize:document.getElementById("titleSizes").value,
+            titleColor:document.getElementById("titleColors").value
+        };
+    }
+    var obj = api.require('chatBox');
+    obj.open({
+             bgColor:document.getElementById("menutypes").value,
+             lineColor:document.getElementById("viewx").value,
+             fileBgColor:document.getElementById("viewy").value,
+             borderColor:document.getElementById("centerimgpath").value,
+             switchButton:{
+                 faceNormal:document.getElementById("face1").value,
+                 faceHighlight:document.getElementById("face2").value,
+                 addNormal:document.getElementById("add1").value,
+                 addHighlight:document.getElementById("add2").value,
+                 keyboardNormal:document.getElementById("key1").value,
+                 keyboardHighlight:document.getElementById("key2").value
+             },
+             sourcePath:document.getElementById("emojiPath").value,
+             addButtons:addButtonAry,
+             pageControl:{
+                 normalColor:document.getElementById("pgColor").value,
+                 highlightColor:document.getElementById("pgColorSel").value
+             },
+             placeholder:document.getElementById("placeholderStr").value,
+             maxLines:document.getElementById("showContentMaxLines").value
+     },function(ret,err)
+     {
+         if(ret.click){
+             api.alert({msg:"用户点击了第"+ret.index+"个按钮"});
+         }else{
+           api.alert({
+               title: '输入的内容是',
+               msg: ret.msg,
+               buttons: ['确定']
+           });
+             document.getElementById("sendMessage").value = ret.msg;
+         }
+    });
+};
+function closeInputView()
+{
+    var obj = api.require('chatBox');
+    obj.close();
+};
+    function showInputView()
+{
+    var obj = api.require('chatBox');
+    obj.show();
+};
+function hideInputView()
+{
+    var obj = api.require('chatBox');
+    obj.hide();
+};
+    function becomeInputView()
+    {
+        var obj = api.require('chatBox');
+        obj.becomeFirstResponder();
+    };
+    function resignInputView()
+    {
+        var obj = api.require('chatBox');
+        obj.resignFirstResponder();
+    };
+    function setChatBoxText(){
+        var obj = api.require('chatBox');
+        obj.setMsg({
+           msg:document.getElementById("setMsgStr").value
+        },function(ret,err){
+           if(ret.status){
+             api.alert({msg:"设置成功"});
+           }
+       });
+    }
+    function getChatBoxText(){
+        var obj = api.require('chatBox');
+        obj.getMsg(function(ret,err){
+           api.alert({msg:ret.msg });
+       });
+    }
+    function configChatBoxText(){
+        var obj = api.require('chatBox');
+        obj.configMsg({
+                      
+        },function(ret,err){
+          if(ret.status){
+              api.alert({msg:ret.msg });
+          }
+        });
+    }
+    function insertChatBoxText(){
+        var obj = api.require('chatBox');
+        obj.insertMsg({
+          index:document.getElementById("insertMsgIndex").value,
+          msg:document.getElementById("setMsgStr").value
+        });
+    }
+    </script>
+</html>

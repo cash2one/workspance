@@ -1,0 +1,378 @@
+<div class="clear"></div>
+<div class="tdl_lsbar margintop8 html5radius borderwhitegray">
+    <div class="tdl_lsbar_form">
+        <label class="tdlf_forprice" for="tdlf_price">单价</label>
+        <input type="text" class="tdlf_price_s" id="searchPriceTo" value="$!{search.priceTo}" maxlength="10"/>
+        <span class="tdlf_pric_to">至</span>
+        <input type="text" class="tdlf_price_e" id="searchPriceFrom" value="$!{search.priceFrom}" maxlength="10"/>
+        <span class="tdlf_unit">元</span>
+        <select id="provinceCode" name="provinceCode" class="tdlf_area" onchange="changeRegion()">
+            <option value="">所在地区</option>
+        </select>
+        <select class="tdlf_date" id="searchTime" onchange="changeDay()">
+            <option value="" #if("" == "$!{search.time}") selected #end>发布时间</option>
+            <option value="1" #if("1" == "$!{search.time}") selected #end>一天内</option>
+			<option value="7" #if("7" == "$!{search.time}") selected #end>一周内</option>
+			<option value="30" #if("30" == "$!{search.time}") selected #end>一个月内</option>
+            <option value="90" #if("90" == "$!{search.time}") selected #end>三个月内</option>
+            <option value="180" #if("180" == "$!{search.time}") selected #end>半年内</option>
+        </select>
+        <select class="tdlf_sorts" id="searchSort" onchange="changeSort()">
+            <option value="" #if("" == "$!{page.sort}") selected #end>默认排序</option>
+            <option value="1" #if("1" == "$!{page.sort}") selected #end>价格从高到低</option>
+            <option value="2" #if("2" == "$!{page.sort}") selected #end>价格从低到高</option>
+        </select>
+        <input type="button" value="筛 选"class="tdlf_formsub" onclick="changePrice()"/>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="tdl_ls">
+    #if($!{page.records.size()}<=0)
+            <div style="font-size:18px;color:red">此页已无内容</div>
+    #end
+    <ul>
+        <!-- 标王列表开始-->
+        #foreach($l in ${bwList})
+            <li>
+                <article class="#if($velocityCount < 3) ts_ls_box_top #else ts_ls_box #end">
+                    <section class="ls_selector">
+                        <input type="checkbox" name="supplyIds" value="$!{l.targetId}"/>
+                        <div class="ls_selector_tipbox">
+                            <p class="lss_tipbox_t">您可以:</p>
+                            <p class="lss_tipbox_b">
+                                <a href="javascript:batchInquiry()" class="lss_tipbox_p">批量询价</a>
+                                <span class="lss_tipbox_o">或</span>
+                                <a href="javascript:infoContrast()" class="lss_tipbox_c">对比产品</a>
+                            </p>
+                        </div>
+                    </section>
+                    <section class="ls_ifo">
+                        <header class="ls_ifo_img">
+                            #if("$!{l.photoCover}"=="")
+                                <a href="$!{address.esite}/detail$!{l.targetId}.htm" target="_blank" title="$!{l.title}">
+                                    <img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" alt="$!{l.title}"/>
+                                </a>
+                            #else
+                                <a href="$!{address.esite}/detail$!{l.targetId}.htm" target="_blank" title="$!{l.title}">
+                                    <img src="$!{address.thumb}$!{address.resource}$!{l.photoCover}&width=100&height=100" alt="$!{l.title}"/>
+                                </a>
+                            #end
+                        </header>
+                        <section class="ls_ifo_details">
+                            <h3>
+                                <a href="$!{address.esite}/detail$!{l.targetId}.htm" target="_blank" title="$!{l.title}">
+                                    <span class="fontorange comm_em_red p_ellipsis">#printTitle($!{l.title} 20 '')</span>
+                                </a>
+                            </h3>
+                            <p class="ls_ifo_content comm_em_red p_ellipsis">$!{l.detailsQuery}</p>
+                            <p class="ls_ifo_com">
+                                <a href="$!{address.esite}/index$!{l.cid}.htm" target="_blank">$!{l.cname}</a>
+                                <span class="ls_ifo_remarksbtn"></span>
+                                <br/>
+                                #if($velocityCount==1)
+                                    <img src="$!{address.img}/huanbao/images/trade/bw/jpbw.jpg"/>
+                                #elseif($velocityCount > 1 && $velocityCount <4)
+                                    <img src="$!{address.img}/huanbao/images/trade/bw/ypbw.jpg"/>
+                                #elseif($velocityCount >= 4)
+                                    <img src="$!{address.img}/huanbao/images/trade/bw/tpbw.jpg"/>
+                                #end
+							</p>
+                            <aside class="ls_ifo_remarks">
+                                <div id="compDetails$!{l.cid}" class="ls_ifo_rmkbase">
+                                    <p>注册时间：<span class="fontblue">#printFragmentDate("yyyy-MM-dd" $!{l.gmtRegister})</span>
+                                    </p>
+                                </div>
+                                <div class="ls_ifo_rmkbook">
+                                    <p>荣誉证书：<span class="fontblue">0条</span>
+                                    </p>
+                                </div>
+                            </aside>
+                          </section>
+                        </section>
+                        <section class="ls_detal">
+                            <div class="ls_detal_area">
+                                <span>$!{l.provinceName}</span>
+                                <span>$!{l.areaName}</span>
+                            </div>
+                            <div class="ls_detal_price">
+                                #if ("$!{l.priceNum}" != "" && "$!{l.priceNum}" != "0" && "$!{l.priceNum}" != "0.0")
+                                    <span class="fontbold fontorange">$!{l.priceNum}</span>
+                                    #if("$!{l.priceUnits}" == "") 
+                                        元 
+                                        #else 
+                                            $!{l.priceUnits} 
+                                    #end 
+                                    #else 面议 
+                                #end</div>
+                                <div class="ls_detal_mem">
+                                    #if("$!{l.memberCode}"=="10011001")
+                                        <img src="${address.img}/huanbao/images/company/zht.png" width="51" hight="23"/>
+                                        <a href="#" class="1001001">高级会员</a>
+                                    #else
+                                        <a href="#" class="1001003">普通会员</a>
+                                    #end
+                                </div>
+                                <div class="ls_detal_link">
+                                    <a href="$!{address.esite}/message$!{l.cid}.htm" class="ls_detal_link01" target="_blank">给我留言</a>
+                                    <a href="$!{address.esite}/companyContact$!{l.cid}.htm" class="ls_detal_link02" target="_blank">联系方式</a>
+                                    <a href="$!{address.esite}/index$!{l.cid}.htm" class="ls_detal_link03" target="_blank">门市部</a>
+                                    <aside class="link_evalute_box">
+                                        <header class="link_eva_t">
+                                            <h4 class="link_eva_tit">评价信息</h4>
+                                            <span class="link_eva_close"></span>
+                                        </header>
+                                        <!-- this is iframe <iframe> start-->
+                                        <p class="link_eva_f">
+                                            <input type="radio" name="eva" value="0" id='isgood'/>
+                                            <label for="isgood" class="isgoodfor">好</label>
+                                            <input type="radio" name="eva" value="1" id='isbad'/>
+                                            <label for="isbad" class="isbadfor">不好</label>
+                                        </p>
+                                        <p class="link_eva_s">
+                                            <input type="submit" class="link_eva_sub" value="提交评价"//>
+                                        </p>
+                                        <!-- this is iframe <iframe> end-->
+                                    </aside>
+                                </div>
+                        </section>
+				</article>
+			</li>
+        #end
+        <!-- 标王列表结束-->
+        #foreach($list in $!{page.records})
+            <li>
+                <article class="#if($velocityCount < 3) ts_ls_box_top #else ts_ls_box #end">
+                    <section class="ls_selector">
+                        <input type="checkbox" name="supplyIds" value="$!{list.supply.id}"/>
+                        <div class="ls_selector_tipbox">
+                            <p class="lss_tipbox_t">您可以:</p>
+                            <p class="lss_tipbox_b">
+                                <a href="javascript:batchInquiry()" class="lss_tipbox_p">批量询价</a>
+                                <span class="lss_tipbox_o">或</span>
+                                <a href="javascript:infoContrast()" class="lss_tipbox_c">对比产品</a>
+                            </p>
+                        </div>
+                    </section>
+                    <section class="ls_ifo">
+                        <header class="ls_ifo_img">
+                            #if("$!{list.supply.photoCover}"=="")
+                                <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}">
+                                    <img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" alt="$!{list.supply.title}"/>
+                                </a>
+                                #else
+                                    <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}">
+                                        <img src="$!{address.thumb}$!{address.resource}$!{list.supply.photoCover}&width=100&height=100" alt="$!{list.supply.title}"/>
+                                    </a>
+                            #end
+                        </header>
+                        <section class="ls_ifo_details">
+                            <h3>
+                                <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}">
+                                    <span class="fontorange comm_em_red p_ellipsis">$!{list.supply.title}</span>
+                                </a>
+                            </h3>
+                            <p class="ls_ifo_content comm_em_red p_ellipsis">$!{list.supply.detailsQuery}</p>
+                            <p class="ls_ifo_com">
+                                <a href="$!{address.esite}/index$!{list.comp.id}.htm" target="_blank">#printTitle($!{list.comp.name} 16 '')</a>
+                                #if("$!{list.account.qq}" != "")
+                                    <a rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=$!{list.account.qq}&amp;site=www.zz91.com&amp;menu=yes" title="QQ:$!{list.account.qq}">
+                                        <img border="0" src="http://wpa.qq.com/pa?p=2:$!{list.account.qq}:4" alt="QQ:$!{list.account.qq}" onerror="this.src='${address.img}/zz91/china/images/qq.gif'" />
+                                    </a>
+                                #end
+                                <span class="ls_ifo_remarksbtn"></span>
+                            </p>
+                            <aside class="ls_ifo_remarks">
+                                <div id="compDetails$!{list.supply.id}" class="ls_ifo_rmkbase">
+                                    <p>注册时间：<span class="fontblue">#printFragmentDate("yyyy-MM-dd" $!{list.comp.gmtCreated})</span></p>
+                                    <!--
+                                    <p>中环通：<span class="fontblue">第1年</span>
+                                    </p>
+                                    <p>诚信指数：<span class="fontblue">--</span>
+                                    </p>
+                                    <p>供应产品：<span class="fontblue"0条</span>
+                                    </p>
+                                    <p>行业类型：<span class="fontblue">$!{list.industryName}</span>
+                                    </p>
+                                    <p>业务类型：<span class="fontblue">$!{list.businessName}</span>
+                                    </p>
+                                    -->
+                                </div>
+                                <div class="ls_ifo_rmkbook">
+                                    <p>荣誉证书：<span class="fontblue">0条</span>
+                                    </p>
+                                </div>
+                            </aside>
+                        </section>
+                    </section>
+                    <section class="ls_detal">
+                        <div class="ls_detal_area">
+                            <span>$!{list.area.province}</span>
+                            <span>$!{list.area.area}</span>
+                        </div>
+                        <div class="ls_detal_price">
+                            #if ("$!{list.supply.priceNum}" != "" && "$!{list.supply.priceNum}" != "0" && "$!{list.supply.priceNum}" != "0.0")
+                                <span class="fontbold fontorange">$!{list.supply.priceNum}</span>
+                                #if("$!{list.supply.priceUnits}" == "") 元 #else $!{list.supply.priceUnits} #end 
+                                        #else
+                                            面议 
+                            #end
+                        </div>
+                        <div class="ls_detal_mem">
+                            #if("$!{list.comp.memberCode}"=="10011001")
+                                <img src="${address.img}/huanbao/images/company/zht.png" width="51" hight="23"/>
+                                <a href="#" class="1001001">高级会员</a>
+                                #else
+                                    <a href="#" class="1001003">普通会员</a>
+                            #end
+                        </div>
+                        <div class="ls_detal_link">
+                            <a href="$!{address.esite}/message$!{list.supply.cid}.htm" class="ls_detal_link01" target="_blank">给我留言</a>
+                            <a href="$!{address.esite}/companyContact$!{list.supply.cid}.htm" class="ls_detal_link02" target="_blank">联系方式</a>
+                            <a href="$!{address.esite}/index$!{list.supply.cid}.htm" class="ls_detal_link03" target="_blank">门市部</a>
+                            ##                                <!--
+                            ##                                <a href="#" class="ls_detal_link04" id="ls_detal_link_evalute">评价此信息</a>
+                            ##                                -->
+                            ##                                <aside class="link_evalute_box">
+                                ##                                        <header class="link_eva_t">
+                                    ##<h4 class="link_eva_tit">评价信息</h4>
+                                    ##<span class="link_eva_close"></span>
+                                </header>
+                                ##                                        <!-- this is iframe <iframe> start-->
+                                    ##                                            <p class="link_eva_f">
+                                        ##                                                <input type="radio" name="eva" value="0" id='isgood'/>
+                                        ##<label for="isgood" class="isgoodfor">好</label>
+                                        ##                                                <input type="radio" name="eva" value="1" id='isbad'/>
+                                        ##<label for="isbad" class="isbadfor">不好</label>
+                                        ##                                            </p>
+                                        ##                                            <p class="link_eva_s">
+                                            ##                                                <input type="submit" class="link_eva_sub" value="提交评价"//>
+                                            ##                                            </p>
+                                            ##                                    	<!-- this is iframe <iframe> end-->
+                                                ##                                </aside>
+                                </div>
+					</section>
+			</article>
+		</li>
+        #end
+        <div class="clear"></div>
+    </ul>
+<div class="tdl_lsbar_bottom margintop8">
+    <div class="tdl_btn_lsbar_viewtype">
+        <a class="viewtype_txt" href="#"></a>
+        <a class="viewtype_pic" href="#"></a>
+        <a class="viewtype_inquiry" href="#">批量询价</a>
+        <a class="viewtype_contrast" href="#">对比产品</a>
+    </div>
+    <div class="tdl_btn_lsbar_pagesize">
+        <span class="lsbar_pagesize_t">每页显示数量：</span>
+        <a href="#springUrl('/trade/supply/index')--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l30.htm" class="pagesize_selected">30</a>
+        <a href="#springUrl('/trade/supply/index')--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l40.htm" class="pagesize_selected">40</a>
+        <a href="#springUrl('/trade/supply/index')--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l50.htm" class="pagesize_selected">50</a>
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="pagesbar margintop8">
+    #staticPageNav($!{page} "#springUrl('/trade/supply/index')" "--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}" "")
+</div>
+</div>
+<script language="javascript">
+    jQuery(document).ready(function(){
+        // 地区下拉框初始化
+        var _selectAreaCode=["#provinceCode"];
+        var selectAreaCode=new hb.util.Selector({
+            selects:_selectAreaCode,
+            url:"#springUrl('/trade/getAreaCode.htm')",
+            field:{code:"code",label:"name"}
+        });
+        selectAreaCode.init({
+            rootCode:"10011000",
+            #if(!$!{search.region}) 
+                initCode:"10011000"
+            #else
+                initCode:"$!{search.region}"
+            #end
+        });
+    });
+    function changePrice(){
+    	if(jQuery("#searchPriceFrom").val() == ""){
+        	jQuery("#searchPriceFrom").focus();
+        	return false
+        }
+        if(jQuery("#searchPriceFrom").val() == "0"){
+        	jQuery("#searchPriceFrom").val(1);
+        }
+        if(jQuery("#searchPriceTo").val() == "") {
+        	jQuery("#searchPriceTo").focus();
+        	return false
+        } 
+    	window.location="#springUrl('/trade/supply/index')"+"--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--"+jQuery("#searchPriceFrom").val()+"--"+jQuery("#searchPriceTo").val()+"--$!{search.showStyle}--$!{page.sort}--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+    }
+    function changeRegion(){
+    	window.location="#springUrl('/trade/supply/index')"+"--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--"+jQuery("#provinceCode").val()+"--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+    }
+    function changeSort(){
+    	window.location="#springUrl('/trade/supply/index')"+"--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--"+jQuery("#searchSort").val()+"--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+    }
+    function changeDay(){
+    	window.location="#springUrl('/trade/supply/index')"+"--$!{search.category}--$!{search.encodeKeywords}--$!{search.propertyValue}--$!{search.group}--$!{search.region}--"+jQuery("#searchTime").val()+"--$!{search.priceFrom}--$!{search.priceTo}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+    }
+    function batchInquiry(){
+    	var a=new Array();
+        jQuery.each(jQuery("input[name=supplyIds]"),function(idx,e){
+            if(e.checked){
+            	a.push(e.value)
+            }
+        });
+    	if (a.length < 2) {
+            hb.util.Message.show({
+                msg:"请选择要询价的供应信息！",
+                autoClose:10000
+            });
+        }else if (a.length >5){
+			hb.util.Message.show({
+                msg:"最多同时询价5条供应信息！",
+                autoClose:10000
+            });
+		} else {
+        	var url = "?";
+        	for(var i=0; i < a.length; i++) {
+                if (i ==0 ) {
+                	url+="ids="+a[i];
+                } else {
+                    url+="&ids="+a[i];
+                }
+            }
+            window.location="#springUrl('/trade/supply/batchInquiry.htm')"+url;
+        }
+    }
+    function infoContrast(){
+        var a=new Array();
+        jQuery.each(jQuery("input[name=supplyIds]"),function(idx,e){
+            if(e.checked){
+            	a.push(e.value)
+            }
+        });
+		
+        if (a.length < 2) {
+            hb.util.Message.show({
+                msg:"请选择要对比的供应信息！",
+                autoClose:10000
+            });
+        }else if (a.length >5){
+			hb.util.Message.show({
+                msg:"最多同时对比5条供应信息！",
+                autoClose:10000
+            });
+		} else {
+            var url = "?";
+            for(var i=0; i < a.length; i++) {
+                if (i ==0 ) {
+                	url+="ids="+a[i];
+                } else {
+                	url+="&ids="+a[i];
+                }
+            }
+            window.location="#springUrl('/trade/supply/infoContrast.htm')"+url;
+        }
+    }
+</script>

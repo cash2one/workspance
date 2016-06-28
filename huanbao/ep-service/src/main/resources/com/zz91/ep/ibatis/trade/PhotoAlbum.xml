@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+    <sqlMap namespace="photoAlbum">
+    
+    	<typeAlias alias="photoAlbum" type="com.zz91.ep.domain.trade.PhotoAlbum"/>
+    
+    	<resultMap class="photoAlbum" id="allColumnResult">
+    		<result property="id" column="id"/>
+    		<result property="uid" column="uid"/>
+    		<result property="cid" column="cid"/>
+    		<result property="name" column="name"/>
+    		<result property="details" column="details"/>
+    		<result property="albumType" column="album_type"/>
+    		<result property="gmtCreated" column="gmt_created"/>
+    		<result property="gmtModified" column="gmt_modified"/>
+    	</resultMap>	
+    	
+    	<sql id="allColumn">
+    			id,
+    			uid,
+    			cid,
+    			name,
+    			details,
+    			album_type,
+    			gmt_created,
+    			gmt_modified
+    	</sql>	
+    
+    <select id="queryAlbumByCid" parameterClass="java.util.HashMap" resultMap="allColumnResult">
+    	select 
+    		<include refid="allColumn"/>
+    	from photo_album 
+    	where cid = #cid# 
+    	<isNotEmpty property="albumId">
+    		and id !=#albumId#
+    	</isNotEmpty>
+    	 order by id
+    </select>
+    
+    <select id="getAlbumNum" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    	select count(*) from photo_album  where cid = #value# 
+    </select>
+    
+   <update id="updateAlbumName" parameterClass="java.util.Map" >
+   		update photo_album set name = #name# where id = #albumId#
+   </update>
+   
+   <delete id="deleteAlbumAndPhoto" parameterClass="java.lang.Integer">
+   		delete from photo_album where id = #value#
+   </delete>
+   
+   <insert id="insertAlbum" parameterClass="photoAlbum" >
+   		insert into photo_album(uid,cid,name,details,album_type,gmt_created,gmt_modified)
+   		values(#uid#,#cid#,#name#,#details#,#albumType#,now(),now())
+   		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+   </insert>
+   
+   <select id="queryNameById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+   		select name from photo_album where id = #value#
+   </select>
+   
+   
+   
+    </sqlMap>

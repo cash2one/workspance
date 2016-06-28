@@ -1,0 +1,266 @@
+#set($pageName="marketIndex")
+#set($layout="/layout/marketLayout.vm")
+<script>
+function deal(){
+	openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.market}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+}
+</script>
+<div class="module mt12">
+	<div class="mar_mod_left">
+       <div class="mml_scroll">
+			
+       		<div class="mls_left">
+				#if($list.size()==0)
+				<li style="z-index:1;"><img src="http://img0.zz91.com/front/images/global/noimage.gif" width="300" height="290"/></li>
+				#else
+            	<div id="playimages" class="play">
+    				<ul class="big_pic">
+						<div class="prev"></div>
+						<div class="next"></div>
+						<a class="mark_left" href="javascript:;"></a>
+						<a class="mark_right" href="javascript:;"></a>
+						#foreach($li in $!{list})
+						#if($velocityCount==1)
+        				<li style="z-index:1;"><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222"/></li>
+						#end
+						#end
+						#foreach($li in $!{list})
+						#if($velocityCount>1)
+							<li><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+						
+    				</ul>
+    			<div class="small_pic">
+        			<ul>
+						#foreach($li in $!{list})
+						#if($velocityCount==1)
+							<li style="filter: 100; opacity: 1;"><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+						#foreach($li in $!{list})
+						#if($velocityCount>1)
+							<li><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+        			</ul>
+    			</div>
+			</div>
+			#end
+			<!--End play-->
+            </div>
+            <!--end mls_left-->
+            <div class="mls_right">
+            	<div class="msr_title">市场简介</div>
+                <div class="msr_content2">#set($intro=${market.introduction})#if($intro.length()>70)#printTitle(${market.introduction} 70 "...")<a href="#springUrl("/$!{market.words}/info.html")" target="_blank">更多>></a>#else${market.introduction}#end</div>
+            	<!--end msr_content2-->
+                <div class="msr_title mt12" ><a href="#springUrl("/$!{market.words}/info.html")#map" target="_blank">查看大图</a>市场地图</div>
+                <div class="msr_content3">
+                	<div class="mc3" id="container">
+                    	
+                    </div>
+                </div>
+                <!--end msr_content3-->
+            </div>
+            <!--end mls_right-->
+            <div class="cb"></div>
+       </div>
+       <!--end mml_scroll-->
+       <div class="mt12">
+       	<div class="mml_forum fl" style="width:312px;">
+       		<div class="mf_title"><a href="$!{address.market}/$!{market.words}/scsh.html" target="_blank">更多</a><h2>市场商户</h2></div>
+            <div class="mf_info">
+            	<div class="mf_item fl">
+                	<ul class="mf_ul">
+						#cacheFragment("$!{address.fragment}/market/queryCompanyByCondition.htm?id=$!{market.id}&size=8&type=0&2" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount<5)
+							#if($!{li.company.membershipCode}!="10051000"&&$!{li.company.membershipCode}!="10051003")
+								<li><a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+						    #elseif($!{li.company.membershipCode}=="10051003")
+								<li><a href="$!{address.www}/ppc/index$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#else
+								<li><a href="$!{address.company}/compinfo$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#end
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="mf_item fr">
+                	<ul class="mf_ul">
+                    	#cacheFragment("$!{address.fragment}/market/queryCompanyByCondition.htm?id=$!{market.id}&size=8&type=0&1" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount>4)
+							#if($!{li.company.membershipCode}!="10051000"&&$!{li.company.membershipCode}!="10051003")
+								<li><a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+						    #elseif($!{li.company.membershipCode}=="10051003")
+								<li><a href="$!{address.www}/ppc/index$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#else
+								<li><a href="$!{address.company}/compinfo$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#end
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end mf_info-->
+            <div class="mf_link">我是该市场商户，马上<a href="javascript:onclick=openremind($!{market.id})">加入该市场</a></div>
+            <!--end mf_link-->
+         </div>
+         <!--end mml_forum fl-->
+         <div class="mml_forum fr" style="width:374px;">
+       		<div class="mf_title"><h2>优质市场商户推荐</h2></div>
+            <div class="mf_info">
+            	<div class="mf_item fl">
+                	<ul class="mf_ul">
+						#cacheFragment("$!{address.fragment}/market/queryCompanyByCondition.htm?id=$!{market.id}&size=10&type=1&1" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount<6)
+							#if($!{li.company.membershipCode}!="10051000"&&$!{li.company.membershipCode}!="10051003")
+								<li><a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+						    #elseif($!{li.company.membershipCode}=="10051003")
+								<li><a href="$!{address.www}/ppc/index$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#else
+								<li><a href="$!{address.company}/compinfo$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#end
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="mf_item fr">
+                	<ul class="mf_ul">
+                    	#cacheFragment("$!{address.fragment}/market/queryCompanyByCondition.htm?id=$!{market.id}&size=10&type=1&2" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount>5)
+							#if($!{li.company.membershipCode}!="10051000"&&$!{li.company.membershipCode}!="10051003")
+								<li><a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+						    #elseif($!{li.company.membershipCode}=="10051003")
+								<li><a href="$!{address.www}/ppc/index$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#else
+								<li><a href="$!{address.company}/compinfo$!{li.company.id}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a></li>
+							#end
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end mf_info-->
+         </div>
+         <!--end mml_forum fr-->
+         <div class="cb"></div>
+       </div>
+       <!--end mt12-->
+       <div class="mt12">
+       	<div class="mml_forum fl" style="width:312px;">
+        	<div class="mf_title"><a href="#springUrl("/$!{market.words}/scgq.html")" target="_blank">更多</a><h2>市场热门供应</h2></div>
+            <div class="mf_info">
+            	<div class="mf_item fl">
+                	<ul class="mf_ul2">
+						#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&type=10331000&size=10&3" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount<6)
+							<li><em>[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</em><span><a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a></span></li>
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="mf_item fr">
+                	<ul class="mf_ul2">
+                    	#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&type=10331000&size=10&4" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount>5)
+							<li><em>[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</em><span><a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a></span></li>
+						    #end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end mf_info-->
+        </div>
+        <!--end mml_forum fl-->
+        <div class="mml_forum fr" style="width:374px;">
+        	<div class="mf_title"><a href="#springUrl("/$!{market.words}/scgq.html")" target="_blank">更多</a><h2>市场热门求购</h2></div>
+            <div class="mf_info">
+            	<div class="mf_item fl">
+                	<ul class="mf_ul2">
+                    	#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&type=10331001&size=10&1" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount<6)
+							<li><em>[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</em><span><a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a></span></li>
+							#end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="mf_item fr">
+                	<ul class="mf_ul2">
+                    	#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&type=10331001&size=10&2" "" "" "")
+						#foreach($li in $!{list})
+							#if($velocityCount>5)
+							<li><em>[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</em><span><a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a></span></li>
+						    #end
+						#end
+						#end
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end mf_info-->
+        </div>
+        <!--end mml_forum fr-->
+        <div class="cb"></div>
+       </div>
+       <!--end mt12-->
+       <div class="mml_map mt12">
+       		<div class="mmap_title">市场地图</div>
+            <div class="mmap_info"><div class="map_bg" id="container1"></div></div>
+       </div>
+       <!--end mml_map-->
+    </div>
+    <!--end mar_mod_left-->
+	#parse("/common/right.vm")
+</div>
+<!--end module mt12-->
+<script >
+var map=new BMap.Map("container");//创建地图实例
+##map.addControl(new BMap.NavigationControl());//平移缩放控件
+map.addControl(new BMap.ScaleControl());//比例尺控件
+##map.addControl(new BMap.OverviewMapControl());//缩略地图控件，默认位于地图右下方，是一个可折叠的缩略地图
+map.enableScrollWheelZoom(); //启用滚轮放大缩小
+// 创建地址解析器实例
+var myGeo = new BMap.Geocoder();
+// 将地址解析结果显示在地图上，并调整地图视野
+myGeo.getPoint("$!{market.address}", function(point){ 
+    if (point) { 
+         var marker=new BMap.Marker(point);//创建标注
+		 map.centerAndZoom(point,9);
+         map.addOverlay(marker);   
+     } 
+ }, "中国");
+</script>
+<script >
+var map1=new BMap.Map("container1");//创建地图实例
+##map.addControl(new BMap.NavigationControl());//平移缩放控件
+map1.addControl(new BMap.ScaleControl());//比例尺控件
+##map.addControl(new BMap.OverviewMapControl());//缩略地图控件，默认位于地图右下方，是一个可折叠的缩略地图
+map1.enableScrollWheelZoom(); //启用滚轮放大缩小
+// 创建地址解析器实例
+var myGeo = new BMap.Geocoder();
+// 将地址解析结果显示在地图上，并调整地图视野
+myGeo.getPoint("$!{market.address}", function(point){ 
+    if (point) { 
+         var marker=new BMap.Marker(point);//创建标注
+		 map1.centerAndZoom(point,11);
+         map1.addOverlay(marker);   
+     } 
+ }, "中国");
+</script>

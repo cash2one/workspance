@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="judge">
+	<typeAlias alias="judgeDO" type="com.ast.feiliao91.domain.company.Judge" />
+	<resultMap class="judgeDO" id="judgeResult">
+		<result property="id" column="id" />
+		<result property="goodId" column="good_id" />
+		<result property="orderId" column="order_id" />
+		<result property="judgeId" column="judge_id" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="goodStar" column="good_star" />
+		<result property="serveStar" column="serve_star" />
+		<result property="mailStar" column="mail_star" />
+		<result property="goodJudge" column="good_judge" />
+		<result property="serveJudge" column="serve_judge" />
+		<result property="picAddress" column="pic_address" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		good_id,
+		order_id,
+		judge_id,
+		company_id,
+		target_id,
+		good_star,
+		serve_star,
+		mail_star,
+		good_judge,
+		serve_judge,
+		pic_address,
+		is_del,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="judgeResult">
+		select 
+		<include refid="defaultColumn"/>
+		from judge
+		where id= #value#
+	</select>
+	
+	<select id="queryByOrderId" parameterClass="java.lang.Integer" resultMap="judgeResult">
+		select 
+		<include refid="defaultColumn"/>
+		from judge
+		where order_id= #value#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="judgeDO">
+		INSERT INTO judge
+		(
+		good_id,
+		order_id,
+		company_id,
+		target_id,
+		good_star,
+		serve_star,
+		mail_star,
+		good_judge,
+		serve_judge,
+		pic_address,
+		is_del,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#goodId#,
+		#orderId#,
+		#companyId#,
+		#targetId#,
+		#goodStar#,
+		#serveStar#,
+		#mailStar#,
+		#goodJudge#,
+		#serveJudge#,
+		#picAddress#,
+		#isDel#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="countTradeNum" resultClass="java.lang.Integer"
+		parameterClass="java.lang.Integer">
+		select count(0)
+		from judge
+		where 
+		good_star >=4 and target_id = #value#
+	</select>
+	
+
+	<!-- 某产品的评价数 -->
+	<select id="countJudgeByGoodId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from judge
+		where good_id=#goodId# and is_del='0' and judge_id='0'
+	</select>
+	
+	<select id="avgGoodStar" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		SELECT avg(good_star)
+		FROM `judge` 
+		where company_id = #value#
+	</select>
+	
+	<select id="avgByCondition" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+		SELECT AVG( good_star ) as good_star , AVG( serve_star ) as serve_star , AVG( mail_star ) as mail_star 
+		FROM  `judge` 
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="companyId">
+				target_id =#companyId#
+			</isNotNull>
+			<isNotNull prepend="and" property="month">
+			gmt_created &gt;(CURDATE()   -    INTERVAL   #month#  MONTH)
+			</isNotNull>
+		</dynamic>
+		and is_del='0'
+		LIMIT 0 , 1
+	</select>
+	
+	<select id="countJudgeNumByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from judge
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="goodId">
+				good_id = #goodId#
+			</isNotNull>
+			<isEqual compareValue="1" property="type" prepend="and">
+				good_star > 3
+			</isEqual>
+			<isEqual compareValue="2" property="type" prepend="and">
+				3 = good_star
+			</isEqual>
+			<isEqual compareValue="3" property="type" prepend="and">
+				3 > good_star
+			</isEqual>
+			<isEqual compareValue="4" property="type" prepend="and">
+				LENGTH(pic_address) > 0
+			</isEqual>
+		</dynamic>
+	</select>
+
+	<sql id="sqlCondition">
+		<isEqual property="type" compareValue="1" prepend="and">
+				<![CDATA[good_star > 3]]>
+		</isEqual>
+		<isEqual property="type" compareValue="2" prepend="and">
+				good_star = 3
+		</isEqual>
+		<isEqual property="type" compareValue="3" prepend="and">
+				<![CDATA[good_star < 3]]>
+		</isEqual>
+		<isEqual property="type" compareValue="4" prepend="and">
+				length(pic_address) > 0
+		</isEqual>
+		<isNotEmpty prepend="and" property="targetId">
+			target_id = #targetId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="companyId">
+			company_id = #companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="goodId">
+			good_id = #goodId#
+		</isNotEmpty>
+	</sql>
+	<!-- 评价列表 -->
+	<select id="queryJudgeByCondition" parameterClass="java.util.Map" resultMap="judgeResult">
+		select 
+			<include refid="judge.defaultColumn"/>
+		from judge
+		where is_del='0'
+		<include refid="judge.sqlCondition"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!-- 评价列表数 -->
+	<select id="countJudgeByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from judge
+		where is_del='0'
+		<include refid="judge.sqlCondition"/>
+	</select>
+	
+	<select id="getcount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	   select count(0)
+	   from judge
+	   where target_id=#companyId#
+	</select>
+	
+	<select id="getEvaluation" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   select count(0)
+	   from judge
+	   <dynamic prepend="where">
+	      <isEqual property="level" compareValue="0">
+	          good_star &gt; 3 and gmt_created &gt;(CURDATE()   -    INTERVAL   #month#  MONTH)
+	      </isEqual>
+	      <isEqual property="level" compareValue="1">
+	          good_star = 3 and gmt_created &gt;(CURDATE()   -    INTERVAL   #month#  MONTH)
+	      </isEqual>
+	      <isEqual property="level" compareValue="2">
+	          good_star &gt; 0 and good_star &lt; 3 and gmt_created &gt;(CURDATE()   -    INTERVAL   #month#  MONTH)
+	      </isEqual>
+	   </dynamic>
+			  and  target_id =#companyId# and is_del='0'
+	</select>
+	
+	<select id="getEvaluationTwo" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   select count(0)
+	   from judge
+	   <dynamic prepend="where">
+	      <isEqual property="level" compareValue="0">
+	          good_star &gt; 3 and gmt_created &lt;(CURDATE()   -    INTERVAL   6  MONTH)
+	      </isEqual>
+	      <isEqual property="level" compareValue="1">
+	          good_star = 3 and gmt_created &lt;(CURDATE()   -    INTERVAL   6  MONTH)
+	      </isEqual>
+	      <isEqual property="level" compareValue="2">
+	          good_star &gt; 0 and good_star &lt; 3 and gmt_created &lt;(CURDATE()   -    INTERVAL   6  MONTH)
+	      </isEqual>
+	   </dynamic>
+	         and target_id =#companyId# and is_del='0'
+	</select>
+	
+	<select id="pageJudgeByAll" parameterClass="java.util.Map" resultMap="judgeResult">
+	    select
+	   <include refid="judge.defaultColumn"/>
+		from judge
+		where is_del='0'
+	    <isEqual prepend="and" property="type" compareValue="1">
+	      <![CDATA[good_star > 3]]>
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="2">
+	       good_star = 3
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="3">
+	       3 > good_star
+	    </isEqual>
+	    <isEqual property="type" compareValue="10000">
+	       good_star &gt; 0
+	    </isEqual>
+	    <isEqual prepend="and" property="type2" compareValue="1">
+	       good_judge is not null 
+	    </isEqual>
+	    <isEqual  prepend="and" property="type2" compareValue="2">
+	       good_judge is  null 
+	    </isEqual>
+	    <isNotEmpty prepend="and" property="companyId">
+			target_id = #companyId#
+		</isNotEmpty>
+	    <include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="pageJudgeByAllcount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    select count(0)
+		from judge
+		where is_del='0'
+	    <isEqual prepend="and" property="type" compareValue="1">
+	       <![CDATA[good_star > 3]]>
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="2">
+	       good_star = 3
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="3">
+	       3 > good_star
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="10000">
+	       good_star &gt; 0
+	    </isEqual>
+	    <isEqual prepend="and" property="type2" compareValue="1">
+	       good_judge is not null 
+	    </isEqual>
+	     <isEqual prepend="and" property="type2" compareValue="2">
+	       good_judge is  null and pic_address is  null
+	    </isEqual>
+	    <isNotEmpty prepend="and" property="companyId">
+			target_id = #companyId#
+		</isNotEmpty>
+	</select>
+	
+	<select id="pageJudgeBySellAll" parameterClass="java.util.Map" resultMap="judgeResult">
+	    select
+	   <include refid="judge.defaultColumn"/>
+		from judge
+		where is_del='0'
+	    <isEqual prepend="and" property="type" compareValue="1">
+	       <![CDATA[good_star > 3]]>
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="2">
+	       good_star = 3
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="3">
+	       3 > good_star
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="10000">
+	       good_star &gt; 0
+	    </isEqual>
+	    <isEqual prepend="and" property="type2" compareValue="1">
+	       good_judge is not null 
+	    </isEqual>
+	    <isEqual prepend="and" property="type2" compareValue="2">
+	       good_judge is  null and pic_address is  null
+	    </isEqual>
+	    <isNotEmpty prepend="and" property="companyId">
+			company_id = #companyId#
+		</isNotEmpty>
+	    <include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="pageJudgeBySellAllCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    select count(0)
+		from judge
+		where is_del='0'
+	    <isEqual prepend="and" property="type" compareValue="1">
+	       <![CDATA[good_star > 3]]>
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="2">
+	       good_star = 3
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="3">
+	       3 > good_star
+	    </isEqual>
+	    <isEqual prepend="and" property="type" compareValue="10000">
+	       good_star &gt; 0
+	    </isEqual>
+	    <isEqual prepend="and" property="type2" compareValue="1">
+	       good_judge is not null 
+	    </isEqual>
+	     <isEqual prepend="and" property="type2" compareValue="2">
+	       good_judge is  null and pic_address is  null
+	    </isEqual>
+	    <isNotEmpty prepend="and" property="companyId">
+			company_id = #companyId#
+		</isNotEmpty>
+	</select>
+</sqlMap>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>收藏</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.deleteBtnActive{
+		color: #00b8ff !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title">收藏</strong>
+				</div>
+				<a id="right" tapmode="deleteBtnActive" onclick="deleteAll()">清除</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	apiready = function() {
+		api.addEventListener({name: 'keyback'}, function(ret, err){
+			closeWin();
+		});
+		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		api.openFrame({
+			name: 'favorite_frame',
+			url: 'favorite_frame.html',
+			rect: {
+				x: 0,
+				y: headerPos.h,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	};
+	
+	function deleteAll(){
+		api.confirm({
+			title: '删除确认',
+			msg: '确认要清除所有吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){				
+				api.execScript({name: 'favorite', frameName: 'favorite_frame', script: 'deleteAll()'});
+			}
+		});
+	}
+	
+	function closeWin(){
+		api.closeWin();
+	}
+</script>
+</html>

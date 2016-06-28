@@ -1,0 +1,237 @@
+#set($layout='/layout/normLayout1.vm')
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/jquery.alert.css"/>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.easydrag.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.alert.js"></script>
+
+
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index.htm')">首页</a></li>
+                <li><a href="#springUrl('/mblog.htm')">个人主页</a></li>
+                <li><a href="#springUrl('/info.htm')">账户设置</a></li>
+            </ul>
+        </div>
+        
+ 		<form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+        
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="FansFocus">
+    	<div class="ff-left">
+        	<div class="bl-group">
+            	<div class="f-group-title">
+                	<div class="f-title-left fl">关注中心</div>
+                </div>
+                <!--end bl-info-title-->
+                <ul id="ff-group">
+					#if($!{group})
+                    <li><a href="#springUrl('/follow')$!{group.id}.htm">特别关注</a></li>
+					#else
+					<li><a href="#springUrl('/follow').htm?groupType=1">特别关注</a></li>	
+					#end
+                    <li><a href="#springUrl('/follow')0.htm">默认分组</a></li>
+			#foreach($!{group}  in $!{groupList})
+				#if($velocityCount==4)
+                </ul>
+                     <ul id="bl-group-hide">
+						#if($!{group.groupName}!="特别关注")
+        					#if($!{group.id}==$!{groupId})	
+                        	 <li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{group.id}.htm"  style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">$!{group.groupName}</a></li>
+        					#else
+        					<li><a href="#springUrl('/follow')$!{group.id}.htm">$!{group.groupName}</a></li>	
+    						#end
+						#end	
+				#else
+						#if($!{group.groupName}!="特别关注")
+    						#if($!{group.id}==$!{groupId})
+    						<li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{group.id}.htm"  style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">$!{group.groupName}</a></li>
+    						#else
+    						<li><a href="#springUrl('/follow')$!{group.id}.htm" >$!{group.groupName}</a></li>	
+    						#end
+    					#end	
+				#end
+			#end
+                </ul>
+			
+                #if(3 <= $!{groupList.size()})
+                    <div class="bl-an">
+                    	<a href="#" onclick="blGroupHide();">展开</a>
+                    </div>
+				#else
+				#end
+                <!--bl-an-->
+               <div class="f-left-box">
+                	<img src="http://img0.huanbao.com/huanbao/mblog/images/group.jpg" id="f-newGroup"/>
+                    <div class="g-new-box">
+                        <div class="g-box-textBox">
+                            <input type="text" class="g-box-text" value="新分组">
+                        </div>                          
+                        <div class="g-box-new" onclick="FFaddGroup(this)">创建</div>
+                        <div class="g-box-cancel">取消</div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end g-new-box-->
+                    <div class="cb"></div>
+                </div>
+            </div>
+            <!--end 关注中心-->
+            <div class="f-fans">
+              <a href="#springUrl('/myfans.htm')">粉丝（$!{fansCount}）</a> 
+            </div>
+            <!--end ff-fans-->
+        </div>
+        <!--end ff-left-->
+        <div class="ff-right">
+        	
+			#foreach($l in  $!{page.records})
+            <div class="ff-right-item">
+            	<div class="ff-item-img">
+					<a href="#springUrl('/ublog')$!{l.mBlogInfo.id}.htm">
+						#if($!{l.mBlogInfo.headPic})
+						<img src="$!{address.thumb}$!{address.resource}$!{l.mBlogInfo.headPic}" width="50px;" height="50px;"/>
+						#else
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />
+						#end	
+					</a>
+                </div>
+                <div class="ff-item-text">
+                	<div class="ff-text-box1">
+                    	<div class="ff-box1-left fl"><a href="#springUrl('/ublog')$!{l.mBlogInfo.id}.htm">${l.mBlogInfo.name}</a></div>
+                        <div class="ff-box1-img fl">
+							#if(${l.mBlogInfo.sex}==1)
+							<img src="http://img0.huanbao.com/huanbao/mblog/images/icon_ms.jpg" />
+							#else
+							<img src="http://img0.huanbao.com/huanbao/mblog/images/img10.jpg" />
+							#end
+						</div>
+                        <div class="ff-box1-text fl">$!{l.provinceName}&nbsp;$!{l.areaName}</div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end ff-text-box1-->
+                    <div class="ff-text-box2">
+                    	<div class="ff-box2-left fl">关注<span class="greed">$!{l.followCount}</span></div>
+                        <div class="ff-box2-fans fl">粉丝<span class="greed">$!{l.fansCount}</span></div>
+                        <div class="ff-box2-text fl">微博<span class="greed">$!{l.mblogCount}</span></div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end ff-text-box2-->
+                    <div class="ff-text-box3">
+                    	简介：#if($!{l.compProfile.detailsQuery}) #printTitle($!{l.compProfile.detailsQuery} 17 "")...#end
+                    </div>
+                    <!--end ff-text-box3-->
+                </div>
+                <div class="ff-item-focus">
+				    #if($!{l.type}=='1')
+					<img src="http://img0.huanbao.com/huanbao/mblog/images/focus3.jpg" />
+					#else	
+                    <img src="http://img0.huanbao.com/huanbao/mblog/images/focus.jpg" onclick="AddFocus(this,$!{l.mBlogInfo.id});" />
+				    #end
+                </div>
+                <div class="ff-item-remove">
+                	<ul>
+                    	<li><a onclick="remove_item(this,$!{l.mBlogInfo.id},$!{l.type});">移除粉丝</a></li>
+                        <li>|</li>
+                        <li><a>举报</a></li>
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+			#end
+            <!--end ff-right-item-->
+            #mBlogPageNav(${page} "#springUrl('/myfans')" "" "")
+            <!--end ff-page-->
+        </div>
+        <!--end ff-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end wei-box-->
+</div>
+<!--end main-->
+
+
+#if(($!{newFansCount} && $!{newFansCount}>0) || ($!{commentCount} && $!{commentCount}>0) || $!{anteCount} && $!{anteCount}>0)
+	
+<div class="FloatBox">
+	<div class="fb-close">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/close3.jpg" />
+    </div>
+    <!--end fb-close-->
+    <div class="cb"></div>
+	#if($!{newFansCount} && $!{newFansCount}>0)
+	<div class="fb-box">
+    	$!{newFansCount}位新粉丝，<a href="/mblog/newfans.htm">查看粉丝</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{commentCount} && $!{commentCount}>0)
+    <div class="fb-box">
+    	$!{commentCount}条新评论，<a href="/mblog/comments.htm">查看回复</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{anteCount} && $!{anteCount}>0)
+    <div class="fb-box">
+    	$!{anteCount}个新@我，<a href="/mblog/ante.htm">查看@我</a>
+    </div>
+	#end
+    <!--end fb-box-->
+</div>
+<!--end FloatBox-->
+#end
+
+
+
+
+
+
+
+
+<script >
+function remove_item(obj,id,type){
+jQuery.ajax({
+		type:"post",
+		data:{'id':id,'type':type},
+		url:"/mblog/ajaxUpdateFollowStatus.htm",
+		dataType:"json",
+		cache:false,
+		success: function(data){
+		 if(data.success==true){
+			jQuery(obj).parent().parent().parent().parent().fadeOut();
+		  }		
+		}
+   });
+};
+ 
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+ 
+</script>
+
+
+

@@ -1,0 +1,225 @@
+#set($layout="/layout/innerLayout.vm")
+<script type="text/javascript">
+$(document).ready(function() {
+$(".mod_bar label button").click(function(){
+$(".mod_bar label button").css("background-color","#fff");
+$(this).css("background-color","#dddddd");
+});
+});
+</script>
+<div class="market_nav2 mt12"> <span class="num"><font>没有找到所在的市场？马上<a href="http://y.zz91.com/createMarket.htm" target="_blank">创建市场</a></font>有<span style="color:red;">$!{marketNum}</span>家相关市场</span> 当前位置：<a href="#springUrl('/index.htm')">再生产业带</a> 〉#if($!{industry}=="1000")废金属产业带#elseif($!{industry}=="1001")废塑料产业带#elseif($!{industry}=="1002")二手设备产业带#end </div>
+<!--end market_nav2-->
+#parse("/common/index/market_head.vm")
+<div class="module mt12">
+  <div class="mod_floor bold">#if($!{industry}=="1000")废金属产业带#elseif($!{industry}=="1001")废塑料产业带#elseif($!{industry}=="1002")二手设备产业带#end</div>
+  <!--end mod_floor-->
+  <div class="mod_bar">
+  	<label>
+    	<button #if($flag==0)#if($dir==1)class="sort_up" style="background-color:#dddddd" #else class="sort_down" style="background-color:#dddddd"#end #else class="sort" #end id="company" value=$!{dir}>市场客户</button>
+        <button #if($flag==1)#if($dir==1)class="sort_up" style="background-color:#dddddd" #else class="sort_down" style="background-color:#dddddd"#end #else class="sort" #end id="product" value=$!{dir}>市场供求</button>
+    </label>
+  	<form method="post" action="" id="search">
+  		<input type="text" class="company_search" placeholder="请输入市场关键字" value="$!{keyword}" />
+    	<button class="company_btn">搜索</button>
+  	</form>
+  </div>
+  <script type="text/javascript">	
+					jQuery(".company_btn").click(function(){
+						jQuery("#search").submit();
+					});
+					jQuery("#search").submit(function(){
+						var key = jQuery(".company_search").val();
+						key = encodeURI(key);
+						var url = "#springUrl('/search')-"+key+"-s-i.htm";
+						if(key&&key!=""){
+							jQuery("#search").attr("action",url);
+						}else{
+							alert("请输入您要检索的关键字");
+						}
+					});
+					jQuery("#company").click(function(){
+					    var val=Number(jQuery("#company").val());
+						if(val==0){
+							val = 1;
+						}else{
+							val = 0;
+						}
+						#if($!{keywords})
+							window.location.href="#springUrl('/search')-$!{keywords}-s$!{provice}-i$!{industry}f0d"+val+".htm";
+						#else
+							window.location.href="#springUrl('/market/')v$!{provice}i$!{industry}c$!{category}f0d"+val+".htm";
+						#end
+						
+					});
+					jQuery("#product").click(function(){
+					    var val=Number(jQuery("#product").val());
+						if(val==0){
+							val = 1;
+						}else{
+							val = 0;
+						}
+						#if($!{keywords})
+							window.location.href="#springUrl('/search')-$!{keywords}-s$!{provice}-i$!{industry}f1d"+val+".htm";
+						#else
+							window.location.href="#springUrl('/market/')v$!{provice}i$!{industry}c$!{category}f1d"+val+".htm";
+						#end
+						
+					});
+				</script>
+  <!--end mod_bar-->
+  <div class="mod_box">
+    <div class="mob_left">
+		#foreach($li in $!{page.records})
+		<div class="mob_item">
+			<div class="mi2"> 
+					#if($!{li.pic.picAddress})
+						<img src="$!{address.resource}/$!{li.pic.picAddress}" width="122" height="100" alt="$!{li.name}" />
+					#else
+						<img src=" http://img0.zz91.com/front/images/global/noimage.gif"  width="122" height="100" />
+					#end
+			</div>
+			<!--end mi2-->
+			<div class="mi4">
+				<div class="mi4_top"><a href="#springUrl("/$!{li.words}/")" target="_blank">$!{li.name}</a></div>
+				<div class="mi4_down">#set($content=$!{li.introduction})#if($content.length()>85)#printTitle($!{li.introduction} 85 "...")<a href="#springUrl("/$!{li.words}/")" target="_blank">更多>></a>#else$!{li.introduction}#end</div>
+			</div>
+			<!--end mi4-->
+			<div class="mi6">
+				<div class="mi6_top">
+					<h4>市场商家</h4>
+				</div>
+				<br />
+					<a #if($!{li.companyNum}>0)href="#springUrl("/$!{li.words}/scsh.html")" target="_blank"#end>$!{li.companyNum}</a>户 </div>
+			<!--end mi6-->
+			<div class="mi6">
+				<div class="mi6_top">
+					<h4>市场供求</h4>
+				</div>
+				<br />
+				<a #if($!{li.productNum}>0)href="#springUrl("/$!{li.words}/scgq.html")" target="_blank"#end>$!{li.productNum}</a>条 </div>
+			<!--end mi6-->
+			<div class="mi8">
+				<div class="mi6_top">
+					<h4>市场所在地</h4>
+				</div>
+				<br />
+				$!{li.area} </div>
+				<!--end mi8-->
+				<div class="cb"></div>
+			</div>
+			<!--end mob_item-->
+			<div class="cb"></div>
+		#end
+		    #if($!{keywords})
+				#pageMarket($page "#springUrl('/search')" "-$!{keywords}-s$!{provice}-i$!{industry}f$!{flag}d$!{dir}" "")
+			#else
+				#pageMarket($page "#springUrl('/market/')" "v$!{provice}i$!{industry}c$!{category}f$!{flag}d$!{dir}" "")
+			#end
+      <!--end page_border--> 
+    </div>
+    <!--end mob_left-->
+    <div class="mob_right">
+      <div class="ppcmain">
+        <div class="ppcbox">
+          <div id="ppccomplist">
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=1008227&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313436363539342e68746d" target="_blank" rel="nofollow">供应钴铬钼</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=1008227&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e646578313030383232372e68746d" target="_blank" rel="nofollow">供应钴,铬,钼等废金属</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0291</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=1008227&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e646578313030383232372e68746d" target="_blank" rel="nofollow">范先生</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=820431&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313432333033332e68746d" target="_blank" rel="nofollow">求购钯碳</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=820431&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783832303433312e68746d" target="_blank" rel="nofollow">求购钯碳,铂碳,催化侪,含金银废料</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0135</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=820431&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783832303433312e68746d" target="_blank" rel="nofollow">王航海</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=984346&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313433303434332e68746d" target="_blank" rel="nofollow">求购氧化铁皮</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=984346&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783938343334362e68746d" target="_blank" rel="nofollow">求购氧化铁皮,铁粉,铁粒,铝线,高压铜</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0202</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=984346&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783938343334362e68746d" target="_blank" rel="nofollow">杨保良</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313135303335332e68746d" target="_blank" rel="nofollow">供应加气粉和铝粉 原材料</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783932333430332e68746d" target="_blank" rel="nofollow">求购PVC药板,供应PVC塑料,秧盘原材料</a></div>
+                <div class="cb"></div>
+                <div><span>400-881-6685 转1166</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783932333430332e68746d" target="_blank" rel="nofollow">颜才富</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c3339363237392e68746d" target="_blank" rel="nofollow">求购废旧汽车半轴</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783333303733322e68746d" target="_blank" rel="nofollow">供应汽车半轴,汽车钢板,弹簧板</a></div>
+                <div class="cb"></div>
+                <div><span>400-881-6685转1111</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783333303733322e68746d" target="_blank" rel="nofollow">陈金龙</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991404&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313431393933342e68746d" target="_blank" rel="nofollow">求购钨尾矿</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991404&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783939313430342e68746d" target="_blank" rel="nofollow">长期收购钨尾矿,废铜水,废锡水,含铋2</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0087</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991404&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783939313430342e68746d" target="_blank" rel="nofollow">朱恒民</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=828698&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313432343636332e68746d" target="_blank" rel="nofollow">求购钨粉</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=828698&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783832383639382e68746d" target="_blank" rel="nofollow">常年回收钨粉,镍基合金粉,镍,镍礳灰,</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0097</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=828698&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783832383639382e68746d" target="_blank" rel="nofollow">宋先生、刘先生</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991614&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313431333430392e68746d" target="_blank" rel="nofollow">供应钢卷(电镀锌,镀铝锌,彩钢)</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991614&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783939313631342e68746d" target="_blank" rel="nofollow">加工与销售家电,建筑用钢卷,钢板</a></div>
+                <div class="cb"></div>
+                <div><span>400-745-0079</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=991614&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783939313631342e68746d" target="_blank" rel="nofollow">成先生</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c313135303335332e68746d" target="_blank" rel="nofollow">供应加气粉和铝粉 原材料</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783932333430332e68746d" target="_blank" rel="nofollow">求购PVC药板,供应PVC塑料,秧盘原材料</a></div>
+                <div class="cb"></div>
+                <div><span>400-881-6685 转1166</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=923403&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783932333430332e68746d" target="_blank" rel="nofollow">颜才富</a></div>
+              </div>
+            </div>
+            <div class="ppcadbox">
+              <div class="ptitle"><b><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f70726f6475637464657461696c3339363237392e68746d" target="_blank" rel="nofollow">求购废旧汽车半轴</a></b></div>
+              <div class="ppctxt">
+                <div class="txt"><a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783333303733322e68746d" target="_blank" rel="nofollow">供应汽车半轴,汽车钢板,弹簧板</a></div>
+                <div class="cb"></div>
+                <div><span>400-881-6685转1111</span></div>
+                <div class="comp">联系人：<a href="http://pyapp.zz91.com/app/ppchit.html?company_id=330732&amp;rd=687474703a2f2f7777772e7a7a39312e636f6d2f7070632f696e6465783333303733322e68746d" target="_blank" rel="nofollow">陈金龙</a></div>
+              </div>
+            </div>
+          </div>
+          <div class="cb"></div>
+        </div>
+      </div>
+    </div>
+    <!--end mob_right-->
+    <div class="cb"></div>
+  </div>
+  <!--end mod_box--> 
+</div>
+<!--end module-->

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="crmCompSvr">
+	<typeAlias alias="crmCompSvr" type="com.zz91.ep.domain.crm.CrmCompSvr" />
+	
+	<resultMap id="simpColumnResult" class="crmCompSvr">
+		<result property="id" column="id" />
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="gmtEnd" column="gmt_end"/>
+	</resultMap>
+	
+	<sql id="simpleColumn">
+		id,gmt_start,gmt_end 
+	</sql>
+	
+	<select id="queryLastSvr" resultMap="simpColumnResult">
+		select
+		<include refid="simpleColumn"/>
+		from crm_comp_svr
+		where cid=#cid# and crm_svr_id=#svrId#
+		order by gmt_start desc 
+		limit 1
+	</select>
+	
+	<select id="querySvr" parameterClass="java.util.Map" resultMap="simpColumnResult">
+		select 
+		<include refid="simpleColumn"/>
+		from crm_comp_svr
+		where cid=#cid# and crm_svr_id=#svrId#
+		order by gmt_start desc
+	</select>
+	
+	<select id="querySeoSvrCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from crm_comp_svr
+		where cid=#cid# and crm_svr_id=#svrId# and apply_status=1
+		and now() >= gmt_start and gmt_end > now() 
+	</select>
+</sqlMap>

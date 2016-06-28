@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="downloadInfo">
+	<typeAlias alias="downloadInfoDO"
+		type="com.ast.ast1949.domain.download.DownloadInfo" />
+	<resultMap class="downloadInfoDO" id="downloadInfoResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="detail" column="detail" />
+		<result property="fileUrl" column="file_url" />
+		<result property="code" column="code" />
+		<result property="picCover" column="pic_cover" />
+		<result property="picThumb" column="pic_thumb" />
+		<result property="size" column="size" />
+		<result property="language" column="language" />
+		<result property="type" column="type" />
+		<result property="viewCount" column="view_count" />
+		<result property="downloadCount" column="download_count" />
+		<result property="createdBy" column="created_by" />
+		<result property="isDeleted" column="is_deleted"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		title,
+		detail,
+		file_url,
+		code,
+		pic_cover,
+		pic_thumb,
+		size,
+		language,
+		type,
+		view_count,
+		download_count,
+		created_by,
+		is_deleted,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="downloadInfoResult">
+		select
+		<include refid="defaultColumn" />
+		from download_info
+		where id = #id#
+	</select>
+
+	<insert id="insert" parameterClass="downloadInfoDO">
+		INSERT INTO
+		download_info
+		(
+		title,
+		detail,
+		file_url,
+		code,
+		pic_cover,
+		pic_thumb,
+		size,
+		language,
+		type,
+		<!--  
+		view_count,
+		download_count,
+		-->
+		created_by,
+		is_deleted,
+		gmt_created,gmt_modified
+		)
+		VALUES
+		(
+		#title#,
+		#detail#,
+		#fileUrl#,
+		#code#,
+		#picCover#,
+		#picThumb#,
+		#size#,
+		#language#,
+		#type#,
+		<!--  
+		#viewCount#,
+		#downloadCount#,
+		-->
+		#createdBy#,
+		#isDeleted#,
+		now(),now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="downloadInfoDO">
+		update download_info
+		set
+		gmt_modified = now(),
+		pic_cover = #picCover#,
+		pic_thumb = #picThumb#,
+		language = #language#,
+		type = #type#
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail = #detail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="fileUrl">
+			file_url = #fileUrl#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="code">
+			code = #code#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="size">
+			size = #size#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+
+	<sql id="whereClause">
+		<dynamic>
+			where is_deleted = '0'
+			<isNotEmpty prepend="and" property="search.title">
+				title like concat('%',#search.title#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.code">
+				code like concat(#search.code#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryList" parameterClass="java.util.Map" resultMap="downloadInfoResult">
+		select 
+		<include refid="defaultColumn"/>
+		from download_info
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from download_info
+		<include refid="whereClause"/>
+	</select>
+	
+	<update id="updateViewCountByClick" parameterClass="java.lang.Integer">
+		update download_info 
+		set view_count = view_count +1
+		where id = #id#
+	</update>
+	
+	<update id="updateDownloadCountByClick" parameterClass="java.lang.Integer">
+		update download_info 
+		set download_count = download_count +1
+		where id = #id#
+	</update>
+	
+	<update id="updateToDel" parameterClass="java.lang.Integer">
+		update download_info
+		set is_deleted = '1'
+		where id = #id#
+	</update>
+	
+	<select id="countAllFile" resultClass="java.lang.Integer">
+		select count(0)
+		from download_info
+	</select>
+	
+	<select id="queryByFileUrl" resultMap="downloadInfoResult" parameterClass="java.lang.String">
+		select 
+		<include refid="defaultColumn"/>
+		from download_info
+		where file_url = #fileUrl#
+		limit 1
+	</select>
+	
+
+</sqlMap>

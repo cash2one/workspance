@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="newsModule">
+	<typeAlias alias="newsModuleDO" type="com.ast.ast1949.domain.news.NewsModuleDO" />
+	<typeAlias alias="newsModuleDTO" type="com.ast.ast1949.dto.news.NewsModuleDTO" />
+	
+	<resultMap class="newsModuleDO" id="resultNewsModuleDO">
+		<result property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="checked" column="checked" />
+		<result property="url" column="url" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="newsModuleDTO" id="resultNewsModuleDTO">
+		<result property="newsModule" resultMap="newsModule.resultNewsModuleDO" />
+	</resultMap>
+	
+	<insert id="insertNewsModule" parameterClass="newsModuleDO">
+		INSERT INTO news_module
+            (parent_id,
+             name,
+             checked,
+             url,
+             gmt_created,
+             gmt_modified)
+		VALUES (#parentId#,
+		        #name#,
+		        #checked#,
+		        #url#,
+		        now(),
+		        now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteNewsModuleById" parameterClass="java.lang.Integer">
+		DELETE
+		FROM news_module
+		WHERE id = #value#
+	</delete>
+	
+	<update id="updateNewsModuleById" parameterClass="newsModuleDO">
+		UPDATE news_module
+		SET parent_id = #parentId#,
+		  name = #name#,
+		  checked = #checked#,
+		  url = #url#,
+		  gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<select id="queryNewsModuleById" parameterClass="java.lang.Integer" resultMap="resultNewsModuleDO">
+		SELECT
+		  id,
+		  parent_id,
+		  name,
+		  checked,
+		  url,
+		  gmt_created,
+		  gmt_modified
+		FROM news_module
+		WHERE id = #value#
+	</select>
+	
+	<select id="queryNewsModuleByParentId" parameterClass="java.lang.Integer" resultMap="resultNewsModuleDO">
+		SELECT
+		  id,
+		  parent_id,
+		  name,
+		  checked,
+		  url,
+		  gmt_created,
+		  gmt_modified
+		FROM news_module
+		WHERE parent_id = #value#
+	</select>
+	
+	<select id="countNewsModuleByParentId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM news_module
+		WHERE parent_id = #value#
+	</select>
+	
+	<!-- 
+	<select id="queryNewsModuleListByParentId" parameterClass="newsModuleDTO" resultMap="resultNewsModuleDTO">
+		SELECT
+		  id,
+		  parent_id,
+		  name,
+		  checked,
+		  url,
+		  gmt_created,
+		  gmt_modified
+		FROM news_module
+		<dynamic prepend="where">
+			<isNotEmpty property="newsModule.parentId" prepend="and">
+				parent_id = #newsModule.parentId#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<select id="countNewsModuleListByParentId" parameterClass="newsModuleDTO" resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM news_module
+		<dynamic prepend="where">
+			<isNotEmpty property="newsModule.parentId" prepend="and">
+				parent_id = #newsModule.parentId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	 -->
+	
+	
+	<select id="queryNewsModuleListByNewsId" parameterClass="java.lang.Integer" resultMap="resultNewsModuleDO">
+		SELECT
+		  nm.id,
+		  nm.parent_id,
+		  nm.name,
+		  nm.checked,
+		  nm.url,
+		  nm.gmt_created,
+		  nm.gmt_modified
+		FROM news_module nm
+		  LEFT JOIN news_relate_module nrm
+		    ON nrm.module_id = nm.id
+		WHERE nrm.news_id = #value#
+	</select>
+</sqlMap>

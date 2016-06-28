@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="chs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="view-port" content="width=device-width ,initial-scale=1">
+    <title>baiduMap</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <style>
+    #header {
+        background-color: #81a9c3;
+    }
+    #nav {
+        display: -webkit-box;
+        height: 44px;
+    }
+    #left {
+        width: 80px;
+        color: #fff;
+        background: url(../image/navbtn_back.png) no-repeat 14px 12px;
+        -webkit-background-size: 12px 20px;
+    }
+    #left>span {
+        margin-top: 13px;
+        margin-left: 36px;
+        font-size: 18px;
+        height: 18px;
+        line-height: 18px;
+        color: #fff;
+    }
+    #middle {
+        -webkit-box-flex: 1;
+        width: 100%;
+        display: -webkit-box;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+    }
+    #title {
+        font-size: 18px;
+        text-align: center;
+        color: #fff;
+    }
+    #right {
+        width: 80px;
+    }
+    section {
+        -webkit-box-flex: 1;
+    }
+    .leftBtnActive {
+        background: url(../image/navbtn_back_hov.png) no-repeat 14px 12px!important;
+        -webkit-background-size: 12px 20px!important;
+        color: rgb(94, 153, 186)!important;
+    }
+    .rightBtnActive {}
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="header">
+            <nav id="nav">
+                <a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+                    <span>返回</span>
+                </a>
+                <div id="middle">
+                    <strong id="title">baiduMap百度地图</strong>
+                </div>
+                <a id="right">
+                </a>
+            </nav>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+ function switchFrame(index){
+    api.setFrameGroupIndex({
+        name:'baiduMap-con',
+        index: index,
+        scroll:true
+    })
+}
+
+
+apiready = function() {//加载地图
+    var lastKey = '88BF262133571E4A2EDD42E93A5BF696C2F23E96';
+    var newKey = 'Kwt0ZLUE88gvkvcgvYHIDvj0';
+    var obj = api.require('baiduMap');
+    obj.open({
+        apiKey: newKey,
+        x: '0',
+        y: '64',
+        width: api.winWidth,
+        height: 235
+    }, function(ret, err) {
+        //alert('retInfo '+JSON.stringify(ret));
+    });
+    //打开导航
+    api.openFrame({
+        name: 'baiduMapNav-con',
+        url: './baiduMapNav-con.html',
+        bounces: false,
+        rect: {
+            x: '0',
+            y: '281',
+            width: api.winWidth,
+            height: 45,
+        }
+    })
+    //打开窗口组
+    api.openFrameGroup({
+        name: 'baiduMap-con',
+        background: '#fff',
+        rect: {
+            x: 0,
+            y: 327,
+            w: api.winWidth,
+            h: api.winHeight-327
+        },
+        frames: [{
+            name: 'baiduMapBase-con',
+            url: './baiduMapBase-con.html',
+            pageParam: {
+                name: 'baiduMapBase'
+            },
+            bounces: false,
+            opaque: false,
+            bgColor: '#fff'
+        }, {
+            name: 'baiduMapTips-con',
+            url: './baiduMapTips-con.html',
+            pageParam: {
+                name: 'baiduMapTips'
+            },
+            bounces: false,
+            opaque: false,
+            bgColor: '#fff'
+        }, {
+            name: 'baiduMapSearch-con',
+            url: './baiduMapSearch-con.html',
+            pageParam: {
+                name: 'baiduMapSearch'
+            },
+            bounces: false,
+            opaque: false,
+            bgColor: '#fff'
+        }]
+    }, function(ret) {
+        if(ret){
+            var index = ret.index;
+            //alert('index1 '+index);
+            api.execScript({
+                name: 'baiduMapNav-con',
+                script: 'switchTab("'+index+'");'
+            });
+        }
+    });    
+}
+</script>
+</html>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="news">
+	
+	<typeAlias alias="news" type="com.ast1949.shebei.domain.News"/>
+	
+	<resultMap class="news" id="simpMap">
+		<result property="id" column="id"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="title" column="title"/>
+		<result property="gmtShow" column="gmt_show"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+	</resultMap>
+	
+	<resultMap class="news" id="simpleResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+	</resultMap>
+	
+	<resultMap class="news" id="fullColumnMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="description" column="description"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="type" column="type"/>
+		<result property="details" column="details"/>
+		<result property="detailsQuery" column="details_query"/>
+		<result property="viewCount" column="view_count"/>
+		<result property="source" column="source"/>
+		<result property="sourceUrl" column="source_url"/>
+		<result property="tags" column="tags"/>
+		<result property="gmtShow" column="gmt_show"/>
+		<result property="photoCover" column="photo_cover"/>
+		<result property="auth" column="auth"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="simpColumn">
+		 id,
+		 category_code,
+		 title,
+		 gmt_show,
+		 gmt_publish
+	</sql>
+	
+	<sql id="fullcolumn">
+		id,
+		title,
+		description,
+		category_code,
+		type,
+		details,
+		details_query,
+		view_count,
+		source,
+		source_url,
+		tags,
+		gmt_show,
+		photo_cover,
+		auth,
+		gmt_publish,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insertNews" parameterClass="news">
+		insert into `news`
+		(
+		`title`,
+		`description`,
+		`category_code`,
+		`type`,
+		`details`,
+		`details_query`,
+		`view_count`,
+		`source`,
+		`source_url`,
+		`tags`,
+		`gmt_show`,
+		`photo_cover`,
+		`auth`,
+		`gmt_publish`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#title#,
+		#description#,
+		#categoryCode#,
+		#type#,
+		#details#,
+		#detailsQuery#,
+		#viewCount#,
+		#source#,
+		#sourceUrl#,
+		#tags#,
+		#gmtShow#,
+		#photoCover#,
+		#auth#,
+		now(),
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryNewsByCategoryAndType" parameterClass="java.util.HashMap" resultMap="simpMap">
+		select
+		<include refid="news.simpColumn"/>
+		from news
+		<dynamic prepend="where">
+			<isNotEmpty property="category">
+				<isEqual compareValue="0" prepend="and" property="flag">
+					category_code like concat(#category#,'%')
+				</isEqual>
+				<isEqual compareValue="1" prepend="and" property="flag">
+					category_code=#category#
+				</isEqual>
+				<isEqual compareValue="2" prepend="and" property="flag">
+					category_code like concat(#category#,'____')
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				type=#type#
+			</isNotEmpty>
+		</dynamic>
+		and now() > gmt_show
+		order by gmt_publish desc
+		limit #size#
+	</select>
+	
+	<select id="queryNews" parameterClass="java.util.HashMap" resultMap="simpMap">
+		select 
+		<include refid="news.simpColumn"/>
+		from news n
+		where type=#type#
+		<isNotEmpty property="category">
+			<isEqual compareValue="1000" prepend="and" property="category">
+				category_code like concat(#category#,'%')
+			</isEqual>
+			<isNotEqual compareValue="1000" prepend="and" property="category">
+				category_code=#category#
+			</isNotEqual>
+		</isNotEmpty>
+		and now() > gmt_show
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+
+	<select id="queryNewsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from news
+		where category_code=#category# and type=#type#
+	</select>
+	
+	<select id="queryNewsById" parameterClass="java.util.HashMap" resultMap="fullColumnMap">
+		select
+		<include refid="news.fullcolumn"/>
+		from news
+		where id=#id# and type=#type#
+	</select>
+	
+	<select id="queryOnNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        gmt_publish > (select gmt_publish from news where id = #id#)
+        and category_code=#categoryCode# and type=#type#
+        order by gmt_publish asc limit 1
+	</select>
+	
+	<select id="queryDownNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        (select gmt_publish from news where id = #id#) > gmt_publish
+        and category_code=#categoryCode# and type=#type#
+        order by gmt_publish desc limit 1
+	</select>
+	
+	<select id="queryMaxGmtShow" resultClass="java.util.Date">
+		select max(gmt_show) from news
+	</select>
+</sqlMap>

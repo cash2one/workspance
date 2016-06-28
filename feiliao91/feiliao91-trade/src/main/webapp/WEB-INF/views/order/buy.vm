@@ -1,0 +1,407 @@
+<!--[if IE 6]> 
+    <script src="$!{address.css}/trade/comm/clarity.js"></script> 
+    <script type="text/javascript">  
+    DD_belatedPNG.fix('img');
+    DD_belatedPNG.fix('.info-img');
+    DD_belatedPNG.fix('.now-nav i');
+    DD_belatedPNG.fix('.myuse-dl i');
+    DD_belatedPNG.fix('.dis-syar i');
+    DD_belatedPNG.fix('.myuse-img');
+    $(function(){
+        $(".mygoods-dl dd").each(function(){
+            $(this).height($(this).find(".dingd-goods-list").height())
+        })
+    })
+    </script>
+<![endif]-->
+<link rel="stylesheet" href="$!{address.css}/trade/priceindex/css/deal.css" />
+##<link rel="stylesheet" href="$!{address.css}/trade/comm/selectJr.css" />
+<link rel="stylesheet" href="$!{address.css}/trade/comm/comm-pop.css" />
+<script src="http://img0.taozaisheng.com//trade/comm/comm.js"></script>
+#set($layout="/layout/default.vm")
+#set($in=1)
+#parse("/common/menu.vm")
+<div class="content clearfix">
+    #set($pageName="buy")
+	#parse("/common/left.vm")
+	<div class="ads-main fr ads-qh" id="tt">
+		<div class="manage-info clearfix">
+			<div class="state fl state2">
+				<a href="#springUrl('/order/buy.htm')" #if(!$!{searchDto.status}) class="now-hear" #end>所有订单</a>|
+				<a href="#springUrl('/order/buy.htm?status=0')" #if($!{searchDto.status}==0) class="now-hear" #end>待审核 <span class="anred">#if($!{countMapOne}!=0) $!{countMapOne}#end</span></a>|
+				<a href="#springUrl('/order/buy.htm?status=1')" #if($!{searchDto.status}==1) class="now-hear" #end>待付款 <span class="anred">#if($!{countMapTwo}!=0) $!{countMapTwo}#end</span></a>|
+				<a href="#springUrl('/order/buy.htm?status=2')" #if($!{searchDto.status}==2) class="now-hear" #end>待发货 <span class="anred">#if($!{countMapThree}!=0) $!{countMapThree}#end</span></a>|
+				<a href="#springUrl('/order/buy.htm?status=3')" #if($!{searchDto.status}==3) class="now-hear" #end>待收货 <span class="anred">#if($!{countMapFour}!=0) $!{countMapFour}#end</span></a>|
+				<a href="#springUrl('/order/buy.htm?status=66&hasNoJudge=1')" #if($!{searchDto.status}==66&&$!{searchDto.hasNoJudge}==1) class="now-hear" #end>待评价 <span class="anred">#if($!{countMapFive}!=0) $!{countMapFive}#end</span></a>|
+			</div>
+			<!-- <a class="fr hushou" href="#">
+				<i class="icon-hushou iconfont">&#xe60f;</i>回收站
+			</a> -->
+		</div>
+		<div  class="mygoods-title clearfix" style="position:relative;z-index:2">
+			<div class="gd-tt1 fl">产品</div>
+			<div class="gd-tt2 fl">单价（元）</div>
+			<div class="gd-tt3 fl">数量</div>
+			<div class="gd-tt4 fl">操作</div>
+			<div class="gd-tt5 fl">金额（元）</div>
+			<div class="gd-tt6 fl">
+				<select class="mygd-type">
+					<option value="100">交易状态</option>
+					<option value="0" >待审核</option>
+					<option value="1" >待付款</option>
+					<option value="2" >待发货</option>
+					<option value="3" >待收货</option>
+					<option value="66" >待评价</option>
+				</select>
+			</div>
+		</div>
+		
+		#foreach($tradeNo in $resultMap.keySet())
+		#set($list=$resultMap.get($tradeNo))
+		#set($totalFee=0)
+		#set($gmtCreated="")
+		#set($sellCompanyId=0)
+		#set($sellCompanyName="")
+		#set($tradeSuc = 0)
+		#foreach($dto in $list)
+			#if($gmtCreated=="")
+				#set($gmtCreated=$dto.orders.gmtCreated)
+			#end
+			#if($sellCompanyId==0)
+				#set($sellCompanyId = $!{dto.sellCompany.id})
+			#end
+			#if($sellCompanyName=="")
+				#set($sellCompanyName = $!{dto.sellCompany.name})
+			#end
+			#set($totalFee = $totalFee + $!{dto.orders.buyPricePay} * $!{dto.orders.buyQuantity} + $!{dto.orders.buyPriceLogistics})
+			#if($!{dto.orders.status}==66||$!{dto.orders.status}==99)
+				#set($tradeSuc = 1)
+			#end
+		#end
+        <dl #if($tradeSuc==1) class="mygoods-dl close-goods" #else class="mygoods-dl" #end style="position:relative;z-index:1">
+            <dt>
+                <span class="i-fweight">#printFragmentDate("yyyy-MM-dd" $gmtCreated)</span>
+                <span>订单号: $tradeNo</span>
+                <span><a href="$!{address.www}/compInfo$!{sellCompanyId}.htm" target="_blank">$!{sellCompanyName}</a></span>
+				#if($tradeSuc == 1)
+					<i class="iconfont icon-remove" onclick="delOrder('$tradeNo')">&#xe60f;</i>
+				#end
+            </dt>
+			#foreach($dto in $list)
+            <dd class="clearfix">
+                <div class="dingd-goods-list clearfix">
+                    <div #if($!{dto.orders.status}==4) class="dingd-goods clearfix dingd-goods2 " #else class="dingd-goods clearfix " #end>
+                        <div class="gd-tt1 fl">
+                            <div class="gd-nameimg">
+								<a href="$!{address.www}/goods$!{dto.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}/$!{dto.picAddress}" class="gd-imginfo" width="80" height="80">
+								</a>
+                                <p class="gd-nameinfo gd-nameinfo-di">
+                                    <a href="$!{address.www}/goods$!{dto.goods.id}.htm" target="_blank">$!{dto.goods.title}</a>
+                                </p>
+                                <p>
+							        #if($dto.bzjFlag)
+									<i class="res-iconimg1"></i>
+									#else
+									<i class="res-iconimg1 res-iconimg3"></i>
+									#end
+									#if($dto.sevenDayFlag)
+									<i class="res-iconimg1 res-iconimg2"></i>
+									#else
+									<i class="res-iconimg1 res-iconimg4"></i>
+									#end
+								</p>
+								#if($dto.detailJson.get("format"))
+									<p class="color-66">$dto.detailJson.get("format")</p>
+								#end
+                            </div>
+                        </div>
+                        <div class="gd-tt2 fl">
+                            <p class="text-cnt">$!{dto.orders.buyPricePay}</p>
+                            <p class="text-cnt mrt-top color-66">(不含税)</p>
+                        </div>
+                        <div class="gd-tt3 fl">
+                            <p class="text-cnt">$!{dto.orders.buyQuantity}</p>
+                        </div>
+						<div class="gd-tt4 fl gd-ltthid">
+    						#if($!{dto.orders.status}==0)
+    						#elseif($!{dto.orders.status}==1)
+    						#elseif($!{dto.orders.status}==2)
+    							<p class="text-cnt"><a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue" target="_blank">退款</a></p>
+    						#elseif($!{dto.orders.status}==3)
+    							<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退款</a>
+    							</p>
+    						#elseif($!{dto.orders.status}==4)
+    							<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退款</a>
+    							</p>
+    						#elseif($!{dto.orders.status}==66)
+								#if(!$dto.judge)
+									<p class="text-cnt"><a href="$!{address.www}/goods/goods.htm?id=$!{dto.goods.id}&flag=1" class="blue" target="_blank">评价</a></p>
+								#end
+    						#elseif($!{dto.orders.status}==50)
+								#if($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==0)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退货进度</a>
+									</p>
+								#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==1)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">等待买家退货</a>
+									</p>
+								#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==2)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退款被拒绝</a>
+									</p>
+								#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==3)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退货中</a>
+									</p>
+								#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==66)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退货进度</a>
+									</p>
+								#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==99)
+									<p class="text-cnt mrt-top">
+    								<a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue j_rma" target="_blank">退货完成</a>
+									</p>
+								#end
+    						#elseif($!{dto.orders.status}==99)
+							#end
+                        </div>
+                    </div>
+
+                </div>
+                <div class="gd-tt5 fl gd-ddone gd-ltset">
+                    <div class="gd-ddone-ptop">
+						#if($velocityCount==1)
+							<p class="text-cnt">#if(${dto.orderTotalPay}) ${dto.orderTotalPay} #else ${dto.jsTotalPay} #end</p>
+							<p class="text-cnt mrt-top"> #if($!{dto.yunfei}>0||$!{dto.orderFreightPay}>0) （含运费：#if($!{dto.orderFreightPay}) $!{dto.orderFreightPay} #else $!{dto.yunfei} #end ) #else (不含运费) #end</p>
+						#end
+                    </div>
+                </div>
+				<div class="gd-tt6 fl gd-ddone">
+					<div class="gd-ddone-ptop">
+						#if($velocityCount==1)
+							#if($!{dto.orders.status}==0)
+								<p class="text-cnt">买家已下单</p>
+								<p class="text-cnt"><a class="blue j_rma" style="cursor: pointer;" onclick="closeJy(1,'$tradeNo')">取消订单</a></p>
+							#elseif($!{dto.orders.status}==1)
+								<p class="text-cnt">等待付款</p>
+##								<p class="text-cnt"><a href="#springUrl('/step')$!{dto.orders.orderNo}.htm" class="blue" target="_blank">付款</a></p>
+								#if($!{dto.flagPaying}==1)
+									<p class="text-cnt"><a href="javascript:void(0)" class="blue" target="_blank" id="pay$!{tradeNo}">付款中</a></p>
+									<script>
+										function checkPay(){
+											jQuery.ajax({
+												url:"#springUrl('/yeepay/checkPaySuccessOrNot.htm')",
+												data:{orderNo:"$tradeNo"},
+												success:function(data){
+													if(data.success){
+														jQuery("#pay$!{tradeNo}").attr("href","#springUrl('/step')$!{dto.orders.orderNo}.htm")
+														jQuery("#pay$!{tradeNo}").html("付款");
+													}
+												}
+											});
+										}
+										checkPay();
+									</script>
+								#else
+									<p class="text-cnt"><a href="#springUrl('/order/pay.htm')?orderNo=$!{dto.orders.orderNo}" class="blue" target="_blank">付款</a></p>
+								#end
+								<p class="text-cnt"><a href="javascript:void(0)" class="blue j_rma" onclick="closeJy(1,$tradeNo)">取消订单</a></p>
+							#elseif($!{dto.orders.status}==2)
+								<p class="text-cnt">等待卖家发货</p>
+							#elseif($!{dto.orders.status}==3)
+								<p class="text-cnt">物流运输中</p>
+								<p class="text-cnt"><a href="#springUrl('/order/recetion.htm')?orderNo=$!{dto.orders.orderNo}" class="blue j_rma" target="_blank">确认收货</a></p>
+								<div class="mrt-top see_wl j_seewl">
+									<a href="#springUrl('/logistics/logistics.htm?logisticsCode=')$!{dto.orders.logisticsNo}&type=1" target="_blank"><p class="text-cnt blue"><span class="wl-ss">查看物流</span></p></a>
+								</div>
+							#elseif($!{dto.orders.status}==4)
+								<p class="text-cnt">货物已经揽收</p>
+								<p class="text-cnt"><a href="#springUrl('/step')$!{dto.orders.orderNo}.htm" class="blue j_rma" target="_blank">确认收货</a></p>
+								<p class="text-cnt color-99">
+									<i class="iconfont icon-lttime">&#xe60c;</i>还剩9天23时
+								</p>
+								<div class="see_wl j_seewl">
+									<a href="#springUrl('/logistics/logistics.htm?logisticsCode=')$!{dto.orders.logisticsNo}" target="_blank"><p class="text-cnt blue"><span class="wl-ss">查看物流</span></p></a>
+								</div>
+							#elseif($!{dto.orders.status}==66)
+								<p class="text-cnt greed">交易成功</p>
+								<p class="text-cnt"><a href="#springUrl('/service/complain.htm')?targetCompanyId=$!{dto.sellCompany.id}" class="blue" target="_blank">投诉卖家</a></p>
+							#elseif($!{dto.orders.status}==50)
+									#if($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==0)
+									<p class="text-cnt color-99">等待卖家同意退款</p>
+									#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==1)
+									<p class="text-cnt color-99">卖家同意退款,请退货</p>
+									#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==2)
+									<p class="text-cnt color-99">卖家拒绝退款</p>
+									#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==3)
+									<p class="text-cnt color-99">物流运输中</p>
+									#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==66)
+									<p class="text-cnt color-99">淘再生介入</p>
+									#elseif($!{dto.orderReturnStatus}&&$!{dto.orderReturnStatus}==99)
+									<p class="text-cnt color-99">退货完成</p>
+									#end
+									<p class="text-cnt"><a href="#springUrl('/ordersreturn/thSpFrist.htm?orderId=')$!{dto.orders.id}" class="blue">订单详情</a></p>
+									#if($!{dto.orderReturnStatus}==3||$!{dto.orderReturnStatus}==66||$!{dto.orderReturnStatus}==99)
+									<div class="mrt-top see_wl j_seewl">
+										<a href="#springUrl('/logistics/logistics.htm?logisticsCode=')$!{dto.orderReturn.logisticsNo}" target="_blank"><p class="text-cnt blue"><span class="wl-ss">查看物流</span></p></a>
+									</div>
+									#end
+							#elseif($!{dto.orders.status}==99)
+								<p class="text-cnt color-99">交易关闭</p>
+							#end
+							#if($!{dto.orders.status}!=50)
+							<p class="text-cnt">
+								<a href="#springUrl('/step')$!{dto.orders.orderNo}.htm" class="blue" target="_blank">订单详情</a>
+							</p>
+							#end
+						#end
+					</div>
+                </div>
+            </dd>
+			#end
+        </dl>
+		#end
+		#postListPageNav($page "#springUrl('/order/buy.htm')" "status=$!{searchDto.status}&hasNoJudge=$!{searchDto.hasNoJudge}" "")
+	</div>
+</div>
+<form action="#" method="post" id="form1">
+	<input type="hidden" name="orderNo" id="orderNo" value="0"/>
+	<input type="hidden" name="reason" id="reason" value="0"/>
+</form>
+<script type="text/javascript">
+	var reason ="";
+	var orderNo ="";
+	function closeJy(id,tradeNo){
+    if(id==1){
+        var close_dd =  '<div class="pop-page-buy clearfix">'
+                            +'<div class="pop-top clearfix">'
+                                +'<div class="pop-tltle fl">'
+                                    +'<i class="icon-jg iconfont">&#xe60d;</i>'
+                                    +'<span>您确定要取消该订单吗？取消订单后，不能恢复。</span>'
+                                +'</div>'
+                                +'<a class="fr close-pay j_close" href="javascript:void(0)">x</a>'
+                            +'</div>'
+                            +'<div class="reason-rm">'
+                                +'请选择取消订单的理由：'
+                                +'<select class="reason-set" value=""><option value="">请选择取消理由</option>'
+    							+'<option value="buy我不想买了">我不想买了</option>'
+    							+'<option value="buy信息填写错误，重新拍">信息填写错误，重新拍</option>'
+    							+'<option value="buy卖家缺货">卖家缺货</option>'
+    							+'<option value="buy线下交易">线下交易</option>'
+    							+'<option value="buy付款遇到问题（如余额不足、不知道如何付款等）">付款遇到问题（如余额不足、不知道如何付款等）</option>'
+    							+'<option value="buy拍错了">拍错了</option>'
+    							+'<option value="buy其他原因">其他原因</option>'
+    							+'</select>'
+    							+'<br/><span style="color:red" id="erro"></span>'
+                          	  	+'</div>'
+                          	  	+'<span class="rm-btn">确 定</span>'
+                       	 	+'</div>';
+    						orderNo = tradeNo;
+    						$("#orderNo").val(tradeNo);
+    }else if(id=2){
+    	var close_dd =  '<div class="pop-page-buy clearfix">'
+                            +'<div class="pop-top clearfix">'
+                                +'<div class="pop-tltle fl">'
+                                    +'<i class="icon-jg iconfont">&#xe60d;</i>'
+                                    +'<span>您确定要关闭该订单吗？关闭订单后，不能恢复。</span>'
+                                +'</div>'
+                                +'<a class="fr close-pay j_close" href="javascript:void(0)">x</a>'
+                            +'</div>'
+                            +'<div class="reason-rm">'
+                                +'请选择关闭订单的理由'
+                                +'<select class="reason-set"><option value="">请选择关闭理由</option>'
+    							+'<option value="sell缺货">缺货</option>'
+    							+'<option value="sell距离太远,运费高"> 距离太远,运费高</option>'
+    				            +'<option value="sell其他">其他</option></select>'
+    							+'<br/><span style="color:red" id="erro"></span>'
+                            +'</div>'
+                            +'<span class="rm-btn">确 定</span>'
+                        +'</div>';
+    					$("#orderNo").val(tradeNo);
+    		}			
+        popHtml(close_dd)
+    }
+
+    selectJr(changeObj)
+	var tt =jQuery("[value='$!{searchDto.status}']").html()
+	if(tt!=undefined){
+		var str = jQuery("[value='$!{searchDto.status}']").html();
+		jQuery("[value='$!{searchDto.status}']").remove();
+		jQuery("[value='100']").html(str);
+	}
+	##jQuery("[value='交易状态']").attr("value","$!{searchDto.status}").html(tt);
+	function changeObj(obj){
+		var param="";
+		var type = obj.attr("value");
+		if(type==0){
+			param="status=0";
+			window.location="#springUrl('/order/buy.htm?')"+param;
+		}
+		if(type==1){
+			param="status=1";
+			window.location="#springUrl('/order/buy.htm?')"+param;
+		}
+		if(type==2){
+			param="status=2";
+			window.location="#springUrl('/order/buy.htm?')"+param;
+		}
+		if(type==3){
+			param="status=3";
+			window.location="#springUrl('/order/buy.htm?')"+param;
+		}
+		if(type==66){
+			param="status=66&hasNoJudge=1";
+			window.location="#springUrl('/order/buy.htm?')"+param;
+		}
+		window.event.returnValue = false; ## ie6使用， 让window 跳转生效
+		ret=obj.attr("value");
+	}
+
+	function delOrder(orderNo){
+		if(confirm("确定要删除此订单数据吗？")){
+    		jQuery.ajax({
+    			url:"#springUrl('/orders/delOrdersByUser.htm')",
+    			data:{orderNo:orderNo},
+    			dataType:"json",
+    			success:function(data){
+    				if(data.success){
+    					window.location.reload();
+    				}
+    			}
+    		});
+		}
+	}
+
+	var ret="";
+	jQuery("body").delegate(".rm-btn","click",function(){
+    	if(ret==""){
+    		jQuery("#erro").html("请选择取消理由");
+    		return false;
+    	}else{
+    		jQuery("#erro").html("");
+    	}
+		reason = ret;
+		var da = jQuery("#form1").serialize();
+		jQuery.ajax({
+			url:"#springUrl('/orders/cancelOrderTwo.htm')",
+			type:'post',
+			datatype:'json',
+			data:{orderNo:orderNo,reason:reason},
+			cache:false,
+			success:function(data){
+				ajaxob=eval("("+data+")");
+				var b=ajaxob.success;
+				var c=ajaxob.data;
+				if(b){
+				window.location.reload();
+				}else{
+				alert(c);
+				}
+			}
+		});
+	});
+</script>

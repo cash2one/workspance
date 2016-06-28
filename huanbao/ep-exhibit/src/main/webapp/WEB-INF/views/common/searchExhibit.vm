@@ -1,0 +1,80 @@
+ <article class='borderlightgreen html5radius'>
+    <form method="post" action="#springUrl('/search.htm')">
+         <h3 class="et_bg paddingleft14 html5radius fontlightgreen">展会查询</h3>
+         <div class="et_section1_r_form marginleft16">
+             <span class="et_section1_r_l"><label for=""><em class="paddingright05em">关</em><em class="paddingright05em">键</em>字：</label></span>
+             <span class="et_section1_r_inpt">
+             <input type="text" class="bordergrey" id="name" name="name" value="$!{exhibitCondition.name}"/></span>
+         </div>     
+                      
+         <div class="et_section1_r_form marginleft16">
+              <span class="et_section1_r_l"><em class="paddingright2em">行</em>业：</span>
+              <span class="et_section1_r_selt1">
+                  <select class="bordergrey" name="industryCode" id="industryCode">
+                      <option value="">--请选择--</option>
+                      #foreach($list in $!{IndustryCategory})
+                          <option value="$!{list.code}" #if($!{list.code} == $!{exhibitCondition.industryCode}) selected  #end>$!{list.name}</option>
+                      #end
+                  </select>
+              </span>
+         </div>
+       
+         <div class="et_section1_r_form marginleft16">
+              <span class="et_section1_r_l"><label for=""><em class="paddingright05em">主</em><em class="paddingright05em">办</em>方：</label></span>
+              <span class="et_section1_r_inpt">
+                  <input id="organizers" type="text" class="bordergrey" name="organizers" value="$!{exhibitCondition.organizers}"/>
+              </span>
+         </div>
+      
+         <div class="et_section1_r_form marginleft16">
+              <span class="et_section1_r_l"><em class="paddingright2em">地</em>区：</span>
+              <span class="et_section1_r_selt2">
+                  <select class="bordergrey" id="provinceCode" name="provinceCode">
+                      <option value="">省份</option>
+                  </select>
+                  <select class="bordergrey" id="areaCode" name="areaCode">
+                      <option value="">城市</option>
+                  </select>
+              </span>
+          </div>
+         
+         <div class="et_section1_r_form marginleft16">
+             <span class="et_section1_r_l"><label for="">开始时间：</label></span>
+             <span class="et_section1_r_inpt">
+                 <input type="text" class="bordergrey" id="gmtStart" name="startTime" value="#printFragmentDate('yyyy-MM-dd',$!{exhibitCondition.gmtStart})"/>
+             </span>
+         </div>
+       
+         <div class="et_section1_r_form marginleft16">
+              <span class="et_section1_r_l"><label for="">结束时间：</label></span>
+              <span class="et_section1_r_inpt">
+                  <input type="text" class="bordergrey" id="gmtEnd" name="endTime" value="#printFragmentDate('yyyy-MM-dd',$!{exhibitCondition.gmtEnd})"/>
+              </span>
+         </div>     	
+         <div class="et_section1_r_btn">
+             <input type="submit" value="查看展会信息" class="txtcenter"/>
+         </div>
+    </form>
+	<div class="clear"></div>
+</article>
+<script>
+	//展会查询初始化
+	jQuery(document).ready(function(){
+		// 地区下拉框初始化
+		var _selectAreaCode=["#provinceCode","#areaCode"];
+		var selectAreaCode=new hb.util.Selector({
+			selects:_selectAreaCode,
+			url:"$!{address.exhibit}/getAreaCode.htm",
+			field:{code:"code",label:"name"}
+		});
+		selectAreaCode.init({
+			rootCode:"10011000",
+			#if($!{exhibitCondition.areaCode} != "")
+			initCode:"$!{exhibitCondition.areaCode}"
+			#else
+			initCode:"$!{exhibitCondition.provinceCode}"	
+			#end
+		});
+		
+	});
+</script>

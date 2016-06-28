@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="autoCaiji">
+	<typeAlias alias="autoCaiji" type="com.ast.ast1949.domain.autocaiji.AutoCaiji"/>
+	
+	<resultMap class="autoCaiji" id="autoCaijiResult">
+		<result property="id" column="id" />
+		<result property="title" column="title"/>
+		<result property="type" column="type" />
+		<result property="url" column="url" />
+		<result property="log" column="log" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	
+	<sql id="where_clause_time">
+		<isNotNull prepend="and" property="start">
+			gmt_target &gt;= #start#
+		</isNotNull>
+		<isNotNull prepend="and" property="end">
+			gmt_target &lt;= #end#
+		</isNotNull>
+	</sql>
+	<select id="queryPageRang" parameterClass="java.util.Map" resultMap="autoCaijiResult">
+		select id, title, type, url , log, gmt_target
+		from analysis_caiji_log
+		<dynamic prepend="where">
+<!--		<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>  
+ -->	
+			<include refid="where_clause_time"/>
+		</dynamic>
+		order by gmt_target
+		<include refid="common.pageLimit" />
+		
+		
+	</select>
+	<select id="queryListRang" parameterClass="java.util.Map" resultMap="autoCaijiResult">
+		select id, title, type, url ,log, gmt_target
+		from analysis_caiji_log
+		<dynamic prepend="where">
+<!--		<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>  
+ -->	
+			<include refid="where_clause_time"/>	
+		</dynamic>
+		order by gmt_target
+	</select>
+	<select id="queryCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from analysis_caiji_log
+		<dynamic prepend="where">
+<!--		<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>  
+ -->	
+			<include refid="where_clause_time"/>	
+		</dynamic>
+	</select>
+</sqlMap>

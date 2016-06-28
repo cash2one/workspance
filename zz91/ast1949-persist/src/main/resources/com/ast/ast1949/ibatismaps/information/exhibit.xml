@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="exhibit">
+	<typeAlias alias="exhibitDO" type="com.ast.ast1949.domain.information.ExhibitDO" />
+	<typeAlias alias="exhibitDTO" type="com.ast.ast1949.dto.information.ExhibitDTO" />
+	
+	<resultMap class="exhibitDO" id="exhibitWithOutContentResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="areaCode" column="area_code" />
+		<result property="plateCategoryCode" column="plate_category_code" />
+		<result property="exhibitCategoryCode" column="exhibit_category_code" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="photoCover" column="photo_cover" />
+	</resultMap>
+	<resultMap class="exhibitDO" id="exhibitResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="areaCode" column="area_code" />
+		<result property="plateCategoryCode" column="plate_category_code" />
+		<result property="exhibitCategoryCode" column="exhibit_category_code" />
+		<result property="content" column="content" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="photoCover" column="photo_cover" />
+	</resultMap>
+	
+	<resultMap class="exhibitDTO" id="exhibitDTOResult">
+		<result property="exhibitCategoryName" column="exhibitCategoryName" />
+		<result property="plateCategoryName" column="plateCategoryName" />
+		<result property="areaName" column="areaName" />
+		<result property="exhibitDO" resultMap="exhibit.exhibitResult" />
+	</resultMap>
+	
+	<resultMap class="exhibitDTO" id="exhibitDTOResultForEdit">
+		<result property="exhibitCategoryName" column="exhibitCategoryName" />
+		<result property="plateCategoryName" column="plateCategoryName" />
+		<result property="areaName" column="areaName" />
+		<result property="exhibitDO" resultMap="exhibit.exhibitResult" />
+	</resultMap>
+	
+	<sql id="commonExhibitDTO">
+		e.id,e.name,e.area_code,
+		e.start_time,e.end_time,
+		e.plate_category_code,e.exhibit_category_code,
+		c.label as exhibitCategoryName,
+		c1.label as plateCategoryName,
+		c2.label as areaName,
+		e.content,e.gmt_created,e.gmt_modified,e.photo_cover
+		FROM exhibit e
+	</sql>
+	
+	<sql id="fullColumn" >
+		id,name,area_code,start_time,end_time,plate_category_code,exhibit_category_code,content,gmt_created,gmt_modified,photo_cover
+	</sql>
+	
+	<sql id="commonExhibitRelation">
+		INNER JOIN category c ON e.exhibit_category_code=c.code
+		INNER JOIN category c1 ON e.plate_category_code=c1.code
+		left join category c2 on e.area_code=c2.code
+	</sql>
+	<sql id="commonExhibitCondition">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="exhibitDO.name">
+				e.name like
+				concat('%',#exhibitDO.name#,'%')
+		 </isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitDO.exhibitCategoryCode">
+				e.exhibit_category_code
+				like
+				concat(#exhibitDO.exhibitCategoryCode#,'%')
+		 </isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitDO.plateCategoryCode">
+				e.plate_category_code
+				=#exhibitDO.plateCategoryCode#
+		 </isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitDO.areaCode">
+				e.area_code like
+				concat(#exhibitDO.areaCode#,'%')
+		 </isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitDO.startTime">
+		   <![CDATA[e.start_time >=#exhibitDO.startTime# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitDO.endTime">
+		  <![CDATA[e.end_time <=#exhibitDO.endTime# ]]>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<!-- admin后台 -->
+	<select id="queryExhibitByCondition" parameterClass="exhibitDTO"
+		resultMap="exhibitDTOResult">
+		 SELECT
+		<include refid="commonExhibitDTO"/>
+        <include refid="commonExhibitRelation"/>
+		<include refid="commonExhibitCondition" />
+		<dynamic prepend="order by">
+		 e.start_time desc
+		</dynamic>
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryExhibitCountByCondition" parameterClass="exhibitDTO"
+		resultClass="Integer">
+		SELECT COUNT(*)
+		FROM exhibit e
+        <include refid="commonExhibitRelation"/>
+		<include refid="commonExhibitCondition" />
+	</select>
+	<select id="queryExhibitByCategoryCode" parameterClass="java.util.Map"
+		resultMap="exhibitResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM
+		exhibit
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="plateCategoryCode">
+				plate_category_code=#plateCategoryCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitCategoryCode">
+				exhibit_category_code=#exhibitCategoryCode#
+			</isNotEmpty>
+		</dynamic>
+		order by start_time desc
+		LIMIT 0, #limitSize#
+	</select>
+	
+	<!-- 
+	<select id="queryExhibitById" parameterClass="java.lang.Integer"
+		resultMap="exhibitDTOResult">
+		SELECT 
+		<include refid="commonExhibitDTO"/>
+		<include refid="commonExhibitRelation"/>
+		where e.id=#id:Integer#
+	</select>
+	 -->
+	<select id="selectExhibitById" parameterClass="java.lang.Integer"
+		resultMap="exhibitResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM
+		exhibit
+		where id=#id:Integer#
+	</select>
+	<insert id="insertExhibit" parameterClass="exhibitDO">
+		INSERT INTO exhibit
+		(
+		name,
+		area_code,
+		start_time,
+		end_time,
+		plate_category_code,
+		exhibit_category_code,
+		photo_cover,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#name#,
+		#areaCode#,
+		#startTime#,
+		#endTime#,
+		#plateCategoryCode#,
+		#exhibitCategoryCode#,
+		#photoCover#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id="updateExhibit" parameterClass="exhibitDO">
+		UPDATE exhibit
+		SET
+		id = #id# ,
+		name = #name# ,
+		area_code = #areaCode# ,
+		start_time = #startTime# ,
+		end_time = #endTime# ,
+		plate_category_code = #plateCategoryCode# ,
+		exhibit_category_code = #exhibitCategoryCode# ,
+		photo_cover = #photoCover# ,
+		gmt_modified = now()
+		WHERE
+		id =#id:Integer# 
+	</update>
+	<delete id="deleteExhibitById" parameterClass="java.lang.Integer">
+		delete from
+		exhibit
+		where id=#id:Integer#  
+	</delete>
+	
+	<sql id="dynamicQueryExhibit">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="exhibit.name">
+				e.name like concat('%',#exhibit.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibit.exhibitCategoryCode">
+				e.exhibit_category_code like concat(#exhibit.exhibitCategoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibit.plateCategoryCode">
+				e.plate_category_code=#exhibit.plateCategoryCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibit.areaCode">
+				e.area_code like concat(#exhibit.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibit.startTime">
+				e.start_time >=#exhibit.startTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibit.endTime">
+				#exhibit.endTime#>=e.end_time
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryExhibit" parameterClass="java.util.HashMap" resultMap="exhibitResult">
+		select 
+			e.id,e.name,e.area_code, e.start_time,e.end_time,
+			e.plate_category_code,e.exhibit_category_code,
+			e.content,e.gmt_created,e.gmt_modified,e.photo_cover
+		from exhibit e
+		<include refid="dynamicQueryExhibit"/>
+		order by e.start_time desc
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryExhibitCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer" >
+		select 
+			count(*)
+		from exhibit e
+		<include refid="dynamicQueryExhibit"/>
+	</select>
+	
+	<select id="queryExhibitByPlateCategory" parameterClass="java.util.HashMap" resultMap="exhibitResult">
+		select 
+			e.id,e.name,e.area_code, e.start_time,e.end_time,
+			e.plate_category_code,e.exhibit_category_code,
+			e.content,e.gmt_created,e.gmt_modified,e.photo_cover
+		from exhibit e
+		where e.plate_category_code=#plateCategory#
+		order by e.start_time desc
+		limit #max#
+	</select>
+	
+	<select id="queryContent" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select content from exhibit where id=#id# limit 1
+	</select>
+	
+	<update id="updateContent" parameterClass="java.util.HashMap">
+		update exhibit
+		set content=#content#,gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<select id="queryExhibitByAdmin" parameterClass="java.util.HashMap" resultMap="exhibitWithOutContentResult">
+		select 
+			e.id,e.name,e.area_code, e.start_time,e.end_time,
+			e.plate_category_code,e.exhibit_category_code,
+			e.gmt_created,e.gmt_modified,e.photo_cover
+		from exhibit e
+		<include refid="dynamicQueryExhibit"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryExhibitByAdminCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from exhibit e
+		<include refid="dynamicQueryExhibit"/>
+	</select>
+	
+	<select id="queryNewestExhibit" parameterClass="java.util.Map" resultMap="exhibitResult">
+		select id,name,area_code,start_time,end_time,plate_category_code,exhibit_category_code,content,gmt_created,gmt_modified,photo_cover
+		from exhibit 
+		<dynamic prepend="and">
+			<isNotEmpty prepend="and" property="plateCategoryCode">
+				plate_category_code = #plateCategoryCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="exhibitCategoryCode">
+				exhibit_category_code = #exhibitCategoryCode#
+			</isNotEmpty>
+		</dynamic>
+		order by start_time desc
+		limit #size#
+	</select>
+	<!--上一篇新闻-->
+	<select id ="queryUpNews" parameterClass="java.util.Map" resultMap="exhibitResult">
+	 select id,name,area_code,start_time,end_time,plate_category_code,exhibit_category_code,content,gmt_created,gmt_modified,photo_cover
+	 from exhibit
+	 where 	plate_category_code = #plateCategoryCode# and gmt_created > #gmtCreated#
+	 order by gmt_created  asc
+	 limit 1	
+	</select>
+	<!--下一篇新闻-->
+	<select id ="queryDownNews" parameterClass="java.util.Map" resultMap="exhibitResult">
+	 select id,name,area_code,start_time,end_time,plate_category_code,exhibit_category_code,content,gmt_created,gmt_modified,photo_cover
+	 from exhibit
+	 where 	plate_category_code = #plateCategoryCode# and #gmtCreated#>gmt_created
+	 order by gmt_created  desc
+	 limit 1	
+	</select>	
+</sqlMap>
+	

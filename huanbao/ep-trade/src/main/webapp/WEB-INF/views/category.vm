@@ -1,0 +1,83 @@
+#set($layout="/layout/default.vm")
+
+<div class="header hb_dhwzs">当前位置：<a href="$!{address.trade2}">产品中心</a> > <a href="$!{address.trade2}/$!{cn}">$!{categoryName}</a></div>
+
+<div class="header">
+        <div class="hb_classl floatleft">
+			
+            <div class="hb_class_ads">
+				<script type="text/javascript" src="http://gg.zz91.com/show?p=455&er"></script>
+        	</div>
+			
+			#cacheFragment("$!{address.fragment}/fragment/trade/queryIndexCategory.htm?category=$!{search.category}", "", "", "60")
+            <div class="hb_category_l">
+                    <div class="hb_category_ctl floatleft tdlshh"><h2><a href="#" >$!{parent.name}</a></h2></div>
+                    <div class="hb_category_ctr floatright">
+						#foreach($list1 in $!{supplyCategory})
+                            <div class="hb_category_ctrinfo">
+                                    <div class="hb_category_rlist">
+										<a href="#springUrl('/list')-$!{list1.categoryDomain.id}.htm" target="_blank">
+                                            $!{list1.categoryDomain.name}
+                                        </a>
+									</div>
+                                    <div>
+                                        <ul class="hb_category_rlistin">
+                                            #foreach($list2 in $!{list1.child})
+                                                <li>
+                                                    <a href="#springUrl('/list')-$!{list2.categoryDomain.id}.htm" title="$!{list2.categoryDomain.name}" target="_blank">#printTitle($!{list2.categoryDomain.name} 6 '')</a>
+                                                </li>
+                                            #end
+                                        </ul>
+                                        <div class="clear"></div>
+                                    </div>
+                            </div>
+						#end
+                    </div>
+                    <div class="clear"></div>
+            </div>
+			#end
+        </div>
+		
+        <div class="hb_classr floatright">
+			#cacheFragment("$!{address.fragment}/fragment/company/newestCompany.htm?size=10&tb","","","60")
+                <div class="hb_classr_infolist">
+                    <div class="hb_category_rt">最新商家</div>
+                    <div class="contents_lists">
+                         <ul>
+                            #foreach($newcompany in $!{list})
+								<li><a href="$!{address.esite}/index$!{newcompany.id}.htm" target="_blank" title="${newcompany.name}">#printTitle($!{newcompany.name}  9  "" )</a></li>
+                            #end
+                         </ul>
+                    </div>
+                </div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/company/recommendCompany.htm?categoryCode=10001010&size=30&tb","","","600")
+                <div class="hb_classr_infolist margintop8">
+                        <div class="hb_category_rt">推荐商家</div>
+                        <div class="contents_lists">
+                             <ul>
+								#foreach($l in $!{list})
+                    				<li><a href="http://$!{l.domainTwo}.huanbao.com" target="_blank" title="${l.name}">#printTitle($!{l.name} 9 "...")</a></li>
+                    			#end
+                             </ul>
+                        </div>
+                </div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?size=10&tb", "", "", "60")
+                <div class="hb_classr_infolist margintop8">
+                        <div class="hb_category_rt">最新供应</div>
+                        <div class="contents_lists">
+                             <ul>
+								#foreach($supply in $!{list})
+                					<li><a href="#springUrl('/supply/detail')$!{supply.id}.htm" target="_blank" title="$!{supply.title}"> 
+                							#printTitle($!{supply.title} 9 '')
+                						</a>
+                					</li>
+                				#end
+                             </ul>
+                        </div>
+                </div>
+			#end
+        </div>
+        <div class="clear"></div>
+</div>

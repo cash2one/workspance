@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" href="../../css/comm/win_blank.css" type="text/css">
+		<style>
+			.selectmain {
+				height: 250px;
+				overflow: auto;
+			}
+			.selectadd,.selectmy {
+				text-align: left;
+				line-height: 20px;
+				background-color: #e1e1e1;
+				padding: 10px;
+				font-size: 14px;
+				border-bottom: solid 1px #999;
+			}
+			.get-xinx {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				padding:10px
+				
+			}
+			.get-xinx span {
+				display: block;
+				text-align: center;
+				border: 1px solid #e1e1e1;
+				border-radius: 3px;
+				line-height: 35px;
+				margin-bottom: 10px;
+				position: relative;
+				float:left;
+				padding-right:30px;
+				padding-left:20px;
+				margin-right:10px;
+			}
+			.get-xinx span:last-child {
+				margin-bottom: 0;
+			}
+			.get-xinx {
+				margin-bottom: 15px;
+				min-height: 37px;
+			}
+			.get-xinx span i {
+				display: block;
+				height: 15px;
+				width: 15px;
+				position: absolute;
+				background-image: url(../../image/imageslist.png);
+				background-position: -87px -267px;
+				background-size: 320px;
+				right: 5px;
+				top: 50%;
+				margin-top: -7px;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div id="cloud" class="topbar  activebar">
+				<div tapmode="hover-category" class="category" style="position:absolute;top:0px;left:0px;z-index:20000" onclick="api.closeWin();">
+					<i></i>
+				</div>
+				<div class="select">
+					定制行情
+				</div>
+			</div>
+		</header>
+		<div class="selectmain">
+			<div class="selectmy">
+				我的定制
+			</div>
+			<div class="get-xinx">
+				<!--<span>杭州<i class="remove"></i></span>
+				<span>上海上海上海<i class="remove"></i></span>
+				<span>上海sf<i class="remove"></i></span>
+				<span>上海<i class="remove"></i></span>
+				<span>上海<i class="remove"></i></span>-->
+			</div>
+		</div>
+		<div class="selectadd">
+			添加定制
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../../script/common.js"></script>
+	<script type="text/javascript" src="../../script/laytpl.js"></script>
+	<script type="text/javascript" src="../../script/aui-alert.js" ></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var systemType = api.systemType;
+			if (systemType != "ios") {
+				$("header").css("padding-top", "0px")
+			}
+			var topHeight = $("header").height();
+			var oHeight = $(".selectmain").height();
+			var aHeight = $(".selectadd").height();
+			var pageParam = {
+				type : 'price',
+			};
+			api.openFrame({
+				name : 'order_price',
+				url : '../price/order-priceselect.html',
+				rect : {
+					x : 0,
+					y : topHeight + oHeight + aHeight,
+					w : 'auto',
+					h : 'auto'
+				},
+				pageParam : pageParam,
+				bounces : false,
+				bgColor : 'rgb(255,255,255,255)',
+				vScrollBarEnabled : true,
+				hScrollBarEnabled : true,
+				showProgress : true
+			});
+			//删除定制
+			$(".get-xinx").on("click", ".remove", function() {
+				var spanFt = $(this).parent()
+				spanFt.hide(300, function() {
+					spanFt.remove()
+				})
+			});
+		};
+		//添加定制
+		function intoOrder(name,code) {
+			// alert(JSON.stringify(city_info))
+			var order_span = '<span>' + name + '<i class="remove"></i></span>';
+			$(".get-xinx").append(order_span);
+		}
+	</script>
+</html>

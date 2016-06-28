@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneBlacklist">
+	<typeAlias alias="phoneBlacklistDO" type="com.ast.ast1949.domain.phone.PhoneBlacklist" />
+	<resultMap class="phoneBlacklistDO" id="phoneBlacklistResult">
+		<result property="id" column="id" />
+		<result property="phone" column="phone" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="phoneLogId" column="phone_log_id" />
+		<result property="checkPerson" column="check_person" />
+		<result property="blackReason" column="black_reason" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		phone,
+		gmt_created,
+		gmt_modified,
+		phone_log_id,
+		check_person,
+		black_reason
+	</sql>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="phoneBlacklistResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone
+		where id = #id#
+	</select>
+
+	<insert id="insert" parameterClass="phoneBlacklistDO">
+		INSERT INTO `phone_blacklist`
+		(
+		`phone`,
+		`gmt_created`,
+		`gmt_modified`,
+		`phone_log_id`,
+		`check_person`,
+		`black_reason`
+		)
+		VALUES
+		(
+		#phone#,
+		now(),
+		now(),
+		#phoneLogId#,
+		#checkPerson#,
+		#blackReason#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteById" parameterClass="java.lang.Integer">
+		delete from phone_blacklist
+		where id = #value#
+	</delete>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneBlacklist.phone">
+				phone like concat('%',#phoneBlacklist.phone#,'') 
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="query" parameterClass="java.util.Map" resultMap="phoneBlacklistResult">
+		select 
+		<include refid="defaultColumn"/>
+		from phone_blacklist
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_blacklist
+		<include refid="whereClause"/>
+	</select>
+	
+	<select id="isExistByPhone" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_blacklist
+		where phone = #phone#
+		and phone_log_id = #phoneLogId#
+	</select>
+</sqlMap>

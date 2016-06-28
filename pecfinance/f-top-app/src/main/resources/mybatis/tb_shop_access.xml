@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.zz91.top.app.persist.TbShopAccessMapper">
+
+    <insert id="insert" parameterType="tbShopAccess" useGeneratedKeys="true" keyProperty="id"> 
+    	insert into tb_shop_access(`sid`,`access_token`,`token_type`,`expires_in`,
+    	`refresh_token`,`re_expires_in`,`r1_expires_in`,`r2_expires_in`,
+    	`w1_expires_in`,`w2_expires_in`,`taobao_user_nick`,`taobao_user_id`,
+    	`sub_taobao_user_id`,`sub_taobao_user_nick`,`gmt_last_login`,
+    	`gmt_created`,`gmt_modified`,`company_id`)
+    	values (
+    		#{sid},#{accessToken},#{tokenType},#{expiresIn},#{refreshToken},
+    		#{reExpiresIn},#{r1ExpiresIn},#{r2ExpiresIn},#{w1ExpiresIn},
+    		#{w2ExpiresIn},#{taobaoUserNick},#{taobaoUserId},#{subTaobaoUserId},
+    		#{subTaobaoUserNick},now(),now(),now(),#{companyId}
+    	)
+    </insert>
+    
+    <select id="countAccess" parameterType="java.lang.String" resultType="java.lang.Integer" >
+    	select count(*) as c from tb_shop_access 
+    	where taobao_user_id=#{taobaoUserId}
+    </select>
+    
+    <update id="update" parameterType="tbShopAccess" >
+    	update tb_shop_access set
+    		`access_token`=#{accessToken},
+			`token_type`=#{tokenType},
+			`expires_in`=#{expiresIn},
+			`refresh_token`=#{refreshToken},
+			`re_expires_in`=#{reExpiresIn},
+			`r1_expires_in`=#{r1ExpiresIn},
+			`r2_expires_in`=#{r2ExpiresIn},
+			`w1_expires_in`=#{w1ExpiresIn},
+			`w2_expires_in`=#{w2ExpiresIn},
+			`gmt_last_login`=now(),
+			`gmt_modified`=now()
+		where `taobao_user_id` = #{taobaoUserId}
+    </update>
+    
+    <select id="queryAccess" resultType="tbShopAccess">
+    	select 
+    		`id`,`sid`,`access_token` as accessToken,
+    		`refresh_token` as refreshToken,`taobao_user_nick` taobaoUserNick,
+    		`taobao_user_id` as taobaoUserId
+    	from tb_shop_access
+    	where id>#{fromId}
+    	order by id
+    	limit #{limit}
+    </select>
+    
+</mapper>
+

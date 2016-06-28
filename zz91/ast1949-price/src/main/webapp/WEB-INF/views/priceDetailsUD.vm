@@ -1,0 +1,687 @@
+#set($layout="/layout/indexLayout.vm")
+<link rel="stylesheet" href="$!{address.img}/front/css/zz91.hack.css" />
+<link rel="stylesheet" href="$!{address.img}/front/css/zz91.comm.css" />
+
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/price/detail/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/price/detail/css/index.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/price/detail/css/style.css"/>
+
+<script src="$!{address.img}/lib/jquery/jquery-1.6.2.min.js"></script>
+<script src="$!{address.img}/front/js/topbar/jquery.topbar.js"></script>
+<script src="$!{address.img}/front/js/zz91.common.js"></script>
+<script type="text/javascript" src="$!{address.img}/front/js/zz91.scroll.js"></script>
+
+##<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/zz91/price/js/industry.js"></script>
+
+<script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js" type="text/javascript" charset="utf-8"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/nav/css/nav.css" />
+<script type="text/javascript" src="$!{address.img}/front/js/search/zz91.search.js"></script>
+
+#parse("/common/importJqueryUI.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<!-- for include js code -->
+<script type="text/javascript" >
+    var Context = new function(){
+    this.ROOT = "";
+    this.BBS_SERVER= "http://huzhu.zz91.com"
+    }
+    function timestamp(){
+    var timestamp = Date.parse(new Date());
+    return timestamp;
+    }
+</script>
+<!--google analysis-->
+<!--baidu analysis-->
+<!--51yes analysis-->
+<script>
+    (function(doc){
+    function hidenbigtoppic() {
+    var objbig = doc.getElementById("topadpic_big"),
+    objmini = doc.getElementById("topadpic_mini");
+    if (objbig)	{
+    objbig.style.display = "none";
+    if (objmini) {
+    objmini.style.display = "";
+    }		
+    } else {
+    objmini.style.display = "";
+    }
+    }
+    setTimeout(hidenbigtoppic, 6000);
+    })(document);
+</script>
+<div class="body">
+    <div class="top">
+        ##<div class="advertising">
+			##<script src="http://gg.zz91.com/show?p=478"></script>
+            ##<img src="$!{address.img}/zz91/price/detail/images/img_advertising.jpg" />
+        ##</div>
+        <div class="logo_search" id="header">
+            <div class="logo">
+				<a href="$!{address.www}" target="_blan">
+					<img src="$!{address.img}/zz91/price/detail/images/logo.jpg" />
+				</a>
+            </div>
+			<form id="searchForm" action="#" method="post" onsubmit="return zz91newsearch(this);">
+            <div class="search">
+				<div class="search_bar">
+                    <div class="nav1">
+                        <ul>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav0" onclick="javascript:search_qiehuan(0)">供应</a>
+                            </li>
+                            <li class="line">|</li>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav1" onclick="javascript:search_qiehuan(1)">求购</a>
+                            </li>
+                            <li class="line">|</li>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav2" onclick="javascript:search_qiehuan(2)">报价</a>
+                            </li>
+                            <li class="line">|</li>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav3" onclick="javascript:search_qiehuan(3)">公司</a>
+                            </li>
+                            <li class="line">|</li>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav4" onclick="javascript:search_qiehuan(4)">图片</a>
+                            </li>
+                            <li class="line">|</li>
+                            <li>
+                                <a href="javascript:void(0)" id="search_nav5" onclick="javascript:search_qiehuan(5)">现货</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box">
+                        <div class="left">
+							<input name="search" id="search_text" type="text" value="请输入搜索关键字" class="text" />
+                            
+                            <input type="hidden" value="1" name="TopSeaType"  id="TopSeaType" />
+                            <div class="search_suggest" id="gov_search_suggest">
+                                <ul>  
+                                </ul>
+                            </div>
+                            
+                        </div>
+                        <div class="right">
+                            <a href="#" class="search_a"></a>
+                        </div>
+                    </div>
+                </div>
+                <!--搜索-->
+                <div class="weibo">
+                    <span style="display:block;float:left">
+                        <wb:follow-button uid="2871825710" type="red_1" width="67" height="24" ></wb:follow-button>
+                    </span>
+                    <img src="$!{address.img}/zz91/price/detail/images/weibo_zsw.jpg" />
+                </div>
+            </div>
+			</form>
+        </div>
+		<div class="nav">
+			## 小导航链接
+			#parse("/common/menuLink.vm")
+			
+        </div>
+        <!--导航-->
+    </div>
+    <!--头部-->
+    <div style="clear:both"></div>
+    <div class="s_nav">
+        当前位置：
+		<a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a>
+        &gt;
+        <a href="#springUrl('/')">报价资讯中心</a>
+        &gt;
+        #if($!{code}=='metal')
+            <a href="http://jinshu.zz91.com/" target="_blank">废金属频道</a>
+        #elseif($!{code}=='plastic')
+            <a href="#springUrl('/channel/wastePlastic.htm')">废塑料频道</a>
+        #else
+            <a href="#springUrl('/channel/otherWaste.htm')">废纸废橡胶频道 </a>
+		#end
+		&gt;
+		<a href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm" target="_blank">$!{price.title}</a>
+    </div>
+    <div class="t_nav">
+        <table class="t_table">
+			## 静态导航链接
+			#parse("/price/vm_price/detailTopLink.vm")
+        </table>
+    </div>
+    <!--表格导航-->
+    <div style="clear:both"></div>
+    <div class="info_content">
+        <div class="top">
+            <div class="left">
+                上一篇: 
+				#if($!{onPrice.id} && $!{onPrice.id}>0)
+					<a title="$!{onPrice.title}" href="#springUrl('/priceDetails_')$!{onPrice.id}_$!{code}.htm">$!{onPrice.title}</a>
+				#end
+            </div>
+            <div class="right">
+                下一篇: 
+				#if($!{downPrice.id} && $!{downPrice.id}>0)
+					<a title="$!{downPrice.title}" href="#springUrl('/priceDetails_')$!{downPrice.id}_$!{code}.htm">$!{downPrice.title}</a>
+				#end
+            </div>
+        </div>
+        <div class="t1">
+            $!{price.title}
+        </div>
+        <div class="t2">
+            发布时间：$!date.format('yyyy-MM-dd',$!{price.gmtCreated})  
+			相关标签： 
+			#foreach($a in $!tag)
+				#if($velocityCount==1)
+					#set($keyTag=$!{a})
+				#end
+				<a href="$!{address.tags}/s/$!encodeTagsMap.get($!{a})/" target="_blank" title="${a}">${a}</a>
+			#end
+			<a target="_blank" href="$!{address.www}" title="$!{siteInfo.site_name}首页">$!{siteInfo.site_name} </a>
+			<span class="t3" onclick="lprint()">[打印]</span>
+			<script>
+				function lprint(){
+					window.print();
+				}
+			</script>
+        </div>
+        <div class="p1">
+            <div class="l_nav">
+				#if($!{code}=='metal')
+	                #parse("/price/vm_index/metalTableUD.vm")
+	            #elseif($!{code}=='plastic')
+	                #parse("/price/vm_index/plasticTableUD.vm")
+	            #elseif($!{code}=='paper')
+	                #parse("/price/vm_index/paperTableUD.vm")
+	            #end
+            </div>
+            <div class="p1_info">
+                <div class="title">
+                    <span class="t4">
+						#if($code=="metal")
+                        	#set($codeLabel="废金属")
+							#set($codeType="216_metal.htm")
+                        #elseif($code=="plastic")
+                        	#set($codeLabel="废塑料")
+							#set($codeType="217_plastic.htm")
+                        #else
+                        	#set($codeLabel="综合废料")
+							#set($codeType="220_paper.htm")
+                        #end
+						<a href="#springUrl('/priceList_t')$!{codeType}" target="_blank">$!{codeLabel}行情资讯导读</a>
+					</span>
+                    <span class="t5">
+                        <a href="#springUrl('/priceList_t')$!{codeType}" target="_blank">更多>></a>
+                    </span>
+                </div>
+                <ul id="topscroll1" style="width: 227px; margin: 0px auto; overflow: hidden; height: 70px;">
+					#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{priceTypeId}&11123", "", "", "")
+						#foreach($b in $!list)
+							<li class="t6">
+								<a href='#springUrl("/priceDetails")_$!{b.id}_$!{code}.htm' target='_blank' title='$!{b.title}'> #printTitle($!{b.title} 10 "") </a>
+								<span>#printFragmentDate("yyyy-MM-dd" $!{b.gmtOrder})</span>
+							</li>
+						#end
+					#end
+                </ul>
+            </div>
+        </div>
+        <script type="text/javascript">
+            window.onload=function(){
+            new Marquee(
+            "topscroll1",  //容器ID<br />
+            0,  //向上滚动(0向上 1向下 2向左 3向右)<br />
+            1,  //滚动的步长<br />
+            227,  //容器可视宽度<br />
+            70,  //容器可视高度<br />
+            20,  //定时器 数值越小，滚动的速度越快(1000=1秒,建议不小于20)<br />
+            1000,  //间歇停顿时间(0为不停顿,1000=1秒)<br />
+            1000,  //开始时的等待时间(0为不等待,1000=1秒)<br />
+            22//间歇滚动间距(可选)<br />
+            );
+            };
+        </script>
+        <div class="p3">
+			#if(!$!{sessionUser} && 3 >= ${daysInterval})
+    			<div class="weixin_login2">
+					<div class="weixin_login_click2">
+						<input type="button" class="weixin_login2_ok"/>
+##						<a href="http://china.zz91.com/login.htm"></a>
+	            ##            <a href="javascript:openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.trade}/submitCallback.htm&regfrom=10031003','注册/登录',750,400,0);"></a>
+					</div>
+					<!--end weixin_login_click2-->
+					<div class="weixin_login_qq2">
+						<a href="http://china.zz91.com/accessToQQLogin.htm" target="_blank"></a>
+					</div>
+					<!--end weixin_login_qq-->
+					<div class="clear"></div>
+				</div>
+				<!--end weixin_login2-->
+	    	#else
+    	        <div class="content">
+    	            #if($priceDataDOList.size()>0)
+    	            <div id="tbcontent" >
+    					<table border="1">
+    						<thead>
+    							<tr>
+    								<th>产品名称</th>
+    								<th>价格</th>
+    								<th>地区</th>
+    								<th>企业名称</th>
+    							</tr>
+    						</thead>
+    						<tbody>
+    	                    #foreach($list in $priceDataDOList)
+    							<tr>
+    								<td>
+    								#if($!{list.companyPriceId}=="0")
+                                        $!{list.productName}
+                                    #else
+                                        <a href="#springUrl('/companyprice/priceDetails.htm?id=')$!{list.companyPriceId}" title="$!{list.productName}">$!{list.productName}</a>
+                                    #end
+    								</td>
+    								<td>$!{list.quote}</td>
+    								<td>$!{list.area}</td>
+    								<td>
+    									#if($!{list.companyId}=="0")
+    	                                    $!{list.companyName}
+    	                                #else
+    	                                    <a href="$!{address.company}/compinfo.htm?id=$!{list.companyId}" title="$!{list.companyName}">$!{list.companyName}</a>
+    	                                #end
+    								</td>
+    							</tr>
+    							#end
+    						</tbody>
+    					</table>
+    	            </div>
+    				#end
+    	            <div class="aboutContent">
+    					$!{price.content}
+    				</div>
+    	        </div>
+			#end
+        </div>
+        <!--中间表格-->
+    </div>
+    <!--中间部分-->
+    <div class="p5">
+        免责声明:本信息仅供参考,ZZ91再生网力求准确可靠,但不作为您投资决策的唯一因素！   ZZ91再生网 - 报价中心
+    </div>
+    <div class="info_down">
+        <div class="p6">
+            <ul>
+                <li>
+                    <a href="#springUrl('/priceList_t')$!{categoryDO.id}_$!{code}.htm" target="_blank">$!{categoryDO.name}</a>
+                </li>
+                <li>
+                    <a href="$!{address.www}">返回首页</a>
+                </li>
+                <li>
+                    <a href="javascript:window.close()">关闭窗口</a>
+                </li>
+                <li>
+                    <a id="Js_collectBtn">收藏</a>
+                </li>
+                <li>
+                    <a onclick="lprint()">打印</a>
+                </li>
+            </ul>
+			<!-- Baidu Button BEGIN -->
+			<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+				<a style="background:url('')">分享到：</a>
+                <a class="bds_qzone"></a>
+                <a class="bds_tsina"></a>
+                <a class="bds_tqq"></a>
+                <a class="bds_renren"></a>
+                <span class="bds_more"></span>
+                <a class="shareCount"></a>
+                </div>
+                <script type="text/javascript" id="bdshare_js" data="type=tools" ></script>
+                <script type="text/javascript" id="bdshell_js"></script>
+                <script type="text/javascript">
+                document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?t=" + new Date().getHours();
+                </script>
+            <!-- Baidu Button END -->
+        </div>
+        <!--导航-->
+        <div style="clear:both"></div>
+        <div class="p7">
+			<script type="text/javascript">
+			/*报价最终页 960*22，创建于2013-5-24*/
+				var cpro_id = "u1290346";
+			</script>
+			<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+        </div>
+        <div style="clear:both"></div>
+        <div class="p8">
+            <div class="l4">
+                <ul>
+                    <li><a href="#springUrl('/priceSearch.htm?title=%E4%BB%B7%E6%A0%BC%E8%A1%8C%E6%83%85')" target="_blank">价格行情</a></li>
+					<li>|</li>
+					<li><a href="#springUrl('/priceList_t216_metal.htm')" target="_blank">行情综述</a></li>
+					<li>|</li>
+					<li><a href="#springUrl('/priceSearch.htm?title=%E5%B8%82%E5%9C%BA%E5%8A%A8%E6%80%81')" target="_blank">市场动态</a></li>
+					<li>|</li>
+					<li><a href="#springUrl('/priceSearch.htm?title=%E6%97%A5%E8%AF%84')" target="_blank">日评周评</a></li>
+					<li>|</li>
+					<li><a href="http://xiazai.zz91.com/" target="_blank">研究报告</a></li>
+					<li>|</li>
+					<li><a href="" target="_blank">热点专题</a></li>
+					<li>|</li>
+					<li><a href="http://zhanhui.zz91.com/" target="_blank">展会动态</a></li>
+					<li>|</li>
+					<li><a href="http://daohang.zz91.com/" target="_blank">更多</a></li>
+                </ul>
+                <div class="p9">
+                    <div class="l2">
+						#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001005&811" "" "" "")
+        					#foreach($fi in $list)
+            	        		##<div class="pic"><a href="$!{fi.link}" target="_blank"> <img src="$!{address.resource}$!{fi.pic}" width="115" height="100" title="${fi.title}" alt="${fi.title}"></a></div>
+            	        		##<div class="article"><a href="$!{fi.link}" target="_blank">${fi.title}</a></div>
+								<span class="i1">
+									<a href="$!{fi.link}" target="_blank">
+										<img src="$!{address.resource}$!{fi.pic}" width="115" height="100" title="${fi.title}" alt="${fi.title}" />
+									</a>
+								</span>
+								<span class="t7">
+									<a href="$!{fi.link}" target="_blank" title="${fi.title}">
+										#printTitle(${fi.title} 60 "")
+									</a>
+								</span>
+        					#end
+    					#end
+                    </div>
+                    <div class="r2">
+                        <span class="i2">
+							<a href="http://xiazai.zz91.com/list/3_1.html" title="废塑料周报免费下载" target="_blank">
+								##废塑料周报免费下载
+								<img src="$!{address.img}/zz91/price/detail/images/img9.jpg" />
+							</a>
+                        </span>
+                        <span class="i2">
+							<a href="http://xiazai.zz91.com/list/4_1.html" title="废金属周报免费下载" target="_blank">
+								<img src="$!{address.img}/zz91/price/detail/images/img9.jpg"/>
+								##废金属周报免费下载
+							</a>
+                        </span>
+                    </div>
+                </div>
+                <!--p9-->
+                <div style="clear:both"></div>
+                <div class="p10">
+                    <div class="l3">
+                        <span class="l3_li">
+                            【报价】#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001000&9z22" "" "" "")#foreach($bj in $list)<a href="$!{bj.link}" title="$!{bj.title}" target="_blank"> #printTitle($!{bj.title} 17 "") #end</a>#end
+                        </span>
+                        <br />
+                        <span class="l3_li">
+							【行情】#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001001&z110" "" "" "")#foreach($hq in $list)<a href="$!{hq.link}" title="$!{hq.title}" target="_blank"> #printTitle($!{hq.title} 17 "") #end</a>#end
+                        </span>
+                        <br />
+                        <span class="l3_li">
+							【周刊】#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001002&1z11" "" "" "")#foreach($zk in $list)<a href="$!{zk.link}" title="$!{zk.title}" target="_blank"> #printTitle($!{zk.title} 17 "") #end</a>#end
+                        </span>
+                        <br />
+                        <span class="l3_li">
+							【展会】#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001003&1z12" "" "" "")#foreach($zh in $list)<a href="$!{zh.link}" title="$!{zh.title}" target="_blank"> #printTitle($!{zh.title} 17 "") #end</a>#end
+                        </span>
+                        <br />
+                        <span class="l3_li">
+							【社区】#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001004&11z3" "" "" "")#foreach($sq in $list)<a href="$!{sq.link}" title="$!{sq.title}" target="_blank"> #printTitle($!{sq.title} 17 "") #end</a>#end
+                        </span>
+                    </div>
+                    <div class="r3">
+                        <span class="i3">
+							#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001006&14z" "" "" "")
+        						#foreach($se in $list)
+        							<a href="$!{se.link}" target="_blank"><img src="$!{address.resource}$!{se.pic}" width="102" height="90" alt="$!{se.title}" title="${se.title}" /></a>
+									<br />
+									<span class="zi6">$!{se.title}</span>
+        						#end
+    						#end
+                        </span>
+                        <span class="i3">
+							#cacheFragment("$!{address.fragment}/china/indexByCode.htm?size=1&code=100810001007&15z" "" "" "")
+								#foreach($th in $list)
+									<a href="$!{th.link}" target="_blank"><img src="$!{address.resource}$!{th.pic}" width="102" height="90" alt="$!{th.title}" title="${th.title}" /></a>
+									<br />
+									<span class="zi6">$!{th.title}</span>
+								#end
+							#end
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!--下面左半部-->
+            <div class="right">
+                <div class="title">
+                    <span class="zi7">$!{codeLabel}行情报价导读</span>
+					#if($code=="metal")
+						<a href="#springUrl('/priceList_t17_metal.htm')" class="zi8" target="_blank">更多>> </a>
+                    #elseif($code=="plastic")
+						<a href="#springUrl('/priceList_t11_plastic.htm')" class="zi8" target="_blank">更多>> </a>
+                    #else
+						<a href="#springUrl('/priceSearch.htm?title=%E5%BA%9F%E7%BA%B8%7C%E5%BA%9F%E6%A9%A1%E8%83%B6')" class="zi8" target="_blank">更多>> </a>
+                    #end
+					
+                </div>
+                <div class="content">
+					#set($listSize=$bjddList.size())
+					#foreach($obj in $bjddList)
+    					#if($velocityCount==1)	
+    						<span class="zi9"><a href="#springUrl('/priceDetails_')$!{obj.price.id}.htm" target="_blank">$!{obj.price.title}</a></span>
+    					#elseif($velocityCount==2)
+    						<ul>
+                                <li>
+                                    <a href="#springUrl('/priceDetails_')$!{obj.price.id}.htm"  target="_blank">$!{obj.price.title}</a>
+                                    <span class="zi10">$!date.format('yyyy-MM-dd',$!{obj.price.gmtOrder})</span>
+                                </li>
+    					#elseif($velocityCount==$listSize)
+    							<li>
+                                    <a href="#springUrl('/priceDetails_')$!{obj.price.id}.htm"  target="_blank">$!{obj.price.title}</a>
+                                    <span class="zi10">$!date.format('yyyy-MM-dd',$!{obj.price.gmtOrder})</span>
+                                </li>
+    						</ul>
+    					#else
+    						<li>
+    							<a href="#springUrl('/priceDetails_')$!{obj.price.id}.htm" target="_blank">$!{obj.price.title}</a>##class="zi11"
+    							<span class="zi10">$!date.format('yyyy-MM-dd',$!{obj.price.gmtOrder})</span>
+                            </li>
+						#end
+					#end
+                </div>
+            </div>
+            <!--下面右半部--> 
+        </div>
+        <div style="clear:both"></div>
+        <div class="p11">
+            <div class="p11_left">
+                <div class="title">
+                    省物流、看货近，一键寻找最匹配商机	
+                </div>
+                <div class="content">
+                    <ul>
+                        <li><a href="http://map.zz91.com/guangdong.htm" target="_blank" title="广东废料网">广东废料网</a></li>
+						<li><a href="http://map.zz91.com/zhejiang.htm" target="_blank" title="浙江废料网">浙江废料网</a></li>
+						<li><a href="http://map.zz91.com/shandong.htm" target="_blank" title="山东废料网">山东废料网</a></li>
+						<li><a href="http://map.zz91.com/jiangsu.htm" target="_blank" title="江苏废料网">江苏废料网</a></li>
+						<li><a href="http://map.zz91.com/beijing.htm" target="_blank" title="北京废料网">北京废料网</a></li>
+						<li><a href="http://map.zz91.com/shanghai.htm" target="_blank" title="上海废料网">上海废料网</a></li>
+						<li><a href="http://map.zz91.com/tianjin.htm" target="_blank" title="天津废料网">天津废料网</a></li>
+						<li><a href="http://map.zz91.com/hebei.htm" target="_blank" title="河北废料网">河北废料网</a></li>
+						<li><a href="http://map.zz91.com/henan.htm" target="_blank" title="河南废料网">河南废料网</a></li>
+						<li><a href="http://map.zz91.com/hunan.htm" target="_blank" title="湖南废料网">湖南废料网</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!--最下面栏目左半部-->
+            <div class="p11_center">
+                <div class="title">
+					#if($!keyTag)
+						<span class="zi7">$!keyTag供求信息</span>
+						#if($!{code}=='plastic')
+							<a title="$!keyTag供求信息" href="http://trade.zz91.com/offerlist--mc1002.htm" class="zi8" target="_blank">更多>></a>
+						#elseif($!{code}=='metal')
+							<a title="$!keyTag供求信息" href="http://trade.zz91.com/offerlist--mc1000.htm" class="zi8" target="_blank">更多>></a>
+						#else
+							<a title="$!keyTag供求信息" href="http://trade.zz91.com/offerlist--mc1004.htm" class="zi8" target="_blank">更多>></a>
+						#end
+            		#elseif($!{code}=='plastic')
+						<span class="zi7">最新废塑料供求信息</span>
+						<a title="最新废塑料供求信息" href="http://trade.zz91.com/offerlist--mc1002.htm" class="zi8" target="_blank">更多>></a>
+            		#elseif($!{code}=='metal')
+						<span class="zi7">最新废金属供求信息</span>
+						<a title="最新废金属供求信息" href="http://trade.zz91.com/offerlist--mc1000.htm" class="zi8" target="_blank">更多>></a>
+            		#else
+						<span class="zi7">最新废纸供求信息</span>
+						<a title="最新废纸供求信息" href="http://trade.zz91.com/offerlist--mc1004.htm" class="zi8" target="_blank">更多>></a>
+            		#end
+                    ##<span class="zi7">沪铜供求信息</span>
+                    ##<a href="#" class="zi8">更多>> </a>
+                </div>
+                <div class="content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{mainCode}&keywords=$!{theUrlKey}&typeCode=10331001&size=5&priced204z111", "", "", "")
+                			#foreach($products in $list)
+                            <li>
+                                <a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm" title="$!{products.title}">
+                					<em style="color:#c60">#printProductType($!{products.products.productsTypeCode} "" "")</em>#printTitle($!{products.products.title} 5 "")
+                				</a>
+                				<span class="zi10">#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+                            </li>
+                			#end
+                		#end
+                		#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{mainCode}&keywords=$!{theUrlKey}&typeCode=10331000&size=5&priced1z0412", "", "", "")
+                			#foreach($products in $list)
+                            <li>
+                                <a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm" title="$!{products.title}">
+                					<em style="color:#c60">#printProductType($!{products.products.productsTypeCode} "" "")</em>#printTitle($!{products.products.title} 5 "")
+                				</a>
+                				<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+                            </li>
+                			#end
+                		#end
+                    </ul>
+                </div>
+            </div>
+            <!--最下面栏目中间部分-->
+            <div class="p11_right">
+                <div class="title">
+                    <span class="p11_right_title1"	id="p11_right_title1">24小时热贴</span>
+                    <span class="p11_right_title1"	id="p11_right_title2">历史牛贴</span>
+                </div>
+                <div class="content">
+                    <ul id="p11_right_content1">
+						#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=5&311z4" "" "" "")
+    						#foreach($post in $!{postDailylist})
+								<li class="noticeli3">
+									<a href="$!{address.huzhu}/viewReply$!{post.id}.htm" target="_blank" title="$!{post.title}">
+										#printTitle($!{post.title} 22 "")
+									</a>
+								</li>
+    						#end
+        				#end
+                    </ul>
+                    <ul id="p11_right_content2" style="display:none">
+						#cacheFragment("$!{address.fragment}/huzhu/mostPost.htm?size=5&51z6" "" "" "")
+                            #foreach($all in $!{allBbsPostList})
+								<li class="noticeli3">
+									<a href="$!{address.huzhu}/viewReply$!{all.id}.htm" target="_blank" title="$!{all.title}">
+										#printTitle($!{all.title} 22 "")
+									</a>
+								</li>
+    						#end
+						#end
+                    </ul>
+                </div>
+            </div>
+            <!--最下面栏目右半部-->
+        </div>
+        <!--最下面栏目-->
+    </div>
+    <!--主体下部-->
+</div>
+<!--整体-->
+#if($!{sessionUser})
+	<input type="hidden" id="loginFlag" value="1" />
+#else
+	<input type="hidden" id="loginFlag" value="0" />
+#end
+<script >
+	jQuery(document).ready(function(){
+		$("#p11_right_title1").mouseover(function(){
+    		$(this).css("background","#3c7d09");
+    		$("#p11_right_content1").css("display","block");
+    		$("#p11_right_title2").css("background","none");
+    		$("#p11_right_content2").css("display","none");
+    		});
+    	$("#p11_right_title2").mouseover(function(){
+    		$(this).css("background","#3c7d09");
+    		$("#p11_right_content2").css("display","block");
+    		$("#p11_right_title1").css("background","none");
+    		$("#p11_right_content1").css("display","none");
+		});
+	##	jQuery("#loginBtn").button();
+	});
+	## 登录弹出框
+	var loginBox=new Asto.util.PopupBox({
+		url:"$!{address.front}/miniLogin.htm?regfrom=10031010",
+		destUrl:"$!{address.price}/submitCallback.htm",
+		title:"请先登录再查看报价信息",
+		callbackFn:function(success,data){
+			loginBox.close();
+			Asto.util.Message.show({
+				msg:"正在加载，请稍候！"
+			});
+			window.location.reload();
+		},
+		modal:true,
+		height:450,
+		width:631
+	});
+	
+	jQuery(".weixin_login2_ok").click(function(){
+		Asto.util.Callback.setSubmitCallback(function(success, data){
+			loginBox.close();
+			window.parent.location.reload();
+		});
+		loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031010&destUrl=$!{address.price}/submitCallback.htm");
+	});
+	
+	## 收藏按钮 点击弹出 收藏页面
+	var collectBox= new Asto.util.PopupBox({
+		url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{price.id}&favoriteTypeCode=10091004&title=$!{price.title}",
+		destUrl:"$!{address.price}/submitCallback.htm",
+		modal:true,
+		height:370,
+		width:660
+	});
+	
+	jQuery("#Js_collectBtn").click(function(){
+		var id = ${price.id};
+		var title = "$!{price.title}";
+		title = encodeURI(title);
+		if(jQuery("#loginFlag").val()==0){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				jQuery("#loginFlag").val(1);
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+				});
+				loginBox.close();
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091004&title="+title+"&destUrl=$!{address.price}/submitCallback.htm");
+			});
+			
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.price}/submitCallback.htm");
+		}else{
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				collectBox.close();
+				if(success=="false"){
+					jQuery("#loginFlag").val(0);
+				}
+			});
+			collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091004&title="+title+"&destUrl=$!{address.price}/submitCallback.htm");
+		}
+	});
+</script>

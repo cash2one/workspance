@@ -1,0 +1,137 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="site.master.cs" Inherits="site" %>
+<%@ Register Src="~/admin/menu.ascx" TagName="menu" TagPrefix="uc1" %>
+<%@ Import Namespace="BlogEngine.Core" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head runat="server" profile="http://gmpg.org/xfn/11">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="default.css" type="text/css" />
+    <link rel="shortcut icon" href="~/pics/blogyi.ico" type="image/x-icon"/>
+</head>
+<body>
+    <div class="outmain" id="divTopC">
+        <div id="divTop" class="main">
+            <h1 id="BlogTitle">
+                <a href="<%=Utils.AbsoluteWebRoot %>"><%=BlogSettings.Instance.Name %></a></h1>
+            <h2 id="BlogSubTitle">
+                <%=BlogSettings.Instance.Description %></h2>
+        </div>
+    </div>
+    <div class="outmain" id="divNavBarC">
+        <div id="divNavBar" class="main">
+            <ul>
+             <li class="NavRss"><a href="<%=Utils.FeedUrl %>" class="feed"><img src="<%=Utils.RelativeWebRoot %>themes/SummerGreen/images/icon_feed.gif" alt="Feed" /></a></li>
+             <li><a href="<%=Utils.AbsoluteWebRoot %>" rel="home"><%=Resources.labels.home %></a></li>
+              <li><a href="<%=Utils.AbsoluteWebRoot %>archive.aspx"><%=Resources.labels.archive %></a></li>
+              <li><a href="<%=Utils.AbsoluteWebRoot %>contact.aspx"><%=Resources.labels.contact %></a></li>
+	      <li><a href="<%=Utils.AbsoluteWebRoot %>page/e5a496e993be.aspx">外链</a></li>
+	      <li><a href="<%=Utils.AbsoluteWebRoot %>page/e8b584e6ba90.aspx">资源</a></li>
+              <li><a href="<%=Utils.AbsoluteWebRoot %>tag.aspx">标签</a></li>
+              <li><a href="<%=Utils.AbsoluteWebRoot %>search.aspx"><%=Resources.labels.search%></a></li>
+              <li><a runat="server" id="aLogin" /></li>
+            </ul><p align="right" style="font-size:14px; color:White;"><a style="font-size:14px; color:White; font-weight:bold;" href="javascript:void(filterByAPML())" class="apmlfilter"><%=Resources.labels.filterByApml %></a></p>
+        </div>
+    </div>
+    <div id="divMain" class="main">
+        <form runat="Server" class="body">
+            <div id="postMulti">
+                <blog:SearchOnSearch ID="SearchOnSearch1" runat="server" MaxResults="3" Headline="You searched for" Text="Here are some results for the search term on this website" /> 
+                <asp:ContentPlaceHolder ID="cphBody" runat="server" />
+            </div>
+           
+          <div id="divSidebar">
+            <div class="box">
+                <div class="box_in container">
+                    <div class="box_left">
+                        <blog:postcalendar ID="Postcalendar1" runat="Server" nextmonthtext=">>" daynameformat="FirstTwoLetters"
+                            firstdayofweek="monday" prevmonthtext="<<" cssclass="calendar" borderwidth="0"
+                            weekenddaystyle-cssclass="weekend" othermonthdaystyle-cssclass="other" useaccessibleheader="true"
+                            enableviewstate="false" />
+                    </div>
+<!--
+                    <div class="box_right"><br />
+                        <p class="author_title">
+                            SEO时间表</p>
+                        <p class="author_name">
+                            四条“A”</p>
+                        <img src="<%=Utils.RelativeWebRoot %>themes/SummerGreen/images/photo.gif" style="width: 90px;
+                            height: 100px;" />
+                        <p>
+                        </p>
+                    </div>-->
+                </div>
+            </div>
+	    <div class="divSidebar_left">
+                <div class="function" id="divPrevious">
+                    <h3>
+                        <%=Resources.labels.recentPosts %></h3>
+                    <div>
+                        <blog:RecentPosts ID="RecentPosts1" runat="server"/>
+                    </div>
+                </div>
+                <div class="function" id="divComments">
+                    <h3>
+                        <%=Resources.labels.recentComments %></h3>
+                    <div>
+                        <blog:RecentComments ID="RecentComments1" runat="Server" />
+                    </div>
+                </div>
+            </div>            
+            <div class="divSidebar_right">
+
+            <!-- Administration links -->
+            <% if (Page.User.Identity.IsAuthenticated)
+            { %>
+            <div class="function" id="divContorPanel">
+                <h3>
+                    控制面板</h3>
+                <uc1:menu ID="Menu1" runat="server" />
+            </div>                               
+            <%} %>
+            
+                <div class="function" id="divCatalog">
+                    <h3>
+                        文章分类</h3>
+                    <ul>
+                        <blog:CategoryList ID="Categorylist1" ShowRssIcon="true" runat="Server" />
+                    </ul>
+                </div>
+                <div class="function" id="divArchives">
+                    <h3>
+                        <%= Resources.labels.archive %></h3>
+                    <blog:MonthList ID="Monthlist1" runat="server" />
+                </div>
+                <div class="function" id="divStatistics">
+                    <h3>
+                        <%= Resources.labels.pages %></h3>
+                    <blog:PageList ID="Pagelist1" runat="Server" />
+                </div>
+                <div class="function" id="divFavorites">
+                    <h3>
+                        <%= Resources.labels.blogroll %></h3>
+                    <blog:blogroll ID="Blogroll1" runat="server" />
+                    <a href="<%=Utils.AbsoluteWebRoot %>opml.axd" style="display:block;text-align:right" title="下载 OPML 文件" ><asp:Image ID="Image1" runat="server" ImageUrl="~/pics/opml.png" AlternateText="OPML" /> 下载 OPML 文件</a>
+                </div>
+            </div>
+        </div>  
+        </form>
+        
+    </div>
+    <div class="outmain" id="divFoot">
+        <div class="main">
+            <ul>
+                <blog:tagcloud id="TagCloud1" runat="server" /></ul>
+        </div>
+    </div>
+    <div id="divBottom" class="outmain">
+        <div class="nonmain">
+            <p id="BlogCopyRight">
+                中国再生资源交易网 www.zz91.com</p>
+            <p id="BlogPowerBy">
+                Powered by BlogYi.NET ver:<%=BlogSettings.Instance.Version() %>.
+         </p>
+        </div>
+    </div>
+</body>
+</html>

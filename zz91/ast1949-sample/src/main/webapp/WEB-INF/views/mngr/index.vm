@@ -1,0 +1,436 @@
+#set($layout="/layout/defaultSample.vm")
+
+<style>
+    caption, th {
+    text-align: center;
+    }
+    a:hover {text-decoration:none} 
+</style>
+
+<script type="text/javascript">
+	function p_confirm() {
+	var msg = "是否确认发货？";  
+	if (confirm(msg)==true){  return true;  }else{   return false;  }  
+	}
+	
+	function undo()
+	{
+  		alert("提现功能开发中，敬请期待");
+	}
+	
+	function change(num) {
+		if ( num == '1') {
+			document.getElementById('div_1').style.display = '';
+			document.getElementById('div_0').style.display = 'none';
+
+			document.getElementById('div_1_li').className = 'current';
+			document.getElementById('div_0_li').className = '';
+			
+			document.getElementById('view_allorder').href = "#springUrl('/mngr/saleAll.htm')" ;
+		} else {
+			document.getElementById('div_0').style.display = '';
+			document.getElementById('div_1').style.display = 'none';
+
+			document.getElementById('div_0_li').className = 'current';
+			document.getElementById('div_1_li').className = '';			
+			
+			document.getElementById('view_allorder').href = "#springUrl('/mngr/orderAll.htm')" ;
+		}
+	}
+</script>
+
+<body class="gbody1000">
+	#parse("mngr/include/nav.vm")
+	#parse("mngr/include/head.vm")
+	#parse("mngr/include/lm.vm")
+
+	<div class="gMain gMainindex clearfix">
+		#parse("mngr/include/leftmenu.vm")
+		<div class="gContainer">
+			<div class="userInfo clearfix">
+				<div class="accountBox">
+					<h2>您好，尊敬的ZZ91再生网会员，<span>$!{sessionUser.account} </span>，欢迎您来到ZZ91再生网</h2>
+					<div class="accontInfo clearfix">
+						<div class="accountPic"><b class="gPimg gPimg75"><a href="javascript:;"> <img src="$!{address.img}/zz91/sample/score/images/head.jpg" /></a></b> </div>
+						<ul class="accoutList">
+                    		<!-- 
+                            <li class="clearfix">
+                              <label>账户级别：</label>
+                              <div class="accCell"> <strong class="level level1">1</strong><span>您还需消费1000.00元，即可提升至LV2等级，享受更多特权（<a href="#">积分规则</a>）</span> </div>
+                            </li>
+                    		-->
+							<li  class="clearfix">
+								<label>账户安全级别：</label>
+								<div class="accCell">
+									<div class="safeLevel ">
+									    #set($level=($safeLevel) / 2)
+									    #if(${level} && ${level}==3)
+										<div class="lHigh"><div class="sLBox"></div><strong> 高 </strong></div>
+										#elseif(${level} && ${level}==2)
+										<div class="lMedium"><div class="sLBox"></div><strong> 中 </strong></div>
+										#else
+										<div class=""><div class="sLBox"></div><strong> 低 </strong></div>
+										#end
+									</div>
+									
+									#if($!{idnt} && $!{idnt.state}=='01')
+                                    <div class="verifyBox"> <a href="#springUrl('/mngr/checkname.htm')" class="person"><i></i>已认证</a></div>
+									#else
+                                    <div class="verifyBox"> <a href="#springUrl('/mngr/checkname.htm')" class="noPerson"><i></i>未认证</a></div>
+									#end
+									
+									#if($!{myaccount.email} && $!{myaccount.email} !='')
+									<div class="verifyBox"> <a href="#springUrl('/mngr/checkemail.htm')" class="email"> <i></i> 已验证 </a> </div>
+									#else
+									<div class="verifyBox"> <a href="#springUrl('/mngr/checkemail.htm')" class="noEmail"> <i></i> 未验证 </a> </div>
+									#end
+									 
+									 #if($au && $au.mobile)
+									<div class="verifyBox"> <a href="#springUrl('/mngr/checkmobile.htm')" target="_blank" class="telNum "> <i></i> 已验证 </a> </div>
+									 #else
+									<div class="verifyBox"> <a href="#springUrl('/mngr/checkmobile.htm')" class="noTelNum "> <i></i> 未验证 </a> </div>
+									 #end
+								</div>
+							</li>
+                            <li  class="clearfix">
+                              <label>采购订单提醒：</label>
+                              <div class="accCell"> 
+	                              <span><a href="#springUrl('/mngr/orderAll.htm')?state=00">待付款（<em>$!{bc_00}</em>）</a></span>
+	                              <span><a href="#springUrl('/mngr/orderAll.htm')?state=11">待收货（<em>$!{bc_11}</em>）</a></span> 
+                              </div>
+                            </li>
+                            <li  class="clearfix">
+                              <label>供应订单提醒：</label>
+                              <div class="accCell"> 
+	                              <span><a href="#springUrl('/mngr/saleAll.htm')?state=03">待发货（<em>$!{sc_03}</em>）</a></span>
+	                              <span><a href="#springUrl('/mngr/saleAll.htm')?state=06">提醒发货（<em>$!{sc_06}</em>）</a></span>
+	                              <span><a href="#springUrl('/mngr/saleAll.htm')?state=11">等待买家收货（<em>$!{sc_11}</em>）</a></span>
+	                              <span><a href="#springUrl('/mngr/saleAll.htm')?state=14">退货中（<em>$!{sc_14}</em>）</a></span>
+                              </div>
+                            </li>
+							<li  class="clearfix">
+								<label>财务统计：</label>
+								<div class="accCell">
+									<span class="userFncItem">
+										<span>
+											账户余额【<em>$!{account.amount}元</em>】
+										</span>
+										##<a href="http://www.gongchang.cn/userfinance/index/deposit/">充值</a>
+										<a href="#" onclick="undo()">提现</a>
+									</span>
+									<span class="userFncItem"><span>我的积分【<em>#if($!{totalScore})$!{totalScore}#else 0 #end分</em>】<a href="#springUrl('/score.htm')">积分兑换</a></span></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="rewardIn"> </div>
+			</div>
+			<div class="userTrade">
+				<div class="gTab">
+					<ul class="clearfix">
+						<li class="current"  id="div_0_li"   onclick="change('0')"><a href="#">最新采购订单</a></li>
+						<li id="div_1_li"  onclick="change('1')"><a href="#" target="_self">最新供应订单</a></li>
+					</ul>
+					<a id="view_allorder"  href="#springUrl('/mngr/orderAll.htm')" class="viewMore">查看全部订单</a> </div> 
+				<div class="tableList">
+					<table class="tableListTit">
+						<tbody>
+							<tr>
+								<th class="w200">产品名称</th>
+								<th class="w100">单价（元/件）</th>
+								<th class="w50">数量（件）</th>
+								<th class="w50">总重量（千克）</th>
+								<th class="w100">订单状态</th>
+								<th class="w100">实付款（元）</th>
+								<th class="w100">交易操作</th>
+								<th>其他操作</th>
+							</tr>
+						</tbody>
+					</table>
+					<div style="display:block;"  id="div_0">
+						#foreach($obj in $cgPage.records)
+							<table class="tableListItem">
+								<tr>
+									<th colspan="8"><span>订单编号：${obj.orderid}</span><span>下单时间：$!date.format('yyyy-MM-dd HH:mm:ss',$!{obj.createTime})</span> 
+										<span>卖家：
+											#if($!{map.get($!{obj.sellerId})}=="10051000")
+												<a href="$!{address.company}/compinfo$!{obj.sellerId}.htm" target="_blank">$!{obj.sellerName}</a>
+											#else
+												<a href="http://$!{maps.get($!{obj.sellerId})}.zz91.com" target="_blank">$!{obj.sellerName}</a>
+											#end
+										</span>
+									</th>
+								</tr>
+								<tr>
+									<td class="w200">
+										<div class="infoListPrd clearfix">
+											<div class="infoListPrdImg">
+												<a href="#springUrl('/sale/')$!{obj.snapProductId}.htm" target="_blank"> <img src="$!{address.img3}/227x227/$!{obj.snapPic}&width=75&height=75" width="75" height="63" alt="${obj.snapTitle}"/></a>
+											</div>
+											<p><a target="_blank" href="#springUrl('/sale/')$!{obj.snapProductId}.htm" class="prdName">$!{obj.snapTitle}</a></p>
+										</div>
+									</td>
+									<td class="w100">
+										<div class="prdPrice">
+											#if(${obj.unitPrice})
+												${obj.unitPrice}元
+											#end
+										</div>
+									</td>
+									<td class="w50">$!{obj.number}</td>
+									<td class="w50">$!{obj.weight}</td>
+									<td class="w100">
+										<div class="tradeListState">
+											<p>
+												#if(${obj.state}=="00")          等待付款
+												#elseif(${obj.state}=="01")  付款中
+												#elseif(${obj.state}=="02")  等待买家提交订单
+												#elseif(${obj.state}=="03")  卖家待发货
+												#elseif(${obj.state}=="04")  付款失败
+												#elseif(${obj.state}=="06")  已提醒发货
+												#elseif(${obj.state}=="11")  等待收货
+												#elseif(${obj.state}=="12")  交易成功
+												#elseif(${obj.state}=="13")  交易成功
+												#elseif(${obj.state}=="14")  已申请退货
+												#elseif(${obj.state}=="15")  卖家同意退货
+												#elseif(${obj.state}=="16")  退货已发货
+												#elseif(${obj.state}=="17")  退货成功
+												#elseif(${obj.state}=="18")  卖家不同意退货
+												#elseif(${obj.state}=="20")  交易关闭
+												#else  其他
+												#end
+											</p>
+										</div>
+									</td>
+									<td class="w100">$!{obj.amount}
+										<br />(#if($!{obj.isCashDelivery}==1) 不#end含运费：$!{obj.trafficFee} 元)
+									</td>
+									<td class="w100">
+										#if(${obj.state}=="00" || ${obj.state}=="01") 
+											<a href="#springUrl('/mngr/payToChannel.htm')?orderid=$!{obj.orderid}"><b>付款</b></a>
+											<br/>
+											<a href="javascript:jIframe('cancelOrderBybuyerPro.htm?id=$!{obj.id} ', '取消订单','350','240');">取消订单</a>
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="02")
+											<a href="#springUrl('/mngr/createOrderPro.htm')?id=${obj.sampleId}&orderSeq=$!{obj.orderid}"><b>付款</b></a>
+											<br/>
+											<a href="javascript:jIframe('cancelOrderBybuyerPro.htm?id=$!{obj.id} ', '取消订单','350','240');">取消订单</a>
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+            							#elseif(${obj.state}=="03")
+											<a href="javascript:jIframe('remindSendGoods.htm?id=$!{obj.id} ', '提醒卖家发货','350','110');">提醒卖家发货</a>
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="04")
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="06")
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="11")
+											<a href="javascript:jIframe('confirmRecvGoods.htm?id=$!{obj.id} ', '确认收货','350','110');"><b>确认收货</b></a>
+											<br/>
+											<a href="javascript:jIframe('applayRefundPro.htm?id=$!{obj.id} ', '退货','350','340');">退货</a>
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="12")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="13")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="14")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="15")
+											<a href="javascript:jIframe('confirmRefundSendGoods.htm?id=$!{obj.id} ', '确认发货','350','110');"><b>退货发货</b></a>
+											<br/>
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="16")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="17")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="18")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#elseif(${obj.state}=="20")
+											<a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+										#else
+											其他
+                						#end
+									</td>
+									<td>
+										<a href="javascript:jIframe('bw.htm?flag=B&id=$!{obj.id} ', '编辑备忘','350','210');">
+											#if($!{obj.buyerMemo}=="4")           <font  color="#FFDC81" >备忘</font>
+                        						#elseif($!{obj.buyerMemo}=="3" )  <font  color="#A1DD98" >备忘</font>
+                        						#elseif($!{obj.buyerMemo}=="2" )  <font  color="#8AA9E1" >备忘</font>
+                        						#elseif($!{obj.buyerMemo}=="1" )  <font  color="#E18860" >备忘</font>
+                        						#else                                                     <font  color="#8AA9E1" >备忘</font>
+                    						#end
+										</a>
+										<br />
+										#if($!{obj.custominfoId} && $!{obj.custominfoId}!= "") 
+											<a href="javascript:jIframe('leavewords.htm?custominfoId=$!{obj.custominfoId}', '订单留言','500','300');" class="aBtn" >查看留言</a> 
+										#end
+									</td>
+								</tr>
+							</table>
+						#end
+					</div>
+					<div   style="display:none;"  id="div_1">
+						#foreach($obj in $gyPage.records)
+							<table class="tableListItem">
+								<tr>
+									<th colspan="8"><span>订单编号：${obj.orderid}</span><span>下单时间：$!date.format('yyyy-MM-dd HH:mm:ss',$!{obj.createTime})</span> 
+										<span>买家：
+											#if($!{map.get($!{obj.buyerId})}=="10051000")
+												<a href="$!{address.company}/compinfo$!{obj.buyerId}.htm" target="_blank">$!{obj.buyerName}</a>
+											#else
+												<a href="http://$!{maps.get($!{obj.buyerId})}.zz91.com" target="_blank">$!{obj.buyerName}</a>
+											#end
+										</span>
+									</th>
+								</tr>
+								<tr>
+									<td class="w200">
+										<div class="infoListPrd clearfix">
+											<div class="infoListPrdImg">
+												<a href="#springUrl('/sale/')$!{obj.snapProductId}.htm" target="_blank">  <img src="$!{address.img3}/227x227/$!{obj.snapPic}&width=75&height=75" alt="${obj.snapTitle}"/></a>
+											</div>
+											<p> <a target="_blank" href="#springUrl('/sale/')$!{obj.snapProductId}.htm" class="prdName">$!{obj.snapTitle}</a></p>
+										</div>
+									</td>
+									<td class="w100">
+										<div class="prdPrice">
+											#if(${obj.unitPrice})
+												${obj.unitPrice}元
+											#end
+										</div>
+									</td>
+									<td class="w50">$!{obj.number}</td>
+									<td class="w50">$!{obj.weight}</td>
+									<td class="w100">
+										<div class="tradeListState">
+											<p>
+												#if(${obj.state}=="00")          等待买家付款
+												#elseif(${obj.state}=="01")  买家付款中
+												#elseif(${obj.state}=="03")  待发货
+												#elseif(${obj.state}=="04")  买家付款失败
+                                                #elseif(${obj.state}=="06")  买家提醒发货
+                                                #elseif(${obj.state}=="11")  等待买家收货
+                                                #elseif(${obj.state}=="12")  交易成功
+                                                #elseif(${obj.state}=="13")  交易成功
+                                                #elseif(${obj.state}=="14")  买家已申请退货
+                                                #elseif(${obj.state}=="15")  同意退货
+                                                #elseif(${obj.state}=="16")  买家退货已发货
+                                                #elseif(${obj.state}=="17")  退货成功
+                                                #elseif(${obj.state}=="18")  卖家不同意退货
+                                                #elseif(${obj.state}=="20")  交易关闭
+                                                #else  其他
+            									#end
+											</p>
+										</div>
+									</td>
+									<td class="w100">$!{obj.amount}   <br />(#if($!{obj.isCashDelivery}==1) 不#end含运费：$!{obj.trafficFee} 元)</td>
+									<td class="w100">
+										#if(${obj.state}=="00" || ${obj.state}=="01")   <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="03")    <a href="javascript:jIframe('confirmSendGoods.htm?id=$!{obj.id} ', '确认发货','350','110');"    onclick="javascript:return p_confirm()"><b>确认发货</b></a>   <br/>   <a href="javascript:jIframe('closeOrderBysellerPro.htm?id=$!{obj.id} ', '关闭订单','350','240');">关闭订单</a> <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="04")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="06")  <a href="javascript:jIframe('confirmSendGoods.htm?id=$!{obj.id} ', '确认发货','350','110');"    onclick="javascript:return p_confirm()"><b>确认发货</b></a>   <br/>   <a href="javascript:jIframe('closeOrderBysellerPro.htm?id=$!{obj.id} ', '关闭订单','350','240');">关闭订单</a> <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="11")   <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="12")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="13")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="14")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>   <br/>   <a href="javascript:jIframe('applayRefundAuditPro.htm?id=$!{obj.id} ', '退货申请审核','300','350');"><b>退货申请审核</b></a>
+                                        #elseif(${obj.state}=="15")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="16")  <a href="javascript:jIframe('refundGoodRecvBysellerPro.htm?id=$!{obj.id} ', '退货收货','300','130');">退货收货</a> <br/>  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="17")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                         #elseif(${obj.state}=="18")  <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #elseif(${obj.state}=="20")   <a href="javascript:jIframe('orderDetail.htm?id=$!{obj.id} ', '订单详情','550','420');">订单详情</a>
+                                        #else  其他
+    									#end
+									</td>
+									<td>
+										<a href="javascript:jIframe('bw.htm?flag=S&id=$!{obj.id} ', '编辑备忘','350','210');">
+											#if($!{obj.sellerMemo}=="4")           <font  color="#FFDC81" >备忘</font>
+            								#elseif($!{obj.sellerMemo}=="3" )  <font  color="#A1DD98" >备忘</font>
+            								#elseif($!{obj.sellerMemo}=="2" )  <font  color="#8AA9E1" >备忘</font>
+            								#elseif($!{obj.sellerMemo}=="1" )  <font  color="#E18860" >备忘</font>
+            								#else                                                     <font  color="#8AA9E1" >备忘</font>
+            								#end
+										</a>
+										<br />
+										#if($!{obj.custominfoId} && $!{obj.custominfoId}!= "") 
+											<a href="javascript:jIframe('leavewords.htm?custominfoId=$!{obj.custominfoId}', '订单留言','500','300');" class="aBtn" >查看留言</a> 
+										#end
+									</td>
+								</tr>
+							</table>
+						#end
+					</div>
+				</div>
+			</div>
+			<div class="prdShow">
+				<div class="prdShowBox clearfix">
+					<div class="prdShowMod">
+						<div class="prdShowTit clearfix">
+							<h3>为您推荐</h3>
+						</div>
+						<div class="prdShowCon">
+							<div class="prdBox clearfix">
+								#foreach($obj in $gyypList)
+									<div class="prdItem">
+										<div class="prdShowImg">
+											<b class="gPimg gPimg150">
+												<a href=#if($!{obj.products.productsTypeCode}=="10331000")"#springUrl('/sale/')$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end target="_blank">
+													<img src="$!{address.img3}/227x227/$!{obj.coverPicUrl}"  alt="$!{obj.products.title}" />
+												</a>
+											</b>
+										</div>
+										<p class="prdShowName">
+											<a title="$!{obj.products.title}" target="_blank" href=#if($!{obj.products.productsTypeCode}=="10331000")"#springUrl('/sale/')$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end  >#printProductType($!{obj.products.productsTypeCode},"","")#printTitle($!{obj.products.title} 13 "")</a>
+										</p>
+										<div class="prdShowName">
+											拿样价:
+											#if($!{obj.sample.takePrice}&&$!{obj.sample.takePrice}>0)
+												$!{obj.sample.takePrice}
+												元/件
+											#else
+												免费
+											#end
+											<a href=#if($!{obj.products.productsTypeCode}=="10331000")"#springUrl('/sale/')$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end target="_blank">
+												<font style="color:red">申请拿样</font> 
+											</a>
+										</div>
+									</div>
+								#end
+							</div>
+						</div>
+					</div>
+					<div class="prdShowMod">
+						<div class="prdShowTit clearfix">
+							<h3></h3>
+							##<a href="#springUrl('/buy/order.htm')" target="_blank">查看更多</a>
+						</div>
+						<div class="prdShowCon">
+							<div class="prdBox clearfix">
+								#foreach($obj in $qgypList)	
+									<div class="prdItem">
+										<div class="prdShowImg">
+											<b class="gPimg gPimg150">
+												<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+													<img src="$!{address.img3}/252x217/$!{obj.coverPicUrl}" />
+												</a>
+											</b>
+										</div>
+										<p class="prdShowName">
+											<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">#printProductType($!{obj.products.productsTypeCode},"","")#printTitle($!{obj.products.title} 13 "")</a>
+										</p>
+										<div class="prdShowPrice"></div>
+									</div>
+								#end
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>

@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>$!{companyName}</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/api/api.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/cslog.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/profile.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/company.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/marketCompany/marketView.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+    	Ext.override(Ext.form.RadioGroup, {   
+            getValue: function(){   
+                var v;   
+                if (this.rendered) {   
+                    this.items.each(function(item){   
+                        if (!item.getValue())    
+                            return true;   
+                        v = item.getRawValue();   
+                        return false;   
+                    });   
+                }   
+                else {   
+                    for (var k in this.items) {   
+                        if (this.items[k].checked) {   
+                            v = this.items[k].inputValue;   
+                            break;   
+                        }   
+                    }   
+                }   
+                return v;   
+            },   
+            setValue: function(v){   
+                if (this.rendered)    
+                    this.items.each(function(item){   
+                        item.setValue(item.getRawValue() == v);   
+                    });   
+                else {   
+                    for (var k in this.items) {   
+                        this.items[k].checked = this.items[k].inputValue == v;   
+                    }   
+                }   
+            }   
+        });
+	
+		var svrHistoryGrid = new ast.ast1949.crm.open.Step1CompanySvrGrid({
+			title:"公司已开通的服务",
+			columnWidth:1,
+			height:150,
+			collapsible:true,
+			titleCollapse:true,
+			tbar:[{
+				iconCls:"edit",
+				text:"变更",
+				handler:function(){
+					var row=svrHistoryGrid.getSelectionModel().getSelected();
+					if(row!=null && typeof row !="undefined"){
+						if(row.get("status")=="2"){
+							ast.ast1949.utils.Msg("","服务未开通的情况下，请不要变更服务内容！");
+							return false;
+						}
+						
+						ast.ast1949.api.callback=function(){
+							ast.ast1949.api.closeWin();
+							svrHistoryGrid.getStore().reload();
+						}
+						ast.ast1949.api.showChangeWin(
+							row.get("crmServiceCode"),
+							{
+								"companyId":row.get("companyId"),
+								"companySvrId":row.get("id")
+							}
+						);
+					}else{
+						ast.ast1949.utils.Msg("","请选择要变更的服务！");
+					}
+				}
+			},{
+				iconCls:"unlock",
+				text:"开通",
+				handler:function(btn){
+					var row=svrHistoryGrid.getSelectionModel().getSelected();
+					if(row!=null && typeof row !="undefined"){
+						if(row.get("status")=="1"){
+							ast.ast1949.utils.Msg("","服务已开通，请不要重复开通！");
+							return false;
+						}
+						
+						ast.ast1949.api.callback=function(){
+							ast.ast1949.api.closeWin();
+							svrHistoryGrid.getStore().reload();
+						}
+						ast.ast1949.api.showOpenWin(
+							row.get("crmServiceCode"),
+							{"companyId":row.get("companyId"),"companySvrId":row.get("id")}
+						);
+					}else{
+						ast.ast1949.utils.Msg("","请选择要开通的服务！");
+					}
+				}
+			},{
+				iconCls:"lock",
+				text:"关闭",
+				handler:function(btn){
+					var row=svrHistoryGrid.getSelectionModel().getSelected();
+					if(row!=null && typeof row !="undefined"){
+						if(row.get("status")!="1"){
+							ast.ast1949.utils.Msg("","服务没有开通，不能关闭！");
+							return false;
+						}
+						
+						ast.ast1949.api.callback=function(){
+							ast.ast1949.api.closeWin();
+							svrHistoryGrid.getStore().reload();
+						}
+						ast.ast1949.api.showCloseWin(
+							row.get("crmServiceCode"),
+							{"companyId":row.get("companyId"),"companySvrId":row.get("id")}
+						);
+					}else{
+						ast.ast1949.utils.Msg("","请选择要关闭的服务！");
+					}
+				}
+			},{
+				iconCls:"add",
+				text:"申请",
+				handler:function(btn){
+					//admin1949.zz91.com/web/zz91/crm/open/apply.htm
+					window.open("http://192.168.2.2/admin1/compinfo/login.asp?com_id=$!{companyId}&mbflag=3");
+				}
+			},{
+				iconCls:"go",
+				text:"广告位",
+				handler:function(btn){
+					window.open("http://apps2.zz91.com/ads/ad/ad/index.htm?email=$!{email}");
+				}
+			},{
+				iconCls:"delete",
+				text:"扣服务费",
+				id:"FEELOG",
+				handler:function(btn){
+					var wind =  new Ext.Window({
+							title:"扣服务费服务",
+							width:600,
+							height:350,
+							modal:true,
+							autoScroll:true,
+							items:[
+									new Ext.form.FormPanel({
+										id:"feeForm",
+										frame:true,##控制Panel底色
+										layout:'column',
+										items: [{
+												xtype: 'hidden',  
+        　　									name: 'companyId',
+        										value:"$!{companyId}"
+										},{
+        										##title: 'Column 1',
+        										columnWidth: .5,
+        										layout:'form',
+        										defaultType: 'textfield',
+        										defaults:{
+														anchor:"99%",##控制输入框的长度
+												},
+        										items:[{
+        												xtype: 'datefield', ##时间类型
+        												fieldLabel: '上次服务开始时间', 
+														format:"Y-m-d",
+														name:"preStartTime"
+        										},{
+        												xtype: 'datefield', 
+        												fieldLabel: '本次服务开始时间', 
+        												allowBlank:false,
+														itemCls:"required",
+														format:"Y-m-d",
+														name:"startTime"
+        										},{
+        												xtype: 'datefield', 
+        												fieldLabel: '服务签订时间', 
+        												allowBlank:false,
+														itemCls:"required",
+														format:"Y-m-d",
+														name:"signedTime"
+        										}/**,{
+        												fieldLabel:'服务费(单位:元)'
+        										}**/]
+   									   	},{
+        										##title: 'Column 2',
+        										columnWidth: .5,
+        										layout:'form',
+        										defaultType: 'textfield',
+        										defaults:{
+														anchor:"99%"
+												},
+        										items:[{
+        												xtype: 'datefield', 
+        												fieldLabel: '上次服务结束时间', 
+														format:"Y-m-d",
+														name:"preEndTime"
+        										},{
+        												xtype: 'datefield', 
+        												fieldLabel: '本次服务结束时间', 
+        												allowBlank:false,
+														itemCls:"required",
+														format:"Y-m-d",
+														name:"endTime"
+        										},{
+        											　	fieldLabel: '类型',  
+        　　											name: 'category',  
+        　　											hiddenName: 'categoryType',  
+        　　											xtype: 'combo',  
+        　　											store: new Ext.data.SimpleStore({  
+            　　													fields: ['value','text'],  
+            　　													data: [['1','付费'],['0','赠送']]  
+    　　  											}),  
+        　　											emptyText: '请选择类型',  
+        　　											mode: 'local',  
+        　　											triggerAction: 'all',  
+        　　											valueField: 'value',  
+        　　											displayField: 'text' 
+        										}/**,{
+        												xtype:"combo",
+														triggerAction : "all",
+														forceSelection : true,
+														fieldLabel:"指定客服",
+														displayField : "name",
+														valueField : "account",
+														hiddenId:"csAccount",
+														hiddenName:"csAccount",
+														store:new Ext.data.JsonStore( {
+																fields : [ "account", "name" ],
+																autoLoad:true,
+																url : Context.ROOT + Context.PATH+ "/crm/open/applyQueryCs.htm"
+														}),
+														emptyText: '请选择指定客服',  
+        										}**/]
+    									},{
+    											columnWidth: 1,
+    											xtype: 'textarea', 
+    											height: 100,
+            									emptyText : '备注',
+            									name:"remark"
+    									}]
+									}),
+									new Ext.Button({
+										text:"扣服务费",
+										iconCls:"delete",
+										style:'margin:35px 0px 0px 200px',##上 右 下 左
+										handler:function(){
+											    var form = Ext.getCmp("feeForm");
+												form.getForm().submit({  
+            　　								url: Context.ROOT + Context.PATH+ '/crm/cs/reduceServiceFee.htm',
+            　　								success: function(f, action) {  
+            　　										if (action.result.success) {  
+            　　												svrHistoryGrid.getStore().reload();
+            　　												Ext.Msg.alert('消息', "&quot;"+action.result.data+"&quot;"); 
+            													wind.close(); 
+            　　										}else{
+            													Ext.Msg.alert('消息', "&quot;"+action.result.data+"&quot;");  
+            													wind.close();
+            											}
+            　　							   },  
+            　　							  failure: function() {  
+            　　										Ext.Msg.alert('错误', "&quot;提交有误，请核准信息后再提交&quot;");  
+            											wind.close();
+            　　							  }  
+            　　						});  
+									}
+									}),
+									new Ext.Button({
+										text:"关闭窗口",
+										iconCls:"item-exit",
+										style:'margin:-21px 0px 0px 300px',##上 右 下 左
+										handler:function(){
+												wind.close();
+										}
+									})
+							]
+					});
+					wind.show();
+				}
+			}]
+		});
+		
+		svrHistoryGrid.loadByCompany("$!{companyId}");
+	
+		var companyForm= new ast.ast1949.crm.company.CompanyForm({
+			title:"公司信息",
+			companyId:"$!{companyId}",
+			region:"center"
+		});
+		
+		companyForm.loadCompany();
+		
+		var accountContactGrid=new ast.ast1949.crm.company.CompanyAccountContactGrid({
+			title:"账户联系人",
+			region:"south",
+			split:true,
+			height:120
+		});
+		
+		var accountGrid= new ast.ast1949.crm.company.CompanyAccountGrid({
+			title:"公司账户信息",
+			region:"center",
+			listeners:{
+				"rowclick":function(g,rowIndex,e){
+					accountContactGrid.getStore().baseParams["account"]=g.getStore().getAt(rowIndex).get("account");
+					accountContactGrid.getStore().reload();
+				}
+			}
+		});
+		
+		accountGrid.loadAccount("$!{companyId}");
+		
+		var profileForm = new ast.ast1949.crm.profile.ProfileForm({
+			title:"附加信息",
+			columnWidth:1,
+			height:360,
+			collapsible:true,
+			titleCollapse:true
+			//region:"center"
+		});
+		
+		profileForm.loadProfile("$!{companyId}");
+		
+		var logGrid = new ast.ast1949.crm.cslog.LogGrid({
+			title:"小记情况",
+			id:"loggrid",
+			layout:"fit",
+			columnWidth:1,
+			height:600,
+			collapsible:true,
+			titleCollapse:true,
+			companyName:"$!{companyName}",
+			companyId:"$!{companyId}"
+			//region:"center"
+		});
+		
+		logGrid.loadLog("$!{companyId}");
+		
+		var logForm = new ast.ast1949.crm.cslog.LogForm({
+			title:"小记详情",
+			columnWidth:1,
+			height:720,
+			loggrid:"loggrid",
+			collapsible:true,
+			titleCollapse:true
+			//collapsed:true
+			//region:"east",
+			//width:400,
+			//split:true
+		});
+		
+		logForm.initLogForm("$!{companyId}","$!{star}","$!{crmCsProfile.crmCsProfile.numLogin}","$!{gmt_last_login}","$!{crmCsProfile.pv}");
+		
+		// 产业带 商户管理form
+		var marketGrid = new ast.ast1949.admin.products.market.marketGrid({
+			title:"商户市场管理",
+			id:"marketGrid",
+			layout:"fit",
+			columnWidth:1,
+			height:300,
+			collapsible:true,
+			titleCollapse:true
+		});
+		marketGrid.initFormByCid("$!{companyId}")
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[{
+				region:"center",
+				layout:"column",
+				autoScroll:true,
+				items:[svrHistoryGrid,{
+					columnWidth:1,
+					layout:"border",
+					height:450,
+					collapsible:true,
+					titleCollapse:true,
+					title:"公司基本信息及账户信息",
+					items:[companyForm,{
+						region:"east",
+						width:400,
+						layout:"border",
+						split:true,
+						items:[accountGrid,accountContactGrid]
+					}]
+				},profileForm,logForm,logGrid,marketGrid]
+			}]
+		});
+		
+		#if(${haveTrustLog})
+			var checktab = Ext.getCmp("haveTrustLog");
+			checktab.setIconClass("item-true");
+		#end
+		#if(!$!{feelog})
+				Ext.getCmp("FEELOG").hide();
+		#end
+		
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

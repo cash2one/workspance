@@ -1,0 +1,439 @@
+#set( $layout = "/layout/default.vm" )
+<script src="$!{address.img}/zz91/js/validationEngine_myrc.js"></script>
+<script src="$!{address.img}/zz91/js/jquery.validationEngine-zh_CN.js"></script>
+#if($!{checkInfo} && $!{checkInfo}=="1")
+<div class="container">	
+    ##完善提示#
+    <div class="container-info">
+    	<div class="container-info-title">
+        	重要提示：
+        </div>
+        <!--end container-info-title-->
+        <div class="container-info-content">
+        	您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+        </div>
+        <!--end container-info-content-->
+    </div>
+    <!--end ontainer-info-->
+	
+	<div class="container-float-post"></div>	
+</div>	
+	
+#else
+	
+	
+<div class="container">
+	<div class="process-bar">
+	    <ul class="clearfix">
+	        <li class="active">第一步：填写基本信息<s class="l"></s><s class="r"></s></li>
+	        <li>第二步：填写详细信息<s class="l"></s><s class="r"></s></li>
+	        <li>第三步：发布成功<s class="l"></s><s class="r"></s></li>
+	    </ul>
+	</div>
+	#if($!{result})
+	<form id="editForm" name="editForm" method="post" action="#springUrl('/myproducts/office_post2.htm')">
+		<input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode" value="$!{products.categoryProductsMainCode}">
+		<input id="mainCodeLabel" type="hidden" name="mainCodeLabel" value="$!{mainCodeLabel}">
+		<input id="mainCodeLabels" type="hidden" name="mainCodeLabels" value="$!{mainCodeLabels}">
+		<div class="alert alert-info mt"><strong>重要提示：</strong>请您务必确认您所发布的信息真实、合法、准确、及时、未侵犯他人合法权益，以免引起不必要的纠纷！</div>
+		<div class="control-group mt">
+			<label class="control-label">
+				<span class="red">*</span>信息类型：
+			</label>
+			<div class="controls">
+				<label class="radio"><input name="productsTypeCode" type="radio" class="js_type validate[required]" value="10331000" #if(!$!{products.productsTypeCode}||$!{products.productsTypeCode}=="10331000") checked #end> 供应信息</label>
+				<label class="radio"><input name="productsTypeCode" type="radio" class="js_type validate[required]" value="10331001" #if($!{products.productsTypeCode}=="10331001") checked #end> 求购信息</label>
+				<label class="radio"><input name="productsTypeCode" type="radio" class="js_type validate[required]" value="10331002" #if($!{products.productsTypeCode}=="10331002") checked #end> 合作信息</label>
+			</div>
+		</div>
+        <div class="control-group">
+			<label for="provideStatus" class="control-label">
+				<span class="red">*</span><span class="offerTimeText">供应</span>情况：
+			</label>
+			<div class="controls">
+				<label class="radio">
+					<input type="radio" name="provideStatus" id="provideStatus" checked value="0">
+					长期<span class="offerTimeText">#if($!{products.productsTypeCode}=="10331001")求购 #else供应#end</span>
+				</label>
+				<label class="radio">
+					<input type="radio" name="provideStatus" id="provideStatus" value="1">
+					不定期<span class="offerTimeText">#if($!{products.productsTypeCode}=="10331001")求购 #else供应#end</span>
+				</label>
+			</div>
+		</div>
+		<div class="control-group" style="margin-bottom:0px">
+			<label for="provideStatus" class="control-label">
+				<span class="red">*是否提供样品</span>：
+			</label>
+			<div class="controls">
+				<label class="radio">
+					<input type="radio" name="ypStatus" id="ypradio1" value="1" class="validate[required]" />##id="ypOpen" 
+					是
+				</label>
+				<label class="radio">
+					<input type="radio" name="ypStatus" id="ypradio2" value="0" class="validate[required]" /> ##id="ypClose"
+					否
+					<span style="color:grey">(样品网上交易目前只支持塑料再生颗粒)</span>
+				</label>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="tradeBox">
+    			<img src="http://img0.zz91.com/zz91/myrc/images/triangle.jpg" class="triangle" />
+      			<div class="tradeBox-list">
+    				<ul>
+        				<li style="font-weight:bold">为什么发布供求信息，选择提供样品？</li>
+            			<li>1、发布就有机会获得3000元ZZ91首页中部广告</li>
+            			<li>2、支持在线拿样，加速订单转化</li>
+            			<li>3、信息可在样品中心全方位展示，同时获得免费推广</li>
+            			<li>4、系统自动推送商机，为您快速匹配相关信息</li>
+            			<li>5、交易成功系统赠送积分，兑换超值奖励</li>
+        			</ul>
+     			</div>
+   			</div>
+		</div>
+		<style>
+		.tradeBox{margin-left:160px;padding-top:9px;position:relative}
+.triangle{position:absolute;left:20px;top:0}
+.tradeBox-list{width:284px;background-color:#ffefe0;border:1px solid #dedbd7;border-radius:5px;padding:10px}
+.tradeBox-list ul li{font-size:12px;line-height:20px;list-style:none}
+.tradeBox-list ul li:first-child{font-weight:bold}
+		</style>
+        <div class="control-group" id="categoryStyle">
+			<label for="keywords" class="control-label"><span class="red">*</span>供求所属类别：</label>
+			<div class="controls">
+				<div id="js_post0">
+					<script >
+						function enterClick(){
+                    		if (event.keyCode == 13){
+								jQuery("#searchCode").click();
+                        	}
+                    	}
+                    </script>
+					<input type="text" id="keywords" name="keywords" class="field" onkeydown="enterClick();" >
+					<input type="button" id="searchCode" value="搜索" class="btn">
+					<input type="button" id="js_usedType" value="您常使用的类别" class="btn">
+					<input type="button" id="js_clear" value="返回" class="btn">
+					<p id="js_tip" style="display:none;">
+						抱歉，没有找到与关键字“<span class="red" id="js_keyword"></span>”相关的类别。
+					</p>
+					<ul id="Js_result" class="hidden"></ul>
+				</div>
+				<div id="js_post1">
+					<p>
+						<select id='c1' name='c1'>
+	                        <option value="" >--请选择主类别--</option>
+	                    </select>
+                    </p>
+                    <select id='c2' name='c2' size='10'>
+                        <option value="" >--二级分类--</option>
+                    </select>
+                    <select id='c3' name='c3' size='10'>
+                        <option value="">--三级分类--</option>
+                    </select>
+                    <select id='c4' name='c4' size='10'>
+                        <option value="">--四级分类--</option>
+                    </select>
+            		<select id='ac' name='categoryProductsAssistCode' size='10'>
+                        <option value="">--请选择辅助类别--</option>
+                    </select>
+				</div>
+			</div>
+		</div>
+		<div class="control-group">
+			<label for="title" class="control-label"><span class="red">*</span>产品名称：</label>
+			<div class="controls">
+				#set($titleVal = "输入您要供应/求购的产品,如:废铜")
+				#if($!{products.title} && $!{products.title} != "")
+					#set($titleVal = $!{products.title})
+				#end
+				<input name="title" type="text" id="title" maxlength="96" class="field input-xlarge validate[required,maxSize[50]]" placeholder="$!{titleVal}" value="$!{title}" >##,ajax[ajaxTitle]
+                <span>建议在标题中包含产品名称和相应关键词,如:白色PP吨包袋颗粒</span>
+			</div>
+			<div class="controls">
+				<span id="tipId" style="display: none;" class="red">* 您发布的供求标题有重复,不利于您的产品排名,建议修改后再发布。</span>
+            </div>
+			<div class="controls">
+				<span id="tipId1" style="display: none;" class="red">此处不可空白。</span>
+            </div>	
+		</div>
+		<div class="form-actions">
+            <input type="button" id="submitBtn" class="btn btn-primary" value="下一步，填写详细信息" onclick="subm()"/> 
+			##<input type="submit" id="submitBtn" class="btn btn-primary" value="下一步，填写详细信息">
+		</div>
+	</form>
+	#else
+	<div class="alert alert-info mt"> 
+		<p><strong>重要提示：</strong>
+		作为本网站的普通会员，您每天只能发布<span class="red">10</span> 条供求信息，且所发布供求信息的联系方式除本站高级会员外均不可见。</p>
+		<p><a href="$!{address.www}/service/newzst/apply.asp" target="_blank"><b>升级成为再生通会员</b></a>，即可无限制发布供求信息，享受全方位展示、无限制查看联系方式等特权！</p>
+	</div>
+	<div class="form-actions">
+		<a href="$!{address.www}/service/newzst/apply.asp" class="btn btn-primary">现在就去申请</a>
+	</div>
+	#end
+</div>
+
+#end
+
+<script>
+jQuery(document).ready(function(){
+	if(jQuery.validationEngineLanguage == undefined || jQuery.validationEngineLanguage.allRules == undefined ){
+	}else {
+		jQuery.validationEngineLanguage.allRules["ajaxTitle"] = {
+		};
+	}
+});
+</script>
+<script>
+    jQuery(function(){
+    	##myrc.menu(2, 1);
+    	
+    	var category = new Asto.util.Selector({
+    		selects : ["#c1", "#c2", "#c3", "#c4"],
+    		assistSelects : ["#ac"],
+    		url : "#springUrl('/category/productChild.htm')",
+    		assistUrl : "#springUrl('/category/productAssist.htm')",
+    		changeCallback : function(c, idx) {
+    			jQuery("#categoryProductsMainCode").val(category.getValue());
+    			jQuery("#mainCodeLabels").val(category.getTexts());
+				if(jQuery("#ypradio1").attr("checked")){
+					validateMainCodeForYP();
+				}
+    		}
+    	});
+    	
+    	category.init({
+    		initAssistCode:"$!{products.categoryProductsAssistCode}",
+    		initCode:"$!{products.categoryProductsMainCode}",
+    		rootCode:""
+    	});
+
+    	jQuery("#editForm").validationEngine("attach");
+		
+    
+		var a = 0;
+		jQuery("#ypradio1").click(function(){
+			if(a==0){
+				a=1;
+			}else{
+				return false;
+			}
+			## 设置类别的方法
+			jQuery("#c1").hide();
+			jQuery("#c1").html("<option value=''>--请选择主类别--</option><option value='1001'>废塑料</option>");
+			jQuery("#c2").html("<option value=''>--二级分类</option><option value='10011004'>再生颗粒</option>");
+			jQuery("#c3").html("<option value=''>--三级分类--</option><option value='100110041000'>PP再生颗粒</option><option value='100110041001'>PE再生颗粒</option><option value='100110041002'>PVC再生颗粒</option><option value='100110041003'>ABS再生颗粒</option><option value='100110041004'>PS再生颗粒</option><option value='100110041005'>EVA再生颗粒</option><option value='100110041006'>PA再生颗粒</option><option value='100110041007'>PET再生颗粒</option><option value='100110041008'>PPO再生颗粒</option><option value='100110041009'>PC再生颗粒</option><option value='100110041010'>其他再生颗粒</option>");
+			jQuery("#c4").html("<option value=''>--四级分类--</option>");
+		});
+		
+		jQuery("#ypradio2").click(function(){
+			a = 0;
+			jQuery("#c1").html("<option value=''>--请选择主类别--</option><option value='1000'>废金属</option><option value='1001'>废塑料</option><option value='1005'>废电子电器</option><option value='1002'>废橡胶</option><option value='1011'>废轮胎</option><option value='1004'>废纸</option><option value='1010'>废皮革</option><option value='1003'>废纺织品</option><option value='1007'>废旧二手设备</option><option value='1006'>废玻璃</option><option value='1008'>其他废料</option><option value='1009'>服务</option>");
+			jQuery("#c1").show();
+			jQuery("#c2").validationEngine("showPrompt","","pass");
+			jQuery("#categoryStyle").removeClass("success");
+			jQuery("#categoryStyle").removeClass("error");
+    	});
+		
+		#if($isYP=="1")
+			jQuery("#ypradio1").click();
+		#end
+    });
+	
+    
+    ## 搜索类别发布 start
+    jQuery("input[name='raProCode']").live("change", function(){
+    	var cvalue = jQuery("#Js_result :input[name='raProCode'][checked]").val();
+    	var cname = jQuery("#Js_result :input[name='raProCode'][checked]").attr("cname");
+    	var lname = jQuery("#Js_result :input[name='raProCode'][checked]").attr("lname");
+    	jQuery("#title").val(cname);
+    	jQuery("#mainCodeLabel").val(cname);
+    	jQuery("#mainCodeLabels").val(lname);
+    	jQuery("#categoryProductsMainCode").val(cvalue);
+    });
+    ## end
+    
+    var typeArr = {"10331000":"供应", "10331001":"求购", "10331002":"合作信息"};
+    
+    jQuery("#searchCode").click(function(){
+    	jQuery("#Js_result").empty();
+    	var key = jQuery("#keywords").val();
+    	key = encodeURI(key);
+		if(key==null||key==""||key==undefined){
+			return false;
+		}
+    	jQuery.ajax({
+    		url : "#springUrl('/myproducts/searchCategoryByKeywordsForPost.htm?keywords=')"+key,
+    		type : "get",
+    		cache : false,
+    		dataType : "json", 
+    		success : function(data, textStatus){
+    			jQuery("#Js_result").show();
+    			if(!data){
+    				jQuery("#js_keyword").empty().append(jQuery("#keywords").val());
+    				jQuery("#js_tip").show();
+    				jQuery("#js_post1").show();
+    			} else {
+    				## 选择类别发布 隐藏
+    				jQuery("#js_tip").hide();
+    				jQuery("#js_post1").hide();
+    				$(data).each(function(){
+    					var code = this["code"],
+    						name = this["name"],
+    						tName = this["tName"],
+    						fName = this["fName"],
+    						sName = this["sName"],
+    						nameStr = name; 
+						if(jQuery("#ypradio1").attr("checked")){
+							var minCode = "";
+							if(code.length>=8){
+								minCode = code.substring(0,8)
+							}
+							if("10011004"!=minCode){
+								return true;
+							}
+						}
+    					nameStr = tName ? tName + " > " + nameStr : nameStr;
+    					nameStr = sName ? sName + " > " + nameStr : nameStr;
+    					nameStr = fName ? fName + " > " + nameStr : nameStr;
+    					jQuery("#Js_result").append("<li><label class='radio'><input type='radio' value='" + code + "' name='raProCode' cname='" + name + "' lname='" + nameStr + "'> " + nameStr + "</label></li>")
+    				});
+    			}
+    		},
+    		error : function(e) {
+    			alert("搜索失败!");
+    		}
+    	});
+    });
+    
+    jQuery("#js_usedType").click(function(){
+    	jQuery("#js_tip").hide();
+    	jQuery("#keywords").val("");
+    	jQuery("#Js_result").empty();
+    	jQuery.ajax({
+    		url : "#springUrl('/myproducts/searchCategoryByHistoryForPost.htm')",
+    		type : "get",
+    		cache : false,
+    		dataType : "json", 
+    		success : function(data, textStatus){
+    			jQuery("#Js_result").show();
+    			if(!data){
+    				//没有常用类别
+    			} else {
+    				## 选择类别发布 隐藏
+    				jQuery("#js_post1").hide();
+    				$(data).each(function(){
+    					var code = this["code"],
+    						name = this["name"],
+    						tName = this["tName"],
+    						fName = this["fName"],
+    						sName = this["sName"],
+    						nameStr = name; 
+						if(jQuery("#ypradio1").attr("checked")){
+							var minCode = "";
+							if(code.length>=8){
+								minCode = code.substring(0,8)
+							}
+    						if("10011004"!=minCode){
+    							return true;
+    						}
+						}
+    					nameStr = tName ? tName + " > " + nameStr : nameStr;
+    					nameStr = sName ? sName + " > " + nameStr : nameStr;
+    					nameStr = fName ? fName + " > " + nameStr : nameStr;
+    					
+    					jQuery("#Js_result").append("<li><label class='radio'><input type='radio' value='" + code + "' name='raProCode' cname='" + name + "' lname='" + nameStr + "'> " + nameStr + "</label></li>")
+    				});
+    			}
+    		},
+    		error : function(e) {
+    			alert("搜索失败!");
+    		}
+    	});
+    });
+    jQuery("#js_clear").click(function(){
+    	jQuery("#Js_result").empty();
+    	jQuery("#keywords").val("");
+    	jQuery("#js_post1").show();
+    	jQuery("#js_tip").hide();
+    });
+    
+    ## 供求情况 选择长期 还是不定期
+    jQuery(".js_type").click(function(){
+    	var typeCode = jQuery(this).val();
+    	var str = "";
+    	if (typeCode == 10331000){
+    		str = "供应";
+    	} else if (typeCode == 10331001){
+    		str = "求购";
+    	} else{
+    		str = "合作";
+    	}
+    	jQuery(".offerTimeText").text(str);
+    });
+    
+##    function filltitle(cid){
+##    	if(jQuery("#" + cid).val()){
+##    		jQuery("#title").val(jQuery("#"+cid+" :selected").text());
+##    		jQuery("#mainCodeLabel").val(jQuery("#" + cid + " :selected").text());
+##    	}
+##    }
+	
+	function validateMainCodeForYP(){
+		var str = jQuery("#categoryProductsMainCode").val();
+		if(str.length>8){
+			str = str.substring(0,8);
+		}else{
+			return false;
+		}
+		if(str =="10011004"){
+			jQuery("#c2").validationEngine("showPrompt","* 类别符合样品发布","pass");
+		}
+	}
+	function subm(){
+			if(jQuery("#ypradio1").validationEngine("validate")&&jQuery("#ypradio2").validationEngine("validate")){
+
+        		jQuery("#ypradio1").validationEngine("showPrompt","* 请选择是否提供样品","error");
+				return false;
+			}
+			if(jQuery("#ypradio1").attr("checked")){
+				var str = jQuery("#categoryProductsMainCode").val();
+				if(str.length>=8){
+					str = str.substring(0,8);
+				}else{
+					jQuery("#c2").validationEngine("showPrompt","* 不是再生颗粒类别的无法继续发布样品信息","error");
+					return false;
+				}
+				if(str !="10011004"){
+					jQuery("#c2").validationEngine("showPrompt","* 不是再生颗粒类别的无法继续发布样品信息","error");
+					return false;
+				}
+			}
+			if(jQuery("#title").val()==""){
+				jQuery("#tipId1").show();
+				return false;
+			}
+			jQuery.ajax({
+    			url : "#springUrl('/myproducts/hasTitle.htm')",
+    			type: "get",
+    			cache : false,
+    			dataType : "json", 
+				data: {"title": jQuery("#title").val()},
+    			success : function(data){
+					if(data.success){
+						jQuery("#editForm").submit();
+					}else{
+						jQuery("#tipId").show();
+					}
+    			}
+    		})
+
+	}
+	
+</script>
+
+
+<!-- custom ajax validator -->
+
+

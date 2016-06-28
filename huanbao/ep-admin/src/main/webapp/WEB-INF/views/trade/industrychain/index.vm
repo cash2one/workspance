@@ -1,0 +1,49 @@
+<script type="text/javascript" src="#springUrl('/app/trade/industrychain/industrychain.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/syscommon/areaTree.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<input type="hidden" id="compId" value="$!{cid}"/>
+<script type="text/javascript">
+Ext.onReady(function(){
+
+	#if($!{cid} && $!{cid}>0)
+    	var grid=new com.zz91.ep.industrychain.compChainGrid({
+    		id:"compChainGrid",
+    		region:"center"
+    	});
+    	
+    	grid.loadCompId($!{cid});
+		
+		new Ext.Viewport({
+    		layout:"border",
+    		items:[grid]
+    	});
+	#else
+	
+    	var tree=new com.zz91.ep.common.area.Tree({
+    		region:"west",
+    		width:230
+    	});
+		
+		var grid=new com.zz91.ep.industrychain.allChainGrid({
+    		id:"chainMainGrid",
+    		region:"center"
+    	});
+		
+    	new Ext.Viewport({
+    		layout:"border",
+    		items:[tree,grid]
+    	});
+	#end
+
+	
+	tree.on('click',function(node,event){
+		var code = node.attributes['data'];
+		if(code!=""){
+			grid.getStore().baseParams["areaCode"]=code;
+		}else{
+			grid.getStore().baseParams["areaCode"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+})
+</script>

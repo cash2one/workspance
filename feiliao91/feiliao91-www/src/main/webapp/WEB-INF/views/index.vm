@@ -1,0 +1,923 @@
+#set($layout="/layout/wwwLayout.vm")
+<style type="text/css">
+	*{
+        margin: 0;
+        padding: 0
+    }
+    .swiper{
+		left:0;
+        width: 100%;
+		height:360px;
+        overflow: hidden;
+        position: relative;
+    }
+	.swiper li a {
+		display:block;
+		height:360px;
+	}
+    .swiper .swiper-ul:after{
+        content: "020"; 
+        display: block; 
+        height: 0; 
+        clear: both; 
+        visibility: hidden;  
+    }
+    .swiper-ul {
+      /* 触发 hasLayout */ 
+	  left:0;
+      zoom: 1; 
+      position: absolute;
+      top: 0;
+    }
+    .swiper-ul li{
+        float: left;
+        list-style: none;
+        width: 100%
+    }
+    .swiper .slide-num{
+		left:0;
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        width: 100%;
+        height: 20px;
+    }
+    .swiper .slide-num span{
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #fff;
+        margin: 0 5px;
+        cursor: pointer;
+        overflow: hidden;
+    }
+    .swiper .slide-num .nowSpan{
+        background-color: blue
+    }
+</style>
+
+#parse("/common/search.vm")
+
+<div class="band band2">
+	<div class="bandlog">
+		<div class="swiper">
+            <ul class="swiper-ul">
+				<script type="text/javascript" src="http://gg.zz91.com/show?p=746"></script>
+##                <li style="background:url() no-repeat center;" class="swiper-slide"><a href="" target="_blank"></a></li>
+ ##               <li style="background:url() no-repeat center;" class="swiper-slide"></li>
+  ##              <li style="background:url() no-repeat center;" class="swiper-slide"></li>
+            </ul>
+            <div class="slide-num"></div>
+        </div>
+		<div class="swiper-container">
+			<div class="swiper-wrapper">
+				
+##				<div class="swiper-slide" style="background:url('http://img1.zz91.com/ads/1454256000000/d5abcafa-ab30-45c5-b163-491582744cc7.jpg') no-repeat center;"><a href="" target="_blank"></a></div>
+##				<div class="swiper-slide"></div>
+##				<div class="swiper-slide"></div>
+##				<div class="swiper-slide"></div>
+##				<div class="swiper-slide"></div>
+			</div>
+			<!-- Add Pagination -->
+			<div class="swiper-pagination"></div>
+			<!-- Add Arrows -->
+			<div class="swiper-button-next"></div>
+			<div class="swiper-button-prev"></div>
+		</div>
+	</div>
+	<div class="band-main">
+		<div class="band-right">
+			<p class="welcome-p">您好,欢迎来到淘再生网!</p>
+			#if(!$!{sessionUser})
+			<div class="index-usedo">
+				<a href="#springUrl('/login.htm')">
+					<i class="ys"></i>
+					登录
+				</a>
+				<a href="#springUrl('/register/step1.htm')">
+					<i class="ys2"></i>
+					注册
+				</a>
+			</div>
+			#end
+			<form id="pubCGForm">
+				<div class="sech-fast sub1">
+					<h3 class="sech-title">免费快速找货</h3>
+					<textarea placeholder="写下您的需求，包括产品、数量、价格颜色、用途、级别等" class="sech-into" id="cg_detail"></textarea>
+				</div>
+				<div class='sech-fast sub2' style="display:none">
+					<h3 class='sech-title'>发布成功！</h3>
+				</div>
+				<div class="helpyou clearfix sub1">
+					<input placeholder="联系方式" class="helpyou-ipt fl" id="cg_mobile"/>
+					<span class="fr hlep-btn pubBtn">
+						<i class="icon-big iconfont">&#xe603;</i>帮你找
+					</span>
+				</div>
+			</form>
+			<script type="text/javascript">
+				function reToSub(){
+					jQuery(".sub1").toggle();
+					jQuery(".sub2").toggle();
+				}
+				
+				jQuery(".pubBtn").click(function(){
+					var cg_detail = jQuery("#cg_detail").val();
+					var cg_mobile = jQuery("#cg_mobile").val();
+					if(cg_detail.length==0){
+						return false;
+					}
+					if(cg_mobile.length==0){
+						return false;
+					}
+					##http://test_apps.zz91.com/trust/
+					##http://caigou.zz91.com
+					var a = jQuery.getScript("http://caigou.zz91.com/doEntrustForTZS.htm?mobile="+cg_mobile+"&detail="+encodeURI(cg_detail),function(data,response,status){
+						jQuery(".sub1").toggle();
+						jQuery(".sub2").toggle();
+						jQuery("#cg_detail").val("");
+						jQuery("#cg_mobile").val("");
+						setTimeout("reToSub()",3000);
+					});
+				});
+			</script>
+		</div>
+	</div>
+</div>
+
+<div class="content clearfix">
+    <div class="fiem-left fl">
+        <div class="paycp_title clearfix">
+            <span class="paycp_name fl">PP</span>
+            <a href="#springUrl('/list.htm?title=pp')" class="color-99 fr">更多>></a>
+        </div>
+        <div class="paycp-info">
+            <ul class="paycp-ul clearfix">
+				#foreach($obj in $ppList)
+                    <li>
+                        <div class="info-imgmo j_moimg">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}$!{obj.picAddress}" class="info-img" />
+                            </a>
+                            <div class="xiyu-mai xiyu-zz"></div>
+                            <div class="xiyu-mai">
+                                <p>
+                                    <span>卖家信誉: </span>
+                                    <span class="dj-imglist">
+										#if($i>1250)
+    										#set($i = $!{obj.tradeNum} % 1250)
+    										#set($j = $!{obj.tradeNum} / 1250)
+    										#foreach($a in [1..$j])
+        										<i class="djimg4"></i>
+    										#end
+										#end
+										#if($i>250)
+    										#set($i = $i % 250)
+    										#set($j = $i / 250)
+    										#foreach($a in [1..$j])
+    											<i class="djimg3"></i>
+    										#end
+										#end
+										#if($i>50)
+    										#set($i = $i % 50)
+    										#set($j = $i / 50)
+    										#foreach($a in [1..$j])
+    											<i class="djimg2">s</i>
+    										#end
+										#end
+										#if($i>10)
+    										#set($i = $i % 10)
+    										#set($j = $i / 10)
+    										#foreach($a in [1..$j])
+    											<i class="djimg1"></i>
+    										#end
+										#end
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="clearfix info-first">
+                            <span class="anred fl">¥ <span class="cp-moery">$!{obj.goods.price}</span>
+                            </span>
+                            <span class="color-99 fr">成交$!{obj.successNum}笔</span>
+                        </p>
+                        <p class="cpmore-info">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm">#printTitle($!{obj.goods.title},31,"...")</a>
+                        </p>
+                        <p class="info-two">
+                            <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" class="color-99" target="_blank">$!{obj.companyInfo.name}</a>
+                        </p>
+                        <p class="clearfix info-two">
+                            <span class="fl">
+								#if($!{obj.goods.fare})
+								  #if($!{obj.goods.fare}=="0")
+								   <i class="baoy"></i>
+								  #end
+								#end
+								#if($obj.bzjFlag)
+									<i class="rz-img1"></i>
+								#else
+									<i class="rz-img3"></i>
+								#end
+								
+								#if($obj.sevenDayFlag)
+									<i class="rz-img2"></i>
+								#else
+									<i class="rz-img4"></i>
+								#end
+                            </span>
+                            <span class="fr color-99">$!{obj.area}</span>
+                        </p>
+                    </li>
+				#end
+            </ul>
+        </div>
+    </div>
+    <div class="fiem-right fr">
+        <div class="baoz-mo">
+            <div class="baoz-title">
+                <h2 class="baoz-name">买家保障</h2>
+                <p class="color-99">购买时请认准以下图标，交易全程有保障</p>
+            </div>
+            <ul class="baoz-list clearfix">
+                <li>
+                    <i class="bzimg-big"></i>
+                    <p class="bz-smname">保证金</p>
+                </li>
+                <li>
+                    <i class="bzimg-big bzimg-big2"></i>
+                    <p class="bz-smname bz-smname2">7天无理由退货</p>
+                </li>
+                <li>
+                    <i class="bzimg-big bzimg-big3"></i>
+                    <p class="bz-smname">企业认证</p>
+                </li>
+                <li>
+                    <i class="bzimg-big bzimg-big4"></i>
+                    <p class="bz-smname">个人认证</p>
+                </li>
+            </ul>
+        </div>
+        <div class="newpeol">
+            <div class="newpeol-title">新手指南</div>
+            <div class="newpeol-list clearfix">
+                <div class="xin-li">
+                    <i class="xin-img"></i>
+                    <span class="xinname">买家入门</span>
+                </div>
+                <div class="xin-li">
+                    <i class="xin-img xin-img2"></i>
+                    <span class="xinname">卖家入门</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content clearfix">
+    <div class="fiem-left fl">
+        <div class="paycp_title clearfix">
+            <span class="paycp_name fl">PS</span>
+            <a href="#springUrl('/list.htm?title=ps')" class="color-99 fr">更多>></a>
+        </div>
+        <div class="paycp-info">
+            <ul class="paycp-ul clearfix">
+				#foreach($obj in $psList)
+                    <li>
+                        <div class="info-imgmo j_moimg">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}$!{obj.picAddress}" class="info-img" />
+                            </a>
+                            <div class="xiyu-mai xiyu-zz"></div>
+                            <div class="xiyu-mai">
+                                <p>
+                                    <span>卖家信誉: </span>
+                                    <span class="dj-imglist">
+										#if($i>1250)
+    										#set($i = $!{obj.tradeNum} % 1250)
+    										#set($j = $!{obj.tradeNum} / 1250)
+    										#foreach($a in [1..$j])
+        										<i class="djimg4"></i>
+    										#end
+										#end
+										#if($i>250)
+    										#set($i = $i % 250)
+    										#set($j = $i / 250)
+    										#foreach($a in [1..$j])
+    											<i class="djimg3"></i>
+    										#end
+										#end
+										#if($i>50)
+    										#set($i = $i % 50)
+    										#set($j = $i / 50)
+    										#foreach($a in [1..$j])
+    											<i class="djimg2"></i>
+    										#end
+										#end
+										#if($i>10)
+    										#set($i = $i % 10)
+    										#set($j = $i / 10)
+    										#foreach($a in [1..$j])
+    											<i class="djimg1"></i>
+    										#end
+										#end
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="clearfix info-first">
+                            <span class="anred fl">¥ <span class="cp-moery">$!{obj.goods.price}</span>
+                            </span>
+                            <span class="color-99 fr">成交$!{obj.successNum}笔</span>
+                        </p>
+                        <p>
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm">#printTitle($!{obj.goods.title},31,"...")</a>
+                        </p>
+                        <p class="info-two">
+                            <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" class="color-99" target="_blank">$!{obj.companyInfo.name}</a>
+                        </p>
+                        <p class="clearfix info-two">
+                            <span class="fl">
+								#if($!{obj.goods.fare})
+								  #if($!{obj.goods.fare}=="0")
+								   <i class="baoy"></i>
+								  #end
+								#end
+								#if($obj.bzjFlag)
+									<i class="rz-img1"></i>
+								#else
+									<i class="rz-img3"></i>
+								#end
+								#if($obj.sevenDayFlag)
+									<i class="rz-img2"></i>
+								#else
+									<i class="rz-img4"></i>
+								#end
+                            </span>
+                            <span class="fr color-99">$!{obj.area}</span>
+                        </p>
+                    </li>
+				#end
+            </ul>
+        </div>
+    </div>
+	## 广告1
+    <div class="fiem-right fr">
+		<div class="cgdan">
+            <div class="caigou-num">
+                <div class="caigou-titem">
+                    <span class="cgdan-info1">采购产品</span>
+                    <span class="cgdan-info2">交易状态</span>
+                    <span class="cgdan-info3">时间</span>
+                </div>
+                <div class="caigou-num-list">
+                    <ul class="num-list-ul">
+						#foreach($obj in $ingList)
+                        <li>
+                            <span class="cgdan-info1 blue">$!{obj.trustBuy.title}</span>
+                            <span #if($!{obj.trustBuy.status}=="05") class="cgdan-info2 blue" #else class="cgdan-info2" #end>
+								#if($!{obj.trustBuy.status}=="00")
+    								未审核
+    							#elseif($!{obj.trustBuy.status}=="01")
+    								正在报价
+    							#elseif($!{obj.trustBuy.status}=="02")
+    								已有报价
+    							#elseif($!{obj.trustBuy.status}=="03")
+    								正在洽谈
+    							#elseif($!{obj.trustBuy.status}=="04")
+    								等待打款
+    							#elseif($!{obj.trustBuy.status}=="05")
+    								交易完成
+    							#elseif($!{obj.trustBuy.status}=="06")
+    								交易终止
+    							#elseif($!{obj.trustBuy.status}=="99")
+    								审核不通过
+    							#end
+							</span>
+                            <span class="cgdan-info3 color-66">#printFragmentDate("MM.dd" $!{obj.trustBuy.gmtModified})</span>
+                            <div class="moresee-if">
+                                <em>$!{obj.trustBuy.title}</em>
+                                <em class="weight">$!{obj.trustBuy.quantity}</em>
+                            </div>
+                        </li>
+						#end
+                    </ul>
+                </div>
+            </div>
+        </div>
+		##<script type="text/javascript" src="http://gg.zz91.com/show?p=747"></script>
+        ##<img src="http://img0.zz91.com/trade/buyer/images/guanggao1.jpg" />
+    </div>
+</div>
+<div class="content clearfix">
+    <div class="fiem-left fl">
+        <div class="paycp_title clearfix">
+            <span class="paycp_name fl">PE</span>
+            <a href="#springUrl('/list.htm?title=pe')" class="color-99 fr">更多>></a>
+        </div>
+        <div class="paycp-info">
+            <ul class="paycp-ul clearfix">
+				#foreach($obj in $peList)
+                    <li>
+                        <div class="info-imgmo j_moimg">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}$!{obj.picAddress}" class="info-img" />
+                            </a>
+                            <div class="xiyu-mai xiyu-zz"></div>
+                            <div class="xiyu-mai">
+                                <p>
+                                    <span>卖家信誉: </span>
+                                    <span class="dj-imglist">
+										#if($i>1250)
+    										#set($i = $!{obj.tradeNum} % 1250)
+    										#set($j = $!{obj.tradeNum} / 1250)
+    										#foreach($a in [1..$j])
+        										<i class="djimg4"></i>
+    										#end
+										#end
+										#if($i>250)
+    										#set($i = $i % 250)
+    										#set($j = $i / 250)
+    										#foreach($a in [1..$j])
+    											<i class="djimg3"></i>
+    										#end
+										#end
+										#if($i>50)
+    										#set($i = $i % 50)
+    										#set($j = $i / 50)
+    										#foreach($a in [1..$j])
+    											<i class="djimg2"></i>
+    										#end
+										#end
+										#if($i>10)
+    										#set($i = $i % 10)
+    										#set($j = $i / 10)
+    										#foreach($a in [1..$j])
+    											<i class="djimg1"></i>
+    										#end
+										#end
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="clearfix info-first">
+                            <span class="anred fl">¥ <span class="cp-moery">$!{obj.goods.price}</span>
+                            </span>
+                            <span class="color-99 fr">成交$!{obj.successNum}笔</span>
+                        </p>
+                        <p>
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm">#printTitle($!{obj.goods.title},31,"...")</a>
+                        </p>
+                        <p class="info-two">
+                            <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" class="color-99" target="_blank">$!{obj.companyInfo.name}</a>
+                        </p>
+                        <p class="clearfix info-two">
+                            <span class="fl">
+								#if($!{obj.goods.fare})
+								  #if($!{obj.goods.fare}=="0")
+								   <i class="baoy"></i>
+								  #end
+								#end
+								#if($obj.bzjFlag)
+									<i class="rz-img1"></i>
+								#else
+									<i class="rz-img3"></i>
+								#end
+								#if($obj.sevenDayFlag)
+									<i class="rz-img2"></i>
+								#else
+									<i class="rz-img4"></i>
+								#end
+                            </span>
+                            <span class="fr color-99">$!{obj.area}</span>
+                        </p>
+                    </li>
+				#end
+            </ul>
+        </div>
+    </div>
+	## 广告2
+    <div class="fiem-right fr">
+		<script type="text/javascript" src="http://gg.zz91.com/show?p=748"></script>
+		##<img src="http://img0.zz91.com/trade/buyer/images/guanggao2.jpg" />
+    </div>
+</div>
+<div class="content clearfix">
+    <div class="fiem-left fl">
+        <div class="paycp_title clearfix">
+            <span class="paycp_name fl">PA</span>
+            <a href="#springUrl('/list.htm?title=pa')" class="color-99 fr">更多>></a>
+        </div>
+        <div class="paycp-info">
+            <ul class="paycp-ul clearfix">
+				#foreach($obj in $petList)
+                    <li>
+                        <div class="info-imgmo j_moimg">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}$!{obj.picAddress}" class="info-img" />
+                            </a>
+                            <div class="xiyu-mai xiyu-zz"></div>
+                            <div class="xiyu-mai">
+                                <p>
+                                    <span>卖家信誉: </span>
+                                    <span class="dj-imglist">
+										#if($i>1250)
+    										#set($i = $!{obj.tradeNum} % 1250)
+    										#set($j = $!{obj.tradeNum} / 1250)
+    										#foreach($a in [1..$j])
+        										<i class="djimg4"></i>
+    										#end
+										#end
+										#if($i>250)
+    										#set($i = $i % 250)
+    										#set($j = $i / 250)
+    										#foreach($a in [1..$j])
+    											<i class="djimg3"></i>
+    										#end
+										#end
+										#if($i>50)
+    										#set($i = $i % 50)
+    										#set($j = $i / 50)
+    										#foreach($a in [1..$j])
+    											<i class="djimg2"></i>
+    										#end
+										#end
+										#if($i>10)
+    										#set($i = $i % 10)
+    										#set($j = $i / 10)
+    										#foreach($a in [1..$j])
+    											<i class="djimg1"></i>
+    										#end
+										#end
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="clearfix info-first">
+                            <span class="anred fl">¥ <span class="cp-moery">$!{obj.goods.price}</span>
+                            </span>
+                            <span class="color-99 fr">成交$!{obj.successNum}笔</span>
+                        </p>
+                        <p>
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm">#printTitle($!{obj.goods.title},31,"...")</a>
+                        </p>
+                        <p class="info-two">
+                            <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" class="color-99" target="_blank">$!{obj.companyInfo.name}</a>
+                        </p>
+                        <p class="clearfix info-two">
+                            <span class="fl">
+								#if($!{obj.goods.fare})
+								  #if($!{obj.goods.fare}=="0")
+								   <i class="baoy"></i>
+								  #end
+								#end
+								#if($obj.bzjFlag)
+									<i class="rz-img1"></i>
+								#else
+									<i class="rz-img3"></i>
+								#end
+								#if($obj.sevenDayFlag)
+									<i class="rz-img2"></i>
+								#else
+									<i class="rz-img4"></i>
+								#end
+                            </span>
+                            <span class="fr color-99">$!{obj.area}</span>
+                        </p>
+                    </li>
+				#end
+            </ul>
+        </div>
+    </div>
+    <div class="fiem-right fr">
+		<script type="text/javascript" src="http://gg.zz91.com/show?p=749"></script>
+		##<img src="http://img0.zz91.com/trade/buyer/images/guanggao3.jpg" />
+    </div>
+</div>
+<div class="content clearfix">
+    <div class="caigou-main">
+        <div class="paycp_title clearfix">
+            <span class="paycp_name fl">采购信息</span>
+            <a href="http://caigou.zz91.com" class="color-99 fr" target="_blank">更多>></a>
+        </div>
+		<div style="position:relative;">
+			<div class="see-cginfo">
+                <div class="close-tite">
+                    <a href="javascript:void(0)" class="close-gy j_csgy">x</a>
+                </div>
+                <ul class="see-cginfo-ul clearfix">
+                    <li class="first-see color-66">采购单号：No.<span id="cl-buyNo"></span></li>##$!{obj.trustBuy.buyNo}
+                    <li><span class="color-66">产品：</span><span id="cl-title"></span></li>##$!{obj.trustBuy.title}
+                    <li class="first-see"><span class="color-66">价格：</span><span id="cl-price"></span></li>###if($!{obj.trustBuy.price}&&$!{obj.trustBuy.price}!="")$!{obj.trustBuy.price}#else 电议#end
+                    <li><span class="color-66">采购量：</span><span id="cl-quantity"></span></li>##$!{obj.trustBuy.quantity}
+                    <li class="first-see"><span class="color-66">地区：</span><span id="cl-area"></span></li>##$!{obj.area}
+                    <li><span class="color-66">级别：</span><span id="cl-level"></span></li>##$!{obj.trustBuy.level}
+                    <li class="first-see"><span class="color-66">颜色：</span><span id="cl-color"></span></li>##$!{obj.trustBuy.color}
+                    <li><span class="color-66">电话：</span><span id="cl-tel"></span></li>##$!{obj.trustDealer.tel}
+                    <li class="first-see">
+						<span class="color-66">交易员：</span>
+						<span id="cl-name">
+						##$!{obj.trustDealer.name}
+						</span>
+						<span id="cl-qq">
+						</span>
+						##<a target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=$!{obj.trustDealer.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes"><i class="qq"></i></a>
+					</li>
+                    <li class="clearfix">
+                        <span class="color-66 fl">用途：</span>
+                        <p class="fl yongtu" id="cl-useful">$!{obj.trustBuy.useful}</p>
+                    </li>
+                </ul>
+                <div class="ghtc-btn">
+					<a href="http://caigou.zz91.com" target="_blank">立即供货</a>
+                </div>
+            </div>
+            <div class="dl-top clearfix">
+                <div class="caigou1">采购单号</div>
+                <div class="caigou2">产品</div>
+                <div class="caigou3">价格</div>
+                <div class="caigou4">采购量</div>
+                <div class="caigou5">地区</div>
+                <div class="add-cg1">交易员</div>
+                <div class="add-cg2">电话</div>
+                <div class="caigou6">操作</div>
+            </div>
+			<div class="dl-move">
+				<dl class="caigou-info">
+        			#foreach($obj in $buyList)
+        				<dd class="clearfix">
+        					<div class="caigou1"><p class="color-99">No.$!{obj.trustBuy.buyNo}</p></div>
+        					<div class="caigou2">$!{obj.trustBuy.title}</div>
+        					<div class="caigou3"><p class="fb">#if($!{obj.trustBuy.price}&&$!{obj.trustBuy.price}!="")$!{obj.trustBuy.price}#else 电议#end</p></div>
+        					<div class="caigou4">$!{obj.trustBuy.quantity}</div>
+                            <div class="caigou5">$!{obj.area}</div>
+                            <div class="add-cg1">$!{obj.trustDealer.name}
+            					<a target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=$!{obj.trustDealer.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes"><i class="qq"></i></a>
+            				</div>
+                            <div class="add-cg2">$!{obj.trustDealer.tel}</div>
+                            <div class="caigou6">
+                                <a href="javascript:void(0)" class="blue j_seegy" apt="$velocityCount">查看</a>
+                                <a href="http://caigou.zz91.com" class="gh-btn" target="_blank">立即供货</a>
+                            </div>
+        				</dd>
+        			#end
+                </dl>
+			</div>
+		</div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="paycp_title">
+        <span class="paycp_name">金牌供应商</span>
+    </div>
+    <div class="gongyi-mo">
+        <ul class="gongyi-list clearfix">
+			#foreach($obj in $companyList)
+            <li class="clearfix">
+                <div class="fl">
+					## 啥图片要问下
+##                    <a href="#springUrl('/goods')$!{obj.goods.id}.htm">
+						<img src="$!{address.img}$!{obj.logo}" width="70" height="59" />
+##					</a>
+                    <p class="gyi-rz">
+						#if($obj.bzjFlag)
+							<i class="rz-img1"></i>
+						#else
+							<i class="rz-img3"></i>
+						#end
+						#if($obj.sevenDayFlag)
+							<i class="rz-img2"></i>
+						#else
+							<i class="rz-img4"></i>
+						#end
+                    </p>
+                </div>
+                <div class="fl gongyi-info">
+                    <p class="gy-firmname">
+                        <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" target="_blank">$!{obj.companyInfo.name}</a>
+                    </p>
+                    <p class="gy-this">
+                        <a href="#springUrl('/compinfo')$!{obj.companyInfo.id}.htm" target="_blank">$!{obj.compInfo.business}</a>
+                    </p>
+                    <p>
+                        <span class="color-66">成交：</span>
+                        $!{obj.totalSuccessNum}笔&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="color-66">满意度：</span>
+						#if($!{obj.degreeSatisfaction})
+							#printTitle($!{obj.degreeSatisfaction} 3 "")
+						#else
+							0
+						#end
+                    </p>
+                </div>
+            </li>
+			#end
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //查看联系方式
+    $(".j_phone").live("click",function(){
+    $(".lianxi-type").show()
+    })
+    $(".j_pclose").live("click",function(){
+    $(".lianxi-type").hide()
+    })
+    //查看买家信誉
+    $(".j_moimg").live("mouseenter",function(){
+    $(this).find(".xiyu-mai").animate({"margin-top":"157px"},200)
+    })
+    $(".j_moimg").live("mouseleave",function(){
+    $(this).find(".xiyu-mai").animate({"margin-top":"100%"},200)
+    })
+    var time,marginTop,gdHeight;
+    var succBox = $(".num-list-ul");
+    $(function(){
+    gdHeight = succBox.height();
+    var ulHtml = $(".num-list-ul").parent().html();
+    $(".caigou-num-list").live("mouseover",function(){
+    clearInterval(time)
+    })
+    $(".caigou-num-list").live("mouseout",function(){
+    startmov(ulHtml);
+    })
+    if(gdHeight>succBox.parent().height()){
+    succBox.parent().append(ulHtml);
+    marginTop = parseInt(succBox.css("margin-top"));
+    startmov(ulHtml)
+    }
+    })
+    function startmov(ulHtml){
+    time = setInterval(function(){
+    if(marginTop == gdHeight){
+    $(".caigou-num-list").append(ulHtml);
+    $(".num-list-ul").eq(0).remove()
+    marginTop = 0;
+    }
+    marginTop +=1;
+    $(".num-list-ul").eq(0).css("margin-top",-marginTop+"px") 
+    },50)
+    }
+	
+    //查看采购信息
+    $(".dl-move").delegate(".j_seegy","click",function(){
+		var i = parseInt($(this).attr("apt"));
+		jQuery("#cl-buyNo").html(jsonArray[i-1].buyNo);
+		jQuery("#cl-title").html(jsonArray[i-1].title);
+		jQuery("#cl-price").html(jsonArray[i-1].price);
+		jQuery("#cl-quantity").html(jsonArray[i-1].quantity);
+		jQuery("#cl-area").html(jsonArray[i-1].area);
+		jQuery("#cl-level").html(jsonArray[i-1].level);
+		jQuery("#cl-color").html(jsonArray[i-1].color);
+		jQuery("#cl-tel").html(jsonArray[i-1].tel);
+		jQuery("#cl-name").html(jsonArray[i-1].name);
+		jQuery("#cl-qq").html('<a target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin='+jsonArray[i-1].qq+'&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes"><i class="qq"></i></a>');
+		jQuery("#cl-useful").html(jsonArray[i-1].area);
+        $(".see-cginfo").show();
+    })
+    $(".j_csgy").bind("click",function(){
+        $(".see-cginfo").hide();
+    })
+	
+	 $(function(){
+        //获取swiper的宽和高
+        var swiper_width = $(".swiper").width();
+        var swiper_height = $(".swiper").height()
+
+        //获取 swiper_ul
+        var swiper_ul = $(".swiper-ul");
+        
+        //复制li
+        var ul_html = $(".swiper-ul").html();
+        swiper_ul.append(ul_html);
+
+        //获取li的个数
+        var slide = $(".swiper-slide");
+        var li_length = slide.length;
+
+        //给li赋值高度宽度 给swiper_ul赋值宽度
+        slide.width(swiper_width).height(swiper_height);
+        swiper_ul.width(swiper_width*li_length);
+
+        //swiper_ul的初始位置
+        // swiper_ul.css("left",-swiper_width/2*li_length)
+
+
+        var btnNum = "";
+        for(i=0;i<li_length/2;i++){
+            btnNum += '<span></span>';
+        }
+        $(".slide-num").html(btnNum);
+        $(".slide-num span").eq(0).addClass("nowSpan")
+       
+        var playTime ="";   //定时器
+        var startNum = 0;   //初始数字
+
+        function startMove(){
+            playTime = setInterval(function(){
+                if(startNum<li_length/2){
+                    startNum += 1;
+                }
+                
+                moveSwiper();
+            },3000)
+        }
+        startMove();
+
+        $(".swiper").delegate(".slide-num span","click",function(){
+            startNum = $(this).index();
+            moveSwiper();
+        })
+
+        function moveSwiper(){
+            clearInterval(playTime);
+            $(".nowSpan").removeClass("nowSpan");
+            $(".slide-num span").eq(startNum<li_length/2?startNum:0).addClass("nowSpan");
+            swiper_ul.animate({"left":-startNum*swiper_width+"px"},500,function(){
+                if(startNum == li_length/2){
+                    startNum = 0;
+                    swiper_ul.css("left",0)
+                }
+            });
+            startMove();
+        }
+
+        $(window).resize(function(){
+            swiper_width = $(".swiper").width();
+            slide.width(swiper_width)
+        });
+    })
+	
+	$(".caigou-num-list").delegate(".cgdan-info1","mouseover",function(e){
+        var pointX = e.pageX;
+        //这里可以得到鼠标Y坐标
+        var pointY = e.pageY;
+        $(this).siblings(".moresee-if").css({"left":pointX+10+"px","top":pointY-17+"px"}).show()
+    })
+    $(".caigou-num-list").delegate(".cgdan-info1","mouseout",function(){
+        $(this).siblings(".moresee-if").hide()
+    })
+    $(document).mousemove(function(e){
+
+        var pointX = e.pageX;
+        //这里可以得到鼠标Y坐标
+        var pointY = e.pageY;
+        $(".moresee-if:visible").css({"left":pointX+10+"px","top":pointY-17+"px"})
+    });
+	
+	var time_dl,marginTop_dl,gdHeight_dl;
+    var succBox_dl = $(".caigou-info");
+    $(function(){
+        gdHeight_dl = succBox_dl.height();
+        var ulHtml = $(".caigou-info").parent().html();
+        $(".dl-move").live("mouseover",function(){
+            clearInterval(time_dl)
+        })
+        $(".dl-move").live("mouseout",function(){
+            startmovDl(ulHtml);
+        })
+        if(gdHeight_dl>succBox_dl.parent().height()){
+            succBox_dl.parent().append(ulHtml);
+            marginTop_dl = parseInt(succBox_dl.css("margin-top"));
+            startmovDl(ulHtml)
+        }
+    })
+    function startmovDl(ulHtml){
+        time_dl = setInterval(function(){
+            if(marginTop_dl == gdHeight_dl){
+                $(".dl-move").append(ulHtml);
+                $(".caigou-info").eq(0).remove()
+                marginTop_dl = 0;
+            }
+            marginTop_dl +=1;
+            $(".caigou-info").eq(0).css("margin-top",-marginTop_dl+"px") 
+        },50)
+    }
+	
+	var clArray = [
+		#foreach($obj in $buyList)
+    		{
+    			"buyNo":"$!{obj.trustBuy.buyNo}",
+    			"title":"$!{obj.trustBuy.title}",
+				#if($!{obj.trustBuy.price}&&$!{obj.trustBuy.price}!="")
+					"price":"$!{obj.trustBuy.price}",
+				#else
+					"price":"电议",
+				#end
+    			"quantity":"$!{obj.trustBuy.quantity}",
+    			"area":"$!{obj.area}",
+    			"level":"$!{obj.trustBuy.level}",
+    			"color":"$!{obj.trustBuy.color}",
+    			"tel":"$!{obj.trustDealer.tel}",
+    			"name":"$!{obj.trustDealer.name}",
+    			"qq":"$!{obj.trustDealer.qq}",
+    			"useful":"$!{obj.trustBuy.useful}"
+    		}
+    		#if($velocityCount!=$buyList.size())
+    			,
+    		#end
+		#end
+	]
+	var jsonArray = eval(clArray);
+</script>

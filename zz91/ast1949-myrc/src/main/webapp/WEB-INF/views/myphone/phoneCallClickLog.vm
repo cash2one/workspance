@@ -1,0 +1,90 @@
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li class="active">
+				<a href="#springUrl('/myphone/index.htm')">来电宝</a>- 查看点击查看联系方式扣费记录
+				<a href="#springUrl('/myphone/index.htm')" class="btn">返回来电宝</a>
+			</li>
+        </ul>
+        <div class="well mt">
+            <table class="table table-bordered table-condensed mt" id="myTable">
+                <thead>
+                    <tr>
+						<th width="20%" class="tac">开始时间</th>
+						<th width="20%" class="tac">结束时间</th>
+						<th width="20%" class="tac">来电地区</th>
+                        <th width="20%" class="tac" >未接号码</th>
+                        <th width="20%" class="tac" >点击费用</th>
+                    </tr>
+                </thead>
+                <tbody>
+					#if($!{page.records.size()}>0)
+                    #foreach($obj in $!{page.records})
+                        <tr>
+                            <td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.startTime})</td>
+							<td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.endTime})</td>
+							<td class="tac">
+								$!{obj.address}
+							</td>
+                            <td class="tac $!{maps.get($!{obj.callerId})}" >
+								#if($!{map.get($!{obj.callerId})}==1)
+									$!{obj.callerId} 
+									#else 
+									<a onclick="offerSample('$!{obj.callSn}',id,'$!{maps.get($!{obj.callerId})}','$!{mapG.get($!{obj.callerId})}')" id="$velocityCount">
+										#printTitle($!{obj.callerId} 7 "****")
+									</a>
+								#end 
+							</td>
+                            <td class="tac $!{mapG.get($!{obj.callerId})}" id="a$velocityCount">
+								#if($!{map.get($!{obj.callerId})}==1&&$!{mapm.get($!{obj.callerId})}==$!{obj.callSn})
+									10元
+								#elseif($!{map.get($!{obj.callerId})}==1)
+									已付
+								#else
+									<a onclick="offerSample('$!{obj.callSn}',id,'$!{maps.get($!{obj.callerId})}','$!{mapG.get($!{obj.callerId})}')" id="$velocityCount">
+										点击查看未接号码
+									</a>
+								#end
+							</td>
+                        </tr>
+					#end
+					#end
+						<tr>
+							<td colspan="4" style="text-align:right">余额：<b class="red">$!{phone.balance}0</b>元</td>
+						</tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+	#myrcPageNav($!{page} "#springUrl('/myphone/phoneCallClickLog.htm')" "" "")
+</div>
+<script>
+function offerSample(a,id,cla,cl){
+           if(confirm("查看客户联系方式，将会扣除“来电宝”信息点击费（金额为10元/条），确定要查看吗？")){
+		   jQuery.ajax({
+    			url:'#springUrl("/myphone/insertPhoneCallClickLog.htm")',
+    			data:{"callSn":a},
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.state!=2){
+						 var val=reg.callerId;
+				 		jQuery("."+cla).html(val);
+				 		jQuery("."+cl).html("已付");
+						jQuery("#a"+id).html("10元");
+						jQuery(".red").html(reg.callFee+"0");
+				 	}else{
+				 		alert("余额不足，请续费");
+    				}
+				}
+			});
+	}		
+}
+</script>
+<script>
+jQuery(function(){
+	myrc.menu(1, 7);
+})
+</script>
+

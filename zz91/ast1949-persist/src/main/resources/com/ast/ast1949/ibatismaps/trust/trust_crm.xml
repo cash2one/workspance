@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustCrm">
+	<typeAlias alias="trustCrmDO" type="com.ast.ast1949.domain.trust.TrustCrm" />
+
+	<resultMap class="trustCrmDO" id="trustCrmResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="crmAccount" column="crm_account" />
+		<result property="star" column="star" />
+		<result property="isPublic" column="is_public" />
+		<result property="isRubbish" column="is_rubbish" />
+		<result property="gmtNextVisit" column="gmt_next_visit" />
+		<result property="gmtLastVisit" column="gmt_last_visit" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		star,
+		is_public,
+		is_rubbish,
+		crm_account,
+		gmt_next_visit,
+		gmt_last_visit,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<resultMap class="trustCrmDO" id="queryResult">
+		<result property="id" column="tc.id" />
+		<result property="companyId" column="tc.company_id" />
+		<result property="crmAccount" column="tc.crm_account" />
+		<result property="star" column="tc.star" />
+		<result property="isPublic" column="tc.is_public" />
+		<result property="isRubbish" column="tc.is_rubbish" />
+		<result property="gmtNextVisit" column="tc.gmt_next_visit" />
+		<result property="gmtLastVisit" column="tc.gmt_last_visit" />
+		<result property="gmtCreated" column="tc.gmt_created" />
+		<result property="gmtModified" column="tc.gmt_modified" />
+	</resultMap>
+	
+	<sql id="queryColumn">
+		tc.id,
+		tc.company_id,
+		tc.star,
+		tc.is_public,
+		tc.is_rubbish,
+		tc.crm_account,
+		tc.gmt_next_visit,
+		tc.gmt_last_visit,
+		tc.gmt_created,
+		tc.gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="trustCrmResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_crm
+		where id = #value#
+	</select>
+	
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="trustCrmResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_crm
+		where company_id = #value#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="trustCrmDO">
+		INSERT INTO `ast`.`trust_crm`
+		(
+		`company_id`,
+		`gmt_next_visit`,
+		`star`,
+		`gmt_last_visit`,
+		`is_public`,
+		`is_rubbish`,
+		`crm_account`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#companyId#,
+		#gmtNextVisit#,
+		#star#,
+		#gmtLastVisit#,
+		#isPublic#,
+		#isRubbish#,
+		#crmAccount#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<!-- 页面区分 -->
+			<isNotNull prepend="and" property="searchDto.isToday">
+				TO_DAYS(now()) = TO_DAYS(tc.gmt_next_visit)
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isNew">
+				tc.gmt_next_visit is NULL
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isFirst">
+				TO_DAYS(now()) = TO_DAYS(tc.gmt_created)
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isLost">
+				TO_DAYS(now()) >= TO_DAYS(tc.gmt_next_visit) + 1
+			</isNotNull>
+			
+			<!-- 客服选择 -->
+			<isNotEmpty prepend="and" property="searchDto.crmAccount">
+				tc.crm_account = #searchDto.crmAccount#
+			</isNotEmpty>
+			
+			<!-- 右上角选择框 -->
+			<isNotNull prepend="and" property="searchDto.isPublic">
+				tc.is_public = 1
+				and
+				tc.is_rubbish = 0
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isRubbish">
+				tc.is_rubbish = 1
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isDeafult">
+				tc.is_public = 0 and tc.is_rubbish = 0
+			</isNotNull>
+			
+			<!-- 搜索框 -->
+			<isNotEmpty prepend="and" property="searchDto.name">
+				exists( select id from company c where c.id = tc.company_id and c.name = #searchDto.name#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.contact">
+				exists( select id from company_account d where d.company_id = tc.company_id and d.contact = #searchDto.contact#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.mobile">
+				exists( select id from company_account e where e.company_id = tc.company_id and e.mobile = #searchDto.mobile#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.areaCode">
+				exists( select id from company f where f.id = tc.company_id and f.area_code like concat('',#searchDto.areaCode#,'%') )
+			</isNotEmpty>
+			<isNotNull prepend="and" property="searchDto.star">
+				tc.star = #searchDto.star#
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isHaveSell">
+				exists( select g.id from trust_sell g where g.company_id = tc.company_id  )
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.isHaveBuy">
+				exists( select h.id from trust_buy h where h.company_id = tc.company_id and is_del = 0 )
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.gmtNextVisit">
+				TO_DAYS(now()) = TO_DAYS(#searchDto.gmtNextVisit#)
+			</isNotNull>
+			<isNotEmpty prepend="and" property="searchDto.nextVisitPhoneFromStr">
+				tc.gmt_next_visit >= #searchDto.nextVisitPhoneFromStr#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.nextVisitPhoneToStr">
+				#searchDto.nextVisitPhoneToStr# > tc.gmt_next_visit 
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map"
+		resultMap="queryResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_crm tc
+		<include refid="whereCaluse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountByCondition" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from trust_crm tc
+		<include refid="whereCaluse" />
+	</select>
+	
+	<update id="updateStar" parameterClass="java.util.Map">
+		update trust_crm
+		set gmt_modified = now(),
+		star= #star#
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateContact" parameterClass="java.util.Map">
+		update trust_crm
+		set gmt_modified = now(),
+		gmt_next_visit = #gmtNextVisit#,
+		gmt_last_visit = now()
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateStatus" parameterClass="java.util.Map">
+		update trust_crm
+		set gmt_modified = now()
+		<isNotNull prepend="," property="isPublic">
+			is_public = #isPublic#
+		</isNotNull>
+		<isNotNull prepend="," property="isRubbish">
+			is_rubbish = #isRubbish#
+		</isNotNull>
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateTrustAccount" parameterClass="java.util.Map">
+		update trust_crm
+		set gmt_modified = now(),
+		crm_account = #crmAccount#
+		where company_id = #companyId#
+	</update>
+	
+	<select id="selectDayLog" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0) 
+		from trust_crm
+		where crm_account = #account#
+		<isNotNull prepend="and" property="star">
+			star = #star#
+		</isNotNull>
+		<isNotNull prepend="and" property="isToday">
+			TO_DAYS(now()) = TO_DAYS(gmt_next_visit)
+		</isNotNull>
+		<isNotNull prepend="and" property="isNew">
+			gmt_next_visit is NULL
+		</isNotNull>
+		<isNotNull prepend="and" property="isLost">
+			TO_DAYS(now()) >= TO_DAYS(gmt_next_visit) + 1
+		</isNotNull>
+		<isNotNull prepend="and" property="isTomorrow">
+			TO_DAYS(now()) = TO_DAYS(gmt_next_visit) - 1
+		</isNotNull>
+	</select>
+	
+</sqlMap>

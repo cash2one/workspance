@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link href="../css/main.min.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../css/main.css" type="text/css">
+		<style>
+			* {
+				outline: 0;
+			}
+			html, body {
+				height: 100%;
+				width: 100%;
+			}
+			/*header*/
+			.header {
+				display: -webkit-box;
+				display: -webkit-flex;
+				background-color: #f2f2f2;
+				border-bottom: 1px solid #ebebeb;
+				width: 100%;
+				position: fixed;
+				z-index: 90000;
+				top: 0px;
+				left: 0px;
+			}
+			.topmove {
+				height: 45px;
+				width: 100%
+			}
+			.header a {
+				display: block;
+				background-size: 30px;
+				background-repeat: no-repeat;
+				background-position: center;
+				padding: 20px;
+			}
+			.header .title {
+				line-height: 40px;
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: left;
+				font-size: 18px;
+			}
+			.header .menu {
+				background-image: url("../image/menu.png");
+			}
+			.list {
+				border-top: solid 1px #F0F0F0;
+				padding: 10px;
+				text-align: left;
+				line-height: 20px;
+				background-color: #fff;
+			}
+			.list .title {
+				font-size: 20px;
+				color: #000000;
+				font-weight: 700;
+				text-align: left;
+				line-height: 25px;
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+			.list .description {
+				font-size: 14px;
+				color: #999;
+				font-weight: normal;
+				text-align: left;
+				line-height: 20px;
+				padding-top: 10px;
+			}
+			.liActive {
+				background-color: #3ABA63;
+			}
+			#scroller {
+				position: absolute;
+				z-index: 1;
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				width: 200%;
+				/*-webkit-transform: translateZ(0);
+				 transform: translateZ(0);*/
+				-webkit-touch-callout: none;
+				-webkit-user-select: none;
+				-webkit-text-size-adjust: none;
+			}
+			#scroller ul {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				display: -webkit-box
+			}
+			#scroller li {
+				width: 10%;
+				line-height: 35px;
+				font-size: 14px;
+				overflow: hidden;
+				text-align: center;
+			}
+			/*header*/
+		</style>
+	</head>
+	<body>
+		<!--新闻列表-->
+		<div class="newslist"></div>
+		<div class="jzmore" style="border: 0;">
+			更多加载中...
+		</div>
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../script/iscroll.js"></script>
+		<script type="text/javascript" src="../script/swipe.min.js"></script>
+		<script type="text/javascript" src="../script/DBapi.js"></script>
+		<script type="text/javascript" src="../script/common.js"></script>
+		<script>
+			function sliding() {
+				api.openSlidPane({
+					type : 'left'
+				});
+			}
+
+			var currPage = 1;
+			var stoploading = false;
+			var typeid = "1";
+			function changesexmain(tid) {
+				typeid = tid;
+				api.showProgress();
+				api.ajax({
+					url : hosturl+'/sex/list.html?typeid=' + typeid.toString() + '&t=' + (new Date()).getTime().toString(),
+					method : 'get',
+					timeout : 30,
+					data : {},
+					dataType : 'text',
+					returnAll : false
+				}, function(ret, err) {
+					if (ret) {
+						$(".newslist").html(ret);
+						$(".jzmore").css("display", "block");
+					} else {
+						$(".newslist").html("<div style='width=100%;text-align:center;padding-top:20px;height:100%'>暂无信息</div>");
+						$(".jzmore").css("display", "none");
+						api.toast({
+							msg : ('错误码：' + err.code + '；错误信息：' + err.msg + '网络状态码：' + err.statusCode),
+							duration : 3000,
+							location : 'bottom'
+						});
+					}
+					api.hideProgress();
+					
+					sstop();
+					
+				});
+			}
+
+			apiready = function() {
+				typeid = api.pageParam.typeid;
+				api.addEventListener({
+					name : 'keyback'
+				}, function(ret, err) {
+					api.closeWidget();
+				});
+				api.addEventListener({
+					name : 'scrolltobottom'
+				}, function(ret, err) {
+					loadmorelist(hosturl+'/sex/list.html', currPage + 1);
+				});
+				changesexmain(typeid)
+				//下拉刷新
+				api.setRefreshHeaderInfo({
+					visible : true,
+					// bgColor: '#F2F2F2',
+					bgColor : '#E6E6E6',
+					textColor : '#000000',
+					textDown : '下拉刷新',
+					textUp : '释放刷新',
+				}, function(ret, err) {
+					changesexmain(typeid)
+					api.refreshHeaderLoadDone();
+					api.hideProgress();
+					api.toast({
+						msg : '数据已是最新！',
+						duration : 3000,
+						location : 'bottom'
+					});
+				});
+				$(".jzmore").click(function() {
+					loadmorelist(hosturl+'/sex/list.html', currPage + 1);
+				});
+			};
+			function sstop() {
+				api.pageUp(function(ret) {
+					if (!ret.scrolled) {
+					} else {
+						sstop();
+					}
+				});
+			}
+
+			function toDetail(id) {
+				var pageParam = {
+					id : id,
+					t : (new Date()).getTime().toString()
+				};
+				openWin("detail","detail.html",pageParam);
+			}
+
+			function loadmorelist(url, page) {
+				if (stoploading == false) {
+					stoploading = true;
+					$(".jzmore").html("更多加载中...");
+					api.ajax({
+						url : hosturl+'/sex/list.html?page=' + page.toString() + '&typeid=' + typeid.toString() + '&t=' + (new Date()).getTime().toString(),
+						method : 'get',
+						timeout : 30,
+						data : {},
+						dataType : 'text',
+						returnAll : false
+					}, function(ret, err) {
+						if (ret && ret != "") {
+							$(".newslist").append(ret);
+							stoploading = false;
+							currPage = page;
+							api.hideProgress();
+							$(".jzmore").html("点击加载更多");
+						} else {
+							stoploading = false;
+							$(".jzmore").css("display", "none");
+						};
+					});
+				}
+			}
+		</script>
+	</body>
+</html>

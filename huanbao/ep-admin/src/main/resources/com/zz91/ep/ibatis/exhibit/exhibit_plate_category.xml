@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="plate">
+	<typeAlias alias="plate" type="com.zz91.ep.domain.exhibit.ExhibitPlateCategory" />
+	
+	<resultMap class="plate" id="plateResult">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="code" column="code"/>
+		<result property="sort" column="sort"/>
+		<result property="showIndex" column="show_index"/>
+		<result property="tags" column="tags"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		p.id,
+		p.name,
+		p.code,
+		p.sort,
+		p.show_index,
+		p.tags,
+		p.gmt_created,
+		p.gmt_modified
+	</sql>
+	
+	<select id="queryExhibitPlateCategoryAll" resultMap="plateResult">
+		select 
+			 <include refid="plate.fullColumn" />
+		from exhibit_plate_category p
+		order by p.sort
+	</select>
+	
+	<insert id="insertExhibitCategory" parameterClass="plate">
+		insert into exhibit_plate_category 
+		(
+			id,
+			name,
+			code,
+			sort,
+			show_index,
+			tags,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#id#,
+			#name#,	
+			#code#,
+			#sort#,
+			#showIndex#,
+			#tags#,
+			now(),
+			now()		
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateCategory" parameterClass="plate">
+		update exhibit_plate_category set 
+			name=#name#,
+			sort=#sort#,
+			tags=#tags#,
+			gmt_modified=now()
+		where code=#code#	
+	</update>
+	
+	<delete id="deleteCategory" parameterClass="java.lang.String">
+		delete from exhibit_plate_category
+		where code like concat(#code#,'%')
+	</delete>
+	
+	<select id="queryCategoryByCode" parameterClass="java.lang.String" resultMap="plateResult">
+		select
+		<include refid="plate.fullColumn" />
+		from exhibit_plate_category p
+		where p.code=#value#
+		limit 1
+	</select>
+	
+	<select id="queryChild" parameterClass="java.lang.String" resultMap="plateResult">
+		select
+		<include refid="plate.fullColumn" />
+		from exhibit_plate_category p where p.code like concat(#value#,'____')
+	</select>
+	
+	<select id="countChild" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from exhibit_plate_category where code like concat(#value#, '____')
+	</select>
+	
+	<select id="queryMaxCodeOfChild" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code) from exhibit_plate_category
+		where code like concat(#value#,'____')	
+	</select>
+</sqlMap>

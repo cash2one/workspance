@@ -1,0 +1,109 @@
+#set($layout="/layout/default.vm")
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/messagetitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="#springUrl("/message/receiveMessage.htm")">我收到的留言</a></li>
+            <li class="hbnyleft"><a href="#springUrl("/message/sendMessage.htm")">我发出的留言</a></li>
+            <li class="hbnylefts"><a href="#springUrl("/message/epMessage.htm")">环保客服留言</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">我发出的留言</td>
+      </tr>
+    </table>
+      <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnylyhw">
+        <tr>
+          <td width="70"><img src="$!{address.img}/huanbao/images/myesite/hbmem_26.jpg" width="13" height="9" /> <a href="#springUrl("/message/epMessage.htm?type=$!{messagetype}&replyStatus=1")">已回复</a></td>
+          <td><img src="$!{address.img}/huanbao/images/myesite/hbmem_27.jpg" width="13" height="9" /> <a href="#springUrl("/message/epMessage.htm?type=$!{messagetype}&replyStatus=0")">未回复</a></td>
+        </tr>
+    </table>
+    #foreach($list in $!{page.records})
+      <table id="messageDiv$!{list.message.id}" width="90%" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#98dcfb" class="hbnylylist">
+        <tr>
+          <td bgcolor="#FFFFFF" style="color:#555; font-weight:bold; padding-left:8px">
+	          #if($!{list.message.replyStatus} == 0 )
+	          <img src="$!{address.img}/huanbao/images/myesite/hbmem_27.jpg" width="13" height="9" />
+			  #else
+			  <img src="$!{address.img}/huanbao/images/myesite/hbmem_26.jpg" width="13" height="9" />
+			  #end
+	          环保网客服的留言
+           </td>
+        </tr>
+        <tr>
+          <td bgcolor="#FFFFFF"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td width="80" align="right" bgcolor="#f3fafd" style="color:#989797; border-bottom:dashed 1px #dfdede;">信息标题：</td>
+              <td bgcolor="#f3fafd" style="color:#FF0000; border-bottom:dashed 1px #dfdede;">$!{list.message.title}</td>
+              <td width="140" rowspan="2" align="center"><a href="javascript:deleteMessage('$!{list.message.id}')"><img src="$!{address.img}/huanbao/images/myesite/hbmem_28.jpg" width="56" height="22" /></a></td>
+            </tr>
+            <tr bgcolor="#f3fafd">
+              <td align="right" valign="top" style="color:#989797;">留言内容：</td>
+              <td>$!{list.message.details}</td>
+              </tr>
+          </table></td>
+        </tr>
+         #if($!{list.message.replyStatus} == 1 )
+        <tr>
+          <td bgcolor="#FFFFFF">
+          <table id="replyDiv$!{list.message.id}" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="80" align="right" valign="top" bgcolor="#f3fafd" style="color:#989797;">回复内容：</td>
+                <td bgcolor="#f3fafd" style="line-height:22px; color:#989797;">$!{list.message.replyDetails}</td>
+                <td width="140" align="center">&nbsp;</td>
+              </tr>
+          </table>
+          </td>
+        </tr>
+        #end
+    </table>
+    #end
+    <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+	    <tr>
+	      <td height="50">#myrcPageNav(${page} "#springUrl('/message/epMessage.htm')" "type=$!{messagetype}&replyStatus=$!{replyStatus}" "")</td>
+	    </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+<script language="javascript">
+function deleteMessage(id){
+    jQuery.ajax({
+        url:'#springUrl('/message/delete.htm')',
+        data:{"id":id,"type":0},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+            if(req.success){
+                hb.util.Message.show({
+			      msg:"删除成功！",
+			      autoClose:10000
+				});
+				jQuery("#messageDiv"+id).remove();
+            }
+        },
+        failure:function(){
+			hb.util.Message.show({
+			      msg:"删除失败！",
+			      autoClose:10000
+			});
+        }
+    });
+}
+</script>

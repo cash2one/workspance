@@ -1,0 +1,523 @@
+#set($head="search")
+#set($in="2")
+#set($ll=$date.format('HH:mm:ss',$date))
+#set($layout="layout/yuanliaoLayout.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+    <div class="content">
+    	<div class="wrapper clearfix">
+        	<div class="hd_box layer clearfix">
+				#parse("/common/left.vm")
+            	<div class="layer_header">
+                	<div class="layer_title">
+                		<h3>当前位置：<a href="$!{address.yuanliao}">首页</a>&nbsp;&gt;&nbsp;<a href="$!{address.yuanliao}/gy/">产品库</a>&nbsp;&gt;&nbsp;搜索&nbsp;<font class="result">$!{search.keyword}</font></h3>
+                    </div>
+                    <div class="layer_btn clearfix">
+                    	<a href="$!{address.yuanliao}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布供应信息</a>
+                        <a href="$!{address.yuanliao}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布求购信息</a>
+                    </div>
+                </div>
+                <!--end layer_header-->
+				#if($!{sessionUser})
+					<input type="hidden" name="loginFlag" id="loginFlag" value="1">
+				#else
+					<input type="hidden" name="loginFlag" id="loginFlag" value="0">
+				#end
+                <div class="layer_block">
+                	<div class="layer_title2 clearfix">
+                    	<h3>塑料原料<font class="black">筛选</font></h3>
+                        <div class="selected">
+                        	<span class="fl">已选择：</span>
+                            <div id="condition">
+								#if($!{province})
+									<a class="inbtn"><span>$!{province}</span></a>
+								#end
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="layer_info clearfix" id="filter">
+                    	<div class="rowbp">
+                        <div class="row" id="J_NavCommonRow">
+                        	<div class="rowhead">
+                               	<h4 class="bold">  
+                                   	<span class="title" title="地区分类">地区分类</span>：                                                
+                            	</h4>
+                            </div>
+                            <div class="rowbody">
+                            	<div class="rb_items">
+                                    <div class="item_inner g-clearfix" id="addr">
+                                       #foreach($li in $mapp.keySet())
+											<a class="item tip" id="a$velocityCount" rel="type" title="$mapp.get($li)" name="$li" #if($li==$!{search.province})style="color:#fff;background-color:#ff500b;"#end>$mapp.get($li)</a>
+										#end
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rowfoot" id="footSale">
+                               	<span class="show-more" id="more">+ 更多</span>
+                                <span class="show-less" id="less">- 收起</span>
+                            </div>
+                        </div>
+                        <!--end row-->
+                    </div>
+                </div>
+                <!--end layer_block-->
+            </div>
+			#cacheFragment("$!{address.yuanliao}/fragment/yuanliao/querySimilarCategory.htm?keyword=$!{keyword}", "", "", "")			
+			#if($list.size()>0)
+				<div class="nav-layer clearfix">
+					<div style="float:left;margin-left:20px;line-height:20px;">你还可以查看：</div>
+					<ul>
+						#foreach($li in $list)
+							#if($!{li.label}!=$!{search.keyword})
+								<li><a href="$!{address.yuanliao}/$!{mapMain.get($!{li.code})}/gy/">$!{li.label}</a></li>
+							#end
+						#end
+					</ul>
+				</div>
+			#end			
+			#end
+			<!--end layer-nav-->
+            <div class="hd_box whole clearfix">
+            	<div class="whole_block">
+                	<div class="whole_title clearfix">
+                    	<h3>塑料原料<font class="black">供求</font></h3>
+                       <div class="wt_item fr" id="gongqiu">
+                        	<label id="gong" class="tip">
+                            	<a href="$!{hrefUrl}" #if(!$!{search.type}||$!{search.type}=="10331000")class="msg cur"#else class="msg" #end name="10331000">供应信息</a>
+                                <a href="$!{hrefUrl}" #if($!{search.type}=="10331001")class="msg cur" #else class="msg" #end name="10331001">求购信息</a>
+                                <a href="$!{hrefUrl}" #if($!{search.dir}=="down")data-order="down" class="price down"#elseif($!{search.dir}=="up") data-order="up" class="price up"#else data-order="disorder" class="price disorder" #end>价格</a>
+                            	<select class="time_sel tip" id="time">
+                            		<option value="0">发布时间</option>
+									<option value="1" #if($limit==1)selected #end>1天内</option>
+									<option value="3" #if($limit==3)selected #end>3天内</option>
+									<option value="7" #if($limit==7)selected #end>7天内</option>
+									<option value="15" #if($limit==15)selected #end>15天内</option>
+									<option value="30" #if($limit==30)selected #end>30天内</option>
+                            	</select>
+                            	<label class="record">有<font class="red">$!{page.totalRecords}</font>条相关供求信息</label>
+							</label>
+                        </div>
+                    </div>
+                    <div class="whole_head">
+                    	<ul>
+                        	<li class="w15">产品图片</li>
+                            <li class="w35">产品信息</li>
+                            <li class="w15">价格</li>
+                            <li class="w15">数量</li>
+                            <li class="w10">操作</li>
+                        </ul>
+                    </div>
+                    <!--end whole_head-->
+                    <div class="whole_list clearfix">
+                    	#foreach($li in $page.records)
+                    	<div class="whole_item clearfix">
+                        	<div class="wi2">
+                            	<a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank">
+									#if($!{li.picAddress})
+										<img src="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=140&height=140"/>
+									#else
+										<img src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" width="140" height="140" />
+									#end
+								</a>
+                            </div>
+                            <div class="wi4">
+                            	<dl>
+                                	<dt><a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})</a></dt>
+                                    <dd class="mb15">
+                                    	<p><font class="grey">厂家(产地)：</font>$!{li.categoryMainLabel}&nbsp;&nbsp;|&nbsp;&nbsp;<font class="grey">牌号：</font>$!{li.yuanliao.tradeMark}&nbsp;&nbsp;|&nbsp;&nbsp;#if($!{li.typeLabel}&&$!{li.typeLabel}!="")<font class="grey">类型：</font>$!{li.typeLabel}#end</p>
+                                        #if($!{li.processLabel}||$!{li.charaLabel}||$!{li.usefulLabel})<p>#if($!{li.processLabel})<font class="grey">加工级别：</font>$!{li.processLabel}&nbsp;&nbsp;|&nbsp;&nbsp;#end #if($!{li.charaLabel})<font class="grey">特性级别：</font>$!{li.charaLabel}&nbsp;&nbsp;|&nbsp;&nbsp;#end #if($!{li.usefulLabel})<font class="grey">用途级别：</font>$!{li.usefulLabel}#end</p>#end
+                                        <p>#if($!{li.address})<font class="grey">所在地：</font>$!{li.address}&nbsp;&nbsp;|&nbsp;&nbsp;#end<font class="grey">发布时间：</font>$!date.format('yyyy-MM-dd',$!{li.yuanliao.refreshTime})</p>
+                                    </dd>
+                                    <dd>
+                                    	 <p class="h22 oow #if($!{li.company.membershipCode}=="100510021000")
+												icon_yin">
+										   #elseif($!{li.company.membershipCode}=="100510021001")
+												icon_gold">
+										   #elseif($!{li.company.membershipCode}=="100510021002")
+												zuanshi">
+										   #elseif($!{li.company.membershipCode}=="10051001")
+												icon_zst">
+										   #elseif($!{li.company.membershipCode}=="10051003")
+												icon_ldb">
+										   #else
+												">
+										   #end
+										   #if($!{li.company.membershipCode}=="10051000")
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #elseif($!{li.company.membershipCode}=="10051003")
+												<a href="$!{address.www}/ppc/index$!{li.yuanliao.companyId}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #else
+												<a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #end
+										   &nbsp;&nbsp;[$!{li.location}]
+										</p>
+                                        <p>
+											#if($!{li.company.membershipCode}=="10051000")
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.company}/compinfo.htm?id=$!{li.yuanliao.companyId}&flag=1" target="_blank">更多产品</a>
+											#elseif($!{li.company.membershipCode}=="10051003")
+												<a href="$!{address.www}/ppc/index$!{li.yuanliao.companyId}.htm" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.www}/ppc/contact$!{li.yuanliao.companyId}.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.www}/ppc/zxgq$!{li.yuanliao.companyId}.htm" target="_blank">更多产品</a>
+											#else
+												<a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="http://$!{li.company.domainZz91}.zz91.com/lxfs.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="http://$!{li.company.domainZz91}.zz91.com/zxgq.htm" target="_blank">更多产品</a>
+											#end
+										</p>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="wi6 tc">
+                            	<br />
+                                <br />
+                            	<p><font>
+										#if($!{li.yuanliao.minPrice})
+											$!{li.yuanliao.minPrice}-$!{li.yuanliao.maxPrice}
+										#else
+											#if($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')
+												$!{li.yuanliao.price}
+											#else
+												面议
+											#end
+										#end
+								   </font>
+								   #if(($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')||$!{li.yuanliao.minPrice}) $!{li.yuanliao.priceUnit}/$!{li.yuanliao.unit}#end
+								</p>
+                                <br />
+                                <p><a href="$!{address.www}/inquiry/inquiryApi.htm?yuanliaoId=$!{li.yuanliao.id}#messeges" class="inquiry" target="_blank">在线询价</a></p>
+                            </div>
+                            <div class="wi6 tc">
+                            	<br />
+                                <br />
+                            	<p><font>#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.quantity}#else 不限#end</font>#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.unit}#end</p>
+                            </div>
+                            <div class="wi6">
+                            	<br />
+                            	<div class="wi6_link">
+									<a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html?q=0" target="_blank" class="qq">联系方式</a>
+									#if($!{li.qq}&&$!{li.qq}!="")<a class="qq_link" rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=$!{li.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes" title="请注明您是在ZZ91与我洽谈！"><img border="0" src="http://wpa.qq.com/pa?p=2:413318087:4" alt="请注明您是在ZZ91与我洽谈！" onerror="this.src='http://img0.zz91.com/zz91/china/images/qq.gif'" /></a>#end
+                                </div>
+                                <div class="wi6_cang"><a href="javascript:;" id="$!{li.yuanliao.id}" class="shoucang" onclick="mycollect($!{li.yuanliao.id})">收藏</a></div>
+                            </div>
+                        </div>
+                        <!--end whole_item-->
+					#end
+                    </div>
+                    <!--end whole_list-->
+                </div>
+				<!--end whole_block-->
+				#if($page.totalRecords>0)
+						<div class="page_block">
+							<div class="page_a02">
+								#pageYuanliao($page)
+							</div>
+						</div>
+				#end
+                <!--end page_block-->
+				#if($page.totalRecords<1)
+                <div class="search_block">抱歉，未找到 "<font class="red">$!{search.keyword} $!{province}</font>" 相关的信息</div>
+                <!--end search_block-->
+                <div class="layer_block">
+                	<div class="form_block">
+                    	<h2>没有找到合适的产品，马上发布求购，展示你的产品需求!</h2>
+                        <form action="" method="">
+                        	<div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 产品类别：</div>
+                                <div class="mod-info">
+                                	<select id="c1" name="c1">
+                                    	<option>请选择产品类别</option>
+                                    </select>
+                                    <select id="c2" name="c2">
+                                    	<option>请选择详细产品类别</option>
+                                    </select>
+									<input type="hidden" name="categoryYuanliaoCode" value=""/>
+                                </div>
+                            </div>
+							<div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 厂家（产地）：</div>
+                                <div class="mod-info">
+                                	<select id="c3" name="c3">
+                                    	<option>请选择厂家（产地）</option>
+                                    </select>
+									<input type="hidden" name="categoryMainDesc" value=""/>
+                                </div>
+                            </div>
+                            <!--end mod-form-->
+                            <!--end mod-form-->
+                            <div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 产品标题：</div>
+                                <div class="mod-info">
+                                	<input type="text" class="mod-info-text reduce" id="" tabindex="1" name="title" />
+                                </div>
+                            </div>
+                            <!--end mod-form-->
+                            <div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 牌号：</div>
+                                <div class="mod-info">
+                                	<input type="text" class="mod-info-text reduce" id="" tabindex="1" name="tradeMark" />
+                                </div>
+                            </div>
+                            <!--end mod-form-->
+                            <div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 数量：</div>
+                                <div class="mod-info">
+                                	<input type="text" class="mod-info-text2 mr8 reduce" id="" tabindex="1" name="quantity" />
+                                    <select name="unit" id="unit">
+                                    	<option value="吨">吨</option>
+                                        <option value="千克">千克</option>
+										<option value="斤">斤</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!--end mod-form-->
+                            <div class="mod-form clearfix">
+                            	<div class="mod-title"><span class="red">*</span> 信息有效期：</div>
+                                <div class="mod-info" style="padding-top: 5px;" id="time">
+                                	 <input type="radio" name="time" value="365" /> 12个月
+                                     <input type="radio" name="time" value="90" /> 3个月
+                                     <input type="radio" name="time" value="30" /> 1个月
+                                     <input type="radio" name="time" value="20" /> 20天
+                                     <input type="radio" name="time" value="10" /> 10天  
+                                </div>
+                            </div>
+                            <!--end mod-form-->
+                            <div class="mod-btn">
+                            	<a href="javascript:;" onclick="submit1()">立即发布求购信息</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!--end layer_block-->
+				#end
+            </div>
+            <!--end hd_box-->
+        </div>
+    </div>
+<script>
+jQuery(function(){
+		getlist('c1','20091000');
+		initcollect();
+});
+jQuery(".inbtn").click(function(){
+		var url = window.location.href;
+		url = url.replace("&province="+"$!{search.province}","");
+		jQuery(this).remove();
+		location.href=url;
+});
+jQuery("#c1").click(function(){
+	var c1 = jQuery("#c1").val();
+	if(isNaN(c1)){
+		return false;
+	}
+	jQuery("#c2").empty();
+	jQuery("#c2").append("<option>请选择详细产品类别</option>");
+	getlist('c2',c1);
+});
+jQuery("#c2").click(function(){
+	var c2 = jQuery("#c2").val();
+	if(isNaN(c2)){
+		return false;
+	}
+	jQuery("#c3").empty();
+	jQuery("#c3").append("<option>请选择厂家（产地）</option>");
+	getlist('c3',c2);
+	jQuery("input[name=categoryYuanliaoCode]").val(c2);
+	jQuery("input[name=categoryYuanliaoCode").parent().find("span").remove();
+});
+jQuery("#c3").click(function(){
+	var c3 = jQuery("#c3").val();
+	if(isNaN(c3)){
+		return false;
+	}
+	jQuery("input[name=categoryMainDesc]").val(c3);
+	jQuery("input[name=categoryMainDesc").parent().find("span").remove();
+});
+function getlist(a,b){
+	jQuery.ajax({
+    	url : "#springUrl('/yuanliao/queryCategoryYuanliaoByParentCode.htm?parentCode=')"+b,
+    	type : "post",
+    	cache : false,
+    	dataType : "json", 
+    	success : function(data, textStatus){
+    		for(var i=0;i<data.length;i++){
+				jQuery("#"+a).append("<option value='"+data[i].code+"'class=\"reduce\">"+data[i].label+"</option>");
+			}
+    	},
+    	error : function(e) {
+    		alert("搜索失败!");
+    	}
+    });
+}
+jQuery(".reduce").blur(function(){
+	if(jQuery(this).val().replace(/\s/g,'')){
+		jQuery(this).parent().find("span").remove();
+	}
+});
+jQuery("#time").click(function(){
+	jQuery(this).find("span").remove();
+});
+jQuery(".tip").click(function(){
+	var limit = jQuery("#gongqiu").find("select").val();
+	if(jQuery(this).attr("id")=="time"){
+		if(limit=="0"){
+			return false;
+		}
+	}
+	if(limit=="0"){
+		limit = "$!{search.limit}";
+	}
+	var currentPage = '';
+	if(jQuery(this).parent().attr("class") == "page_box" && jQuery(this).attr("class")=="tip"){
+		currentPage = jQuery(this).attr("name");
+	}
+	if(jQuery(this).attr("class")=="go tip"){
+		var num = Number(jQuery(".jump_page").val());
+		if(num<0){
+			alert("页码不能小于零");
+			return false;
+		}
+		if(num>$totalPage){
+			num = $totalPage;
+		}
+		if(num > 0){
+			currentPage = num ;
+		}
+	}
+	//跳转链接
+	var url = "$!{address.yuanliao}/search.htm?";
+	//类目or产地
+	var keyword ="$!{search.keyword}";
+	if(keyword){
+		url = url + "&keyword=" + keyword;
+	}
+	//省份
+	var province = jQuery("#addr").find(".on").attr("name")||"$!{search.province}";
+	if(province){
+		url = url + "&province=" + province;
+	}
+	//供求类型
+	var type = jQuery("#gongqiu #gong .cur").attr("name");
+	if(type){
+		url = url + "&type=" + type;
+	}
+	var price = jQuery("#gongqiu #gong .up").attr("data-order")||jQuery("#gongqiu #gong .down").attr("data-order");
+	if(price){
+		url = url + "&dir=" + price;
+	}
+	if(limit){
+		url = url + "&limit=" + limit;
+	}
+	if(currentPage > 0){
+		url = url + "&currentPage=" + currentPage;
+	}
+	location.href=url;
+});
+function submit1(){
+	var category = jQuery("input[name=categoryYuanliaoCode]").val();
+	if(!category){
+		jQuery("input[name=categoryYuanliaoCode]").parent().find("span").remove();
+		jQuery("input[name=categoryYuanliaoCode]").parent().append("<span class=\"red\">请选择产品类别</span>");
+	}
+	var code = jQuery("input[name=categoryMainDesc]").val();
+	if(!code){
+		jQuery("input[name=categoryMainDesc]").parent().find("span").remove();
+		jQuery("input[name=categoryMainDesc]").parent().append("<span class=\"red\">请选择产品厂家（产地）</span>");
+	}
+	var title = jQuery("input[name=title]").val().replace(/\s/g,'');
+	if(!title){
+		jQuery("input[name=title]").parent().find("span").remove();
+		jQuery("input[name=title]").parent().append("<span class=\"red\">请填写产品标题</span>");
+	}
+	var tradeMark = jQuery("input[name=tradeMark]").val().replace(/\s/g,'');
+	if(!tradeMark){
+		jQuery("input[name=tradeMark]").parent().find("span").remove();
+		jQuery("input[name=tradeMark]").parent().append("<span class=\"red\">请填写产品牌号</span>");
+	}
+	var quantity = jQuery("input[name=quantity]").val().replace(/\s/g,'');
+	if(!jQuery("input[name=quantity]").val().replace(/\s/g,'')||jQuery("input[name=quantity]").val().replace(/\s/g,'')=='0'|| isNaN(quantity)){
+		jQuery("input[name=quantity]").parent().find("span").remove();
+		jQuery("input[name=quantity]").parent().append("<span class=\"red\">数量不能为空/零</span>");
+	}
+	var time = jQuery("input[name=time]:checked").val();
+	if(!time){
+		jQuery("input[name=time]").parent().find("span").remove();
+		jQuery("input[name=time]").parent().append("<span class=\"red\">有效期不能为空</span>");
+	}
+	if(!category||!code||!title||!tradeMark||!quantity||!time){
+		return false;
+	}
+	var unit = jQuery("#unit").val();
+	jQuery.ajax({
+    	url : "#springUrl('/yuanliao/publishYuanliao.htm')",
+    	type : "post",
+		data:{
+			"categoryYuanliaoCode":category,
+			"categoryMainDesc":code,
+			"title":title,
+			"tradeMark":tradeMark,
+			"quantity":quantity,
+			"time":time,
+			"unit":unit
+			},
+    	cache : false,
+    	dataType : "json", 
+    	success : function(data, textStatus){
+			if(data.publish=="login"){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					closeoverlay();
+               		jQuery("#loginFlag").val(1);
+					submit();
+            	});
+           		 openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.yuanliao}/submitCallback.htm&regfrom=10031019&loginType=1','注册/登录',750,430,0);
+			}else if(data.publish=="yes"){
+				alert("发布成功");
+				window.location.reload();
+			}
+    	},
+    	error : function(e) {
+    		alert("发布失败!");
+    	}
+    });
+}
+function initcollect(){
+	jQuery.ajax({
+           	url:"#springUrl('/yuanliao/initCollect.htm')",
+			dataType:"json",
+           	success:function(reg){
+				var array = jQuery(".shoucang");
+				for(var i=0;i<array.length;i++){
+					var sc = array[i].id;
+					if(reg.idlist.indexOf(','+sc+',')!=-1){
+						jQuery("#"+sc).html("已收藏");
+					}
+				}
+			}
+		})
+}
+function mycollect(a){
+		jQuery.ajax({
+           	url:"#springUrl('/yuanliao/collectYuanliao.htm')",
+            data:{"yuanliaoId":a},
+			dataType:"json",
+           	success:function(reg){
+				if(reg.collect=="has"){
+					alert("您已经收藏过该信息！");
+				}else if(reg.collect=="success"){
+					alert("收藏成功");
+					jQuery("#"+a).html("已收藏");
+				}else if(reg.collect=="login"){
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						closeoverlay();
+                		jQuery("#loginFlag").val(1);
+						initcollect();
+						mycollect(a);
+        			});
+        			openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.yuanliao}/submitCallback.htm&regfrom=10031019&loginType=1','注册/登录',750,430,0);
+				}
+			}
+		})
+}
+</script>

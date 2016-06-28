@@ -1,0 +1,191 @@
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="categoryProducts">
+
+	<typeAlias alias="categoryProductsDO"
+		type="com.ast.ast1949.domain.products.CategoryProductsDO" />
+	<resultMap id="categoryProductsResult" class="categoryProductsDO">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="label" column="label" />
+		<result property="isAssist" column="is_assist" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="cnspell" column="cnspell" />
+	</resultMap>
+
+	<sql id="selectCategoryProductsColumns">
+		id,code,label,is_assist,is_del,gmt_created,gmt_modified,cnspell
+	</sql>
+
+	<resultMap id="categoryProductsSimpleResult" class="categoryProductsDO">
+		<result property="code" column="code" />
+		<result property="label" column="label" />
+	</resultMap>
+
+	<sql id="selectCategoryProductsSimpleColumns">
+		code,label
+	</sql>
+
+	<select id="queryCategoryProductsByLabel" parameterClass="string"
+		resultMap="categoryProductsResult">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from category_products
+		where label like concat('%',#label#,'%') and
+		is_del=0 limit 1
+	</select>
+	
+	<!-- 根据关键字查询当前的报价对于的code 用于企业报价 -->
+	<select id="queryCategoryProductsByKey" parameterClass="string" resultMap="categoryProductsResult">
+		select
+			<include refid="categoryProducts.selectCategoryProductsColumns"/>
+		from category_products
+		where label = #label# and is_del=0 limit 1
+	</select>
+
+	<select id="queryAllCategoryProducts" resultMap="categoryProductsResult">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from
+		category_products
+		where is_del=0
+		order by sort
+	</select>
+
+	<select id="queryCategoryProductsById" parameterClass="int"
+		resultMap="categoryProductsResult">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from
+		category_products
+		where id=#id:Integer#
+		and is_del=0
+	</select>
+	
+	<select id="queryNameByCode" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select label from category_products where code=#code# and is_del=0
+	</select>
+
+	<select id="queryCategoryProductsByCode" parameterClass="java.util.Map"
+		resultMap="categoryProductsResult">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from
+		category_products
+		where code like concat(#code#,'____')
+		and is_del=0
+		<dynamic prepend="and">
+			<isNotEmpty property="isAssist">
+				is_assist=#isAssist#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="queryMaxCodeBypreCode" parameterClass="String"
+		resultClass="String">
+		select
+		max(code)
+		from
+		category_products
+		where code like
+		concat(#preCode#,'____')
+	</select>
+	<insert id="insertCategoryProducts" parameterClass="categoryProductsDO">
+		insert into category_products (code, label, is_assist, is_del,
+		gmt_created, gmt_modified, cnspell)
+		values(#code#,#label#,#isAssist#,'0',now(),now(),#cnspell#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID() as value
+		</selectKey>
+	</insert>
+
+	<update id="updatecategoryProducts" parameterClass="categoryProductsDO">
+		update
+		category_products
+		set
+		is_assist = #isAssist#,
+		label = #label#,
+		gmt_modified = now(),
+		cnspell = #cnspell#
+		where id = #id:INTEGER#
+	</update>
+
+	<!--
+		<update id="deleteCategoryProductsById"
+		parameterClass="categoryProductsDO"> update category_products set
+		is_del = #isDel# where id = #id:INTEGER# </update>
+	-->
+
+	<update id="deleteCategoryProductsAndChild" parameterClass="java.util.HashMap">
+		update category_products
+		set is_del = #isdel#
+		where code like
+		concat(#parentCode#,'%')
+    </update>
+    
+    <update id="updateSearchLabelById" parameterClass="java.util.Map">
+    	update category_products
+    	set search_label = #searchLabel#
+    	where id = #id#
+    </update>
+
+	<!--
+		<select id="queryCategoryNameByCode" parameterClass="String"
+		resultMap="categoryProductsResult"> select <include
+		refid="categoryProducts.selectCategoryProductsColumns"/> from
+		category_products where code=#code# </select> <select
+		id="queryCategoryProductsFront" resultMap="categoryProductsResult">
+		SELECT <include
+		refid="categoryProducts.selectCategoryProductsColumns"/> FROM
+		category_products WHERE is_assist=0 AND CODE LIKE CONCAT('____')
+		</select>
+	-->
+
+
+	<select id="queryCategoryProductsByCnspell" resultMap="categoryProductsResult"
+		parameterClass="java.lang.String">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from category_products
+		where is_assist=0
+		and cnspell like
+		concat(#value#,'%')
+	</select>
+
+	<select id="queryCategoryByTags" resultMap="categoryProductsResult"
+		parameterClass="java.util.HashMap">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from category_products
+		where tags like concat('%',#keywords#,'%')
+		limit
+		#size#
+	</select>
+
+	<select id="queryHistoryCategoryByCompanyId" resultMap="categoryProductsSimpleResult"
+		parameterClass="java.lang.Integer">
+		SELECT
+		<include refid="categoryProducts.selectCategoryProductsSimpleColumns" />
+		FROM category_products b
+		left join products p on
+		p.category_products_main_code = b.code
+		where p.company_id = #value# and p.check_status=1 and p.is_del=0
+		group by p.category_products_main_code
+	</select>
+	
+	<select id="queryAllCategoryProductsByLabel" parameterClass="string"
+		resultMap="categoryProductsResult">
+		select
+		<include refid="categoryProducts.selectCategoryProductsColumns" />
+		from category_products
+		where label like concat('%',#label#,'%') and
+		is_del=0
+	</select>
+	
+</sqlMap>

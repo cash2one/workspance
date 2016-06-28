@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisTrustLog">
+	<!-- analysis 企业报价 result -->
+	<typeAlias alias="analysisTrustLogDO"
+		type="com.ast.ast1949.domain.analysis.AnalysisTrustLog" />
+	<resultMap class="analysisTrustLogDO" id="analysisTrustLogResult">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="star1B" column="star1_b" />
+		<result property="star1C" column="star1_c" />
+		<result property="star2B" column="star2_b" />
+		<result property="star2C" column="star2_c" />
+		<result property="star3B" column="star3_b" />
+		<result property="star3C" column="star3_c" />
+		<result property="star4B" column="star4_b" />
+		<result property="star4C" column="star4_c" />
+		<result property="star5B" column="star5_b" />
+		<result property="star5C" column="star5_c" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		account,
+		gmt_target,
+		star1_b,
+		star1_c,
+		star2_b,
+		star2_c,
+		star3_b,
+		star3_c,
+		star4_b,
+		star4_c,
+		star5_b,
+		star5_c
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="analysisTrustLogResult">
+		select 
+		<include refid="defaultColumn"/>
+		FROM analysis_trust_log
+		where 
+		gmt_target >= #from#
+		and 
+		#to# > gmt_target
+		<isNotEmpty prepend="and" property="account">
+			account = #account#
+		</isNotEmpty>
+		group by account
+		limit 1000
+	</select>
+
+</sqlMap>

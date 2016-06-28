@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>首页</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	#left, #leftno {
+		display:-webkit-box;
+	}
+	#left img, #leftno img {
+		margin:4px 6px 4px 10px;
+		width:36px;
+		height:36px;
+		-webkit-border-radius:9px;
+	}
+	#left div {
+		/*margin-top:8px;*/
+		-webkit-box-flex:1;
+	}
+	#leftno div{
+		font-size:18px;
+		color:#fff;
+		/*margin-top:13px;*/
+		line-height: 44px;
+	}
+	#left div dt strong {
+		font-size:18px;
+		line-height:44px;
+		color:#fff;
+	}
+	#left div dd {
+		margin-top:4px;
+		line-height:13px;
+		font-size:13px;
+		color:#868686;
+		overflow:hidden;
+	}
+	.middle {
+	    -webkit-box-flex:1;
+	    width:100%;
+	    display:-webkit-box;
+	    -webkit-box-pack:center;
+	  	-webkit-box-align:center;
+	  	line-height: 44px;
+	}
+	#right {
+		width:60px;
+		display:-webkit-box;
+		background:url(../image/home/nav_msg.png) no-repeat center;
+		-webkit-background-size:27px 20px;
+		-webkit-box-pack: end;
+	}
+	#right span{
+		display: -webkit-inline-box;
+		margin-right: 8px;
+		margin-top: 4px;
+		padding: 3px;
+		background:url(../image/checkedbg.png) no-repeat center;
+		-webkit-background-size:contain;
+		font-size: 12px;
+		color: #FFFFFF;
+		font-weight: bold;
+	}
+	#rightno{
+		width:60px;
+	}
+	.rightBtnActive {
+		background:url(../image/home/nav_msg_hov.png) no-repeat center!important;
+		-webkit-background-size:27px 20px!important;
+	}
+	.hidden{
+		display: none !important;
+	}
+	.openActive{
+		color: #00b8ff !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav" class="hidden">
+				<a id="left" tapmode="openActive" onclick="toPcenter()">
+					<img src="../image/home/default.png" id="head" />
+					<div>
+						<dt><strong id="username"></strong></dt>
+						<dd id="city"></dd>
+					</div>
+				</a>	
+				<div class="middle">
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="toPmsg()">
+				</a>
+			</nav>
+			<nav id="navno">
+				<a id="leftno" tapmode="openActive" onclick="toPvalid()">
+					<img src="../image/home/default.png" />
+					<div tapmode="openActive">
+						注册
+					</div>
+				</a>	
+				<div class="middle">
+				</div>
+				<a id="rightno">
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	apiready = function() {
+        addEventListener();
+		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		api.openFrame({
+			name: 'home_frame',
+			url: 'home_frame.html',
+			bounces: false,
+			rect: {
+				x: 0,
+				y: headerPos.h,
+				w: 'auto',
+				h: 'auto'
+			}
+		});		
+		checkLogin();
+		// 引导页
+		// checkGuide();
+		setTimeout(hideLaunch, 1000);//一秒后关闭启动界面
+	};
+	
+	function addEventListener(){
+		api.setStatusBarStyle({style:'dark'});
+        
+        //监听没联网的状态
+        api.addEventListener({name: 'offline'}, function(ret, err){
+			api.toast({msg: '没联网哦，请检查网络状态！', duration: 3000, location: 'middle'});
+		});
+        
+        //监听keyback键
+		api.addEventListener({name: 'keyback'}, function(ret, err){
+			api.closeWidget();
+		});
+		
+		//页面显示，查看地图是否关闭
+		api.addEventListener({name:'viewappear'}, function(){
+	        var openmap = $api.getStorage('openmap');
+	        if(openmap){
+		        var map = api.require('baiduMap');
+		        map.close();
+		        $api.rmStorage('openmap');
+	        }
+	    });
+		
+		api.addEventListener({name: 'resume'}, function(ret, err){
+			//从后台回到前台的时候，如果是已经登录的用户，需要再次缺省登录
+			var logined = $api.getStorage('logined');
+			if(logined){	
+				defaultLogin && defaultLogin();//默认登录
+			}
+		});
+		
+		//监听推送消息:暂时把推送类型定为通知，通知类的推送不进行监听。
+		/*var push = api.require('push');
+		push.setListener(function(ret, err){
+			if(ret){
+				push.removeListener();
+				api.alert({msg:ret});
+			}
+		});*/
+	}
+	
+	//检查是否已经登录
+	function checkLogin(){
+		var logined = $api.getStorage('logined');
+		if(logined){//如果已经登录
+			defaultLogin(getSysMsg, updateHeader);//默认登录
+		}else{
+			hasNoClsAddIt($api.byId('nav'), 'hidden');
+			hasClsRemoveIt($api.byId('navno'), 'hidden');
+		}
+	}
+	
+	function updateHeader(){//更新头部信息
+		var logined = $api.getStorage('logined');
+		var usr = $api.getStorage('usr');
+		if(usr && logined){
+			var icon = usr.icon;
+			var city = usr.caddress;
+			var head = $api.byId('head')
+			if(icon){
+			   if(head){
+				$api.attr(head,'src', '../image/home/default.png');
+				}
+			}else{
+			   if(head){
+				$api.attr(head,'src', '../image/home/default.png');
+				}
+			}
+			$api.html($api.byId('username'), usr.name);
+			if(city){
+				$api.html($api.byId('city'), city);
+			}else{
+				$api.html($api.byId('city'), '');
+			}
+			hasNoClsAddIt($api.byId('navno'), 'hidden');
+			hasClsRemoveIt($api.byId('nav'), 'hidden');
+		}else{
+			hasClsRemoveIt($api.byId('navno'), 'hidden');
+			hasNoClsAddIt($api.byId('nav'), 'hidden');
+		}
+	}
+	
+	function afterUpdateHead(src){
+		$api.attr($api.byId('head'),'src', src);
+	}
+	
+	function afterUpdateCity(city){
+		$api.html($api.byId('city'), city);
+	}
+	
+	function defaultLogin(getSysMsg, updateHeader) {
+		var model = api.require('model');
+		model.config({
+			appId: 'A6961693132912',
+			appKey: '727724FF-FD26-C97B-B317-366723CA78A2'
+		});
+		//告诉server登录，更新数据
+		var usr = $api.getStorage('usr');
+		account = usr.name;
+		password = usr.password;
+		var user = api.require('user');
+		user.login({
+			username: account,
+			password: password
+		}, function(ret, err) {
+
+			if (ret && ret.id) {
+				//getSysMsg();
+				//updateHeader(); 	
+				var logined = $api.getStorage('logined');
+				var usr = $api.getStorage('usr');
+				if (usr && logined) {
+					var icon = usr.icon;
+					var city = usr.caddress;
+					var head = $api.byId('head')
+					if (icon) {
+						if (head) {
+							$api.attr(head, 'src', '../image/home/default.png');
+						}
+					} else {
+						if (head) {
+							$api.attr(head, 'src', '../image/home/default.png');
+						}
+					}
+					$api.html($api.byId('username'), usr.name);
+					if (city) {
+						$api.html($api.byId('city'), city);
+					} else {
+						$api.html($api.byId('city'), '');
+					}
+					hasNoClsAddIt($api.byId('navno'), 'hidden');
+					hasClsRemoveIt($api.byId('nav'), 'hidden');
+				}
+				$api.setStorage('usr', usr);
+			} else {
+				if (ret) {
+					api.toast({
+						msg: ret.msg,
+						location: 'middle'
+					});
+				} else if (err) {
+					api.toast({
+						msg: err.msg,
+						location: 'middle'
+					});
+				} else {
+					api.toast({
+						msg: '数据错误',
+						location: 'middle'
+					});
+				}
+			}
+		});
+	}
+	
+	function getSysMsg(){//获取系统消息
+	/**
+		api.ajax({
+	    	url: serverUrl + '/user/SystemMessage?uid=' + $api.getStorage('usr').uid + '&pageIndex=0',
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    },function(ret,err){
+	    	if(ret && ret.status && ret.body.list.length > 0){
+	    		$api.setStorage('sysmsgs', ret);
+	    	}
+	    	if(ret.body.notRead > 0){
+	    		var html = '<span>' + ret.body.notRead + '</span>';
+	    		$api.html($api.byId('right'), html);
+	    	}
+	    });
+	    */
+	}
+	
+	function checkGuide(){//check是否需要显示引导页
+		var showGuide = $api.getStorage('showGuide');
+		if (!showGuide) {
+			api.openWin({name: 'guide', url: 'guide.html', slidBackEnabled: false});
+		}
+	}
+	
+	function toPcenter(){
+		logoutConfirm();
+	}
+	
+		function logoutConfirm(){
+		api.confirm({
+			title: '注销确认',
+			msg: '确定要注销登录吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){
+				logout();
+			}
+		});
+	}
+	
+	function logout(){
+	var model = api.require('model');
+    model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2'});
+		//告诉server登录，更新数据
+
+		 var user = api.require('user');
+	user.logout(ajaxBack);
+		
+	}
+	
+	function ajaxBack(ret,err){
+		if(ret ){
+			$api.rmStorage('logined');
+			api.execScript({name: 'root', script: 'updateHeader()'});
+			api.toast({msg: '注销成功', location: 'middle'});
+			setTimeout(function(){				
+				api.openWin({name:'login', url:'login.html'});
+			}, 2000);
+		
+    	}else{
+    		if(ret){
+    			api.toast({msg: ret.msg, location: 'middle'});
+    		}else if(err){
+    			api.toast({msg: err.msg, location: 'middle'});
+    		}else{
+    			api.toast({msg: '数据错误', location: 'middle'});
+    		}
+    	}
+	}
+
+	function toPvalid(){
+		api.openWin({name:'validate',url:'validate.html'});
+	}
+	
+	function toPmsg(){
+		$api.html($api.byId('right'), '');//移除系统消息未读条数提醒
+		api.openWin({name:'message',url:'message.html'});
+	}
+	
+	function hideLaunch(){	
+		api.removeLaunchView();
+		checkUpdate();
+	}
+	
+	function checkUpdate(){
+		var mam = api.require('mam');
+		mam.checkUpdate(function(ret, err){
+			if(ret && ret.status){
+				checkUpdateBack(ret.result);
+			}/*else{
+				if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+			}*/
+		});
+	}
+	
+	function checkUpdateBack(result){
+		if(!result.update && !result.closed){//如果无更新
+			return;
+		}else if(result.update && !result.closed){//如果有更新,且设备上的当前版本没有被强行关闭，提示用户有更新，由用户选择是否更新
+			var msg = '';
+			msg += '最新版本：' + result.version + '\n';
+			msg += '发布时间：' + result.time.substring(0, 10) + '\n';
+			api.confirm({
+				'title': '更新提示',
+				'msg': msg,
+				'buttons':['立即更新', '以后再说']
+			}, function(ret, err){
+				if(ret.buttonIndex == 1){
+					doUpdate(result.source);
+				}else{
+					$api.setStorage('lastestVersion', result);//缓存最新版信息
+					return;
+				}
+			});
+		}else if(result.update && result.closed){//如果有更新，且设备上的当前版本被强行关闭，强制更新
+			api.alert({'title':'强制更新', 'msg':umsg, 'buttons':['立即更新']}, function(ret, err){				
+				doUpdate(result.source);
+			});
+		}else if(!result.update && result.closed){//如果无更新, 或者无更新且强制关闭,提醒被关闭的原因,关闭应用
+			var umsg = "该应用被强制关闭!\n原因：" + result.closeTip;
+			api.alert({'title':'强制关闭', 'msg':umsg}, function(ret, err){
+				api.closeWidget();
+			});
+		}
+	}
+	
+	function doUpdate(appUri){
+		var isAndroid = (/android/gi).test(navigator.appVersion);
+		if(isAndroid){//如果是Android，需要先下载，再更新
+			api.download({
+				url: appUri,
+				report: true,
+				cache: true,
+				allowResume: true
+			}, function(ret, err){
+				if(ret.state == 1){//1为下载完成
+					api.installApp({									
+						appUri: ret.savePath
+					});
+				}
+			});
+		}else{//如果是iOS，安装
+			api.installApp({									
+				appUri: appUri
+			});
+		}
+	}
+</script>
+</html>

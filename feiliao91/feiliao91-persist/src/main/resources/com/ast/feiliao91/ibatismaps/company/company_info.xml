@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap 
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="companyInfo">
+	<typeAlias alias="companyInfoDO"
+		type="com.ast.feiliao91.domain.company.CompanyInfo" />
+		
+	<resultMap class="companyInfoDO" id="companyInfoResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="business" column="business" />
+		<result property="area" column="area" />
+		<result property="introduce" column="introduce" />
+		<result property="creditType" column="credit_type" />
+		<result property="creditInfo" column="credit_info" />
+		<result property="creditStatus" column="credit_status" />
+		<result property="isDel" column="is_del" />
+		<result property="isValid" column="is_valid" />
+		<result property="isAdmin" column="is_admin" />
+		<result property="regFromCode" column="reg_from_code" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="gmtReg" column="gmt_reg" />
+		<result property="address" column="address" />
+		<result property="companyCode" column="company_code" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		name,
+		business,
+		area,
+		introduce,
+		credit_type,
+		credit_info,
+		credit_status,
+		is_del,
+		is_valid,
+		is_admin,
+		reg_from_code,
+		gmt_created,
+		gmt_modified,
+		gmt_reg,
+		address,
+		company_code
+	</sql>
+	
+	<!-- 带别名的公司信息 -->
+	<sql id="infoColumn">
+		ci.id,
+		ci.name,
+		ci.business,
+		ci.area,
+		ci.introduce,
+		ci.credit_type,
+		ci.credit_info,
+		ci.credit_status,
+		ci.is_del,
+		ci.is_valid,
+		ci.is_admin,
+		ci.reg_from_code,
+		ci.gmt_created,
+		ci.gmt_modified,
+		ci.gmt_reg as gmt_reg,
+		ci.address,
+		ci.company_code
+	</sql>
+
+	<!-- 创建公司信息 shiqp 2016-01-11 -->
+	<insert id="insertCompanyInfo" parameterClass="companyInfoDO">
+		insert into company_info
+		(
+		name,
+		business,
+		area,
+		introduce,
+		reg_from_code,
+		gmt_created,
+		gmt_modified,
+		gmt_reg,
+		address,
+		company_code
+		)
+		values
+		(
+		#name#,
+		#business#,
+		#area#,
+		#introduce#,
+		#regFromCode#,
+		now(),
+		now(),
+		now(),
+		#address#,
+		#companyCode#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="companyInfoResult">
+		select
+		<include refid="defaultColumn" />
+		from company_info
+		where id = #value#
+	</select>
+	
+	<select id="queryWithoutCheckInfoById" parameterClass="java.lang.Integer"
+		resultMap="companyInfoResult">
+		select
+		id,
+		name,
+		business,
+		area,
+		introduce,
+		credit_type,
+		'' as credit_info,
+		credit_status,
+		is_del,
+		is_valid,
+		is_admin,
+		reg_from_code,
+		gmt_created,
+		gmt_modified,
+		gmt_reg,
+		address,
+		company_code
+		from company_info
+		where id = #value#
+	</select>
+	
+
+	<update id="updateValidate" parameterClass="companyInfoDO">
+		update company_info set gmt_modified =
+		now(),credit_type=#creditType#,credit_info=#creditInfo#,credit_status=#creditStatus#
+		where id=#id#
+	</update>
+	
+	<!-- 条件搜索 -->
+	<sql id="whereCaulse">
+		<dynamic prepend="where"> 
+			<isNotEmpty prepend="and" property="search.companyName">
+				name = #search.companyName#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.creditStatus">
+				credit_status = #search.creditStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<!--  
+	<select id="queryInfoByCondition" parameterClass="java.util.Map" resultMap="companyInfoResult">
+		select 
+			<include refid="companyInfo.defaultColumn"/>
+		from company_info
+		<include refid="companyInfo.whereCaulse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countinfoByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_info
+		<include refid="companyInfo.whereCaulse"/>
+	</select>
+	
+	-->
+	<!-- 更新审核状态 -->
+	<update id="updateStatus" parameterClass="java.util.Map">
+		update company_info set credit_status = #checkStatus#,gmt_modified =now()
+		where id = #id#
+	</update>
+	<!-- 更新公司信息删除状态 -->
+	<update id="updateDelStatus" parameterClass="java.util.Map">
+		update company_info set is_del = #checkStatus#,gmt_modified =now()
+		where id = #id#
+	</update>
+	
+	<!-- 后台保存公司信息 -->
+	<update id="updateCompanyByAdmin" parameterClass="companyInfoDO">
+		update company_info set gmt_modified =now()
+		<isNotNull prepend="," property="name">
+			name= #name#
+		</isNotNull>
+		<isNotNull prepend="," property="area">
+			area= #area#
+		</isNotNull>
+		<isNotNull prepend="," property="companyCode">
+			company_code= #companyCode#
+		</isNotNull>
+		<isNotNull prepend="," property="business">
+			business= #business#
+		</isNotNull>
+		<isNotNull prepend="," property="address">
+			address= #address#
+		</isNotNull>
+		<isNotNull prepend="," property="introduce">
+			introduce= #introduce#
+		</isNotNull>
+		where id = #id#
+	</update>
+	
+	<!-- where条件 -->
+	<sql id="whereCaulseAdmin">
+		<dynamic prepend="where"> 
+			<isNotEmpty prepend="and" property="search.creditType">
+				ci.credit_type is not null
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.isDel">
+				ci.is_del = #search.isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.companyName">
+				ci.name like concat('%',#search.companyName#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.account">
+				ca.account= #search.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.mobile">
+				ca.mobile= #search.mobile#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.area">
+				ci.area like concat(#search.area#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.email">
+				ca.email= #search.email#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.companyCode">
+				ci.company_code= #search.companyCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.creditStatus">
+				ci.credit_status= #search.creditStatus#
+			</isNotEmpty>
+			<!-- 后台时间条件 -->
+			<isNotEmpty prepend="and" property="search.from">
+				<isNotEmpty property="search.dateType">
+					$search.dateType$ >=  #search.from#
+				</isNotEmpty>
+				<isEmpty property="search.dateType">
+					gmt_created >=  #search.from#
+				</isEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.to">
+				<isNotEmpty property="search.dateType">
+					#search.to# >= $search.dateType$
+				</isNotEmpty>
+				<isEmpty property="search.dateType">
+					#search.to# >= gmt_created
+				</isEmpty>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<!-- 多表联查zhujq(要改) -->
+	<select id="queryInfoByCondition" parameterClass="java.util.Map" resultMap="companyInfoResult">
+		select 
+			<include refid="companyInfo.infoColumn" />,ca.gmt_last_login as gmt_last_login
+		from company_info ci 
+		left join company_account ca on ca.company_id=ci.id
+		<include refid="companyInfo.whereCaulseAdmin"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countinfoByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_info ci 
+		left join company_account ca on ca.company_id=ci.id
+		<include refid="companyInfo.whereCaulseAdmin"/>
+	</select>
+	
+	
+</sqlMap>

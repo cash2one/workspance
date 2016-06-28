@@ -1,0 +1,54 @@
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li class="active">
+				<a href="#springUrl('/myphone/index.htm')">来电宝</a>- 查看通话扣费记录
+				<a href="#springUrl('/myphone/index.htm')" class="btn">返回来电宝</a>
+			</li>
+        </ul>
+        <div class="well mt">
+            <table class="table table-bordered table-condensed mt" id="myTable">
+                <thead>
+                    <tr>
+						<th width="20%">开始时间</th>
+                        <th width="20%" class="tac" >结束时间</th>
+						<th width="20%" class="tac" >来电地区</th>
+                        <th width="20%" class="tac" >来电号码</th>
+                        <th width="20%" class="tac" >通话费用</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #foreach($obj in $!{page.records})
+						#if($!{obj.isBlack}==0)
+                            <tr>
+                                <td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.phoneLog.startTime})</td>
+                                <td class="tac" id="refreshTimeFlag$!{products.id}">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.phoneLog.endTime})</td>
+    							<td class="tac">$!{obj.phoneLog.province}$!{obj.phoneLog.city}</td>
+                                <td class="tac">$!{obj.phoneLog.callerId}</td>
+                                <td class="tac">$!{obj.phoneLog.callFee} 元 </td>
+                            </tr>
+						#else
+							<tr>
+                            <td><b class="red">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.phoneLog.startTime})</b></td>
+                            <td class="tac" id="refreshTimeFlag$!{products.id}"><b class="red">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.phoneLog.endTime})</b></td>
+							<td class="tac"><b class="red">$!{obj.phoneLog.province}$!{obj.phoneLog.city}</b></td>
+                            <td class="tac"><b class="red">$!{obj.phoneLog.callerId}</b></td>
+                            <td class="tac"><b class="red">$!{obj.phoneLog.callFee} 元 </b></td>
+                        </tr>
+						#end
+					#end
+						<tr>
+							<td colspan="2" style="text-align:left"><b class="red">红色记录为无效通话，钱已反充您的余额！</b></td>
+							<td colspan="4" style="text-align:right">余额：<b class="red">$!{phone.balance}</b>元</td>
+						</tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+	#myrcPageNav($!{page} "#springUrl('/myphone/phoneLog.htm')" "" "")
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(1, 7);
+})
+</script>

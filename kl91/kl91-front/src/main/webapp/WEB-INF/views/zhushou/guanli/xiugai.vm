@@ -1,0 +1,226 @@
+#set($layout="/layout/zhushou.vm")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper mt">
+	<form id="form1" name="myrcForm" method="post" action="#springUrl('/zhushou/guanli/doXiugai.htm')" enctype="multipart/form-data">
+	<fieldset class="st1">
+    <em>基本信息</em>
+
+    <section>
+		<label for="typeCode1" class="t"><span class="red">*</span>信息类型：</label>
+        <input type="radio" name="typeCode" id="typeCode1" value="$!{products.typeCode}" checked>
+        <label for="typeCode2">供应信息</label>
+		<input type="radio" name="typeCode" id="typeCode2" value="$!{products.typeCode}"><label for="infoType2">求购信息</label>
+    </section>
+    <section class="clearfix">
+		<div class="r">
+			<select id='productsCategoryCode' name='productsCategoryCode'>
+				<option value="" >--请选择主类别--</option>
+				<option value="" >--非金属--</option>
+			</select>
+			<br />
+			<select id='c2' name='c2' size='10' class="subCategory" onchange="filltitle('c2');">
+				<option value="" >--二级分类--</option>
+				<option value="" >--pp--</option>
+			</select>
+			<select id='c3' name='c3' size='10' class="subCategory" onchange="filltitle('c3');">
+				<option value="">--三级分类--</option>
+				<option value="">--颗粒--</option>
+			</select>
+			<select id='c4' name='c4' size='10' class="subCategory" onchange="filltitle('c4');">
+				<option value="">--四级分类--</option>
+			</select>
+			<select id='ac' name='categoryProductsAssistCode' size='10' class="subCategory">
+				<option value="">--请选择辅助类别--</option>
+			</select>
+		</div>
+		<label for="productsCategoryCode" class="t"><span class="red">*</span>信息类别：</label>
+	</section>
+	<section>
+		<label for="title" class="t"><span class="red">*</span>信息标题：</label>
+		<input type="text" name="title" id="title" class="field tran validate[required]" maxlength="30"><span>最长30个汉字</span>
+	</section>
+	<section>
+		<label for="color" class="t">产品属性：</label>
+		<label for="color">颜色：</label>
+		<select name="color" id="color" value="$!{products.color}" style="width:80px">
+			<option value="白色">白色</option>
+		</select>
+		<label for="shape">形状：</label>
+		<select name="shape" id="shape" value="$!{products.color}" style="width:80px">
+			<option value="片状">片状</option>
+		</select>
+		<label for="level">级别：</label>
+		<select name="level" id="level" value="$!{products.color}" style="width:80px">
+			<option value="二级">二级</option>
+		</select>
+		<label for="apply">主要应用：</label>
+		<select name="apply" id="apply" value="$!{products.color}" style="width:80px">
+			<option value="注塑">注塑</option>
+		</select>
+	</section>
+	<section class="clearfix">
+		<div class="r">
+			<textarea name="details" value="$!{products.details}" rows="5" id="details" class="validate[required]"></textarea><br/>
+			<div class="publishFormItems">
+				<label for="pde1"><input type="radio" value="有意者请与我联系" id="pde1" name="pde" onclick="setDetails(this)" />有需要者请联系</label>
+				<label for="pde2"><input type="radio" value="具体情况联系详谈" id="pde2" name="pde" onclick="setDetails(this)" />具体情况联系详谈</label>
+				<label for="pde3"><input type="radio" value="愿与新老客户建立良好合作关系" id="pde3" name="pde" onclick="setDetails(this)" />愿与新老客户建立良好合作关系</label>
+				<br />
+				<label for="pde4"><input type="radio" value="欢迎有货者与我联系" name="pde" id="pde4" onclick="setDetails(this)" />欢迎有货者与我联系</label>
+				<label for="pde5"><input type="radio" value="欢迎来电垂询,详谈" name="pde" id="pde5" onclick="setDetails(this)" />欢迎来电垂询,详谈</label>
+			</div>
+			<script>
+			function setDetails(v){
+				var o=document.getElementById("details");
+				for(var i=1;i<=5;i++){
+					var v=document.getElementById("pde"+i);
+					if(v.checked){
+						o.value+=v.value;
+					}else{
+						o.value=o.value.replace(v.value,"");
+					}
+				}
+			}
+			</script>
+		</div>
+		<!-- label放后面尾解决ie6换行问题 -->
+		<label for="" class="t"><span class="red">*</span>详细描述：</label>
+	</section>
+	<section class="clearfix">
+		<div class="r">
+			<figure>
+				<img id="previewImg$pic" src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="1">
+			</figure>
+			<input type="button" value="上传" class="btn_s3" id="uploadBtn_$pic"/>
+			<input type="hidden" value="$!{products.picId}" name="picId" id="previewId$pic"/>
+		</div>
+			<!-- label放后面尾解决ie6换行问题 -->
+		<label for="" class="t">产品图片：</label>
+	</section>
+    <em>交易信息</em>
+   <section>
+		<label for="quantity" class="t"><span class="red">*</span>供应数量：</label>
+		<input type="text" name="quantity" id="quantity" value="$!{products.quantity}" class="field tran validate[required]" style="width:210px">
+		<input type="radio" name="quantityUnit" value="$!{products.quantityUnit}" id="u1" value="吨" onclick="kl91.myrc.setUnit('Js-unit', this)" checked><label for="u1">吨</label>
+		<input type="radio" name="quantityUnit" value="$!{products.quantityUnit}" id="u2" value="千克" onclick="kl91.myrc.setUnit('Js-unit', this)"><label for="u2">千克</label>
+		<input type="radio" name="quantityUnit" value="$!{products.quantityUnit}" id="u3" value="斤" onclick="kl91.myrc.setUnit('Js-unit', this)"><label for="u3">斤</label>
+		<input type="radio" name="quantityUnit" value="$!{products.quantityUnit}" id="u4" value="其它"><label for="u4">其它</label>
+		<input type="text" name="" onblur="kl91.myrc.setUnit('Js-unit', this)" class="field tran" style="width:60px">
+	</section>
+	<section>
+		<label for="minPrice" class="t"><span class="red">*</span>报价：</label>
+		<input type="text" name="minPrice" value="$!{products.minPrice}" id="minPrice" class="field tran validate[required]" style="width:81px">——
+		<input type="text" name="maxPrice" value="$!{products.maxPrice}" id="maxPrice" class="field tran validate[required]" style="width:81px">
+		<input type="radio" name="priceUnit" value="$!{products.priceUnit}" id="p1" checked>
+		<label for="p1">元</label>
+		<input type="radio" name="priceUnit"  value="$!{products.priceUnit}" id="p2">
+		<label for="p2">美元</label>
+		<span class="red">每<span id="Js-unit">吨</span></span>
+	</section>
+	<section>
+		<label for="" class="t"><span class="red">*</span>发货地：</label>
+		<select name="location">
+			<option value="$!{products.areaCode}">省份</option>
+		</select>
+		<select name="location">
+			<option value="$!{products.areaCode}">城市</option>
+		</select>
+	</section>
+	<section>
+		<label for="" class="t"><span class="red">*</span>信息有效期：</label>
+		<label><input type='radio' value="$!{products.postlimitetime}" name='postlimitetime' value='-1' />长期有效</label>
+		<label><input type='radio' value="$!{products.postlimitetime}" name='postlimitetime' value='90' />3个月</label>
+		<label><input type='radio' value="$!{products.postlimitetime}" name='postlimitetime' value='30' />1个月</label>
+		<label><input type='radio' value="$!{products.postlimitetime}" name='postlimitetime' value='20' checked />20天</label>
+		<label><input type='radio' value="$!{products.postlimitetime}" name='postlimitetime' value='10' />10天</label>
+	</section>
+    <section>
+      <label for="" class="t"> </label>
+      <button type="" class="btn_s2">提交</button>
+    </section>
+  </fieldset>
+	<input type="hidden" id="pid" value="$!{products.id}" name="pid"/>
+	<input type="hidden" id="cid" value="$!{uploadPic.cid}" name="cid"/>
+	<input type="hidden" id="id" value="$!{uploadPic.id}" name="id"/>
+	<input type="hidden" id="filePath" value="$!{uploadPic.filePath}" name="filePath"/>
+	<input type="hidden" id="targetType" value="$!{uploadPic.targetType}" name="targetType"/>
+	<input type="hidden" id="targetId" value="$!{uploadPic.targetId}" name="targetId"/>
+	
+	<input type="hidden" id="deletedFlag" value="$!{products.deletedFlag}" name="deletedFlag"/>
+##	<input type="hidden" id="cid" value="$!{products.cid}" name="cid"/>
+	<input type="hidden" id="checkedFlag" value="$!{products.checkedFlag}" name="checkedFlag"/>
+	<input type="hidden" id="imptFlag" value="$!{products.imptFlag}" name="imptFlag"/>
+	<input type="hidden" id="publishFlag" value="$!{products.publishFlag}" name="publishFlag"/>
+	<input type="hidden" id="detailsQuery" value="$!{products.detailsQuery}" name="detailsQuery"/>
+  </form>
+</div>
+#parse("/common/login/footer.vm")
+#parse("/common/importValidator.vm")
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		var reg = new kl91.reg.Validate("form1");
+		var upload=new Asto.util.PopupBox({
+			url:"#springUrl('/sys/upload/product.htm')",
+			title:"上传产品图片",
+			width:450,
+			height:230,
+			modal:true
+		});
+		
+		
+		jQuery(".btn_s3").button();
+		jQuery(".btn_s3").click(function(obj){
+			var id=jQuery(this).attr("id").replace("uploadBtn_","");
+			var btn=jQuery(this);
+			if(btn.val()=="上传"){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+				
+					$("#cid").attr("value",data.cid);
+					$("#id").attr("value",data.id);
+					$("#filePath").attr("value","data.filePath");
+					$("#targetType").attr("value",data.targetType);
+					$("#targetId").attr("value",data.targetId);
+		
+					
+					jQuery("#previewImg"+id).attr("src","$!{address.resource}"+data.thumbPath);
+					jQuery("#previewId"+id).val(data.id);
+					btn.val("删除");
+				upload.close();
+		});
+				upload.show("#springUrl('/sys/upload/product.htm')");
+			}else{
+				deletePic(btn, id);
+			}
+		});
+		
+		function deletePic(btn, id){
+		jQuery.ajax({
+			type:"post",
+			url:"#springUrl('/sys/upload/deleteOnlyPic.htm')",
+			data:{"id":jQuery("#previewId"+id).val()},
+			dataType:"json",
+			success:function(req){
+				jQuery("#previewImg"+id).attr("src","$!{address.img}/front/images/global/noimage.gif");
+				jQuery("#previewId"+id).val("");
+				btn.val("上传");
+			},
+			failure:function(){
+				Asto.util.Message.show({
+					msg:"发生错误，图片没有被删除，请过一会再试一下！",
+					msgType:Asto.util.Message.ERROR,
+					autoClose:5000
+				});
+			}
+		});
+	}
+		var previewImg=new Asto.util.PopupBox({
+			url:"#",
+			width:850,
+			height:450,
+			modal:true,
+			title:"大图预览"
+		});
+	});
+	kl91.util.tabs("J-tab","click", false);
+</script>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>在线交流</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	ul,li{
+		list-style: none;
+	}
+	#notice{
+		background-color: #FFFFFF;
+	}
+	#notice .wrap{
+		border-bottom: 1px solid #CCCCCC;
+		padding-bottom: 5px;
+	}
+	#notice .wrap #title{
+		padding: 15px 0px;
+		text-align: center;
+		font-size: 14px;
+		color: #F42d2d;
+		background: url(../image/arrowdown.png) no-repeat bottom;
+		-webkit-background-size: 14px 11px;
+	}
+	.noticearrowdown{
+		background: url(../image/arrowup.png) no-repeat bottom !important;
+		-webkit-background-size: 14px 11px !important;
+	}
+	#notice #content{
+		border-bottom: 1px solid #CCCCCC;
+		padding: 10px 10px;
+		font-size: 12px;
+		line-height: 20px;
+	}
+	.hidden{
+		display: none;
+	}
+	#list ul{
+		width: 100%;
+	}
+	#list li{
+		background-color: #FFFFFF;
+		display: -webkit-box;
+		border-bottom: 1px solid #CCCCCC;
+		padding: 10px 10px;	
+	}
+	#list li .left{
+		-webkit-box-flex: 1;
+		width: 100%;
+		display: -webkit-box;
+		-webkit-box-align: center;
+	}
+	#list li .middle{
+		width: 50px;
+		color: #FFFFFF;
+		font-size: 14px;
+		background: url(../image/numbg.png) no-repeat center;
+		-webkit-background-size: contain;
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+	}
+	#list li .right{
+		width: 25px;
+		display: -webkit-box;
+		background: url(../image/forward.png) no-repeat center;
+		-webkit-background-size: 10px 17px;
+	}
+	.listActive{
+		background-color: #CCCCCC !important;
+	}
+	.nodata{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		background-color: #FAFAFA;
+		-webkit-box-flex: 1;
+		font-size: 14px;
+		padding-top: 40px;
+	}
+</style>
+</head>
+
+<body>
+	<div id="main">
+		<section>
+			<ul id="notice">
+				<li tapmode="listActive" class="wrap" onclick="noticeFolding()">
+					<div id="title">版块声明！</div>
+				</li>
+				<li id="content" class="hidden">
+					本交流版块仅限于各位用户就HER培训内容、组织管理以及个人健康问题进行提问和回答，严禁传播含有下列内容之一的信息。违者将会受到扣除积分、封号等处理。<br/>
+ 
+					1.	不利于工厂劳资关系、管理与工厂稳定的；<br/>
+					2.	损害工厂荣誉与利益的；<br/>
+					3.	反对宪法所确定的基本原则的；<br/>
+					4.	危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；<br/>
+					5.	损害国家荣誉和利益的；<br/>
+					6.	煽动民族仇恨、民族歧视，破坏民族团结的；<br/>
+					7.	破坏国家宗教政策，宣扬邪教和封建迷信的；<br/>
+					8.	散布谣言，扰乱社会秩序，破坏社会稳定的；<br/>
+					9.	散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的；<br/>
+					10.	侮辱或者诽谤他人，侵害他人合法权益的；<br/>
+					11.	含有法律、行政法规禁止的其他内容的。
+
+				</li>
+			</ul>
+		</section>
+		<section id="list">
+		</section>
+	</div>
+</body>
+<script>
+	var pageIndex = 0;
+	var inLoading = false;
+	var needLoadMore = false;
+	
+	apiready = function() {
+		api.showProgress({modal: false});
+		
+		//页面显示，更新数据
+		api.addEventListener({name:'viewappear'}, function(){
+	        loadData(true);
+	    });
+		
+		//下拉到页面底部，加载更多
+		api.addEventListener({name:'scrolltobottom'}, function(){
+	        if (needLoadMore) {
+	            loadData(false);
+	        }
+	    });
+	    //下拉刷新
+	    api.setRefreshHeaderInfo({
+	    	visible:true, 
+	    	bgColor: '#F2F2F2', 
+	    	textColor: '#000000',
+	    	textDown: '下拉刷新',
+	    	textUp: '释放刷新',
+	    },function(ret,err){
+	        loadData(true);
+	    });
+	    
+	    loadData(true);
+	};
+
+	function loadData(isReload_){
+		if (inLoading) {//如果还在加载中，不执行操作
+	        return;
+	    }
+	    inLoading = true;
+	    if (isReload_) {//下拉刷新，即重新载入,pageIndex为0
+	        pageIndex = 0;
+	    }
+	    
+	    function ajaxBack(ret,err){
+	    	inLoading = false;
+	    	if(ret && ret.status){
+	    		if(ret.body.list.length > 0){ 
+	    			var list = ret.body.list;
+	    			var html = createContent(list);	    									
+	    			pageIndex++;
+					if(isReload_){//如果是刷新
+						//如果提问入口被隐藏，显示它
+	    				api.execScript({name: 'communication', script: 'showCommunicationQuestion()'});
+					
+	    				$api.html($api.byId('list'), html);
+	    				
+						api.refreshHeaderLoadDone();
+			    		setTimeout(function(){api.hideProgress();}, 300);
+					}else{//如果是加载更多
+						$api.append($api.byId('list'), html);
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					api.parseTapmode();
+	    		}else if(ret.body.list.length == 0){
+	    			api.refreshHeaderLoadDone();
+	    			api.hideProgress();
+	    			if(isReload_){//如果是刷新
+	    				var html = '<div class="nodata">暂无版块</div>';
+	    				$api.html($api.byId('list'), html);
+	    				
+	    				//隐藏提问入口
+	    				api.execScript({name: 'communication', script: 'hideCommunicationQuestion()'});
+	    			}
+	    		}
+	    		
+	    		if(pageIndex < ret.pages){
+	    			needLoadMore = true;
+	    		}else{
+	    			needLoadMore = false;
+	    		}
+	    	}else{
+	    		api.refreshHeaderLoadDone();
+	    		api.hideProgress();
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    		var html = '<div class="nodata">数据错误，请下拉刷新重试！</div>';
+	    		$api.html($api.byId('listwrap'), html);
+	    	}
+	    }
+	    
+    	api.ajax({
+	    	url: serverUrl + '/user/BBSSection?getAll=0&pageIndex='+ pageIndex,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, ajaxBack);
+	}
+	
+	function createContent(list){
+		var html = '';
+		for(var i=0; i<list.length; i++){
+			html += '<ul><li tapmode="listActive" onclick="communicationItem(\'' + list[i]._id + '\',\'' + list[i].bname + '\')">';
+			html += '<div class="left">' + list[i].bname + '</div>';
+			html += '<a class="middle">' + list[i].oe + '</a>';
+			html += '<a class="right"></a>';
+			html += '</li></ul>';
+		}
+		return html;
+	}
+
+	function communicationItem(_id, bname){			
+		var list = {_id: _id, bname: bname};
+		api.openWin({name:'communicationItem', url:'communicationItem.html', pageParam: {list: list}});
+	}
+	
+	function noticeFolding(){
+		var title = $api.byId('title');
+		var content = $api.byId('content');
+		if(!$api.hasCls(title, 'noticearrowdown') && $api.hasCls(content, 'hidden')){			
+			$api.removeCls(content, 'hidden');
+			$api.addCls(title, 'noticearrowdown');
+		}else if($api.hasCls(title, 'noticearrowdown') && !$api.hasCls(content, 'hidden')){
+			$api.addCls(content, 'hidden');
+			$api.removeCls(title, 'noticearrowdown');
+		}
+	}
+</script>
+</html>

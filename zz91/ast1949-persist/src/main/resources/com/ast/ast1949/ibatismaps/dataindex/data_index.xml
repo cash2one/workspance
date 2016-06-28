@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+		
+		<sqlMap  namespace="dataIndex">
+		<typeAlias  alias="dataIndexDO" type="com.ast.ast1949.domain.dataindex.DataIndexDO" />
+		<typeAlias 	alias="dataIndexDto" type="com.ast.ast1949.dto.dataindex.DataIndexDto" />
+			<resultMap class="dataIndexDO" id="dataIndexResult">
+					<result property="id" column="id" />
+					<result property="title" column="title" />
+					<result property="categoryCode" column="category_code" />
+					<result property="pic" column="pic" />
+					<result property="style" column="style" />
+					<result property="link" column="link" />
+					<result property="isChecked" column="is_checked" />
+					<result property="sort" column="sort" />
+					<result property="gmtCreated" column="gmt_created" />
+					<result property="gmtModified" column="gmt_modified" />
+			</resultMap>
+			
+			<delete id="deleteDataIndexById" parameterClass="java.lang.Integer" >
+				delete from data_index
+				where id=#id#
+			</delete>
+			
+			<insert id="insertDataIndex" parameterClass="dataIndexDO" >
+				insert data_index(
+					title,
+					category_code,
+					pic,
+					style,
+					link,
+					sort,
+					gmt_created,
+					gmt_modified
+				)
+				values(
+					#title#,
+					#categoryCode#,
+					#pic#,
+					#style#,
+					#link#,
+					#sort#,
+					now(),
+					now()
+				)
+				<selectKey keyProperty="id" resultClass="int">
+					SELECT
+					LAST_INSERT_ID()
+				</selectKey>
+			</insert>
+			
+			<sql id="fullColumn" >
+				id,title,category_code,pic,style,link,is_checked,sort,gmt_created,gmt_modified
+			</sql>
+			
+			<sql id="dynamicQuery" >
+				<dynamic prepend="where">
+					<isNotEmpty property="index.title" prepend="and">
+					title like concat(#index.title#,'%')
+					</isNotEmpty>
+					<isNotEmpty property="index.categoryCode" prepend="and">
+					category_code like concat(#index.categoryCode#,'%')
+					</isNotEmpty>
+				</dynamic>
+			</sql>
+			
+			<select id="queryDataIndex" parameterClass="java.util.HashMap" resultMap="dataIndexResult" >
+				select 
+					<include refid="dataIndex.fullColumn"/>
+				from data_index
+				<include refid="dataIndex.dynamicQuery" />
+				<include refid="common.pageOrderBy" />
+				<include refid="common.pageLimit" />
+			</select>
+			
+			<select id="queryDataIndexById" parameterClass="java.lang.Integer"  resultMap="dataIndexResult">
+				select 
+				<include refid="dataIndex.fullColumn"/>
+				from data_index 
+				where id=#id#
+			</select>
+			
+			<select id="queryDataIndexByParentCode" parameterClass="java.util.HashMap" resultMap="dataIndexResult">
+				select 
+				<include refid="dataIndex.fullColumn"/>
+				from data_index
+				where category_code like concat(#parentCode#,#path#)
+				order by sort
+				limit #size#
+			</select>
+			
+			<select id="queryDataIndexCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+				select count(*) from data_index 
+				<include refid="dataIndex.dynamicQuery"/>
+			</select>
+			
+			<update id="updateDataIndex" parameterClass="dataIndexDO" >
+				update data_index
+				set title=#title#,
+				category_code=#categoryCode#,
+				pic=#pic#,
+				style=#style#,
+				link=#link#,
+				sort=#sort#,
+				gmt_Modified=now()
+				where id=#id#
+			</update>
+			
+			<select id="queryDataIndexByCode" parameterClass="java.util.HashMap" resultMap="dataIndexResult">
+				select 
+				<include refid="dataIndex.fullColumn"/> 
+				from data_index 
+				where category_code = #code# 
+				limit #size#
+			</select>
+			
+		</sqlMap>

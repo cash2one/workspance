@@ -1,0 +1,11 @@
+zz91-searchengine主要负责索引的创建和搜索。
+索引
+1、入口位于com.zz91.index.products3.IndexData.startup(),在ast1949-timer的web.xml里加载了spring-zz91SearchEngine.xml,从而实现项目启动的自动运行。
+2、数据库路径配置在spring-searchDB.xml中，实际的路径由ast1949-timer启动时从persist.properties里读取,在DataProducer的内部类DataPrepare里使用。本地测试时，可将该配置改为spring-searchDB-local.xml
+3、DataProducer由于第一次大索引的需要，可能会将rcsVisited.set(0);提交时注意检查这里是否还原。
+
+
+导数据
+1、数据库配置在spring-import.xml里，由于需要在服务器上同步数据，所以本地也需要一份spring-import-local.xml
+2、spring-import.xml里的实际路径同样需要从persist里取，但由于涉及到mysql和mssql,所以导致persist.properties配置的内容会相对多一点
+3、定时导数据的入口在msSql2MySql的startImport

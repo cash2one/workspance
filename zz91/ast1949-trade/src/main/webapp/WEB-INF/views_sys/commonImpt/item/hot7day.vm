@@ -1,0 +1,78 @@
+#if(!$!{hotType})
+	#set($hotType="100310021000")
+#end
+
+<div class="te_7rx te_tit_border">
+    <div class="te_tit_name">最近<font color="#fed700">7</font>天热销</div><!-- $!{zj7trxProductList.size()}-->
+        <div style="height:371px;  padding-top:8px; overflow: overflow:hidden;">
+			
+		#if($!{zj7trxProductList.size()}>3)
+				#foreach($obj in $zj7trxProductList)
+					<div style="width:235px; height:3px; overflow:hidden;"></div>
+					<div class="te_7rx_cons">
+						<div class="te_7rx_img te_tit_border">
+							<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+								#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=75&height=75" width="75" height="75" />
+								#else
+									<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+								#end
+							</a>
+						</div>
+						<div class="te_7rx_con">
+							<ul>
+								<li>
+									<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" class="te_titlea">
+										#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 9 "")
+									</a>
+								</li>
+								<li>
+									<font color="#FF0000"><strong>$!{obj.products.minPrice}#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0)-$obj.products.maxPrice#end</strong></font>$!{obj.products.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+								</li>
+								<li>
+									<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" class="te_classoone" target="_blank">在线询价</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				#end			
+			
+			#else
+				
+			#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=$!{hotType}&size=4&1td1", "", "", "")
+				#foreach($obj in $list)
+					<div style="width:235px; height:3px; overflow:hidden;"></div>
+					<div class="te_7rx_cons">
+						<div class="te_7rx_img te_tit_border">
+							<a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">
+								#if($!{obj.pic} && $!{obj.pic}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=75&height=75" width="75" height="75" />
+								#else
+									<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+								#end
+							</a>
+						</div>
+						<div class="te_7rx_con">
+							<ul>
+								<li>
+									<a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank" class="te_titlea">
+										#printProductType($!{obj.productsType} "" "")#printTitle($obj.title 9 "")
+									</a>
+								</li>
+								<li>
+									<font color="#FF0000"><strong>$obj.minPrice#if($!{obj.maxPrice}&&$!{obj.maxPrice}!='0')-$obj.maxPrice#end</strong></font>$!{obj.priceUnit}#if($!{productDetails.quantityUnit})/$!{productDetails.quantityUnit}#end
+								</li>
+								<li>
+									<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" target="_blank" class="te_classoone">在线询价</a>
+								</li>
+##										<li>
+##											<a href="#" class="te_titlea">查看公司信息</a>
+##										</li>
+							</ul>
+						</div>
+					</div>
+				#end
+			#end
+		#end
+        </div>
+</div>

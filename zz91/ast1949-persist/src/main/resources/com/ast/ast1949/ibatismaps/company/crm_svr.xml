@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmSvr">
+
+	<typeAlias alias="crmSvr" type="com.ast.ast1949.domain.company.CrmSvr"/>
+	
+	<resultMap class="crmSvr" id="crmSvrResult">
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="remark" column="remark"/>
+		<result property="unitPrice" column="unit_price"/>
+		<result property="units" column="units"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<select id="querySvr" resultMap="crmSvrResult">
+		select
+		`id`,
+		`code`,
+		`name`,
+		`remark`,
+		`unit_price`,
+		`units`,
+		`gmt_created`,
+		`gmt_modified`
+		from `crm_service`
+	</select>
+	
+	<select id="queryLdbSvr" resultMap="crmSvrResult">
+		select
+		`id`,
+		`code`,
+		`name`,
+		`remark`,
+		`unit_price`,
+		`units`,
+		`gmt_created`,
+		`gmt_modified`
+		from `crm_service`
+		where code in(1007,1008,1009,1010,1011,10001006,10001007,10001008)
+	</select>
+	
+	<select id="querySvrByGroup" parameterClass="java.lang.String" resultMap="crmSvrResult">
+		select
+		`id`,
+		`code`,
+		`name`,
+		`remark`,
+		`unit_price`,
+		`units`,
+		`gmt_created`,
+		`gmt_modified`
+		from `crm_service` 
+		where code in 
+		(select crm_service_code from crm_service_group where code=#value#)
+	</select>
+	
+	<resultMap class="java.util.HashMap" id="membershipMap" >
+		<result property="key" column="crm_service_code"/>
+		<result property="value" column="membership_code"/>
+	</resultMap>
+	
+	<select id="queryMembershipOfSvr" parameterClass="java.lang.String" resultMap="membershipMap" >
+		select crm_service_code,membership_code 
+		from crm_service_group 
+		where membership_code!="" and code=#value#
+	</select>
+	
+	<select id="queryApi" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		select $apiName$ as api from crm_service
+		where code=#svrCode#
+		limit 1
+	</select>
+	
+</sqlMap>

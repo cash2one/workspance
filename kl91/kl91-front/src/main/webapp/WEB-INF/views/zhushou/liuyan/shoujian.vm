@@ -1,0 +1,67 @@
+#set($layout="/layout/zhushou.vm")
+#set($row="shoujian")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper mt list-wrap">
+	#set($pageName="shoujian")
+	#parse("/common/zhushou/liuyan/listType.vm")
+	<form id="form1" name="form1" action="deleteToById.htm" method="post">
+	<table class="list-table">
+		<thead>
+			<tr>
+				<td class="nobdr">
+					<input type="checkbox" class="chooseAll" />
+				</td>
+				<td class="nobdl">发件人</td>
+				<td width="243">留言标题</td>
+				<td>发布时间</td>
+				<td>操作</td>
+			</tr>
+		</thead>
+		<tbody>
+			#foreach($obj in $page.records)
+    			<tr>
+    				<td>
+    					<input type="checkbox" id="$!{obj.id}" name="id" value="$!{obj.id}"/>
+					</td>
+   					<td>$!{obj.fromCname}</td>
+   					<td>
+   						<a href="msg-details$!{obj.id}.htm">$!{obj.title}</a>
+   					</td>
+   					<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtPost})</td>
+   					<td>
+   						<a href="msg-details$!{obj.id}.htm">回复</a>
+   						<a href="deleteToById.htm?id=$!{obj.id}">删除</a>
+   					</td>
+    			</tr>
+			#end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td class="nobdr" align="center">
+					<input type="checkbox" class="chooseAll"/>
+				</td>
+				<td class="nobdl" colspan="6">
+					##<a href="">全选</a>
+					<a href="#" class="delBtn">删除</a>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+	</form>
+	#zhushouPageNav($!{page} "#springUrl('/zhushou/liuyan/shoujian.htm')" "" "")
+</div>
+#parse("/common/login/footer.vm")
+<script type="text/javascript">
+	kl91.util.tabs("J-tab","click", false);
+	
+	jQuery(".chooseAll").click(function(){
+		var chk=jQuery(this).attr("checked");
+		jQuery(":checkbox").each(function(index, obj){
+			obj.checked=chk;
+		});
+	});
+	jQuery(".delBtn").click(function(){
+		jQuery("#form1").submit();
+	});
+</script>
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>

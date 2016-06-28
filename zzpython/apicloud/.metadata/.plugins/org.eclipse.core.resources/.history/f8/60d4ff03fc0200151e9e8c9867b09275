@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>性情中人</title>
+    <link rel="stylesheet" type="text/css" href="css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>
+    <style>
+        
+
+        /*
+            iscroll
+        */
+        #wrapper {
+            position: relative;
+            z-index: 1;
+            height: 35px;
+            width: 90%;
+            overflow: hidden;
+
+        }
+        #scroller {
+	            position: absolute;
+	            z-index: 1;
+	            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	            width: 200%;
+	            /*-webkit-transform: translateZ(0);
+	            transform: translateZ(0);*/
+	            -webkit-touch-callout: none;
+	            -webkit-user-select: none;
+	            -webkit-text-size-adjust: none;
+	        }
+	
+	        #scroller ul {
+	            list-style: none;
+	            padding: 0;
+	            margin: 0;
+	            display: -webkit-box
+	        }
+	
+	        #scroller li {
+	            width: 10%;
+	            line-height: 35px;
+	            font-size: 14px;
+	            overflow: hidden;
+	            text-align: center;
+	        }
+	        /*
+            iscroll
+        */
+        .nav_active {
+            color: #DC282E;
+            font-size: 16px !important;
+        }
+
+        nav {
+            width: 100%;
+            display: -webkit-box;
+            background-color: #F6F6F6;
+        }
+
+        .arrow_down {
+            display: block;
+            background-size: 15px;
+            background-repeat: no-repeat;
+            background-position: center;
+            padding: 15px;
+            background-image: url('image/channel_nav_arrow@2x.png');
+            -webkit-box-flex: 1;
+            -webkit-transform: rotate(180deg);
+            -webkit-transition: All .5s ease;
+        }
+
+        .arrow_up {
+            -webkit-transform: rotate(0deg);
+            -webkit-transition: All .5s ease;
+        }
+
+        .switchNav {
+            position: relative;
+            width: 90%;
+            line-height: 35px;
+            text-indent: 10px;
+        }
+
+        .navTips {
+            width: 70px;
+            height: 15px;
+            position: absolute;
+            right: 0;
+            bottom: 10px;
+            font-size: 12px;
+            line-height: 16px;
+            color: #DE0000;
+            margin-top: 2px;
+            border: 1px solid;
+            border-radius: 10px;
+        }
+
+        .cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body tapmode="" onclick="clearFilter()">
+
+<header>
+    <div class=" header index-header">
+        <div class="btn menu" style="visibility: hidden" tapmode="" onclick="openMenu()"></div>
+
+        <div class=" title">
+            <div class="btn logo " tapmode=""></div>
+        </div>
+        <div class="btn user" tapmode="" onclick="openUser()"></div>
+    </div>
+</header>
+<nav>
+    <div id="wrapper">
+        <div id="scroller">
+            <ul>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">2</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">1</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">3</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">3</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">9</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">8</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">3</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">5</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">7</li>
+                <li data-index=""  class="" tapmode="" onclick="openFrame(this)">3</li>
+            </ul>
+        </div>
+    </div>
+    <div class="switchNav hidden">切换栏目
+
+    </div>
+    <div class="arrow_down" onclick="openNav()" tapmode=""></div>
+</nav>
+<div class="cover hidden" tapmode="">
+
+</div>
+<script type="text/javascript" src="script/zepto.min.js"></script>
+<script type="text/javascript" src="script/iscroll.js"></script>
+<script>
+var myScroll, menuOpened = false;
+    function loaded() {
+        try {
+            myScroll = new IScroll('#wrapper', {
+                eventPassthrough: true,
+                scrollX: true,
+                scrollY: false,
+                preventDefault: false
+            });
+        } catch (e) {
+            alert(e)
+        }
+    }
+    function getNavlist(){
+    	api.ajax({
+			url : 'http://app.zjfriend.com/sex/navlist.html',
+			method : 'get',
+			timeout : 30,
+			pageParam : {
+				t : (new Date()).getTime().toString()
+			},
+			dataType : 'text',
+			returnAll : false
+		}, function(ret, err) {
+			if (ret) {
+				$("#scroller").find('ul').html(ret);
+			} else {
+				api.alert({
+					//msg : ('错误码：' + err.code + '；错误信息：' + err.msg + '网络状态码：' + err.statusCode)
+				});
+			};
+		});
+    }
+    apiready = function () {
+       try {
+       		getNavlist();
+	        loaded();
+	        openFrameGroup();
+       }catch (e) {
+            alert(e)
+        }
+    }
+    function openFrame(obj) {
+    alert($(obj).data('id'))
+        try {
+            api.setFrameGroupIndex({
+                name: 'group',
+                index: 0,
+                url:'html/main.html',
+                scroll: true
+            });
+        } catch (e) {
+            alert(e)
+        }
+
+    }
+    function openFrameGroup() {
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: true,
+            rect: {x: 0, y: $("header").height() + $("nav").height(), w: 'auto', h: 'auto'},
+            index: 0,
+            frames: [{
+                    name: 'frame',
+                    url: 'html/sexmain.html'
+                }]
+        }, function (ret, err) {
+            if (ret.index >= 4) {
+                myScroll.scrollTo(-$("li").width() * (ret.index - 4), 0, 1000);
+            }
+            $("#scroller").find('li').removeClass('nav_active').eq(ret.index).addClass('nav_active');
+        });
+    }
+    function openNav() {
+        var $arrow_down = $('.arrow_down');
+        if ($arrow_down.hasClass('arrow_up')) {
+            $arrow_down.removeClass('arrow_up');
+            $(".switchNav").addClass('hidden');
+            $("#wrapper").removeClass('hidden');
+            _closeNav()
+        } else {
+            $(".switchNav").removeClass('hidden');
+            $("#wrapper").addClass('hidden');
+            $arrow_down.addClass('arrow_up');
+            _openNav();
+        }
+    }
+
+    function _openNav() {
+        api.openFrame({
+            name: 'frm_nav',
+            url: 'html/frm_nav.html',
+            rect: {
+                x: 0,
+                y: $("header").height() + $("nav").height(),
+                w: $("body").width(),
+                h: 'auto'
+            },
+            bounces: false
+        });
+
+    }
+
+    function _closeNav() {
+        api.closeFrame({
+            name: 'frm_nav'
+        });
+        api.closeFrame({
+            name: 'frm_more_nav'
+        })
+    }
+
+    function openMenu() {
+        if ($('.arrow_down').hasClass('arrow_up')) {
+            $('.arrow_down').removeClass('arrow_up');
+            $(".switchNav").addClass('hidden');
+            $("#wrapper").removeClass('hidden');
+            _closeNav()
+        } else {
+            /*if (!menuOpened) {
+                api.openFrame({
+                    name: 'menu',
+                    url: 'html/frm_menu.html',
+                    bounces: false,
+                    rect: {
+                        x: -($("body").width()),// -($("body").width() * .25),
+                        y: 0,
+                        w: $("body").width(),
+                        h: $("body").height()
+                    }
+                });
+                menuOpened = true;
+            }*/
+            //_animation(api.winWidth * 0.75, addFilter);
+        }
+    }
+
+    function addFilter() {
+        $(".cover").removeClass('hidden');
+        $("body").addClass('filter');
+        api.execScript({frameName: 'topLine', script: 'addFilter()'});
+    }
+
+    function _animation(x, callBack) {
+        api.animation({
+            name: 'menu',
+            duration: 200,
+            curve: 'easeIn',
+            translation: {
+                x: x,
+                y: 0,
+                z: 0
+            }
+        }, function () {
+            if (callBack) {
+                callBack();
+            }
+        });
+    }
+
+    function closeMenu() {
+        _animation(-api.winWidth * 0.75, function () {
+            api.execScript({frameName: 'topLine', script: '_clearFilter()'});
+            $("body").removeClass('filter');
+            $(".cover").addClass('hidden');
+        });
+    }
+    function openUser() {
+        api.openWin({
+            name: 'user',
+            url: 'html/win_user.html'
+        })
+    }
+    function clearFilter() {
+        if ($("body").hasClass('filter')) {
+            closeMenu();
+        }
+    }
+</script>
+</body>
+</html>

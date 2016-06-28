@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <title>多窗口测试</title>
+        <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+        <style>
+            html,body
+            {
+                background-color:rgb(60,135,160);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <div class="list">
+                    <ul>
+                        <li><a tapmode="active" onclick="openFrame1()">打开frame1</a></li>
+                        <li><a tapmode="active" onclick="openFrame2()">打开frame2</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="../../script/api.js"></script>
+    <script type="text/javascript">
+        apiready = function () {
+            api.openFrame({name:'right', url:'./right.html'});
+            api.setFrameAttr({name:'right', hidden:false});
+			api.addEventListener({name: 'keyback'}, function(ret, err){
+				api.closeWin();
+			});
+        };
+    
+        function openFrame1(){
+            api.closeSlidPane();
+            
+            var script = 'showFrame1()';
+            api.execScript({
+                name: 'above',
+                script: script
+            });
+        }
+        
+        function openFrame2(){
+            api.closeSlidPane();
+            
+            var script = 'showFrame2()';
+            api.execScript({
+                name: 'above',
+                script: script
+            });
+        }
+    
+        function showLeft() {
+            api.setFrameAttr({name:'right', hidden:true});
+        }
+        
+        function showRight() {
+            api.setFrameAttr({name:'right', hidden:false});
+        }
+    </script>
+</html>

@@ -1,0 +1,161 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	
+    <meta charset="utf-8">
+    <title>修改收获地址</title>
+	
+	  <style type="text/css">
+        table
+        {
+            border-collapse: collapse;
+            border: none;
+            width: 500px;
+        }
+        td
+        {
+			padding:3px;
+			margin-bottom:10px;
+            border: solid #ffcd9c 1px;
+			font-size:12px;
+        }
+		em{
+			font-size:12px;
+		}
+    </style>
+    
+    <script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/checkForm.js"></script>
+	<script src="$!{address.img}/lib/asto/modernizr.js"></script>
+    <script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+    <script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+	<link rel="stylesheet" href="$!{address.img}/zz91/myrc/css/theme.css" />
+	<script language="javascript">
+	function isOnSubmit()
+	{
+	 	if (!checkFormdata(document.all.contact, "联系人",20,true, false, false, false, false))
+	    {	
+	        return false;
+	    }
+		
+	 	if (checkLength(document.all.addressCode.value)  <20  )
+	    {	
+			alert("请选择所在地区！");
+	        return false;
+	    }
+		
+	 	if (!checkFormdata(document.all.address, "详细地址",100,true, false, false, false, false))
+	    {	
+	        return false;
+	    }
+		
+	 	if (!checkFormdata(document.all.mobile, "手机号码",11,true, false, false, false, true))
+	    {	
+	        return false;
+	    }
+		
+	 	if (checkLength(document.all.mobile.value)<11 )
+	    {	
+			alert("手机号码不能少于11位！");
+	        return false;
+	    }
+		
+		return true;
+	}
+	
+function changevalue(){
+      	 var isdefault=document.getElementById("isdefault");
+     	 if(isdefault.checked==true)
+    	      isdefault.value="1";
+  		 if(isdefault.checked==false)
+     		 isdefault.value="0";
+    }
+</script>
+
+</head>
+<body >
+<div>
+            <div>
+                <form id="cominfo" name="cominfo" action="#springUrl('/mngr/addressfrntEdit.htm')" method="post"   onsubmit="return isOnSubmit();">
+                  <input type="hidden" class="text" name="flag" value="${flag}" >
+				  <input type="hidden" class="text" name="companyId" value="${obj.companyId}" >     
+				  <input type="hidden" class="git gw-gw" name="id" value="${obj.id}">
+					<div>
+						<table>
+							<tr>
+                                <td  style="width:80px;"><span class="red">*</span>#if(${flag}=='B')收货#else发货#end人：</td><td> <input type="text" class="text" id="contact" name="contact"  value="${obj.contact}"></td>
+                            </tr>
+							<tr >
+                                <td><span class="red">*</span>所在地区：</td>
+								<td>
+                                <div class="cell">
+                                     <select id='yp-area-1' class="validate[required]">
+							            <option value="">请选择省份</option>
+						             </select>
+						             <select id='yp-area-2'>
+							            <option value="">请选择城市</option>
+						             </select>
+							         <select id='yp-area-3'>
+							             <option value="">请选择区</option>
+						             </select>
+							         <input type="hidden" name="addressCode" id="areaCode"    value=${obj.addressCode}/>
+                               </div>
+                               </td>
+                            </tr>
+							<tr >
+                                <td><span class="red">*</span>街道地址：</td><td> <textarea class="textarea"  id= 'address' name="address">${obj.address}</textarea></td>
+                            </tr>
+							<tr >
+                                <td></span>邮政编码：</td><td><input type="text" class="text" name="addressZip"  value="${obj.addressZip}"></td>
+                            </tr>
+							<tr >
+                                <td>电话号码：</td><td> <input type="text" class="text fl" name="tel"  value="${obj.tel}"/></td>
+                            </tr>
+							<tr >
+                                <td><span class="red">*</span>手机号码：</td><td><input type="text"  id="mobile" class="text " name="mobile"  value="${obj.mobile}"></td>
+                            </tr>
+							<tr >
+                                <td>设为默认：</td><td><input type="checkbox" id="isdefault" name="isdefault"  onclick="changevalue();"  value="${obj.isdefault}" #if(${obj.isdefault}==0) #else checked #end ></td>
+                            </tr>
+							<tr >
+                                <td></td><td> <input class="sCSumbitBtn" type="submit" value="确认提交"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+		</div>
+	</div>
+	</div>
+<script>
+var regarea = new Asto.util.Selector({
+    		selects:["#yp-area-1","#yp-area-2","#yp-area-3"],
+    		url:"#springUrl('/category/areaChild.htm')",
+    		changeCallback:function(c,idx){
+    			setAreaCode();
+    		}
+    	});
+regarea.init({
+				rootCode:"10011000",
+				#if($!{obj.addressCode}&&$!{obj.addressCode}!="")
+    			    initCode:"$!{obj.addressCode}"
+    		    #else
+    			   initCode:"10011000"
+    		    #end
+			});
+function setAreaCode(){
+        		var areacode=jQuery("#yp-area-1").val();
+        		if(jQuery("#reg-area-1").val()!=""){
+        			areacode=jQuery("#yp-area-1").val();
+        		}
+        		if(jQuery("#yp-area-2").val()!=""){
+        			areacode=jQuery("#yp-area-2").val();
+        		}
+				if(jQuery("#yp-area-3").val()!=""){
+        			areacode=jQuery("#yp-area-3").val();
+        		}
+        		jQuery("#areaCode").val(areacode);
+        	}
+</script>
+</body>
+</html>

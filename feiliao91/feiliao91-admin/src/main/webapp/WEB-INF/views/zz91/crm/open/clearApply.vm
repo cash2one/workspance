@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.open</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/crm/svr.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+
+    <script type="text/javascript">
+		
+		var applyForm=new ast.ast1949.crm.open.SvrApplyForm({
+			title:"开通单",
+			region:"east",
+			width:500,
+			split:true
+		});
+	
+    	Ext.onReady(function() {
+			var svrGrid=new ast.ast1949.crm.svr.Grid({
+				//queryUrl:Context.ROOT +Context.PATH+  "/crm/open/applyQuerySvr.htm",
+				region:"west",
+				width:250,
+				split:true,
+				layout:"fit",
+				autoload:true
+			});
+			
+			var companyGrid= new ast.ast1949.crm.open.OpenHistoryGrid({
+				queryUrl:Context.ROOT+Context.PATH+"/crm/open/queryApplyCompany.htm",
+				toolbar:[{
+					iconCls:"item-open",
+					text:"开通申请单",
+					handler:function(btn){
+						var applyGroup=companyGrid.getSelectionModel().getSelected();
+						if(typeof(applyGroup)=="object"){
+    						window.open(Context.ROOT+Context.PATH+"/crm/open/detail.htm?applyGroup="+applyGroup.get("applyGroup")+"&companyId="+applyGroup.get("id"));
+						}
+					}
+				},{
+					text:"客户信息",
+					handler:function(btn){
+						var applyGroup=companyGrid.getSelectionModel().getSelected();
+						if(typeof(applyGroup)=="object"){
+    						window.open(Context.ROOT+Context.PATH+"/crm/company/detail.htm?companyId="+applyGroup.get("id"));
+						}
+					}
+				},{
+					iconCls:"item-false",
+					text:"拒绝开通",
+					handler:function(btn){
+						var applyGroup=companyGrid.getSelectionModel().getSelected();
+						Ext.MessageBox.confirm(Context.MSG_TITLE, "你确定要拒绝开通该用户的这些服务吗？", function(btn){
+							if(btn != "yes"){
+								return false;
+							}
+							applyForm.refusedApply(applyGroup.get("applyGroup"));
+							companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+						});
+					}
+				},"->","用户email",":",{
+					 xtype:"textfield",
+            		 listeners:{
+        				"blur":function(field){
+        					var B=companyGrid.getStore().baseParams||{};
+        					if(field.getValue()!=""){
+        						B["email"]=field.getValue();
+        					}else{
+        						B["email"]=undefined;
+        					}
+        					companyGrid.getStore().baseParams = B;
+        					companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+        				}
+        			}
+				},"申请状态",":",{
+					xtype:"combo",
+					mode:"local",
+					triggerAction:"all",
+					id:"applystatuscombo",
+					hiddenId:"applystatus",
+					store:[
+						["","全部"],
+					    ["0",ast.ast1949.crm.open.ApplyStatus["0"]],
+					    ["1",ast.ast1949.crm.open.ApplyStatus["1"]],
+					    ["2",ast.ast1949.crm.open.ApplyStatus["2"]]
+					],
+					listeners:{
+						"blur":function(field){
+							if(Ext.get("applystatuscombo").dom.value==""){
+								field.setValue("");
+							}
+							companyGrid.getStore().baseParams["applyStatus"]=field.getValue();
+							var rows=svrGrid.getSelectionModel().getSelections();
+							if(rows.length>0){
+    							companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+							}
+						}
+					}
+				}],
+				region:"center"
+			});
+			
+			var companySvrGrid = new ast.ast1949.crm.open.Step1CompanySvrGrid({
+				region:"south",
+				title:"开通的服务",
+				height:200,
+				split:true
+			});
+			
+			svrGrid.on("rowclick",function(g,rowIndex,e){
+				var svrcode=g.getStore().getAt(rowIndex).get("code");
+    			var B=companyGrid.getStore().baseParams;
+				B=B||[];
+    			B["svrCode"]=svrcode;
+    			companyGrid.getStore().baseParames=B;
+    			companyGrid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+			});
+			
+			companyGrid.on("rowclick",function(g,rowIndex,e){
+        		var B=companySvrGrid.getStore().baseParams;
+				B=B||{};
+        		B["companyId"]=g.getStore().getAt(rowIndex).get("id");
+        		companySvrGrid.getStore().baseParams=B;
+        		companySvrGrid.getStore().reload({});
+        	});
+			
+			var viewport=new Ext.Viewport({
+    			layout:"border",
+    			items:[svrGrid,{
+    				region:"center",
+    				layout:"border",
+    				items:[companyGrid,companySvrGrid]
+    			}]
+    		});
+			
+			companyGrid.getStore().baseParams["applyStatus"]="0";
+			Ext.getCmp("applystatuscombo").setValue("0");
+    	});
+    </script>
+</head>
+
+<body>
+
+</body>
+</html>

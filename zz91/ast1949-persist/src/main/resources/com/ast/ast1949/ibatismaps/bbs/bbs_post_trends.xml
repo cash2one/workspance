@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPostTrends">
+
+	<typeAlias alias="bbsPostTrends" type="com.ast.ast1949.domain.bbs.BbsPostTrends" />
+	<resultMap id="bbsPostTrendsResult" class="bbsPostTrends">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="action" column="action" />
+        <result property="gmtCreated" column="gmt_created" />		
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--插入动态-->
+	<insert id="insertBbsPostTrends" parameterClass="bbsPostTrends">
+		insert into `bbs_post_trends`
+		(
+		`company_id`,
+		`bbs_post_id`,
+		`action`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#companyId#,
+		#bbsPostId#,
+		#action#,
+		now(),
+		now()
+		)	
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<!--获取某用户的动态-->
+	<select id="queryTrendsByCompanyId" parameterClass="java.util.HashMap" resultMap="bbsPostTrendsResult">
+		select id,company_id,bbs_post_id,action,gmt_created,gmt_modified
+		from bbs_post_trends
+		where company_id=#companyId#
+		limit #size#
+	</select>
+	<!--某用户动态列表-->
+	<select id="queryListTrendsByCompanyId" parameterClass="java.util.HashMap" resultMap="bbsPostTrendsResult">
+		select id,company_id,bbs_post_id,action,gmt_created,gmt_modified
+		from bbs_post_trends
+		where company_id=#companyId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--某用户的动态列表记录数-->
+	<select id="countListTrendsByCompanyId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_trends
+		where company_id=#companyId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+</sqlMap>

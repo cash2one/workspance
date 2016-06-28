@@ -1,0 +1,115 @@
+	<div class="clear"></div>
+ 	<div class="tdl_lsbar margintop8 html5radius borderwhitegray">
+    	<div class="tdl_lsbar_viewtype">
+        	<a class="viewtype_txt" href="#"></a>
+            <a class="viewtype_pic" href="#"></a>
+        </div>
+        <div class="tdl_lsbar_form">
+            <select id="provinceCode" name="provinceCode" value="$!{search.region}" class="tdlf_area" onchange="changeRegion()">
+            	<option value="">所在地区</option>
+            </select>
+            <select class="tdlf_date" id="searchTime" onchange="changeDay()">
+            	<option value="" #if("" == "$!{search.time}") selected #end>发布时间</option>
+            	<option value="1" #if("1" == "$!{search.time}") selected #end>一天内</option>
+                <option value="7" #if("7" == "$!{search.time}") selected #end>一周内</option>
+                <option value="30" #if("30" == "$!{search.time}") selected #end>一个月内</option>
+                <option value="90" #if("90" == "$!{search.time}") selected #end>三个月内</option>
+                <option value="180" #if("180" == "$!{search.time}") selected #end>半年内</option>
+            </select>
+            <select class="tdlf_sorts" id="searchSort" onchange="changeSort()">
+            	<option value="" #if("" == "$!{page.sort}") selected #end>默认排序</option>
+            	<option value="1" #if("1" == "$!{page.sort}") selected #end>求购量从高到低</option>
+                <option value="2" #if("2" == "$!{page.sort}") selected #end>求购量从低到高</option>
+                <option value="3" #if("3" == "$!{page.sort}") selected #end>询盘量从高到低</option>
+                <option value="4" #if("4" == "$!{page.sort}") selected #end>询盘量从低到高</option>
+                <option value="5" #if("5" == "$!{page.sort}") selected #end>按发布时间倒序</option>
+                <option value="6" #if("6" == "$!{page.sort}") selected #end>按发布时间顺序</option>
+            </select>
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <div class="tdl_ls ">
+    	<ul class="listul">
+			#foreach($list in $!{page.records})
+				<li>
+					<table align="center">
+						<tr>
+							<td width="368px" class="listul_abcde">
+								<div>
+									<h4><em style="color:#F27800;">[采购]</em> <a href="#springUrl('/trade/buy/detail')$!{list.buy.id}.htm" target="_blank">$!{list.buy.title}</a></h4>
+									<div class="listtdspan_content">$!{list.buy.detailsQuery}</div>
+									<div>报价截至日期：#if("$!{list.buy.validDays}"==0)无限制 #else #printFragmentDate("yyyy-MM-dd" $!{list.buy.gmtExpired}) #end</div>
+									##<div>已有<em style="color:#FF0101;">$!{list.messageCount}</em>人报价</div>
+								</div>
+							</td>
+							<td width="118px">
+								#if($!{list.buy.validDays} > 0)剩余<em class="cF27">
+										#if($!{list.hasEnable} > 0)
+											$!{list.hasEnable}
+										#else
+											0
+										#end
+								</em>天
+								#end
+							</td>
+							<td width="88px">
+								<em class="cF27">#printFragmentDate("yyyy-MM-dd" $!{list.buy.gmtRefresh})</em>
+							</td>
+							<td width="118px">$!{list.area.province}$!{list.area.city}</td>
+							<td><a href="#springUrl('/trade/buy/detail')$!{list.buy.id}.htm#messages" class="listul_buy_btn">询价</a></td>
+						</tr>
+					</table>
+				</li>
+            #end
+        	<div class="clear"></div>
+        </ul>
+        
+        <div class="tdl_lsbar_bottom margintop8">
+            <div class="tdl_btn_lsbar_viewtype">
+                <a class="viewtype_txt" href="#"></a>
+                <a class="viewtype_pic" href="#"></a>
+            </div>
+            <div class="tdl_btn_lsbar_pagesize">
+                <span class="lsbar_pagesize_t">每页显示数量：</span>
+                <a href="#springUrl('/trade/buy/list')--$!{search.keywords}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l20.htm" class="pagesize_selected">20</a>
+                <a href="#springUrl('/trade/buy/list')--$!{search.keywords}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l30.htm" class="pagesize_selected">30</a>
+                <a href="#springUrl('/trade/buy/list')--$!{search.keywords}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}--s0--l40.htm" class="pagesize_selected">40</a>
+            </div>
+        <div class="clear"></div>
+    </div>
+        <div class="pagesbar margintop8">
+        	#staticPageNav($!{page} "#springUrl('/trade/buy/list')" "--$!{search.keywords}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}" "")
+        </div>
+    </div>
+
+ <script language="javascript">
+ jQuery(document).ready(function(){
+    // 地区下拉框初始化
+	var _selectAreaCode=["#provinceCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"#springUrl('/trade')/getAreaCode.htm",
+		field:{code:"code",label:"name"}
+	});
+	selectAreaCode.init({
+		rootCode:"10011000",
+		#if(!$!{search.region}) 
+			initCode:"10011000"
+		#else
+			initCode:"$!{search.region}"
+		#end
+	});
+
+});
+function changeRegion(){
+	window.location="#springUrl('/trade/buy/list')"+"--$!{search.keywords}--$!{search.group}--"+jQuery("#provinceCode").val()+"--$!{search.time}--$!{search.showStyle}--$!{page.sort}--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+}
+function changeSort(){
+	window.location="#springUrl('/trade/buy/list')"+"--$!{search.keywords}--$!{search.group}--$!{search.region}--$!{search.time}--$!{search.showStyle}--"+jQuery("#searchSort").val()+"--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+}
+function changeDay(){
+	window.location="#springUrl('/trade/buy/list')"+"--$!{search.keywords}--$!{search.group}--$!{search.region}--"+jQuery("#searchTime").val()+"--$!{search.showStyle}--$!{page.sort}--$!{page.dir}"+"--s0--l$!{page.limit}.htm";
+}
+
+</script>

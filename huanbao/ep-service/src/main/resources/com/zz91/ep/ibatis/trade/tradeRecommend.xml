@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeRecommend">
+	
+	<typeAlias alias="tradeRecommend" type="com.zz91.ep.domain.trade.TradeRecommend"/>
+	
+	<resultMap class="tradeRecommend" id="fullResultMap">
+		<result property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="targetId" column="target_id"/>
+		<result property="type" column="type"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<insert id="insertRecommend" parameterClass="tradeRecommend">
+		insert into `trade_recommend`
+		(
+		`cid`,
+		`target_id`,
+		`type`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#cid#,
+		#targetId#,
+		#type#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryRecommendByTargetIdAndType" parameterClass="java.util.HashMap" resultMap="fullResultMap">
+		select 
+		id,cid,target_id,type,gmt_created,gmt_modified
+		from trade_recommend
+		where target_id=#targetId# and type=#type#
+	</select>
+	
+	<delete id="deleteRecommend" parameterClass="java.util.HashMap">
+		delete from trade_recommend
+		where target_id=#targetId# and id=#rid#
+	</delete>
+	
+	<delete id="deleteRecommendByCid" parameterClass="java.util.HashMap">
+		delete from trade_recommend
+		where target_id=#targetId# and cid=#cid# and type=#type#
+	</delete>
+</sqlMap>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
+    <title>APICloud</title>
+    <link rel="stylesheet" type="text/css" href="../css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <script type="text/javascript">
+
+		var uzyzxVerification = null;
+		apiready = function(){
+	    	uzyzxVerification = api.require('yzxVerification');
+	    }
+
+		function getSign(){
+			var signurl = document.getElementById("signurl").value;
+			var phone = document.getElementById("phone").value;
+			var param = {phonenum:phone,url:signurl};
+			uzyzxVerification.getSign(
+				param,
+				function(ret,err){
+				if(ret.status){
+					api.alert({msg:'获得签名成功 sign='+ret.sign});
+				}else{
+					api.alert({msg:'获取签名失败 返回值:'+err.result});
+				}
+			});
+		}
+	    
+		function getVerificationCode(){
+			var phone = document.getElementById("phone").value;
+			var sid = document.getElementById("sid").value;
+			var appid = document.getElementById("appid").value;
+			var appname = document.getElementById("appname").value;
+			var param = {phonenum:phone,sid:sid,appid:appid,appname:appname,seconds:60};
+	        uzyzxVerification.getVerificationCode(
+				param,
+				function(ret,err){
+				if(ret.status){
+					switch (ret.type)
+					{
+					case 0:
+						api.alert({msg:'验证成功'});
+						break;
+					case 1:
+						api.alert({msg:'等待短信下发验证码'});
+						break;
+					case 2:
+						api.alert({msg:'等待语音下发验证码'});
+						break;
+					}
+				}else{
+					api.alert({msg:'获取验证码失败 错误码:'+err.code});
+				}
+			});
+		}
+		
+		function doVerificationCode(){
+			var verifycode = document.getElementById("verifycode").value;
+			var phone = document.getElementById("phone").value;
+			var sid = document.getElementById("sid").value;
+			var appid = document.getElementById("appid").value;
+			var param = {phonenum:phone,verifycode:verifycode,sid:sid,appid:appid};
+	        uzyzxVerification.doVerificationCode(
+				param,
+				function(ret,err){
+				if(ret.status){
+					api.alert({msg:'验证成功'});
+				}else{
+					api.alert({msg:'验证失败 错误码:'+err.code});
+				}
+			});
+		}
+    
+	</script>
+</head>
+<body>
+    <div id="wrap">
+        <div id="main"> 
+            <div  >
+				<div style="font-size:0.8em;">输入手机号码</div>
+				<input type="text" id="phone"/><br><br>
+				<div style="font-size:0.8em;">输入AS获得签名网址</div>
+				<input type="text" id="signurl" value="https://mid.ucpaas.com/vfs/demo/reg.do"/><br><br>
+				<input type="button" onclick="getSign()" value="获得签名"/><br><br><br>
+				<div style="font-size:0.8em;">输入sid号</div>
+				<input type="text" id="sid" value="4c1990a5c1ad2674bc94bc39a6fd0699"/><br><br>
+				<div style="font-size:0.8em;">输入appid号</div>
+				<input type="text" id="appid" value="efb7e1de9da649fa83881afea2841cd7"/><br><br>
+				<div style="font-size:0.8em;">输入appname</div>
+				<input type="text" id="appname" value="yzxcloud"/><br><br>
+            	<input type="button" onclick="getVerificationCode()" value="获得验证码"/><br><br><br>
+				<div style="font-size:0.8em;">输入验证码</div>
+				<input type="text" id="verifycode"/><br><br>
+            	<input type="button" onclick="doVerificationCode()" value="进行验证"/><br><br><br>
+            </div>
+
+        </div>   
+    </div>
+</body>
+</html>

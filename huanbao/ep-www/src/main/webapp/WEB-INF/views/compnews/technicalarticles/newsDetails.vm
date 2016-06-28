@@ -1,0 +1,195 @@
+#set($layout = "/layout/compnews/defaultS.vm")
+
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/tech/css/JiShuZhongXin.css"/>
+<link rel="stylesheet" style="text/css" href="http://img0.huanbao.com/lib/jquery-ui/1.8.16/south-street/jquery-ui-1.8.16.custom.css" />
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/asto/asto.hack-1.0.0.css" />
+<script type="text/javascript" src="$!{address.img}/lib/jquery-ui/1.8.16/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/tech/js/validation.js"></script>
+
+
+
+ #if($!{epAuthUser})
+    <input type="hidden"  id="loginstatus"  value="1"/>	 
+ #else
+ 	<input type="hidden"  id="loginstatus" value="0" />
+ #end	
+<div class="TechnicalDetails">
+	#parse("/common/compnews/menu.vm")
+	<div class="td-left">
+    	<div class="td-left-title">
+        	<span class="td-Zuo">
+            	正文
+            </span>
+            <span class="td-You">
+            	<a href="#springUrl('/compnews/technicalarticles/publish.htm')">发布技术文章</a>
+            </span>
+        </div>
+        <!--end left title-->
+        <div class="td-content">
+					<div class="td-content-title">
+                    	 $!{news.title}
+                    </div>
+                    <div class="td-content-date">
+                    	$!date.format('yyyy年MM月dd日',$!{news.gmtPublish}) <span class="zi13"></span>浏览量:${news.viewCount}
+                    </div>
+                    <div class="td-content-content">
+                    	    $!{news.details}
+                    </div>
+                    <div class="td-content-page">
+                    	<div class="td-page-up"><a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{onNews.id}.htm">#if("$!{onNews.id}"!="")上一篇：#printTitle($!{onNews.title} 20 "")#end</a></div>
+                        <div class="td-page-down"><a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{downNews.id}.htm">#if("$!{downNews.id}"!="")下一篇：#printTitle($!{downNews.title} 20 "")#end</a></div>
+                    </div>
+		</div>
+        <div style="clear:both"></div>
+        <div class="td-message">
+		  <form id="messageForm" method="post" action="$!{address.myesite}/message/sendInquiry.htm">
+        	<div class="td-message-LiuYan">
+            	留言
+            </div>
+            <div class="td-message-LiuYan_title">
+            	<span class="LiuYan-title">
+                	标<span class="LiuYan-space"></span>题:
+                </span>
+                <span class="LiuYan-text">
+                	<input type="text" class="text" name="title" id="title" value="我对 $!{news.title} 感兴趣"/>
+                </span>
+            </div>
+            <div style="clear:both"></div>
+            <div class="td-message-LiuYan_title">
+            	<span class="LiuYan-title">
+                	主要内容:
+                </span>
+                <span class="LiuYan-text">
+                	<textarea name="details" cols="" class="text1" rows="" id="details"></textarea>
+                </span>
+            </div>
+            <div style="clear:both"></div>
+			
+			<input id="sendMsgBtn" type="button"   value="提交留言" style="margin-left:7cm;margin-top:10px;">
+            <input type="hidden" name="targetId" value=" $!{news.id}"/>
+			<input type="hidden" name="targetCid" value="$!{cid}"/>
+			<input type="hidden" name="targetType" value="3"/>
+			<input type="hidden" name="targetUid" value="$!{uid}"/>
+			<input type="hidden" name="refurl" value="$!{address.www}/compnews/technicalarticles/newsDetails$!{id}.htm" />
+			</form>
+			<div class="td-BanQuan">
+            	<span class="td-BanQuan-copyright">
+                	版权与免责声明：
+                </span>
+                <p>
+                	该栏目文章仅代表作者或其公司的观点,本网站对文章的归属，及内容的准确性，可靠性，完整性等情况不承担任
+何法律责任，也不承担此类作品侵权行为的直接责任及连带责任。如涉及文章内容、版权等问题请与本网联系，我们
+将尽快予以处理。
+                </p>
+            </div>
+        </div>
+        <!--end message-->
+    </div>
+    <!--end 技术文章详情页 left-->
+    <div class="m2-right2">
+	  <div class="m2-right-item">
+    	<div class="m2-right-title">
+               <a href="$!{address.trade}/newg.htm">最新产品</a>
+        </div>
+        <div class="m2-right-content">
+			#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?size=8&ssu","","","600")
+          	<ul>
+				#foreach($l in $!{list})
+            	<li><a href="$!{address.trade2}/supply/detail$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a></li>
+				#end
+            </ul>
+			#end
+        </div>
+      </div>
+      <div class="m2-right-item">
+        <div class="m2-right-title">
+            	<a href="$!{address.trade}/newb.htm">推荐求购信息</a>
+        </div>
+         <div class="m2-right-content">
+			#cacheFragment("$!{address.fragment}/fragment/trade/recommendBuy.htm?size=7&wwwIex","","","600")
+            <ul>
+    			#foreach($l in $list)
+                <li><a href="$!{address.trade}/buy/detail$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a></li>
+                #end
+			</ul>
+			#end
+          </div> 
+        </div>
+		<div class="m2-right-item" style="border-bottom:none">
+        	<div class="m2-right-title">
+            	<a href="${address.news}/list10001002.htm">市场行情</a>
+            </div>
+            <div class="m2-right-content">
+				#cacheFragment("$!{address.fragment}/fragment/news/categoryNews.htm?categoryCode=10001002&size=7&oue","","","600")
+            	<ul>
+					#foreach($l in $!{list})
+                	<li><a href="$!{address.news}/details.htm?id=$!{l.id}">·#printTitle($!{l.titleIndex} 15 "")</a></li>
+                   #end
+				</ul>
+				#end
+           </div>
+      </div>
+    </div>
+    <!--end 技术文章详情页 right-->
+</div>
+<!--end 技术文章详情页-->
+
+<div style="clear:both"></div>
+<!--end main-->
+<!--底部 start-->
+
+
+<script type="text/javascript" >
+  	if($!{show}==1){
+		Asto.util.Message.show({
+			msg:"你对技术文章留言成功！",
+			autoClose:5000
+		});
+	}  
+  
+  jQuery(document).ready(function(){
+     jQuery("#sendMsgBtn").click(function(){
+	 jQuery.ajax({
+		    type:"post",
+			url:"/compnews/technicalarticles/ajaxUser.htm",
+			dataType:"json",
+			cache:false,
+			success:function(data){
+				if(data.success==true){
+				    jQuery("#loginstatus").val("1")
+				}else{
+				    jQuery("#loginstatus").val("0")
+				}
+    	    if(jQuery("#title").val()=="" || jQuery("#title").val()=="请输入内容"){
+    		   jQuery("#title").blur();
+    		   return false;
+    		 }else if( jQuery("#details").val()=="" || jQuery("#details").val()=="请输入内容"){
+    		   jQuery("#details").blur();
+    		   return false;
+    		 }else if(jQuery("#loginstatus").val()!="1"){
+    		    var loginbox=new Asto.util.PopupBox({
+        		  		url:"#springUrl('/compnews/technicalarticles/loginMini.htm')",
+        		  		destUrl:"$!{address.www}/submitCallback.htm",
+        		  		callbackFn:function(success, data){
+        		  			loginbox.close();
+        		  			jQuery("#loginstatus").val("1");
+        					jQuery("#messageForm").submit();
+        		 		},
+    					modal:true,
+    					title:"请先登录后再在留言",
+        		  		width:800,
+        		  		height:500
+        	  		});
+        		  	loginbox.show();
+    		 }else{
+    		    jQuery("#messageForm").submit();
+    		 }  
+	   	  }
+		  });
+      });
+ });
+	 
+	
+	</script>

@@ -1,0 +1,514 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta content="$!{address.name}是中国最大最旺的网上废料贸易市场，这里为您精选了废金属，废塑料，废纸，废橡胶，纺织废料，废旧设备，废电子电器，废玻璃，废皮革等各类废料供求信息、公司黄页、行业资讯、价格行情、展会信息等" name="description" />
+<meta content="废金属，废塑料，废纸，纺织废料，再生资源，废橡胶"  name="keywords" />
+<title>$!{siteInfo.site_name} 会员注册 -- $!{address.server}/register.htm</title>
+<link href="$!{address.logo}/favicon.ico" rel="shortcut icon">
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.hack.css" />
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.comm.css" />
+<link rel="stylesheet" type="text/css" href="$!{address.css}/zz91.register.css" />
+#parse("/common/import.vm")
+#parse("/common/context.vm")
+<script type="text/javascript" src="$!{address.js}/validate/jquery.validate.js"></script>
+<script type="text/javascript" src="$!{address.js}/zz91.register.js" ></script>
+<script type="text/javascript">
+	function changeImg(){
+		var ts=Math.random();
+		##document.getElementById('codeImg').src='#springUrl("/validationcode/mathcode.htm")?ts='+ts ;
+		document.getElementById('codeImg').src='http://pyapp.zz91.com/getzwpic/?t='+ts ;
+		jQuery("#verifyCodeKey").val(ts);
+	}
+	function fuwushow(){
+		document.getElementById("fuwukuang").style.display="";
+	}
+	function fuwuclose(){
+		document.getElementById("fuwukuang").style.display="none";
+	}
+	
+	jQuery(document).ready(function(){
+		var regarea = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')",
+			assistUrl:"#springUrl('/category/gardenChild.htm')"
+    	});
+    	
+    	regarea.init({
+    		rootCode:"1001",
+    		initCode:"10011000",
+			initAssistCode:"",
+			assistSelects:["#reg-garden"],
+    		selects:["#reg-area-0","#reg-area-1","#reg-area-2","#reg-area-3"]
+    	});
+		
+		var industry = new zz91Selector({
+			url:"#springUrl('/category/categoryChild.htm')"
+		});
+		
+		industry.init({
+			rootCode:"1000",
+			initCode:"",
+			selects:["#industryCode"]
+		});
+		
+		var service=new zz91Selector({
+			url:"#springUrl('/category/categoryChild.htm')"
+		});
+		service.init({
+			rootCode:"1020",
+			selects:["#serviceCode"]
+		});
+		
+		changeImg();
+	});
+	
+	function setAreaCode(){
+		var areacode=jQuery("#reg-area-0").val();
+		if(jQuery("#reg-area-1").val()!=""){
+			areacode=jQuery("#reg-area-1").val();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			areacode=jQuery("#reg-area-2").val();
+		}
+		if(jQuery("#reg-area-3").val()!=""){
+			areacode=jQuery("#reg-area-3").val();
+		}
+		jQuery("#areaCode").val(areacode);
+	}
+	
+	jQuery(document).ready(function(){
+		jQuery("#viewZZ91Detail").click(function(){
+			jQuery("#fuwukuang").slideDown(500);
+		});
+		jQuery("#closeZZ91Detail").click(function(){
+			jQuery("#fuwukuang").slideUp(500);
+		});
+	})
+	
+	function printServer(){
+		document.body.innerHTML =  document.getElementById("printArea").innerHTML;
+		window.print();
+		location.reload();
+	}
+</script>
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+#parse("/register/regLoginHead.vm")
+<!--content start-->
+<div class="content">
+  <div class="topbanner"> 
+	##showAds($adsList)
+	<script type="text/javascript" src="$!{address.server}/ads/zz91ads.htm?placeId=434" ></script>
+  </div>
+  <div class="clear"></div>
+  <form id="regForm" name="regForm" >
+    <ul id="ul_one" class="registForm" style="display:">
+      <li>
+		<span class="item" >以下加<span class="textcolor1">*</span>为必填项</span> 
+		<span id="show_error_one" style="color:red;text-align: right;float:left;padding-right:10px;line-height:24px;">$!{error}</span>
+	  </li>
+	  <li>
+		<label class="item required"  for="membershipCode">选择注册会员类型<span class="textcolor1">*</span></label>
+        <span class="item-input">
+            <input type="radio" name="membershipCode" value="10051000" checked="checked" class="style2"/>
+            <img src="$!{address.images}/register/member.jpg" class="image1"/>
+            <input type="radio" name="membershipCode" value="10051001" />
+            <img src="$!{address.images}/register/cont1.jpg" class="image1" />
+            <input type="radio" name="membershipCode" value="10051002" />
+            <img src="$!{address.images}/register/cont2.jpg"  class="image2"/>
+		</span>
+	  </li>
+      <li>
+      	<label class="item required"  for="account">用户名<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="account" id="account" type="text" onBlur="check_account()" maxLength="32" class="item-input-long" />
+        </span>
+        <span id="lb_account" class="lb_password">用户名只能包含英文字母、数字和下划线。</span>
+      </li>
+      <li>
+      	<label class="item required" for="password">密码<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="password" id="password" type="password" onBlur="check_password()" maxLength="16" class="item-input-long"/>
+        </span>
+        <span id="lb_password" class="lb_password">密码至少6位，只能包含英文字母、数字和下划线。</span>
+      </li>
+      <li>
+      	<label class="item required"  for="vpassword">重复密码<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="vpassword" id="vpassword" type="password" onBlur="check_vpassword()" maxLength="16" class="item-input-long"/>
+        </span>
+        <span id="lb_vpassword" class="lb_vpassword">请再一次输入密码。</span>
+      </li>
+      <li>
+        <label class="item required" for="telCountryCode">固定电话<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="telCountryCode" id="telCountryCode" type="text" class="item-input-long" style="width:50px;" value="086"/>
+        	<input name="telAreaCode" id="telAreaCode" type="text" class="item-input-long"  style="width:50px; margin-left:5px;" />
+        	<input name="tel" id="tel" type="text" onBlur="check_tel()"  class="item-input-long"  style="width:112px;margin-left:5px;" />
+        </span>
+        <span id="lb_tel" class="lb_tel">请正确填写您的电话号码,号码在7-9位之间。</span>
+      </li>
+      <li>
+      	<label class="item required" for="mobile">手机号码<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="mobile" id="mobile" type="text" onBlur="check_mobile()"  class="item-input-long" />
+        </span>
+        <span id="lb_mobile" class="lb_mobile">请正确填写您的手机号码,号码为11位。</span>
+        <div class="telTip">
+          1、确保您的潜在客户联系到您；<br>
+          2、zz91将不定期的发送最新商机和资讯发送到您手机；<br>
+          3、准确的联系方式让您的潜在客户更相信您,成交机会倍增；<br>
+          4、zz91不绑定任何收费服务。
+        </div>
+      </li>
+	   <li>
+      	<label class="item required" for="contact">联系人<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="contact" id="contact" type="text" class="item-input-long" />
+        </span>
+        <span id="lb_mobile" class="lb_mobile">请正确填写您公司常用联系人的姓名。</span>
+      </li>
+	  <li>
+		<label class="item required" for="sex">性别<span class="textcolor1"></span></label>
+		<span class="item-input">
+        	<input type="radio" id="sex" name="sex" value="0" checked="checked" style="border:none"/>先生
+			<input type="radio" id="sex" name="sex" value="1" style="border:none"/>女士
+        </span>	
+	  </li>
+      <li>
+      	<label class="item required" for="email">邮箱<span class="textcolor1">*</span></label>
+        <span class="item-input">
+        	<input name="email" id="email" type="text" onBlur="check_email()" class="item-input-long"/>
+        </span>
+        <span id="lb_email" class="lb_email">请正确填写您的邮箱，确保格式正确。</span>
+      </li>
+      <li>
+      	<label class="item required" for="verifyCode">验证码<span class="textcolor1">*</span></label>
+        <span class="item-input">
+			<input name="verifyCodeKey" id="verifyCodeKey" type="hidden" />
+          ##<img id='codeImg' onclick="javascript:changeImg();" src='#springUrl("/validationcode/code.htm")?ts=' + new Date().getTime() class="image3" title="看不清楚?点击图刷新验证码！" style="cursor:pointer" />
+          <img src='$!{address.img}/front/images/global/loading.gif'  align="absmiddle" id='codeImg' style="cursor:pointer"  title="看不清楚?点击图刷新验证码！" onclick="javascript:changeImg();"/>  ##class="image3"
+	  <input name="verifyCode" id="verifyCode"  class="item-input-long"  style="width:50px;"  type="text" size="10" />
+		  <span class="textcolor2"><a href="javascript:changeImg();" class="a1" >看不清楚?换一张。</a></span>
+        </span>
+		##<span id="lb_verifycode" class="lb_verifycode" style="font-weight:bold; color:#F00">请将左边图片里的计算结果填入框中。</span>
+		<span id="lb_verifycode" class="lb_verifycode" style="font-weight:bold; color:#F00">请将左侧显示的信息填写到框中。</span>
+      </li>
+      <li style="text-align:center;">
+		<span id="viewZZ91Detail">点此阅读ZZ91再生网服务条款  <img src="$!{address.images}/global/print.png" onclick="printServer()" alt="打印ZZ91服务条款" title="打印ZZ91服务条款"> </span>
+	  </li>
+	  <li style="height:50px;">
+        <input type="hidden" id="refurl" name="refurl" value="$!{refurl}" />
+        <input type="hidden" id="regfromCode" name="regfromCode" value="$!{regfromCode}" />
+        <input type="button" id="submit1"  class="submit2"  value="同意服务条款  提交注册" onclick="check_reg()" />
+      </li>
+    </ul>
+	<ul id="ul_two" class="registForm" style="display:none;">
+		<li >
+    		<span class="item" >以下 <span class="textcolor1">*</span> 为必填项</span>
+    		<span id="show_error_two" style="color:red;text-align: right;float:left;padding-right:10px;line-height:24px;">$!{error}</span>
+    	</li>
+		<li >
+        	<label class="item required" for="industryCode">主营行业<span class="textcolor1">*</span></label>
+			<span class="item-input">
+    			<select id='industryCode' name='industryCode' onBlur="check_industrycode()">
+    				<option value="">--请选择--</option>
+                </select>
+            </span>
+			<span id="lb_industrycode" class="lb_industrycode">请选择主营行业。</span>
+        </li>
+		<li >
+        	<label class="item required"  for="business">主营产品<span class="textcolor1">*</span></label>
+        	<span class="item-input">
+				<input type="text" name="business" id="business" class="item-input-long"onBlur="check_business()" />
+			</span>
+			<span id="lb_business" class="lb_business">请输入主营产品。</span>
+        </li>
+		<li >
+			<label class="item required" for="name">公司名称<span class="textcolor1">*</span></label>
+			<span class="item-input">
+				<input type="text" name="name" id="name" class="item-input-long" onBlur="check_name()"/>
+			</span>
+			<span id="lb_name" class="lb_name">请输入公司名称。</span>
+		</li>
+		#*
+		<li >
+        	<label class="item required" for="contact">联系人 <span class="textcolor1">*</span></label>
+        	<span class="item-input">
+				<input type="text" name="contact" id="contact" class="item-input-long" onBlur="check_contact()"/>
+			</span>
+			<span id="lb_contact" class="lb_contact">请输入公司的联系人信息。</span>
+		</li>
+		<li >
+        	<label class="item required"  for="sex">性别</label>
+			<label>
+				<input type="radio" name="sex" value="0" checked="checked" />男
+			</label>
+			<label>
+				<input type="radio" name="sex" value="1" />女
+			</label>
+		</li>
+		*#
+		<li >
+        	<label class="item required" for="position">职位</label>
+        	<span class="item-input">
+			<input type="text" name="position" id="position" class="item-input-long"/>
+			</span>
+		</li>
+		<li >
+        	<label class="item required" for="serviceCode">公司类型 :<span class="textcolor1">*</span></label>
+        	<span class="item-input">
+    			<select name="serviceCode" id="serviceCode" onBlur="check_servicecode()">
+                    <option value="">请选择</option>
+                </select>
+			</span>
+			<span id="lb_servicecode" class="lb_servicecode">请选择公司类型。</span>
+		</li>
+        <li >
+        	<label class="item required"  for="nation">国家/地区:<span class="textcolor1">*</span></label>
+        	<span class="item-input">
+    			<select id='reg-area-0'>
+                    <option value="">请选择国家</option>
+                </select>
+                <select id='reg-area-1' >
+                    <option value="">请选择省份</option>
+                </select>
+                <select id='reg-area-2'>
+                    <option value="">请选择城市</option>
+                </select>
+                <select id='reg-area-3'>
+                    <option value="">请选择区县</option>
+                </select>
+    			<span id="lb_area">请选择国家地区</span>
+			</span>
+        </li>
+		<li id="li-gardens" >
+            <label class="item required" for="gardens">园区、集散地、市场<span class="textcolor1"></span></label>
+			<span class="item-input" >
+				<select id='reg-garden' name="categoryGardenId">
+                    <option value="">请选择集散地</option>
+                </select>
+			</span>
+        </li>
+        <li >
+            <label class="item required" for="address">地址<span class="textcolor1">*</span></label>
+            <span class="item-input">
+				<input name="address" type="text" id="address" class="item-input-long" onBlur="check_address()"/>
+			</span>
+			<span id="lb_address" class="lb_address">请输入公司地址。</span>
+        </li>
+        <li >
+			<label class="item required" for="zip" >邮编</label>
+			<span class="item-input">
+				<input name="addressZip" type="text" id="zip" class="item-input-long" />
+			</span>
+        </li>
+		<li >
+			<label class="item required" for="fax">传真</label>
+			<span class="item-input">
+            <input name="fax" type="text" id="fax" class="item-input-long" />
+			</span>
+        </li>
+		<li >
+			<label class="item required" for="website">网址</label>
+			<span class="item-input">
+				<input name="website" type="text" id="website" class="item-input-long" />
+			</span>
+        </li>
+		<li >
+			<label class="item required" for="qq">QQ</label>
+			<span class="item-input">
+				<input name="qq" type="text" id="qq" class="item-input-long" />
+			</span>
+        </li>
+		<li >
+			<label class="item required" for="msn" >MSN</label>
+			<span class="item-input">
+				<input name="msn" type="text" id="msn" class="item-input-long" />
+			</span>
+        </li>
+        <li >
+			<label class="item required" for="businessType" >主营方向</label>
+            <label><input type="radio" name="businessType" value="1" checked="checked" />销售</label>
+			<label><input type="radio" name="businessType" value="2" />采购</label>
+			<label><input type="radio" name="businessType" value="0" />两者都有</label>
+        </li>
+		<li id="li-businessType1">
+			<label class="item required" >主营产品（提供的服务）</label>
+			<span class="item-input">
+            <input name="saleDetails" type="text" id="saleDetails" class="item-input-long" />
+			</span>
+			<span class="item-input-tip"></span>
+        </li>
+		<li id="li-businessType2">
+			<label class="item required" for="buyDetails">采购的产品</label>
+			<span class="item-input">
+            <input name="buyDetails" type="text" id="buyDetails" class="item-input-long" />
+			</span>
+			<span class="item-input-tip">30个字符以内</span>
+        </li>
+        <li>
+			<label class="item required" for="introduction">公司简介 <span class="textcolor1">*</span></label>
+			<span class="item-input">
+				<textarea name="introduction" type="text" id="introduction" class="item-textarea-long" rows="3" onBlur="check_introduction()"></textarea>
+            </span>
+			<span id="lb_introduction" class="lb_introduction">请输入公司简介。</span>
+        </li>
+        <li >
+        	<label class="item required" >如何得知本网站?</label>
+        	<span class="item-input">
+        		<label><input type="radio"  name="infoSourceCode" value="1"/> 网络搜索</label>
+	            <label><input type="radio"  name="infoSourceCode" value="2" />线下活动</label>
+	            <label><input type="radio"  name="infoSourceCode" value="3" />广告</label>
+	            <label><input type="radio"  name="infoSourceCode" value="4" />朋友介绍</label>
+	            <label><input type="radio"  name="infoSourceCode" value="0" checked="checked" />其它</label>
+            </span>
+        </li>
+		<li>
+			<input type="button" id="submit2" class="submit2" value="同意服务条款" style=" margin-left:193px;" onclick="check_reg_two()"/>
+		</li>
+	</ul>
+	<input type="hidden" id="companyId" name="companyId" />
+	<input type="hidden" id="areaCode" name="areaCode" value="" />
+	</form>
+	<ul id="ul_three" class="registForm" style="display:none">
+		<li style="height:150px;text-align:center;margin:100px 0 0 0;">
+            <span style="font-size:16px;font-weight:bold;">友情提示：</span><br/>
+			恭喜，您的帐号:<span id="success_account" style="color:red;font-size:14px;font-weight:bold;"></span>已注册成功！<span id="success_time" style="color:red">5</span>秒后自动跳转...
+			<br />没有跳转？请点击<a href="$!{address.server}/myrc/index.htm" class="a1" >这里</a>进入生意管家。
+		</li>
+	</ul>
+</div>
+<!--content end-->
+<div class="bottom1">
+	<div id="fuwukuang" style="display:none">
+			<div id="printArea">
+			<h3>《 ZZ91再生网网络服务使用协议 》</h3>
+			<div class="zz91detail">
+            <h4>一 、 注册提示</h4>
+            <h5>1.1</h5>
+            <p>ZZ91再生网同意按照本协议的规定及其不时发布的操作规则提供基于互联网以及移动网的相关服务（以下简称"网络服务"）。如无特别申明，本协议所称"网络服务"特指由ZZ91再生网提供的网络服务。</p>
+            <p>为获得网络服务，服务使用人（以下简称"用户"）应当同意本协议的全部条款并按照网站页面上的提示完成全部的注册程序。</p>
+            <p>用户在进行注册程序过程中点击"同意"按钮即表示用户完全接受本协议项下的全部条款。</p>
+            <p>中国再生资源网提供的各项网络服务的运作权、所有权和解释权归浙江杭州阿思拓信息科技有限公司。</p>
+            <h5>1.2</h5>
+            <p>用户在注册时，必须提供真实、准确的个人资料；如个人资料有任何变动，必须及时更新。</p>
+            <h5>1.3</h5>
+            <p>用户注册成功后，ZZ91再生网将给予每位用户一个独有的用户帐号及密码。用户帐号和密码由用户独享使用和负责保管，因此用户应当对以该用户帐号进行的所有活动和事件负法律责任。</p>
+            <p>用户若发现任何非法使用用户帐号或存在安全漏洞的情况，应立即通告ZZ91再生网。</p>
+            <h4>二 、服务内容</h4>
+            <h5>2.1</h5>
+            <p>ZZ91再生网仅提供相关的网络服务，除此之外与相关网络服务有关的设备（如个人电脑、手机、及其他与接入互联网或移动网有关的装置）及所需的费用（如为接入互联网而支付的电话费及上网费、为使用移动网而支付的手机费）均应由用户自行负担。</p>
+            <h5>2.2</h5>
+            <p>ZZ91再生网提供的部分网络服务为收费的网络服务，用户使用收费网络服务需要向ZZ91再生网支付一定的费用。如用户拒绝支付相关费用，则ZZ91再生网有权不向用户提供上述收费网络服务。</p>
+            <h4>三 、服务变更、中断或终止</h4>
+            <h5>3.1</h5>
+            <p>用户同意，鉴于网络服务的特殊性，ZZ91再生网有权根据实际情况提供具体的网络服务内容，有权随时变更、中断或终止部分或全部的网络服务（包括收费网络服务）。</p>
+            <p>如变更、中断或终止的网络服务属于免费网络服务，ZZ91再生网无需通知用户，也无需对任何用户或任何第三方承担任何责任；</p>
+            <p>如变更、中断或终止的网络服务属于收费网络服务，ZZ91再生网会在变更、中断或终止之前事先通知用户，并协商相关事宜。</p>
+            <h5>3.2</h5>
+            <p>用户理解，ZZ91再生网需要定期或不定期地对提供网络服务的平台和相关的设备进行检修或维护，如因此类情况而造成收费网络服务在合理时间内的中断，ZZ91再生网无需为此承担任何责任。但ZZ91再生网会尽可能就检修维护事宜事先进行通告。</p>
+            <h5>3.3</h5>
+            <p>如有下列任何情形之一，ZZ91再生网有权随时中断或终止向用户提供本协议项下的网络服务（包括收费网络服务）而无需对用户或任何第三方承担任何责任： </p>
+            <h6>（1）用户提供的个人资料不真实，不准确；</h6>
+            <h6>（2）用户在使用收费网络服务时未按规定向ZZ91再生网支付相应的服务费；</h6>
+            <h6>（3）用户违反本协议中规定的服务使用说明。</h6>
+            <p></p>
+            <h4>四 、服务使用说明</h4>
+            <h5>4.1</h5>
+            <p>用户应妥善使用和保管自己的用户账号和密码，不可随意将自己的用户帐号、密码转让或借予他人使用。因用户的保管疏忽或黑客行为导致用户帐号、密码遭他人非法使用，ZZ91再生网不承担任何责任。</p>
+            <h5>4.2</h5>
+            <p>用户同意，对于用户通过网络服务上传到ZZ91再生网可公开获取信息的区域的任何内容，ZZ91再生网在全世界范围内具有免费的、永久性的、不可撤销的、非独家的和完全再许可的权利和许可，以使用、复制、修改、改编、出版、翻译、据以创作衍生作品、传播、表演和展示上述内容（整体或部分），和/或将上述内容编入当前已知的或以后开发的其他任何形式的作品、媒体或技术中。</p>
+            <h5>4.3</h5>
+            <p>用户同意ZZ91再生网有权在提供网络服务过程中以各种方式投放各种商业性广告或其他任何类型的商业信息（包括但不限于在ZZ91再生网的任何页面上投放广告），并且，用户同意接受ZZ91再生网通过电子邮件或手机短信等其他方式向用户发送商品促销或其他相关商业信息。</p>
+            <h5>4.4</h5>
+            <p>用户在使用网络服务过程中，必须遵守以下原则： </p>
+            <h6>（1） 遵守中国的法律和法规；</h6>
+            <h6>（2） 遵守所有与网络服务有关的网络协议、规定和程序；</h6>
+            <h6>（3） 不得为任何非法目的而使用网络服务系统；</h6>
+            <h6>（4） 不得以任何形式利用网络服务侵犯ZZ91再生网的商业利益；</h6>
+            <h6>（5） 不得利用网络服务系统进行任何可能对互联网或移动网正常运转造成不利影响的行为；</h6>
+            <h6>（6） 不得利用网络服务上传、展示或传播任何虚假的、骚扰性的、中伤他人的、辱骂性的、恐吓性的、庸俗淫秽的或其他任何非法的信息资料；</h6>
+            <h6>（7） 不得侵犯其他任何第三方的专利权、著作权、商标权、名誉权或其他任何合法权益；</h6>
+            <h6>（8） 不得利用网络服务系统进行任何不利于ZZ91再生网的行为；</h6>
+            <p></p>
+            <h5>4.5</h5>
+            <p>ZZ91再生网有权对用户使用网络服务的情况进行审查和监督(包括但不限于对用户存储在ZZ91再生网的内容进行审核)，如用户在使用网络服务时违反任何上述规定，ZZ91再生网或其授权人有权要求用户改正或直接采取一切必要的措施（包括但不限于更改或删除用户上传的内容等、暂停或终止用户使用网络服务）以减轻用户不当行为造成的影响。</p>
+            <h5>4.6</h5>
+            <p>ZZ91再生网针对某些特定的网络服务的使用，通过各种方式（包括但不限于网页公告、电子邮件、短信提醒等）作出的任何声明、通知、警示等内容应视为本协议的一部分。用户如使用上述网络服务，视为用户也同意并遵守上述声明、通知、警示的内容。</p>
+            <h4>五 、用户隐私保护</h4>
+            <h5>5.1</h5>
+            <p>保护用户隐私是ZZ91再生网的一项基本政策。ZZ91再生网保证不对外公开或向第三方提供单个用户的注册资料及用户在使用网络服务时存储在ZZ91再生网的非公开内容，但有下列情形之一除外： </p>
+            <h6>（1） 事先获得用户的明确授权；</h6>
+            <h6>（2） 根据有关的法律法规要求；</h6>
+            <h6>（3） 按照相关政府主管部门的要求；</h6>
+            <h6>（4） 为维护社会公众的利益；</h6>
+            <h6>（5） 为维护ZZ91再生网的合法权益。</h6>
+            <p></p>
+            <h5>5.2</h5>
+            <p>ZZ91再生网可能会与第三方合作向用户提供相关的网络服务，在此情况下，如该第三方同意承担与ZZ91再生网同等的保护用户隐私的责任，则ZZ91再生网有权将用户的注册资料等提供给该第三方。</p>
+            <h5>5.3</h5>
+            <p>在不透露单个用户隐私资料的前提下，ZZ91再生网有权对整个用户数据库进行分析并对用户数据库进行商业上的利用。</p>
+            <h4>六 、知识产权</h4>
+            <h5>6.1</h5>
+            <p>ZZ91再生网提供的网络服务中包含的任何文本、图片、图形、音频和/或视频资料均受版权、商标和/或其它财产所有权法律的保护，未经相关权利人同意，上述资料均不得在任何媒体直接或间接发布、播放、出于播放或发布目的而改写或再发行，或者被用于其他任何商业目的。所有这些资料或资料的任何部分仅可作为私人和非商业用途而保存在某台计算机内。由于上述资料产生或在传送或递交全部或部分上述资料过程中产生的延误、不准确、错误和遗漏或从中产生或由此产生的任何损害赔偿，ZZ91再生网无需向用户或任何第三方承担任何形式的责任。</p>
+            <h5>6.2</h5>
+            <p>ZZ91再生网为提供网络服务而使用的任何软件（包括但不限于软件中所含的任何图象、照片、动画、录像、录音、音乐、文字和附加程序、随附的帮助材料）的一切权利均属于该软件的著作权人，未经该软件的著作权人许可，用户不得对该软件进行反向工程（reverse engineer）、反向编译（decompile）或反汇编（disassemble）。</p>
+            <h4>七 、协议修改</h4>
+            <h5>7.1</h5>
+            <p>ZZ91再生网有权随时修改本协议的任何条款，一旦本协议的内容发生变动，ZZ91再生网将会直接在网站上公布修改之后的协议内容。该公布行为视为ZZ91再生网已经通知用户修改内容，ZZ91再生网也可通过其他适当方式向用户提示修改内容。</p>
+            <h5>7.2</h5>
+            <p>如果不同意ZZ91再生网对本协议相关条款所做的修改，用户有权停止使用网络服务。但如果用户继续使用网络服务，则视为用户已接受ZZ91再生网对本协议相关条款所做的修改。</p>
+            <h4>八 、通知送达</h4>
+            <h5>8.1</h5>
+            <p>本协议项下ZZ91再生网对于用户所有的通知均可通过网页公告、电子邮件、手机短信或常规的信件传送等方式进行；自上述通知的发送之日起视为上述通知已送达收件人。</p>
+            <h5>8.2</h5>
+            <p>用户对于ZZ91再生网的通知应当通过ZZ91再生网对外正式公布的通信地址、传真号码、电子邮件地址等联系信息进行送达。</p>
+            <h4>九 、违约赔偿</h4>
+            <p>用户同意保障和维护ZZ91再生网及其他用户的利益，如因用户违反有关法律、法规或本协议项下的任何条款而给ZZ91再生网或任何其他第三人造成损失，用户同意承担由此造成的损害赔偿责任。</p>
+            <h4>十 、免责声明</h4>
+            <h5>10.1</h5>
+            <p>用户明确同意其使用网络服务所存在的风险将完全由其自己承担；因其使用网络服务而产生的一切后果也由其自己承担，ZZ91再生网对用户不承担任何责任。</p>
+            <h5>10.2</h5>
+            <p>ZZ91再生网不担保网络服务一定能满足用户的要求，也不担保网络服务不会中断，对网络服务的及时性、安全性、准确性也都不作担保。</p>
+            <h5>10.3</h5>
+            <p>ZZ91再生网不保证为向用户提供便利而设置的外部链接的准确性和完整性，同时，对于上述外部链接指向的不由ZZ91再生网实际控制的任何网页上的内容，ZZ91再生网不承担任何责任。</p>
+            <h5>10.4</h5>
+            <p>对于因不可抗力或ZZ91再生网不能控制的原因造成的网络服务中断或其它缺陷，ZZ91再生网不承担任何责任，但会尽力减少由此给用户造成的损失和影响。</p>
+            <h5>10.5</h5>
+            <p>用户同意，对于ZZ91再生网向用户提供的下列产品或者服务的质量缺陷本身及其引发的任何损失，ZZ91再生网无需承担任何责任： </p>
+            <h6>（1） ZZ91再生网向用户免费提供的各项网络服务；</h6>
+            <h6>（2） ZZ91再生网向用户赠送的任何产品或者服务；</h6>
+            <h6>（3） ZZ91再生网向收费网络服务用户附赠的各种产品或者服务。</h6>
+            <p> </p>
+            <h4>十一 、法律效力</h4>
+            <h5>11.1 </h5>
+            <p>本协议构成双方对本协议之约定事项及其他有关事宜的完整协议，除本协议的规定之外，未赋予本协议各方其他权利。</p>
+            <h5>11.2</h5>
+            <p>如本协议中的任何条款无论因何种原因完全或部分无效或不再具有执行力，本协议的其余条款并不受此影响而依然有效并具有法律约束力。</p>
+            <h5>11.3</h5>
+            <p>本协议的订立、执行和解释及争议的解决均应适用中国法律并受中国法院管辖。如发生本协议项下的服务条款与中华人民共和国法律相抵触时，则优先适用有关法律规定。</p>
+            <h4>十二 、其他规定</h4>
+            <h5>12.1</h5>
+            <p>本协议中的标题仅为方便而设，在解释本协议时应被忽略。</p>
+            <p> </p>
+            <h5>12.2</h5>
+            <p>本协议未尽事宜应按友好协商原则和国家有关法律法规妥善处理之。</p>
+            </div>
+       </div>
+	   <div class="closeDetail"> <input type="submit" name="button" id="closeZZ91Detail" value=" 阅读完毕，关闭窗口 " class="submit3" /> <span onclick="printServer()"> <img src="$!{address.images}/global/print.png" onclick="printServer()" alt="打印ZZ91服务条款" title="打印ZZ91服务条款" class="printDetailsBtn"></span></div>
+  </div>
+</div>
+<!--footer start-->
+#cacheFragment("$!{address.fragment}/china/footer.htm","","1","")
+	$!{fragmentContext}
+#end
+<!--footer end-->
+<!--box end-->
+#parse("/seo/analysis_body.vm")
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")

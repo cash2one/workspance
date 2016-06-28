@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="yuanLiaoExportInquiry">
+	<!-- 原料导出讯盘 -->
+	<typeAlias alias="yuanLiaoExportInquiryDO"
+		type="com.ast.ast1949.domain.yuanliao.YuanLiaoExportInquiry" />
+	<resultMap class="yuanLiaoExportInquiryDO" id="yuanLiaoExportInquiryResult">
+		<result property="id" column="id" />
+		<result property="yuanLiaoId" column="yuanliao_id" />
+		<result property="targetId" column="target_id" />
+		<result property="fromCompanyId" column="from_company_id" />
+		<result property="toCompanyId" column="to_company_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		yuanliao_id,
+		target_id,
+		from_company_id,
+		to_company_id,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insertYuanLiao" parameterClass="yuanLiaoExportInquiryDO">
+		INSERT INTO yuanliao_export_inquiry
+		(
+		`yuanliao_id`,
+		`target_id`,
+		`from_company_id`,
+		`to_company_id`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#yuanLiaoId#,
+		#targetId#,
+		#fromCompanyId#,
+		#toCompanyId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="countByYuanLiaoId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM yuanliao_export_inquiry
+		where
+		yuanliao_id = #yuanLiaoId#
+	</select>
+	
+	<select id="queryByYuanLiaoId" parameterClass="java.lang.Integer" resultMap="yuanLiaoExportInquiryResult">
+		select
+			<include refid="yuanLiaoExportInquiry.defaultColumn"/>
+		from yuanliao_export_inquiry
+		where yuanliao_id = #id#
+	</select>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="yuanLiaoId">
+				yuanliao_id = #yuanLiaoId#
+			</isNotNull>
+			<isNotNull prepend="and" property="companyId">
+				from_company_id = #companyId#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="yuanLiaoExportInquiryResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM yuanliao_export_inquiry
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM yuanliao_export_inquiry
+		<include refid="whereClause"/>
+	</select>
+</sqlMap>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeProperty">
+
+
+    <typeAlias alias="tradeProperty" type="com.zz91.ep.domain.trade.TradeProperty"/>
+    <typeAlias alias="tradePropertyDto" type="com.zz91.ep.dto.trade.TradePropertyDto"/>
+
+    <resultMap class="tradeProperty" id="someColumnMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="name" column="name"/>
+        <result property="inputRequired" column="input_required"/>
+        <result property="vtype" column="vtype"/>
+        <result property="vtypeReg" column="vtype_reg"/>
+        <result property="vtypeValue" column="vtype_value"/>
+        <result property="searchValue" column="search_value"/>
+        <result property="searchable" column="searchable"/>
+    </resultMap>
+    
+	<resultMap class="tradePropertyDto" id="tradePropertyDtoResult">
+		<result property="tradeProperty" resultMap="tradeProperty.someColumnMap" />
+	</resultMap>
+    
+    <sql id="someColumn">
+        id,
+        code,
+        category_code,
+        name,
+        input_required,
+        vtype,
+        vtype_reg,
+        vtype_value,
+        search_value,
+        searchable
+    </sql>
+
+<!-- 
+    <resultMap class="tradeProperty" id="simpleColumnMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="searchValue" column="search_value"/>
+    </resultMap>
+    
+    <sql id="simpleColumn">
+        id,
+        name,
+        search_value
+    </sql>
+    
+    <select id="querySearchPropertyByCategory" resultMap="simpleColumnMap" parameterClass="java.lang.String">
+        select 
+        <include refid="simpleColumn"/>
+        from trade_property
+        where category_code = #categoryCode#
+        and searchable = 1
+    </select>
+ -->
+
+    <select id="queryPropertyByCategoryCode" resultMap="someColumnMap" parameterClass="java.lang.String">
+        select 
+        <include refid="someColumn"/>
+        from trade_property
+        where category_code = #categoryCode#
+    </select>
+    <delete id="deleteTradePropertyById" parameterClass="java.lang.Integer">
+	    delete from trade_property
+	    where id=#id#
+    </delete>
+    
+    <delete id="deleteTradePropertyByCode" parameterClass="java.lang.String">
+	    delete from trade_property
+	    where category_code like concat(#code#,'%')
+    </delete>
+     <sql id="dynamicByAdmin">
+		<dynamic prepend="where" >
+			<isNotEmpty property="dto.tradeProperty.categoryCode" prepend="and">
+				category_code like concat(#dto.tradeProperty.categoryCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+		</sql>
+    <select id="queryPropertys" parameterClass="java.util.HashMap" resultMap="tradePropertyDtoResult">
+		select 
+		<include refid="tradeProperty.someColumn"/>
+		from trade_property 
+		<include refid="tradeProperty.dynamicByAdmin"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryPropertysCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from trade_property
+		<include refid="tradeProperty.dynamicByAdmin"/>
+	</select>
+	<insert id="insertTradeProperty" parameterClass="tradeProperty">
+		insert into trade_property ( 
+		id,
+		category_code,
+        code,
+        name,
+        input_required,
+        vtype,
+        vtype_reg,
+        vtype_value,
+        search_value,
+        searchable,
+        gmt_created,
+        gmt_modified
+        ) 
+		value (
+		#id#,
+		#categoryCode#,
+        #code#,
+        #name#,
+        #inputRequired#,
+        #vtype#,
+        #vtypeReg#,
+        #vtypeValue#,
+        #searchValue#,
+        #searchable#,
+       	now(),
+        now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryMaxCode"  resultClass="java.lang.String" >
+		select max(code) from trade_property
+	</select>
+	
+	<select id="queryTradePropertyById" parameterClass="java.lang.Integer" resultMap="someColumnMap">
+		select 
+		<include refid="tradeProperty.someColumn"/>
+		from trade_property
+		where id=#id#
+		order by gmt_created desc
+		limit 1
+	</select>
+    
+	<update id="updateTradeProperty" parameterClass="tradeProperty">
+		update `trade_property`
+		set
+		`name` = #name#,
+		`category_code` = #categoryCode#,
+		`input_required` = #inputRequired#,
+		`vtype` = #vtype#,
+		`vtype_reg` = #vtypeReg#,
+		`vtype_value` = #vtypeValue#,
+		`search_value` = #searchValue#,
+		`searchable` = #searchable#,
+		`gmt_modified`= now()
+		where id=#id#
+	</update>
+</sqlMap>

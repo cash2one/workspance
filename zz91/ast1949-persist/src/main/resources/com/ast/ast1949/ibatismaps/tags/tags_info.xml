@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tagsInfo">
+	<typeAlias alias="tagsInfoDO" type="com.ast.ast1949.domain.tags.TagsInfoDO" />
+	<typeAlias alias="tagsInfoDTO" type="com.ast.ast1949.dto.tags.TagsInfoDTO" />
+	<typeAlias alias="tagsInfoDto2" type="com.ast.ast1949.dto.tags.TagsInfoDto" />
+	
+	<typeAlias alias="tagsRelateArticleDO" type="com.ast.ast1949.domain.tags.TagsRelateArticleDO" />
+	
+	<typeAlias alias="tagsArticleRelationDto" type="com.ast.ast1949.dto.tags.TagsArticleRelationDto" />
+	
+	<resultMap class="tagsInfoDO" id="tagsInfoResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="typeId" column="type_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--标签基本信息 by liuwb-->
+	<resultMap class="tagsInfoDO" id="baseTagInfoResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+	</resultMap>
+		
+	<!--根据标签类型获取标签信息列表 by liuwb-->
+	<select id="queryTagsInfoByType" parameterClass="map"
+		resultMap="baseTagInfoResult">
+		select id,name 
+		from tags_info
+		where type_id=#typeId#
+		order by gmt_created desc
+		limit #topNum#
+	</select>
+	
+	<select id="queryTagsInfoById" parameterClass="java.lang.Integer"
+		resultMap="tagsInfoResult">
+		select id,name,type_id,gmt_created,gmt_modified
+		from
+		tags_info
+		where id=#id:Integer#
+	</select>
+	<select id="queryTagsInfoByCondition" parameterClass="tagsInfoDTO"
+		resultClass="tagsInfoDO">
+		select id,name,type_id,gmt_created,gmt_modified
+		from tags_info
+		<dynamic prepend="where">
+			<isNotEmpty property="tagsInfoDO.name" prepend="and">
+				name like concat('%',#tagsInfoDO.name#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<select id="queryTopLastTagList" parameterClass="map"
+		resultMap="tagsInfoResult">
+		select id,name,type_id,gmt_created,gmt_modified
+		from tags_info
+		<dynamic prepend="where">
+			<isNotEmpty property="typeId">
+				type_id=#typeId# 
+			</isNotEmpty>
+		</dynamic>
+		order by gmt_created desc
+		limit #topNum#
+	</select>
+	
+	<select id="getRecordCountByCondition" parameterClass="tagsInfoDTO"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from tags_info
+	</select>
+	
+	<select id="queryTagsInfoByName" parameterClass="String"
+		resultMap="tagsInfoResult">
+		select id,name,type_id,gmt_created,gmt_modified
+		from tags_info
+		where
+		name=#name#
+		limit 1
+	</select>
+	
+	<insert id="insertTagsInfo" parameterClass="tagsInfoDO">
+		insert into tags_info
+		(name,type_id,gmt_created,gmt_modified)
+		values
+		(#name#,#typeId#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!--只能变更类型 标签名称添加后就不可变-->
+	<update id="updateTagsInfo" parameterClass="tagsInfoDO">
+		update tags_info
+		set
+		type_id=#typeId#,
+		gmt_modified=now()
+		where
+		id=#id:Integer#
+	</update>
+	
+	<delete id="deleteTagsInfoById" parameterClass="int">
+		delete from
+		tags_info
+		where id=#id#
+	</delete>
+
+</sqlMap>

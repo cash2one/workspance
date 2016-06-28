@@ -1,0 +1,86 @@
+<div class="main_box">
+<div class="searchPrice">
+	<div class="zz91searchPrice" id="fillDiv">
+		<form method="post" name="form1" id="form1">
+			<div class="form_fill">
+				<label for="keywords" id="keywords-lable">查找关键字</label>
+				<input name="keywords" id="keywords" type="text" size="16" value="$!{keywords}"/>
+				<select name="province" id="province">
+					<option value="">-请选择省份</option>
+				</select>
+				<select name="city" id="city">
+					<option value="">-请选择城市</option>
+				</select>
+				<script type="text/javascript">
+					
+				</script>
+                <span id="validTime1">
+                    <select name="postInDays," id="postInDays" class="validTime">
+                        <option value="" >-日期</option>
+                        <option value='-1' #if( $!{postInDays}=='-1') selected #end>最近一天</option>
+                        <option value='-7' #if( $!{postInDays}=='-7') selected #end>最近一周</option>
+                        <option value='-20' #if( $!{postInDays}=='-20') selected #end>最近20天</option>
+                        <option value='-30' #if( $!{postInDays}=='-30') selected #end>最近一月</option>
+                    </select>
+                </span>
+                <span id="prices1">
+                    <select name="price1" id="price1" onchange="changeprices(this.value)"  class="price1">
+                        <option value="">-价格</option>
+                        <option value="0-1000" #if($!{priceRange}=='0-1000') selected #end>1000以下</option>
+                        <option value="1000-3000" #if($!{priceRange}=='1000-3000') selected #end>1000-3000</option>
+                        <option value="3000-5000" #if($!{priceRange}=='3000-5000') selected #end>3000-5000</option>
+                        <option value="5000-10000" #if($!{priceRange}=='5000-10000') selected #end>5000-10000</option>
+                        <option value="10000-" #if($!{priceRange}=='10000-') selected #end>10000以上</option>
+                        <option value="0"  #if($!{priceRange}=='0') selected #end>其他价格</option>
+                    </select>
+                </span>
+                <span id="prices2" style='display:none'>
+                    <input name="pricefrom" type="text" id="pricefrom" size="6" value="$!{pricefrom}" />
+						至
+                    <input name="priceto" type="text" id="priceto" size="6" value="$!{priceto}"/>
+						元
+                </span>
+            </div>		
+			<div class="form_submit">
+                <input type="text" name="hidden" style="display:none;" />
+				<a class="buttonNormal" id="clickToSearch">搜 索</a>&nbsp;
+				<a href="$!{address.myrc}/mycompanyprice/createPrice.htm" target="_blank" class="buttonNormal">立即发布报价</a>
+            </div>
+        </form>
+    </div>
+	
+	
+    <div class="zz91service">
+        <a href="http://www.zz91.com/service/ppt/reg.asp" target="_blank" title="点击申请品牌通">
+			<img src="$!{address.img}/front/images/companyPrice/searchPPT.gif" alt="点击申请品牌通"/>
+        </a>
+	</div>
+    <div style="clear:both"></div>
+</div>
+    <div style="clear:both"></div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery("#clickToSearch").click(function(){
+		if(jQuery("#city").val()){
+		  var areaval=jQuery("#city").val();
+		  }
+		  else{
+		  var areaval=jQuery("#province").val();
+		  }
+			var priceRangeVal=jQuery("#price1").val();
+			window.location.href = "/companyprice/list--"+jQuery("#keywords").val()+"--pc$!{categoryCompanyPriceCode}--area"+areaval+"--int"+jQuery("#postInDays").val()+"--pr"+priceRangeVal+".htm"
+		});
+		jQuery("#form1").submit(function(){
+			jQuery("#clickToSearch").click();
+		});
+		var areaSelector = new Asto.util.Selector({
+			url:"#springUrl('/category/areaChild.htm')",
+			selects:["#province","#city"]
+		});
+		areaSelector.init({
+			rootCode:"10011000",
+			initCode:"$!{areaCode}"
+		});
+	});
+</script>

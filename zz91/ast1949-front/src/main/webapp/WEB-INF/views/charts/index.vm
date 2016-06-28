@@ -1,0 +1,250 @@
+<link href="$!{address.css}/charts/zz91_newindex.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/calendar/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{address.js}/calendar/jquery.ui.core.js"></script>
+<script type="text/javascript" src="$!{address.js}/calendar/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="$!{address.js}/calendar/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="$!{address.js}/calendar/jquery.ui.datepicker-zh-CN.js"></script>
+<script type="text/javascript" src="$!{address.js}/charts/category.js"></script>
+<script type="text/javascript" src="$!{address.server}/charts/swfobject_debug.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+    /*
+    var nowdays = new Date();
+    var dateConfig = {  
+    //showOn: 'both',               //二个都显示  
+    //buttonImage: 'calendar.gif',  //加载图片  
+    //buttonImageOnly: true,        //显示图片的地方有一个突出部分，这个就是隐藏那玩意的  
+    changeFirstDay: false,        //这个参数干什么的呢，星期一是日历的第一个，不可以改动的  
+    //numberOfMonths: 2,            //显示二个月，默认一个月  
+    //minDate: nowdays,             //显示最小时间是今天  
+    dateFormat: 'yyyy-mm-dd',       //日期格式  
+    yearRange: '-20:+20'          //前后20年，不过这根minDate是今天有冲突，自己去试吧。  
+    };
+    jQuery("#fromdate").datepicker(dateConfig);
+    jQuery("#todate").datepicker(dateConfig);
+    */
+    jQuery("#fromdate").datepicker();
+    jQuery("#todate").datepicker();
+    });
+    /**
+    * 加载走势图
+    */
+    function loaddata(id,elem){
+	if($(elem)){
+		$(elem).addClass("ubuon");
+		$(elem).siblings().removeClass("ubuon");
+		$(".chartsMapTit h3").html("$!{parentName}<font color='#FF7319'>"+$(elem).text()+"</font>走势图");
+	}
+    var url="$!{address.server}/charts/data.htm?p="+id+",$!{f},$!{t}";
+    swfobject.embedSWF("$!{address.server}/flash/open-flash-chart.swf", "my_chart", "572", "350",
+    "9.0.0", "expressInstall.swf",
+    {"data-file":url});
+
+	
+    }
+</script>
+<div class="main_box">
+    <div class="zz91leader">
+		当前位置：
+		<a href="${address.server}" target="_blank">$!{address.name}</a>
+        &gt; <a href="${address.server}/price">报价资讯中心</a>
+        &gt; 走势图
+    </div>
+</div>
+<div class="main_box">
+    <div class="news_leftbox_detail">
+		<div class="chartsMap">
+            <div class="chartsMapTit">
+                <h3>$!{parentName}<font color="#FF7319">$!{childName}</font>走势图</h3>
+            </div>
+    		
+    		<div class="chartsotherTags">
+    			#foreach($child in $!{childList})
+                    <span class="#if($!{id}==$!{child.id}) ubuon #end" onclick="loaddata('$!{child.id}',this)">$!{child.name}</span>
+                    <!--<a href="javascript:void(0)" onclick="hiddentisi(1)"></a>-->
+    			#end
+    		</div>
+    		
+			
+            <div style="clear:both"></div>
+    		<div class="chartsMapSWF">
+            <!-- chart start -->
+            <div id="my_chart"></div>
+            <script type="text/javascript">
+                var url="$!{address.server}/charts/data.htm?p=$!{id},$!{f},$!{t}";
+                swfobject.embedSWF("$!{address.server}/flash/open-flash-chart.swf", "my_chart", "572", "350",
+                "9.0.0", "expressInstall.swf",
+                {"data-file":url});
+            </script>
+            <!-- chart end-->
+            </div>
+    		
+    		
+    		<div class="searchCharts">
+                <form name="form1" id="form1" method="get" action="$!{address.server}/charts/index.htm">
+                    <select name="id" id="pid" style="display:"></select>
+                    <label for="fromdate">起始日期  </label><input name="f" type="text" id="fromdate" class="fromdate" readonly="" size="10" value="$!{f}" style="display:">
+                    <label for="todate">结束日期 </label><input name="t" type="text" id="todate" class="todate" readonly="" size="10" value="$!{t}" style="display:">
+        			<input type="submit" name="Submit" class="subBtn" value="查询走势图" style="display:">
+        		</form>
+        		<input name="hidden-pid" type="hidden" id="hidden-pid" value="$!{id}">
+        		<input name="hidden-cid" type="hidden" id="hidden-cid">
+        	</div>
+    		
+    		<div class="zz91Warn">警告：以上信息由<a href="$!{address.server}" target="_blank" title="ZZ91再生网"> <b>ZZ91再生网</b></a> 提供,严禁拷贝!</div>
+        </div>
+		
+		<!--more price info-->
+		<div class="priceInfo">
+            <div class="priceInfoTit">
+                <h3>相关报价</h3>
+                <span class="more"><a href="${address.server}/price" title="更多相关报价">更多 &gt;&gt;</a></span>
+			</div>
+            <div class="priceInfoCont">
+				<ul>
+    				 #foreach($price in $!{list})
+                            <li>
+                                <span class="priceContTit"><a href="$!{address.server}/price/priceDetails.htm?id=$!{price.id}" class="a1" target="_blank" title="$!{price.title}">$!{price.title}</a></span>
+                                <span class="grayed">$!date.format('yyyy-MM-dd HH:mm:ss ',$!{price.title})</span>
+                            </li>
+    				 #end
+                </ul>
+			</div>
+        </div>	
+    </div>
+
+    <div class="news_rightbox_detail">
+        <div class="subPrice">
+            <a href="$!{address.server}/subscribe/subscribeIndex.htm" target="_blank">
+                <img src="$!{address.images}/charts/dingzhi_1.gif" width="176" height="38" border="0"></a>
+        </div>
+        <div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p17_metal.htm">全国主要地区废金属价格</a></h3>
+                <span class="more"></span>
+            </div>
+			<div class="newsBrightCont newsBrightContArea">
+                <ul>
+                    <li><a href="$!{address.server}/price/moreList_p17_a53_metal.htm" title="江浙沪废金属价格">江浙沪</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a54_metal.htm" title="海南废金属价格">海南</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a55_metal.htm" title="山东临沂废金属价格">山东临沂</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a56_metal.htmc" title="湖南汨罗废金属价格">湖南汨罗</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a57_metal.htm" title="天津废金属价格">天津</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a58_metal.htm" title="河南长葛废金属价格">河南长葛</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a59_metal.htm" title="广东清远废金属价格">广东清远</a></li>
+					<li><a href="$!{address.server}/price/moreList_p17_a179_metal.htm" title="其他地区废金属价格">其他地区</a></li>
+				</ul>
+			</div>
+        </div>
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p17_metal.htm"> 金属废料价格</a></h3>
+                <span class="more"></span>
+            </div>
+			<div class="newsBrightCont newsBrightContMetal">
+                <ul>
+                    <li><a href="$!{address.server}/price/moreList_p3_t40_metal.htm" title="废铜">废铜</a></li>
+					<li><a href="$!{address.server}/price/moreList_p3_t41_metal.htm" title="废铝">废铝</a></li>
+					<li><a href="$!{address.server}/price/moreList_p3_t42_metal.htm" title="废铁">废铁</a></li>
+					<li><a href="$!{address.server}/price/moreList_p3_t43_metal.htm" title="废锌/铅">废锌/铅</a></li>
+					<li><a href="$!{address.server}/price/moreList_p3_t44_metal.htm" title="废不锈钢">废不锈钢</a></li>
+					<li><a href="$!{address.server}/price/moreList_p3_t45_metal.htm" title="废钢">废钢</a></li>
+					<li><a href="$!{address.server}/price/priceList_t46_metal.htm" title="国外废金属">国外废金属</a></li>
+					<li><a href="$!{address.server}/price/priceList_t47_metal.htm" title="废镍">废镍</a></li>            
+				</ul>
+			</div>
+        </div>
+		
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3> <a href="$!{address.server}/price/moreList_p18_metal.htm"> 金属新料/期货价格</a></h3>
+                <span class="more"></span>
+            </div>
+			<div class="newsBrightCont newsBrightContNewMetal">
+                <ul>
+                   <li><a href="$!{address.server}/price/priceList_t64_metal.htm" title="LME/期货">LME/期货</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t65_metal.htm" title="有色金属">有色金属</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t68_metal.htm" title="贵金属">贵金属</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t66_metal.htm" title="生铁">生铁</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t67_metal.htm" title="金属现货">金属现货</a></li>           
+				</ul>
+			</div>
+        </div>
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p11_plastic.htm">塑料废料价格</a></h3>
+                <span class="more"><a href="$!{address.server}/price/moreList_p11_plastic.htm" target="_blank">更多</a></span>
+            </div>
+			<div class="newsBrightCont newsBrightContPlastic">
+                <ul>
+                   <li><a href="$!{address.server}/price/priceList_t109_plastic.htm" title="PET价格">PET</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t108_plastic.htm" title="PP价格">PP</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t107_plastic.htm" title="LDPE价格">LDPE</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t104_plastic.htm" title="HDPE价格">HDPE</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t105_plastic.htm" title="PS价格">PS</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t103_plastic.htm" title="ABS价格">ABS</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t102_plastic.htm" title="PVC价格">PVC</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t106_plastic.htm" title="PC价格">PC</a></li>            
+				</ul>
+			</div>
+        </div>
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p98_plastic.htm">塑料再生料价格</a></h3>
+                <span class="more"><a href="$!{address.server}/price/moreList_p98_plastic.htm" target="_blank">更多</a></span>
+            </div>
+			<div class="newsBrightCont newsBrightContRePlastic">
+                <ul>
+                   <li><a href="$!{address.server}/price/priceList_t150_plastic.htm" title="再生PET价格">PET</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t151_plastic.htm" title="再生PP价格">PP</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t152_plastic.htm" title="再生LDPE价格">LDPE</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t153_plastic.htm" title="再生HDPE价格">HDPE</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t155_plastic.htm" title="再生PS价格">PS</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t154_plastic.htm" title="再生ABS价格">ABS</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t156_plastic.htm" title="再生PVC价格">PVC</a></li>
+                   <li><a href="$!{address.server}/price/priceList_t157_plastic.htm" title="再生PC价格">PC</a></li>   
+				</ul>
+			</div>
+        </div>
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p13_paper.htm">废纸价格</a></h3>
+                <span class="more"></span>
+            </div>
+			<div class="newsBrightCont newsBrightContPaper">
+                <ul>
+                   <li><a href="$!{address.server}/price/priceList_t28_plastic.htm" title="国内美废">国内美废</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t27_plastic.htm" title="国内日废">国内日废</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t26_plastic.htm" title="国内欧废">国内欧废</a></li>        
+				</ul>
+			</div>
+        </div>
+		
+		<div style="clear:both"></div>
+        <div class="newsBrightBox">
+            <div class="newsBrightTit">
+                <h3><a href="$!{address.server}/price/moreList_p15_paper.htm">橡胶价格</a></h3>
+                <span class="more"></span>
+            </div>
+			<div class="newsBrightCont newsBrightContRubber">
+                <ul>
+                   <li><a href="$!{address.server}/price/priceList_t30_paper.htm">国内橡胶</a></li>
+				   <li><a href="$!{address.server}/price/priceList_t31_paper.htm">国外橡胶</a></li>   
+				</ul>
+			</div>
+        </div>
+		
+    </div>
+    </div>
+</div>

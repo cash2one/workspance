@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisMyrcVisitor">
+	<typeAlias alias="analysisMyrcVisitor" type="com.ast.ast1949.domain.analysis.AnalysisMyrcVisitor"/>
+	<resultMap id="analysisMyrcVisitorResult" class="analysisMyrcVisitor">
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="address" column="address" />
+		<result property="title" column="title" />
+		<result property="url" column="url" />
+		<result property="name" column="company_name" />
+		<result property="contact" column="contact" />
+		<result property="business" column="business" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--根据公司id和时间段检索浏览量-->
+	<select id="countViewByCidATime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target
+	</select>
+	<!--根据公司id和时间段检索访客量-->
+	<select id="countVisitByCidATime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target and company_id>0
+	</select>
+	<!--根据公司id和时间的浏览量检索列表-->
+	<select id="queryViewByCidATime" parameterClass="java.util.Map" resultMap="analysisMyrcVisitorResult">
+		select distinct(url),gmt_target,company_id,target_id,address,title,company_name,contact,business,gmt_created,gmt_modified
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target
+		group by url
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--根据公司id和时间的访客数检索列表-->
+	<select id="queryVisitByCidATime" parameterClass="java.util.Map" resultMap="analysisMyrcVisitorResult">
+		select distinct(url),gmt_target,company_id,target_id,address,title,company_name,contact,business,gmt_created,gmt_modified
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target and company_id>0
+		group by url
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--根据公司id和时间的浏览量检索列表的长度-->
+	<select id="countViewByCidATimeLen" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(distinct url)
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target
+	</select>
+	<!--根据公司id和时间的访客数检索列表的长度-->
+	<select id="countVisitByCidATimeLen" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(distinct url)
+		from analysis_myrc_visitor
+		where target_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target and company_id>0
+	</select>
+	<update id="updateTitle" parameterClass="java.util.Map">
+		update analysis_myrc_visitor
+		set title=#title#
+		where url=#url#
+	</update>
+</sqlMap>

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneLog">
+	<typeAlias alias="phoneLogDO" type="com.ast.ast1949.domain.phone.PhoneLog" />
+	
+	<typeAlias alias="phoneLogDto" type="com.ast.ast1949.dto.phone.PhoneLogDto" />
+	
+	<resultMap class="phoneLogDO" id="phoneLogResult">
+		<result property="id" column="id" />
+		<result property="callerId" column="caller_id" />
+		<result property="tel" column="tel" />
+		<result property="callFee" column="call_fee" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="callSn" column="call_sn" />
+		<result property="state" column="state" />
+		<result property="companyId" column="company_id" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+	</resultMap>
+	
+	<resultMap class="phoneLogDto" id="phoneLogDtoResult">
+		<result property="phoneLog" resultMap="phoneLog.phoneLogResult"/>
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		caller_id,
+		tel,
+		call_fee,
+		start_time,
+		gmt_created,
+		gmt_modified,
+		end_time,
+		call_sn,
+		state,
+		company_id,
+		province,
+		city
+	</sql>
+	
+	<select id="queryByCallSn" parameterClass="java.lang.String" resultMap="phoneLogResult">
+		select 
+		<include refid="defaultColumn" />
+		from phone_log
+		where call_sn = #callSn#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="phoneLogDO">
+		INSERT INTO phone_log
+		(
+		caller_id,
+		tel,
+		call_fee,
+		start_time,
+		gmt_created,
+		gmt_modified,
+		end_time,
+		call_sn)
+		VALUES
+		(
+		#callerId#,
+		#tel#,
+		#callFee#,
+		#startTime#,
+		now(),
+		now(),
+		#endTime#,
+		#callSn#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="whereClauseForFront">
+		<dynamic>
+			where state = '1'
+			<isNotEmpty prepend="and" property="phoneLog.tel">
+				tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.companyId">
+				company_id = #phoneLog.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.startTime">
+				date(start_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.endTime">
+				#phoneLog.endTime# >= date(end_time)
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+				<isEqual property="phoneLog.callSn" compareValue="0">
+					call_sn = '0'
+				</isEqual> 
+				<isEqual property="phoneLog.callSn" compareValue="1">
+					call_sn != '0'
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneLog.tel">
+				tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.companyId">
+				company_id = #phoneLog.companyId#
+			</isNotEmpty>
+			<isNull prepend="and" property="phoneLog.companyId">
+				company_id > 0
+			</isNull>
+			<isNotEmpty prepend="and" property="phoneLog.startTime">
+				date(end_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.endTime">
+				#phoneLog.endTime# >= date(end_time)
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+			    <isEqual property="phoneLog.callSn" compareValue="0">
+			    	call_sn = '0'
+			    </isEqual> 
+			    <isEqual property="phoneLog.callSn" compareValue="1">
+			    	call_sn != '0'
+			    </isEqual>
+		    </isNotEmpty>
+		    <isNotEmpty property="phoneLog.state"	prepend="and">
+		    	   state = #phoneLog.state#
+		    </isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="phoneLogResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_log
+		<include refid="whereClauseForFront" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryDtoListForFront" parameterClass="java.util.Map" resultMap="phoneLogDtoResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_log
+		<include refid="whereClauseForFront" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryDtoListByAdmin" parameterClass="java.util.Map" resultMap="phoneLogDtoResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_log
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_log
+		<include refid="whereClauseForFront" />
+	</select>
+	
+	<select id="queryDtoListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_log
+		where caller_id!='0' and caller_id!="057156633055" and caller_id!="057156633056" and caller_id!="057156633060"
+			<isNotEmpty prepend="and" property="phoneLog.tel">
+				tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.companyId" prepend="and">
+				company_id = #phoneLog.companyId#
+			</isNotEmpty>
+			<isNull property="phoneLog.companyId" prepend="and">
+				company_id > 0
+			</isNull>
+			<isNotEmpty prepend="and" property="phoneLog.startTime">
+				date(start_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.endTime">
+				#phoneLog.endTime# >= date(end_time)
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+				<isEqual property="phoneLog.callSn" compareValue="0">
+					call_sn = '0'
+				</isEqual> 
+				<isEqual property="phoneLog.callSn" compareValue="1">
+					call_sn != '0'
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.state"	prepend="and">
+				state = #phoneLog.state#
+			</isNotEmpty>
+	</select>
+	<select id="queryDtoListCounts" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(distinct caller_id)
+		FROM phone_log
+		where state='0' and caller_id!=#mobile# and caller_id!="057156633055" and caller_id!="057156633056" and caller_id!="057156633060"
+			<isNotEmpty prepend="and" property="phoneLog.tel">
+				tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.companyId" prepend="and">
+				company_id = #phoneLog.companyId#
+				and not exists(select p.id from phone p where p.company_id = #phoneLog.companyId# and p.mobile = caller_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.startTime">
+				date(start_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLog.endTime">
+				#phoneLog.endTime# >= date(end_time)
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+			    <isEqual property="phoneLog.callSn" compareValue="0">
+			    	call_sn = '0'
+			    </isEqual> 
+			    <isEqual property="phoneLog.callSn" compareValue="1">
+			    	call_sn != '0'
+			    </isEqual>
+		    </isNotEmpty>
+	</select>
+
+	<select id="queryPhoneLogListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_log
+		where 
+		call_sn != '0'
+		<isNotEmpty property="phoneLog.tel">
+			and	tel = #phoneLog.tel#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.companyId" prepend="and">
+			company_id = #phoneLog.companyId#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.startTime">
+			and	date(start_time) >= #phoneLog.startTime#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.endTime">
+			and	#phoneLog.endTime# >= date(end_time)
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.state">
+			and state = #phoneLog.state#
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryPhoneLogIsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone_log
+		where 
+		call_sn = '0'
+		<isNotEmpty property="phoneLog.tel">
+			and	tel = #phoneLog.tel#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.companyId" prepend="and">
+			company_id = #phoneLog.companyId#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.startTime">
+			and	date(start_time) >= #phoneLog.startTime#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.endTime">
+			and	#phoneLog.endTime# >= date(end_time)
+		</isNotEmpty>
+	</select>
+	
+	<select id="countCallFee" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT sum(call_fee) 
+		FROM phone_log 
+		where tel = #tel# and company_id =#companyId#
+		and state = '1'
+	</select>
+	
+	<select id="countCallFeeWithOutToday" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT sum(call_fee)
+		FROM phone_log
+		where tel = #tel# and #date# > start_time
+		and state = '1' and company_id = #companyId#
+	</select>
+
+	<select id="countAllCallFee" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT sum(call_fee) 
+		FROM phone_log 
+	</select>
+	
+	<select id="countCallFeeByCallSn" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT sum(call_fee) 
+		FROM phone_log 
+		<dynamic prepend="where">
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+			    <isEqual property="phoneLog.callSn" compareValue="0">
+			    	call_sn = '0'
+			    </isEqual> 
+			    <isEqual property="phoneLog.callSn" compareValue="1">
+			    	call_sn != '0'
+			    </isEqual>
+		    </isNotEmpty>
+		</dynamic>
+	</select>
+
+
+	<select id="countCallFeeByTime" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT sum(call_fee) 
+		FROM phone_log
+		<dynamic prepend="where"> 
+			<isNotEmpty property="phoneLog.tel" prepend="and">
+				 tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.companyId" prepend="and">
+				 company_id = #phoneLog.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.startTime" prepend="and">
+			  date(start_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.endTime" prepend="and">
+			 #phoneLog.endTime# >= date(end_time)
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.callSn" prepend="and">
+			    <isEqual property="phoneLog.callSn" compareValue="0">
+			    	 call_sn = '0'
+			    </isEqual> 
+			    <isEqual property="phoneLog.callSn" compareValue="1">
+			    	 call_sn != '0'
+			    </isEqual>
+		    </isNotEmpty>
+		    <isNotEmpty property="phoneLog.state"	prepend="and">
+		    	   state = #phoneLog.state#
+		    </isNotEmpty>
+	    </dynamic>
+	</select>
+	<!--计算每月已接电话的费用-->
+	<select id="countEveCallFee" parameterClass="java.util.Map" resultClass="java.lang.String">
+		SELECT sum(call_fee) 
+		FROM phone_log
+		<dynamic>
+			where  state = '1'
+			<isNotEmpty property="phoneLog.tel" prepend="and">
+				tel = #phoneLog.tel#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.companyId" prepend="and">
+				 company_id = #phoneLog.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.startTime" prepend="and">
+				date(start_time) >= #phoneLog.startTime#
+			</isNotEmpty>
+			<isNotEmpty property="phoneLog.endTime" prepend="and">
+			 	#phoneLog.endTime# > date(end_time)
+			</isNotEmpty>
+			<isNotNull property="phoneLog.companyId" prepend="and">
+				company_id = #phoneLog.companyId#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	
+	<select id="queryCountTelRentByPhoneLog" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from phone_log
+		where LENGTH(tel) > 10
+		<isNotEmpty property="phoneLog.startTime">
+			and start_time >= #phoneLog.startTime#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.endTime">
+			and #phoneLog.endTime# >= end_time
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.state">
+			and state = #phoneLog.state#
+		</isNotEmpty>
+		<isNotEmpty property="phoneLog.callerId">
+			and caller_id = #phoneLog.callerId#
+		</isNotEmpty>
+	</select>
+	<select id="queryListByTel" parameterClass="java.util.Map" resultMap="phoneLogResult">
+		select 
+		<include refid="defaultColumn" />
+		from phone_log
+		where tel=#tel# and state='0' and call_sn!='0'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countListByTel" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) 
+		from phone_log
+		where tel=#tel# and state='0' and call_sn!='0'
+	</select>
+	<select id="queryPhoneLogByCallSn" parameterClass="java.lang.String" resultMap="phoneLogResult">
+		select 
+		<include refid="defaultColumn" />
+		from phone_log
+		where call_sn=#callSn#
+	</select>
+	<select id="queryYJCompanyBytime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(company_id)
+		from phone_log
+		where start_time>=#from# and #to#>=start_time and state='1' and end_time>start_time 
+	</select>
+	<select id="queryWJCompanyBytime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(distinct company_id)
+		from phone_log
+		where start_time>=#from# and #to#>=start_time and state='0'
+	</select>
+	<select id="countYJCompanyBytime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_log
+		where start_time>=#from# and #to#>=start_time and company_id=#companyId# and state='1'
+	</select>
+	<select id="countWJCompanyBytime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(distinct caller_id)
+		from phone_log
+		where start_time>=#from# and #to#>=start_time and company_id=#companyId# and state='0'
+	</select>
+	<select id="exportPhoneLog" parameterClass="java.util.Map" resultMap="phoneLogDtoResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_log
+		where tel=#tel# and date(start_time)>=#from# and #to#>=date(start_time)
+		<include refid="common.pageOrderBy" />
+	</select>
+	<select id="exportAllPhoneLog" parameterClass="java.util.Map" resultMap="phoneLogDtoResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone_log
+		where date(start_time)>=#from# and #to#>=date(start_time)
+		<include refid="common.pageOrderBy" />
+	</select>
+	<!-- 设置callfee为0，拉黑用 -->
+	<update id="updateCallFeeById" parameterClass="java.lang.Integer">
+		UPDATE phone_log
+		SET
+		gmt_modified = now()
+		,
+		call_fee=0
+		WHERE id = #id#
+	</update>
+</sqlMap>

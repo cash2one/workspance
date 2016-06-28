@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="priceCategory">
+	<typeAlias alias="priceCategoryDo"  type="com.ast.ast1949.domain.price.PriceCategoryDO" />
+	<!-- 分页参数 -->
+	<typeAlias alias="priceCategoryDto" type="com.ast.ast1949.dto.price.PriceCategoryDTO" />
+	<typeAlias alias="priceCategoryLinkDO" type="com.ast.ast1949.domain.price.PriceCategoryLinkDO" />
+	<!-- 完整结果集 -->
+	<resultMap class="priceCategoryDo" id="fullPriceCategory">
+		<result property="id" column="id" jdbcType="INTEGER"/>
+		<result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+		<result property="name" column="name" jdbcType="VARCHAR"/>
+		<result property="pinyin" column="pinyin" jdbcType="VARCHAR"/>
+		<result property="goUrl" column="go_url" jdbcType="VARCHAR"/>
+		<result property="showIndex" column="show_index" jdbcType="INTEGER"/>
+		<result property="gmtCreated" column="gmt_created" jdbcType="TIMESTAMP"/>
+		<result property="gmtModified" column="gmt_modified" jdbcType="TIMESTAMP"/>
+		<result property="isDelete" column="is_delete" jdbcType="SHORT"/>
+	</resultMap>
+	
+	<resultMap class="priceCategoryDto" id="resultPriceCategoryDto">
+		<result property="priceCategoryDO" resultMap="priceCategory.fullPriceCategory" />
+		<result property="parentName" column="parent_name" />
+	</resultMap>
+	<!--根据price的type_id查询price_category表中父类别的名称-->
+	<select id="queryTypeNameByTypeId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select
+			 name 
+		from price_category
+		where id=#value#
+	</select>
+	
+	<!-- 添加资讯信息 -->
+	<insert id="insertPriceCategory" parameterClass="priceCategoryDo">
+		insert into price_category
+            (parent_id,
+             name,
+             go_url,
+             show_index,
+             gmt_created,
+             gmt_modified,
+             is_delete)
+		values (#parentId#,
+		        #name#,
+		        #goUrl#,
+		        #showIndex#,
+		        #gmtCreated#,
+		        #gmtModified#,
+		        #isDelete#);
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		 	select last_insert_id()
+		</selectKey>
+	</insert>
+	<!-- 删除资讯信息 -->
+	<delete id="deletePriceCategoryById" parameterClass="java.lang.Integer">
+			delete from price_category
+			where id=#value#
+	</delete>
+	
+	<!-- 更新资讯信息 -->
+	<update id="updatePriceCategoryById" parameterClass="priceCategoryDo">
+		update price_category
+		set parent_id = #parentId#,
+		  name = #name#,
+		  go_url = #goUrl#,
+		  show_index = #showIndex#,
+		  gmt_modified = #gmtModified#,
+		  is_delete = #isDelete#
+		where id = #id#;
+	</update>
+	
+	<select id="queryPriceCategoryById" parameterClass="java.lang.Integer" resultMap="fullPriceCategory">
+		select
+		  nc.id,
+		  nc.parent_id,
+		  nc.name,
+		  nc.pinyin,	
+		  nc.go_url,
+		  nc.show_index,
+		  nc.gmt_created,
+		  nc.gmt_modified,
+		  nc.is_delete
+		from price_category nc
+		where nc.id=#value#
+	</select>
+	
+	<select id="queryPriceCategoryDtoById" parameterClass="java.lang.Integer" resultMap="resultPriceCategoryDto">
+		select
+		  pc.id,
+		  pc.parent_id,
+		  pc.name,
+		  pc.go_url,
+		  pc.show_index,
+		  pc.gmt_created,
+		  pc.gmt_modified,
+		  pc.is_delete,
+		  pc2.name parent_name
+		from price_category pc
+		left join price_category pc2 on pc2.id=pc.parent_id 
+		where pc.id=#value#
+	</select>
+	
+	<!-- 分页查询 
+	<select id="queryPriceCategoryByCondition" parameterClass="priceCategoryDto" resultMap="fullPriceCategory" >
+		SELECT
+		  nc.id,
+		  nc.parent_id,
+		  nc.name,
+		  nc.go_url,
+		  nc.show_index,
+		  nc.gmt_created,
+		  nc.gmt_modified,
+		  nc.is_delete
+		FROM price_category nc
+		<dynamic prepend="where">
+			<isNotEmpty property="priceCategoryDO.parentId" prepend="and">
+				nc.parent_id=#priceCategoryDO.parentId#
+			</isNotEmpty>	
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				#page.sort#
+				<isNotEmpty property="page.dir">
+					 #page.dir#
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex" compareValue="0" >
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+ 	</select>
+	-->
+	
+	<!-- 分页取记录总数 
+	<select id="countPriceCategoryByCondition"  parameterClass="priceCategoryDto" resultClass="java.lang.Integer" >
+		SELECT COUNT(0) 
+		FROM price_category nc
+		<dynamic prepend="where">
+			<isNotEmpty property="priceCategoryDO.parentId" prepend="and">
+				nc.parent_id=#priceCategoryDO.parentId#
+			</isNotEmpty>	
+		</dynamic>
+	</select>
+	-->
+	
+	<!-- 
+	<select id="getPriceCategoryRecordConutByCondition"  parameterClass="priceCategoryDto" resultClass="java.lang.Integer" >
+		select count(nc.id) from price_category nc
+	</select>
+	 -->
+	
+	<typeAlias alias="priceCategoryMinDto" type="com.ast.ast1949.dto.price.PriceCategoryMinDto" />
+	<!--查询报价分类下子分类的最新信息时间-->
+	<select id="queryPriceCategoryByParentIdOrderList" parameterClass="java.lang.Integer" resultClass="priceCategoryMinDto">
+		
+		SELECT nc.id, nc.parent_id as parentId, nc.name, nc.go_url as goUrl,nc.pinyin,
+		nc.show_index as showIndex,
+			(select max(p.gmt_order) from price p 
+			where p.type_id=nc.id and p.is_checked = 1) as gmtOrder
+		FROM price_category nc
+		WHERE nc.is_delete=0  and nc.parent_id=#value#
+		order by show_index
+	</select>
+		
+	<!-- 根据父节点查询 -->
+	<select id="queryPriceCategoryByParentId" parameterClass="java.lang.Integer" resultMap="fullPriceCategory">
+		select
+		  nc.id,
+		  nc.parent_id,
+		  nc.name,
+		  nc.pinyin,	
+		  nc.go_url,
+		  nc.show_index,
+		  nc.gmt_created,
+		  nc.gmt_modified,
+		  nc.is_delete
+		from price_category nc
+		where 0>=nc.is_delete
+		and nc.parent_id=#value#
+		order by show_index
+	</select>
+	
+	
+	<!-- 
+	<select id="queryPriceCategoryLink" parameterClass="priceCategoryLinkDO" resultClass="priceCategoryLinkDO">
+		select id,price_type_id as priceTypeId,price_assist_type_id as priceAssistTypeId
+		from price_category_link
+		<dynamic prepend="where">
+			<isNotEmpty property="priceTypeId" prepend="and">
+				price_type_id=#priceTypeId#
+			</isNotEmpty>
+			<isNotEmpty property="priceAssistTypeId" prepend="and">
+				price_assist_type_id=#priceAssistTypeId#
+			</isNotEmpty>
+		</dynamic>
+		limit 20
+	</select>
+	 -->
+	
+	
+	<select id="queryAssistPriceCategoryByTypeId" parameterClass="java.lang.Integer" resultClass="priceCategoryDO">
+		select 
+			pc.id,
+			pc.parent_id,
+			pc.name,
+			pc.go_url,
+			pc.show_index,
+			pc.gmt_created,
+			pc.gmt_modified,
+			pc.is_delete
+		from price_category_link pcl 
+		left join price_category pc 
+			on pc.id=pcl.price_assist_type_id 
+		where pcl.price_type_id=#value#
+		order by show_index
+		limit 0,100
+	</select>
+	
+	<!-- 
+	<select id="queryAssistPriceCategoryIdByTypeId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select 
+			pc.id
+		from price_category_link pcl 
+		left join price_category pc 
+			on pc.id=pcl.price_assist_type_id 
+		where pcl.price_type_id=#value#
+		order by show_index
+		limit 0,100
+	</select>
+	 -->
+	
+	<select id="queryParentIdById" parameterClass="java.lang.Integer" resultClass="java.lang.Integer" >
+		select parent_id from price_category
+		where id =#value#
+	</select>
+	
+	<select id="queryForPinyin" parameterClass="java.lang.Integer" resultClass="java.lang.String" >
+		select pinyin from price_category
+		where id =#value#
+	</select>
+	
+	<select id="countChild" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*)
+		from price_category 
+		where is_delete=0
+		and parent_id=#value#
+	</select>
+	
+	<select id="queryIdByName" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from price_category where name=#name#
+	</select>
+	
+	<!-- 本地更新 search_label 数据 构造搜索引擎 需要的 报价类别 格式 如：废金属-废铜-铜价格 -->
+	<update id="updateSearchLabel" parameterClass="java.util.Map" >
+		update price_category
+		set search_label = #searchLabel#
+		where id = #id#
+	</update>
+</sqlMap>

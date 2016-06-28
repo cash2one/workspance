@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productMarket">
+
+	<typeAlias alias="productMarket" type="com.ast.ast1949.domain.market.ProductMarket" />
+	<resultMap id="productMarketResult" class="productMarket">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="marketList" column="market_list" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<select id="queryProductBySize" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select product_id
+		from product_market
+		order by id desc
+		limit #size#
+	</select>
+	<select id="countProducts" resultClass="java.lang.Integer">
+		select count(0)
+		from product_market
+	</select>
+	<select id="queryProductMarketByProductId" parameterClass="java.lang.Integer" resultMap="productMarketResult">
+		select id,product_id,market_list,gmt_created,gmt_modified
+		from product_market
+		where product_id=#productId#
+	</select>
+</sqlMap>

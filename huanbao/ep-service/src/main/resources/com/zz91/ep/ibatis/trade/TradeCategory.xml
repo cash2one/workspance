@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="tradecategory">
+
+	<typeAlias alias="tradeCategory" type="com.zz91.ep.domain.trade.TradeCategory" />
+	 <typeAlias alias="tradeProperty" type="com.zz91.ep.domain.trade.TradeProperty"/>
+	 
+	<resultMap class="tradeCategory" id="simpleColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="leaf" column="leaf"/>
+        <result property="tags" column="tags"/>
+    </resultMap>
+    
+    <resultMap class="tradeCategory" id="simpleBroColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+    </resultMap>
+    
+    <resultMap class="tradeProperty" id="simplePropertyColumnMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="searchValue" column="search_value"/>
+    </resultMap>
+
+	<sql id="simpleColumn">
+        id,
+        code,
+        name,
+        leaf,
+        tags
+    </sql>
+    
+    <sql id="simpleBroColumn">
+        id,
+        code,
+        name
+    </sql>
+    
+    
+    <sql id="simplePropertyColumn">
+        id,
+        name,
+        search_value
+    </sql>
+
+	<select id="queryCategoryByParent" resultMap="simpleColumnResultMap" parameterClass="java.util.HashMap">
+        select 
+        <include refid="simpleColumn"/>
+        from trade_category
+        <dynamic prepend="where">
+            <isEqual prepend="and" property="deep" compareValue="0">
+                code like concat(#parentCode#, '____')
+            </isEqual>
+            <isEqual prepend="and" property="deep" compareValue="1">
+                code like concat(#parentCode#, '____%') and leaf = 1
+            </isEqual>
+            <isEqual prepend="and" property="deep" compareValue="2">
+                code like concat(#parentCode#, '____%')
+            </isEqual>
+        </dynamic>
+        <isNotEqual property="count" compareValue="0">
+            limit #count#
+        </isNotEqual>
+    </select>
+    
+    <select id="queryTagsByCode" resultClass="java.lang.String" parameterClass="java.lang.String">
+        select 
+        tags
+        from trade_category
+        where code = #value#
+    </select>
+    
+    <select id="queryCategoryByTags" resultMap="simpleColumnResultMap" parameterClass="java.util.HashMap">
+        select 
+        	<include refid="simpleColumn"/>
+        from trade_category
+        where tags like concat('%',#tags#,'%')
+              and code like concat(#parentCode#, '%')
+        <isEqual property="deep" prepend="and" compareValue="0">
+            leaf = 1
+        </isEqual>
+        <isNotEqual property="count" compareValue="0">
+            limit #count#
+        </isNotEqual>
+    </select>
+
+    <select id="queryIsLeafByCode" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+        select leaf from trade_category
+        where code = #code#
+    </select>
+    
+    <select id="querySearchPropertyByCategory" resultMap="simplePropertyColumnMap" parameterClass="java.lang.String">
+        select 
+        	<include refid="simplePropertyColumn"/>
+        from trade_property
+        where category_code = #categoryCode# and searchable = 1
+    </select>
+    <select id="queryTagsById" resultMap="simpleColumnResultMap" parameterClass="java.lang.Integer">
+        select 
+        <include refid="simpleColumn"/> 
+        from trade_category
+        where id = #value#
+    </select>
+    <select id="getCategoryByCode" resultMap="simpleColumnResultMap" parameterClass="java.lang.String">
+        select 
+        	<include refid="simpleColumn"/>
+        from trade_category
+        where code =#value#
+    </select>
+    
+    <select id="queryNameByCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+    	select name from trade_category where code = #value#
+    </select>
+    
+    <select id="queryCodeById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    	select code from trade_category where id = #value#
+    </select>
+    
+    <select id="queryBroCategoryByCode" parameterClass="java.util.HashMap" resultMap="simpleBroColumnResultMap">
+    	select 
+    		<include refid="simpleBroColumn"/>
+    	from trade_category
+    	 <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="code">
+                code like concat(#code#, '____')
+            </isNotEmpty>
+           <isNotEmpty property="size">
+            limit #size#
+       	    </isNotEmpty>
+        </dynamic>
+    </select>
+    
+    <select id="queryTradeCategoryById" resultClass="tradeCategory" parameterClass="java.lang.Integer">
+    	select * from trade_category where id = #value#
+    </select>
+</sqlMap>

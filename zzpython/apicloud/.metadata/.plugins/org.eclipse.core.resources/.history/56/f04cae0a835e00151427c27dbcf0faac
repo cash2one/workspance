@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <title>子窗口动画测试用例</title>
+        <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <label>延迟时间</label>
+                <input type="text" id="delay" value="0"><br>
+                <label>持续时间</label>
+                <input type="text" id="duration" value="3000"><br>
+                <label>重复次数</label>
+                <input type="text" id="repeatCount" value="0"><br>
+                <br>
+                <h4>是否自动反转</h4>
+                <input type="radio" name="reverse" value=true checked id="reverse1"><label for="reverse1">true</label>
+                <input type="radio" name="reverse" value=false id="reverse2"><label for="reverse2">false</label>
+                <br>
+                <label>动画曲线类型</label>
+                <select id="curveType">
+                    <option value="easeInOut">easeInOut</option>
+                    <option value="easeIn">easeIn</option>
+                    <option value="easeOut">easeOut</option>
+                    <option value="linear">linear</option>
+                </select>
+                <br>
+                <label>透明度</label>
+                <input type="text" id="alpha" value="1"><br>
+                <h3>平移</h3>
+                <label>x：</label><input type="text" id="translationX" value="0"><br>
+                <label>y：</label><input type="text" id="translationY" value="0"><br>
+                <label>z：</label><input type="text" id="translationZ" value="0"><br>
+                <h3>缩放</h3>
+                <label>x：</label><input type="text" id="scaleX" value="1"><br>
+                <label>y：</label><input type="text" id="scaleY" value="1"><br>
+                <label>z：</label><input type="text" id="scaleZ" value="1"><br>
+                <h3>旋转</h3>
+                <label>角度：</label><input type="text" id="degree" value="0"><br>
+                <label>x：</label><input type="text" id="rotationX" value="0"><br>
+                <label>y：</label><input type="text" id="rotationY" value="0"><br>
+                <label>z：</label><input type="text" id="rotationZ" value="1"><br>
+                <button class="btn btn-default" tapmode="active" onclick="animation()">开始动画</button>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="../../script/api.js"></script>
+    <script type="text/javascript">
+        function animation(){
+            var delay = $api.val($api.byId('delay'));
+            var duration = $api.val($api.byId('duration'));
+            var repeatCount = $api.val($api.byId('repeatCount'));
+            var aRadio = $api.domAll('input:checked');
+            var autoreverse = aRadio[0].value;
+            var curveType = $api.byId('curveType');
+            var curve = curveType.options[curveType.selectedIndex].value;
+            var alpha = $api.val($api.byId('alpha'));
+            var translation = {};
+            translation.x = $api.val($api.byId('translationX'));
+            translation.y = $api.val($api.byId('translationY'));
+            translation.z = $api.val($api.byId('translationZ'));
+            var scale = {};
+            scale.x = $api.val($api.byId('scaleX'));
+            scale.y = $api.val($api.byId('scaleY'));
+            scale.z = $api.val($api.byId('scaleZ'));
+            var rotation = {};
+            rotation.degree = $api.val($api.byId('degree'));
+            rotation.x = $api.val($api.byId('rotationX'));
+            rotation.y = $api.val($api.byId('rotationY'));
+            rotation.z = $api.val($api.byId('rotationZ'));
+            api.animation({
+                 name:'block',
+                 delay:delay,
+                 duration:duration,
+                 repeatCount:repeatCount,
+                 autoreverse:autoreverse,
+                 curve:curve,
+                 alpha:alpha,
+                 translation:translation,
+                 scale:scale,
+                 rotation:rotation
+            });
+        }
+       
+        apiready = function(){
+            api.openFrame({
+                name:'block',
+                url:'./block.html',
+                bounces:false,
+                vScrollBarEnabled:false,
+                hScrollBarEnabled:false,
+                rect:{x:200, y:api.winHeight-100, w:80, h:80}
+            });
+        };
+    </script>
+</html>

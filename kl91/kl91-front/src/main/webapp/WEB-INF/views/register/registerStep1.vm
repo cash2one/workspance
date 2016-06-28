@@ -1,0 +1,78 @@
+#set($layout="/layout/loginAndSign.vm")
+#set($head="register")
+#parse("/common/login/head.vm")
+<div class="wrapper reg-wrap">
+	<form action="#springUrl('/register/doRegister.htm')" id="regform" name="regform" method="post">
+		<fieldset class="reg-form">
+			<em>以下打<b class="red">*</b>为必填项</em>
+			<p>
+				<label for="account" class="t">会员名<b class="red">*</b></label>
+				<input type="text" id="account" name="account" placeholder="包含4-20位英文字母和数字" class="field tran validate[required,custom[usernamelength],minSize[6],maxSize[32],ajax[ajaxAccount]]" />
+			</p>
+			<p>
+				<label for="password1" class="t">密码<b class="red">*</b></label>
+				<input type="password" id="password1" name="password" placeholder="至少6位，只能包含英文字母、数字和下划线" class="field tran validate[required,minSize[6],maxSize[32],custom[password]]" />
+			</p>
+			<p>
+				<label for="password2" class="t">确认密码<b class="red">*</b></label>
+				<input type="password" id="password2" name="password2" placeholder="请重复输入密码" class="field tran validate[required,equals[password1]]" />
+			</p>
+			<p>
+				<label for="email" class="t">邮箱<b class="red">*</b></label>
+				<input type="email" id="email" name="email" class="field tran validate[required,minSize[6],maxSize[32],custom[email],ajax[ajaxEmail]]" />
+			</p>
+			<p>
+				<label for="mobile" class="t">手机号码<b class="red">*</b></label>
+				<input type="tel" id="mobile" name="mobile" placeholder="请正确填写您的手机号码,号码为11位" class="field tran validate[required,ajax[ajaxMobile]]" />
+			</p>
+			<p>
+				<label for="contact" class="t">联系人<b class="red">*</b></label>
+				<input type="text" id="contact" name="contact" class="field tran validate[required]" style="width: 143px" />
+				<input type="radio"  name="sex" id="sex" value="0" checked="checked" />
+				<label for="sex-m">先生</label>
+				<input type="radio" id="sex" name="sex" value="1"/>
+				<label for="sex-f">女士</label>
+			</p>
+			<p>
+				<label for="" class="t">主营行业<b class="red">*</b></label>
+				<input type="radio" id="industryCode" name="industryCode" checked="checked" />
+				<label for="industryCode">废塑料</label>
+				<input type="radio" id="trade2" name="industryCode" />
+				<label for="trade2">再生料</label>
+				<input type="radio" id="trade3" name="industryCode" />
+				<label for="trade3">综合</label>
+			</p>
+			<p>
+				<label for="verifyCode" class="t">验证码<b class="red">*</b></label>
+				<input  type="text" name="verifyCode" id="verifyCode" maxlength="5" class='field tran validate[required]' style="width:50px;" />
+				<img src='$!{address.img}/front/images/global/loading.gif' align="absmiddle" id='codeImg' style="cursor:pointer"  title="看不清楚?点击图刷新验证码！"/>  请输入结果</p>
+			<p class="center">
+				<a href="#" class="mustread">点此阅读ZZ91再生网服务条款</a>
+			</p>
+			<p class="center">
+				<input type="submit" value="同意条款并注册" class="btn_s1" />
+			</p>
+		</fieldset>
+		<input name="verifyCodeKey" id="verifyCodeKey" type="hidden" />
+	</form>
+</div>
+#parse("/common/login/footer.vm")
+#parse("/common/importValidator.vm")
+<script>
+jQuery(document).ready(function(){
+	var reg = new kl91.reg.Validate("regform");
+	jQuery("#regform").validationEngine("attach");
+	var vcode = new kl91.util.ValidationCode({
+		url:'#springUrl("/register/mathcode.htm")',
+		width:90,
+		height:30,
+		targetImg:"#codeImg",
+		targetVK:"#verifyCodeKey"
+	});
+	vcode.refresh();
+	jQuery("#codeImg").click(function(){
+
+		vcode.refresh();
+	});
+});
+</script>

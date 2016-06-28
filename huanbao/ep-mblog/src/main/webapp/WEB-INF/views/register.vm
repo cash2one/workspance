@@ -1,0 +1,189 @@
+#set($layout='/layout/normLayout2.vm')
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+
+<div class="login">
+	<div class="l-top">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/logo.jpg" />
+    </div>
+    <!--end l-top-->
+    <div class="register">
+    	<div class="r-left">
+        	<div class="r-left-title">
+            	<img src="http://img0.huanbao.com/huanbao/mblog/images/info.jpg" />
+            </div>
+            <!--end r-left-title-->
+			<form id="createInfo" name="createInfo" action="#springUrl('/doCreateInfo.htm')" method="post">
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	登录名
+                </div>
+                <div class="r-item-text fl">
+                	$!{epAuthUser.account}
+                    <span class="r-blue"><a href="$!{address.myesite}/company/updatePassword.htm">修改密码</a></span>
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	昵&nbsp;&nbsp;&nbsp;称
+                </div>
+                <div class="r-item-text fl">
+                	<input type="text" class="r-text input-xlarge validate[required]" name="name" id="infoName"  value="$!{info.name}"/>
+                    #if($!{error})
+					<font style="color:red;">$!{error}</font>
+					#end
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	真实姓名
+                </div>
+                <div class="r-item-text fl">
+                	<input type="text" class="r-text input-xlarge validate[required]" name="realName" id="realName"value="$!{info.realName}"/>
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	所在地
+                </div>
+                <div class="r-item-text fl">
+                	<select id="provinceCode" name="provinceCode" id="provinceCode" style="width:70px;hieght:50px;" class="select validate[required]">
+                            <option value="">省份</option>
+                   </select>
+                   <select id="areaCode" name="areaCode" id="areaCode" style="width:100px;hieght:50px;" class="select validate[required]">
+                             <option value="">城市</option>
+                    </select>
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	性&nbsp;&nbsp;&nbsp;别
+                </div>
+				<div class="r-item-text fl">
+                <input type="radio" value="0" class="r-radio" name="sex" checked="checked"/>男
+                <input type="radio" value="1" class="r-radio" name="sex" />女
+				</div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	公司名
+                </div>
+                <div class="r-item-text fl">
+                	$!{compProfile.name}
+                </div>
+                <!--end as-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	公司简介
+                </div>
+                <div class="r-item-text fl">
+                	$!{compProfile.detailsQuery}
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-editor">
+            	<a href="$!{address.myesite}/company/updateCompany.htm" target="_blank">修改公司名或简介»</a>
+            </div>
+            <!--end r-editor-->
+            <div class="r-ok">
+                <div class="r-ok-left fl"></div>
+                <div class="r-ok-center fl">
+                    <a href="javascript:createInfo();">保存</a>
+                </div>
+                <div class="r-ok-right fl"></div>
+                <div class="cb"></div>
+            </div>
+			<input type="hidden"  name="headPic" value="$!{info.headPic}"/>
+            </form>
+            <!--end r-ok-->
+        </div>
+        <!--end r-left-->
+        <div class="r-right">
+        	<div class="r-right-img">
+				#if($!{info} && $!{info.headPic})
+            	<img src="$!{address.thumb}$!{address.resource}$!{info.headPic}" width="185px" height="188"/>
+				<input type="hidden"  name="headPic" value="$!{info.headPic}"/>
+				#else
+				<img src="http://img0.huanbao.com/huanbao/mblog/images/no-images.jpg" />	
+				#end
+            </div>
+            <!--end as-right-img-->
+            <div class="r-right-editor">
+            ##	<a href="#springUrl('/editorHead.htm')" target="_blank"><img src="http://img0.huanbao.com/huanbao/mblog/images/editor2.jpg" /></a>
+			<a href="javascript:editorHead();" target="_blank"><img src="http://img0.huanbao.com/huanbao/mblog/images/editor2.jpg" /></a>
+            </div>
+            <!--end r-right-editor-->
+        </div>
+        <!--end r-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end register-->
+    
+</div>
+<!--end login-->
+#parse("/common/importValidateOriginal.vm")
+<script >
+jQuery(document).ready(function(){
+	  jQuery("#createInfo").validationEngine("attach");
+		// init selector
+    	var selector = new Asto.util.Selector({
+    		url:"#springUrl('/getAreaCode.htm')",
+    		selects:["#provinceCode","#areaCode"],
+    		field:{code:"code",label:"name"}
+    	});
+    	
+    	selector.init({ 
+    		rootCode:"10011000",
+           	initCode:"$!{info.areaCode}"
+    	});
+  
+})
+
+function createInfo(){
+   if(jQuery("#createInfo").validationEngine('validate')) {
+      jQuery("#createInfo").submit();
+   }
+}
+
+function editorHead(){
+    var infoName=jQuery("#infoName").val();
+	var realName=jQuery("#realName").val();
+	var provinceCode=jQuery("#provinceCode").val();
+	var areaCode=jQuery("#areaCode").val();
+	var sex=jQuery("input[name='sex']:checked").val();
+	jQuery.ajax({
+		type:"post",
+		dataType:"json",
+		cache:false,
+		data:{"infoName":infoName,"realName":realName,"provinceCode":provinceCode,"areaCode":areaCode,"sex":sex},
+		url:"/mblog/ajaxSaveInfo.htm",
+		success:function(data){
+			if(data.success==true){
+				window.location.href="#springUrl('/editorHead.htm')";
+			}
+		}		
+	})	
+}
+
+</script>
+

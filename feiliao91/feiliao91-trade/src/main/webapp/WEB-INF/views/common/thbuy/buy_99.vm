@@ -1,0 +1,123 @@
+   #parse("/common/returnTwo.vm") 
+				<div class="orderright fl">
+                    <div class="odr-h">退款完成</div>
+                    <div class="odr-tellus">
+						#if($!out.get("pay").get(0).get(0))
+                        <p class="color-66">退款成功时间:$!out.get("pay").get(0).get(0)</p>
+                        <p>退还金额：$!{orderReturn.reurnPrice}元</p>
+						#end
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="xies-title">协商记录</h2>
+            <ul class="xies-list">
+			    #set($jl=1)
+			   #if($!out.get("pay"))
+                <li>
+                    <div class="objtime">商家<span>$!out.get("pay").get(0).get(0)</span></div>
+                    #foreach($in in $!{out.pay})
+						#foreach($obj in $in)
+						#if($jl!=1)<p>$obj</p>#end
+							#set($jl=0)
+						#end
+					#end
+                </li>
+			   #end
+			   
+			   #set($ju=1)
+			   #if($!out.get("refused"))
+                <li>
+                    <div class="objtime">商家<span>$!out.get("refused").get(0).get(0)</span></div>
+                    #foreach($in in $!{out.refused})
+						#foreach($obj in $in)
+						#if($ju!=1)<p>$obj</p>#end
+							#set($ju=0)
+						#end
+					#end
+                </li>
+			   #end
+			   
+               #set($jg=1)
+			   #if($!out.get("logistics"))
+                <li>
+                    <div class="objtime">自己<span>$!out.get("logistics").get(0).get(0)</span></div>
+                    #foreach($in in $!{out.logistics})
+						#foreach($obj in $in)
+						#if($jg!=1)<p>$obj</p>#end
+							#set($jg=0)
+						#end
+					#end
+                </li>
+			   #end
+			   	#set($jc=1)
+				#if($!out.get("agree"))
+                <li>
+                    <div class="objtime">商家<span>$!out.get("agree").get(0).get(0)</span></div>
+                    #foreach($in in $!{out.agree})
+						#foreach($obj in $in)
+						#if($jc!=1)<p>$obj</p>#end
+							#set($jc=0)
+						#end
+					#end
+                </li>
+				#end
+					#set($jj=1)
+				#if($!out.get("regist"))
+                <li>
+                  <div class="objtime">自己<span>$!out.get("regist").get(0).get(0)</span></div>
+					#foreach($in in $!{out.regist})
+						#foreach($obj in $in)
+						#if($jj!=1)<p>$obj</p>#end
+							#set($jj=0)
+						#end
+					#end
+                </li>
+				#end
+            </ul>
+        </div>
+    <script type="text/javascript">
+     $(".j_seller").bind("hover",function(){
+        $(this).toggleClass("seller-tt2");
+        $(".hide-div").stop().slideToggle();
+     })
+
+     $(".j_rma").bind("click",function(){
+        var wHight = $(document).height();
+        var wWidth = $(document).width();
+        var scrollTop = $(document).scrollTop();
+        $(".estopDiv").height(wHight).width(wWidth).show();
+        var left_pop = (wWidth - $(".pop-main").width())/2
+        var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+        $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+    })
+    $(".j_close").bind("click",function(){
+        $(".estopDiv").hide();
+        $(".pop-main").hide();
+    })
+
+    $(".refund-type span").bind("click",function(){
+        $(".this-refunbd").removeClass("this-refunbd")
+        $(this).addClass("this-refunbd")
+        var index = $(this).index();
+        $(".see-reson").removeClass("see-reson");
+        $(".tk-reason").eq(index).addClass("see-reson")
+    })
+
+    var lastNum = parseInt($(".j_number").html());
+    $(".j_stext").bind("keyup",function(){  
+        var allNumber = $(this).val().length;
+        allNumber = lastNum - allNumber;
+        $(".j_number").html(allNumber);
+        if(allNumber<=0){
+            allNumber = 0;
+            $(".j_number").html(0)
+            $(this).val($(this).val().substring(0,lastNum));
+            $(this).css("background","#f2f2f2")
+        }else{
+            $(this).css("background","#fff")
+        }
+    })
+
+    selectJr()
+    </script>

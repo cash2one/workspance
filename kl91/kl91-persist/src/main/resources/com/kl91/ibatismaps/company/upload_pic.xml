@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="uploadPic">
+	<typeAlias alias="uploadPic" type="com.kl91.domain.company.UploadPic" />
+
+	<resultMap class="uploadPic" id="resultUploadPic">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_tyoe" />
+		<result property="filePath" column="file_path" />
+		<result property="thumbPath" column="thumb_path" />
+		<result property="fileName" column="file_name" />
+		<result property="fileType" column="file_type" />
+		<result property="fileSize" column="file_size" />
+		<result property="remark" column="remark" />
+		<result property="album" column="album" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="all_column">
+		id,cid,target_id,target_tyoe,file_path,thumb_path,file_name,file_type,file_size,remark,album,gmt_created,gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="uploadPic">
+		insert into upload_pic
+			(cid,target_id,target_tyoe,file_path,thumb_path,file_name,file_type,file_size,remark,album,gmt_created,gmt_modified)
+		values
+			(#cid#,#targetId#,#targetType#,#filePath#,#thumbPath#,#fileName#,#fileType#,
+			#fileSize#,#remark#,#album#,#gmtCreated#,#gmtModified#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from upload_pic where id=#id#
+	</delete>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="resultUploadPic">
+		select 
+			<include refid="all_column"/>
+		from upload_pic
+			where id=#id#
+	</select>
+	<select id="queryByTargetId" parameterClass="java.lang.Integer" resultMap="resultUploadPic">
+		select 
+			<include refid="all_column"/>
+		from upload_pic
+			where target_id=#targetId#
+	</select>
+	
+	<update id="update" parameterClass="uploadPic">
+		UPDATE upload_pic
+		SET
+			cid =#cid#,
+			target_id = #targetId#,
+			target_tyoe = #targetType#,
+			file_path =#filePath#,
+			thumb_path = #thumbPath#,
+			file_name = #fileName#,
+			file_type = #fileType#,
+			file_size=#fileSize#,
+			remark=#remark#,
+			album=#album#,
+			gmt_created =now(),
+			gmt_modified = now()
+		where
+			id=#id#
+	</update>
+	
+	<update id="updateTarget" parameterClass="java.util.Map">
+		update upload_pic
+			set 
+				target_id = #targetId#,
+				target_tyoe=#targetType#
+			where id=#id#
+	</update>
+</sqlMap>

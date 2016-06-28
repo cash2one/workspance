@@ -1,0 +1,125 @@
+  <!--end hz-header-->
+  <div class="huzhu">
+  	<div class="hz-left fl">
+    	<div class="mainblock">
+        	<div class="mb-dh lt4">$!{category}</div>
+        	<ul class="item11">
+				#foreach($li in $!{page.records})
+					<li style="padding-top:15px">
+                	<div class="m3-box">
+                    	<div class="m3-box-info fl">
+                        	<div class="mi3-block1">
+                            	<div class="mi3-block1-gz">
+                                	<p class="tc bold f16 greed">#if($!{li.noticeCount})$!{li.noticeCount}#else 0 #end</p>
+                                    <p class="tc grey">关注</p>
+                                </div>
+                                <!--end mi3-block1-gz-->
+                                <div class="mi3-block1-hd">
+                                	<p class="tc grey">$!{li.replyCount}</p>
+                                    <p class="tc grey">回答</p>
+                                </div>
+                                <img src="http://img0.zz91.com/zz91/newhuzhu/images/star.png" class="mi3-block1-icon" />
+                                <!--end mi3-block1-hd-->
+							</div>
+                            <!--end mi3-block1-->
+						</div>
+                        <!--end m3-box-info fl-->
+                        <div class="m3-box-info fr">
+                        	<div class="mi3-block2">
+                            	<div class="mi3-block2-tle f14">
+                                	<a href="#springUrl('/detail/')$!{li.id}.html" target="_blank" title="$!{li.title}">
+										#printTitle($!{li.title} 20 "...")
+									</a>
+                                    <span class="grey f12">时间：$!date.format('yyyy-MM-dd HH:mm:ss', $!{li.replyTime})</span>
+                                </div>
+                                <!--end mi3-block2-tle-->
+                                <div class="mi3-block2-content grey">#printTitle($!{li.content} 90 "...")</div>
+                                <!--end mi3-block2-content-->
+                                <div class="mi3-block2-down">
+                                	<div class="md-item b2down fl">
+                                    	<div class="mi3-block2-text fl">#set($tagsMap=$!{map.get($!{li.id})}) #if($tagsMap.size()>0) 标签:&nbsp;#end</div>
+                                        <!--end mi3-block2-text fl-->
+										#foreach($!{tag} in $!{map.get($!{li.id})})
+										<div class="mi3-block2-label fl"><a href="#springUrl('/viewTags')-$!{tag.id}.htm" target="_blank">#printTitle($!{tag.tagName} 5 "")</a></div>
+										#end
+                                        <!--end mi3-block2-label-->
+                                        <div class="cb"></div>
+                                    </div>
+                                    <!--end md-item fl-->
+                                    <div class="md-item fr"><span class="grey">提问者：$!{li.nickname}</span></div>
+                                    <!--end md-item fr-->
+                                	<div class="cb"></div>
+                                </div>
+                                <!--end mi3-block2-down-->
+                            </div>
+                            <!--end mi3-block2-->
+						</div>
+                        <!--end m3-box-info fr-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m3-box-->
+                </li>
+				#end
+            </ul>
+            <div class="page">	
+				#pageViewQA1($page "#springUrl('/shangquan')$!{flagpp}/" "pn" "" "")
+    		 </div>
+            <!--end page-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+    <div class="hz-right fr">
+		 <!--end sublock-->
+        <div class="sublock">
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px;margin-top:10px;">最新问题</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:10px 0 25px 0">
+            	<ul class="item10">
+					#cacheFragment("$!{address.fragment}/huzhu/newQuestion.htm" "" "" "")
+					#foreach($!{nq} in $!{NewQuestion})
+						<li><a href="#springUrl('/detail/')$!{nq.id}.html" target="_blank">$!{nq.title}</a></li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end sub-post gclear mb-->
+        </div>
+		 <!--end sublock-->
+        <div class="sublock">
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px;margin-top:10px">热门回答</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:10px 0 25px 0">
+            	<ul class="item10">
+					#cacheFragment("$!{address.fragment}/huzhu/hotQuestion.htm?categoryId=1" "" "" "")
+					#foreach($!{hq} in $!{HotQuestion})
+						<li><a href="#springUrl('/detail/')$!{hq.id}.html" target="_blank">$!{hq.title}</a></li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end sub-post gclear mb-->
+        </div>
+        <!--end sublock-->
+        <div class="sublock">
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px;margin-top:10px">热门问题关注</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:10px 0 25px 0">
+            	<ul class="item10">
+					#cacheFragment("$!{address.fragment}/huzhu/hotNotices.htm" "" "" "")
+					#foreach($!{hn} in $!{hotNotice})
+						<li><a href="#springUrl('/detail/')$!{hn.id}.html" target="_blank">$!{hn.title}</a></li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end sub-post gclear mb-->
+        </div>
+        <!--end sublock-->
+    </div>
+    <!--end hz-right-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

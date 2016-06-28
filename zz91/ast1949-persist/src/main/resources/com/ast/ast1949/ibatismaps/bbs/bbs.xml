@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbs">
+	
+	<typeAlias alias="bbsPostDO" type="com.ast.ast1949.domain.bbs.BbsPostDO" />
+	<typeAlias alias="bbsPostReplyDO" type="com.ast.ast1949.domain.bbs.BbsPostReplyDO" />
+	<typeAlias alias="bbsPostCategoryDO" type="com.ast.ast1949.domain.bbs.BbsPostCategoryDO" />
+	<typeAlias alias="bbsUserProfilerDO" type="com.ast.ast1949.domain.bbs.BbsUserProfilerDO" />
+	<typeAlias alias="bbsSignDO" type="com.ast.ast1949.domain.bbs.BbsSignDO" />
+	<typeAlias alias="bbsPostDTO" type="com.ast.ast1949.dto.bbs.BbsPostDTO" />
+    <typeAlias alias="weeklyDTO" type="com.ast.ast1949.dto.information.WeeklyDTO"/>
+	
+	<resultMap class="bbsPostCategoryDO" id="bbsPostCategoryResult">
+		<result property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="l" column="l"/>
+		<result property="r" column="r"/>
+		<result property="isDel" column="is_del"/>
+		<result property="name" column="name"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="postCategoryColumn">
+		id,
+		parent_id,
+		l,
+		r,
+		is_del,
+		name,
+		remark,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+ 
+	<update id="updateBbsPostReplyTime" parameterClass="java.lang.Integer">
+		update bbs_post
+		set
+		reply_time = now()
+		where id = #id#
+	</update>
+
+	<insert id="insertBbsPostReply" parameterClass="bbsPostReplyDO">
+		insert into bbs_post_reply
+		(company_id,tocompany_id,account,bbs_post_id,title,
+		content,is_del,check_person,check_status,
+		check_time,unpass_reason,unchecked_check_status,
+		gmt_created,gmt_modified)
+		values
+		(#companyId#,#toCompanyId#,#account#,#bbsPostId#,#title#,
+		#content#,#isDel#,#checkPerson#,
+		#checkStatus#,#checkTime#,#unpassReason#,
+		#uncheckedCheckStatus#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryBbsPostCategoryById" parameterClass="java.lang.Integer"
+		resultClass="bbsPostCategoryDO">
+		select id,parent_id as parentId,l,r,is_del as isDel,
+		name,
+		remark,gmt_created as gmtCreated,
+		gmt_modified as gmtModified
+		from
+		bbs_post_category
+		where id=#id#
+	</select>
+	
+	<select id="queryAllBbsPostCategory" parameterClass="java.lang.Integer"
+		resultMap="bbsPostCategoryResult">
+		select 
+		<include refid="postCategoryColumn"/>
+		from
+		bbs_post_category
+	</select>
+
+
+	<insert id="insertBbsUserProfiler" parameterClass="bbsUserProfilerDO">
+		insert into bbs_user_profiler
+		(company_id,account,nickname,email,sex,life_stage,
+		marriage_case,zip,tel,mobile,qq,msn,interests,
+		love_sports,real_name,brithday,address,work_scope,
+		remark,integral,picture_name,picture_path,
+		post_number,reply_number,essence_number,gmt_created,gmt_modified)
+		values
+		(#companyId#,#account#,#nickname#,#email#,#sex#,
+		#lifeStage#,#marriageCase#,#zip#,#tel#,#mobile#,#qq#,#msn#,
+		#interests#,#loveSports#,#realName#,#brithday#,#address#,
+		#workScope#,#remark#,#integral#,#pictureName#,
+		#picturePath#,#postNumber#,#replyNumber#,#essenceNumber#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryBbsUserProfilerById" parameterClass="java.lang.Integer"
+		resultClass="bbsUserProfilerDO">
+		select id,company_id as
+		companyId,account,nickname,email,sex,
+		life_stage as lifeStage,marriage_case as marriageCase,
+		zip,tel,mobile,qq,msn,interests,love_sports as loveSports,
+		real_name as realName,brithday,address,work_scope as workScope,
+		remark,integral,picture_name as pictureName,picture_path as
+		picturePath, post_number as postNumber,reply_number as
+		replyNumber,essence_number as essenceNumber,
+		gmt_created as gmtCreated,gmt_modified as gmtModified
+		from bbs_user_profiler
+		where id=#id#
+	</select>
+	
+	<update id="updateSomeBbsUserProfiler" parameterClass="bbsUserProfilerDO">
+		update
+		bbs_user_profiler
+		set sex = #sex#, email=#email#, mobile=#mobile#,
+		qq=#qq#,address=#address#,
+		nickname = #nickname#,work_scope =
+		#workScope#,gmt_modified = now()
+		where account = #account#
+	</update>
+
+	<update id="updateBbsUserProfilerReplyNumber" parameterClass="java.lang.String">
+		update
+		bbs_user_profiler
+		set reply_number = IFNULL(reply_number,0)+1
+		where account = #value#
+	</update>
+	
+	<update id="updateBbsUserProfilerReplyNumberForDel" parameterClass="java.lang.String">
+		update
+		bbs_user_profiler
+		set reply_number = IFNULL(reply_number,0)-1
+		where account = #value#
+	</update>
+
+
+	<insert id="insertBbsSign" parameterClass="bbsSignDO">
+		insert into bbs_sign
+		(company_id,account,sign_name,gmt_created,gmt_modified)
+		values(#companyId#,#account#,#signName#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="queryBbsSignByAccountCount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(id)
+		from bbs_sign
+		where account=#account#
+	</select>
+
+	<select id="queryBbsSignByAccount" parameterClass="java.util.Map"
+		resultClass="bbsSignDO">
+		select id,company_id as companyId,account,sign_name as signName,
+		gmt_created as gmtCreated,gmt_modified as gmtModified
+		from bbs_sign
+		where account=#account#
+		<dynamic prepend="order by">
+			<isNotEmpty property="sort">
+				$sort$
+				<isNotEmpty property="dir">
+					$dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="size" compareValue="0">
+				<isGreaterEqual property="startIndex" compareValue="0">
+					#startIndex#,#size#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<update id="updateBbsUserPicturePath" parameterClass="java.util.Map">
+		update
+		bbs_user_profiler
+		set
+		picture_path = #picturePath#
+		where account = #account#
+	</update>
+
+	<select id="queryUserNicknameByReply" parameterClass="java.util.Map"
+		resultClass="bbsPostDTO">
+		select distinct(c.nickname),c.id as userProfilerId,c.picture_path as picturePath,c.account
+		from
+		bbs_post_reply a
+		inner join bbs_post b on b.id=a.bbs_post_id
+		inner join bbs_user_profiler c on a.account=c.account
+		where b.is_del='0'
+		and b.account=#account#
+		<![CDATA[ and b.check_status<>'3' ]]>
+		<![CDATA[ and b.check_status<>'0' ]]>
+		<dynamic prepend="order by">
+			<isNotEmpty property="sort">
+				$sort$
+				<isNotEmpty property="dir">
+					$dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="size" compareValue="0">
+				<isGreaterEqual property="startIndex" compareValue="0">
+					#startIndex#,#size#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<update id="updateBbsPostVisitedCount" parameterClass="java.lang.Integer">
+		update
+		bbs_post
+		set
+		visited_count = visited_count + 1
+		where id = #id#
+	</update>
+
+	<update id="updateBbsPostReplyCount" parameterClass="java.lang.Integer">
+		update
+		bbs_post
+		set
+		reply_count = IFNULL(reply_count,0)+1,
+		reply_time = now()
+		where id = #id#
+	</update>
+	
+	<update id="updateReplyCount" parameterClass="java.util.Map">
+		update
+		bbs_post
+		set
+		reply_count = #replyCount#,
+		reply_time = now()
+		where id = #id#
+	</update>
+	
+	<update id="updateBbsPostReplyCountForDel" parameterClass="java.lang.Integer">
+		update
+		bbs_post
+		set
+		reply_count = IFNULL(reply_count,0)-1,
+		reply_time = now()
+		where id = #id#
+	</update>
+
+
+	<select id="queryBbsUserProfilerPostNumber" resultClass="bbsPostDTO">
+		select account,COUNT(id) as userPostNumber
+		from bbs_post
+		where account is not null
+		group by account
+	</select>
+	
+	<select id="listBbsPostByPage" parameterClass="weeklyDTO" resultClass="bbsPostDO">
+		select id,title,url 
+		from bbs_post
+		<dynamic prepend="where">
+        	<isNotEmpty property="title" prepend="and">
+        		title like concat('%',#title#,'%')
+        	</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countBbsPost" parameterClass="weeklyDTO" resultClass="java.lang.Integer">
+		select count(id) 
+		from bbs_post
+		<dynamic prepend="where">
+        	<isNotEmpty property="title" prepend="and">
+        		title like concat('%',#title#,'%')
+        	</isNotEmpty>
+		</dynamic>
+	</select>
+		
+	<select id="queryUserProfilerPictureByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select picture_path from bbs_user_profiler 
+		where company_id=#value#
+		limit 1
+	</select>
+
+</sqlMap>

@@ -1,0 +1,617 @@
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsPic">
+
+	<typeAlias alias="productsDO" type="com.ast.ast1949.domain.products.ProductsDO" />	
+	<typeAlias alias="productsPicDO"
+		type="com.ast.ast1949.domain.products.ProductsPicDO" />
+	<typeAlias alias="productsPicDTO"
+		type="com.ast.ast1949.dto.products.ProductsPicDTO" />
+	<typeAlias alias="productsAlbumsDO"
+		type="com.ast.ast1949.domain.products.ProductsAlbumsDO" />
+
+	<resultMap class="productsPicDO" id="productsPicResult">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="picAddress" column="pic_address" />
+		<result property="albumId" column="album_id" />
+		<result property="isDefault" column="is_default" />
+		<result property="isCover" column="is_cover" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="name" column="name" />
+		<result property="checkStatus" column="check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		product_id,
+		pic_address,
+		album_id, 
+		is_default,
+		is_cover,
+		gmt_created,
+		gmt_modified,
+		name,
+		check_status,
+		unpass_reason
+	</sql>
+
+	<resultMap class="productsDO" id="productsResult">
+		<result property="id" column="productsId" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="sourceTypeCode" column="source_type_code" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="location" column="location" />
+		<result property="provideStatus" column="provide_status" />
+		<result property="totalQuantity" column="total_quantity" />
+		<result property="isShowInPrice" column="is_show_in_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="price" column="price" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="quantity" column="quantity" />
+		<result property="source" column="source" />
+		<result property="specification" column="specification" />
+		<result property="origin" column="origin" />
+		<result property="impurity" column="impurity" />
+		<result property="color" column="color" />
+		<result property="useful" column="useful" />
+		<result property="appearance" column="appearance" />
+		<result property="manufacture" column="manufacture" />
+		<result property="remark" column="remark" />
+		<result property="postType" column="post_type" />
+		<result property="isPause" column="is_pause" jdbcType="char" />
+		<result property="isPostWhenViewLimit" column="is_post_when_view_limit" jdbcType="char" />
+		<result property="isDel" column="is_del" jdbcType="char" />
+		<result property="categoryProductsMainCode" column="category_products_main_code" />
+		<result property="categoryProductsAssistCode" column="category_products_assist_code" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />
+		<result property="uncheckedCheckStatus" column="unchecked_check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="checkTime" column="check_time" />
+		<result property="realTime" column="real_time" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="expireTime" column="expire_time" />
+		<result property="gmtCreated" column="productsGmtCreated" />
+		<result property="gmtModified" column="productsGmtModified" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="goodsTypeCode" column="goods_type_code" />
+		<result property="isPostFromInquiry" column="is_post_from_inquiry" jdbcType="char" />
+	</resultMap>
+
+	<resultMap class="productsAlbumsDO" id="productsAlbumsResult">
+		<result property="id" column="productsAlbumsId" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="productsAlbumsName" />
+		<result property="gmtCreated" column="productsAlbumsGmtCreated" />
+		<result property="gmtModified" column="productsAlbumsGmtCreated" />
+	</resultMap>
+	
+	<resultMap class="productsPicDTO" id="allProductsPicDTOResult">
+		<result property="productsAlbumsDO" resultMap="productsPic.productsAlbumsResult" />
+		<result property="productsDO" resultMap="productsPic.productsResult" />
+		<result property="productsPicDO" resultMap="productsPic.productsPicResult" />
+	</resultMap>
+
+	<resultMap class="productsPicDTO" id="productsPicDTOResult">
+		<result property="albumName" column="albumName" />
+		<result property="productTitle" column="productTitle" />
+		<result property="productsPicDO" resultMap="productsPic.productsPicResult" />
+	</resultMap>
+	
+	<select id="queryProductsPicByCondition" parameterClass="ProductsPicDTO"
+		resultMap="productsPicDTOResult">
+		select pp.id,pp.name,
+		pp.product_id,
+		pp.album_id,
+		pa.name as albumName,
+		p.title as
+		productTitle,
+		pp.pic_address,
+		pp.is_default,
+		pp.is_cover,
+		pp.gmt_created,
+		pp.gmt_modified,
+		pp.check_status,
+		pp.unpass_reason
+		from products_pic pp
+		inner join products p on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		<dynamic prepend="">
+			<isNotEmpty property="productTitle" prepend="and">
+            	<![CDATA[ p.title like concat('%',#productTitle#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="albumName" prepend="and">
+            	<![CDATA[ pp.album_id like concat('%',#albumName#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="isCover" prepend="and">
+            	<![CDATA[ pp.is_cover like concat('%',#isCover#) ]]>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				#page.sort#
+				<isNotEmpty property="page.dir">
+					#page.dir#
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<select id="queryProductPicById" parameterClass="java.lang.Integer"
+			resultMap="productsPicDTOResult">
+		SELECT pp.id,pp.name,
+		pp.product_id,
+		pp.album_id,
+		pa.name AS albumName,
+		p.title AS
+		productTitle,
+		pp.pic_address,
+		pp.is_default,
+		pp.is_cover,
+		pp.gmt_created,
+		pp.gmt_modified,
+		pp.check_status,
+		pp.unpass_reason
+		FROM products_pic pp
+		left JOIN products p ON pp.product_id=p.id
+		LEFT JOIN products_albums pa ON pp.album_id=pa.id
+	    where pp.id=#id:Integer#
+    </select>
+    
+	<select id="getProductsPicRecordCountByCondition"
+		parameterClass="ProductsPicDTO" resultClass="int">
+		select count(0)
+		FROM products_pic pp
+		INNER JOIN products p ON pp.product_id=p.id
+		LEFT JOIN products_albums pa ON pp.album_id=pa.id
+	</select>
+
+<!-- 
+	<select id="queryProductPicByproductId" parameterClass="java.lang.Integer"
+		resultMap="productsPicDTOResult">
+		select pp.id,pp.name,
+		pp.product_id,
+		pp.album_id,
+		pa.name as albumName,
+		p.title as
+		productTitle,
+		pp.pic_address,
+		pp.is_default,
+		pp.is_cover,
+		pp.gmt_created,
+		pp.gmt_modified
+		from products_pic pp
+		where pp.product_id=#value#
+		limit 0,5
+	</select>
+	 -->
+	<select id="queryProductPicInfoByProductsId" parameterClass="int"
+		resultMap="productsPicResult">
+		select 
+		<include refid="defaultColumn"/>
+		from products_pic
+		where product_id=#productId#
+		order by is_default desc,gmt_modified desc
+		limit 5
+	</select>
+	
+	<select id="queryProductPicInfoByProductsIdForFront" parameterClass="int"
+		resultMap="productsPicResult">
+		select 
+		<include refid="defaultColumn"/>
+		from products_pic
+		where 
+		product_id=#productId# 
+		and check_status = '1'
+		order by is_default desc,gmt_modified desc
+		limit 5
+	</select>
+	
+	<!-- 
+	<select id="queryAllProductsPicByTitleCount" parameterClass="productsDTO"
+		resultClass="java.lang.Integer">
+		select count(pp.id)
+		from products p
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+		<dynamic prepend="">
+			<isNotEmpty property="productsDO.title" prepend="and">
+				<![CDATA[p.title like CONCAT('%',#productsDO.title#,'%')]]>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryAllProductsPicByTitle" parameterClass="productsDTO"
+		resultMap="allProductsPicDTOResult">
+		select pp.id,pp.name,pp.product_id,pp.album_id,pp.pic_address,pp.is_default,
+		pp.is_cover,pp.gmt_created,pp.gmt_modified,
+		pa.id as productsAlbumsId,pa.parent_id,pa.name as productsAlbumsName,
+		pa.gmt_created as productsAlbumsGmtCreated,pa.gmt_modified as productsAlbumsGmtCreated,
+		p.id as productsId,p.company_id,p.account,p.products_type_code,p.source_type_code,
+		p.title,p.details,p.location,p.provide_status,p.total_quantity,
+		p.is_show_in_price,p.price_unit,p.price,p.quantity_unit,
+		p.quantity,p.source,p.specification,p.origin,
+		p.impurity,p.color,p.useful,p.appearance,p.manufacture,
+		p.remark,p.post_type,p.is_pause,p.is_post_when_view_limit,
+		p.is_del,p.category_products_main_code,p.category_products_assist_code,
+		p.check_person,p.check_status,p.unchecked_check_status,
+		p.unpass_reason,p.check_time,p.real_time,p.refresh_time,
+		p.expire_time,p.gmt_created as productsGmtCreated,p.gmt_modified as productsGmtModified,
+		p.min_price,p.max_price,p.goods_type_code,p.is_post_from_inquiry	
+		from products p
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+		<dynamic prepend="">
+			<isNotEmpty property="productsDO.title" prepend="and">
+				<![CDATA[p.title like CONCAT('%',#productsDO.title#,'%')]]>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	 -->
+	
+	<select id="queryProductsPicDetails" parameterClass="java.lang.Integer"
+		resultMap="allProductsPicDTOResult">
+		select pp.id,pp.name,pp.product_id,pp.album_id,pp.pic_address,pp.is_default,
+		pp.is_cover,pp.gmt_created,pp.gmt_modified,pp.check_status,pp.unpass_reason,
+		pa.id as productsAlbumsId,pa.parent_id,pa.name as productsAlbumsName,
+		pa.gmt_created as productsAlbumsGmtCreated,pa.gmt_modified as productsAlbumsGmtCreated,
+		p.id as productsId,p.company_id,p.account,p.products_type_code,p.source_type_code,
+		p.title,p.details,p.location,p.provide_status,p.total_quantity,
+		p.is_show_in_price,p.price_unit,p.price,p.quantity_unit,
+		p.quantity,p.source,p.specification,p.origin,
+		p.impurity,p.color,p.useful,p.appearance,p.manufacture,
+		p.remark,p.post_type,p.is_pause,p.is_post_when_view_limit,
+		p.is_del,p.category_products_main_code,p.category_products_assist_code,
+		p.check_person,p.check_status,p.unchecked_check_status,
+		p.unpass_reason,p.check_time,p.real_time,p.refresh_time,
+		p.expire_time,p.gmt_created as productsGmtCreated,p.gmt_modified as productsGmtModified,
+		p.min_price,p.max_price,p.goods_type_code,p.is_post_from_inquiry	
+		from products p left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where p.id=#value#
+		order by pp.is_default desc,pp.gmt_modified desc
+		limit 0,1
+	</select>
+	
+	<!-- 
+	<select id="queryforthProductsPic" parameterClass="productsDO"
+		resultMap="allProductsPicDTOResult">
+		select pp.id,pp.name,pp.product_id,pp.album_id,pp.pic_address,pp.is_default,
+		pp.is_cover,pp.gmt_created,pp.gmt_modified,
+		pa.id as productsAlbumsId,pa.parent_id,pa.name as productsAlbumsName,
+		pa.gmt_created as productsAlbumsGmtCreated,pa.gmt_modified as productsAlbumsGmtCreated,
+		p.id as productsId,p.company_id,p.account,p.products_type_code,p.source_type_code,
+		p.title,p.details,p.location,p.provide_status,p.total_quantity,
+		p.is_show_in_price,p.price_unit,p.price,p.quantity_unit,
+		p.quantity,p.source,p.specification,p.origin,
+		p.impurity,p.color,p.useful,p.appearance,p.manufacture,
+		p.remark,p.post_type,p.is_pause,p.is_post_when_view_limit,
+		p.is_del,p.category_products_main_code,p.category_products_assist_code,
+		p.check_person,p.check_status,p.unchecked_check_status,
+		p.unpass_reason,p.check_time,p.real_time,p.refresh_time,
+		p.expire_time,p.gmt_created as productsGmtCreated,p.gmt_modified as productsGmtModified,
+		p.min_price,p.max_price,p.goods_type_code,p.is_post_from_inquiry	
+		from products p left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#companyId#
+		<dynamic prepend="">
+			<isNotEmpty property="id" prepend="and">
+				<![CDATA[p.id <> #id#]]>
+			</isNotEmpty>
+		</dynamic>
+		order by p.refresh_time desc
+		limit 0,4
+	</select>
+	<select id="queryAllProductsPicByHadSubSeriesCount" parameterClass="productsDTO"
+		resultClass="java.lang.Integer">
+		select count(pp.id)
+		FROM products_series a
+		LEFT JOIN products_series_contacts b ON a.id=b.products_series_id
+		left join products p ON b.products_id = p.id
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and a.id=#seriesId#
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+	</select>
+	<select id="queryAllProductsPicByHadSubSeries" parameterClass="productsDTO"
+		resultMap="allProductsPicDTOResult">
+		select pp.id,pp.name,pp.product_id,pp.album_id,pp.pic_address,pp.is_default,
+		pp.is_cover,pp.gmt_created,pp.gmt_modified,
+		pa.id as productsAlbumsId,pa.parent_id,pa.name as productsAlbumsName,
+		pa.gmt_created as productsAlbumsGmtCreated,pa.gmt_modified as productsAlbumsGmtCreated,
+		p.id as productsId,p.company_id,p.account,p.products_type_code,p.source_type_code,
+		p.title,p.details,p.location,p.provide_status,p.total_quantity,
+		p.is_show_in_price,p.price_unit,p.price,p.quantity_unit,
+		p.quantity,p.source,p.specification,p.origin,
+		p.impurity,p.color,p.useful,p.appearance,p.manufacture,
+		p.remark,p.post_type,p.is_pause,p.is_post_when_view_limit,
+		p.is_del,p.category_products_main_code,p.category_products_assist_code,
+		p.check_person,p.check_status,p.unchecked_check_status,
+		p.unpass_reason,p.check_time,p.real_time,p.refresh_time,
+		p.expire_time,p.gmt_created as productsGmtCreated,p.gmt_modified as productsGmtModified,
+		p.min_price,p.max_price,p.goods_type_code,p.is_post_from_inquiry
+		FROM products_series a
+		left join products_series_contacts b ON a.id=b.products_series_id
+		left join products p ON b.products_id = p.id
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and a.id=#seriesId#
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	<select id="queryAllProductsPicByNoHadSubSeriesCount" parameterClass="productsDTO"
+		resultClass="java.lang.Integer">
+		select count(pp.id)	
+		from products p
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+		and p.id not in (select distinct products_id 
+		from products_series_contacts)
+	</select>
+	<select id="queryAllProductsPicByNoHadSubSeries" parameterClass="productsDTO"
+		resultMap="allProductsPicDTOResult">
+		select pp.id,pp.name,pp.product_id,pp.album_id,pp.pic_address,pp.is_default,
+		pp.is_cover,pp.gmt_created,pp.gmt_modified,
+		pa.id as productsAlbumsId,pa.parent_id,pa.name as productsAlbumsName,
+		pa.gmt_created as productsAlbumsGmtCreated,pa.gmt_modified as productsAlbumsGmtCreated,
+		p.id as productsId,p.company_id,p.account,p.products_type_code,p.source_type_code,
+		p.title,p.details,p.location,p.provide_status,p.total_quantity,
+		p.is_show_in_price,p.price_unit,p.price,p.quantity_unit,
+		p.quantity,p.source,p.specification,p.origin,
+		p.impurity,p.color,p.useful,p.appearance,p.manufacture,
+		p.remark,p.post_type,p.is_pause,p.is_post_when_view_limit,
+		p.is_del,p.category_products_main_code,p.category_products_assist_code,
+		p.check_person,p.check_status,p.unchecked_check_status,
+		p.unpass_reason,p.check_time,p.real_time,p.refresh_time,
+		p.expire_time,p.gmt_created as productsGmtCreated,p.gmt_modified as productsGmtModified,
+		p.min_price,p.max_price,p.goods_type_code,p.is_post_from_inquiry	
+		from products p
+		left join products_pic pp on pp.product_id=p.id
+		left join products_albums pa on pp.album_id=pa.id
+		where pp.is_default=1
+		and p.check_status=1
+		and p.is_del=0
+		and p.company_id =#productsDO.companyId#
+		and p.id not in (select distinct products_id 
+		from products_series_contacts)
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	 -->
+	
+	
+
+	<insert id="insertProductsPic" parameterClass="productsPicDO">
+		insert into
+		products_pic
+		(product_id,
+		album_id,
+		pic_address,
+		is_default,
+		is_cover,
+		check_status,
+		gmt_created,
+		gmt_modified,
+		name
+		)values
+		(
+		#productId#,
+		#albumId#,
+		#picAddress#,
+		#isDefault#,
+		#isCover#,
+		#checkStatus#,
+		now(),
+		now(),
+		#name#
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<update id="updateProductsPic" parameterClass="productsPicDO">
+		update
+		products_pic
+		set
+		album_id=#albumId#,
+		pic_address=#picAddress#,
+		check_status = #checkStatus#,
+		gmt_modified=now()
+		<isNotEmpty prepend="," property="isDefault">
+			is_default=#isDefault#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isCover">
+			is_cover=#isCover#
+		</isNotEmpty>
+		where
+		id=#id:Integer#
+    </update>
+    
+    <update id="updateProductsPicAddr" parameterClass="productsPicDO">
+		update
+		products_pic
+		set
+		pic_address=#picAddress#,
+		gmt_modified=now()
+		where
+		id=#id:Integer#
+    </update>
+    
+    <update id="updateProductsPicName" parameterClass="productsPicDO">
+		update
+		products_pic
+		set
+		name=#name#,
+		gmt_modified=now()
+		where
+		id=#id:Integer#
+    </update>
+    <!--	图片置顶  -->
+    <update id="updateProductsPicIsDefault" parameterClass="productsPicDO">
+		update
+		products_pic
+		set
+		is_default=#isDefault#,
+		gmt_modified=now()
+		where
+		id=#id:Integer#
+    </update>
+    
+    <update id="updateIsDefaultByProductId" parameterClass="java.util.Map">
+    	update
+    	products_pic
+    	set
+    	is_default=#status#,
+    	gmt_modified = now()
+    	where product_id = #productId#
+    </update>
+    
+    <update id="updateProductsIdById" parameterClass="java.util.HashMap">
+		update products_pic set
+			product_id=#productId#,
+			gmt_modified=now()
+		where id=#id:Integer#
+    </update>
+
+    <delete id="batchDeleteProductsPicbyId" parameterClass="int">
+    	delete from products_pic
+		where id=#id#
+    </delete>
+	<select id="countProductPicByProductId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from products_pic
+		where product_id=#productId#
+	</select>
+	
+	<select id="queryPicPath" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select pic_address from products_pic where id=#value#
+	</select>
+	
+	<select id="queryPicPathByProductId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select pic_address from products_pic 
+		where product_id=#value#
+		order by gmt_modified desc
+		limit 1
+	</select>
+	
+	
+<!--	<update id="updateStickieById" parameterClass="java.lang.Integer">-->
+<!--		update products_pic set is_default = 1,gmt_modified=now() where id=#id#-->
+<!--    </update>-->
+	<select id="queryPicByProId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select pic_address from products_pic where product_id=#id#
+	</select>
+	
+	<update id="updatePicStatus" parameterClass="java.util.Map" >
+		update
+		products_pic
+		set
+		gmt_modified = now(),
+		check_status = #checkStatus#,
+		unpass_reason = #unpassReason#
+		where id=#id#
+	</update>
+	
+	<select id="countPicIsNoPass" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from products_pic
+		where check_status='2' and product_id = #productId#
+	</select>
+    <!--根据图片的 id更isDefault的值，完成第一张图片置顶-->	
+    <update id="updateProductsPicIsDefaultById" parameterClass="java.util.HashMap">
+		update
+		products_pic
+		set
+		is_default=#isDefault#,
+		gmt_modified=now()
+		where
+		id=#id:Integer#
+    </update>
+	
+</sqlMap>

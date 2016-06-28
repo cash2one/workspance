@@ -1,0 +1,194 @@
+#set($layout="/layout/wwwLayout.vm")
+#set($pageCompInfo="1")
+#parse("/common/search.vm")
+<div class="band"></div>
+<div class="content clearfix">
+    <div class="fiem-left fl">
+        <div class="paycp_title">
+            <span class="paycp_name">所有信息</span>
+        </div>
+        <div class="paycp-info">
+			## 所有供求
+            <ul class="paycp-ul clearfix paycp-ul-minh">
+				#foreach($obj in $page.records)
+                    <li>
+                        <div class="info-imgmo j_moimg">
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">
+                                <img src="$!{address.img}$!{obj.picAddress}" class="info-img" />
+                            </a>
+                            <div class="xiyu-mai xiyu-zz"></div>
+                            <div class="xiyu-mai">
+                                <p>
+                                    <span>卖家信誉: </span>
+                                    <span class="dj-imglist">
+										#if($i>1250)
+    										#set($i = $!{obj.tradeNum} % 1250)
+    										#set($j = $!{obj.tradeNum} / 1250)
+    										#foreach($a in [1..$j])
+        										<i class="djimg4"></i>
+    										#end
+										#end
+										#if($i>250)
+    										#set($i = $i % 250)
+    										#set($j = $i / 250)
+    										#foreach($a in [1..$j])
+    											<i class="djimg3"></i>
+    										#end
+										#end
+										#if($i>50)
+    										#set($i = $i % 50)
+    										#set($j = $i / 50)
+    										#foreach($a in [1..$j])
+    											<i class="djimg2"></i>
+    										#end
+										#end
+										#if($i>10)
+    										#set($i = $i % 10)
+    										#set($j = $i / 10)
+    										#foreach($a in [1..$j])
+    											<i class="djimg1"></i>
+    										#end
+										#end
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <p class="clearfix info-first">
+                            <span class="anred fl">¥ <span class="cp-moery">$!{obj.goods.price}</span>
+                            </span>
+                            <span class="color-99 fr">成交#if($!{obj.successNum})$!{obj.successNum}#else 0#end笔</span>
+                        </p>
+                        <p>
+                            <a href="#springUrl('/goods')$!{obj.goods.id}.htm" target="_blank">$!{obj.goods.title}</a>
+                        </p>
+                        <p class="info-two">
+                            <a href="#springUrl('/compInfo')$!{company.companyInfo.id}.htm" class="color-99" target="_blank">$!{company.companyInfo.name}</a>
+                        </p>
+                        <p class="clearfix info-two">
+                            <span class="fl">
+								#if($obj.bzjFlag)
+									<i class="rz-img1"></i>
+								#end
+								#if($obj.sevenDayFlag)
+									<i class="rz-img2"></i>
+								#end
+##                                <i class="rz-img1"></i>
+##                                <i class="rz-img2"></i>
+                            </span>
+                            <span class="fr color-99">$!{obj.area}</span>
+                        </p>
+                    </li>
+				#end
+            </ul>
+			## 翻页
+			#if($page)
+				#compInfoPageNav($page "#springUrl('/compInfo.htm')" "id=$!{company.companyInfo.id}" "")
+			#end
+        </div>
+    </div>
+    <div class="fiem-right fr">
+        <div class="fiem-detail">
+            <div class="fiem-detail-top">
+                <p>$!{company.companyInfo.name}</p>
+                <p>
+                    <span class="color-99">卖家信誉：</span>
+                    <span class="dj-imglist">
+						#if($i>1250)
+							#set($i = $!{company.tradeNum} % 1250)
+							#set($j = $!{company.tradeNum} / 1250)
+							#foreach($a in [1..$j])
+								<i class="djimg4"></i>
+							#end
+						#end
+						#if($i>250)
+							#set($i = $i % 250)
+							#set($j = $i / 250)
+							#foreach($a in [1..$j])
+								<i class="djimg3"></i>
+							#end
+						#end
+						#if($i>50)
+							#set($i = $i % 50)
+							#set($j = $i / 50)
+							#foreach($a in [1..$j])
+								<i class="djimg2"></i>
+							#end
+						#end
+						#if($i>10)
+							#set($i = $i % 10)
+							#set($j = $i / 10)
+							#foreach($a in [1..$j])
+								<i class="djimg1"></i>
+							#end
+						#end
+                    </span>
+                </p>
+                <p>
+                    <span class="color-99">消费保障：</span>
+                    <span>
+						#if($company.bzjFlag)
+							<i class="rz-img1"></i>
+						#end
+						#if($company.sevenDayFlag)
+							<i class="rz-img2"></i>
+						#end
+                    </span>
+                </p>
+            </div>
+            <div class="fiem-detail-info">
+                <div class="detail-info">
+                    <h3 class="color-66">公司简介:</h3>
+                    <p>$!{company.companyInfo.introduce}</p>
+                </div>
+                <div class="detail-info">
+                    <h3 class="color-66">主营产品:</h3>
+                    <p>$!{company.companyInfo.business}</p>
+                </div>
+                <div class="detail-info">
+                    <h3 class="color-66">公司地址:</h3>
+                    <p>$!{company.address}</p>
+                </div>
+            </div>
+            <div class="give-fiem clearfix">
+                <a href="javascript:void(0)" class="fl j_phone" id="clickToSee">查看联系方式</a>
+				<script>
+					jQuery("#clickToSee").click(function(){
+						jQuery.ajax({
+							url:"#springUrl('/clickToSee.htm')"
+						});
+					});
+				</script>
+                <a href="javascript:void(0)" class="fr">在线客服</a>
+            </div>
+            <div class="lianxi-type">
+                <div class="lianxi-bt">
+                    <span class="fl">联系方式</span>
+                    <a href="javascript:void(0)" class="fr lianxi-close j_pclose">X</a>
+                </div>
+                <div class="xx-info">
+                    <p>手机：$!{company.companyAccount.mobile}</p>
+					#if($!{company.companyAccount.tel})
+						<p>电话：$!{company.companyAccount.tel}</p>
+					#end
+				##	<p>姓名：周先生</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //查看联系方式
+    $(".j_phone").live("click",function(){
+    $(".lianxi-type").show()
+    })
+    $(".j_pclose").live("click",function(){
+    $(".lianxi-type").hide()
+    })
+    //查看买家信誉
+    $(".j_moimg").live("mouseenter",function(){
+    $(this).find(".xiyu-mai").animate({"margin-top":"157px"},200)
+    })
+    $(".j_moimg").live("mouseleave",function(){
+    $(this).find(".xiyu-mai").animate({"margin-top":"100%"},200)
+    })
+</script>

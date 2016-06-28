@@ -1,0 +1,200 @@
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/xianhuo/css/base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/xianhuo/css/index.css"/>
+##<script src="$!{address.img}/front/js/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+<script src="$!{address.img}/zz91/xianhuo/js/jquery.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#a").click(function() {
+			var page = jQuery(".line2").length;
+			htmlobj = jQuery.ajax({
+				url: "moreOrder.htm?page="+page,
+				async: false
+			});
+			var htmlinfo = $("#p7").html();
+			$("#p7").html(htmlinfo + htmlobj.responseText);
+		});
+	});
+	
+	function subfrm(frm) {
+	if (frm.pname.value == "") {
+		alert("请输入采购产品！");
+		frm.pname.focus();
+		return false;
+	}
+	if (frm.pperson.value == "") {
+		alert("请输入采购人！");
+		frm.pperson.focus();
+		return false;
+	}
+	if (frm.puse.value == "") {
+		alert("请输入产品用途！");
+		frm.puse.focus();
+		return false;
+	}
+	if (frm.pnum.value == "") {
+		alert("请输入采购数量！");
+		frm.pnum.focus();
+		return false;
+	}
+	if (frm.parea.value == "") {
+		alert("请输入采购地区！");
+		frm.parea.focus();
+		return false;
+	}
+	if (frm.ptel.value == "") {
+		alert("请输入您的电话！");
+		frm.ptel.focus();
+		return false;
+	}
+}
+	
+</script>
+#set($menu="order")
+#parse("/common/menu.vm")
+<div class="p1">
+	<div class="i1">
+		<img src="$!{address.img}/zz91/xianhuo/images/img1.jpg" />
+	</div>
+	<div class="z1">
+		请填写您真实的采购需求，收到后我们会立即给您回电话确认，帮您找货！  找货热线：<b>0571-56633100</b>  QQ:<b>1270407913</b>
+	</div>
+	<form action="#springUrl('/doTrust.htm')" method="post" id="trustForm" onsubmit="return subfrm(this)">
+        <div class="z2">
+			<div style="margin-bottom:10px;">
+				<div class="l1">
+					<div class="l1_1">采购产品：</div>
+					<input name="title" type="text" class="t1" id="pname"/>
+				</div>
+				<div class="l1" style="width:240px">
+					<div class="l1_1">产品用于：</div>
+					<div class="textarea">
+						<textarea name="useful" class="t3" id="puse" style="width:170px; height:65px;"></textarea>
+					</div>
+				</div>
+				<div class="l1">
+					<div class="l1_1">采购数量：</div>
+					<input name="quantity" type="text" class="t1" id="pnum"/>
+				</div>
+				<div class="l1">
+					<div class="l1_1">采购地区：</div>
+					<input name="area" type="text" class="t1" id="parea"/>
+				</div>
+			</div>
+			<div style="clear:both"></div>
+			<div style="padding-top:10px;">
+				<div class="l1">
+					<div class="l1_1">采购人：</div>
+					<input name="contact" type="text" class="t1" id="pperson"/>
+				</div>
+				<div class="l1" style="width:240px">&nbsp;</div>
+				<div class="l1">
+					<div class="l1_1">电话：</div>
+					<input name="mobile" type="text" class="t1" id="ptel"/>
+				</div>
+			</div>
+		</div>
+        <div class="z3">
+            <div class="l4">
+                <input type="image" name="imageField" id="imageField" src="$!{address.img}/zz91/xianhuo/images/ok.jpg" />
+            </div>
+        </div>
+        <div class="z4">
+            <img src="$!{address.img}/zz91/xianhuo/images/ok2.jpg" class="i4" />
+        </div>
+	</form>
+</div>
+<!--p1-->
+<div class="p2">
+    采购商家已全部通过现货商城官方审核，请有现货供应的商家及时联系工作人员寄样并报价
+</div>
+<!--p2-->
+<div class="p3">
+    <table class="table">
+        <tr class="line1">
+            <td class="list1" style="color:#000">采购产品</td>
+            <td class="list2">采购产品用于</td>
+			<td class="list3">联系人</td>
+            <td class="list4">采购数量</td>
+            <td class="list5">采购地区</td>
+            <td class="list6">操作</td>
+            <td class="list7">发布时间</td>
+        </tr>
+		#foreach($obj in $list)
+            <tr #if($velocityCount%2==1) class="line2" #else class="line3" #end id="tr_hover">
+                <td class="list1">$!{obj.title}</td>
+                <td class="list2">$!{obj.useful}</td>
+				<td class="list3">$!{obj.contact}</td>
+                <td class="list4">$!{obj.quantity}</td>
+                <td class="list5">$!{obj.area}</td>
+				<td class="list6">
+					<a href="http://wpa.qq.com/msgrd?v=3&amp;uin=1270407913&amp;site=www.zz91.com&amp;menu=yes" target="_blank">
+						在线报价
+						#if($velocityCount%2==1)<img src="$!{address.img}/zz91/xianhuo/images/img3.jpg" class="i3" />
+						#else<img src="$!{address.img}/zz91/xianhuo/images/img2.jpg" class="i2"/>#end
+					</a>
+				</td>
+                <td class="list7">#printFragmentDate('yyyy-MM-dd' $!{obj.gmtCreated})</td>
+            </tr>
+		#end
+    </table>
+    <div class="p7" id="p7"></div>
+    <div class="p4" >
+        <a href="javascript:void(0)" id="a">点击查看更多采购↓ </a>
+    </div>
+</div>
+<!--p3-->
+<div class="p5">
+    <div class="p6">
+        <ul class="l5">
+            <li class="z5">我要委托买货</li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a1" target="_blank">什么是委托人工买货？</a></li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a1" target="_blank">委托人工买货流程</a></li>
+        </ul>
+        <ul class="l5">
+            <li class="z5">我要委托买货</li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a2" target="_blank">什么是委托人工买货？</a></li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a2" target="_blank">委托人工买货流程</a></li>
+        </ul>
+        <ul class="l5">
+            <li class="z5">交易指南</li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a3" target="_blank">交易规则</a></li>
+            <li class="z6"><a href="http://xianhuo.zz91.com/help.htm#a3" target="_blank">保证金及佣金收取标准</a></li>
+        </ul>
+        <ul class="l5">
+            <li class="z5">常见问题 </li>
+            <li class="z6"><a href="http://china.zz91.com/register/register_stp1.htm" target="_blank">注册</a>/<a href="http://china.zz91.com/login.htm" target="_blank">登录</a></li>
+            <li class="z6"><a href="http://china.zz91.com/user/passwordReminder.htm">忘记密码？ </a></li>
+        </ul>
+        <ul class="l5">
+            <li class="z5">其他服务 </li>
+            <li class="z6"><a href="http://www.zz91.com/zst/" target="_blank">再生通</a>/<a href="http://www.zz91.com/service/ppt/index.asp">品牌通</a></li>
+            <li class="z6"><a href="http://www.zz91.com/service/baidu/yh.html">百度优化</a></li>
+        </ul>
+        <ul class="l6">
+            <li class="z7">客服电话 </li>
+            <li class="z6">0571-56633100 </li>
+            <li class="z6">周一到周五 8:30-18:00 </li>
+        </ul>
+        <div class="i5">
+            <img src="$!{address.img}/zz91/xianhuo/images/img_help.jpg" />
+        </div>
+    </div>
+</div>
+<!--p5-->
+<script type="text/javascript" src="$!{address.img}/zz91/xianhuo/js/zz91.xianhuo.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		//下拉菜单
+		xianhuo.allsort();
+		
+		jQuery("#doTrustButton").click(function(){
+			var str = jQuery("#mobile").val();
+			if(str.trim().length<=0){
+				alert("手机号码必须填写");
+				return false;
+			}
+			jQuery("#trustForm").submit();
+		});
+	});
+</script>
+</a>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>企业自主报价后台管理</title>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/jquery.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/ext-jquery-adapter.js" ></script>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<!--new import S-->
+	<script type="text/javascript" src="$!{address.js}/admin/category/tree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/jiage/jiageList.js" ></script>
+	<!--new import E-->
+	<script type="text/javascript">
+		Ext.onReady(function() {
+
+    	//供求类别树
+    	var tree = new ast.ast1949.admin.category.treePanel({
+    		//title : "供求类别",
+			collapsible: true,
+    		region : "west",
+			autoScroll:true,
+    		layout:"fit",
+    		split : true,
+    		rootData:"2008",
+    		isAssist:'0'
+    	});
+		tree.on("click", function(node, event) {
+    		var B=grid.getStore().baseParams;
+    		B = B||{};
+    		B["category"] = node.attributes["data"];
+    		grid.getStore().baseParams = B ;
+    		grid.getStore().reload({
+    			params : {
+    				"startIndex" : 0,
+    				"pageSize" : Context.PAGE_SIZE
+    			}
+    		});
+    	});
+    
+    	var grid = new ast.ast1949.admin.products.resultGrid({
+    		region:"center",
+    		layout:"fit"
+    	});
+		var viewport = new Ext.Viewport({
+    		layout:"border",
+			border : true,
+			items:[{
+				split:true,
+				region:"west",
+				width:200,
+				items:[tree]
+			},{
+				split:true,
+				region:"center",
+				layout:"border",
+				items:[grid]
+			}]
+    	});
+		grid.initJiage($!{companyId});
+    });
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/decoratitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="$!{address.myesite}/company/updateMainProduct.htm">修改公司主营业务</a></li>
+            <li class="hbnylefts"><a href="$!{address.myesite}/company/updateLogo.htm">上传公司LOGO</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/company/updateStyle.htm">修改门市部模板</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td height="500" valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">上传公司LOGO</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td height="80">&nbsp;</td>
+        </tr>
+      </table>
+      <form id="uploadForm" action="#springUrl('/photo/doUploadPhoto.htm')" enctype="multipart/form-data" method="post" target="uploadActionForm" onsubmit="return upload()">
+      <table width="50%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyconedittit">
+        <tr>
+          <td id="imageDiv" width="60%" height="200" align="center" style="border:solid 1px #abacac; border-radius:3px;">
+          	#if(${logoImage.size()} == 0)
+	    	<img src="$!{address.img}/huanbao/images/esite2/topig_03.gif"/>
+			#else
+				#set($topLogo=${logoImage.get(0)})
+		    	<img src="$!{address.thumb}$!{address.resource}$!{topLogo.path}&width=159&height=71"/>
+			#end
+		  </td>
+          <td id="submitDiv" style="padding-left:20px;">
+          	#if(${logoImage.size()} == 0 )
+				<input id="targetType" name="targetType" value="logo" type="hidden"/>
+          	<div class="pf_upd_ipt"><input id="uploadfile" name="uploadfile" type="file" class="upload_btn" onchange="submitFile()" value="上传" /></div>
+          	#else
+          	<input type="button" onclick="deletePhoto($!{topLogo.id},'$!{topLogo.path}')" value="删除" style="background-image:url($!{address.img}/huanbao/images/myesite/hbmem_32.jpg); width:84px; height:32px; font-size:14px; border:0px;">
+          	#end
+        </tr>
+        <tr>
+          <td height="50" align="center">您当前的LOGO</td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+      <iframe id="uploadActionForm" name="uploadActionForm" style="display:none"></iframe>
+      </form>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td height="80">&nbsp;</td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<script>
+function submitFile(){
+	jQuery("#uploadForm").submit();
+}
+var uploadCallback=null;
+function upload(){
+	uploadCallback=function(success, data){
+	     if(success) {
+             window.location="$!{address.myesite}/company/updateLogo.htm";
+	     } else {
+             hb.util.Message.show({
+		         msg:"上传失败:"+data+"！",
+		         autoClose:100000
+			 });
+	     }
+	};
+	return true;
+}
+
+function deletePhoto(id,path) {
+    jQuery.ajax({
+        url:'#springUrl('/photo/deletePhoto.htm')',
+        data:{"id":id,"path":path},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                	window.location="$!{address.myesite}/company/updateLogo.htm";
+                }
+            },
+        failure:function(){
+            hb.util.Message.show({
+		        msg:"删除失败！",
+		        autoClose:100000
+			 });
+        }
+   });
+}
+</script>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sysLog">
+
+	<typeAlias alias="sysLog" type="com.zz91.crm.domain.SysLog"/>
+	
+	<resultMap class="sysLog" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="targetId" column="target_id"/>
+		<result property="saleAccount" column="sale_account"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="saleDept" column="sale_dept" />
+		<result property="operation" column="operation"/>
+		<result property="saleIp" column="sale_ip" />
+		<result property="details" column="details" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="cname" column="cname" />
+	</resultMap>
+	
+	<insert id="insertSysLog" parameterClass="sysLog">
+		insert into `sys_log`
+		(
+		`operation`,
+		`target_id`,
+		`sale_account`,
+		`sale_dept`,
+		`sale_name`,
+		`sale_ip`,
+		`details`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#operation#,
+		#targetId#,
+		#saleAccount#,
+		#saleDept#,
+		#saleName#,
+		#saleIp#,
+		#details#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<sql id="fullcolumn">
+		sl.`id`,
+		sl.`operation`,
+		sl.`target_id`,
+		sl.`sale_account`,
+		sl.`sale_dept`,
+		sl.`sale_name`,
+		sl.`sale_ip`,
+		sl.`details`,
+		sl.`gmt_created`,
+		sl.`gmt_modified`
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				target_id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="saleName" prepend="and">
+				sale_name=#saleName#
+			</isNotEmpty>
+			<isNotEmpty property="operation" prepend="and">
+				operation=#operation#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="querySysLog" parameterClass="java.util.HashMap" resultMap="fullResultMap">
+		select
+		<include refid="sysLog.fullcolumn"/>
+		,cc.cname
+		from sys_log sl
+		left join crm_company cc on cc.id=sl.target_id
+		<include refid="sysLog.dynamicWhere"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="querySysLogCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from sys_log sl
+		left join crm_company cc on cc.id=sl.target_id
+		<include refid="sysLog.dynamicWhere"/>
+	</select>
+</sqlMap>

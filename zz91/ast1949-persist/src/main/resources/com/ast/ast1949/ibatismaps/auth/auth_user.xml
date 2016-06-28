@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="authUser">
+
+	<typeAlias alias="authuser" type="com.ast.ast1949.domain.auth.AuthUser" />
+	<typeAlias alias="authForgotPassword"
+		type="com.ast.ast1949.domain.auth.AuthForgotPassword" />
+
+	<sql id="fullColumn">
+		id,username,account,password,email,mobile,steping,gmt_created,gmt_modified,isperson
+	</sql>
+
+	<resultMap id="userResult" class="authuser">
+		<result property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="account" column="account" />
+		<result property="password" column="password" />
+		<result property="email" column="email" />
+		<result property="mobile" column="mobile" />
+		<result property="steping" column="steping" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="isperson" column="isperson" />
+	</resultMap>
+
+	<resultMap id="authForgotPasswordResult" class="authForgotPassword">
+		<result property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="userid" column="userid" />
+		<result property="email" column="email" />
+		<result property="authKey" column="auth_key" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<select id="queryUserByEmail" resultMap="userResult"
+		parameterClass="java.lang.String">
+		select
+		<include refid="authUser.fullColumn" />
+		from auth_user
+		where email=#value#
+		limit 1
+	</select>
+	
+	<select id="queryUserByMobile" resultMap="userResult"
+		parameterClass="java.lang.String">
+		select
+		<include refid="authUser.fullColumn" />
+		from auth_user
+		where mobile=#value#
+		limit 1
+	</select>
+
+	<insert id="generateForgotPasswordKey" parameterClass="authForgotPassword">
+		insert into
+		auth_forgot_password(userid,username,email,gmt_created,auth_key)
+		values(#userid#,#username#,#email#,now(),#authKey#);
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="listAuthForgotPasswordByKey" parameterClass="java.lang.String"
+		resultMap="authForgotPasswordResult">
+		select
+		id,username,userid,email,auth_key,gmt_created,gmt_modified
+		from
+		auth_forgot_password
+		where auth_key = #value#
+		limit 1
+	</select>
+
+	<delete id="deleteAuthForgotPasswordByKey" parameterClass="java.lang.String">
+		delete from auth_forgot_password
+		where auth_key=#value#
+	</delete>
+
+	<select id="queryUserByUsername" resultMap="userResult"
+		parameterClass="java.lang.String">
+		select
+		<include refid="authUser.fullColumn" />
+		from auth_user
+		where username=#value#
+		limit 1
+	</select>
+
+	<update id="updatePasswordByUsername" parameterClass="java.util.HashMap">
+		update
+		auth_user set
+		password = #password#,
+		gmt_modified=now()
+		where
+		username =
+		#username#
+  	</update>
+
+	<update id="updateAccount" parameterClass="java.util.HashMap">
+		update auth_user
+		set
+		account=#account#,
+		gmt_modified=now()
+		where username=#username#
+  	</update>
+
+	<select id="countUserByAccount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from auth_user
+		where username=#value# or
+		account=#value#
+  	</select>
+  	
+  	
+  	<select id="countUserByMobile" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from auth_user
+		where mobile=#mobile#
+  	</select>
+
+	<select id="countUserByEmail" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from auth_user
+		where email=#value#
+  	</select>
+
+	<insert id="insertUser" parameterClass="authuser">
+		insert into auth_user (username, account, password,email,mobile, steping,
+		gmt_created, gmt_modified,isperson)
+		values(#username#,#account#,#password#,#email#,#mobile#,#steping#,now(),now(),#isperson#)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateSteping" parameterClass="java.util.HashMap">
+		update auth_user
+		set
+		steping=#steping#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<select id="countUserByAccountLogin" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from auth_user
+		where (account=#username# or
+		username=#username#) and password=#password#
+	</select>
+
+	<select id="countUserByEmailLogin" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from auth_user
+		where email=#email# and
+		password=#password#
+	</select>
+
+	<select id="queryAccountByEmail" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select username from auth_user where email=#value# limit 1
+	</select>
+
+	<select id="queryPassword" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select password from auth_user where username=#value#
+	</select>
+
+	<select id="validateByAccount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select username from auth_user
+		where account=#username#
+		and
+		password=#password#
+		limit 1
+	</select>
+
+	<select id="validateByEmail" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select username from auth_user
+		where email=#username#
+		and
+		password=#password#
+		limit 1
+	</select>
+
+	<select id="validateByUsername" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select username from auth_user
+		where username=#username#
+		and password=#password#
+		limit 1
+	</select>
+	
+	<select id="validateByMobile" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select username from auth_user
+		where mobile=#mobile#
+		and password=#password#
+		limit 1
+	</select>
+
+	<delete id="deleteById" parameterClass="java.lang.Integer">
+		DELETE FROM auth_user
+		WHERE id = #value#
+	</delete>
+
+
+	<update id="updateEmail" parameterClass="java.util.HashMap">
+		update auth_user
+		set
+		email=#email#,
+		gmt_modified=now()
+		where username=#username#
+  	</update>
+  	
+  	<update id="updateMobile" parameterClass="java.util.HashMap">
+		update auth_user
+		set
+		mobile=#mobile#,
+		gmt_modified=now()
+		where username=#username#
+  	</update>
+  	
+</sqlMap>

@@ -1,0 +1,235 @@
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>提现</title>
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+    <script src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+    <script src="http://img0.zz91.com/zz91/newprice/comm/input-plt.js"></script>
+    <style type="text/css">
+        .getname{
+            height: 40px;
+            line-height: 40px;
+            padding-left: 20px;
+            background-color: #027cff;
+            color: #fff;
+            font-size: 16px;
+            font-family: "微软雅黑";
+        }
+        .gettable{
+            margin-top: 30px;
+        }
+        .gettable td{
+            padding: 10px 0;
+        }
+        .tbtitle{
+            height: 30px;
+            line-height: 30px;
+        }
+        .intoipt{
+            width: 100%;
+            height: 28px;
+            line-height: 28px;
+            border:1px solid #cccccc;
+            position: relative;
+            left: -2px;
+        }
+        .bandtype{
+            color: #999999;
+            line-height: 14px;
+            margin-top: 5px;
+        }
+        .getbtn{
+            display: inline-block;
+            height: 30px;
+            width: 60px;
+            color: #fff;
+            background-color: #027cff;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+        }
+        .closebtn{
+            display: inline-block;
+            height: 30px;
+            width: 60px;
+            color: #333333;
+            background-color: #cccccc;
+            text-align: center;
+            line-height: 30px;
+            cursor: pointer;
+            margin-left: 40px;
+        }
+    </style>
+</head>
+    #set($layout="/layout/blank.vm")
+    <body>
+        <div class="getname">请输入以下信息，提交提现申请</div>
+        <table cellpadding="0" cellspacing="0" class="gettable" width="100%">
+            <tr>
+                <td width="20"></td>
+                <td width="60" valign="top"><div class="tbtitle">银行卡号：</div></td>
+                <td>
+                    <div class=""><input class="intoipt" id="bank_account"/></div>
+					<!--银行+卡类型-->
+					<p class="bandtype" id="bank"></p>
+                    <p class="bandtype" id="bank_err" style="color:red"></p>
+                </td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td><div class="tbtitle">开&nbsp;&nbsp;户&nbsp;行：</div></td>
+                <td>
+					<input class="intoipt" id="bank_name"/>
+					<p class="bandtype" id="bank_name_err" style="color:red"></p>
+				</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td><div class="tbtitle">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</div></td>
+                <td>
+					<input class="intoipt"/ id="linkman">
+					<p class="bandtype" id="linkman_err" style="color:red"></p>
+				</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td><div class="tbtitle">手&nbsp;&nbsp;机&nbsp;号：</div></td>
+                <td>
+					<input class="intoipt" id="mobile"/>
+					<p class="bandtype" id="mobile_err" style="color:red"></p>
+				</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td><div class="tbtitle">提现金额：</div></td>
+                <td>
+					<input class="intoipt"/ id="money">
+					<p class="bandtype" id="money_err" style="color:red"></p>
+				</td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td></td>
+                <td></td>
+                <td width="20"></td>
+            </tr>
+            <tr>
+                <td width="20"></td>
+                <td></td>
+                <td><span class="getbtn">提现</span><span class="closebtn">取消</span></td>
+                <td width="20"></td>
+            </tr>
+        </table>
+    </body>
+    <script type="text/javascript">
+		//取消按钮
+        $(".closebtn").click(function(){
+            $(".estopDiv",parent.document).remove();
+            $(".pop-main",parent.document).remove();
+        })
+		//失去焦点时检验是否为空或是否输入正确
+		
+		$("#bank_account").blur(function(){
+			if($("#bank_account").val()==""){
+				$("#bank_err").html("请填写银行卡号");
+				return false;
+			}else{
+				$("#bank_err").html("");
+			}
+			
+			if($("#bank_account").val()!=""){
+				//验证银行卡位数等
+				jQuery.ajax({
+					url:"#springUrl('/cash/validateBankAccount.htm')",
+					type:'post',
+					dataType:'json',
+					data:{bank_account:$("#bank_account").val()},
+					success:function(data){
+						if(data.success==true){
+							$("#bank").html(data.data);
+						}else{
+							$("#bank_err").html(data.data);
+						}
+					}
+				});
+			}
+		});
+		
+		$("#bank_name").blur(function(){
+			if($("#bank_name").val()==""){
+				$("#bank_name_err").html("请填写开户行");
+				return false;
+			}else{
+				$("#bank_name_err").html("");
+			}
+		});
+			
+		$("#linkman").blur(function(){
+			if($("#linkman").val()==""){
+				$("#linkman_err").html("请填写联系人");
+				return false;
+			}else{
+				$("#linkman_err").html("");
+			}
+		});
+		
+		$("#mobile").blur(function(){
+			if($("#mobile").val()==""){
+				$("#mobile_err").html("请填写手机号");
+				return false;
+			}else{
+				$("#mobile_err").html("");
+			}
+		});
+		
+		$("#money").blur(function(){
+			if($("#money").val()==""){
+				$("#money_err").html("请填写提现金额");
+				return false;
+			}else{
+				$("#money_err").html("");
+			}
+		});
+		//提交
+		$(".getbtn").click(function(){
+			var company_id=$!{companyId};
+			var bank_account=$("#bank_account").val();
+			var bank=$("#bank").html();
+			var bank_name=$("#bank_name").val();
+			var linkman=$("#linkman").val();
+			var mobile=$("#mobile").val();
+			var money=$("#money").val();
+			jQuery.ajax({
+				url:"#springUrl('/cash/insertCashAdvance.htm')",
+				type:'post',
+				dataType:'json',
+				data:{
+						companyId:company_id,
+						bankAccount:bank_account,
+						bank:bank,
+						bankName:bank_name,
+						linkman:linkman,
+						mobile:mobile,
+						money:money,
+					},
+				success:function(data){
+					if(data.data=="0"){
+						alert("金额填写错误");
+						return false;
+					}
+					if(data.success==true){
+						window.parent.location.href="getmoney_succ.htm";
+					}
+				}
+			});
+		});
+    </script>
+</html>

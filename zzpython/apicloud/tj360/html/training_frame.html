@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>课程中心</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<meta name="copyright" content="www.thundersoft.com" />
+	<link rel="stylesheet" href="../css/base.css">
+
+	<style>
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+		body{
+			background-color: #FAFAFA;
+		}
+		#main{
+			overflow: hidden;
+		}
+		#recom{
+			display: -webkit-box;
+			-webkit-box-flex:1;
+			-webkit-box-orient:horizontal;
+			-webkit-box-align:center;
+			width:100%;
+			background: url(../image/home/default_blur.png) no-repeat;
+			-webkit-background-size: 100% 100%;
+		}
+		.container{
+			display: -webkit-box;
+			-webkit-box-align:center;
+			-webkit-box-pack:center;
+			-webkit-box-orient:vertical;
+			width: 100%;
+			height: 100%;
+		}
+		.container div{
+			display: -webkit-box;
+			-webkit-box-align:center;
+			-webkit-box-pack:center;
+			width: 100%;
+		}
+		.container div:nth-child(1){
+			height: 85%;
+		}
+		.container div:nth-child(2){
+			height: 15%;
+		}
+		.container div:nth-child(2) span{
+			border-width: 4px;
+			border-radius: 4px;
+			border-style: solid;
+			border-color: #FFFFFF;
+			margin: 0 1px;
+		}
+		.currentbtn{
+			border-color: rgb(0, 184, 255) !important;
+		}
+		#courselist{
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+		}
+		#courselist section{
+			display: -webkit-box;
+			border-bottom: 1px solid #e5e5e5;
+			padding-top: 12px;
+			padding-bottom: 12px;
+			padding-left: 8px;
+			padding-right: 8px;
+			background-color: #fafafa;
+		}
+		#courselist section div:nth-child(1) img{
+			margin-right: 10px;
+			border: 1px solid #B3B3B3;
+			border-radius: 14px;
+			background: #fff;
+		}
+		#courselist section div:nth-child(2){
+			width: 100%;
+			padding-top: 7px;
+			padding-bottom: 7px;
+			-webkit-box-flex: 1;
+		}
+		.title{
+			font-weight: bold;
+			font-size: 18px;
+			color: rgb(50,50,50);;
+			text-overflow:ellipsis;
+			overflow:hidden;
+			white-space:nowrap;
+			-webkit-box-flex: 1;
+			margin-bottom: 7px;
+		}
+		.content{
+			font-size: 0.9em;
+			/*color: rgb(50, 50, 50);*/
+			color: #808080;
+			line-height: 18px;
+			word-wrap: break-word;
+			word-break: break-all;
+		}
+		.courselistActive{
+			background-color: #fff !important;
+		}
+		.nodata{
+			display: -webkit-box;
+			-webkit-box-align: center;
+			-webkit-box-pack: center;
+			background-color: #FAFAFA;
+			-webkit-box-flex: 1;
+			font-size: 14px;
+			padding-top: 40px;
+		}
+		.loadmore {height: 40px; line-height: 40px; text-align: center; font-size: 14px;border-top: 1px solid #e0e0e0;display: none;}
+	
+	</style>
+</head>
+<body>
+	<div id="main">
+		<section id="recom">
+		</section>
+		<div id="courselist">
+			<!-- <section tapmode="courselistActive" onclick="beforeCourseDetail(1)">
+			<div><img src="../image/default.png" width="75px" height="75px"/></div>
+			<div>
+			<label class="title">asdf</label>
+			<label class="content">asdf</label>
+			</div></section> -->
+		
+		<div class="loadmore">
+			加载更多
+		</div>
+	</div>
+</body>
+<script src="../script/api.js"></script>
+<script src="../script/carousel.js"></script>
+<script src="../script/common.js"></script>
+<script>
+	var pageIndex       = 0;
+	var recomInLoading  = false;
+	var courseInLoading = false;
+	var needLoadMore    = false;
+	var totalcount      = 0;
+	var alreadyshow     = 0;
+	var limitItemNum	= 9;
+
+	var jsonList    = [];
+	var newJsonList = [];
+
+	// TODO 初始化放在函数内部，否则报错
+	var model ;
+	var query ;
+
+	apiready = function() {
+		api.showProgress({modal: true });
+		$api.byId('recom').style.height = api.winWidth * 0.6 + 'px';
+		//下拉到页面底部，加载更多
+		api.addEventListener({
+			name: 'scrolltobottom'
+		}, function() {
+			var loadmore = $api.dom('.loadmore');
+
+			if (alreadyshow <= totalcount ) {
+				loadmore.style.display = 'block';
+				api.showProgress({modal: true });
+				loadCourseData(false);
+			}
+			else {
+				loadmore.style.display = 'none';
+			}
+		});
+
+		//下拉刷新
+		api.setRefreshHeaderInfo({
+			visible: true,
+			bgColor: '#F2F2F2',
+			textColor: '#000000',
+			textDown: '下拉刷新',
+			textUp: '释放刷新'
+		}, function(ret, err) {
+			loadRecomData();
+			loadCourseData(true);
+		});
+		// 加载顶图
+		loadRecomData();
+		// 获得总条目
+		getTotalNum ();
+		// 加载数据
+		loadCourseData(true);
+	};
+
+	function recomAjaxBack(ret, err) {
+
+		recomInLoading = false;
+		if (ret) {
+			if (ret.length > 0) {
+				var btnstr = '';
+				var list = ret;
+				var recom = $api.byId('recom');
+				for (var i = 0; i < list.length; i++) {
+					var recomStr = '';
+					if (list[i].rType == '0') { //推荐链接
+						recomStr += '<div id="container' + i + '" class="container" tapmode="" onclick="openLink(\'' + list[i].rType + '\', \'' + list[i].rlink + '\', \'' + list[i].cid + '\', \'' + list[i].mid + '\')">';
+					} else { //推荐课程
+						recomStr += '<div id="container' + i + '" class="container" tapmode="" onclick="openLink(\'' + list[i].rType + '\', \'' + list[i].rlink + '/Index.html' + '\', \'' + list[i].cid + '\', \'' + list[i].mid + '\')">';
+					}
+					recomStr += '<div><a></a></div>';
+					recomStr += '<div class="morebtn">';
+					for (var j = 0; j < list.length; j++) {
+						if (i == j) {
+							recomStr += '<span class="currentbtn"></span>';
+						} else {
+							recomStr += '<span></span>';
+						}
+					}
+					recomStr += '</div>';
+					recomStr += '</div>';
+
+					if (i == 0) {
+						$api.html(recom, recomStr);
+					} else {
+						$api.append(recom, recomStr);
+					}
+					$api.byId('container' + i).style.background = 'url(' + list[i].ricon + ') no-repeat center';
+					$api.byId('container' + i).style.backgroundSize = api.winWidth + 'px ' + api.winWidth * 0.6 + 'px';
+				}
+				slideRecom(); //加幻灯片效果
+			} else if (ret.length == 0) {
+				setTimeout(function() {
+					api.hideProgress();
+				}, 800);
+			}
+		} else {
+			api.hideProgress();
+			if (ret) {
+				api.toast({
+					msg: ret.msg,
+					location: 'middle'
+				});
+			} else if (err) {
+				api.toast({
+					msg: err.msg,
+					location: 'middle'
+				});
+			} else {
+				api.toast({
+					msg: '数据错误',
+					location: 'middle'
+				});
+			}
+		}
+	}
+
+
+	function loadRecomData() {
+		if (recomInLoading) { //如果还在加载中，不执行操作
+			return;
+		}
+		recomInLoading = true;
+
+		model = api.require('model');
+		query = api.require('query');
+
+		model.config({
+			appId: 'A6961693132912',
+			appKey: '727724FF-FD26-C97B-B317-366723CA78A2',
+			host: 'https://d.apicloud.com'
+		});
+
+		// var model = api.require('model');
+		//      var query = api.require('query');
+
+		//      model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2',host: 'https://d.apicloud.com'});
+		query.createQuery(function(ret, err) {
+			if (ret && ret.qid) {
+				var queryId = ret.qid;
+				model.findAll({
+					class: "traninghead",
+					qid: queryId
+				}, recomAjaxBack);
+			}
+
+		});
+
+	}
+
+	function setAllcount (ret, err) {
+		if (ret) {
+			totalcount = ret.count
+			// alert(JSON.stringify(ret));
+		}
+		else{
+			// alert(JSON.stringify(err));
+		}
+	}
+
+	// 获取全部表中全部条目
+	function getTotalNum () {
+		query.createQuery(function(ret, err) {
+			if (ret && ret.qid) {
+				var queryId = ret.qid;
+				model.count({
+					class: "traning",
+					qid: queryId
+				}, setAllcount);
+			}
+		});
+	}
+
+	function slideRecom() {
+		var recom = $api.byId('recom');
+		var rollTimer = null;
+		recom.slide = new Slider(recom, {
+			dir: 'x',
+			touchStartFn: function() {
+				if (rollTimer) {
+					clearInterval(rollTimer);
+				};
+			},
+			touchEndFn: function() {},
+			transEndFn: function() {
+				iNow = this.currentPoint;
+				if (!this.hasNext()) {
+					this.currentPoint = -1;
+				};
+			},
+			duration: 100
+		});
+		setTimeout(function() {
+			api.hideProgress();
+		}, 800);
+	}
+
+	function createContent() {
+		var html = '';
+		
+		for (var i = alreadyshow; i < jsonList.length; i++) {
+			var subM = subStr(jsonList[i].mdescription);
+		
+			// 设置默认头像，如果数据库中有新的，就覆盖掉，如果没有，就用本地默认的
+			var src = '../image/default.png';
+			if (jsonList[i].micon) {
+				src = jsonList[i].micon;
+			}
+
+			html += '<section tapmode="courselistActive" onclick="beforeCourseDetail(' + i + ')">';
+			html += '<div><img src="' + src + '" width="75px" height="75px"/></div>';
+			html += '<div>';
+			html += '<label class="title">' + jsonList[i].mname + '</label>';
+			html += '<label class="content">' + subM + '</label>';
+			html += '</div></section>';
+		}
+		return html;
+	}
+
+	// 课程加载回调
+	function courseAjaxBack(ret, err) {
+
+		courseInLoading = false;
+		// alert(JSON.stringify(ret));
+		if (ret) {
+			if (ret.length > 0) {
+				jsonList = jsonList.concat(ret);
+		
+				var html = createContent();
+				pageIndex++;
+
+				alreadyshow += limitItemNum;
+
+				// $api.html($api.byId('courselist'), html);
+				$api.append($api.byId('courselist'), html);
+				api.hideProgress();
+				/**
+					if(isReload_){//如果是刷新
+	    				
+					}else{//如果是加载更多
+						$api.append($api.byId('courselist'), html);
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					*/
+				api.parseTapmode();
+			} else if (ret.length == 0) {
+				api.refreshHeaderLoadDone();
+				api.hideProgress();
+				// if (isReload_) { //如果是刷新
+				// 	var html = '<div class="nodata">暂无数据</div>';
+				// 	$api.html($api.byId('courselist'), html);
+				// }
+			}
+
+			if (pageIndex < ret.pages) {
+				needLoadMore = true;
+			} else {
+				needLoadMore = true;
+			}
+			api.refreshHeaderLoadDone();
+		} else {
+			api.refreshHeaderLoadDone();
+			api.hideProgress();
+			if (ret) {
+				api.toast({
+					msg: ret.msg,
+					location: 'middle'
+				});
+			} else if (err) {
+				api.toast({
+					msg: err.msg,
+					location: 'middle'
+				});
+			} else {
+				api.toast({
+					msg: '数据错误',
+					location: 'middle'
+				});
+			}
+			var html = '<div class="nodata">数据错误，请下拉刷新重试！</div>';
+			$api.html($api.byId('courselist'), html);
+		}
+	}
+
+	// 加载课程数据
+	function loadCourseData(isReload_) {
+
+		if (courseInLoading) { //如果还在加载中，不执行操作
+			return;
+		}
+		courseInLoading = true;
+		//下拉刷新，即重新载入,pageIndex为0
+		// 第一次进入也是isReload_ = true
+		if (isReload_) {
+			pageIndex = 0;
+		}
+
+		query.createQuery(function(ret, err) {
+			if (ret && ret.qid) {
+				var queryId = ret.qid;
+
+				// 设置limit
+				query.skip({qid: queryId, value:parseInt(alreadyshow)+''});
+				query.limit({qid: queryId, value:limitItemNum+''});
+				query.desc({qid: queryId, column: 'createdAt'});
+				
+				model.findAll({
+					class: "traning",
+					qid: queryId
+				}, courseAjaxBack);
+			}
+
+		});
+	}
+
+	// 点击顶图
+	function openLink(rType, rlink, cid, mid) {
+		if (rType == '1') { //目录需要实现放大和缩小页面	
+			rlink = rlink;
+			api.openWin({
+				name: 'trainingRecomHTML',
+				url: 'trainingRecomHTML.html',
+				pageParam: {
+					link: rlink,
+					scaleEnabled: true
+				}
+			});
+			var uid = 'guest';
+			var logined = $api.getStorage('logined');
+			if (logined) {
+				uid = $api.getStorage('usr').uid;
+			}
+			var values = {
+				uid: uid,
+				cid: cid,
+				mid: mid,
+				record: 1
+			};
+
+		} else {
+			api.openWin({
+				name: 'trainingRecomHTML',
+				url: 'trainingRecomHTML.html',
+				pageParam: {
+					link: rlink,
+					scaleEnabled: false
+				}
+			});
+		}
+	}
+
+	function beforeCourseDetail(index) {
+		// alert(index);
+		// alert(JSON.stringify(jsonList));
+		courseDetail(jsonList[index]);
+	}
+
+	function courseDetail(item) {
+		api.openWin({
+			name: 'trainingDetail',
+			url: 'trainingDetail.html',
+			pageParam: {
+				item: item
+			}
+		});
+	}
+</script>
+</html>

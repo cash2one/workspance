@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="customerCategory">
+	<typeAlias alias="customerCategoryDO" type="com.ast.ast1949.domain.company.CustomerCategoryDO"/>
+	
+	<resultMap class="customerCategoryDO" id="resultCustomerCategoryDO">
+		<result property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="name" column="name"/>
+		<result property="isAuto" column="is_auto"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<!-- 添加 -->
+	<insert id="insertCustomerCategory" parameterClass="customerCategoryDO">
+		insert into customer_category
+            (
+             parent_id,
+             name,
+             is_auto,
+             gmt_created,
+             gmt_modified)
+		values (
+		        #parentId#,
+		        #name#,
+		        #isAuto#,
+		        now(),
+		        now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 删除 -->
+	<delete id="deleteCustomerCategory" parameterClass="java.lang.Integer">
+		delete
+		from customer_category
+		where id = #value#
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="updateCustomerCategory" parameterClass="customerCategoryDO">
+		update customer_category
+		set
+		  parent_id = #parentId#,
+		  name = #name#,
+		  is_auto = #isAuto#,
+		  gmt_modified = #gmtModified#
+		where id = #id#
+	</update>
+	
+	<!-- 查询 -->
+	<select id="queryCustomerCategoryById" parameterClass="java.lang.Integer" resultMap="resultCustomerCategoryDO">
+		select
+		  id,
+		  parent_id,
+		  name,
+		  is_auto,
+		  gmt_created,
+		  gmt_modified
+		from customer_category
+		where id=#value#
+	</select>
+	
+	<select id="queryCustomerCategoryByParentId" parameterClass="java.lang.Integer" resultMap="resultCustomerCategoryDO">
+		select
+		  id,
+		  parent_id,
+		  name,
+		  is_auto,
+		  gmt_created,
+		  gmt_modified
+		from customer_category
+		where parent_id=#value#
+	</select>
+	
+	<!-- 
+	<select id="countCustomerCategoryByName" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(id) 
+		from customer_category
+		where name=#value#
+	</select>
+	 -->
+	
+	
+</sqlMap>

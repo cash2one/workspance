@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tagsCategoryCollection">
+	<typeAlias alias="tagsCategoryCollection" type="com.zz91.tags.domain.TagsCategoryCollection"/>
+	<typeAlias alias="tags" type="com.zz91.tags.domain.Tags"/>
+	
+	<resultMap class="tags" id="tagsResult">
+		<result property="tags" column="tags" />
+		<result property="tagsEncode" column="tags_encode" />
+	</resultMap>
+	
+	<resultMap class="tagsCategoryCollection" id="collectionResult" >
+		<result property="id" column="id"/>
+		<result property="categoryCode" column="category_code" />
+		<result property="categoryIndexKey" column="category_index_key" />
+		<result property="tags" column="tags" />
+		<result property="tagsEncode" column="tags_encode" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,
+		category_code,
+		category_index_key,
+		tags,
+		tags_encode,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insertCollection" parameterClass="tagsCategoryCollection">
+		insert into tags_category_collection (
+			category_code,
+			category_index_key,
+			tags,
+			tags_encode,
+			gmt_created,
+			gmt_modified
+		)
+		values (
+			#categoryCode#,
+			#categoryIndexKey#,
+			#tags#,
+			#tagsEncode#,
+			now(),
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteCollection" parameterClass="java.lang.String">
+		delete from tags_category_collection
+		where tags=#tags#
+	</delete>
+	
+	<select id="queryCollection" parameterClass="java.util.HashMap" resultMap="collectionResult">
+		select 
+			<include refid="tagsCategoryCollection.fullColumn"/>
+		from tags_category_collection 
+		<dynamic prepend="where">
+			<isNotEmpty property="categoryCode" >
+				<isEqual property="isDirect" compareValue="true" prepend="and">
+					category_code like concat(#categoryCode#,"____")
+				</isEqual>
+				<isEqual property="isDirect" compareValue="false" prepend="and">
+					category_code like concat(#categoryCode#,"%")
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCollectionCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from tags_category_collection 
+		<dynamic prepend="where">
+			<isNotEmpty property="categoryCode" >
+				<isEqual property="isDirect" compareValue="true" prepend="and">
+					category_code like concat(#categoryCode#,"____")
+				</isEqual>
+				<isEqual property="isDirect" compareValue="false" prepend="and">
+					category_code like concat(#categoryCode#,"%")
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<delete id="deleteCollectionByCategory" parameterClass="java.lang.String">
+		delete from tags_category_collection
+		where category_code like concat(#code#,'%')
+	</delete>
+	
+	<update id="updateIndexKey" parameterClass="java.util.HashMap">
+		update tags_category_collection set
+			category_index_key=#indexKey# ,		
+			gmt_modified=now()
+		where category_code=#code#	
+	</update>
+	
+	<delete id="deleteCollectionById" parameterClass="java.lang.Integer">
+		delete from tags_category_collection
+		where id=#id#
+	</delete>
+	
+	<select id="queryByCode" parameterClass="java.util.HashMap" resultMap="tagsResult">
+		select tags,tags_encode 
+		from tags_category_collection
+		<dynamic prepend="where">
+			<isEqual property="depth" compareValue="0" >
+				category_code = #code#
+			</isEqual>
+			<isEqual property="depth" compareValue="1" >
+				category_code like concat(#code#,'____')
+			</isEqual>
+			<isEqual property="depth" compareValue="2" >
+				category_code like concat(#code#,'%')
+			</isEqual>
+		</dynamic>
+		limit #size#
+	</select>
+	
+	<select id="queryByIndexKey" parameterClass="java.util.HashMap" resultMap="tagsResult">
+		select tags,tags_encode 
+		from tags_category_collection
+		where category_index_key=#indexKey#
+		limit #size#
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,108 @@
+<div class="subDiv subDivBoarder" >
+    <div class="prev">
+        <b>上一篇:</b>
+		#if($!{onPrice.id} && $!{onPrice.id}>0)
+        <a title="$!{onPrice.title} " href="#springUrl('/priceDetails_')$!{onPrice.id}_$!{code}.htm">$!{onPrice.title}</a>
+		#end
+    </div>
+    <div class="next">
+        <b>下一篇:</b>
+		#if($!{downPrice.id} && $!{downPrice.id}>0)
+        <a title="$!{downPrice.title} " href="#springUrl('/priceDetails_')$!{downPrice.id}_$!{code}.htm">$!{downPrice.title}</a>
+		#end
+    </div>
+    <div style="clear: both;"></div>
+	
+    <h1>$!{price.title}</h1>
+    <div class="remark">
+			发布时间：$!date.format('yyyy-MM-dd',$!{price.gmtCreated})&nbsp;
+			<span class="tags">
+				相关标签：
+            #foreach($a in $!tag)
+                <a href="$!{address.tags}/tagssearchList/$!encodeTagsMap.get($!{a})/" target="_blank" title="${a}">${a}</a>
+            #end
+            <a target="_blank" href="$!{address.front}" title="$!{siteInfo.site_name}首页">$!{siteInfo.site_name} </a>
+			</span>
+    </div>
+		<div class="aboutInfo">
+            #if($!{code}=='metal')
+                #parse("/price/vm_index/metalTable.vm")
+            #elseif($!{code}=='plastic')
+                #parse("/price/vm_index/plasticTable.vm")
+            #elseif($!{code}=='paper')
+                #parse("/price/vm_index/paperTable.vm")
+            #end
+        </div>
+	
+    #if(!$!{sessionUser} && 7 >= ${daysInterval})
+		#parse("/price/login.vm")
+    #else
+        <div class="content">
+            #if($priceDataDOList.size()>0)
+				<div id="tbcontent" >
+					<table border="1" >
+						<tr>
+							<th>产品名称</th>
+							<th>价格</th>
+							<th>地区</th>
+							<th>企业名称</th>
+						</tr>
+                    #foreach($list in $priceDataDOList)
+						<tr>
+							<td>
+								#if($!{list.companyPriceId}=="0")
+                                    $!{list.productName}
+                                #else
+                                    <a href="#springUrl('/companyprice/priceDetails.htm?id=')$!{list.companyPriceId}" title="$!{list.productName}">$!{list.productName}</a>
+                                #end
+							</td>
+							<td>
+								$!{list.quote}
+							</td>
+							<td>
+								$!{list.area}
+							</td>
+							<td>
+								#if($!{list.companyId}=="0")
+                                    $!{list.companyName}
+                                #else
+                                    <a href="$!{address.company}/compinfo.htm?id=$!{list.companyId}" title="$!{list.companyName}">$!{list.companyName}</a>
+                                #end
+							</td>
+						</tr>
+					#end
+				</table>
+            </div>
+			#end
+            <div style="clear:both"></div>
+            <div class="aboutContent">
+				$!{price.content}
+			</div>
+        </div>
+		
+	#end
+	<p>
+        <div style="clear:both"></div>
+        <div class="thisLabel">
+			<a href="$!{weekyUrl}" target="_blank" style="font-size:14px;font-weight:bold;">$!{weekyTitle}</a>
+			<br />
+			本文标签：
+            <span class="tags1">
+                #foreach($a in $!tag)
+                    <a href="$!{address.tags}/tagssearchList/$!encodeTagsMap.get($!{a})/" target="_blank" title="${a}">${a}</a>
+                #end
+            </span>
+        </div>
+        <div style="clear:both"></div>
+        <div class="zz91_copyright">
+            <a href="$!{address.front}" target="_blank" title="$!{siteInfo.site_name}首页">$!{siteInfo.site_name}</a>
+            - 
+            <a href="#springUrl('/')" target="_blank" title="zz91再生网报价中心">报价中心</a>
+        </div>
+    </p>
+    <div class="artBottom">
+        [<a href='#springUrl('/priceList_t')$!{categoryDO.id}_$!{code}.htm'>$!{categoryDO.name}</a>] 
+        [<a href="$!{address.front}">返回首页</a>] 
+        [<a href="javascript:self.close()">关闭窗口</a>]
+    </div>
+</div>

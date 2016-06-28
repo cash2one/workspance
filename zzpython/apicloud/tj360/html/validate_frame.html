@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>注册</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	#title{
+		padding: 10px 20px 10px 20px;
+		color: #666666;
+	}
+	#submit{
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		padding-top: 20px;
+	}
+	#submit button{
+		background-color: #E6E6E6;
+		border:1px solid #E6E6E6;
+		border-radius: 4px;
+		color: #CCCCCC;
+		font-weight: bold;
+		width: 70%;
+		padding: 10px 0;
+	}
+	#validate{
+		border-top: 1px solid #D9D9D9;
+		border-bottom: 1px solid #D9D9D9;
+		padding: 10px 0 10px 20px;
+		background-color: #FFFFFF;
+	}
+	
+	input{
+		width: 100%;
+	}
+	.validateBtnActive{
+		background-color: #00b8ff !important;
+	}
+	#agreement{
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		padding:20px 20px 0 20px;
+	}
+	.argcontent{
+		width: 100%;
+		font-size: 12px;
+		border: 1px solid #D9D9D9;
+		background: #FFFFFF;
+		margin-bottom: 10px;
+	}
+	.argcontent textarea{
+		width: 100%;
+		height: 150px;
+	}
+	.argbtn{
+		display: -webkit-box;
+		font-size: 14px;
+	}
+	.argbtn a{
+		width: 20px;
+		background:url(../image/check.png) no-repeat left;
+		-webkit-background-size: 14px 14px;	
+	}
+	.checked{
+		background:url(../image/checked.png) no-repeat left !important;
+		-webkit-background-size: 14px 14px !important;
+	}
+	.enable{
+		background-color: rgb(0, 184, 255) !important;
+		border:1px solid rgb(0, 184, 255) !important;
+		color: #FFFFFF !important;
+	}
+	.hidden{
+		display: none;
+	}
+</style>
+</head>
+
+<body>
+	<div id="main">
+		<section id="title">如果您是工厂工人，且依据工厂要求注册成为该应用的用户，请输入工厂发放的工厂代码。否则，请跳过该步。</section>
+		<section id="validate"><input type="text" id="validatecode" placeholder="请输入工厂代码" value="" /></section>
+		<section id="agreement">
+			<div class="argcontent">
+				<textarea>欢迎您注册成为美丽管家用户，请仔细阅读下面的协议，只有接受协议才能继续进行注册。
+1.用户的帐号，密码和安全性
+	所有人均可注册成为该应用的用户。用户同意该协议后，要求设置密码。设置成功后，请记住首页显示的用户ID和您所设置的密码。每个用户都要对其帐户中的所有活动和事件负全责。所以请您保管好自己的帐号和密码安全。如果忘记密码，请联系您所在工厂的管理员。
+2.免责条款
+	用户明确同意美丽管家的使用由用户个人承担风险。美丽管家不作任何类型的担保，不担保服务一定能满足用户的要求，也不担保服务不会受中断，对服务的及时性，安全性，出错发生都不作担保。用户理解并接受：任何通过美丽管家取得的信息资料的可靠性取决于用户自己，用户自己承担所有风险和责任。 
+3.用户责任
+	用户单独承担传输内容的责任。用户必须遵循：
+	1)不利于工厂劳资关系、管理与工厂稳定的；
+	2)损害工厂荣誉与利益的；
+	3)反对宪法所确定的基本原则的；
+	4)危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的；
+	5)损害国家荣誉和利益的；
+	6)煽动民族仇恨、民族歧视，破坏民族团结的；
+	7)破坏国家宗教政策，宣扬邪教和封建迷信的；
+	8)散布谣言，扰乱社会秩序，破坏社会稳定的；
+	9)散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的；
+	10)侮辱或者诽谤他人，侵害他人合法权益的；
+	11)含有法律、行政法规禁止的其他内容的。</textarea>
+			</div>
+			<div class="argbtn"><a tapmode="" onclick="agreeFn(this)"><input type="checkbox" id="agree" checked /></a><div>我同意</div></div>
+		</section>
+		<section id="submit"><button id="validbtn">下一步</button></section>
+	</div>
+</body>
+<script>
+	window.onload = function(){
+		//是否显示工厂代码输入框
+		var isAndroid = (/android/gi).test(navigator.appVersion);
+		//设备是Android，显示，否则，隐藏
+		if(!isAndroid){
+			hasNoClsAddIt($api.byId('title'), 'hidden');
+			hasNoClsAddIt($api.byId('validate'), 'hidden');
+		}
+	};
+	
+	apiready = function() {
+
+	};
+	
+	//验证
+	function validate(){
+		var invitationCode = $api.val($api.byId('validatecode'));
+
+		api.showProgress({title: '请稍后……', modal: false});
+		api.ajax({
+	    	url: serverUrl + '/CheckInvitationCode',
+		    method:'post',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json',
+		    data:{'values':{'invitationCode': invitationCode}}
+	    }, ajaxBack);
+	}
+	
+	//验证返回函数
+	function ajaxBack(ret, err){
+		if(ret && ret.status){
+    		$api.setStorage('uid', ret.body.uid);
+    		$api.setStorage('account', ret.body.account);
+    		$api.setStorage('fid', ret.body.fid);
+			api.hideProgress();		
+			api.openWin({name: 'setpassword', url: 'setpassword.html'});
+    	}else{
+    		api.hideProgress();
+    		if(ret){
+    			api.toast({msg: ret.msg, location: 'middle'});
+    		}else if(err){
+    			api.toast({msg: err.msg, location: 'middle'});
+    		}else{
+    			api.toast({msg: '数据错误', location: 'middle'});
+    		}
+    	}
+	}
+	
+	//同意协议，下一步按钮可点，不同意协议，下一步按钮不可点
+	function agreeFn(el){
+		if($api.hasCls(el, 'checked')){//如果是被选择状态，移除被选中样式，且置下一步按钮为disable
+			$api.removeCls(el, 'checked');
+			$api.byId('agree').checked = false;
+			changeBtnStatus(false);
+		}else{
+			$api.addCls(el, 'checked');
+			$api.byId('agree').checked = true;
+			changeBtnStatus(true);
+		}
+	}
+	
+	function changeBtnStatus(str){
+		var btn = $api.byId('validbtn');
+		if(str && !$api.hasCls(btn, 'enable')){//如果想让按钮可点击，但此时按钮状态为不可点击
+			$api.addCls(btn, 'enable');
+			$api.attr(btn, 'onclick', 'validate()');
+			$api.attr(btn, 'tapmode', 'validateBtnActive');
+		}else if(!str && $api.hasCls(btn, 'enable')){//如果想让按钮不可点击，但此时按钮状态为可点击
+			$api.removeCls(btn, 'enable');
+			$api.removeAttr(btn, 'onclick');
+			$api.removeAttr(btn, 'tapmode');
+		}
+	}
+</script>
+</html>

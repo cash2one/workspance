@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="creditFile">
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="creditFileDo" type="com.ast.ast1949.domain.credit.CreditFileDo" />
+	<typeAlias alias="creditFileDTO" type="com.ast.ast1949.dto.credit.CreditFileDTO" />
+
+	<!-- 证书荣誉结果集 -->
+	<resultMap id="creditFileResult" class="creditFileDo">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="categoryCode" column="category_code" />
+		<result property="fileName" column="file_name" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="fileNumber" column="file_number" />
+		<result property="organization" column="organization" />
+		<result property="tel" column="tel" />
+		<result property="website" column="website" />
+		<result property="picName" column="pic_name" />
+		<result property="introduction" column="introduction" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap id="creditFileDTOResult" class="creditFileDTO">
+		<result property="creditFile" resultMap="creditFile.creditFileResult"/>
+		<result property="companyName" column="company_name" />
+		<result property="categoryName" column="category_name" />
+	</resultMap>
+
+	<delete id="deleteFileById" parameterClass="java.lang.Integer">
+		delete from
+		credit_file
+		where id =#value#
+	</delete>
+
+	<!--添加证书荣誉-->
+	<insert id="insertFileByCompany" parameterClass="creditFileDo">
+		INSERT INTO credit_file
+		(company_id,account,category_code,file_name,start_time,
+		end_time,file_number,organization,tel,website,pic_name,
+		introduction,check_status,check_person,gmt_created,gmt_modified)
+		values(#companyId#,#account#,#categoryCode#,#fileName#,
+		#startTime#,#endTime#,#fileNumber#,#organization#,#tel#,
+		#website#,#picName#,#introduction#,#checkStatus#,#checkPerson#,
+		now(),now())
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="fullColumn">
+		id,company_id,account,category_code,file_name,start_time,
+		end_time,file_number,organization,tel,website,pic_name,
+		introduction,check_status,check_person,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryFileByCompany" parameterClass="java.lang.Integer"
+		resultMap="creditFileResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM credit_file
+		where company_id=#value#
+		order by gmt_modified desc
+		limit 200
+	</select>
+	
+	<select id="queryFileById" parameterClass="java.lang.Integer"
+		resultMap="creditFileResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM credit_file
+		where id=#value#
+		limit 1
+	</select>
+
+	<update id="updateFileById" parameterClass="creditFileDo">
+		update
+		credit_file
+		set
+		file_name = #fileName#,
+		start_time = #startTime#,
+		end_time = #endTime#,
+		file_number = #fileNumber#,
+		organization = #organization#,
+		tel = #tel#,
+		website = #website#,
+		pic_name = #picName#,
+		introduction = #introduction#,
+		check_status=#checkStatus#
+		where id = #id# and company_id=#companyId# 
+	</update>
+
+	<select id="queryCreditFileByConditions" parameterClass="java.util.HashMap" 
+		resultMap="creditFileDTOResult">
+		SELECT
+			cf.id,
+			cf.company_id,
+			cf.account,
+			cf.category_code,
+			cf.file_name,
+			cf.start_time,
+			cf.end_time,
+			cf.file_number,
+			cf.organization,
+			cf.tel,
+			cf.website,
+			cf.pic_name,
+			cf.introduction,
+			cf.check_status,
+			cf.check_person,
+			cf.gmt_created,
+			cf.gmt_modified,
+			c.name AS company_name,
+			ca.label AS category_name
+		FROM credit_file cf
+		LEFT JOIN company c ON c.id=cf.company_id
+		LEFT JOIN category ca ON ca.code=cf.category_code 
+		<dynamic prepend="where">
+			<isNotEmpty property="dto.creditFile.checkStatus" prepend="and">
+				cf.check_status in ($dto.creditFile.checkStatus$)
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditFile.fileNumber" prepend="and">
+				cf.file_number=#dto.creditFile.fileNumber#
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditFile.fileName" prepend="and">
+				cf.file_name=#dto.creditFile.fileName#
+			</isNotEmpty>
+			<isNotEmpty property="dto.companyName" prepend="and">
+				c.name LIKE CONCAT(#dto.companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditFile.categoryCode" prepend="and">
+				cf.category_code=#dto.creditFile.categoryCode#
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditFile.companyId" prepend="and">
+				<!-- 查找某公司的证书 -->
+				cf.company_id = #dto.creditFile.companyId#
+			</isNotEmpty>
+			<isNotNull property="dto.isVip" prepend="and">
+				c.membership_code != '10051000'
+			</isNotNull>
+			<isNotNull property="dto.isNoVip" prepend="and">
+				c.membership_code = '10051000'
+			</isNotNull>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<select id="countCreditFileByConditions" parameterClass="creditFileDTO" 
+		resultClass="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM credit_file cf
+		LEFT JOIN company c ON c.id=cf.company_id
+		LEFT JOIN category ca ON ca.code=cf.category_code 
+		<dynamic prepend="where">
+			<isNotEmpty property="creditFile.checkStatus" prepend="and">
+				cf.check_status in ($creditFile.checkStatus$)
+			</isNotEmpty>
+			<isNotEmpty property="creditFile.fileNumber" prepend="and">
+				cf.file_number=#creditFile.fileNumber#
+			</isNotEmpty>
+			<isNotEmpty property="creditFile.fileName" prepend="and">
+				cf.file_name=#creditFile.fileName#
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+				c.name LIKE CONCAT(#companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="creditFile.categoryCode" prepend="and">
+				cf.category_code=#creditFile.categoryCode#
+			</isNotEmpty>
+			<isNotEmpty property="creditFile.companyId" prepend="and">
+				<!-- 查找某公司的证书 -->
+				cf.company_id = #creditFile.companyId#
+			</isNotEmpty>
+			<isNotNull property="isVip" prepend="and">
+				c.membership_code != '10051000'
+			</isNotNull>
+			<isNotNull property="isNoVip" prepend="and">
+				c.membership_code = '10051000'
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<update id="updateCreditFileCheckStatusById" parameterClass="java.util.Map">
+		UPDATE credit_file
+		SET
+			check_status=#checkStatus#,
+			check_person=#checkPerson#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateFileByAdmin" parameterClass="creditFileDo">
+		update
+		credit_file
+		set
+		file_name = #fileName#,
+		start_time = #startTime#,
+		end_time = #endTime#,
+		organization = #organization#,
+		pic_name = #picName#
+		where id = #id# and company_id=#companyId# 
+	</update>
+	
+	<select id="selectpicNameByCompanyId" parameterClass="creditFileDo" resultClass="java.lang.String">
+		SELECT
+		pic_name
+		FROM credit_file
+		where id = #id# and company_id=#companyId# 
+	</select>
+</sqlMap>

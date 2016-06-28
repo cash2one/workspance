@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="sampleRelateProduct">
+
+	<typeAlias alias="sampleRelateProductDO" type="com.ast.ast1949.domain.sample.SampleRelateProduct" />
+
+
+	<insert id="insert" parameterClass="sampleRelateProductDO">
+		INSERT INTO sample_relate_product
+		(
+		product_id,
+		sample_id,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#productId#,
+		#sampleId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByProductIdForSampleId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select sample_id
+		from sample_relate_product
+		where product_id = #value#
+		limit 1
+	</select>
+	
+	<select id="queryBySampleIdForProductId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select product_id
+		from sample_relate_product
+		where sample_id = #value#
+		limit 1
+	</select>
+	
+	<update id="buildRelateByProductIdAndSampleId" parameterClass="java.util.Map" >
+		update sample_relate_product
+		set sample_id = #sampleId#,
+		gmt_modified = now()
+		where product_id = #productId#
+	</update>
+	
+	<select id="countAddByDate" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from sample_relate_product
+		where gmt_created > #from# 
+		and #to# >gmt_created
+	</select>
+
+</sqlMap>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneSeoKeyWords">
+	<typeAlias alias="phoneSeoKeyWordsDo" type="com.ast.ast1949.domain.phone.PhoneSeoKeyWords" />
+	<resultMap class="phoneSeoKeyWordsDo" id="phoneSeoKeyWordsResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="pinYin" column="pinyin" />
+		<result property="clickCount" column="click_count" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		title,
+		pinyin,
+		click_count,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="phoneSeoKeyWordsDo">
+		INSERT INTO phone_seo_keywords
+		(
+		title,
+		pinyin,
+		click_count,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#title#,
+		#pinYin#,
+		#clickCount#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="queryPhoneSeoKeyWordById" parameterClass="java.lang.Integer" resultMap="phoneSeoKeyWordsResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM phone_seo_keywords
+		where id = #value#
+	</select>
+
+	<update id="updateSeoKeyWord" parameterClass="phoneSeoKeyWordsDo">
+		update phone_seo_keywords
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="title">
+			title = #title#	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="pinYin">
+			pinyin = #pinYin#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="clickCount">
+			click_count = #clickCount#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneSeoKeyWords.title">
+				title = #phoneSeoKeyWords.title#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneSeoKeyWords.pinYin">
+				pinyin = #phoneSeoKeyWords.pinYin#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneSeoKeyWords.clickCount">
+				click_count = #phoneSeoKeyWords.clickCount#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryList" parameterClass="java.util.Map" resultMap="phoneSeoKeyWordsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from phone_seo_keywords
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_seo_keywords
+		<include refid="whereClause" />
+	</select>
+	<sql id="whereSearch">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="title">
+				title = #title#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="pinYin">
+				pinyin = #pinYin#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryKeyWords" parameterClass="java.util.Map" resultMap="phoneSeoKeyWordsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from phone_seo_keywords
+		<include refid="whereSearch" />
+	</select>	
+	
+	<delete id="delSeoKeyWords" parameterClass="java.lang.Integer">
+		delete from phone_seo_keywords where id=#id#
+	</delete>
+</sqlMap>

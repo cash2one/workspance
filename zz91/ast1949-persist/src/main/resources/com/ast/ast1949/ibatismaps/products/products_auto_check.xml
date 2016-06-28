@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsAutoCheck">
+	<typeAlias alias="productsAutoCheckDO"
+		type="com.ast.ast1949.domain.products.ProductsAutoCheck" />
+	<resultMap class="productsAutoCheckDO" id="productsAutoCheckResult">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="checkStatus" column="check_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		product_id,
+		check_status,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryCheckBySize" parameterClass="java.lang.Integer"
+		resultMap="productsAutoCheckResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM products_auto_check
+		where check_status = '0'
+		limit #value#
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="productsAutoCheckResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM products_auto_check
+		where id = #value#
+	</select>
+
+	<insert id="insert" parameterClass="productsAutoCheckDO">
+		INSERT INTO products_auto_check
+		(
+		product_id,
+		check_status,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#productId#,
+		#checkStatus#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="java.util.Map">
+		UPDATE
+		products_auto_check
+		SET
+		gmt_modified = now(),
+		check_status = #checkStatus#
+		WHERE id = #id#
+	</update>
+
+</sqlMap>

@@ -1,0 +1,690 @@
+##设置head标签里，添加属性
+#set($pageHeadFlag=2)
+#set($layout="/layout/trustLayout.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+
+<div class="top_p">
+    <div class="top">
+        <ul class="top_gt fr">
+            <li>
+                <i class="icon icon_supply" id="supply"></i>
+                <font class="tradelist">
+					#if($!{sessionUser})
+						<a href="$!{address.myrc}/mytrust/supply.htm" target="_blank">供货单</a>
+					#else
+						供货单
+					#end
+				</font>
+                <span>#if($sellNum)$sellNum#else 0#end</span>
+				#if(!$!{sessionUser})
+                <div class="login_off url_link">
+                    <dl>
+                        <dt>您还未登录，无法查看供货单</dt>
+                        <dd>
+                            <a href="javascript:;" class="clickToRefresh">立即登录</a>
+                        </dd>
+                    </dl>
+                </div>
+				#end
+            </li>
+            <li>
+                <i class="icon icon_shopping" id="shopping"></i>
+                <font class="shoppinglist">
+					#if($!{sessionUser})
+						<a href="$!{address.myrc}/mytrust/purchase.htm" target="_blank">采购单</a>
+					#else
+						采购单
+					#end
+				</font>
+                <span>#if($buyNum)$buyNum#else 0#end</span>
+				#if(!$!{sessionUser})		
+                <div class="login_off url_link">
+                    <dl>
+                        <dt>您还未登录，无法查看采购单</dt>
+                        <dd>
+                            <a href="javascript:;" class="clickToRefresh">立即登录</a>
+                        </dd>
+                    </dl>
+                </div>
+				#end
+            </li>
+        </ul>
+		<script type="text/javascript">
+			jQuery(".clickToRefresh").click(function(){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					window.location.reload();
+    			});
+				openoverlay('$!{address.front}/mini/login_trust.htm?destUrl=$!{address.caigou}/submitCallback.htm&regfrom=10031037','',750,450,0);
+			});
+		</script>
+        <div class="top_lt fl">
+            <a href="$!{address.www}" class="p_home">
+                <img src="$!{address.img}/zz91/purchase/images/icon_cg_logo.jpg" />
+            </a>
+            <font>|</font>
+            <a href="$!{address.www}" target="_blank">首页</a>
+            <font>|</font>
+            <a href="$!{address.trade}" target="_blank">交易中心</a>
+            <font>|</font>
+            <a href="$!{address.jiage}" target="_blank">行情报价</a>
+            <font>|</font>
+            <a href="http://news.zz91.com/" target="_blank">资讯中心</a>
+            <font>|</font>
+            <a href="$!{address.yang}/" target="_blank">样品中心</a>
+            <font>|</font>
+        </div>
+    </div>
+    <!--end top-->
+</div>
+<!--end top_p-->
+<div class="logo_p">
+    <div class="logo_p_content">
+        <div class="fl">
+            <p>
+                <strong class="fb">厂家直购</strong>
+                <br />
+                caigou.zz91.com
+            </p>
+        </div>
+        <div class="logo_p_bg fl">
+            <img src="$!{address.img}/zz91/purchase/images/icon_banner.jpg" />
+        </div>
+        <div class="fr">
+            <ul>
+                <li>
+                    <strong>0571-56600066</strong>
+                    <br />
+                    <span>周一到周五 8:30-18:00</span>
+                </li>
+                <li>
+                    <font>|</font>
+                </li>
+                <li class="mt12">
+                    <strong>委托采购热线</strong>
+                </li>
+            </ul>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end logo_p_content-->
+</div>
+<!--end logo_p-->
+<div id="cgpd">
+    <div class="cgpd_content">
+	<script type="text/javascript" src="http://gg.zz91.com/show?p=740"></script>
+        <div class="cgpd_lt">
+			#foreach($li in $!{page.records})
+				<div class="cgpd-floor">
+                	<div class="floor clearfix">
+                		<div class="floor-block fl">
+                    		<div class="floor-item f-title">
+                        		<strong title="$!{li.trustBuy.quantity}">$!{li.trustBuy.quantity}</strong>
+                        		<h2 title="$!{li.trustBuy.title}">$!{li.trustBuy.title}</h2>
+                        	</div>
+                    		<div class="floor-item clearfix">
+                        		<div class="item-l">
+                            		<div class="item-info coin">
+                                		<span class="col9">价&nbsp;&nbsp;&nbsp;格：</span>
+                            			<span class="col027">$!{li.trustBuy.price}</span>
+                                	</div>
+                            	</div>
+                            	<div class="item-r">
+                            		<div class="item-info locus">
+                                		<span class="col9">所在地：</span>
+                            			<span>$!{li.area}</span>
+                                	</div>
+                            	</div>
+                        	</div>
+                        	<div class="floor-item clearfix">
+                        		<div class="item-l">
+                            		<div class="item-info color">
+                                		<span class="col9">颜&nbsp;&nbsp;&nbsp;色：</span>
+                            			<span class="col027">$!{li.trustBuy.color}</span>
+                                	</div>
+                            	</div>
+                            	<div class="item-r">
+                            		<div class="item-info lv">
+                                		<span class="col9">级&nbsp;&nbsp;&nbsp;别：</span>
+                            			<span>$!{li.trustBuy.level}</span>
+                                	</div>
+                            	</div>
+                        	</div>
+                        	<div class="floor-use">
+                        		<span class="col9">用&nbsp;&nbsp;&nbsp;途：</span>
+                            	<span class="col027" title="$!{li.trustBuy.useful}">$!{li.trustBuy.useful}</span>
+                        	</div>
+                    	</div>
+                    	<div class="floor-block fl ml90">
+                    		<div class="floor-item clearfix">
+                            	<div class="item-l">
+                                	<div class="item-info time">
+                                		<span class="col9">发布时间：</span>
+                            			<span>$!dateUtil.getCNDate($!{li.trustBuy.gmtRefresh})</span>
+                                	</div>
+                                    <div class="item-info dealer">
+                                		<span class="col9">交易员：</span>
+                            			<span>$!{li.trustDealer.name}</span>
+                                	</div>
+                                    <div class="item-info phone">
+                                		<span class="col9">电&nbsp;&nbsp;&nbsp;话：</span>
+                            			<span>$!{li.trustDealer.tel}</span>
+                                	</div>
+                                    <div class="item-info order">
+                                		<span class="col9">采购单号：</span>
+                            			<span>No.$!{li.trustBuy.buyNo}</span>
+                                	</div>
+                                </div>
+                                <div class="item-r">
+                                	<p class="state">
+										#if($!{li.trustBuy.status}=="00")
+											未审核
+										#elseif($!{li.trustBuy.status}=="01")
+											正在报价
+										#elseif($!{li.trustBuy.status}=="02")
+											已有报价
+										#elseif($!{li.trustBuy.status}=="03")
+											正在洽谈
+										#elseif($!{li.trustBuy.status}=="04")
+											等待打款
+										#elseif($!{li.trustBuy.status}=="05")
+											交易完成
+										#elseif($!{li.trustBuy.status}=="06")
+											交易终止
+										#elseif($!{li.trustBuy.status}=="99")
+											审核不通过
+										#end
+									</p>
+                                    <br />
+									<input type="hidden" id="gong_$!{li.trustBuy.id}" value="$!{li.isGong}" />
+									<input type="hidden" id="status_$!{li.trustBuy.id}" value="$!{li.trustBuy.status}" />
+									#if($!{li.isGong}=="1" || $!{li.trustBuy.status}=="05")
+                                    	<span class="off" name="$!{li.trustBuy.id}">我要供货</span>
+									#else
+										<a href="javascript:openoverlay('form.html','',470,250,0);" class="supply" name="$!{li.trustBuy.id}">我要供货</a>
+									#end
+                                </div>
+                            </div>
+                    	</div>
+                    </div>
+                </div>
+                <!--end cgpd-floor-->
+			#end			
+			
+	        #trustPageNav($!{page} "$!{address.caigou}/index.htm" "" "" )
+		</div>
+        <div class="cgpd_gt">
+            <div class="reg_cont">
+                <div class="reg_nav">
+                    <ul>
+                        <li class="local" name="form_tag01" id="form01_Tab">登陆发布采购<span class="icon_title"></span>
+                        </li>
+                        <li name="form_tag02" id="form02_Tab">免登陆发布采购<span></span>
+                        </li>
+                    </ul>
+                </div>
+                <!--end reg_nav-->
+                <form action="" method="post">
+                    <div class="cgpd_form" id="form_tag01">
+                        <label for="pro">产&nbsp;&nbsp;&nbsp;品：</label>
+                        <input type="text" name="pro" id="pro" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="amount">采购量：</label>
+                        <input type="text" name="amount" id="amount" class="cgpd_form_input" value="" />
+                        <br />
+                        <label for="price">价&nbsp;&nbsp;&nbsp;格：</label>
+                        <input type="text" name="price" id="price" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="color">颜&nbsp;&nbsp;&nbsp;色：</label>
+                        <input type="text" name="color" id="color" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="useful">用&nbsp;&nbsp;&nbsp;途：</label>
+                        <input type="text" name="useful" id="useful" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="level">级&nbsp;&nbsp;&nbsp;别：</label>
+                        <input type="text" name="level" id="level" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="source">所在地：</label>
+                        <input type="text" name="source" id="source" class="cgpd_form_input" value="" />
+                        <br/>
+                        <br/>
+                        <label for="details">求购详情：</label>
+                        <br/>
+                        <textarea name="details" id="details"></textarea>
+                        <br/>
+                        <p>注：目前免费委托采购只限<span class="red">塑料再生颗粒</span>
+                        </p>
+                        <p>
+                            <img src="$!{address.img}/zz91/purchase/images/icon_step.jpg" />
+                        </p>
+                        <input type="button" class="cgpd_form_btn f14" id="publish01" value="免费发布" onclick="gotoPublish();" />
+                    </div>
+                    <!--end cgpd_form-->
+                    <div class="cgpd_form" id="form_tag02" style="display:none;">
+                        <label for="pro">产&nbsp;&nbsp;&nbsp;品：</label>
+                        <input type="text" name="pro" id="pro2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="amount">采购量：</label>
+                        <input type="text" name="amount" id="amount2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="price">价&nbsp;&nbsp;&nbsp;格：</label>
+                        <input type="text" name="price" id="price2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="color">颜&nbsp;&nbsp;&nbsp;色：</label>
+                        <input type="text" name="color" id="color2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="useful">用&nbsp;&nbsp;&nbsp;途：</label>
+                        <input type="text" name="useful" id="useful2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="level">级&nbsp;&nbsp;&nbsp;别：</label>
+                        <input type="text" name="level" id="level2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <label for="source">所在地：</label>
+                        <input type="text" name="source" id="source2" class="cgpd_form_input" value="" />
+                        <br/>
+                        <br/>
+                        <label for="details">求购详情：</label>
+                        <br/>
+                        <textarea name="details" id="details2"></textarea>
+                        <br/>
+                        <p>注：目前免费委托采购只限<span class="red">塑料再生颗粒</span>
+                        </p>
+                        <p>
+                            <img src="$!{address.img}/zz91/purchase/images/icon_step.jpg" />
+                        </p>
+                        <input type="button" class="cgpd_form_btn f14" id="publish02" value="免费发布" onclick="gotoPublish();" />
+                    </div>
+                    <!--end cgpd_form-->
+					#if($!{sessionUser})
+						<input type="hidden" id="loginFlag" value="1" />
+					#else
+						<input type="hidden" id="loginFlag" value="0" />
+					#end
+				</form>
+            </div>
+            <!--end reg_cont-->
+            <div class="cgpd_deal mt20">
+                <div class="title">交易进展实时播报</div>
+                <p>
+                    <span>采购单号</span>
+                    <span>采购产品</span>
+                    <em>交易状态</em>
+                    <em>时间</em>
+                </p>
+                <div class="cgpd_box">
+                    <ul>
+						#foreach($li in $pageTrade)
+							<li>
+                                <span title="No.15041">No.$!{li.trustBuy.buyNo}</span>
+                                <span title="$!{li.trustBuy.title}">$!{li.trustBuy.title}</span>
+                                <em>
+									#if($!{li.trustBuy.status}=="00")
+										未审核
+									#elseif($!{li.trustBuy.status}=="01")
+										正在报价
+									#elseif($!{li.trustBuy.status}=="02")
+										已有报价
+									#elseif($!{li.trustBuy.status}=="03")
+										正在洽谈
+									#elseif($!{li.trustBuy.status}=="04")
+										等待打款
+									#elseif($!{li.trustBuy.status}=="05")
+										交易完成
+									#elseif($!{li.trustBuy.status}=="06")
+										交易终止
+									#elseif($!{li.trustBuy.status}=="99")
+										审核不通过
+									#end
+								</em>
+                                <em>$!date.format('MM-dd',$!{li.trustBuy.gmtModified})</em>
+                            </li>
+						#end
+                    </ul>
+                </div>
+            </div>
+            <!--end cgpd_deal-->
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end cgpd_content-->
+</div>
+<!--end cgpd-->
+<div class="fixed_box custom_style_01" id="fixedBox">
+    <div class="content_box">
+        <div class="content_inner">
+            <div class="close_btn">
+                <span>X</span>
+            </div>
+            <div class="content_title">
+                <span>在线客服</span>
+            </div>
+            <div class="content_list">
+                <div class="msgserver">
+                    <p>
+                        <a href="">免费采购热线</a>
+                    </p>
+                    <p>
+                        <span>0571-56600066</span>
+                    </p>
+                </div>
+                <hr/>
+                <div class="qqserver">
+                    <p>点击QQ在线咨询</p>
+                    <p>
+                        <a target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=2652490749&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes">
+                            <img border="0" src="$!{address.img}/zz91/purchase/images/icon_QQ_chat.jpg" alt="点击这里给我发消息" title="点击这里给我发消息" />
+                        </a>
+                    </p>
+					<p>
+                        <a target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=876511602&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes">
+                            <img border="0" src="$!{address.img}/zz91/purchase/images/icon_QQ_chat.jpg" alt="点击这里给我发消息" title="点击这里给我发消息" />
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" >
+
+
+	jQuery(document).ready(function(){
+		
+##		#if($!{sessionUser})
+##			hiddenNoLoginPub()
+##		#end
+	
+		jQuery.getScript("$!{address.front}/getLoginStatus.htm?$date.getSystemTime()",function(){
+    		if(success=='false'){
+    			showPub()
+    		}else{
+    			hiddenNoLoginPub()
+				jQuery("#loginFlag").val(1);
+    		}
+		});
+		
+		
+		## 跳页
+		jQuery("#page_ok1").click(function(){
+		    var curr=Number(jQuery("#topages").val());
+			if(curr<1){
+				curr=1;
+			}
+			var totalP=${totalPage};
+			if(totalP<curr){
+				curr=totalP;
+			}
+			var pi=(curr-1)*$!{page.pageSize};
+			var href="$!{address.caigou}/index.htm"+"?startIndex="+pi+"&pageSize=$!{page.pageSize}";
+			window.location.href=href;
+		});
+		
+	});
+	
+	function hiddenNoLoginPub(){
+		jQuery("#form02_Tab").hide();
+		jQuery("#form_tag02").hide();
+		jQuery("#form01_Tab").attr("style","width:100%");
+		jQuery(".icon_title").attr("style","left:165px");
+	}
+	
+	function showPub(){
+		jQuery("#form02_Tab").show();
+		jQuery("#form_tag02").hide();
+		jQuery("#form_tag01").show();
+		jQuery("#form01_Tab").attr("style","width:175px");
+		jQuery(".icon_title").attr("style","left:78px");
+	}
+	
+    ##提交按钮,所有验证通过方可提交 登陆发布 
+	$("#publish01").click(function(){
+		subToBuy();
+		##openoverlay('submit01.html','',320,200,0);	
+	});
+	##提交按钮,所有验证通过方可提交 免登陆发布
+	$("#publish02").click(function(){
+		subToBuyWithOutLogin();
+		##openoverlay('submit02.html','',470,182,0);	
+	});
+	
+	function subToBuy(){
+		var pro = $("#pro").val().replace(/\s/g,'');
+		var amount = $("#amount").val().replace(/\s/g,'');
+		var price = $("#price").val().replace(/\s/g,'');
+		var color = $("#color").val().replace(/\s/g,'');
+		var useful = $("#useful").val().replace(/\s/g,'');
+		var level = $("#level").val().replace(/\s/g,'');
+		var source = $("#source").val().replace(/\s/g,'');
+		var details = $("#details").val().replace(/\s/g,'');
+		if(pro!=""){
+    		pro = "产品:"+pro;
+    	}
+    	if(amount!=""){
+    		amount = "采购量:" + amount;
+    	}
+    	if(price!=""){
+    		price = "价格:" + price;
+    	}
+    	if(color!=""){
+    		color = "颜色:" + color;
+    	}
+    	if(useful!=""){
+    		useful = "用途:" + useful;
+    	}
+    	if(level!=""){
+    		level = "级别:" + level;
+    	}
+    	if(source!=""){
+    		source = "所在地:" + source;
+    	}
+		if(details!=""){
+    		details = "求购详情:" + details;
+    	}
+		if(pro=="" && amount=="" && price=="" && color=="" && useful=="" && level=="" && source=="" && details==""){
+			alert("请填写您的委托采购详情");
+		}else if(pro!="" || amount!="" || price!="" || color!="" || useful!="" || level!="" || source!="" || details!=""){
+			$('.p2-box-b').parent().find(".p2-box-error").hide();
+			var a="";
+			if(pro!=""){
+				a=pro;
+			}
+			if(amount!=""){
+				if(a!=""){
+					a=a+","+amount;
+				}else{
+					a=amount;
+				}
+			}
+			if(price!=""){
+				if(a!=""){
+					a=a+","+price;
+				}else{
+					a=price;
+				}
+			}
+			if(color!=""){
+				if(a!=""){
+					a=a+","+color;
+				}else{
+					a=color;
+				}
+			}
+			if(useful!=""){
+				if(a!=""){
+					a=a+","+useful;
+				}else{
+					a=useful;
+				}
+			}
+			if(level!=""){
+				if(a!=""){
+					a=a+","+level;
+				}else{
+					a=level;
+				}
+			}
+			if(source!=""){
+				if(a!=""){
+					a=a+","+source;
+				}else{
+					a=source;
+				}
+			}
+			if(details!=""){
+				if(a!=""){
+					a=a+","+details;
+				}else{
+					a=details;
+				}
+			}
+			if(details.length<301){
+				a = encodeURI(a);
+				jQuery.ajax({
+				url:'$!{address.caigou}/doEntrust.htm?detail='+a,
+				type:"get",
+				dataType:"json",
+				success:function(reg){
+					if(reg.sw>0){ 
+						openoverlay('success.htm','',470,182,0);
+					}else{
+    					Asto.util.Callback.setSubmitCallback(function(success, data){
+							jQuery("#loginFlag").val(1);
+            				subToBuy();
+            			});
+            			openoverlay('$!{address.front}/mini/login_trust.htm?destUrl=$!{address.caigou}/submitCallback.htm&regfrom=10031037','',750,450,0);
+					}
+				}
+				});
+			}else{
+				alert("求购详情要求少于300个字");
+			}
+		}
+	}
+	
+	##
+	function subToBuyWithOutLogin(){
+		var pro = $("#pro2").val().replace(/\s/g,'');
+		var amount = $("#amount2").val().replace(/\s/g,'');
+		var price = $("#price2").val().replace(/\s/g,'');
+		var color = $("#color2").val().replace(/\s/g,'');
+		var useful = $("#useful2").val().replace(/\s/g,'');
+		var level = $("#level2").val().replace(/\s/g,'');
+		var source = $("#source2").val().replace(/\s/g,'');
+		var details = $("#details2").val().replace(/\s/g,'');
+		if(pro!=""){
+    		pro = "产品:"+pro;
+    	}
+    	if(amount!=""){
+    		amount = "采购量:" + amount;
+    	}
+    	if(price!=""){
+    		price = "价格:" + price;
+    	}
+    	if(color!=""){
+    		color = "颜色:" + color;
+    	}
+    	if(useful!=""){
+    		useful = "用途:" + useful;
+    	}
+    	if(level!=""){
+    		level = "级别:" + level;
+    	}
+    	if(source!=""){
+    		source = "所在地:" + source;
+    	}
+		if(details!=""){
+    		details = "求购详情:" + details;
+    	}
+		if(pro=="" && amount=="" && price=="" && color=="" && useful=="" && level=="" && source=="" && details==""){
+			alert("请填写您的委托采购详情");
+		}else if(pro!="" || amount!="" || price!="" || color!="" || useful!="" || level!="" || source!="" || details!=""){
+			$('.p2-box-b').parent().find(".p2-box-error").hide();
+			var a="";
+			if(pro!=""){
+				a=pro;
+			}
+			if(amount!=""){
+				if(a!=""){
+					a=a+","+amount;
+				}else{
+					a=amount;
+				}
+			}
+			if(price!=""){
+				if(a!=""){
+					a=a+","+price;
+				}else{
+					a=price;
+				}
+			}
+			if(color!=""){
+				if(a!=""){
+					a=a+","+color;
+				}else{
+					a=color;
+				}
+			}
+			if(useful!=""){
+				if(a!=""){
+					a=a+","+useful;
+				}else{
+					a=useful;
+				}
+			}
+			if(level!=""){
+				if(a!=""){
+					a=a+","+level;
+				}else{
+					a=level;
+				}
+			}
+			if(source!=""){
+				if(a!=""){
+					a=a+","+source;
+				}else{
+					a=source;
+				}
+			}
+			if(details!=""){
+				if(a!=""){
+					a=a+","+details;
+				}else{
+					a=details;
+				}
+			}
+			if(details.length<301){
+				a = encodeURI(a);
+				openoverlay('submit.htm?details='+a,'',320,200,0);
+			}else{
+				alert("求购详情要求少于300个字");
+				return false;
+			}
+		}
+	}
+
+	jQuery(".supply").click(function(){
+	    var a = jQuery(this).attr("name");
+		var status = jQuery("#status_"+a).val();
+		if(status=="05"){
+    		return false;
+    	}
+		if(jQuery("#loginFlag").val()==0){
+            Asto.util.Callback.setSubmitCallback(function(success, data){
+				jQuery("#loginFlag").val(1);
+				hiddenNoLoginPub();
+				location.reload();
+			});
+			openoverlay('$!{address.front}/mini/login_trust.htm?destUrl=$!{address.caigou}/submitCallback.htm&regfrom=10031037','',750,450,0);
+		}else{
+			//登陆情况下能否供货
+			var gonghuo = jQuery("#gong_"+a).val();
+			if(gonghuo=="1"){
+    			return false;
+    		}
+    		openoverlay('form.htm?id='+Number(jQuery(this).attr("name")),'',470,250,0);
+    		}
+    		return false;
+	});
+	
+</script>

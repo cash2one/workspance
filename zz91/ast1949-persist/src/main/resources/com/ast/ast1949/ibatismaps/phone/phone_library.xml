@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneLibrary">
+	<typeAlias alias="phoneLibraryDO" type="com.ast.ast1949.domain.phone.PhoneLibrary" />
+	<resultMap class="phoneLibraryDO" id="phoneLibraryResult">
+		<result property="id" column="id" />
+		<result property="tel" column="tel" />
+		<result property="called" column="called" />
+		<result property="status" column="status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		tel,
+		called,
+		status,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="phoneLibraryDO">
+		INSERT INTO ast.phone_library
+		(
+		tel,
+		called,
+		status,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#tel#,
+		#called#,
+		#status#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="phoneLibraryResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM phone_library
+		where id = #value#
+	</select>
+
+	<select id="queryByTel" parameterClass="java.lang.String" resultMap="phoneLibraryResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM phone_library
+		where tel = #value#
+		limit 1
+	</select>
+	
+	<update id="update" parameterClass="phoneLibraryDO">
+		update phone_library
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="tel">
+			tel = #tel#	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="called">
+			called = #called#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="status">
+			status = #status#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneLibrary.tel">
+				tel = #phoneLibrary.tel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLibrary.called">
+				called = #phoneLibrary.called#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneLibrary.status">
+				status = #phoneLibrary.status#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="phoneLibraryResult">
+		select 
+		<include refid="defaultColumn"/>
+		from phone_library
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_library
+		<include refid="whereClause"/>
+	</select>
+	
+	<delete id="deleteNumber" parameterClass="java.lang.Integer">
+		delete from  phone_library where id=#id#
+	</delete>
+</sqlMap>

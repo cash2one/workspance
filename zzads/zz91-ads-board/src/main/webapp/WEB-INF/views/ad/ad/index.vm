@@ -1,0 +1,80 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/appv2/util.js')" ></script>
+<script type="text/javascript" src="#springUrl('/appv2/ad/booking.js')" ></script>
+<script type="text/javascript" src="#springUrl('/appv2/ad/renew.js')" ></script>
+<script type="text/javascript" src="#springUrl('/appv2/ad/ad.js')" ></script>
+<script type="text/javascript">
+
+Ext.onReady(function() {
+
+	var adGrid=Ext.create("com.zz91.ads.board.ad.ad.SimpleGrid",{
+		id:"mainadgrid",
+		region:"center"
+	});
+	 adGrid.loadByEmail("$!{email}");
+	
+	var bookingGrid=Ext.create("com.zz91.ads.board.ad.booking.BaseGrid",{
+		id:"bookinggrid",
+		split:true,
+		region:"south",
+		crmId:"",
+		height:150
+	});
+	var renewGrid=Ext.create("com.zz91.ads.board.ad.renew.BaseGrid",{
+		id:"renewinggrid",
+		split:true,
+		region:"south",
+		width:'100%',
+		height:200
+	});
+##		renewGrid.loadByAdId(0);
+		##点击公司,弹出公司所有充值记录##
+		adGrid.addListener('cellclick', function (grid, rowIndex, columnIndex, event) {
+    		renewGrid.getStore().setExtraParam("adId",event.data.id);
+   			renewGrid.getStore().load();
+　　		}, adGrid);
+	
+	var tree=Ext.create("com.zz91.util.Tree", {
+		id:"positiontree",
+		treeModel:"PositionTreeModel",
+		queryUrl:Context.ROOT+"/ad/position/child.htm",
+		nodeParam:"id",
+		rootCode:"0",
+		title:"广告位筛选",
+		collapsible:true,
+		split:true,
+		region:"west",
+		width:250,
+		listeners:{
+			"itemclick":function(view,model){
+				
+				adGrid.getStore().setExtraParam("positionId",model.getId());
+				adGrid.getStore().load();
+				
+				bookingGrid.getStore().setExtraParam("positionId",model.getId());
+				bookingGrid.getStore().load();
+			}
+		}
+	});
+	
+	tree.getRootNode().expand();
+	
+	Ext.create("Ext.container.Viewport",{
+		layout:"border",
+		items:[tree,{
+			xtype:"container",
+			layout:"border",
+			region:"center",
+			items:[adGrid,{
+				spilt:true,
+				region:"south",
+				height:350,
+				items : [renewGrid,bookingGrid]
+			}]
+		}]
+	});
+	
+	Ext.get("loading").hide();
+});
+</script>
+#parse("/common/loading.vm")

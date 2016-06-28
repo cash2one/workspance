@@ -1,0 +1,176 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+#parse("/common/myhuzhu/head.vm")
+<script>
+function reply(){
+    if($('#send').css('display')=='none'){
+		$('#send').css('display','block');
+	}else{
+		$('#send').css('display','none');
+	}
+}
+</script>
+ <div class="huzhu">
+  	<div class="hz-left fl">
+    	<div class="mainblock">
+        	<div class="m5-tab f16">
+            	<div class="m5t-item1 fl"><a href="#springUrl('/myhuzhu/list_message_in.htm')" #if($mark==1) class="up" #end target="_blank">收件箱</a></div>
+                <!--end m5t-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl"><a href="#springUrl('/myhuzhu/list_message_out.htm')" #if($mark==2) class="up" #end target="_blank">发件箱</a></div>
+                <!--end m56-item1-->
+##                <div class="m5t-btn fr"><a href="#springUrl('/myhuzhu/send_message.htm')" class="white f14 bold" target="_blank">写私信</a></div>
+                <!--end m5t-btn fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end m5-tab-->
+        </div>
+        <!--end mainblock-->
+    	<div class="mainblock m5-block cb">
+            <ul class="detail2">
+				#if($!{onInquiry})
+					#if($mark==1)
+						<li><a href="#springUrl('/myhuzhu/showmessage')$!{onInquiry.id}-1.htm" target="_blank" class="gray">上一封</a></li>
+					#else
+						<li><a href="#springUrl('/myhuzhu/showmessage')$!{onInquiry.id}-2.htm" target="_blank" class="gray">上一封</a></li>
+					#end
+				#else
+					 <li><a href="javascript:;" target="_blank" class="gray">上一封</a></li>
+				#end
+				#if($!{downInquiry})
+					#if($mark==1)
+						<li><a href="#springUrl('/myhuzhu/showmessage')$!{downInquiry.id}-1.htm" target="_blank" class="blue">下一封</a></li>
+					#else
+						<li><a href="#springUrl('/myhuzhu/showmessage')$!{downInquiry.id}-2.htm" target="_blank" class="blue">下一封</a></li>
+					#end
+				#else
+					 <li><a href="javascript:;" target="_blank" class="gray">下一封</a></li>
+				#end
+            </ul>
+			#foreach($!{inquiry} in $!{inquiryList})
+			#if($!{mark}==1&&$!{inquiry.inquiry.senderAccount}!=$!{sessionUser.account})
+				<div class="person">
+					<div class="per-img fl"><a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img_head.jpg" /></a></div>
+					<!--end per-img fl-->
+					<div class="per-info fl">
+						<table class="per-tab" cellpadding="0" cellspacing="0">
+							<tr>
+								<td><a href="#springUrl('/personIndex')$!{inquiry.profiler.companyId}.htm" target="_blank" class="bold blue f14">$!{inquiry.profiler.nickname}</a></td>
+								<td class="tr grey">$!date.format('yyyy-MM-dd HH:mm:ss',$!{inquiry.inquiry.sendTime})</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<div class="per-text"><span class="bold">$!{inquiry.profiler.nickname}的发言：</span>$!{inquiry.inquiry.title}</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--end per-info fl-->
+					<div class="cb"></div>
+				</div>
+				<!--end person-->
+				<div class="message">
+					<p class="f14 bold">信息内容:</p>
+					<p>$!{inquiry.inquiry.content}</p>
+					#if($mark==1)
+						<p class="tr f14">&nbsp;&nbsp;&nbsp;<a class="blue" onclick="reply()">回复</a></p>
+					#end
+				</div>
+            <!--end message-->
+			#if($mark==1)
+            <div class="m2-tab" style="display:none;" id="send">
+            	<form action="#springUrl('/myhuzhu/do_send_message.htm')" method="post" class="post">
+                <div class="form_item bold mb10">收件人：
+                    <input type="text" class="fi-content-text1" id="" name="accountName" value="$!{inquiry.profiler.nickname}" tabindex="1" />
+					<input type="hidden" name="companyId" value="$!{inquiry.profiler.companyId}"/>
+                </div>
+                <!--end form_item-->
+                <div class="form_item bold mb10">主&nbsp;&nbsp;&nbsp;题：
+                    <input type="text" class="fi-content-text1" id="" name="title" value="$!{inquiry.inquiry.title}" tabindex="1" />
+                </div>
+                <!--end form_item-->
+                <div class="form_item">
+                	<div class="fi-title1 bold fl">正&nbsp;&nbsp;&nbsp;文:</div>
+                    <!--end fi-title1-->
+                    <div class="fi-content fl">
+                    	<textarea type="text" class="fi-content-text3" name="content" cols="20" rows="7"></textarea>
+                    </div>
+                    <!--end fi-content-->
+                    <div class="cb"></div>
+                </div>
+                <!--end form_item-->
+                <div class="form_item mt8 cb">
+                	<div class="mes_hf fr mb10"><input type="submit" value="回复"></div>
+                    <!--end mes_hf-->
+                </div>
+				<input name="conversationGroup" type="hidden" value="$!{inquiry.inquiry.conversationGroup}"/>
+                <!--end form_item-->
+            </form>
+            </div>
+			#end
+			#break
+			#elseif($!{mark}==2&&$!{inquiry.inquiry.senderAccount}==$!{sessionUser.account})
+				<div class="person">
+					<div class="per-img fl"><a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img_head.jpg" /></a></div>
+					<!--end per-img fl-->
+					<div class="per-info fl">
+						<table class="per-tab" cellpadding="0" cellspacing="0">
+							<tr>
+								<td><a href="javascript:;" target="_blank" class="bold blue f14">$!{inquiry.profiler.nickname}</a></td>
+								<td class="tr grey">$!date.format('yyyy-MM-dd HH:mm:ss',$!{inquiry.inquiry.sendTime})</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<div class="per-text">$!{inquiry.profiler.nickname}的发言：<span class="bold">$!{inquiry.inquiry.title}</span></div>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<!--end per-info fl-->
+					<div class="cb"></div>
+				</div>
+				<!--end person-->
+				<div class="message">
+					<p class="f14 bold">信息内容:</p>
+					<p>$!{inquiry.inquiry.content}</p>
+				</div>
+			#break
+			#end
+			#end
+            <!--end m2-tab-->
+        </div>
+        <!--end mainblock-->
+        <div class="dialog-box">
+        	<h3 class="bold f14">与<a href="#springUrl('/personIndex')$!{profiler.companyId}.htm" target="_blank" class="bold blue">$!{profiler.nickname}</a>的对话：</h3>
+			#foreach($!{inquiry} in $!{inquiryList})
+            <div class="dialog">
+            	<div class="per-img fl"><a href="#" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img_head.jpg" /></a></div>
+                <!--end per-img fl-->
+                <div class="per-info fl">
+                	<table class="per-tab" cellpadding="0" cellspacing="0">
+                    	<tr>
+                        	<td><a href="#springUrl('/personIndex')$!{inquiry.profiler.companyId}.htm" target="_blank" class="bold blue f14">$!{inquiry.profiler.nickname}</a></td>
+                            <td class="tr grey">$!date.format('yyyy-MM-dd HH:mm:ss',$!{inquiry.inquiry.sendTime})</td>
+                        </tr>
+                        <tr>
+                        	<td colspan="2">
+								<div class="per-text">$!{inquiry.profiler.nickname}的发言：<span>$!{inquiry.inquiry.content}</span></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <!--end per-info fl-->
+                <div class="cb"></div>
+            </div>
+			#end
+           <!--end dialog-->
+         </div>
+         <!--end dialog-box--> 
+    </div>
+    
+	
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+	
+</div>
+<!--end huzhu-->

@@ -1,0 +1,324 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+            <li>
+                <strong>网站动态管理</strong>
+			</li>
+			<li >
+				/ 
+            </li>
+			<li >
+				#if($!type && $!{type} !="")
+				  <a href="#springUrl('/article/index.htm')?type=$!{type}">$!{category.get($!type)}</a>
+				#else
+				   <a href="#springUrl('/article/index.htm')?type=1000">$!{category.get("1000")}</a>
+				    #set($types='1000')
+				#end
+			</li>
+		</ul>
+		
+		#if("$!{success}"=="1")
+		<div class="alert alert-success" >
+			您的操作成功了
+		</div>
+		#end
+		#if("$!{success}"=="0")
+		<div class="alert alert-success" >
+			<strong>注意：</strong>
+			很抱歉，您刚刚的操作没有成功，<span style="color:red">因为标题重复</span>。请重新操作！
+		</div>
+		#end
+		
+		
+		
+		<div class="table-select mt clearfix">
+			
+			<div class="group">
+				<select class="groupSel" name="articleType" id = "articleType">
+					#foreach( $c in $!{category.keySet()})
+                        <option value="$c" #if($!{type}==$!c) selected #end>$!{category.get($c)}</option>
+					#end
+				</select>
+			</div>
+
+		
+			<div class="btn-toolbar">
+				
+				<a href="#springUrl('/article/addOrUpdate.htm')?type=$!{type}" class="btn btn-small btn-primary">添加</a>
+				
+				<div class="btn-group">
+					<a href="javascript:void(0)" onclick="updateArticle()" class="btn btn-small">修改</a>
+					#if("$!{pause}"=="1")
+						<a href="javascript:void(0)" onclick="publishArticle(0)" class="btn btn-small" >暂不发布</a>
+					#else
+						<a href="javascript:void(0)" onclick="publishArticle(1)" class="btn btn-small" >重新发布</a>
+					#end
+					<a href="javascript:void(0)" class="btn btn-small" onclick="deleteArticle()">删除</a>
+				</div>
+				
+				#set($pauseClass0="")
+				#set($pauseClass1="btn_active")
+				#if($!{pause}==0)
+					#set($pauseClass0="btn_active")
+					#set($pauseClass1="")
+				#end
+				<div class="btn-group" >
+				  #if($types && $types !="")
+					<a href="#springUrl('/article/index.htm')?type=$!{types}&checkStatus=1" class="btn btn-small $!{pauseClass1}" title="查看所有已审核的信息，这类信息将显示在您的商铺上">已审核</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{types}&checkStatus=2" class="btn btn-small $!{pauseClass1}" title="查看所有审核不通过的信息，这类信息将显示在您的商铺上">退回</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{types}&pause=1" class="btn btn-small $!{pauseClass1}" title="已发布的信息，这类信息将显示在您的商铺上">已发布</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{types}&pause=0" class="btn btn-small $!{pauseClass0}" title="已暂停发布的信息，这类信息将不会显示在您的商铺上">已暂停</a>
+				#else
+					<a href="#springUrl('/article/index.htm')?type=$!{type}&checkStatus=1" class="btn btn-small $!{pauseClass1}" title="查看所有已审核的信息，这类信息将显示在您的商铺上">已审核</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{type}&checkStatus=2" class="btn btn-small $!{pauseClass1}" title="查看所有审核不通过的信息，这类信息将显示在您的商铺上">退回</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{type}&pause=1" class="btn btn-small $!{pauseClass1}" title="已发布的信息，这类信息将显示在您的商铺上">已发布</a>
+					<a href="#springUrl('/article/index.htm')?type=$!{type}&pause=0" class="btn btn-small $!{pauseClass0}" title="已暂停发布的信息，这类信息将不会显示在您的商铺上">已暂停</a>
+				#end	
+				</div>
+			</div>
+			
+		</div>
+		
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="20" class="tac"><input type="checkbox" class="Js_checkAll" /></th>
+					<th>文章标题</th>
+					<th width="100" class="tac">发布日期</th>
+					<th width="60" class="tac">审核状态</th>
+					<th width="60" class="tac">发布状态</th>
+					<th width="120" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#if(!$!{page.records} || $!{page.records.size()}==0)
+					<tr >
+						<td colspan="5">
+        					<div class="alert alert-error center" >
+        						<strong>注意：</strong>
+        						很抱歉，您还没有添加任何关于$!{category.get($!type)}的信息，您可以<a href="#springUrl('/article/addOrUpdate.htm')?type=$!{type}">点击这里</a>添加这些信息
+        					</div>
+						</td>
+                    </tr>
+				#end
+				#foreach($list in $!{page.records})
+					   #if($!{list.checkStatus}==2)
+						<tr id="records$!{list.id}">
+						<td class="tac va">
+							<input name="select" type="checkbox" value="$!{list.id}" class="inputChk" />
+						</td>
+						<td>
+							<a href="$!{address.esite}/newsDetails$!{list.id}.htm" target="_blank">
+								<strong>
+									$!{list.title}
+								</strong>
+							</a>
+						</td>
+						<td class="tac va">$!date.format('yyyy-MM-dd',$!{list.gmtPublish})</td>
+						<td class="tac va">
+							<a href="javascript:void(0)" target="_blank">
+								<span class="label label-warning" >审核不通过</span>
+							</a>
+						</td>
+						<td class="tac va">
+							  <a href="javascript:void(0)" target="_blank">
+							    #if(${list.pauseStatus}=='1')
+								<span class="label label-warning">已发布</span>
+								#else
+								<span class="label label-warning">暂停发布</span>
+							   #end
+							  </a>
+						</td>
+						<td class="tac va">
+							<a href="#springUrl('/article/addOrUpdate.htm')?id=$!{list.id}&type=$!{type}">修改</a>
+							#if("$!{pause}"=="1")
+								<a href="javascript:publishArticle(0,$!{list.id})">暂不发布</a>
+							#else
+								<a href="javascript:publishArticle(1,$!{list.id})">重新发布</a>
+							#end
+								<a href="javascript:deleteArticle($!{list.id})">删除</a>
+						</td>
+					</tr>
+					#else
+					<tr id="records$!{list.id}">
+						<td class="tac va">
+							<input name="select" type="checkbox" value="$!{list.id}" class="inputChk" />
+						</td>
+						<td>
+							<a href="$!{address.esite}/newsDetails$!{list.id}.htm" target="_blank">
+								<strong>
+									$!{list.title}
+								</strong>
+							</a>
+						</td>
+						<td class="tac va">$!date.format('yyyy-MM-dd',$!{list.gmtPublish})</td>
+						<td class="tac va">
+							<a href="javascript:void(0)" target="_blank">
+								#if("$!{list.checkStatus}"=="1") 
+									<span class="label label-success" >已审核</span> 
+								#end
+								#if("$!{list.checkStatus}"=="0")
+									<span class="label label-warning" >未审核</span>
+								#end
+								#if("$!{list.checkStatus}"=="2")
+									<span class="label label-warning" >审核不通过</span>
+								#end
+							</a>
+						</td>
+						<td class="tac va">
+							  <a href="javascript:void(0)" target="_blank">
+							    #if(${list.pauseStatus}=='1')
+								<span class="label label-warning">已发布</span>
+								#else
+								<span class="label label-warning">暂停发布</span>
+							   #end
+							  </a>
+						</td>
+						<td class="tac va">
+							<a href="#springUrl('/article/addOrUpdate.htm')?id=$!{list.id}&type=$!{type}">修改</a>
+							#if("$!{pause}"=="1")
+								<a href="javascript:publishArticle(0,$!{list.id})">暂不发布</a>
+							#else
+								<a href="javascript:publishArticle(1,$!{list.id})">重新发布</a>
+							#end
+								<a href="javascript:deleteArticle($!{list.id})">删除</a>
+						</td>
+					</tr>
+					#end
+				#end
+			
+			</tbody>
+		</table>
+			 #if($types && $types !="")
+				 #myrcPageNav1($page "#springUrl('/article/index.htm')" "pause=$!{pause}&checkStatus=$!{checkStatus}&id=$!{id}" "")
+			 #else
+				 #myrcPageNav1($page "#springUrl('/article/index.htm')" "type=$!{type}&pause=$!{pause}&checkStatus=$!{checkStatus}&id=$!{id}" "")
+			 #end
+	 </div>
+</div>
+<script type="text/javascript">
+	
+	#set($idx=1)
+	#if("$!{type}"=="1001")
+	#set($idx=2)
+	#end
+	#if("$!{type}"=="1002")
+	#set($idx=3)
+	#end
+
+	jQuery(document).ready(function(){		
+		myrc.select("Js_select");
+		myrc.menu(4, $!{idx});
+		
+		jQuery("#articleType").change(function(){
+			window.location.href="#springUrl('/article/index.htm')?type="+jQuery(this).val();
+		});
+		
+		jQuery(".Js_checkAll").click(function(){
+			var chk=jQuery(this).attr("checked")||"";
+			if(chk=="checked"){
+				jQuery("table .inputChk").attr("checked","checked");
+			}else{
+				jQuery("table .inputChk").attr("checked",null);
+			}
+		});
+		
+	});
+	
+	function deleteArticle(id){
+		var ids = jQuery("input[name='select']:checked");
+		if(id==null&&ids.length==0){
+			alert("请至少选择一个进行删除!");
+			return false;
+		}
+		if(confirm("确认删除信息?")){
+			if(id!=null){
+				doDeleteArticle(id);
+			}else{
+				ids.each(function(){
+					id = jQuery(this).val();
+					if(id!=null){
+						doDeleteArticle(id);
+					}
+				});
+			}
+		}
+	}
+	
+	function doDeleteArticle(id){
+		jQuery.ajax({
+			url:'#springUrl("/article/doDelete.htm")',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			success:function(req){
+				if(req.success){
+					window.location.href="#springUrl('/article/index.htm')?type=$!{type}&success=1&pause=$!{pause}";
+				}else{
+					window.location.href="#springUrl('/article/index.htm')?type=$!{type}&success=0&pause=$!{pause}";
+				}
+			},
+			failure:function(){
+				window.location.href="#springUrl('/article/index.htm')?type=$!{type}&success=0";
+			}
+		});
+	}
+	
+	function publishArticle(status,id){
+		if(id!=null){
+			doPublishArticle(status,id);
+		}else{
+			jQuery("input[name='select']:checked").each(function(){
+				id = jQuery(this).val();
+				if(id!=null){
+					doPublishArticle(status,id);
+				}	
+			});
+		}
+	}
+	
+	function doPublishArticle(status,id){
+         jQuery.ajax({
+			url:'#springUrl("/article/doPause.htm")',
+			data:{"id":id,"status":status},
+			cache:false,
+			dataType:"json",
+			success:function(req){
+				if(req.success){
+				 #if($!{checkStatus}!=2){
+				   jQuery("#records"+id).remove();
+				  }
+				#end
+				  ##jQuery("#records"+id).remove();
+				   Asto.util.Message.show({
+					msg:"操作成功！",
+					autoClose:10000
+					});
+					jQuery("#info").html("").append("操作成功");
+				}else{
+					jQuery("#info").html("").append("操作失败");
+				}
+			},
+			failure:function(){
+				Asto.util.Message.show({
+					msg:"操作失败！",
+					autoClose:10000
+					});
+				jQuery("#info").html("").append("操作失败");
+			}
+		});
+	}
+	
+	function updateArticle(){
+		var id = jQuery("input[name='select']:checked");
+		if(id.length != 1){
+			//jQuery("#info").html("").append("请选择一个进行修改!");
+			alert("请选择一篇文章修改");
+		}else{
+			window.location.href="#springUrl('/article/addOrUpdate.htm')?id="+id.val()+"&type=$!{type}";
+		}
+		
+	}
+	
+</script>

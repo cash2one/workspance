@@ -1,0 +1,148 @@
+#set($headName=$!{xueyuanPath})
+#set($layout="/layout/xueyuanLayout.vm")
+<script>		
+$(document).ready(function(e) {
+    $(".item5 li").mouseover(function() {
+        $(this).css("background", "#f2f2f2");
+    });
+	$(".item5 li").mouseout(function() {
+        $(this).css("background", "#fff");
+    });
+});
+</script>
+  <div class="hz_nav">
+		当前位置：<a href="$!{address.huzhu}" target="_blank">互助</a>
+		#foreach($!{path} in $!{listPath})
+			#if($velocityCount!=$!{listPath.size()})
+				&nbsp;>>&nbsp;<a href="#springUrl('/')$!{path.get("path")}/" target="_blank">$!{listPath.length}$!{path.get("name")}</a>
+			#else
+				&nbsp;>>&nbsp;$!{path.get("name")}
+			#end
+		#end
+  </div>
+  <div class="huzhu">
+  	<div class="hz-left fl">
+    	<div class="mainblock">
+        	<ul class="item5">
+				#foreach($li in $!{page.records})
+            	<li>
+                	<div class="m5-item">
+                    	<a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="blue" target="_blank" title="$!{li.title}">#printTitle($!{li.title} 15 " ")</a>
+                    </div>
+                    <!--end m5-item-->
+                    <div class="m5-box">
+                    	<div class="m5b-lt fl">
+                        	<p>#printTitle($!{li.content} 150 "...")
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="" target="_blank">[查看全文]</a></p>
+                        </div>
+                        <!--end m5b-info-->
+                        <div class="m5b-gt fr">
+                        	<span>$!{li.replyCount}</span>
+                        </div>
+                        <!--end m5b-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m5-box-->
+                    <div class="m5-box">
+                    	<div class="m5b-dire fl"><span>$!{li.account}</span></div>
+                        <!--end m5b-dire fl-->
+                        <div class="m5b-reply fl"><span>时间&nbsp;$!date.format('yyyy-MM-dd HH:mm:ss', $!{li.postTime})</span></div>
+                        <!--end m5b-reply fr-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m5-box-->
+                </li>
+				#end
+            </ul>
+            <div class="page">
+      			#pageViewQA($page "#springUrl('/xueyuan/')" "$!{xueyuanPath}" "" "")
+    		 </div>
+            <!--end page-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+    <div class="hz-right fr">
+    	<div class="sublock">
+        	<div class="sub-dh f16 gclear">相关问答</div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item9">
+					#set($listSize=$!{pageQue})
+					#if($listSize.size()>0)
+					#foreach($li in $!{pageQue})
+                	<li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" #set($tname=$!{li.title})#if($tname.length()>18)title="$!{li.title}"#end>#printTitle($!{li.title} 18 "...")</a>&nbsp;&nbsp;&nbsp;<span class="grey">$!{li.replyCount}回答</span></li>
+					#end
+					#else
+						#cacheFragment("$!{address.fragment}/huzhu/hotQuestion.htm" "" "" "")
+							#foreach($!{hq} in $!{HotQuestion})
+								<li><a #if($!{hq.url}&&$!{hq.url}!="")href="$!{hq.url}" #else href="#springUrl('/detail/')$!{hq.id}.html"#end target="_blank" #set($tname=$!{hq.title})#if($tname.length()>18)title="$!{hq.title}"#end>#printTitle($!{hq.title} 18 "...")</a>&nbsp;&nbsp;&nbsp;<span class="grey">$!{hq.replyCount}回答</span></li>
+							#end
+							#end
+					#end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+        <div class="sublock">
+        	<div class="sub-dh gclear">
+            	<div class="sub-dh-tle f16 fl">最新商机</div>
+                <!--end -->
+                <div class="sub-dh-more fr"><a href="http://trade.zz91.com" target="_blank" class="blue">[更多]</a></div>
+                <!--end sub-dh-more-->
+                <div class="cb"></div>
+            </div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item3">
+					#cacheFragment("$!{address.fragment}/huzhu/NewProduct.htm" "" "" "")
+					#foreach(${li} in ${gongying})
+						<li><a href="http://trade.zz91.com/productdetails$!{li.id}.htm" target="_blank" title="${li.title}">【供应】${li.title}</a></li>
+					#end
+					#end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+        <div><script type="text/javascript" src="http://gg.zz91.com/show?p=728"></script> </div>
+        <!--end subox-->
+        <div class="sublock">
+        	<div class="sub-dh gclear">
+            	<div class="sub-dh-tle f16 fl">相关帖子</div>
+                <!--end -->
+##                <div class="sub-dh-more fr"><a href="javascript:;" target="_blank" class="blue">[更多]</a></div>
+                <!--end sub-dh-more-->
+                <div class="cb"></div>
+            </div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item3">
+					#set($listSize=$!{pagePost})
+					#if($listSize.size()>0)
+					#foreach($li in $!{pagePost})
+                    <li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" #set($name=$!{li.title})#if($name.length()>23)title="$!{li.title}"#end>&middot;#printTitle($!{li.title} 23 "...")</a></li>
+					#end
+					#else
+						  #cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=5&1s" "" "" "")
+							#foreach($postlist in $!{postDailylist})
+								<li><a #if($!{postlist.url}&&$!{postlist.url}!="")href="$!{postlist.url}" #else href="#springUrl('/detail/')$!{postlist.id}.html"#end target="_blank" #set($name=$!{postlist.title})#if($name.length()>23)title="$!{postlist.title}"#end>&middot;#printTitle($!{postlist.title} 23 "...")</a></li>
+							#end
+						  #end
+					#end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+        <div><script type="text/javascript" src="http://gg.zz91.com/show?p=729"></script></div>
+        <!--end subox-->
+    </div>
+    <!--end hz-right-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

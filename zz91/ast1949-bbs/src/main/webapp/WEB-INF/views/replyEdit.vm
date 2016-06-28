@@ -1,0 +1,151 @@
+#set( $layout = "/layout/blank.vm" )
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="$!{address.img}/bbs/css/bbs/style.css" />
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+<script type="text/javascript" src="$!{address.img}/bbs/js/ckeditor/ckeditor.js"></script>
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<script src="http://img0.zz91.com/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="http://img0.zz91.com/lib/asto/asto-all-1.0.0.js"></script>
+
+
+<style>
+	*{
+	padding:0;
+	margin:0;
+	font-family:Microsoft YaHei
+	}
+	.topic_content p{
+	padding:4px 0;
+	margin:0;
+	}
+	.topic_content label{
+	display:block;
+	width:80px;
+	float:left;
+	text-align:right;
+	line-height:24px;
+	font-size:14px;
+	color:#333;
+	}
+	.topic_content input,
+	.topic_content select{
+	height:20px;
+	padding:2px 4px;
+	line-height:20px;
+	border:1px solid #dbdbdb;
+	}
+	.topic_content input.title{
+	width:480px;
+	}
+	.topic_content input.Submit1,
+	.topic_content input.Submit1over{
+	background: url(http://img0.zz91.com/bbs/images/bbs/alterimginput.jpg);
+	border:none;
+	width:54px;
+	height:24px;
+	margin-left:340px;
+	cursor:pointer;
+	}
+	.topic_content input.Submit1over{
+	background: url(http://img0.zz91.com//bbs/images/bbs/alterimginputover.jpg);
+	}
+	.topic_textcolor4{
+	display:block;
+	line-height:38px;
+	height:38px;
+	color:#999;
+	padding-left:80px;
+	font-size:12px
+	}
+</style>
+<script type="text/javascript">
+	var ckeditor
+	jQuery(document).ready(function() {
+		ckeditor =  CKEDITOR.replace("ckeditor1",{
+			toolbar:"post",
+			width:'750px',
+			height:'180px',
+			language : 'zh-cn'
+		});
+	});
+	
+	/**
+	* 上传图片
+	*/
+	function onAjaxUpLoad(data) {
+		var obj = eval(data);
+		var img="<img src='$!{address.resource}/"+obj.path + obj.uploadedFilename+"' />"
+		var html = ckeditor.document.getBody().getHtml();
+		ckeditor.document.getBody().setHtml(html+img);
+	}
+	
+	function onsubstr(frm){
+        if (frm.title.value==""||frm.title.value.length<=0){
+            alert ("标题不能为空！");
+            frm.title.focus();
+            return false;
+        }
+		
+		var textLength=0;
+		var text = ckeditor.document.getBody().getText(); //取文本形式的值
+		var html = ckeditor.document.getBody().getHtml(); //取包含html代码的值
+		textLength=text.length;
+    	//不能直接用text.length，因为效率会很慢，但不知道为什么。
+    	if(textLength<=0){
+    		alert('内容不能为空');
+    		return false;
+    	}
+		
+		myedit.post();
+        frm.submit();
+    }
+	
+	## 初始化上传窗口
+	var upload = new Asto.util.PopupBox({
+		url:"#springUrl('/sys/upload/bbs.htm')",
+		callbackFn:function(success, data){
+			//关闭窗口
+			//保存图片信息
+			//成功后刷新页面
+			upload.close();
+			window.location.reload();
+		},
+		title:"上传产品图片",
+		width:450,
+		height:250,
+		modal:true
+	});
+	
+	function uploadPic(){
+		Asto.util.Callback.setSubmitCallback(function(success, data){
+			var img="<img src='$!{address.resource}/"+data.picAddress+"'/>"
+			var html = ckeditor.document.getBody().getHtml();
+			ckeditor.document.getBody().setHtml(html+img);
+			upload.close();
+ 		});
+    	upload.show("#springUrl('/sys/upload/bbs.htm')");
+    }
+	
+</script>
+</head>
+<body >
+<div class="topic_content">
+	<!--<div class="topic_content_title" >编辑帖子</div>-->
+	<div class="topic_content_content1">
+		<form id="form1" name="form1" action="" method="post">
+			<p class="topic_content1_3">
+					<textarea id="ckeditor1" name='content' style="width:400px;height:120px">$!{bbsPostReplyDo.content}</textarea>
+			</p>
+			<p>
+				<input type="hidden" id="companyId" name="companyId" value="$!{bbsPostReplyDo.companyId}"/>
+				<input type="hidden" id="id" name="id" value="$!{bbsPostReplyDo.id}"/>
+				<input name="Submit1" class="Submit1" type="submit" value="修改" onclick="return onsubstr(this.form)" onmouseover="this.className='Submit1over'" onmouseout="this.className='Submit1'">
+			</p>
+    	</form>
+    </div>
+</div>
+</body>
+</html>

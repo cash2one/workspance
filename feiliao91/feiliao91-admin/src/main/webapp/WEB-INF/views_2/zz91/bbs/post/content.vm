@@ -1,0 +1,62 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/lib/UploadWin.js')" ></script>
+<script type="text/javascript" src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		CKEDITOR.replace('content',{
+			height:400,
+			language:"zh-cn",
+			enterMode:CKEDITOR.ENTER_BR,
+			shiftEnterMode:CKEDITOR.ENTER_P
+		});
+		
+		#if($!{success}=="1")
+			Ext.Msg.alert(Context.MSG_TITLE,"详细信息已保存！");
+		#elseif($!{success}=="0")
+			Ext.Msg.alert(Context.MSG_TITLE,"详细信息没有保存！");
+		#end
+		
+		Ext.create('Ext.button.Button', {
+            renderTo: Ext.getBody(),
+            text    : '上传图片',
+			scale:"large",
+			iconCls:"paint32",
+            handler : function() {
+				var oEditor = CKEDITOR.instances.content;
+				if ( CKEDITOR.currentInstance ){
+    				var win=Ext.create("ast.ast1949.util.UploadWin",{
+    					uploadUrl:Context.ROOT+"/zz91/common/doUpload.htm",
+    					callbackFn:function(form,action){
+							alert("图片已上传!");
+    						if ( oEditor.mode == 'wysiwyg' ){
+    							oEditor.insertHtml( "<img src='"+Context.RESOURCES+action.result.data+"' />" );
+    						}
+    						win.close();
+    					}
+    				});
+    				win.show();
+				}else{
+					Ext.Msg.alert(Context.MSG_TITLE,"请先将焦点放在要插入的位置");
+				}
+            }
+        });
+		
+		Ext.create('Ext.button.Button', {
+            renderTo: Ext.getBody(), 
+            text    : '保存详细信息',
+			scale:"large",
+			iconCls:"saveas32",
+            handler : function() {
+				Ext.getDom("form1").submit();
+            }
+        });
+	});
+</script>
+<form nbame="form1" id="form1" action="#springUrl('/zz91/bbs/post/doUpdateContent.htm')" method="post" >
+	<textarea name="content" id="content">$!{content}</textarea>
+	<br />
+	##<input type="submit" id="upload" value="上传图片" /> 
+	##<input type="submit" value="保存详细信息" />
+	<input type="hidden" name="id" id="id" value="$!{id}" />
+</form>

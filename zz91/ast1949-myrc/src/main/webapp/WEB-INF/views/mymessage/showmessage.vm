@@ -1,0 +1,247 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	
+	
+	#if($!{checkInfo} && $!{checkInfo}=="1")
+    <div class="container">	
+        ##完善提示#
+        <div class="container-info">
+        	<div class="container-info-title">
+            	重要提示：
+            </div>
+            <!--end container-info-title-->
+            <div class="container-info-content">
+            	您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+            </div>
+            <!--end container-info-content-->
+        </div>
+        <!--end ontainer-info-->
+    </div>	
+	
+	#end
+	
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/mymessage/inbox.htm')">询价管理</a><span class="divider">/</span>
+			</li>
+			<li class="active">询价信息</li>
+		</ul>
+    	#if(${inquiry.senderAccount}!=$!{sessionUser.account})
+    	<div class="mt">
+    		<a href="#replyForm" class="label label-success">回复询价</a>
+    		#if($!{inquiry.isRubbish}=="0")
+    			<a onclick="setRubbish('$!{inquiryDTO.inquiry.id}',1)" href="javascript:void(0)" class="label label-success">垃圾询价</a>
+    		#else
+    			<a onclick="setRubbish('$!{inquiryDTO.inquiry.id}',0)" href="javascript:void(0)" class="label label-success">放回收件箱</a>
+    		#end
+    	</div>
+    	#end
+		#if($!{error}==1)
+		<div class="alert alert-error mt"> <strong>提示：</strong>发生错误，您的询价没有发出去！</div>
+		#end
+		<div class="well mt">
+			<div class="well-head">询价 - $!{inquiry.title}</div>
+			<div class="well-content">
+				<dl class="info-wrap">
+					<dt>询价内容：</dt>
+					<dd>
+						#set($details = $inquiry.content.replaceAll("\n", "<br />"))
+						$!{details}
+						<p class="grey pd" style="float:right;width:300px;border-bottom:1px solid #888;text-align:right">顺祝商祺!</p>
+						<p class="grey nomargin" style="clear:both;text-align:right">
+	    					$!{sender.contact}
+	            			(#if($!{sender.sex}==0) 
+	    						先生
+	    					#else
+	    						女士
+	    					#end)&nbsp;&nbsp;谨上
+	    				</p>
+					</dd>
+				</dl>
+				<dl class="info-wrap">
+					<dt>询价者公司：</dt>
+					<dd style="width:300px">
+						#if($!{senderCompany.membershipCode} && $!{senderCompany.membershipCode}!="10051000" && $!{senderCompany.domainZz91}!="")
+							<a href="http://$!{senderCompany.domainZz91}.zz91.com" target="_blank" >$!{senderCompany.name}</a>
+						#else
+							<a href="$!{address.company}/compinfo$!{senderCompany.id}.htm" target="_blank" >$!{senderCompany.name}</a>
+						#end
+					</dd>
+					<dt>电话：</dt>
+					<dd style="width:300px">
+						#if($!{ldbTel})
+							<b class="red">$!{ldbTel}</b>
+						#else
+							#if($!{isForbid})
+								<a href="$!{address.www}/zst/" target="_blank">申请再生通 可直接查看联系方式</a>
+							#else
+								$!{sender.telCountryCode}-$!{sender.telAreaCode}-$!{sender.tel}
+							#end
+						#end
+					</dd>
+				</dl>
+				<dl class="info-wrap">
+					<dt>联系人：</dt>
+					<dd style="width:300px">
+						$!{sender.contact}
+						(#if($!{sender.sex}==0) 
+    						先生
+    					#else
+    						女士
+    					#end)
+					</dd>
+					#if(!$!{ldbTel})
+						<dt>传真：</td>
+						<dd style="width:300px">#if($!{isForbid})<a href="$!{address.www}/zst/" target="_blank">申请再生通 可直接查看联系方式</a>#else($!{isForbid})$!{sender.faxCountryCode}-$!{sender.faxAreaCode}-$!{sender.fax}#end</dd>
+					#end
+				</dl>
+				<dl class="info-wrap">
+					<dt>地址：</td>
+					<dd style="width:300px">$!{senderCompany.address}</dd>
+					#if(!$!{ldbTel})
+						<dt>手机：</dt>
+						<dd style="width:300px">#if($!{isForbid})<a href="$!{address.www}/zst/" target="_blank">申请再生通 可直接查看联系方式</a>#else$!{sender.mobile}#end</dd>
+					#end
+				</dl>
+			</div>
+		</div>
+		#if($!{checkInfo} && $!{checkInfo}=='1')
+		
+    		<div class="well mt">
+    			<div class="well-head">回复询价</div>
+    			<div class="well-content">
+    				<div class="container-info-title">
+						重要提示：
+					</div>
+					<!--end container-info-title-->
+					<div class="container-info-content">
+						您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+					</div>
+					<!--end container-info-content-->
+    			</div>
+    		</div>
+			
+		#else
+			
+    		#if(${inquiry.senderAccount}!=$!{sessionUser.account})
+    		<div class="well mt">
+    			<div class="well-head">回复询价</div>
+    			<div class="well-content">
+    				<form id="editForm" name="editForm" method="post" action="#springUrl('/mymessage/replyInquiry.htm');">
+    					<input name="beInquiredId" type="hidden" value="$!{inquiry.id}"/>
+    					<input name="conversationGroup" type="hidden" value="$!{inquiry.conversationGroup}"/>
+    					<input name="receiverAccount" type="hidden" value="$!{inquiry.senderAccount}"/>
+    		    		<div class="control-group">
+    						<label for="" class="control-label">发送给：</label>
+    		    			<div class="controls">
+        					#if($!{sender.contact}!="")
+    							$!{sender.contact}
+    						#else
+    							$!{sender.account}
+    						#end
+    						#if($!{sender.sex}==0) 
+    							先生 
+    						#else 
+    							女士 
+    						#end
+    						</div>
+    		    		</div>
+    	    			<div class="control-group">
+    						<label for="title" class="control-label"><span class="red">*</span>主题：</label>
+    	    				<div class="controls">
+    	    					<input name="title" type="text" id="title" value="回复：$!{inquiry.title}" size="50" class="field validate[required, maxSize[50]]">
+    							<span class="grey">建议标题简洁，突出询盘主题，优先获得回复！</span>
+    	    				</div>
+    	    			</div>
+    	    			<div class="control-group">
+    						<label for="content" class="control-label">
+    							<span class="red">*</span>主要内容：<br/>
+    							<span class="grey">( 限1500字 )</span>
+    						</label>
+    	    				<div class="controls">
+    	    					<textarea name="content" cols="60" rows="10" id="content" class="validate[required]" ></textarea>
+    	    				</div>
+    	    			</div>
+    	    			<div class="form-actions">
+        					<a href="#springUrl('/mycompany/updateCompany.htm')" target="_blank" title="点击修改联系信息">
+    							检查我的联系信息是否有误
+    						</a>
+        					<input type="submit" id="submitBtn" value="回复询价" class="btn btn-primary" >
+    	    			</div>
+    				</form>
+    			</div>
+    		</div>
+    		#end
+		#end
+		<div class="well mt">
+			<div class="well-head">会话历史</div>
+			<div class="well-content">
+				#foreach($rs in $!{conversationList})
+				<dl class="info-wrap">
+					<dt>
+						#if($!{rs.inquiry.senderAccount}==$!{sessionUser.account})
+							我
+						#else
+							$!{senderCompany.name}
+							(#if($!{sender.sex}==0) 
+								先生
+							#else
+								女士
+							#end)
+						#end
+						<p class="grey nomargin">
+							$!date.format('yyyy-MM-dd HH:mm:ss ',$!{rs.inquiry.sendTime})
+						</p>
+					</dt>
+					<dd>
+						<strong>$!{rs.inquiry.title}</strong>
+						<p>$!{rs.inquiry.content}</p>
+					</dd>
+				</dl>
+				#end
+			</div>
+		</div>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+	jQuery(function(){
+		myrc.menu(3, 1);
+		jQuery("#editForm").validationEngine("attach");	
+	});
+	
+	function setRubbish(id, rubbish){
+		//提交
+		var confirmStr = "确定要将这条询价转为垃圾询价?";
+		if(rubbish == "0"){
+			confirmStr = "确定要将这条询价放回收件箱?"
+		}
+		
+    	if (confirm(confirmStr)){
+			jQuery.ajax({
+    			url:"#springUrl('/mymessage/spamInquiry.htm')",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{ids:$!{inquiry.id}, isRubbish:rubbish},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.href="#springUrl('/mymessage/inbox.htm')";
+    				} else {
+    					Asto.util.Message.show({
+    						msg:"您的操作没有成功！",
+    						msgType:Asto.util.Message.ERROR,
+    						bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+    							Asto.util.Message.clear();
+    						}}],	
+    						autoClose:20000
+    					});
+    				}
+    			},
+    			error:function(e){
+    			}
+    		});
+		}
+	}
+</script>

@@ -1,0 +1,636 @@
+#set($layout="/layout/defaultSLayout.vm")
+
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+<script src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor.js"></script>
+<script src="http://img0.zz91.com/zz91/tradedetails/js/Png.js"></script>
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+
+<link rel="stylesheet" href="$!{address.img}/lib/jquery-ui/1.8.16/south-street/jquery-ui-1.8.16.custom.css" />
+<script src="$!{address.img}/lib/jquery/jquery-1.6.2.min.js"></script>
+<script src="$!{address.img}/lib/jquery-ui/1.8.16/jquery-ui-1.8.16.custom.min.js"></script>
+
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css"/>
+
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+
+<div class="huzhu">
+	#parse("/common/head_login.vm")
+	#parse("/common/head_reply_search.vm")
+
+	## 暖冬广告
+	<script type="text/javascript" src="http://gg.zz91.com/show?p=478"></script>
+
+    <!--end banner-->
+	#if($!{sessionUser})
+		<input type="hidden" id="loginFlag" value="1" />
+	#else
+		<input type="hidden" id="loginFlag" value="0" />
+	#end
+    <div class="huzhu_content">
+    	<div class="hc-block1">
+        	<div class="hc-block1-left">
+            	<span class="grey">当前位置</span>：<a href="#springUrl('/')">互助社区</a>»<a href="#springUrl('/bbsCategory')$!{bbsPostCategory.id}.htm">$!{bbsPostCategory.name}</a>»$!{bbsPostDO.title}
+            </div>
+            
+            <div class="hc-block1-right">
+            	<ul>
+                	<li><a href="#springUrl('/postReply_')c1.htm">发贴</a></li>
+                    <li><a action-data="comment" onclick="bookmarks(this);">回贴</a></li>
+                    <div class="cb"></div>
+                </ul>
+            </div>
+            <!--end hc-block1-right-->
+            <div class="cb"></div>
+        </div>
+        <!--end hc-block1-->
+        
+        <div class="post">
+        	<div class="post-title">
+            	<div class="post-title-info">
+                	$!{bbsPostDO.title}
+                </div>
+
+                <div class="post-title-right">
+                	<ul>
+                    	<li>
+                        	<div class="post-title-num">
+                            	$!{bbsPostDO.visitedCount}
+                            </div>
+                            <!--end post-title-num-->
+                            <div class="post-title-text">
+                            	阅读
+                            </div>
+                            <!--end post-title-text-->
+                        </li>
+                        <li>
+                        	<div class="post-title-num">
+                            	$!{bbsPostDO.replyCount}
+                            </div>
+                            <!--end post-title-num-->
+                            <div class="post-title-text">
+                            	回复
+                            </div>
+                            <!--end post-title-text-->
+                        </li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end post-title-info-->
+            </div>
+            <!--end post-title-->
+            <div class="post-content">
+            	<div class="post-content-left">
+                	<div class="post-name">
+                    	#if($!{bProfiler.nickname} && $!{bProfiler.nickname} != "")
+							$!{bProfiler.nickname}
+						#else
+							#if($!{contact.contact} && $!{contact.contact} != "")
+								$!{contact.contact}
+							#else
+								匿名
+							#end
+						#end
+							
+                    </div>
+                    <!--end post-name-->
+                    <div class="post-left-img">
+						#if($!{bProfiler.picturePath} && $!{bProfiler.picturePath}!="")
+							 <img src="$!{address.thumb}$!{address.resource}/$!{bProfiler.picturePath}&width=140" />
+						#else
+							<img src="http://img0.zz91.com/bbs/images/photo_default.jpg" />
+						#end	
+                    </div>
+                    <!--end post-left-img-->
+                    <div class="post-text">
+                    	等级：
+						#if($!{memberShip} == '10051001')
+							高级会员
+						#elseif($!{memberShip} == '10051003')
+							来电宝会员
+						#elseif($!{memberShip} == '100510021000')
+							银牌会员
+						#elseif($!{memberShip} == '100510021001')
+							金牌会员
+						#elseif($!{memberShip} == '100510021002')
+							钻石会员
+						#elseif($!{memberShip} == '10051000')
+							普通会员
+						#else
+							互助管理员
+						#end
+						<br />
+						积分：$!{bProfiler.integral}
+						<br />
+						#cacheFragment("$!{address.fragment}/huzhu/countBbsByInfo.htm?account=$!{bProfiler.account}" "" "" "")
+						发帖：$!{countBbsPost} 回帖：$!{countBbsReply}<Br />
+						#end
+                        注册时间：$!date.format('yyyy-MM-dd',$!bProfiler.gmtCreated)
+                    </div>
+                    <!--end post-text-->
+                    <div class="post-messages">
+                        <div class="post-messages-sent"><a href="#springUrl('/sendMessage')$!{bbsPostDO.id}.htm">发私信</a></div>
+                        <div class="post-messages-home">
+							#if($!{memberShip} && $!{memberShip} == '10051003')
+								<a href="http://www.zz91.com/ppc/index$!{bProfiler.companyId}.htm" target="_blank">公司主页</a>
+							#elseif($!{memberShip} && $!{memberShip} != '10051000' && $!{memberShip}!="")
+								#if($!{company.domainZz91} && $!{company.domainZz91}!="")
+									<a href="http://$!{company.domainZz91}.zz91.com" target="_blank">公司主页</a>
+								#end
+							#elseif($!{productsDO})
+								<a href="$!{address.trade}/productdetails$!{productsDO.id}.htm" target="_blank">公司主页</a>
+							#else
+								公司主页
+							#end
+						</div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end post-messages-->
+                </div>
+                
+                <div class="post-content-right">
+                	<div class="post-floor">
+                    	<div class="post-floor-new">
+                        	更新于$!date.format('yyyy-MM-dd HH:mm:ss ',$!bbsPostDO.postTime)
+                        </div>
+						#if(!$!{companyId})
+                        <div class="post-floor-title">
+                        	<button><a href="#springUrl('/viewReply')$!{bbsPostDO.id}_c$!{bProfiler.companyId}.htm">只看楼主</a></button>
+                        </div>
+						#else
+						<div class="post-floor-title">
+                        	<button><a href="#springUrl('/viewReply')$!{bbsPostDO.id}.htm">取消只看楼主</a></button>
+                        </div>
+						#end
+                        <div class="post-floor-text">
+                        	楼主
+                        </div>
+                        <!--end post-floor-text-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end post-floor-->
+                    <div class="post-p">
+                    	    <div class="post-p-text">$!{bbsPostDO.content}</div>
+                    </div>
+                    <!--end post-p-->
+                    <div class="post-Relevant">
+                    	<div class="post-Relvant-title">
+                        	<a>相关帖子</a>
+                        </div>
+                        <!--end post-Relvant-title-->
+                        <div class="post-Relvant-content">
+                        	<div class="post-Relvant-ul brda">
+								<ul>
+									#foreach($!{post} in $!{postPage.getRecords()})
+										#if(12 >= $velocityCount)	
+											#if($velocityCount==7)
+									</ul>
+								</div>
+								<div class="post-Relvant-ul">
+									<ul>
+										<li><a href="#springUrl('/viewReply')$!{post.post.id}.htm" target="_blank">$!{post.post.title}</a></li>
+											#else
+												<li><a href="#springUrl('/viewReply')$!{post.post.id}.htm" target="_blank">$!{post.post.title}</a></li>
+											#end
+										#end		
+									#end	
+                                </ul>
+                            </div>
+							
+                            <!--end post-Relvant-ul-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end post-Relvant-content-->
+                    </div>
+                    <!--end post-Relevant-->
+                    <div class="post-button">
+                        <div class="post-button-BackAccount">
+                            <a action-data="comment" onclick="bookmarks(this);"><img src="http://img0.zz91.com/zz91/huzhu/images/BackAccount.jpg" /></a>
+                        </div>
+                        <!--end post-button-BackAccount-->
+                        <div class="post-button-Collection">
+                            <a href="javascript:void(0)" id="Js_collectBtn" class="collectBtn" title="加入收藏夹"><img src="http://img0.zz91.com/zz91/huzhu/images/Collection.jpg" /></a>
+                        </div>
+                        <!--end post-button-BackAccount-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end post-button-->
+                    <div class="post-label">
+                    	<ul>
+                        	<li class="orange">标签：</li>
+							<li><a href="#springUrl('/bbsCategory')$!{bbsPostDO.bbsPostCategoryId}.htm">$!{bbsPostCategory.name}</a></li>
+							  #foreach($bbsTags in ${bbsTagsDOList.keySet()})
+                                <li><a href="#springUrl('/search.htm')?keywords=$!{bbsTags}">$bbsTags</a></li>
+							 #end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end post-label-->
+                    <div class="post-share">
+                    	<div class="post-share-list">
+                        	
+                        	<script type="text/javascript">
+                            /*互助详细页 680*22，创建于2013-3-13*/
+                        	var cpro_id = "u1233038";
+                        	</script>
+                        	<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+                        </div>
+                        <div class="cb"></div>
+                        <div class="post-share-content">
+                        	<div class="post-share-icon">
+                            	<ul>
+                                        <div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+											<a class="bds_qzone"></a><a class="bds_tsina"></a>
+											<a class="bds_tqq"></a><a class="bds_renren"></a>
+											<span class="bds_more"></span><a class="shareCount"></a>
+										</div>
+                                        <script type="text/javascript" id="bdshare_js" data="type=tools&uid=613114" ></script>
+                                        <script type="text/javascript" id="bdshell_js"></script>
+                                        <script type="text/javascript">
+                                        document.getElementById("bdshell_js").src = "http://share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+                                        </script>
+                                    <li>|</li>
+                                    <li><a action-data="comment" onclick="bookmarks(this);">快速回帖</a></li>
+                                    <li>|</li>
+                                    <li><a href="#">举报</a></li>
+                                    <div class="cb"></div>
+                                </ul>
+                            </div>
+                            
+                        </div>
+                        <!--end post-share-content-->
+                    </div>
+                    <!--end post-share-->
+                </div>
+                <!--end post-content-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end post-content-->
+			#foreach($reply in ${page.records})	
+            <div class="post-content">
+            	<div class="post-content-left">
+                	<div class="post-name">
+						#if($!{reply.profiler.nickname} && $!{reply.profiler.nickname}!="")
+							${reply.profiler.nickname} 
+						#else
+							#if($!{reply.companyAccount.contact} && $!{reply.companyAccount.contact} !="")
+							   $!{reply.companyAccount.contact}
+							#else
+								匿名
+							#end
+##							$!{reply.profiler.account}
+						#end
+                    </div>
+                    <!--end post-name-->
+                    <div class="post-left-img">
+						#if($!{reply.profiler.picturePath} && $!{reply.profiler.picturePath}!="")
+							 <img src="$!{address.thumb}$!{address.resource}/$!{reply.profiler.picturePath}&width=120" />
+						#else
+							<img src="http://img0.zz91.com/bbs/images/photo_default.jpg" />
+						#end	
+                    </div>
+                    <!--end post-left-img-->
+                    <div class="post-text">
+                    	等级：
+						#if($!{reply.company.membershipCode} == '10051001')
+							高级会员
+						#elseif($!{reply.company.membershipCode} == '10051003')
+							来电宝会员
+						#elseif($!{reply.company.membershipCode} == '100510021000')
+							银牌会员
+						#elseif($!{reply.company.membershipCode} == '100510021001')
+							金牌会员
+						#elseif($!{reply.company.membershipCode} == '100510021002')
+							钻石会员
+						#elseif($!{reply.company.membershipCode} == '10051000')
+							普通会员
+						#else
+							互助管理员
+						#end
+						<br />
+						积分：$!{reply.profiler.integral}
+						<br />
+						#cacheFragment("$!{address.fragment}/huzhu/countBbsByInfo.htm?account=$!{reply.profiler.account}&" "" "" "")
+							发帖：$!{countBbsPost} 回帖：$!{countBbsReply}<br />
+						#end
+                        注册时间：$!date.format('yyyy-MM-dd',$!{reply.company.regtime})
+                    </div>
+                    <!--end post-text-->
+                    <div class="post-messages">
+                        <div class="post-messages-sent"><a href="#springUrl('/sendMessage')_c$!{reply.reply.companyId}.htm">发私信</a></div>
+                        <div class="post-messages-home">
+							#if($!{reply.company.membershipCode} && $!{reply.company.membershipCode} == '10051003')
+								<a href="http://www.zz91.com/ppc/index$!{reply.reply.getCompanyId()}.htm" target="_blank">公司主页</a>
+							#elseif($!{reply.company.membershipCode} && $!{reply.company.membershipCode} != '10051000' && $!{reply.company.membershipCode}!="")
+								#if($!{reply.company.domainZz91} && $!{reply.company.domainZz91}!="")
+									<a href="http://$!{reply.company.domainZz91}.zz91.com" target="_blank">公司主页</a>
+								#end
+							#elseif($!{reply.company.membershipCode} == '10051000') 
+								<a href="$!{address.company}/compinfo$!{reply.CompanyAccount.companyId}.htm" target="_blank">公司主页</a>
+							#else
+								公司主页
+							#end
+						</div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end post-messages-->
+                </div>
+                
+                <div class="post-content-right">
+                	<div class="post-floor">
+                    	<div class="post-floor-new">
+                        	$!date.format('yyyy-MM-dd HH:mm:ss',$!{reply.reply.gmtCreated})<a href="#springUrl('/viewReply')$!{bbsPostDO.id}_c$!{reply.reply.companyId}.htm">只看该作者</a>
+                        </div>
+                        <div class="post-floor-text">
+            				#set($foo=${page.startIndex}+${velocityCount})
+            				#if($foo==1) 沙发 #elseif($foo==2) 板凳 #elseif($foo==3) 地板 #else $foo 楼 #end 
+                        </div>
+                        <!--end post-floor-text-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end post-floor-->
+                    <div class="post-p">
+                    	    <div class="post-p-text" id="replyContent$!{reply.reply.id}">$!{reply.reply.content}</div>
+                    </div>
+                    <!--end post-p-->
+                    <div class="post-label">
+                    </div>
+                    <!--end post-label-->
+                    <div class="post-share">
+                    	<div class="post-share-list2">
+                            	<script type="text/javascript">
+                                /*互助详细页 680*22，创建于2013-3-13*/
+                            	var cpro_id = "u1233038";
+                            	</script>
+                            	<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+                        </div>
+                        
+                        <div class="post-share-content2">
+                            <ul>
+                                <li>|</li>
+                                <li><a action-data="comment" onClick="quoteReply(this,'$!{reply.reply.id}')">引用回帖</a></li>
+                                <li>|</li>
+                                <li><a href="#">举报</a></li>
+                                <li>|</li>
+                                <li><a action-data="comment" onClick="doReply(this,$!foo,$!{reply.reply.companyId})">回复</a></li>
+                                <div class="cb"></div>
+                            </ul>
+                        </div>
+                        <!--end post-share-content-->
+                    </div>
+                    <!--end post-share-->
+                </div>
+                <!--end post-content-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end post-content-->
+           #end 
+            
+            <div class="post-content2">
+            	<div class="post-content-left"></div>
+                
+                <div class="post-content-right">
+                	<div class="page">
+						#bbsPageNav($page "#springUrl('/viewReply.htm')" "postId=$!{bbsPostDO.id}&companyId=$!{companyId}" "")
+                    </div>
+                    <!--end page-->
+                </div>
+                <!--end post-content-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end post-content-->
+        </div>
+        <!--end post-->
+        <div class="quickComment" id="comment">
+        	<div class="quickComment-title">
+            	快速回帖
+            </div>
+            <!--end quickComment-title-->
+			<form id="form1" name="form1" method="post" action="replyBbs.htm" >			
+            <div class="quickComment-content">
+            	<div class="quickComment-edit">
+                	<textarea name="content" id="introduction" cols="60" rows="5"></textarea>
+                </div>
+                
+                <div class="quickComment-info">
+                	<ul>
+                    	<li>1. 互助社区仅公开再生通会员联系方式；</li>
+                        <li>2. 网友应自觉遵守《互联网电子公告服务管理规定》等国家相关法律法规；</li>
+                        <li>3. 互助社区所有信息/内容均为用户提供，仅代表用户意见！</li>
+                        <li>4. 管理员有权保留或删除论坛中的信息内容；</li>
+                        <li>5. 互助社区保留变更及最终解释权;发贴即表明已阅读并接受以上条款。</li>
+                    </ul>
+                </div>
+    				<!--end quickComment-info-->
+					<div class="cb"></div>
+					<input type="hidden" name="bbsPostId" value="$!{bbsPostDO.id}"/>
+					<input type="hidden" name="title" value="$!{bbsPostDO.title}"/>
+					<input type="hidden" id="reContent" name="reContent" value=""/>
+					<input type="hidden" id="reCompanyId" name="reCompanyId" value=""/>
+##					#if($!{sessionUser})
+						<input type="button"  class="quickComment-button"  onclick="viewReplychk();">
+##					#else
+##						<a class="quickComment-button"></a>
+##					#end
+                    <!--end quickComment-button-->
+              </div>
+            <!--end quickComment-content-->
+			</form>
+        </div>
+        <!--end quickComment-->
+			
+        <div class="huzhu_news">
+        	<div class="hn-news">
+            	<div class="hn-news-title">
+                	最新话题
+                </div>
+                <!--end hn-news-title-->
+                <div class="hn-news-content">
+            	#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=6&12" "" "" "")
+                  <ul>
+                    #foreach($allBbs in $frontBbsPostList)
+                    <li>
+            			<a href="#springUrl('/viewReply')$!{allBbs.id}.htm" target="_blank" title="$!{allBbs.title}"> 
+            			#printTitle($!{allBbs.title} 20 "")
+            			</a>
+            		</li>
+                    #end
+                  </ul>
+            	#end
+                </div>
+                <!--end hn-news-content-->
+            </div>
+            
+            <div class="hn-newsInfo">
+            	<div class="hn-newsInfo-title">
+                	最新供求信息
+                </div>
+                <!--end hn-newsInfo-title-->
+                <div class="hn-newsInfo-content">
+                	<ul>
+                		#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=&keywords=$!{theKeyword}&typeCode=10331000&size=3&priced1570", "", "", "")
+                					#foreach($products in $list)
+                						<li>
+                						<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.title}">
+                						<font color='#CC6600'>供应</font>#printTitle($!{products.products.title} 12 "")
+                					</a>
+                					<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+                				</li>
+                			#end
+                 		#end
+                		
+                		#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=&keywords=$!{theKeyword}&typeCode=10331001&size=3&priced172", "", "", "")
+                						#foreach($products in $list)
+                							<li>
+                								<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.products.title}">
+                										<font color='#CC6600'>求购</font>#printTitle($!{products.products.title} 12 "")
+                								</a>
+                								<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+                							</li>
+										#end
+                    	#end
+                    </ul>
+                </div>
+                <!--end hn-news-content-->
+            </div>
+            
+            <div class="hn-newsBanner">
+            	<div class="hn-newsBanner-title">
+                	百度联盟广告
+                </div>
+                <!--end hn-newsBanner-title-->
+                <div class="hn-newsBanner-content">
+                	<script type="text/javascript">/*360*300(8.24)huzhu*/ var cpro_id = 'u1035831';</script><script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+                </div>
+                <!--end hn-news-content-->
+            </div>
+            <!--end hn-newsBanner-->
+            <div class="cb"></div>
+        </div>
+        <!--end huzhe_news-->
+        
+        <div class="HotRecommend">
+        	<ul>
+            	<li>热门推荐：</li>
+				 #cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10041000&size=&idd", "", "", "")
+					#foreach($!index in $!list)
+						<li><a href="$!{index.link}" target="_blank" title="$!{index.title}" style="$!{index.style}">
+							$!{index.title} 
+                        </a></li>
+					#end
+				#end
+
+                <div class="cb"></div>
+            </ul>
+            <div class="cb"></div>
+        </div>
+        <!--end HotRecommend-->
+    </div>
+    <!--end huzhu_content-->
+    <div class="line"></div>
+	<div style="height:190px;">
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=698"></script>
+    </div>
+    <!--end line-->
+</div>
+<!--end huzhu-->
+
+
+<script>
+jQuery(document).ready(function(){
+		CKEDITOR.replace('introduction',{
+			toolbar:"Basic",
+			height:65
+		});
+		
+		## 收藏按钮 点击弹出 收藏页面
+		var collectBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{bbsPostDO.id}&favoriteTypeCode=10091005&title=$!{bbsPostDO.title}",
+			destUrl:"$!{address.huzhu}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+		## 登录弹出框
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{address.trade}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+		jQuery("#Js_collectBtn").click(function(){
+			var id = $!{bbsPostDO.id};
+			var title = "$!{bbsPostDO.title}";
+			var catrgoryId="$!{bbsPostDO.bbsPostCategoryId}";
+			title = encodeURI(title);
+			if(jQuery("#loginFlag").val()==0){
+    			Asto.util.Callback.setSubmitCallback(function(success, data){
+					jQuery("#loginFlag").val(1);
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						collectBox.close();
+					});
+					loginBox.close();
+					collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091005&title="+title+"&destUrl=$!{address.huzhu}/submitCallback.htm");
+				});
+				
+				loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.huzhu}/submitCallback.htm");
+			}else{
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+					if(success=="false"){
+						jQuery("#loginFlag").val(0);
+					}
+				});
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091005&title="+title+"&destUrl=$!{address.huzhu}/submitCallback.htm");
+			}
+		});
+
+});
+
+	function quoteReply(obj,id) {
+		var obj1=$(obj).attr("action-data");
+		var zuobiao=$("#"+obj1).offset().top-60;
+		$('body,html').animate({scrollTop:zuobiao+'px'},"slow");
+		var text = document.getElementById("replyContent"+id).innerText;
+		CKEDITOR.instances.introduction.setData(text);
+		CKEDITOR.instances.introduction.focus();
+	}
+	
+	function viewReplychk() {
+		var frm = document.getElementById("form1");
+		var result = CKEDITOR.instances.introduction.getData();
+		if (result.length == 0) {
+			alert("请输入回复内容");
+			return false;
+		}
+		
+		if(jQuery("#loginFlag").val()==0){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				closeoverlay();
+				jQuery("#loginFlag").val(1);
+				frm.submit();
+			});
+			openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031029&loginType=1','注册/登录',750,430,0);
+			return false;
+		}
+		
+		frm.submit();
+	}
+
+	//回复回复的信息
+	function doReply(obj,row,reCompanyId){
+  		var obj1=$(obj).attr("action-data");
+		var zuobiao=$("#"+obj1).offset().top-60;
+		$('body,html').animate({scrollTop:zuobiao+'px'},"slow");
+		jQuery("#reContent").val("回复<a>"+row+"</a>楼的帖子<br/>");
+		jQuery("#reCompanyId").val(reCompanyId+"");
+
+	}
+</script>

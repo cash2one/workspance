@@ -1,0 +1,110 @@
+	<div class="nav">
+    	<div class="nav-ul">
+            <ul>
+                <li><a href="#springUrl('/index').htm" style="color:#ffff00">互助首页</a></li>
+                <li><a href="#springUrl('/bbsCategory11.htm')">废料问答</a></li>
+                <li><a href="#springUrl('/bbsCategory3.htm')" >江湖风云</a></li>
+                <li><a href="http://www.zz91.com/xiazai/" target="_blank">ZZ91研究院</a></li>
+                <li><a href="#springUrl('/bbsCategory1.htm')" >废料动态</a></li>
+                <li><a href="#springUrl('/bbsCategory4.htm')" >站务管理</a></li>
+                <!--针对导航栏中没有骗子曝光台的新增加的-->
+                <li><a href="#springUrl('/bbsCategory16.htm')" >骗子曝光台</a></li>
+                <div class="cb"></div>
+				<div class="nav-new">
+                	<img src="http://img0.zz91.com/zz91/huzhu/images/new.png" />
+                </div>
+                <!--end nav-new-->
+            </ul>
+        </div>
+        <!--end nav-ul-->
+        <div class="nav-button">
+        	<ul>
+            	<li><a href="#springUrl('/postReply_c11.htm')" target="_blank">我要提问</a></li>
+                <li><a href="#springUrl('/postReply_c1.htm')" target="_blank">我要发贴</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end nav-button-->
+        <div class="cb"></div>
+    </div>
+    <!--end nav-->
+    
+    <div class="searchblock">
+    	<div class="searchblock-hot">
+        	<div class="searchblock-hot-key">
+            	<ul>
+				<li class="searchblock-hot-title">热&nbsp;&nbsp;&nbsp;点</li>	
+        		#foreach($tags in $!{tagsList.keySet()})
+        			#if($velocityCount==6)
+        					<li><a href="#springUrl('/search.htm?keywords=')${tagsList.get($!{tags})}" title="$!{tags}" target="_blank">#printTitle($!{tags} 4 "")</a></li>
+                        </ul>
+                    </div>
+                    <!--end searchblock-hot-key-->
+                    <div class="searchblock-hot-key">
+                    	<ul>
+                        	<li class="searchblock-hot-title2">风向标</li>
+        			#elseif($velocityCount>6)
+        			         <li><a href="#springUrl('/search.htm?keywords=')${tagsList.get($!{tags})}" title="$!{tags}" target="_blank">#printTitle($!{tags} 4 "")</a></li>	
+        			#else		
+                            <li><a href="#springUrl('/search.htm?keywords=')${tagsList.get($!{tags})}" title="$!{tags}" target="_blank">#printTitle($!{tags} 4 "")</a></li>
+        			#end
+        		#end				
+                </ul>
+            </div>
+            <!--end searchblock-hot-key-->
+			
+        </div>
+        <!--end searchblock-hot-->
+		
+        <form method="post" action="" name="search" id="search" onsubmit="return false;">
+        <div class="search">
+        	<div class="search-content">
+            	<input type="text" class="search-text" value="请输入您想要查找的内容" id="search_text" name="searchTit"/>
+            </div>
+            <div class="search-list" id="searhc_list">帖子</div>
+            <!--end search-list-->
+			<input type="hidden" value="0" id="searchSorts"/>
+            <div class="search-list-content">
+                	<ul id="searchNub">
+                    	<li>贴子<input type="hidden" value="0" class="showNub"/></li>
+                        <li>会员<input type="hidden" value="2" class="showNub"/></li>
+                    </ul>
+                </div>
+                <!--end search-list-content-->
+            <div class="cb"></div>
+            
+        </div>
+        <!--end search-->
+		<input class="search-button" id="submitSearch" value="搜索" type="submit"/>
+       </form>
+        <!--end search-button-->
+    </div>
+    <!--searchblock-->
+<script type="text/javascript">
+
+ 	$("#searchNub li ").click(function (e) {
+		var showNub=jQuery(this).find(".showNub").val();
+		jQuery("#searchSorts").val(showNub);  
+    });
+	
+   	jQuery(document).ready(function(){
+    	  jQuery("#search").submit(function(){
+       	    var k=jQuery("#search_text").val();
+			if(k=="请输入您想要查找的内容"){
+				jQuery("#search_text").css("color","#3B6823");
+				return false;
+			}
+			var ek=encodeURI(k);
+			if(jQuery("#searchSorts").val()==2){
+				window.open("$!{address.company}/index.htm?keywords="+ek);
+				return false;
+			}
+			searchBbs(ek)
+			return false;
+    	 });
+	});	
+	function searchBbs(encodeKeywords){
+		window.open("#springUrl('/search.htm?keywords=')"+encodeKeywords);
+	}
+
+</script>

@@ -1,0 +1,105 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/analysis/analysis.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		
+		var opertionMap={
+			"myrc":"pc端生意管家",
+			"fast_public":"pc端快速发布",
+			"yang":"pc端样品定制",
+			"weixin_public":"公众号信息发布",
+			"mobile_public":"手机站供求发布",
+			"app_myrc":"app生意管家",
+			"mobile_myrc":"手机站生意管家",
+		};
+		
+		var chart=Ext.create("ast.ast1949.analysis.analysis.ChartView",{
+			region:"south",
+			height:400,
+			split:true,
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryProductListSource.htm",
+			storeModel:"QQModel"
+		});
+		var mainGrid=Ext.create("ast.ast1949.analysis.analysis.MainGrid",{
+			region:"center",
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryProductSource.htm",
+			storeModel:"QQModel",
+			cm:[
+				{
+					text:"编号",dataIndex:"id",width:30,hidden:true
+				},{
+					header:"供求来源发布情况",dataIndex:"operation",width:250,
+					renderer:function(v,m,record,ridx,cidx,store,view){
+    					return opertionMap[v];
+    				},
+					summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return "总计";
+					}
+				},{
+					text:"数量",dataIndex:"num",summaryType:"sum",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return value;
+					}
+				},{text:"百分比",dataIndex:"num",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						var sum=0;
+    					Ext.Array.each(store.getGroups(),function(obj,idx){
+							##sum+=obj.get("num");
+							##(obj.name==record.get("targetDate")){
+								Ext.Array.each(obj.children,function(oj,ix){
+									sum+=oj.get("num");
+								})
+							##}
+						});
+						if(sum==0){
+							return 0;
+						}else{
+							return (Math.round(v / sum * 10000) / 100.00)+"%";
+						}
+    				},
+					summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return "";
+					}
+				},{
+					text:"统计日期",dataIndex:"gmtTarget",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						return Ext.Date.format(new Date(v.time),"Y-m-d");
+					},
+					summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return Ext.String.format("共{0}个注册来源",value);
+					}
+				}
+			],
+			tbar:["->",{
+				xtype:"datefield",
+				format:"Y-m-d",
+				submitFormat:"Y-m-d H:i:s",
+				emptyText:"统计日期",
+				name : 'gmtTarget',
+				id : 'gmtTarget',
+				listeners:{
+					"change":function(field, nv, ov, e){
+						mainGrid.getStore().setExtraParam("from",field.getSubmitValue());
+						##mainGrid.getStore().setExtraParam("to",field.getSubmitValue());
+						mainGrid.getStore().load();
+					}
+				}
+			}],
+			listeners:{
+				"itemclick":function(_this,record,item,idx){
+					chart.getChartStore().setExtraParam("operation",record.get("operation"));
+					chart.getChartStore().load();
+				}
+			}
+		});
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[mainGrid,chart]
+		});
+		
+	});
+</script>

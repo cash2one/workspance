@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.index</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/crm/highsea.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		var grid = new ast.ast1949.crm.highsea.Grid({
+    		region:"center",
+			layout:"fit",
+			contextmenu:new Ext.menu.Menu({
+				items:[
+				]
+			}),
+			loadDefault:function(){
+				var B=grid.getStore().baseParams;
+				B["companyId"]="$!{companyId}";
+				grid.getStore().baseParames=B;
+				grid.getStore().reload();
+			}
+    	});
+		
+		grid.loadDefault();
+		
+    	var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid]
+    	});
+    
+    	var form = new ast.ast1949.crm.highsea.SearchForm({
+    		title:"搜索公司信息",
+    		collapsible: true,
+            animCollapse: false,
+            frame:true,
+            titleCollapse:true,
+            style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+            height:200,
+            width:270,
+            targetGrid:grid
+    	});
+    
+    	form.render(Ext.getBody());
+    
+    	form.resizer = new Ext.Resizable(form.el, {
+            minHeight:50,
+            minWidth:100,
+            handles: "n",
+            pinned: true,
+            transparent:true,
+            resizeElement : function(){
+                var box = this.proxy.getBox();
+                this.proxy.hide();
+                form.setHeight(box.height);
+                return box;
+            }
+        });
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

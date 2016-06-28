@@ -1,0 +1,141 @@
+<header data-am-widget="header" class="am-header am-header-default">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:void(0)" class="" onClick="javascript :history.back(-1)">
+                <i class="am-header-icon am-icon-chevron-left"></i>
+            </a>
+        </div>
+
+        <h1 class="am-header-title">
+            选择#if($!{addressType}==0)收货#else发货#end地址
+        </h1>
+    </header>
+    <div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+        <a href="#top" title="">  
+            <img class="am-gotop-icon-custom" src="http://img0.zz91.com/trade/assets/images/goTop.gif" />
+        </a>
+    </div>
+
+    <ul class="am-list am-margin-0 show-address">
+        #if($page.records&&$page.records.size()>0)
+			#foreach($obj in $page.records)
+				<li class="am-list-item-desced am-list-item-thumbed am-g">
+					<div class="am-u-sm-1">
+						#if($!{obj.address.isDefault}==1)
+							##默认地址标志
+							<i class="am-icon-check-circle am-text-primary am-margin-top-xs"></i>
+						#end
+					</div>
+					<div class="am-u-sm-9 am-text-sm">
+                        <div class="am-text-ftweright">$!{obj.address.name}  $!{obj.address.mobile}</div>
+                        <div class="">$!{obj.areaLabel}</div>
+                    </div>
+                    <div class="am-u-sm-2 am-margin-top-xs am-revi-ads" a-id=$!{obj.address.id} ><i class="am-icon-pencil-square-o"></i></div>
+				</li>
+			#end
+		#else
+			已经到底！没有找到需要的信息吗？
+		#end
+		
+		
+    </ul>
+
+    <footer data-am-widget="navbar" class="am-navbar am-cf am-navbar-default  am-no-layout" >
+        <div class="am-padding-xs am-bg-white">
+            <button type="button" class="am-btn am-btn-primary am-btn-block am-radius" id="am-add-ads"><i class="am-icon-plus"></i> 添加配送地址</button>
+        </div>
+    </footer>
+<input type="hidden" name="startIndex" value="8" id="startIndex" />
+<!--在这里编写你的代码-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/comm.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.min.js"></script>
+<script type="text/javascript">
+	//底部标志
+    var buttomFlag = true;
+	var addressType = $!{addressType};
+	
+	$(function(){
+        init()
+    })
+    function init(){
+        scrollBottomTest(grtMore);
+        main();
+    }
+    function main(){
+
+
+        $("#am-add-ads").on("click",function(){
+            location.href="$!{address.mobile}/address/addAddress.htm?addressType="+addressType;
+        });
+		$(".am-revi-ads").on("click",function(){
+			var aid = $(this).attr("a-id");
+            location.href="$!{address.mobile}/address/addAddress.htm?id="+aid+"&addressType="+addressType;
+        })
+
+    }
+    function grtMore(){ //页面到达底部100px执行
+		
+		if(!buttomFlag){
+			return false;
+		}
+		var startIndex = jQuery("#startIndex").val();
+		
+		_reqajax({
+				type:"post",
+				url:"#springUrl('/address/getMoreAddress.htm')",
+				data:{startIndex:startIndex,addressType:addressType},//0代表收获地址
+			},getView);
+		
+    }
+	
+	function isNumber(obj) {  
+		return obj === +obj  
+	}
+	
+	function getView(data){
+		var i = jQuery("#startIndex").val();
+		if(isNumber(parseInt(i))){
+			jQuery("#startIndex").val(parseInt(i)+5);
+		}
+		//组装数据
+		if(data.records.length>0){
+			buildHtml(data.records)
+		}else{
+			buildNoHtml();
+		}
+	}
+	
+	function buildHtml(list){
+		for(var i=0;i<list.length;i++){
+			var obj = list[i];
+			var isDefault = "";
+			if(obj.address.isDefault==1){
+				isDefault='<i class="am-icon-check-circle am-text-primary am-margin-top-xs"></i>';
+			}
+			var moreHtml = "<li class='am-list-item-desced am-list-item-thumbed am-g'>"
+								+"<div class='am-u-sm-1'>"
+									+isDefault
+								+"</div>"
+								+'<div class="am-u-sm-9 am-text-sm">'
+									+'<div class="am-text-ftweright">'+obj.address.name+"  "+obj.address.mobile + "</div>"
+									+'<div class="">'+obj.areaLabel+"</div>"
+								+'</div>'
+								+'<div class="am-u-sm-2 am-margin-top-xs am-revi-ads" a-id='+obj.address.id+'><i class="am-icon-pencil-square-o"></i></div>'
+							+"</li>";
+			$(".show-address").append(moreHtml)//添加更多元素
+		}
+	}
+	
+	function buildNoHtml(){
+		buttomFlag = false;
+		$(".show-address").append("已经到底！没有找到需要的信息吗？");
+	}
+</script>

@@ -1,0 +1,127 @@
+#set($layout="/layout/zhushou.vm")
+#set($row="guanli")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper mt">
+	<div class="notice-wrap2">
+		<em><s></s>提示：</em>
+		<p>1.删除：永久删除信息，无法找回，请慎重操作“删除”。</p>
+		<p>2.修改：完善信息内容，提高信息质量；信息质量越高，越能吸引买家。</p>
+	</div>
+	#if($!{dcount})
+		<p class="summary">您已成功删除信息$!{dcount}条!</p>
+	#end
+	#if($!{ccount})
+		<p class="summary">您已成功修改信息$!{ccount}条!</p>
+	#end
+</div>
+<div class="wrapper mt list-wrap">
+	
+	#parse("/common/zhushou/guanli/guanli_listType.vm")
+	
+	<form id="form2" name="form1" action="" method="post">
+
+		<table class="list-table">
+			<thead>
+				<tr>
+					<td class="nobdr">
+						<input type="checkbox"  class="chooseAll" />
+					</td>
+					<td class="nobdl">图片</td>
+					<td width="243">标题</td>
+					<td>价格</td>
+					<td>到期时间</td>
+					<td>发布时间</td>
+					<td>操作</td>
+				</tr>
+			</thead>
+			<tbody>
+			#foreach($obj in $page.records)
+				<tr>
+					<td>
+						<input type="checkbox" id="$!{obj.products.id}" name="id" value="$!{obj.products.id}"/>
+					</td>
+					<td>$!{obj.img}</td>
+					<td>
+						<a href="msg-details$!{obj.id}.htm">$!{obj.products.title}</a>
+					</td>
+					<td>$!{obj.products.minPrice}</td>
+					<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.products.gmtExpired})</td>
+					<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.products.gmtPost})</td>
+					<td>
+						<a href="xiugai.htm?id=$!{obj.products.id}">修改</a>
+						<a href="batchToDel.htm?id=$!{obj.products.id}">删除</a>
+						#if($!{publishFlag}==0 && !${checkedFlag})
+							<a href="batchToPub.htm?id=$!{obj.products.id}">转为发布</a>
+						#else
+							<a href="batchToNoPub.htm?id=$!{obj.products.id}">暂不发布</a>
+						#end
+					</td>
+				</tr>
+			#end
+			</tbody>
+			<tfoot>
+				<tr>
+					<td class="nobdr" align="center">
+						<input type="checkbox" class="chooseAll" />
+					</td>
+					<td class="nobdl" colspan="6">
+						<a href="#" id="batchToDel">删除</a>
+						#if($!{publishFlag}==0 && !${checkedFlag})
+							<a href="#" id="batchToPub">转为发布</a>
+						#else
+							<a href="#" id="batchToNoPub">暂不发布</a>
+						#end
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<input type="hidden" id="pid" value="$!{products.id}" name="pid"/>
+	</form>
+	#zhushouPageNav($!{page} "#springUrl('/zhushou/guanli/guanli.htm')" "" "")
+</div>
+<div class="wrapper block clearfix">
+	<div class="wrap l">
+		<div class="wt">发布信息指导</div>
+		<div class="wc">
+			<p>1.删除：永久删除信息，无法找回，请慎重操作“删除”。</p>
+			<p>2.修改：完善信息内容，提高信息质量；信息质量越高，越能吸引买家。</p>
+		</div>
+	</div>
+	<div class="wrap r">
+		<div class="wt">公告栏</div>
+		<div class="wc">
+			<p>1.删除：永久删除信息，无法找回，请慎重操作“删除”。</p>
+			<p>2.修改：完善信息内容，提高信息质量；信息质量越高，越能吸引买家。</p>
+		</div>
+	</div>
+</div> 
+#parse("/common/login/footer.vm")
+#parse("/common/importValidator.vm")
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>
+<script >
+	jQuery(document).ready(function(){
+	
+    	jQuery(".chooseAll").click(function(){
+    		var chk=jQuery(this).attr("checked");
+    		jQuery(":checkbox").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+    	jQuery("#batchToDel").click(function(){
+    		jQuery("#form2").attr("action","#springUrl('/zhushou/guanli/batchToDel.htm')");
+    		jQuery("#form2").submit();
+    	});
+    	
+    	jQuery("#batchToNoPub").click(function(){
+    		jQuery("#form2").attr("action","#springUrl('/zhushou/guanli/batchToNoPub.htm')");
+    		jQuery("#form2").submit();
+    	});
+    	
+    	jQuery("#batchToPub").click(function(){
+    		jQuery("#form2").attr("action","#springUrl('/zhushou/guanli/batchToPub.htm')");
+    		jQuery("#form2").submit();
+    	});
+	
+	});
+kl91.util.tabs("J-tab","click", false);
+</script>

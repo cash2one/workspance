@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="smsLog">
+	<typeAlias alias="smsLog" type="com.zz91.sms.domain.SmsLog" />
+	<delete id="deleteById" parameterClass="java.lang.Integer">
+		delete from sms_log where id=#value#
+	</delete>
+	
+	<resultMap id="querySmsLogResult" class="smsLog">
+		<result property="id" column="id"/>
+		<result property="templateCode" column="template_code"/>
+		<result property="receiver" column="receiver"/>
+		<result property="priority" column="priority"/>
+		<result property="gmtSend" column="gmt_send"/>
+		<result property="gatewayCode" column="gateway_code"/>
+		<result property="sendStatus" column="send_status"/>
+		<result property="content" column="content"/>
+	</resultMap>
+	<sql id="querySmsLogColumn">
+		id,template_code,receiver,priority,gmt_send,gateway_code,send_status,content
+	</sql>
+	<sql id="querySmsLogWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="sendStatus" prepend="and">
+				send_status=#sendStatus#
+			</isNotEmpty>
+			<isNotEmpty property="from" prepend="and">
+				gmt_send>=#from#
+			</isNotEmpty>
+			<isNotEmpty property="to" prepend="and">
+				#to#>=gmt_send
+			</isNotEmpty>
+			<isNotEmpty property="receiver" prepend="and">
+				receiver = #receiver#
+			</isNotEmpty>
+			<isNotEmpty property="gatewayCode" prepend="and">
+				gateway_code = #gatewayCode#
+			</isNotEmpty>
+			<isNotEmpty property="priority" prepend="and">
+				priority = #priority#
+			</isNotEmpty>
+			<isNotEmpty property="content" prepend="and">
+				content like concat('%',#content#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="templateCode" prepend="and">
+				template_code = #templateCode#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="querySmsLog" parameterClass="java.util.HashMap" resultMap="querySmsLogResult">
+		select 
+				<include refid="smsLog.querySmsLogColumn" />
+		from sms_log
+				<include refid="smsLog.querySmsLogWhere"/>
+				<include refid="common.pageOrderBy"/>
+				<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="querySmsLogCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from sms_log
+				<include refid="smsLog.querySmsLogWhere" />
+	</select>
+	
+	<update id="updateSendStatus" parameterClass="java.util.HashMap">
+		update sms_log
+		set send_status=#sendStatus#,gmt_modified=now()
+		where id = #id#
+	</update>
+	
+	<!-- ******************************************** -->
+	<insert id="insertSms" parameterClass="smsLog">
+		insert into sms_log
+			(template_code,receiver,send_status,gmt_send,gateway_code,priority,
+				gmt_created,gmt_modified,content)
+		values
+			(#templateCode#,#receiver#,#sendStatus#,#gmtSend#,#gatewayCode#,#priority#,now(),now(),#content#)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="recoverStatus" parameterClass="java.util.HashMap">
+		update 
+			sms_log
+		set 
+			send_status=#toStatus#,
+			gmt_modified = now()
+		where 
+			send_status=#fromStatus#
+	</update>
+	
+	<select id="querySmsSend" parameterClass="java.lang.Integer"
+		resultMap="querySmsLogResult">
+		select
+		<include refid="smsLog.querySmsLogColumn" />
+		from sms_log
+		where send_status=0 and now() >= gmt_send
+		order by priority asc, gmt_send asc
+		limit 0,#value#
+	</select>
+</sqlMap>

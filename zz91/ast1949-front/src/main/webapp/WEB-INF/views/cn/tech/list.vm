@@ -1,0 +1,89 @@
+#set($layout="/layout/techLayout.vm")
+#parse("/common/techCommonMenu.vm")
+<div class="wrapper mt clearfix">
+	<div class="leftCol">
+		#parse("/common/techKeywordsCommon.vm")
+		<div class="wrap mt">
+			<div class="head">
+				<h2 class="t">今日热帖</h2>
+				<a href="$!{address.huzhu}" class="addon" target="_blank">更多</a>
+			</div>
+			<div class="cont">
+				<ul class="list">
+					#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=5&id1", "", "", "")
+    					 #foreach($plist in $!{postDailylist})
+							<li><a href="$!{address.huzhu}/viewReply$!{plist.id}.htm" target="_blank" title="$!{plist.title}">#printTitle($!{plist.title} 17 "")</a></li>
+    					#end
+					#end
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="centerCol">
+		<div class="wrap">
+			<div class="head">
+				<h2 class="t">$!{cateName}</h2>
+			</div>
+			<div class="cont">
+				<ul class="list">
+					#foreach($techList in $page.records)
+						<li><a href="$!{address.tech}/jishu/techDetail$!{techList.id}.htm" target="_blank" title="$!{techList.title}">·【$!{techList.label}】$!{techList.title}</a></li>
+					#end
+				</ul>
+				#if($page.totalRecords>0)
+					#techPageNav($!{page} "$!{address.tech}/jishu/list-c$!{code}-k$!{keywords}.htm" "" "")
+				#else
+				   #set($a="暂无数据")
+				   $a
+				#end
+			</div>
+		</div>
+	</div>
+	<div class="rightCol">
+		<div class="wrap">
+			<div class="head">
+				<h2 class="t">最新供求</h2>
+			</div>
+			<div class="cont">
+				<ul class="list">
+					#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?size=11&mainCode=$!{code}&05", "", "", "")
+        				#foreach($obj in $productsList)
+        					<li><a href="$!{address.trade}/productdetails$!{obj.id}.htm" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 18 "")</a></li>
+        				#end
+					#end
+				</ul>
+			</div>
+		</div>
+		<div class="wrap mt">
+			<div class="head">
+				<h2 class="t">行情报价</h2>
+			</div>
+			<div class="cont">
+				<ul class="list">
+					#cacheFragment("$!{address.fragment}/price/queryLatestPrice.htm?size=12&0", "", "", "")
+						#foreach($price in $list)
+							<li><a href="$!{address.price}/priceDetails_$!{price.id}.htm" target="_blank" title="$!{price.title}">#printTitle($!{price.title} 17 "")</a></li>
+						#end
+					#end
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+jQuery(function(){
+	fader("#J_fader");
+});
+function fader(selector){
+	var el = jQuery(selector),
+		pics = el.children(),
+		length = pics.length,
+		cur = 0;
+
+	setInterval(function(){
+		pics.eq(cur).fadeOut();
+		cur = cur === length - 1 ? 0: cur + 1;
+		pics.eq(cur).fadeIn();
+	}, 3000);
+}
+</script>

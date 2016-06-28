@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.// EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotAuctionLog">
+
+	<typeAlias alias="spotAuctionLogDO" type="com.ast.ast1949.domain.spot.SpotAuctionLog" />
+
+	<resultMap class="spotAuctionLogDO" id="spotAuctionLogResult">
+		<result property="id" column="id" />
+		<result property="spotAuctionId" column="spot_auction_id" />
+		<result property="companyId" column="company_id" />
+		<result property="price" column="price" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,spot_auction_id,company_id,price,gmt_created,gmt_modified
+	</sql>
+
+	<sql id="dynamicWhere">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="spotAuctionLog.spotAuctionId">
+				spot_auction_id =
+				#spotAuctionLog.spotAuctionId#
+			</isNotNull>
+			<isNotNull prepend="and" property="spotAuctionLog.companyId">
+				company_id =
+				#spotAuctionLog.companyId#
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map"
+		resultMap="spotAuctionLogResult">
+		select
+		<include refid="defaultColumn" />
+		from spot_auction_log
+		<include refid="dynamicWhere" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountByCondition" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from spot_auction_log
+		<include refid="dynamicWhere" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryByAuctionIdAndSize" parameterClass="java.util.Map"
+		resultMap="spotAuctionLogResult">
+		select
+		<include refid="defaultColumn" />
+		from spot_auction_log
+		where spot_auction_id = #auctionId#
+		order by price desc
+		limit 0,#size#
+	</select>
+
+	<select id="queryCountByAuctionId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from spot_auction_log
+		where spot_auction_id
+		= #value#
+	</select>
+	
+	<select id="queryCountByCompanyIdAndAuctionId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_auction_log
+		where spot_auction_id = #spotAuctionId# and company_id = #companyId#
+	</select>
+
+	<insert id="insert" parameterClass="spotAuctionLogDO">
+		INSERT INTO spot_auction_log
+		(
+		spot_auction_id,
+		company_id,
+		price,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#spotAuctionId#,
+		#companyId#,
+		#price#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</sqlMap>

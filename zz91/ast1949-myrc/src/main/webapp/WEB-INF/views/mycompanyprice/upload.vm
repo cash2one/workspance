@@ -1,0 +1,238 @@
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/business/css/index.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/price/css/priceMyrc.css" />
+<script type="text/javascript" src="http://img0.zz91.com/zz91/price/js/priceMyrc.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/price/js/openoverlay.js"></script>
+<!--[if lt IE 9]>
+<script>
+      (function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,canvas,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while(i--){document.createElement(e[i])}})()
+</script>
+<link rel="stylesheet" href="css/ie.css" type="text/css" media="screen">
+<![endif]-->
+<div class="container mt clearfix">
+	<div class="grid_12">    
+		<div class="business"><div class="mainblock1"></div></div>
+		<div class="cb"></div>
+		<!--end business-->
+        <div class="alert alert-info">
+            <p><strong>重要提示：</strong>请您务必确认您所发布的信息真实、合法、准确、及时、未侵犯他人合法权益，以免引起不必要的纠纷！</p>
+        </div>
+        <!--end alert-info-->
+		<form  id="uploadForm" action="#springUrl('/mycompanyprice/doUpload.htm')" method="post" enctype="multipart/form-data">
+    	<div class="gbox mt">
+        	<div class="gbox-top">
+            	<p><span class="asterisk">*</span>上传企业报价表：</p>
+                <div class="upload">
+                	<div class="local">
+                		<div class="upload-file">选择文档 </div>
+						<input type="file" name="file" class="file" id="file" onblur="panduan(id)"/>
+                	</div> 
+					<!--end local-->
+                	<span style="display:block">excel、word、txt均可直接上传，无需标准模板</span>
+					<span id="local1">请上传您的企业报价单</span>
+                </div>
+                <!--end upload-->
+            </div>
+            <!--end gbox-top-->
+            <div class="gbox-bottom">
+            	<p><span class="asterisk">*</span>报价详细信息：</p>
+                <div class="gb-form">
+                	<table class="tab-from">
+                    	<tr>
+                        	<td><label for="title"><span class="asterisk">*</span>标题:</label></td>
+                            <td  style="padding:10px 0;"><input type="text" id="title" name="title" class="input" value="$!{offer.title}" onblur="panduan(id)"/><span style="color:red;display:none;">请输入标题</span></td>
+                        </tr>
+                        <tr>
+                        	<td><label><span class="asterisk">*</span>主类别:</label></td>
+                            <td>
+                            	<ul class="cate">
+									#foreach($li in $map.keySet())
+                        			<li>
+                                    	<a href="javascript:;" class="lay-sel">$!{map.get($li)}</a>
+                                        <div class="layer" id="$velocityCount">
+                                        	<table class="layer-tab">
+                                            	<tr>
+                                                	<td width="36" rowspan="2" class="lay-tle">
+														#set($words=$!{map.get($li)})
+														#foreach($ll in [0..$words.length()])
+															#set($a=$ll+1)
+															#if($ll!=$words.length())
+															#if($velocityCount==$words.length())
+																$words.substring($ll,$a)
+															#else
+																$words.substring($ll,$a)<br />
+															#end
+															#end
+														#end
+													</td>
+                                                    <td>
+                                                    	<div class="layBox">
+                                                        	<ul class="lay-ul">
+																#foreach($aa in $!{mapl.get($li).keySet()})
+																	<li><a href="javascript:;" class="sx_child" id="$!{map.get($li)}-m$velocityCount" rel="type" title="$aa" rel="type">$!{mapl.get($li).get($aa)}</a></li>
+																#end
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr><td style="background:#eeeeee;"><input type="button" flag="0" class="lay_btn" /></td></tr>
+                                            </table>
+                                        </div>
+                                    </li>
+									#end
+                        		</ul>
+                            </td>
+                        </tr>
+                        <tr>
+                        	<td><div style="height:30px;margin:10px 0 8px;"><label class="seled">已选类别:</label></div></td>
+                            <td><div id="mainSelect"><span style="color:red;display:none;">请选择类别</span></div></td>
+                        </tr>
+                        <tr>
+                        	<td><label><span class="asterisk">*</span>报价描述:</label></td>
+                            <td><textarea id="comment" name="instruction" value="$!{offer.instruction}" onblur="panduan(id)"></textarea><span style="color:red;display:none;">请填写报价描述</span></td>
+							<input type="hidden" name="category" id="category" value=""/>
+                        </tr>
+                        <tr>
+                        	<td colspan="2"><input type="button" id="sbtn" value="提交"/></td>
+                        </tr>
+                    </table> 
+                </div>
+            </div>
+            <!--end gbox-bottom-->
+        </div>
+		</form>
+        <!--end gbox-->
+    </div>
+    <!--end grid_12-->
+</div>
+<script type="text/javascript">
+	$(".cate li").bind("click", function () {
+		var index = $(this).index()+1
+		$("#1").hide();
+		$("#2").hide();
+		$("#3").hide();
+		$("#4").hide();
+		$("#"+index).show();
+	});
+</script>
+<script language="javascript" src="http://img0.zz91.com/zz91/business/js/jquery.Sonline.js"></script> 
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	myrc.menu(1, 1);
+});
+
+jQuery(function(){
+	jQuery(".business").Sonline({
+		Position:"right",//left或right
+		Top:-110,//顶部距离，默认200px
+		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+		Qqlist:""
+	});
+});
+var file="";
+(function(){
+		jQuery(".file").bind("change",function(){
+		 file= jQuery(".file").val();
+		 if(file!=""){
+		 	jQuery(".file").parent().parent().find("span").html("您的报价单已上传成功,请为该报价单完善以下信息后保存发布</span><br /><span id=\"filename\"></span>");
+			jQuery(".file").parent().parent().find(".upload-file").html("重新选择");
+			var array=file.split("\\");
+  	    	var i=array.length-1;
+			jQuery("#filename").html(array[i]);
+		 }
+		});
+})();
+</script>
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script> 
+<script>
+jQuery(function(){
+	myrc.select("Js_select");	
+
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"http://trade.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"http://price.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("http://huzhu.zz91.com/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("http://company.zz91.com/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+});
+var ll="";
+jQuery(".sx_child").click(function(){
+    ll=jQuery(this).context.title;
+});
+jQuery("#sbtn").click(function(){
+   //已选类别
+   var cat=ll;
+   jQuery("#category").val(cat);
+   var content=jQuery("#comment").val();
+   var title=jQuery("#title").val();
+   if(title&&content&&cat!=""&&file!=""&&content!=""&&title!=""){
+   	 jQuery("#title").parent().find("span").hide();
+	 jQuery("#comment").parent().find("span").hide();
+	 jQuery("#mainSelect").parent().find("span").hide();
+	 jQuery(".file").parent().parent().find("#local1").hide();
+  	 jQuery("#uploadForm").submit();
+   }else{
+   	 if(!title||title==""){
+   		jQuery("#title").parent().find("span").show();
+   	 }
+	 if(!content||content==""){
+	 	jQuery("#comment").parent().find("span").show();
+	 }
+	 if(!cat||cat==""){
+	 	jQuery("#mainSelect").parent().find("span").show();
+	 }
+	 if(file==""){
+	 	jQuery(".file").parent().parent().find("#local1").show();
+	 }
+   }
+});
+function panduan(a){
+	var panduan = jQuery("#"+a).attr("value").replace(/\s/g,'');
+	if(!panduan){
+		jQuery("#"+a).parent().find("span").show();
+	}else{
+		jQuery("#"+a).parent().find("span").hide();
+	}
+}
+jQuery(".lay_btn").click(function(){
+  	jQuery("#mainSelect").parent().find("span").hide();
+});
+var idx=$!{idx};
+if(idx>0){
+	openoverlay('post_suc.htm','',470,237,0);
+}
+</script>

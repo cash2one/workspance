@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="weixin_scoresall" >
+  <resultMap id="WeixinScoresallResult" class="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    <result column="id" property="id"/>
+    <result column="account" property="account"/>
+    <result column="score" property="score"/>
+    <result column="gmt_created" property="gmtCreated" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="WeixinScoresallResult" parameterClass="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    select id, account, score, gmt_created
+    from weixin_scoresall
+    where id = #id#
+  </select>
+  
+  <select id="selectByAccount" resultMap="WeixinScoresallResult" parameterClass="java.lang.String" >
+    select id, account, score, gmt_created
+    from weixin_scoresall
+    where account = #account#
+  	limit 1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    delete from weixin_scoresall
+    where id = #id#
+  </delete>
+  
+  <insert id="insert" parameterClass="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    insert into weixin_scoresall (id, account, score, gmt_created)  values (#id#, #account#, #score#,now() )
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>  	
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    update weixin_scoresall
+    set account = #account#,
+      score = #score#
+    where id = #id#
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterClass="com.ast.ast1949.domain.sample.WeixinScoresall" >
+    update weixin_scoresall
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="account" >
+        account = #account#
+      </isNotNull>
+      <isNotNull prepend="," property="score" >
+        score = #score#
+      </isNotNull>
+    </dynamic>
+    where id = #id#
+  </update>
+</sqlMap>

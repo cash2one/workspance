@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="accountDomain">
+
+	<typeAlias alias="accountDomain" type="com.zz91.mail.domain.AccountDomain" />
+
+	<sql id="fullColumn">
+		ad.`id`,
+		ad.`code`,
+		ad.`email`,
+		ad.`password`,
+		ad.`host`,
+		ad.`port`,
+		ad.`is_delete`,
+		ad.`pause_status`,
+		ad.`gmt_created`,
+		ad.`gmt_modified`,
+		ad.username,
+		ad.nickname
+	</sql>
+
+	<resultMap id="accountDomainResult" class="accountDomain">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="host" column="host" />
+		<result property="port" column="port" />
+		<result property="isDelete" column="is_delete" />
+		<result property="pauseStatus" column="pause_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="username" column="username"/>
+		<result property="nickname" column="nickname"/>
+	</resultMap>
+	<!-- select account by code -->
+	<select id="queryAccountByCode" parameterClass="java.lang.String"
+		resultMap="accountDomainResult">
+		select
+		<include refid="fullColumn" />
+		from account ad
+		where ad.code = #code# and pause_status = '1'
+		limit 0,1
+	</select>
+	<!-- select account by username -->
+    <select id="queryAccountByUsername" parameterClass="java.lang.String"
+        resultMap="accountDomainResult">
+        select
+        <include refid="fullColumn" />
+        from account ad
+        where ad.username = #username# and pause_status = '1'
+    </select>
+	<!-- select account by email -->
+	<select id="queryAccountByEmail" parameterClass="java.lang.String"
+		resultMap="accountDomainResult">
+		select
+		<include refid="fullColumn" />
+		from account ad
+		where ad.email = #email# and pause_status = '1'
+	</select>
+	<!-- select account by id -->
+	<select id="queryAccountById" parameterClass="java.lang.Integer"
+		resultMap="accountDomainResult">
+		select
+		<include refid="fullColumn" />
+		from account ad
+		where ad.id = #id#
+	</select>
+	<insert id="insertAccount" parameterClass="accountDomain">
+		insert into account
+		(code,email,password,host,port,is_delete,pause_status,gmt_created,gmt_modified,username,nickname)
+		values(#code#,#email#,#password#,#host#,#port#,#isDelete#,#pauseStatus#,now(),now(),#username#,#nickname#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+
+	<update id="updateAccount" parameterClass="accountDomain">
+		update account set gmt_modified=now()
+		<isNotEmpty prepend="," property="code">
+			code = #code#
+        </isNotEmpty>
+		<isNotEmpty prepend="," property="email">
+			email = #email#
+        </isNotEmpty>
+		<isNotEmpty prepend="," property="host">
+            host = #host#
+        </isNotEmpty>
+        <isNotEmpty prepend="," property="port">
+            port = #port#
+        </isNotEmpty>
+        <isNotNull prepend="," property="isDelete">
+            is_delete = #isDelete#
+        </isNotNull>
+        <isNotEmpty prepend="," property="pauseStatus">
+            pause_status = #pauseStatus#
+        </isNotEmpty>
+        <isNotEmpty prepend="," property="username">
+            username = #username#
+        </isNotEmpty>
+        <isNotEmpty prepend="," property="nickname">
+            nickname = #nickname#
+        </isNotEmpty>
+		where id=#id#
+	</update>
+	<delete id="deleteAccountByHost" parameterClass="java.lang.String">
+		delete from account
+		where host=#host#
+    </delete>
+	<delete id="deleteAccountById" parameterClass="java.lang.Integer">
+		delete from account
+		where id=#id#
+    </delete>
+    
+    <sql id="dynmicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="account.email">
+				ad.email like concat('%',#account.email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="account.pauseStatus">
+				ad.pause_status = #account.pauseStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+    <select id="queryAccount" parameterClass="java.util.HashMap" resultMap="accountDomainResult">
+		select 
+		 <include refid="accountDomain.fullColumn"/> 
+		from account ad
+		<include refid="accountDomain.dynmicWhere"/><!--
+		and ad.is_delete=0
+		--><include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAccountCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from account ad
+		<include refid="accountDomain.dynmicWhere"/>
+	</select>
+	
+	<update id="updateStatusOfAccount" parameterClass="java.util.HashMap">
+		update account 
+		set pause_status=#pauseStatus#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<select id="queryAllAccount" parameterClass="java.util.HashMap" resultMap="accountDomainResult">
+		select 
+		 <include refid="accountDomain.fullColumn"/> 
+		from account ad
+		where
+			ad.is_delete=0
+		<dynamic>
+			<isNotEmpty property="code" prepend="and">
+				ad.code = #code#
+			</isNotEmpty>
+			<isNotEmpty property="pauseStatus" prepend="and">
+				ad.pause_status = #pauseStatus#
+			</isNotEmpty>
+		</dynamic>
+		limit #size#
+	</select>
+	
+</sqlMap>

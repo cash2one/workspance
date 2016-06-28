@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName">
+	<context:component-scan base-package="com.ast.ast1949"  />
+	<!-- property loader -->
+	<bean id="webPropertyPlaceholderConfigurer"
+		class="com.ast.ast1949.web.util.PropertyPlaceholderConfigurer">
+		<!--property name="placeholderPrefix" value="${web_" / -->
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:/web.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!--<bean id="myService" >
+		<property name="externalUserDao" ref="aaaa">
+
+		</property>
+
+	</bean>
+
+	<bean id="aaa" class="BeanReferenceFactoryBean" >
+		<property name="beanFactoy" ref="externalSpringCtx" ></property>
+		<property name="targetBeanname" value="statisUserDao" ></property>
+	</bean>
+    <bean id="externalSpringCtx" class="ClassPathXmlApplicationContext" >
+    	<constructor-arg index="0">
+    		<list>
+    			<value>classpath:/a.xml</value>
+    			<value>classpath:/b.xml</value>
+    			<value>classpath:/c.xml</value>
+    		</list>
+    	</constructor-arg>
+    </bean>-->
+
+	<!-- message loader -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="i18n_web" />
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="com.ast.ast1949.web.util.AstBindingInitializer" />
+		</property>
+	</bean>
+
+	<!-- CoC for controller classes -->
+	<bean
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+		<property name="caseSensitive"  value="false" />
+		<property name="basePackage"    value="com.ast.ast1949.web.controller" />
+	</bean>
+	
+	<!-- upload file (Add By Rolyer 2010.04.15)-->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize">
+	        <value>5240000</value>
+	    </property>
+	    <property name="maxInMemorySize">
+	        <value>2048</value>
+	    </property>
+	    <property name="defaultEncoding">
+	        <value>UTF-8</value>
+	    </property>
+	</bean>
+
+	<!--  shared velocity engine which will be used by email and page presentation -->
+	<bean id="velocityEngine"
+		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="resourceLoaderPath" value="${velocity.resourceLoaderPath}"         />
+		<property name="preferFileSystemAccess" value="${velocity.preferFileSystemAccess}" />
+		<property name="velocityProperties">
+			<props>
+				<prop key="input.encoding">${input.encoding}</prop>
+				<prop key="output.encoding">${output.encoding}</prop>
+				<prop key="file.resource.loader.cache">false</prop>
+				<prop key="file.resource.loader.modificationCheckInterval">2</prop>
+				<prop key="velocimacro.library">macro.vm</prop>
+				<!-- 针对开发而非实际应用的 -->
+				<prop key="velocimacro.library.autoreload">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="velocityEngine" ref="velocityEngine" />
+	</bean>
+	
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+		<property name="exposeSpringMacroHelpers" value="true"             />
+		<property name="suffix" value="${velocity.suffix}"                 />
+		<property name="layoutUrl" value="layout/default.vm"               />
+		<property name="contentType" value="text/html;charset=utf-8"       />
+		<property name="toolboxConfigLocation"    value="WEB-INF/vm-toolbox.xml" />
+	</bean>
+	
+	<bean id="authConst" class="com.zz91.util.auth.AuthConst" init-method="startup">
+		<property name="projectCode" value="${work.project.code}"></property>
+		<property name="projectPassword" value="${work.project.password}"></property>
+		<property name="api" value="${work.api}" />
+		<property name="domain" value="${work.domain}" />
+	</bean>
+</beans>

@@ -1,0 +1,42 @@
+<script type="text/javascript" src="#springUrl('/app/trade/tradesupply/category.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/trade/tradesupply/supply.js')" ></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+	var recommendMenu=new Array();
+	
+	com.zz91.trade.supply.FILTER_RECOMMEND.push({name : "全部",  value: ''});
+	com.zz91.trade.supply.FILTER_RECOMMEND.push({
+		name:"推荐信息",
+		value:"0"
+	});
+	
+	var subRecTradeMenu=new Array();
+	
+	#foreach($rc in $!{subnetTradeRec.keySet()})
+		com.zz91.trade.supply.FILTER_SUBNETREC.push({
+			name:"$!{subnetTradeRec.get($!{rc})}",
+			value:"$!{rc}"
+		});
+		subRecTradeMenu.push({
+			text:"$!{subnetTradeRec.get($!{rc})}",
+			handler:function(){
+				com.zz91.trade.supply.subRecommend("$!{rc}");
+			}
+		});
+	#end
+	
+	var grid=new com.zz91.trade.supply.grid({
+		id:SUPPLY.COLLECTION_GRID,
+		region:"center",
+		recommendMenu:recommendMenu,
+		subRecTradeMenu:subRecTradeMenu
+	});
+		
+		grid.searchByCompany("$!{id}");
+		
+		var viewport = new Ext.Viewport({
+			layout : "border",
+			items : [grid]
+		});
+})
+</script>

@@ -1,0 +1,153 @@
+#set($layout="/layout/resetPasswordLayout.vm")
+	 <script src="$!{address.img}/zz91/forgetpasswd/js/forgetpasswd.js"></script>
+<div class="forgot">
+    <!--end f-header-->
+    <div class="f-content">
+    <div class="f-mobile ">
+    	<div class="f-mobile-title">
+        	您正在为账号$!{username}找回登录密码。
+        </div>
+        <!--end f-login-title-->
+        <div class="f-mobile-box1">
+		  通过手机($!{mobile})找回密码  [<a href="$!{address.yuanliao}/user/getpassword.html?username=$!{username}">换一个找回方式</a>]   手机换号了,如何更换?<br />
+			请您按如下步骤重置密码：
+        </div>
+        <!--end f-back-box-->
+        <div class="f-mobile-box2">
+        	<div class="f-mobile-text1 fl">
+            	1.获取短信验证码：
+            </div>
+            <!--end f-mobile-text1-->
+            <div class="f-mobile-obtain fl">
+            	<div id="sendmobile"><a href="javascript:SendCheckCode()">免费获取</a></div>
+				<input type="hidden" name = "mobile" id = "mobile" value = "$!{allMobile}"/>
+            </div>
+
+            <!--end f-mobile-obtain-->
+            <div class="f-mobile-text2 fl">
+            	每天限发五条验证码信息
+            </div>
+            <!--end f-mobile-text1-->
+            <div class="cb"></div>
+        </div>
+        <!--end f-mobile-box2-->
+        <form action="$!{address.yuanliao}/user/resetPasswordForPasswd.htm?username=$!{username}" method="post" id="form_mobile">
+        <div class="f-mobile-box3">
+        	<div class="f-mobile-text1">
+            	2.输入刚刚收到的短信内的验证码:
+            </div>
+            <!--end f-mobile-text1-->
+            <div class="f-mobile-item">
+            	<div class="f-item-title">
+                	通行证账号:
+                </div>
+                <div class="f-item-content">
+                	$!{username}
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end f-mobile-item-->
+            <div class="f-mobile-item">
+            	<div class="f-item-title">
+                	短信验证码：
+                </div>
+                <div class="f-item-content">
+                	<input name="smscomfirmcode" type="text" class="f-item-text" id="smscomfirmcode"/>
+                    <span class=post_error></span>
+                </div>
+				
+                <div class="cb"></div>
+            </div>
+            <!--end f-mobile-item-->
+            <div class="f-mobile-item">
+            	<div class="f-item-title">
+                	新密码：
+                </div>
+                <div class="f-item-content">
+                	<input name="password" type="password" class="f-item-text" id="password" />
+                    <span class="f-item-info">密码长度为6-12位，可用英文字母、数字、特殊符号。</span>
+                    <span class=post_error></span>
+            </div>
+                <div class="cb"></div>
+            </div>
+            <!--end f-mobile-item-->
+            <div class="f-mobile-item">
+            	<div class="f-item-title">
+                	重复新密码：
+                </div>
+                <div class="f-item-content">
+                	<input name="passwordcomfirm" type="password" class="f-item-text" id="passwordcomfirm" />
+                    <span class=post_error></span>
+            </div>
+                <div class="cb"></div>
+            </div>
+			<input type="hidden" value="$!{username}" name="username"/>
+            <!--end f-mobile-item-->
+            
+            <!--end f-mobile-item-->
+            <input type="button"  class="f-mobile-ok submit1" value="完成" />
+            
+            <!--end f-mobile-ok-->
+        </div>
+        </form>
+        <!--end f-mobile-box3-->
+        <div class="f-mobile-question">
+        	<ul>
+            	<li>常见问题:</li>
+                <li>1、请确认您的手机处于信号畅通且可接收短信状态。</li>
+                <li>2、有时短信网关拥堵会造成短信接收延迟，请您稍等片刻。</li>
+                <li>3、短信接收免费，有效期10分钟；为防止恶意短信，您每天只能获取5次验证码。</li>
+                <li>4、如果还是无法成功获取验证码，请联系客服热线咨询 0571-56611111 56612345。</li>
+            </ul>
+            <input type="hidden" id="frontaddress" value="$!{address.yuanliao}"/>
+      </div>
+        <!--end mobile-question-->
+    </div>
+    <!--end f-back-->
+    </div>
+    <!--end f-content-->
+</div>
+
+<script >
+	$(".submit1").click(function(){
+		var password=$("input[name='password']").val();
+		var passwordagin=$("input[name='passwordcomfirm']").val();
+		if(password==""){
+			$(".post_error1").html("请输入新密码");
+			return false;
+		}else{
+			if(password.length<6){
+			$(".post_error1").html("最少输入6个字符");
+			return false;
+			}
+			$(".post_error1").html("");
+		}
+		if(passwordagin==""){
+			$(".post_error2").html("请重复输入新密码");
+			return false;
+		}else{
+			$(".post_error2").html("");
+		}
+		if(password!=passwordagin){
+			$(".post_error2").html("两次密码不一致");
+			return false;
+		}else{
+			$(".post_error2").html("");
+		}
+		jQuery.ajax({
+			url:"#springUrl('/user/resetPasswordForPasswd.htm')",		
+			type:"post",
+			data:jQuery("#form_mobile").serialize(),
+			dataType:"json",
+			success:function(data){
+			if(data.success){
+				window.location.href="#springUrl('/user/resetPwSuccess.htm')";
+			}else{
+			alert(data.data);
+			}
+			}
+		})
+	})
+
+</script>
+<!--end forgot-->

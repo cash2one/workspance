@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="products">
+	<typeAlias alias="products" type="com.kl91.domain.products.Products" />
+	<typeAlias alias="company" type="com.kl91.domain.company.Company" />
+	<typeAlias alias="productsDto" type="com.kl91.domain.dto.products.ProductsDto" />
+	<typeAlias alias="searchDto" type="com.kl91.domain.dto.products.ProductsSearchDto" />
+	
+	<resultMap class="products" id="resultProducts">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="productsCategoryCode" column="products_category_code" />
+		<result property="typeCode" column="type_code" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="checkedFlag" column="checked_flag" />
+		<result property="deletedFlag" column="deleted_flag" />
+		<result property="imptFlag" column="impt_flag" />
+		<result property="publishFlag" column="publish_flag" />
+		<result property="areaCode" column="area_code" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="color" column="color" />
+		<result property="location" column="location" />
+		<result property="level" column="level" />
+		<result property="shape" column="shape" />
+		<result property="useful" column="useful" />
+		<result property="tags" column="tags" />
+		<result property="tagsAdmin" column="tags_admin" />
+		<result property="picCover" column="pic_cover" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="numInquiry" column="num_inquiry" />
+		<result property="numView" column="num_view" />
+		<result property="dayExpired" column="day_expired" />
+		<result property="showTime" column="show_time" />
+		<result property="gmtPost" column="gmt_post" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="gmtExpired" column="gmt_expired" />
+		<result property="gmtCheck" column="gmt_check" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insertProducts" parameterClass="products">
+		insert into products(
+			id,cid,products_category_code,type_code,title,details,details_query,checked_flag,
+			deleted_flag,impt_flag,publish_flag,area_code,price_unit,quantity,quantity_unit,color,location,
+			level,shape,useful,tags,tags_admin,pic_cover,min_price,max_price,num_inquiry,num_view,day_expired,
+			show_time,gmt_post,gmt_refresh,gmt_expired,gmt_check,gmt_created,gmt_modified
+			)
+		values(
+			#id#,#cid#,#productsCategoryCode#,#typeCode#,#title#,#details#,#detailsQuery#,#checkedFlag#,
+			#deletedFlag#,#imptFlag#,#publishFlag#,#areaCode#,#priceUnit#,#quantity#,#quantityUnit#,#color#,
+			#location#,#level#,#shape#,#useful#,#tags#,#tagsAdmin#,#picCover#,#minPrice#,#maxPrice#,
+			#numInquiry#,#numView#,#dayExpired#,now(),now(),now(),#gmtExpired#,now(),now(),now()
+			)	
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>	
+	</insert>
+	
+	<update id="updateProducts" parameterClass="products">
+		update products
+			set
+				cid = #cid#,
+				products_category_code=#productsCategoryCode#,
+				type_code=#typeCode#,
+				title=#title#,
+				details=#details#,
+				details_query=#detailsQuery#,
+				checked_flag=#checkedFlag#,
+				deleted_flag=#deletedFlag#,
+				impt_flag=#imptFlag#,
+				publish_flag=#publishFlag#,
+				area_code=#areaCode#,
+				price_unit=#priceUnit#,
+				area_code=#areaCode#,
+				quantity=#quantity#,
+				color=#color#,
+				location=#location#,
+				level=#level#,
+				shape=#shape#,
+				useful=#useful#,
+				tags=#tags#,
+				tags_admin=#tagsAdmin#,
+				pic_cover=#picCover#,
+				min_price=#minPrice#,
+				max_price=#maxPrice#,
+				num_inquiry=#numInquiry#,
+				day_expired=#dayExpired#,
+				num_view=#numView#,				
+				show_time=now(),
+				gmt_post=now(),
+				gmt_refresh=now(),
+				gmt_expired=now(),
+				gmt_check=now(),
+				gmt_created=now(),
+				gmt_modified=now()
+			where id=#id#
+ 	</update>
+ 	
+ 	<sql id="all_column">
+		id,cid,products_category_code,type_code,title,details,details_query,checked_flag,
+		deleted_flag,impt_flag,publish_flag,area_code,price_unit,quantity,quantity_unit,color,location,
+		level,shape,useful,tags,tags_admin,pic_cover,min_price,max_price,num_inquiry,num_view,day_expired,
+		show_time,gmt_post,gmt_refresh,gmt_expired,gmt_check,gmt_created,gmt_modified
+	</sql>
+	
+	
+	<resultMap class="productsDto" id="productsDtoResult">
+		<result property="products" resultMap="products.resultProducts" />
+	</resultMap>
+	
+
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="resultProducts">
+		select 
+			<include refid="all_column"/>
+		from products
+			where id=#value#
+	</select>
+	
+	<delete id="deleteProducts" parameterClass="java.lang.Integer">
+		delete from products where id=#value#
+	</delete>
+	
+	<update id="updateProductsIsNoPub" parameterClass="java.util.HashMap">
+		update products
+		set
+		publish_flag=#publishFlag#
+		where 
+		<iterate prepend="id in" conjunction="," open="(" close=")" property="ids">
+			#ids[]:INTEGER#
+		</iterate>
+	</update>
+	
+	<update id="refreshProductsByIds">
+		update products
+			set gmt_refresh=now(),gmt_modified=now()
+		where
+		<iterate conjunction="," prepend="id in" open="(" close=")">
+			#[]:INTEGER#
+		</iterate>
+	</update>
+	
+	<update id="updatePub">
+		update products
+			set publish_flag = #publishFlag#
+		where
+		 id=#id#
+	</update>
+	
+	<sql id="where_clause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="searchDto.deletedFlag">
+				deleted_flag = #searchDto.deletedFlag#
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.checkedFlag">
+				checked_flag = #searchDto.checkedFlag#
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.publishFlag">
+				publish_flag = #searchDto.publishFlag#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryProducts" parameterClass="java.util.HashMap" resultMap="productsDtoResult">
+		select 
+				<include refid="all_column" />
+		from products
+		<include refid="where_clause" />
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryProductsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from products
+		<include refid="where_clause" />
+	</select>
+
+	<select id="queryProductsForList" parameterClass="java.util.HashMap" resultMap="resultProducts">
+		select 
+			<include refid="all_column" />
+		from products
+			where id=#value#
+		order by gmt_refresh desc
+		limit 0, #size#
+	</select>
+	<sql id="company_column">
+		account,company_name,industry_code,membership_code,sex,contact,
+		mobile,qq,email,tel,fax,area_code,zip,address,position,department,introduction,
+		business,website
+	</sql>
+	
+	<resultMap class="company" id="companyResult">
+		<result property="companyName" column="company_name" />
+		<result property="business" column="business" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="industryCode" column="industry_code" />
+	</resultMap>
+	
+	<select id="queryProductsByCompanyId" parameterClass="java.util.HashMap"
+		resultMap="productsDtoResult">
+		select business from company c
+		inner join products p on p.cid=c.id
+		where p.cid=#companyId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryProductsAndCompanyById" parameterClass="java.lang.Integer" resultMap="productsDtoResult">
+		select 
+			<include refid="all_column" />
+			,
+			<include refid="company_column" />
+		from products p
+		inner join  on company c p.cid=c.id
+		where p.id=#id#
+	</select>
+	
+	<select id="countProductsIsPassByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from products p join company c on where p.cid=c.id and p.checked_flag=1
+	</select>
+	
+	<update id="batchDelete" parameterClass="java.util.HashMap">
+		update products
+		set
+		deleted_flag=#deletedFlag#
+		where 
+		<iterate prepend="id in" conjunction="," open="(" close=")" property="ids">
+			#ids[]:INTEGER#
+		</iterate>
+	</update>
+
+	<select id="countProducts" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) 
+		from products 
+		where 
+		cid = #companyId# and type_code = #productType#
+	</select>
+
+</sqlMap>

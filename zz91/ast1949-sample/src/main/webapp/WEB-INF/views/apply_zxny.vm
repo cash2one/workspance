@@ -1,0 +1,71 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN">
+<title>申请拿样弹出框</title>
+<link rel="shortcut icon" href="$!{address.img}/front/favicon.ico"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/newsample/css/yangFlips.css"/>
+<script type="text/javascript" src="$!{address.img}/front/js/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<script src="$!{address.img}/zz91/newsample/js/style.js" type="text/javascript"></script>
+
+
+</head>
+<body>
+  <div class="yangNav">
+  	  <ul>
+      	 <li class="curNav" id="sam-Ynav-div">在线拿样</li>
+         <li class="flierNav" id="sam-Ynav-div"><a href="#springUrl('/apply_dhny.htm?sampleId=')$!{sampleId}" >电话拿样</a></li>
+      </ul>
+  </div>
+  <!--end yangNav-->
+  <div class="yangInfo"></div>
+  <!--end yangInfo-->
+  <div class="yangContent">
+    <div class="itemSam" id="part1">
+  	 <div class="samLine">
+     	<ul>
+        	<li><span class="sMsg">在线拿样须知：</span></li>
+            <li>1.在线成功拿样，可获得<span class="sCode">5个积分</span>（5元）返利。<a href="http://yang.zz91.com/score.htm" target="_blank" class="chkLink">查看详情</a></li>
+            <li>2.在线拿样低成本、低风险，质量先睹为快。</li>
+            <li>3.拿样流程：</li>
+            <li><img src="$!{address.img}/zz91/newsample/images/samSteps.jpg" /></li>
+        </ul>
+     </div>
+     <!--end samLine-->
+	<div class="samBox">
+     	<a href="javascript:return false;"id="sambox" class="btnYang" onclick="zxnySubmit()" >立即在线拿样</a>
+        <img src="$!{address.img}/zz91/newsample/images/portrait.jpg" class="picYang" />
+    </div>
+     <!--end samBox-->
+    </div>
+    <!--end itemSam-->
+		#if($!{sessionUser})
+			<input type="hidden" id="loginFlag" value="1" />
+		#else
+			<input type="hidden" id="loginFlag" value="0" />
+		#end<!--end itemSam-->
+  </div>
+  
+	<script type="text/javascript">
+		function zxnySubmit(){
+				if(jQuery("#loginFlag").val()==0){
+					parent.overtitle("登录/注册");
+					window.location="#springUrl('/mini/nylogin.htm?sampleId=')"+$!{sampleId}+"&nyType=1";
+				}else{
+					if($!{cute}=="1"){
+					alert("对不起，不能向自己拿样");
+					  return false;
+					}else{
+						parent.closeoverlay();
+						window.open ("#springUrl('/mngr')/createOrderPro${sampleId}.htm");
+					}
+					
+				}
+		}
+    </script>
+	
+  <!--end yangContent-->
+</body>
+</html>

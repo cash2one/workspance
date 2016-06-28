@@ -1,0 +1,35 @@
+<script type="text/javascript" src="#springUrl('/app/message/message.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+	
+		var form=new com.zz91.ep.message.Form({
+			id:MESS.MESSAGE_FORM,
+			region:"center"
+		});
+		
+		var grid= new com.zz91.ep.message.Grid({
+			targetType:COMBO.messageTypes["compType"],
+			id:MESS.MESSAGE_GRID,
+			title:"公司信息留言",
+			split:true,
+			region:"west",
+			width:800,
+			listeners:{
+			"rowclick":function(g,rowindex,e){
+					form.loadOneRecord(grid.getStore().getAt(rowindex).get("id"));
+				}
+			}
+		});
+		
+		#if($!{id} && $!{id}>0)
+			grid.getStore().baseParams["targetCid"]=$!{id};
+		#end
+
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid,form]
+		});
+		
+	});
+</script>

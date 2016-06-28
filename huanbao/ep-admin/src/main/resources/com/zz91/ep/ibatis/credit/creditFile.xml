@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="creditFile">
+	<typeAlias alias="creditFile" type="com.zz91.ep.domain.comp.CreditFile" />
+	
+	<resultMap id="simpleResultMap" class="creditFile">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="fileName" column="file_name" />
+		<result property="picture" column="picture" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="simpleColumn">
+		id,
+		cid,
+		file_name,
+		picture,
+		check_status,
+		check_person,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<select id="queryCreditFileByCid" parameterClass="java.util.Map" resultMap="simpleResultMap">
+		select 
+			<include refid="creditFile.simpleColumn"/>
+		from credit_file
+		<dynamic prepend="where">
+			<isNotEmpty property="cid" prepend="and">
+				cid=#cid#
+			</isNotEmpty>
+			<isNotEmpty property="category" prepend="and">
+				category_code=#category#
+			</isNotEmpty>
+			<isNotEmpty property="checkStatus" prepend="and">
+				check_status=#checkStatus#
+			</isNotEmpty>
+		</dynamic>
+		order by gmt_modified desc
+	</select>
+	
+	<insert id="createCreditFile" parameterClass="creditFile">
+        INSERT INTO credit_file (
+			cid,
+			account,
+			file_name,
+			picture,
+			gmt_created,
+			gmt_modified)
+			VALUES
+			(
+			#cid#,
+			#account#,
+			#fileName#,
+			#picture#,
+			now(),
+			now()
+			)
+        <selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <!-- 
+    <update id="updateCreditFileName" parameterClass="java.util.Map">
+    	update credit_file set file_name = #fileName#,gmt_modified=now() where id=#id# and cid=#cid#
+    </update>
+     -->
+    
+    <delete id="deleteCreditById" parameterClass="java.util.Map">
+    	delete from credit_file where id=#id# and cid=#cid#
+    </delete>
+    
+    <update id="updateCheckStatus" parameterClass="java.util.HashMap">
+    	update credit_file set 
+    	check_status=#status#,
+    	check_person=#person#,
+    	gmt_modified=now()
+    	where id=#id# and cid=#cid#
+    </update>
+    
+    <select id="queryCreditFileCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer"> 
+    	select count(*) from credit_file 
+    	where cid=#cid# and check_status=#checkStatus#
+    </select>
+</sqlMap>

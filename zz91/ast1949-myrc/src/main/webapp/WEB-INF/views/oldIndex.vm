@@ -1,0 +1,205 @@
+#set( $layout = "/layout/default.vm" )
+<link rel="stylesheet" type="text/css" href="http://www.zz91.com/zt/comm/css/jquery.alert.css"/>
+<script src="http://img0.huanbao.com/lib/jquery/jquery.easydrag.js" ></script>
+<script src="http://img0.huanbao.com/lib/jquery/jquery.alert.js" ></script>
+#if($!{checkInfo} && $!{checkInfo}=="1")
+<!--需要判断客户的公司资料是否填写完整，如果填写完整，则不显示-->
+<div class="container-info2">
+	<span class="container-info-title">重要提示：</span>您的公司资料还不完整，目前只能查看信息！请<a href="$!{address.myrc}/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+</div>
+#end
+<!--end container-info2-->
+<div class="container mt clearfix">
+	<div class="grid_9">
+		#if(!$!{days})
+		<div class="alert"> 
+			<p>您还没有发布或更新任何供求信息 强烈建议您更新或发布信息以使您的信息排序更靠前，获得更多商业机会</p>
+			<p><a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">点此立即更新</a></p>
+		</div>
+		#elseif($!{days}>15)
+		<div class="alert"> 
+			<p>您已经有$!{days}天没有发布或更新任何供求信息了 强烈建议您更新或发布信息以使您的信息排序更靠前，获得更多商业机会</p>
+			<p><a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">点此立即更新</a></p>
+		</div>
+		#end
+        <div>
+        	<script>
+			<!--微信验证-->
+			function openweixinyz()
+			{
+				jIframe('http://pyapp.zz91.com/weixin/zz91weixin_yz.html?account=$!{sessionUser.account}', '微信验证','550','300');
+				document.getElementById("weixinkuan").innerHTML="在这进行验证中...";
+				
+			}
+			</script>
+			<style>
+			.tishi{
+				font-size: 16px;
+				line-height: 30px;
+				color: #F00;
+				background-color: #FF0;
+				border: 1px solid #F60;
+				padding-left:10px;
+			}
+			</style>
+			<div id="weixinkuan"><script type="text/javascript" src="http://pyapp.zz91.com/weixin/zz91weixin_yzfront.html?account=$!{sessionUser.account}&flag=0"></script></div>
+        </div>
+
+		#if($!{checkInfo} && $!{checkInfo}=="1")
+		#else
+    		#if($!{compValidate}==1)
+    		<div class="alert mt"> 
+    			<p>您的账户还没有激活，未激活的账户将可能受到限制，请到您注册时的邮箱里收取激活邮件。</p>
+    			<p>如果您没有收到邮件，您可以<a href="#springUrl('/sendValidate.htm')" target="_blank">重新发送激活邮件</a>。</p>
+    		</div>
+    		#end
+		#end
+		#if($!{sessionUser.membershipCode}!="10051000")
+			#if($!{sessionUser.membershipCode}=="10051003")
+				#parse("/commonImpt/index/member.vm")
+			#else
+				#parse("/commonImpt/index/memberVip.vm")
+			#end
+		#else
+			#parse("/commonImpt/index/member.vm")
+		#end
+		<div class="grid_9 alpha omega mt well app_container">
+			<div class="well-head">
+				<h3 class="t">快速通道</h3>发布供求信息及报价，查看最新商机及行情等
+			</div>
+			<div class="well-content clearfix">
+				<div class="app_item">
+					<figure><a href="#springUrl('/myproducts/office_post1.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_gq.png" /></a></figure>
+					<p><a href="#springUrl('/myproducts/office_post1.htm')">发布供求</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/mycompanyprice/list.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_bj.png" /></a></figure>
+					<p><a href="#springUrl('/mycompanyprice/list.htm')">报价管理</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/mymessage/inbox.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_ly.png" /></a></figure>
+					<p><a href="#springUrl('/mymessage/inbox.htm')">询盘留言</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/mysubscribe/bizList.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_sj.png" /></a></figure>
+					<p><a href="#springUrl('/mysubscribe/bizList.htm')">商机快递</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/mysubscribe/priceList.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_hq.png" /></a></figure>
+					<p><a href="#springUrl('/mysubscribe/priceList.htm')">行情快递</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/mycompanycustomers/list.htm')"><img src="$!{address.img}/zz91/myrc/images/miniico_kh.png" /></a></figure>
+					<p><a href="#springUrl('/mycompanycustomers/list.htm')">我的客户</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="#springUrl('/subject/licai.htm')" target="_blank"><img src="$!{address.img}/zz91/myrc/images/miniico_jf.png" /></a></figure>
+					<p><a href="#springUrl('/subject/licai.htm')" target="_blank">理财通宝</a></p>
+				</div>
+				<div class="app_item">
+					<figure><a href="$!{address.huzhu}/myposted.htm" target="_blank"><img src="$!{address.img}/zz91/myrc/images/miniico_hz.png" /></a></figure>
+					<p><a href="$!{address.huzhu}/myposted.htm" target="_blank">我的社区</a></p>
+				</div>
+			</div>
+		</div>
+		<div class="grid_9 alpha omega mt">
+			<script type="text/javascript" src="http://gg.zz91.com/show?p=475"></script>
+		</div>
+		<div class="grid_9 alpha omega mt">
+			<div class="grid_4 well alpha">
+				<div class="well-head">
+					<h3 class="t">使用小窍门</h3>
+				</div>
+				<div class="well-content block">
+					<p>1.怎样可以让客户更快更准找到我？快来使用www.zz91.com全新标签功能。</p>
+						<a href="#springUrl('/myproducts/office_post1.htm')">现在马上体验！</a>
+					<p>2.你想在门市部里公开你的邮箱地址吗？只需在" 公司基本信息 "里做一下设置即可。</p>
+						<a href="#springUrl('/mycompany/updateCompany.htm')">现在马上设置！</a>
+				</div>
+			</div>
+			<div class="grid_5 omega">
+				<div class="well">
+					<div class="well-head">
+						<h3 class="t">常用操作</h3>
+					</div>
+					<div class="well-content info_notice">
+						<dl>
+							<dt><b>供求信息：</b>您已发布<span class="red">$!{publishedProducts}</span>条供求信息</dt>
+							<dd><a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">点此查看</a></dd>
+						</dl>
+						<dl>
+							<dt><b>留言：</b>您有<span class="red">$!{unviewedRecordNumber}</span>条未读留言</dt>
+							<dd><a href="#springUrl('/mymessage/inbox.htm?isViewed=0')">点此查看</a></dd>
+						</dl>
+					</div>
+				</div>
+				<div class="well mt">
+					<div class="well-body refresh">
+						<p>"刷新"功能,让供求发布更加方便,更加快捷！</p>
+						<p><a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">现在马上试试！</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>		
+	<div class="grid_3">
+		##cacheFragment("$!{address.fragment}/trade/newestTrade.htm?size=6&myrc" "" "" "")
+		<div class="well">
+			<div class="well-head"><h3 class="t">最新供求</h3><a href="$!{address.trade}" target="_blank" class="fr">更多</a></div>
+			<div class="well-content">
+				<ul class="lists">
+					#foreach($pro in $!{list2})
+					<li>
+						<a target="_blank" title="$!{products.title}" href="$!{address.trade}/productdetails$!{pro.products.id}.htm" target="_blank">
+							[#printProductType(${pro.products.productsTypeCode} "" "")]
+							#printTitle($!{pro.products.title} 15 "")
+						</a>
+					</li>
+					#end
+				</ul>
+			</div>
+		</div>
+		##end
+		#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=5&1" "" "" "")
+		<div class="well mt">
+			<div class="well-head"><h3 class="t">最新资讯</h3><a href="$!{address.huzhu}" target="_blank" class="fr">更多</a></div>
+			<div class="well-content">
+				<ul class="lists">
+				#foreach($!{bbsPostList} in $!{frontBbsPostList})
+					<li>
+						<a href="$!{address.huzhu}/viewReply$!{bbsPostList.id}.htm" target="_blank" title="$!{bbsPostList.title}" >
+							#printTitle($!{bbsPostList.title} 15 "")
+						</a>
+					</li>
+				#end
+				</ul>
+			</div>
+		</div>
+		#end
+		<div class="well mt">
+			<div class="well-head"><h3 class="t">最新报价</h3><a href="$!{address.price}" target="_blank" class="fr">更多</a></div>
+			<div class="well-content">
+				<ul class="lists">
+				#cacheFragment("$!{address.fragment}/price/queryLatestPrice.htm?size=5&myrc11", "", "", "")
+				#foreach($a in $list)
+					<li>
+						<a href="$!{address.price}/priceDetails_$!{a.id}_metal.htm" target="_blank" title="$!{a.title}"> #printTitle($!{a.title} 15 "")</a>
+					</li>
+				#end
+				#end
+				</ul>
+			</div>
+		</div>
+		<div class="mt">
+			<script type="text/javascript" src="http://gg.zz91.com/show?p=480"></script>
+		</div>
+	</div>
+</div>
+<div class="container">
+<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=960&amp;num=5"></script>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(1, 1);	
+})
+</script>

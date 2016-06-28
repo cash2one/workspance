@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>xml文件内容编辑</title>
+<script type="text/javascript" src="$!{address.js}/jquery-1.4rc1.min.js" ></script>
+</head>
+<body>
+<div class="main">
+    <div class="domain">
+		域名：#if($!{xmlFile.domainZz91})$!{xmlFile.domainZz91}#else$!{domain}#end
+	</div>
+
+	<form action="doUpdate.htm" method="post" >
+		<div class="fileName">
+		死链xml名:<input type="text" name="fileName" id="fileName" #if($!{isExist}==1) value="$!{xmlFile.fileName}" readonly="readonly" #else value="" #end>
+			#if($!{isExist}==1)
+                <a href="javascript:void(0);" class="xg">修改</a>
+			#end
+		</div>
+	<textarea style="width:50%;height:350px;" name="urlList">$!{list}</textarea><br>
+	<input type="hidden" name="companyId" value="$!{companyId}">
+		<input type="hidden" name="hasxml" id="hasxml">
+	<input type="submit" value="确定">
+	</form>
+	#if($!{msg}==1)
+		<p style="color:red">
+			更新成功
+        </p>
+	#end
+	#if($!{msg}==2)
+		<p style="color:red">
+			添加成功
+        </p>
+	#end
+</div>
+<script>
+	$(document).ready(function(){
+		var companyId = $!{companyId};
+		if($!{isExist}==1){
+			$("#hasxml").val(1);
+		}else{
+			$("#hasxml").val(0);
+		}
+		$("#fileName").blur(function(){
+			var text = $("#fileName").val();
+			if(text == null || text.lastIndexOf(".xml") == -1){
+				alert("请输入正确的内容,名字以 .xml 结尾");
+				return false;
+			}
+		});
+		$(".xg").click(function(){
+			html="<div class='newName'><input type='text' id='newName' ><a href='javascript:void(0);' id='sub'>确定</a></div>"
+			$(".xg").after(html);
+		});
+		$("#sub").live("click",function(){
+			var text = $("#newName").val();
+			if(text != null && text.lastIndexOf(".xml") != -1){
+				jQuery.ajax({
+					type: "POST",
+					url: "updateXmlFileName.htm",
+					data: {companyId:companyId, newName:text},
+					dataType: "json",
+					success: function(data){
+						if(data.success){
+							console.log("as");
+							$("#fileName").val(text);
+							$(".newName").remove();
+						}else{
+							alert("更新失败！");
+							return false;
+						}
+					}
+				});
+			}else{
+				alert("请输入正确的内容！");
+				return false;
+			}
+		});
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="weeklyPeriodical">
+	<typeAlias alias="weeklyPeriodicalDO"
+		type="com.ast.ast1949.domain.information.WeeklyPeriodicalDO" />
+	<typeAlias alias="pageDto" type="com.ast.ast1949.dto.PageDto" />
+	<resultMap id="weeklyPeriodicalResult" class="weeklyPeriodicalDO">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="periodicalNum" column="periodical_num" />
+		<result property="publishTime" column="publish_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<select id="listWeeklyPeriodicalByPage" parameterClass="java.util.HashMap"
+		resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		NAME,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_periodical
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countWeeklyPeriodical" resultClass="java.lang.Integer">
+		select count(id)
+		from weekly_periodical
+    </select>
+	<select id="listWeeklyPeriodicalById" parameterClass="java.lang.Integer"
+		resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		name,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_periodical
+		where id=#id#
+    </select>
+	<select id="listAllWeeklyPeriodical" resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		NAME,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_periodical
+    </select>
+	<insert id="insertWeeklyPeriodical" parameterClass="weeklyPeriodicalDO">
+		insert into weekly_periodical(
+		name,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified)
+		values(
+		#name#,
+		#periodicalNum#,
+		#publishTime#,
+		now(),
+		now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id="updateWeeklyPeriodical" parameterClass="weeklyPeriodicalDO">
+		update weekly_periodical set
+		name=#name#,
+		periodical_num=#periodicalNum#,
+		publish_time=#publishTime#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<delete id="deleteWeeklyPeriodicalById" parameterClass="java.lang.Integer">
+		delete from weekly_periodical
+		where id=#id#
+	</delete>
+	<!-- 前台 -->
+	<select id="listFirstWeeklyPeriodical" resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		name,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		from
+		weekly_periodical
+		ORDER BY publish_time DESC
+		LIMIT 0,1
+	</select>
+	<!-- 查询上一期刊 -->
+	<select id="listOnWeeklyPeriodical" parameterClass="java.lang.Integer"
+		resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		name,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		from weekly_periodical
+		<![CDATA[where id<#id#]]>
+		ORDER BY id DESC
+		LIMIT 0,1
+	</select>
+	<!-- 查询下一期刊 -->
+	<select id="listDownWeeklyPeriodical" parameterClass="java.lang.Integer"
+		resultMap="weeklyPeriodicalResult">
+		SELECT id,
+		name,
+		periodical_num,
+		publish_time,
+		gmt_created,
+		gmt_modified
+		from
+		weekly_periodical
+		WHERE id>#id#
+		ORDER BY id asc
+		LIMIT 0,1
+	</select>
+</sqlMap>

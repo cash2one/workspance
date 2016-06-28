@@ -1,0 +1,32 @@
+中文词库
+这里使用的是mmseg4j和搜狗词库 。
+下载地址 : 
+    http://code.google.com/p/mmseg4j/;
+    http://code.google.com/p/mmseg4j/downloads/detail?name=data.zip&can=2&q;
+把本地下载的 mmseg4j  解压缩 , 把里面的mmseg4j-all-1.8.5.jar 文件 拷贝到 Tomcat 6.0\webapps\solr\WEB-INF\lib 目录下
+在\Tomcat 6.0\webapps\solr\conf\multicore\core0\conf\schema.xml文件的types节点里 添加如下节点 :
+
+<fieldtype name="textComplex" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" 
+                       mode="complex" dicPath="/usr/apps/Tomcat/webapps/solr/dic">
+            </tokenizer>
+        </analyzer>
+    </fieldtype>
+    <fieldtype name="textMaxWord" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" mode="maxword" dicPath="/usr/apps/Tomcat/webapps/solr/dic">
+            </tokenizer>
+        </analyzer>
+    </fieldtype>
+    <fieldtype name="textSimple" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" mode="simple" dicPath="/usr/apps/Tomcat/webapps/solr/dic">
+            </tokenizer>
+        </analyzer>
+</fieldtype>
+
+对分词进行测试 , 访问  http://localhost:8080/solr/core0/admin/analysis.jsp?highlight=on
+       Field[Name]输入:complex
+       Field Value(index)输入:中国银行第一分行,Field Value(index)下面的verbose outpu点选
+       点击Analyze按钮,查看分词结果:中国银行|第一|分行

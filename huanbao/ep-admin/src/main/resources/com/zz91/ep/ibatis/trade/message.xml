@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="message">
+
+    <typeAlias alias="message" type="com.zz91.ep.domain.trade.Message"/>
+    <typeAlias alias="messageDto" type="com.zz91.ep.dto.trade.MessageDto"/>
+
+    <resultMap class="message" id="fullColumnResult">
+        <result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="cid" column="cid"/>
+        <result property="targetUid" column="target_uid"/>
+        <result property="targetId" column="target_id"/>
+        <result property="targetCid" column="target_cid"/>
+        <result property="targetType" column="target_type"/>
+        <result property="title" column="title"/>
+        <result property="details" column="details"/>
+        <result property="readStatus" column="read_status"/>
+        <result property="replyStatus" column="reply_status"/>
+        <result property="replyDetails" column="reply_details"/>
+        <result property="gmtReply" column="gmt_reply"/>
+        <result property="gmtCreated" column="gmt_created"/>
+    </resultMap>
+	
+	<resultMap class="message" id="simplyResult">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="details" column="details"/>
+		<result property="replyDetails" column="reply_details"/>
+	</resultMap>
+    
+    <resultMap class="messageDto" id="simplyDtoResult">
+    	<result property="message" resultMap="message.fullColumnResult"/>
+    	<result property="tradeTitle" column="titleName"/>
+    	<result property="receive" column="receive"/>
+    	<result property="send" column="send"/>
+    </resultMap>
+    
+    <resultMap class="messageDto" id="compfileMessage">
+		<result property="cid" column="cid"/>
+		<result property="targetCid" column="target_cid"/>
+		<result property="gmtCreated" column="gmt_created"/>
+	</resultMap>
+
+    <sql id="fullColumn">
+        ms.id,
+        ms.uid,
+        ms.cid,
+        ms.target_uid,
+        ms.target_cid,
+        ms.target_id,
+        ms.target_type,
+        ms.title,
+        ms.details,
+        ms.read_status,
+        ms.reply_status,
+        ms.reply_details,
+        ms.gmt_reply,
+        ms.gmt_created
+    </sql>
+
+    <insert id="insertMessage" parameterClass="message" >
+        insert into message(
+             uid,
+             cid,
+             target_uid,
+             target_cid,
+             target_id,
+             target_type,
+             title,
+             details,
+             del_send_status,
+             gmt_reply,
+             gmt_created,
+             gmt_modified)
+         values(
+             #uid#,
+             #cid#,
+             #targetUid#,
+             #targetCid#,
+             #targetId#,
+             #targetType#,
+             #title#,
+             #details#,
+             #delSendStatus#,
+             now(),
+             now(),
+             now()
+        )
+        <selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+
+    <!-- 
+    <resultMap class="messageDto" id="fullColumnMap">
+        <result property="message" resultMap="message.fullColumnResult"/>
+        <result property="cname" column="name"/>
+    </resultMap>
+   	<sql id="dynamicQueryMessagesByCompany">
+        <dynamic prepend="where">
+            ms.target_type = #type#
+            <isEqual property="sendStatus" compareValue="1">
+                and ms.target_cid = #cid#  and ms.del_receive_status = 0
+            </isEqual>
+            <isEqual property="sendStatus" compareValue="0">
+                and ms.cid = #cid# and ms.del_send_status = 0
+            </isEqual>
+            <isNotEmpty property="targetId">
+                and ms.target_id = #targetId#
+            </isNotEmpty>
+            <isNotEmpty property="replyStatus">
+                and ms.reply_status = #replyStatus#
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+    
+    <sql id="dynamicInnerJoin">
+        <isEqual property="sendStatus" compareValue="1">
+           inner join comp_profile cp on cp.id=ms.cid
+       </isEqual>
+       <isEqual property="sendStatus" compareValue="0">
+           inner join comp_profile cp on cp.id=ms.target_cid
+       </isEqual>
+    </sql>
+    
+    <select id="queryMessagesByCompanyCount"  resultClass="java.lang.Integer"
+        parameterClass="java.util.HashMap">
+        select count(*) from message ms
+        <include refid="dynamicInnerJoin"/>
+        <include refid="dynamicQueryMessagesByCompany"/>
+    </select>
+    
+    <select id="queryMessagesByCompany"  resultMap="fullColumnMap"
+        parameterClass="java.util.HashMap">
+        select
+            <include refid="fullColumn"/>
+            ,cp.name
+        from message ms
+        <include refid="dynamicInnerJoin"/>
+        <include refid="dynamicQueryMessagesByCompany"/>
+        <include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+    </select>
+    
+    <update id="updateMessageBysendStatus" parameterClass="java.util.Map">
+        update message set
+            gmt_modified = now()
+        <isEqual property="sendStatus" compareValue="0">
+            ,del_send_status = 1
+        </isEqual>
+        <isEqual property="sendStatus" compareValue="1">
+            ,del_receive_status = 1
+        </isEqual>
+        where id = #id#
+        <isEqual property="sendStatus" compareValue="0">
+            and cid = #cid#
+        </isEqual>
+        <isEqual property="sendStatus" compareValue="1">
+            and target_cid = #cid#
+        </isEqual>
+    </update>
+    
+    <update id="updateReplyMessage" parameterClass="java.util.Map">
+        update message set
+            reply_status = 1
+            ,reply_details = #replyMessage#
+            ,gmt_reply = now()
+            ,gmt_modified = now()
+        where id = #id# and target_cid=#cid#
+    </update>
+    
+    <select id="queryReplyMessagesCount" resultClass="java.lang.Integer">
+		select count(*) from message
+		where target_cid=#cid#
+		    and reply_status = 0
+		    and del_receive_status = 0
+    </select>
+     -->
+    
+    <sql id="dynamicWhere">
+    	<dynamic prepend="where">
+    		<isNotEmpty property="targetId" prepend="and">
+    			ms.target_id=#targetId#
+    		</isNotEmpty>
+    		<isNotEmpty property="targetCid" prepend="and">
+    			ms.target_cid=#targetCid#
+    		</isNotEmpty>
+    		<isNotEmpty property="targetType" prepend="and">
+    			ms.target_type=#targetType#
+    		</isNotEmpty>
+    		<isNotEmpty property="cid" prepend="and">
+    			ms.cid=#cid#
+    		</isNotEmpty>
+    	</dynamic>
+    </sql>
+    
+    <sql id="dynamicInner">
+		<isEqual property="targetType" compareValue="0">
+			inner join trade_supply ts on ts.id=ms.target_id
+		</isEqual>
+		<isEqual property="targetType" compareValue="1">
+			inner join trade_buy tb on tb.id=ms.target_id
+		</isEqual>
+    </sql>
+    
+	<select id="queryAllMessage" parameterClass="java.util.HashMap" resultMap="simplyDtoResult">
+		select 
+		<include refid="message.fullColumn"/>
+		<isEqual property="targetType" compareValue="0">
+			,ts.title as titleName
+		</isEqual>
+		<isEqual property="targetType" compareValue="1">
+			,tb.title as titleName
+		</isEqual>
+		<isEqual property="targetType" compareValue="2">
+			,cp.name as titleName
+		</isEqual>
+		,cp.name as receive,cp1.name as send
+		from message ms
+		inner join comp_profile cp on cp.id=ms.target_cid
+		inner join comp_profile cp1 on cp1.id=ms.cid
+		<include refid="dynamicInner"/>
+		<include refid="dynamicWhere"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+    
+    <select id="queryAllMessageCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(*)
+    	from message ms
+    	inner join comp_profile cp on cp.id=ms.target_cid
+		inner join comp_profile cp1 on cp1.id=ms.cid
+		<include refid="dynamicInner"/>
+    	<include refid="dynamicWhere"/>
+    </select>
+    
+    <select id="queryShortMessageById" parameterClass="java.lang.Integer" resultMap="simplyResult">
+    	select id,title,details,reply_details
+    	from message
+    	where id=#id#
+    </select>
+    
+    <select id="queryNoReadCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(*) from message
+    	where target_cid=#cid#
+    	<isNotEmpty property="status">
+    	and read_status=0
+    	and del_receive_status=0
+    	</isNotEmpty>
+    </select>
+    
+    <!-- 询盘相关 -->
+	<select id="queryCompfileMessageCount" resultClass="java.lang.Integer">
+		SELECT count(id) total 
+		FROM message m 
+		where date_format(gmt_created,'%Y-%m-%d')= date_add(date_format(now(),'%Y-%m-%d'),INTERVAL -1 DAY)
+	</select>
+	
+	<select id="queryCompfileMessageTime" parameterClass="java.util.HashMap" resultMap="compfileMessage">
+		SELECT m.gmt_created,m.target_cid,m.cid FROM message m
+		where date_format(gmt_created,'%Y-%m-%d')= date_add(date_format(now(),'%Y-%m-%d'),INTERVAL -1 DAY)
+		order by m.gmt_created limit #start#,#size#
+	</select>
+	
+</sqlMap>

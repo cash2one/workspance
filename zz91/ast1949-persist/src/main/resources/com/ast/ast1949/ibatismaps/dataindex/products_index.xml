@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsIndex">
+	<typeAlias alias="productsIndex" type="com.ast.ast1949.domain.dataindex.ProductsIndex" />
+
+	<insert id="insertIndex" parameterClass="productsIndex">
+		insert into `products_index`
+		(
+		`data_index_code`,
+		`products_id`,
+		`account`,
+		`company_id`,
+		`products_type`,
+		`title`,
+		`min_price`,
+		`max_price`,
+		`price_unit`,
+		`quantity`,
+		`quantity_unit`,
+		`tags`,
+		`tags_admin`,
+		`refresh_time`,
+		`real_time`,
+		`pic`,
+		`orderby`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#dataIndexCode#,
+		#productsId#,
+		#account#,
+		#companyId#,
+		#productsType#,
+		#title#,
+		#minPrice#,
+		#maxPrice#,
+		#priceUnit#,
+		#quantity#,
+		#quantityUnit#,
+		#tags#,
+		#tagsAdmin#,
+		#refreshTime#,
+		#realTime#,
+		#pic#,
+		#orderby#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteById" parameterClass="java.lang.Integer">
+		delete from
+		products_index
+		where id=#id#
+	</delete>
+
+	<resultMap class="productsIndex" id="queryResult">
+		<result property="id" column="id"/>
+		<result property="dataIndexCode" column="data_index_code"/>
+		<result property="productsId" column="products_id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="account" column="account"/>
+		<result property="productsType" column="products_type"/>
+		<result property="title" column="title"/>
+		<result property="minPrice" column="min_price"/>
+		<result property="maxPrice" column="max_price"/>
+		<result property="priceUnit" column="price_unit"/>
+		<result property="quantity" column="quantity"/>
+		<result property="quantityUnit" column="quantity_unit"/>
+		<result property="tags" column="tags"/>
+		<result property="tagsAdmin" column="tags_admin"/>
+		<result property="refreshTime" column="refresh_time"/>
+		<result property="realTime" column="real_time"/>
+		<result property="pic" column="pic"/>
+		<result property="orderby" column="orderby"/>
+		<result property="gmtCreated" column="gmt_created"/>
+	</resultMap>
+	
+	<sql id="queryColumn">
+		id,data_index_code,products_id,company_id,account,products_type,title,min_price,max_price,
+		price_unit,quantity,quantity_unit,tags,tags_admin,refresh_time,real_time,pic,orderby,gmt_created
+	</sql>
+	
+	<sql id="dynamicQueryIndex" >
+		<dynamic prepend="where">
+			<isNotEmpty property="dataIndexCode" prepend="and">
+				data_index_code like concat(#dataIndexCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryIndex" parameterClass="java.util.HashMap" resultMap="queryResult">
+		select
+			<include refid="productsIndex.queryColumn" />
+		from products_index
+			<include refid="productsIndex.dynamicQueryIndex" />
+			<include refid="common.pageOrderBy" />
+			<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryIndexCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from products_index
+		<include refid="productsIndex.dynamicQueryIndex" />
+	</select>
+	
+	<update id="updateIndex" parameterClass="productsIndex" >
+		update products_index 
+		set 
+			title=#title#,
+			min_price=#minPrice#,
+			max_price=#maxPrice#,
+			price_unit=#priceUnit#,
+			quantity=#quantity#,
+			quantity_unit=#quantityUnit#,
+			tags=#tags#,
+			tags_admin=#tagsAdmin#,
+			refresh_time=#refreshTime#,
+			real_time=#realTime#,
+			pic=#pic#,
+			orderby=#orderby#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<update id="updateOrderBy" parameterClass="java.util.HashMap" >
+		update products_index
+		set 
+			orderby=#orderby#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+
+</sqlMap>

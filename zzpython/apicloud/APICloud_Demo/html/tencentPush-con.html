@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
+    <title>APICloud</title>
+    <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+    <script type="text/javascript">
+
+        var tencentPush = null;
+        apiready = function(){
+            tencentPush = api.require('tencentPush');
+        }
+
+        function config(){
+            //var tencentPush = api.require('tencentPush');
+            var param = {debug:true};
+            tencentPush.config(param);
+        }
+
+        function registerPush(){
+            //var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                if(ret.status){
+                    alert("注册成功，token为："+ret.token);
+                }else{
+                    alert("注册失败，错误码："+err.code+"，错误信息："+err.msg);
+                }
+            }
+            // 需要绑定的账号，若为"*"表示解除之前的账号绑定
+            var params = {account:"testAccount"};
+            tencentPush.registerPush(params, resultCallback);
+        }
+
+        function unregisterPush(){
+            //var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                if(ret.status){
+                    alert("反注册成功");
+                }else{
+                    alert("反注册失败，错误码："+err.code+"，错误信息："+err.msg);
+                }
+            }
+            tencentPush.unregisterPush(resultCallback);
+        }
+
+        function setTag(){
+            //var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                if(ret.status){
+                    alert("标签设置成功，标签名："+ret.tag);
+                }else{
+                    alert("标签设置失败，错误码："+err.code+"，错误信息："+err.msg);
+                }
+            }
+            var param = {tag:"tagName"};
+            tencentPush.setTag(param, resultCallback);
+        }
+
+        function delTag(){
+            //var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                if(ret.status){
+                    alert("标签删除成功，标签名："+ret.tag);
+                }else{
+                    alert("标签删除失败，错误码："+err.code+"，错误信息："+err.msg);
+                }
+            }
+            var param = {tag:"tagName"};
+            tencentPush.delTag(param, resultCallback);
+        }
+
+        function addlocalNotification(){
+            //var tencentPush = api.require('tencentPush');
+            var params = {
+                title : "title", // 标题
+                content : "test content",  // 内容
+                date : "20150127",  // 日期
+                hour : "15",  // 时间
+                min	: "15",   // 分钟
+                customContent : "{\"key\":\"value\"}",  // 自定义key-value
+                activity : "",  // 打开的activity
+                ring : 1,       // 是否响铃
+                vibrate : 1,    // 是否振动
+            };
+            var resultCallback = function(ret, err){
+                if(ret.status){
+                    alert("添加通知成功，通知id："+ret.notiId);
+                }else{
+                    alert("添加本地通知失败，错误码："+err.code+"，错误信息："+err.msg);
+                }
+            }
+            tencentPush.addlocalNotification(params, resultCallback);
+        }
+
+        function clearLocalNotifications(){
+            //var tencentPush = api.require('tencentPush');
+            tencentPush.clearLocalNotifications();
+        }
+
+        function onTextMessage(){
+            var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                alert("收到透传消息，title："+ret.title+"，content："+ret.content+"，customContent："+ret.customContent);
+            }
+            var params = {name:"message"};
+            tencentPush.setListener(params, resultCallback);
+        }
+
+        function onNotifactionClick(){
+            var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                alert("收到通知被点击的回调，title："+ret.title+"，content："+ret.content+"，customContent："+ret.customContent
+                        + ",activity:"+ret.activity+",actionType:"+ret.actionType+",msgid:"+ret.msgid);
+            }
+            var params = {name:"notifactionClick"};
+            tencentPush.setListener(params, resultCallback);
+        }
+
+        function onNotifactionClear(){
+            var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                alert("收到通知被清除的回调，title："+ret.title+"，content："+ret.content+"，customContent："+ret.customContent
+                        + ",activity:"+ret.activity+",actionType:"+ret.actionType+",msgid:"+ret.msgid);
+            }
+            var params = {name:"notifactionClear"};
+            tencentPush.setListener(params, resultCallback);
+        }
+
+        function onNotifactionShow(){
+            var tencentPush = api.require('tencentPush');
+            var resultCallback = function(ret, err){
+                alert("收到通知被展示的回调，title："+ret.title+"，content："+ret.content+"，customContent："+ret.customContent
+                        + ",activity:"+ret.activity+",actionType:"+ret.actionType+",msgid:"+ret.msgid);
+            }
+            var params = {name:"notifactionShow"};
+            tencentPush.setListener(params, resultCallback);
+        }
+
+        function cancelNotifaction(){
+            var tencentPush = api.require('tencentPush');
+            var params = {nid: -1};
+            tencentPush.cancelNotifaction(params);
+        }
+
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="page-header"><h2>腾讯信鸽</h2><small>请到网站控制台云编译体验</small></div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="config()" class="btn btn-primary">
+                            开启debug
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="registerPush()" class="btn btn-primary">
+                            注册设备
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="unregisterPush()" class="btn btn-primary">
+                            反注册（不需要再接收通知）
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="onTextMessage()" class="btn btn-primary">
+                            设置消息透传的回调
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="onNotifactionShow()" class="btn btn-primary">
+                            通知被展示的回调
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="onNotifactionClick()" class="btn btn-primary">
+                            通知被点击的回调
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="onNotifactionClear()" class="btn btn-primary">
+                            通知被清除的回调
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="setTag()" class="btn btn-primary">
+                            设置标签
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="delTag()" class="btn btn-primary">
+                            删除标签
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="addlocalNotification()" class="btn btn-primary">
+                            添加本地通知
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="clearLocalNotifications()" class="btn btn-primary">
+                            清除所有本地通知
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="cancelNotifaction()" class="btn btn-primary">
+                            清除所有展示的通知
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

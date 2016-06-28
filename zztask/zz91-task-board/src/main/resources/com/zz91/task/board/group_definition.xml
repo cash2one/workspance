@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="groupDefinition">
+
+	<typeAlias alias="groupDefinition" type="com.zz91.task.board.domain.GroupDefinition"/>
+	<resultMap id="groupDefinitionResultMap" class="groupDefinition">
+		<result property="id" column="id"/>
+		<result property="groupId" column="group_id"/>
+		<result property="definitionId" column="definition_id"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<insert id="insertGroupDefinition" parameterClass="java.util.HashMap">
+		insert into group_definition
+		(
+		`group_id`,
+		`definition_id`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#groupId#,
+		#definitionId#,
+		now(),
+		now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+      		SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="queryGroupDefiByGroupId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select definition_id
+		from group_definition
+		where group_id=#groupId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countGroupDefiByGroupId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from group_definition
+		where group_id=#groupId#
+	</select>
+	<delete id="deleteGroupDefinition" parameterClass="java.lang.Integer">
+		delete from group_definition where definition_id=#definitionId#
+	</delete>
+	<select id="selectGroupDefiByDefiId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select group_id
+		from group_definition
+		where definition_id=#definitionId#
+	</select>
+	<update id="updateGroupIdByDefiId" parameterClass="java.util.HashMap">
+		update group_definition
+		set group_id=#groupId#,
+		gmt_modified=now()
+		where definition_id=#definitionId#
+	</update>
+</sqlMap>

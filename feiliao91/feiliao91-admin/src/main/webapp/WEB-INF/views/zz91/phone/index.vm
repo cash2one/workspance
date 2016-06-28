@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>来电宝管理</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/phone/view.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/ldbSvr.js" ></script>
+##	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		var grid = new ast.ast1949.phone.Grid({
+			id:"phoneGrid",
+			region:"center",
+			layout:"fit",
+			contextmenu:new Ext.menu.Menu({
+				items:[
+				#if($!{asignFlag}=="1")
+				{
+					text: '分配给',
+					menu:[
+					#foreach($cs in $!{allcs.keySet()})
+					#if($velocityCount > 1),#end
+					{
+						text:"${allcs.get($!{cs})}",
+						handler:function(){
+							var rows=grid.getSelectionModel().getSelections();
+							var oldassignArr=new Array();
+							for(var i=0;i<rows.length;i++){
+								oldassignArr.push({
+									companyId:rows[i].get("company_id")
+								})
+							}
+							ast.ast1949.phone.reassign(grid, oldassignArr, "${cs}", "$!{allcs.get($!{cs})}");
+						}
+					}
+					#end
+					]
+				},'-',
+				#end
+				]
+			}),
+			loadDefault:function(){
+				var B=grid.getStore().baseParams;
+				grid.getStore().baseParames=B;
+				grid.getStore().reload();
+			}
+		});
+		
+		grid.loadDefault();
+		
+		var ldbSvrGrid = new ast.ast1949.crm.phoneCostSvr.Grid({
+			id:"phoneSvrGrid",
+			region:"south",
+			title:"开通的服务",
+			height:150,
+			split:true
+		});
+		
+		ldbSvrGrid.loadByCompany(0);
+		
+		##点击公司,弹出公司所有充值记录##
+		grid.on("rowclick",function(g,rowIndex,e){
+			var B=ldbSvrGrid.getStore().baseParams;
+			B=B||{};
+    		B["companyId"]=g.getStore().getAt(rowIndex).get("company_id");
+    		ldbSvrGrid.getStore().baseParams=B;
+    		ldbSvrGrid.getStore().reload({});
+		});
+		
+    	var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid,ldbSvrGrid]
+    	});
+    	
+		var form = new ast.ast1949.phone.SearchForm({
+    		title:"搜索来电宝信息",
+    		collapsible: true,
+            animCollapse: false,
+            frame:true,
+            titleCollapse:true,
+            style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+            height:350,
+            width:300,
+            targetGrid:grid
+    	});
+		
+		form.render(Ext.getBody());
+		 
+		form.resizer = new Ext.Resizable(form.el, {
+            minHeight:50,
+            minWidth:100,
+            handles: "n",
+            pinned: true,
+            transparent:true,
+            resizeElement : function(){
+                var box = this.proxy.getBox();
+                this.proxy.hide();
+                form.setHeight(box.height);
+                return box;
+            }
+        });
+
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

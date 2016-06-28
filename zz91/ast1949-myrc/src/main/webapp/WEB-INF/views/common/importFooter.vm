@@ -1,0 +1,70 @@
+<script src="$!{address.img}/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="$!{address.img}/zz91/js/zz91.myrc.js"></script>
+<script>
+jQuery(function(){
+	myrc.select("Js_select");
+	
+##	jQuery.ajax({
+##		url: "/loadesite.htm",
+##		type: "POST",
+##		data: {id:'$!{sessionUser.companyId}'},
+##		dataType: "json",
+##		success: function(msg){
+##			var url = "http://" + msg.data.domainZz91 + ".zz91.com";
+##			jQuery("#Js_url").attr("href", url);
+##		}
+##	});
+
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"${address.trade}",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"$!{address.price}",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("$!{address.huzhu}/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("$!{address.company}/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+##	jQuery.ajax({
+##		url:"#springUrl('/validateCompanyInfo.htm')",
+##		success:function(data){
+##			var d = eval("("+data+")");
+##			if(d.result==0){
+##				window.location="#springUrl('/mycompany/updateCompany.htm?firstLogin=2')";
+##			}
+##		}
+##	});
+});
+</script>
+## 验证是否完善信息
+##<script type="text/javascript" src="#springUrl('/validate/validateCompanyInfo.htm')?basePath=$!{request.requestURI}&$!{date.getSystemTime()}" ></script>

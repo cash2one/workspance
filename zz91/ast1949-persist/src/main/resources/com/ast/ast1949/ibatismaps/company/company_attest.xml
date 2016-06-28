@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAttest">
+	<typeAlias alias="companyAttestDO"
+		type="com.ast.ast1949.domain.company.CompanyAttest" />
+		
+	<typeAlias alias="companyAttestDto" type="com.ast.ast1949.dto.company.CompanyAttestDto" />
+	
+	<resultMap class="companyAttestDO" id="companyAttestResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="attestType" column="attest_type" />
+		<result property="companyName" column="company_name" />
+		<result property="registerCode" column="register_code" />
+		<result property="registerAddr" column="register_addr" />
+		<result property="registerCapital" column="register_capital" />
+		<result property="legal" column="legal" />
+		<result property="serviceType" column="service_type" />
+		<result property="industry" column="industry" />
+		<result property="business" column="business" />
+		<result property="organization" column="organization" />
+		<result property="applicant" column="applicant" />
+		<result property="companyAddr" column="company_addr" />
+		<result property="idNumber" column="id_number" />
+		<result property="contact" column="contact" />
+		<result property="sex" column="sex" />
+		<result property="tel" column="tel" />
+		<result property="mobile" column="mobile" />
+		<result property="showStatus" column="show_status" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkTime" column="check_time" />
+		<result property="checkPerson" column="check_person" />
+		<result property="establishTime" column="establish_time" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="inspectionTime" column="inspection_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="picAddress" column="pic_address" />
+	</resultMap>
+	
+	<resultMap class="companyAttestDto"  id="companyAttestDtoResult">
+		<result property="name" column="name" />
+		<result property="companyAttest" resultMap="companyAttest.companyAttestResult" />
+	</resultMap>
+	<sql id="defaultColumn">
+		ca.id,ca.company_id,ca.attest_type,ca.company_name,ca.register_code,ca.register_addr,ca.register_capital,ca.legal,
+		ca.service_type,ca.industry,ca.business,ca.organization,ca.applicant,ca.company_addr,ca.id_number,ca.contact,ca.sex,ca.tel,ca.mobile,ca.show_status,
+		ca.check_status,ca.check_time,ca.check_person,ca.establish_time,ca.start_time,ca.end_time,ca.inspection_time,ca.gmt_created,ca.gmt_modified,ca.pic_address
+	</sql>
+
+	<sql id="dynamicBySearch">
+		<dynamic prepend="where">
+			<isNotEmpty property="companyAttest.attestType" prepend="and">
+				ca.attest_type =#companyAttest.attestType#
+			</isNotEmpty>
+			<isNotEmpty property="compName" prepend="and">
+				c.name =#compName#
+			</isNotEmpty>
+			<isNotEmpty property="companyAttest.companyId" prepend="and">
+				ca.company_id = #companyAttest.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="companyAttest.checkStatus" prepend="and">
+				ca.check_status in ($companyAttest.checkStatus$)
+			</isNotEmpty>
+			<isNotEmpty property="companyAttest.companyName" prepend="and">
+				ca.company_name = #companyAttest.companyName#
+			</isNotEmpty>
+			<isNotEmpty property="companyAttest.registerCode" prepend="and">
+				ca.register_code = #companyAttest.registerCode#
+			</isNotEmpty>
+			<isNotNull property="companyAttest.isVip" prepend="and">
+				c.membership_code !='10051000'
+			</isNotNull>
+			<isNotNull property="companyAttest.isNoVip" prepend="and">
+				c.membership_code ='10051000'
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="query" parameterClass="java.util.Map" resultMap="companyAttestDtoResult">
+		select
+		c.name,
+		<include refid="defaultColumn" />
+		from company_attest ca
+		inner join company c on ca.company_id=c.id
+		<include refid="dynamicBySearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from company_attest ca
+		inner join company c on ca.company_id=c.id
+		<include refid="dynamicBySearch" />
+		<include refid="common.pageOrderBy" />
+	</select>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="companyAttestResult">
+		select
+		<include refid="defaultColumn" />
+		from company_attest ca
+		<include refid="dynamicBySearch" />
+		limit 1
+	</select>
+
+	<select id="queryAttestByCid" parameterClass="java.lang.Integer" resultMap="companyAttestResult">
+		select
+		<include refid="defaultColumn" />
+		from company_attest ca
+		where company_id = #companyId#
+		limit 1
+	</select>
+	
+	<select id="queryAttestById" parameterClass="java.lang.Integer" resultMap="companyAttestResult">
+		select
+		<include refid="defaultColumn" />
+		from company_attest ca
+		where id = #id#
+	</select>
+	
+	<insert id="insert" parameterClass="companyAttestDO">
+		INSERT INTO
+		company_attest
+		(
+		company_id,attest_type,company_name,register_code,register_addr,register_capital,legal,
+		service_type,industry,business,organization,applicant,company_addr,id_number,contact,sex,tel,mobile,show_status,
+		establish_time,start_time,end_time,inspection_time,gmt_created,gmt_modified,pic_address)
+		VALUES
+		(
+		#companyId#,
+		#attestType#,
+		#companyName#,
+		#registerCode#,
+		#registerAddr#,
+		#registerCapital#,
+		#legal#,
+		#serviceType#,
+		#industry#,
+		#business#,
+		#organization#,
+		#applicant#,
+		#companyAddr#,
+		#idNumber#,
+		#contact#,
+		#sex#,
+		#tel#,
+		#mobile#,
+		#showStatus#,
+		#establishTime#,
+		#startTime#,
+		#endTime#,
+		#inspectionTime#,
+		now(),
+		now(),
+		#picAddress#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="companyAttestDO">
+		UPDATE
+		company_attest
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="attestType">
+			attest_type = #attestType#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyName">
+			company_name = #companyName#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="registerCode">
+			register_code =#registerCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="registerAddr">
+			register_addr = #registerAddr#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="registerCapital">
+			register_capital = #registerCapital#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="legal">
+			legal = #legal#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="serviceType">
+			service_type =#serviceType#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="industry">
+			industry = #industry#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="business">
+			business = #business#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="organization">
+			organization = #organization#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="applicant">
+			applicant =#applicant#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyAddr">
+			company_addr = #companyAddr#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="idNumber">
+			id_number = #idNumber#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="contact">
+			contact = #contact#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="sex">
+			sex =#sex#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tel">
+			tel = #tel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="mobile">
+			mobile = #mobile#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="showStatus">
+			show_status = #showStatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status =#checkStatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkTime">
+			check_time = #checkTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkPerson">
+			check_person = #checkPerson#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="establishTime">
+			establish_time = #establishTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="startTime">
+			start_time = #startTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="endTime">
+			end_time =#endTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="inspectionTime">
+			inspection_time = #inspectionTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="picAddress">
+			pic_address = #picAddress#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateCheckStatusById" parameterClass="java.util.Map">
+		UPDATE company_attest
+		SET
+			check_status=#checkStatus#,
+			check_person=#checkPerson#,
+			check_time = now(),
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<delete id = "delete" parameterClass = "java.lang.Integer">
+		delete from company_attest where id = #id#
+	</delete>
+</sqlMap>

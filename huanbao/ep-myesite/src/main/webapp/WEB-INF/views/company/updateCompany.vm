@@ -1,0 +1,399 @@
+#set($compulsiveUpdate="1")
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+        <ul class="breadcrumb">
+			<li><a href="#springUrl('/company/updateCompany.htm')">修改公司基本信息</a><span class="divider">/</span></li>
+			<li><a href="#Maccount">修改联系人信息</a><span class="divider">/</span></li>
+			<li><a href="#Mpic">修改形象照片</a></li>
+		</ul>
+		
+		#if($!{msg})
+    	<div class="alert alert-info">
+			<strong>注意：</strong>$!{msg}
+        </div>
+		#end
+		
+      <div class="well mt">
+    	<form id="companyForm" name="companyForm" action="#springUrl('/company/doUpdateCompany.htm')" method="post" >
+			<input name="basePath" type="hidden" value="$!{basePath}" />
+    		<div class="well-head">修改基本信息(打<span class="red">*</span>为必填项)</div>
+            <div class="well-content">
+        		 <div class="control-group">
+                        <label class="control-label">
+                            <span class="red">*</span>公司名称:
+                        </label>
+                        <div class="controls">
+                            <input name="name" type="text" id="name" value="$!{compProfile.name}" class="field input-xxlarge validate[required,maxSize[40]]">
+                        </div>
+                  </div>
+        		  
+        		  <div class="control-group">
+                        <label class="control-label">
+                            <span class="red">*</span>公司地址:
+                        </label>
+                        <div class="controls">
+                            <select id="provinceCode" name="provinceCode" class="select">
+        						<option value="">省份</option>
+        					</select>
+            				<select id="areaCode" name="areaCode" class="select validate[required]">
+            					<option value="">城市</option>
+            				</select>
+        					<input id="address" name="address" type="text" class="field input-xlarge validate[required,maxSize[50]]" value="$!{compProfile.address}" />
+						</div>
+                  </div>
+        		  
+          		  <div class="control-group" id="industryChain" #if($!industryChainList.size()<1) style="display : none" #end>
+                        <label class="control-label">
+                            <span class="red">*</span>产业链:
+                        </label>
+                        <div class="controls" id="industryChains">
+        					#foreach($industryChain in $!{industryChainList})
+        						<label class="checkbox">
+        						<input name="industryChain" type="checkbox" value="$!{industryChain.industryChain.id}" class="validate[maxCheckbox[3]]"  $!{industryChain.checked}/>$!{industryChain.industryChain.areaName}$!{industryChain.industryChain.categoryName}
+        						</label>
+        					#end
+                        </div>
+                  </div>
+        		  
+        		  <div class="control-group">
+                        <label class="control-label">
+                            <span class="red">*</span>所处行业：
+                        </label>
+                        <div class="controls">
+        					<select id="industryCode" name="industryCode" class="select input-xxlarge validate[required]">
+            					<option value="">-----请选择-----</option>
+            					#foreach($list in $!{companyIndustry})
+            					<option value="$!{list.code}" #if($!{list.code} == $!{compProfile.industryCode}) selected #end>$!{list.name}</option>
+            					#end
+        					</select>
+                        </div>
+                  </div>
+        		
+        		  <div class="control-group">
+                        <label class="control-label">
+                            <span class="red">*</span>公司简介:
+                        </label>
+                        <div class="controls">
+        					<textarea id="details" name="details"  cols="45" rows="5" class="input-xxlarge validate[required,maxSize[1000]]">$!{compProfile.details}</textarea>
+                        </div>
+                  </div>
+        	
+        		   <div class="control-group">
+        				#if($!{compProfile.mainSupply}== "1")
+        					 <label class="control-label">
+        						<span class="red">*</span>主营产品:
+        					 </label>
+        					 <div class="controls">
+                				<input type="text" id="mainProductSupply" name="mainProductSupply" value="$!{compProfile.mainProductSupply}" class="field input-xxlarge validate[required]" /> <br />
+        						<input id="mainSupply" name="mainSupply" type="hidden" value="1"/>
+                				<input id="mainBuy" name="mainBuy" type="hidden" value="0"/>
+                				<input type="hidden" id="mainProductBuy" name="mainProductBuy" value="$!{compProfile.mainProductBuy}" class="field input-xxlarge" />
+                             </div>
+        				#else 
+        					<label class="control-label">
+        						<span class="red">*</span> 求购产品：
+        					</label>
+        					<div class="controls">
+                				<input type="text" id="mainProductBuy" name="mainProductBuy" value="$!{compProfile.mainProductBuy}" class="field input-xxlarge validate[required]" />
+        						<input id="mainSupply" name="mainSupply" type="hidden" value="0"/>
+                				<input type="hidden" id="mainProductSupply" name="mainProductSupply" value="$!{compProfile.mainProductSupply}" class="field input-xxlarge" /> <br />
+                				<input id="mainBuy" name="mainBuy" type="hidden" value="1"/>
+                            </div>
+        				#end
+                   </div>
+        		  
+        		   
+        		   <div class="control-group">
+                        <label class="control-label">
+                            <span class="red">*</span> 公司类型：
+                        </label>
+                        <div class="controls">
+        					<select id="businessCode" name="businessCode" class="select input-xxlarge validate[required]" >
+            					<option value="">-----请选择-----</option>
+            					#foreach($list in $!{companyCategory})
+            					<option value="$!{list.value}" #if($!{list.value} == $!{compProfile.businessCode}) selected #end>$!{list.name}</option>
+            					#end
+        					</select>
+                        </div>
+        		   </div>
+        		   
+        		  <div class="control-group">
+                        <label class="control-label">
+                            公司网址：
+                        </label>
+                        <div class="controls">
+        					<input type="text" id="domain" name="domain" value="$!{compProfile.domain}" class="field input-xxlarge validate[maxSize[100]]" />
+                        </div>
+        		  </div>
+        		   
+           		  <div class="control-group">
+                        <label class="control-label">
+                            注册资金：
+                        </label>
+                        <div class="controls">
+        					<input type="text" id="funds" name="funds" value="$!{compProfile.funds}" class="field input-xxlarge validate[maxSize[50]]" />
+                        </div>
+        		   </div>
+        		   
+        		   <div class="control-group">
+                        <label class="control-label">
+                            法人：
+                        </label>
+                        <div class="controls">
+        					<input id="legal" name="legal" value="$!{compProfile.legal}" class="field input-xxlarge validate[maxSize[50]]" />
+                        </div>
+        		   </div>
+        		   
+				   <div class="form-actions">
+						<input type="submit"  class="btn btn-primary" value="保存公司信息">
+                   </div>
+    		   </div>
+    	</form>
+        </div>
+		
+		<div class="well mt" id="Mpic">
+			<div class="well-head">修改公司形象照片</div>
+			<div class="well-content">
+				<div class="control-group" >
+                        <label class="control-label">
+                            当前公司最新形象
+                        </label>
+                        <div class="controls">
+    						#if(${compImage.size()} == 0)
+								<img id="pic" src="$!{address.img}/huanbao/images/esite2/topig_03.gif" width="200" height="200"/>
+								<br/>
+								<input type="button" value="上传新形象" class="btn" id="uploadBtn">
+                			#else
+                				#set($topLogo=${compImage.get(0)})
+                		    	<img src="$!{address.thumb}$!{address.resource}$!{topLogo.path}&width=200&height=200"/>
+								<br/>
+                                <a href="#springUrl('/company/deletePhoto.htm')?pid=$!{topLogo.id}" class="btn" >删除当前形象</a>
+							#end
+                        </div>
+        		   </div>
+            </div>
+        </div>
+		
+		<div class="well mt" id="Maccount">
+			<form id="accountForm" class="margintop8" method="post" action="#springUrl('/company/doUpdateAccount.htm')">
+    		<input id="id" name="id" type="hidden" value="$!{account.id}"/>
+			<input id="id" name="basePath" type="hidden" value="$!{basePath}"/>
+    		<div class="well-head">修改联系人信息(打<span class="red">*</span>为必填项)</div>
+    			<div class="well-content">
+				
+					<div class="control-group">
+                        <label class="control-label">
+    						<span class="red">*</span> 联系人姓名：
+    					</label>
+                        <div class="controls">
+        					<input id="name" name="name" type="text" value="$!{account.name}" class="field input-xxlarge validate[required,maxSize[50]]"/>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						<span class="red">*</span> 性别：
+    					</label>
+                        <div class="controls">
+        					<label class="radio">
+								<input type="radio" name="sex" value="0" #if($!{account.sex} != 1) checked #end/>先生 
+								<input type="radio" name="sex" value="1" #if($!{account.sex} ==1) checked #end/>女士
+                            </label>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						<span class="red">*</span> 手机：
+    					</label>
+                        <div class="controls">
+        					<input id="mobile" name="mobile" type="text" value="$!{account.mobile}" class="field input-xxlarge validate[required,custom[mobile]]" />
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						<span class="red">*</span> 邮箱：
+    					</label>
+                        <div class="controls">
+        					<input id="email" name="email" readonly="true" type="text" value="$!{account.email}" class="field input-xlarge validate[required,custom[email]]" />
+							<span class="grey">该项不能更改</span>
+						</div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						座机：
+    					</label>
+                        <div class="controls">
+        					<input id="phoneCountry" name="phoneCountry" class="field" type="text" value="$!{account.phoneCountry}" size="4" maxlength="2"/>-
+                        	<input id="phoneArea" name="phoneArea" class="field" type="text" value="$!{account.phoneArea}" size="8" maxlength="4"/>-
+                        	<input id="phone" name="phone" type="text" class="field input-large validate[maxSize[15],custom[phone]]" value="$!{account.phone}"/>
+							<span class="grey">例如:86-0571-56612345</span>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						传真：
+    					</label>
+                        <div class="controls">
+        					<input id="faxCountry" name="faxCountry" class="field" type="text" value="$!{account.faxCountry}"  size="4" maxlength="2"/>-
+                        	<input id="faxArea" name="faxArea" class="field" type="text" value="$!{account.faxArea}" size="8" maxlength="4"/>-
+                        	<input id="fax" name="fax" type="text" class="field input-large validate[maxSize[15],custom[number]]" value="$!{account.fax}"/>
+							<span class="grey">例如:86-0571-56612345</span>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						部门：
+    					</label>
+                        <div class="controls">
+        					<input id="dept" name="dept" type="text" value="$!{account.dept}" class="field input-xxlarge validate[maxSize[20]]"/>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						QQ：
+    					</label>
+                        <div class="controls">
+        					<input id="contact" name="qq" type="text" value="$!{account.qq}" class="field input-xlarge validate[maxSize[20]]"/>
+							<span class="grey">填写qq后,客户可以通过你发布的产品信息,直接在线联系你</span>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						其他联系方式：
+    					</label>
+                        <div class="controls">
+        					<input id="contact" name="contact" type="text" value="$!{account.contact}" class="field input-xxlarge validate[maxSize[30]]"/>
+                        </div>
+        		    </div>
+					
+					<div class="control-group">
+                        <label class="control-label">
+    						职位：
+    					</label>
+                        <div class="controls">
+        					<input id="position" name="position" type="text" value="$!{account.position}" class="field input-xxlarge validate[maxSize[30]]"/>
+                        </div>
+        		    </div>
+				
+					<div class="form-actions">
+                        <input type="submit"  class="btn btn-primary" value="保存账户信息">
+                    </div>
+    			</div>
+    		</form>
+        </div>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+	jQuery('document').ready(function(){
+	
+		// init system menu 
+		myrc.select("Js_select");
+		myrc.menu(6, 0);
+		
+		// attach valdation engine
+		jQuery("#companyForm").validationEngine("attach");
+
+		jQuery("#accountForm").validationEngine("attach");
+		
+		
+		// bind event when areaCode change
+		jQuery("#provinceCode").change(function(){
+    		jQuery("#industryChains").html("");
+    		jQuery("#industryChain").hide();
+    	});
+    	
+    	jQuery("#areaCode").change(function(){
+    		
+    		var areaCode = jQuery("#areaCode").val();
+			
+    		if(areaCode!=""){
+        		jQuery.ajax({
+        			type : "post",
+        			url : "#springUrl('/common/getIndustryChains.htm')",
+        			data : {"areaCode" : areaCode},
+        			dataType : "json",
+        			success : function(data){
+        				jQuery("#industryChains").html("");
+        				if(data!=""){
+        					jQuery("#industryChain").show();
+        					jQuery.each(data,function(index,value){
+        						jQuery("#industryChains").append("<input type='checkbox' name = 'industryChain'   value='"+value.industryChain.id+"' "+value.checked+" />"+value.industryChain.areaName+value.industryChain.categoryName);
+        					})
+        				}else{
+        					jQuery("#industryChain").hide();
+        				}
+        			}
+        		});
+    		}else{
+    			jQuery("#industryChains").html("");
+    			jQuery("#industryChain").hide();
+    		}
+    	}); 
+		
+		// init selector
+    	var selector = new Asto.util.Selector({
+    		url:"#springUrl('/common/getAreaCode.htm')",
+    		selects:["#provinceCode","#areaCode"],
+    		field:{code:"code",label:"name"}
+    	});
+    	
+    	selector.init({ 
+    		rootCode:"10011000",
+           	initCode:"$!{compProfile.areaCode}"
+    	});
+		
+		// bind upload button
+		jQuery("#uploadBtn").click(function(){
+	
+    		var photoBox=new Asto.util.Modal({
+        		title:"上传公司形象照片",
+        		url:"#springUrl('/photo/promptUpload.htm')?targetType=company&targetId=$!{epAuthUser.cid}&albumId=-1&max=1",
+        		width:500,
+        		height:350,
+        		modal:true
+        	});
+    
+    		Asto.util.Callback.setSubmitCallback(function(success, data){
+    			if(success=="true"){
+        			for(var key in data){
+        				//重新加载新上传的图片
+        				jQuery("#pic").attr('src',"$!{address.thumb}$!{address.resource}"+data[key]+"&width=200&height=200");
+						jQuery('#uploadBtn').hide();
+        			}
+    			}
+    			photoBox.close();
+    		});
+    	});
+	
+    });
+	
+	
+	
+	
+	function deletePhoto(id,path) {
+  		jQuery.ajax({
+            url:'#springUrl('/photo/deleteCompPhoto.htm')',
+            data:{"id":id,"path":path},
+            cache:false,
+            dataType:"json",
+            type:"post",
+			success:function(req){
+                if(req.success){
+                	window.location="#springUrl('/company/updateComp.htm')?info=5";
+                }
+            },
+            failure:function(){
+				window.location="#springUrl('/company/updateComp.htm')?info=6";
+            }
+       });
+    }
+</script>

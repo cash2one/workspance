@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="contactClickLog">
+	<typeAlias alias="contactClickLogDO" type="com.ast.ast1949.domain.sample.ContactClickLog" />
+	<resultMap class="contactClickLogDO" id="contactClickLogResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="clickFee" column="click_fee" />
+		<result property="clickScore" column="click_score" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		target_id,
+		gmt_created,
+		gmt_modified,
+		click_fee,
+		click_score
+	</sql>
+
+	<insert id="insert" parameterClass="contactClickLogDO">
+		INSERT INTO ast.contact_click_log
+		(
+		company_id,
+		target_id,
+		gmt_created,
+		gmt_modified,
+		click_fee,
+		click_score)
+		VALUES
+		(
+		#companyId#,
+		#targetId#,
+		now(),now(),
+		#clickFee#,
+		#clickScore#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+		
+	<select id="countClick" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM contact_click_log
+		where company_id = #companyId#
+	</select>
+	
+	<select id="queryById" parameterClass="java.util.Map" resultMap="contactClickLogResult">
+		select 
+		<include refid="defaultColumn" />
+		from contact_click_log
+		where 
+		company_id = #companyId#
+		and target_id = #targetId#
+	</select>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="contactClickLog.companyId">
+				company_id = #contactClickLog.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="contactClickLog.from">
+				date(gmt_modified) >= #contactClickLog.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="contactClickLog.to">
+				#contactClickLog.to# >= date(gmt_modified)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryList" parameterClass="java.util.Map" resultMap="contactClickLogResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM contact_click_log
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM contact_click_log
+		<include refid="whereClause" />
+	</select>
+</sqlMap>

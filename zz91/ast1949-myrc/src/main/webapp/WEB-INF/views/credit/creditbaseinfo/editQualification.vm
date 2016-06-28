@@ -1,0 +1,191 @@
+#set( $layout = "/layout/default.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sincerity/css/authentication.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sincerity/js/authentication.js"></script>
+<script language="javascript" type="text/javascript" src="http://img0.zz91.com/zz91/sincerity/js/calendar.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<div class="main">
+	<div class="mainblock1">
+    	<a href="#springUrl('/credit/creditbaseinfo/index.htm')">诚信档案</a> <span class="divider">/</span>基本信息
+    </div>
+    <!--end mainblock1-->
+    <div class="mainblock2">
+    	<div class="m2-title">
+        	<ul class="m2-button">
+            	<li>
+					<a href="#springUrl('/credit/creditbaseinfo/index.htm')">认证信息
+        				<span class="m-orange">
+        					#if($!{checkStatus} == "0")
+        						[认证中]
+        					#elseif($!{checkStatus} == "1")
+        						[已认证]
+        					#elseif($!{checkStatus} == "2")
+        						[认证不通过]
+							#else
+								[待认证]
+        					#end
+                        </span>
+    				</a>
+				</li>
+                <li style="background:url(http://img0.zz91.com/zz91/sincerity/images/botton_bg_click.jpg) repeat-x;font-weight:bold">
+					<a href="#springUrl('/credit/creditbaseinfo/indexQualification.htm')">企业自传资质</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end m2-title-->
+        <div class="submitIndividual">
+            <form method="post" id="submitIndividual_update" action="#springUrl('/credit/creditbaseinfo/updateQualification.htm')">
+				<input type="hidden" id="id" name="id" value="$!{creditFile.id}" />
+            <div class="si-item">
+            	<div class="si-item-title">
+                	 <span class="red">*</span>证书名称：
+                </div>
+                <div class="si-item-content">
+                	<input type="text" class="si-item-text" id="certificateName" name="fileName"  value="$!{creditFile.fileName}"/>
+                </div>
+
+                <div class="si-info"></div>
+                <!--end si-info-->
+                <div class="cb"></div>
+            </div>
+            <!--end si-item-->
+            <div class="si-item">
+            	<div class="si-item-title">
+                	 发证机构：
+                </div>
+                <div class="si-item-content">
+                	<input type="text" class="si-item-text" name="organization" value="$!{creditFile.organization}"/>
+                </div>
+                
+                <div class="si-info"></div>
+                <!--end si-info-->
+                
+                <div class="cb"></div>
+            </div>
+            <!--end si-item-->
+            
+            <div class="si-item">
+            	<div class="si-item-title">
+                	 生效日期：
+                </div>
+                <div class="si-item-content">
+                	<div class="si-item-setupTime">
+                    	<input type="text" class="si-item-setupTdate" name="startTimeStr" id="setupTdate" value = "#printFragmentDate("yyyy-MM-dd" $!{creditFile.startTime})"/>
+                    </div>
+                    <!--end si-item-setupTime-->
+                    
+                </div>
+                <div class="si-info"></div>
+                <!--end si-info-->
+                <div class="cb"></div>
+            </div>
+            <!--end si-item-->
+            
+            <div class="si-item">
+            	<div class="si-item-title">
+                	 截止日期：
+                </div>
+                <div class="si-item-content">
+                	<div class="si-item-setupTime">
+                    	<input type="text" class="si-item-setupTdate" name="endTimeStr" value="#printFragmentDate("yyyy-MM-dd" $!{creditFile.endTime})" id="ClosingDate" />
+                    </div>
+                    <!--end si-item-setupTime-->
+                    <div class="si-item-setupTimeInfo">
+                    
+                    </div>
+                    <!--end si-item-setupTimeInfo-->
+                </div>
+                <div class="si-info"></div>
+                <!--end si-info-->
+                <div class="cb"></div>
+            </div>
+            <!--end si-item-->
+            
+            <div class="si-item">
+            	<div class="si-item-title">
+                	 <span class="red">*</span>上传证书图片：
+                </div>
+                <div class="si-item-content">
+                	<div class="si-item-UploadPicture" id="UploadPicture">
+						#if($!{creditFile.picName} && $!{creditFile.picName}!="")
+							<img id="previewImg" src="$!{address.resource}/$!{creditFile.picName}" name="imag" width="231" height="160" border="1">
+						#else
+							<img id="previewImg" src="$!{address.images}/global/noimage.gif" name="imag" width="231" height="160" border="1">
+						#end
+                    </div>
+					<input type="hidden" id="picName" name="picName" class="addinfoinput"  value = "$!{creditFile.picName}">
+                    <!--end si-item-UploadPicture-->
+                    <input type="button" class="si-ok-button" value="上传" id="Js_uploadBtn"/>
+                    <div class="si-Upload-text">
+                    	您可将证书扫描、或用数码相机拍成照片。证书上传所花费时间是
+						由图片大小决定的，大的图片会占用比较长的上传时间。
+
+                    </div>
+                    <!--end si-Upload-text-->
+                </div>
+                <div class="si-info"></div>
+                <!--end si-info-->
+                <div class="cb"></div>
+            </div>
+            <!--end si-item-->
+            
+            <div class="si-ok">
+            	<input type="submit" class="si-ok-submit" value="提交审核" />
+            </div>
+            <!--end si-ok-->
+            </form>
+        </div>
+        <!--end submitIndividual-->
+    </div>
+    <!--end mainblock2-->
+</div>
+<!--end main-->
+
+<script>
+    jQuery(function(){
+   	myrc.menu(7, 0);
+##		jQuery("#submitIndividual").validationEngine("attach");
+		
+		##var upload = new Asto.util.PopupBox({
+		##	url:"#springUrl('/sys/upload/creditFile.htm')",
+		##	title:"上传证书图片",
+		##	width:450,
+		##	height:230,
+		##	modal:true
+		##});
+		
+		##jQuery("#Js_uploadBtn").click(function(obj){
+		##	var btn = jQuery(this);
+		##	Asto.util.Callback.setSubmitCallback(function(success, data){
+		##		jQuery("#previewImg").attr("src","$!{address.resource}/"+data.picAddress);
+		##		jQuery("#picName").val(data.picAddress);
+		##		btn.val("重新上传");
+		##		upload.close();
+     	##	});
+		##	upload.show("#springUrl('/sys/upload/creditFile.htm')");
+		##});
+		
+		jQuery("#Js_uploadBtn").click(function(obj){
+			var btn = jQuery(this);
+				Asto.util.Callback.setSubmitCallback(function (success, data) {
+			  		 jQuery("#previewImg").attr("src","$!{address.resource}/"+data.picAddress);
+					 jQuery("#picName").val(data.picAddress);
+					 btn.val("重新上传");
+					 parent.closeoverlay();
+					 
+					var paths=data.picAddress;
+					var pathArr=paths.split(",");
+					for(var i=1;i<pathArr.length;i++){
+						jQuery("#previewImg").attr("src","$!{address.img3}/231x160/"+pathArr[i]);
+						jQuery("#picName").val(pathArr[i]);
+						btn.val("重新上传");
+					}
+					parent.closeoverlay();
+				});
+				var url="$!{address.myrc}/sys/upload/myrcUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=5&limitCount=1&uploadFlag=0";
+				//将弹框关闭等字显示出来
+				parent.overtitle("上传图片");
+				openoverlay(url,'上传图片',700,500,0);
+		});
+    });
+</script>

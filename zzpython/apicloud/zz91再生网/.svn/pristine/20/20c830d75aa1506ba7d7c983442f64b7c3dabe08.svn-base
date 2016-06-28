@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>消息</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+</head>
+<style>
+.news-list li{
+  padding: 10px 8px;
+  border-bottom: 1px solid #e1e1e1
+}
+.time{
+  font-size: 12px;
+  color: #959595
+}
+.news-list h3{
+  font-weight: normal;
+  font-size: 14px;
+}
+.seend h3{
+  color: #959595
+}
+</style>
+<body>
+  <ul class="news-list">
+    <!-- <li>
+      <h3>只有垮掉的企业，没有垮掉的行业平PPPPPpp...</h3>
+      <div class="time">时间：2015-10-08  15:37</div>
+    </li> -->
+  </ul>
+</body>
+<script id="info-list" type="text/html">
+  <li>
+    <h3>{{ d.title }}</h3>
+    <div class="time">时间：{{ d.gmt_created }}</div>
+  </li>
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script>
+var currPage = 1;
+apiready = function(){
+  api.showProgress({title:'加载中',modal:false});
+  ajaxInfo();
+  $(".news-list").on("click",function(){
+    var pageParam = {
+      wintitle:"信息标题",
+      type:"news-detail"
+    };
+    openWin("news-detail","../comm/news-detail.html",pageParam);
+  })
+  api.addEventListener({
+    name : 'scrolltobottom'
+  }, function(ret, err) {
+    currPage += 1;
+    if($(".mui-spinner").length==0){
+      $("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+    }
+    
+    setTimeout(function(){
+      ajaxInfo();
+    },1000)
+  });
+  //页面刷新
+  api.setRefreshHeaderInfo({
+    visible : true,
+    // bgColor: '#F2F2F2',
+    bgColor : '#E6E6E6',
+    textColor : '#000000',
+    textDown : '下拉刷新',
+    textUp : '释放刷新',
+  }, function(ret, err) {
+    currPage = 1;
+    ajaxInfo();
+    api.refreshHeaderLoadDone();
+    api.hideProgress();
+    api.toast({
+      msg : '数据已是最新！',
+      duration : 3000,
+      location : 'bottom'
+    });
+  });
+}
+function ajaxInfo(){
+  var mtype = api.pageParam.mtype;
+  var isviews = api.pageParam.typeid;
+  var company_id =  UserInfo.memberID();
+  var usertoken = UserInfo.token();
+  api.ajax({
+      url : hosturl + 'messagelistmongo.html?company_id='+ company_id +'&usertoken='+ usertoken +'&appsystem='+ api.systemType +'&datatype=json&isviews='+ isviews +'&mtype='+mtype +"&page="+currPage,
+      method : 'get',
+      timeout : 30,
+      dataType : 'json',
+      returnAll : false
+  }, function(ret, err) {
+      if (ret) {
+        var pageHtml = "";
+        $.each(ret, function(index, item) {
+          var getTpl = $api.html($api.byId("info-list"));
+          laytpl(getTpl).render(item, function(html) {
+              pageHtml = pageHtml + html;
+          });
+        })
+        if(currPage == 1){
+          if(ret.length == 0){
+            pageHtml = "<li style='text-align:center'>暂无数据</li>"
+          }
+          $(".news-list").html(pageHtml);
+        }else{
+          $(".news-list").append(pageHtml)
+        }
+        api.hideProgress();
+        $(".mui-spinner").remove();
+      } else {
+        api.hideProgress();
+      };
+  });
+}
+</script>
+</html>

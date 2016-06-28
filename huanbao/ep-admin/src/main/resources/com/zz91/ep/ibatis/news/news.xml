@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="news">
+
+	<typeAlias alias="news" type="com.zz91.ep.domain.news.News"/>
+	<typeAlias alias="recommend" type="com.zz91.ep.domain.news.NewsRecommend"/>
+	<typeAlias alias="newsDto" type="com.zz91.ep.dto.news.NewsDto"/>
+	
+	<resultMap class="news" id="newsWithRecommendResult">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="description" column="description"/>
+		<result property="tags" column="tags"/>
+		<result property="newsSource" column="news_source"/>
+		<result property="viewCount" column="view_count"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+	</resultMap>
+	
+	<resultMap class="news" id="newsResult">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="description" column="description"/>
+		<result property="details" column="details"/>
+		<result property="detailsQuery" column="details_query"/>
+		<result property="tags" column="tags"/>
+		<result property="htmlPath" column="html_path"/>
+		<result property="adminAccount" column="admin_account"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="newsSource" column="news_source"/>
+		<result property="newsSourceUrl" column="news_source_url"/>
+		<result property="viewCount" column="view_count"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap class="newsDto" id="newsDtoResult">
+		<result property="news" resultMap="news.newsWithRecommendResult" />
+		<result property="rid" column="rid"/>
+	</resultMap>
+	
+	<resultMap class="news" id="simpleResultMap">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		n.`id`,
+		n.`title`,
+		n.`title_index`,
+		n.`category_code`,
+		n.`description`,
+		n.`details`,
+		n.`details_query`,
+		n.`tags`,
+		n.`html_path`,
+		n.`admin_account`,
+		n.`admin_name`,
+		n.`news_source`,
+		n.`news_source_url`,
+		n.`view_count`,
+		n.`pause_status`,
+		n.`gmt_publish`,
+		n.`gmt_created`,
+		n.`gmt_modified`
+	</sql>
+	
+	<sql id="column">
+		n.`id`,
+		n.`title`,
+		n.`title_index`,
+		n.`category_code`,
+		n.`description`,
+		n.`tags`,
+		n.`news_source`,
+		n.`view_count`,
+		n.`admin_name`,
+		n.`pause_status`,
+		n.`gmt_publish` 
+	</sql>
+	
+	<sql id="simplyCollum">
+		n.`id`,
+		n.`title_index`,
+		n.`description`,
+		n.`category_code`,
+		n.`details_query`
+	</sql>
+	
+	<!-- 
+	<sql id="dynamicConditionsWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="categoryCode">
+				category_code like concat(#categoryCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<resultMap class="news" id="simplyResult">
+		<result property="id" column="id"/>
+		<result property="titleIndex" column="title_index"/>
+		<result property="description" column="description"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="detailsQuery" column="details_query"/>
+	</resultMap>
+	
+	<select id="queryNewsByRecommend" parameterClass="java.util.HashMap" resultMap="simplyResult">
+		select
+		<include refid="news.simplyCollum"/>
+		from `news` n 
+		inner join news_recommend nr on nr.news_id=n.id 
+		where n.pause_status=1 and nr.type=#type#
+		order by nr.gmt_created desc
+		limit #max#
+	</select>
+	
+	<select id="queryTopNews" resultClass="java.lang.Integer" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news n
+		where pause_status=1 
+		order by view_count desc 
+		limit #max#
+	</select>
+	
+	<select id="queryNewsByCategory" parameterClass="java.util.HashMap" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news n
+		<include refid="news.dynamicConditionsWhere"/>
+		
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryNewsByCategoryKey" parameterClass="java.util.HashMap" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news_recommend nr,news n
+		where nr.news_id=n.id and nr.type=#categoryKey#
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryNewsByCategoryCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from news n
+		<include refid="news.dynamicConditionsWhere"/>
+	</select>
+	
+	<select id="queryNewsByCategoryKeyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from news_recommend nr,news n
+		where nr.news_id=n.id and nr.type=#categoryKey#
+	</select>
+	
+	<select id="queryRelatedNewsByTag" parameterClass="java.util.HashMap" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news n
+		where pause_status=1 and details_query like concat('%',#tag#,'%') 
+		order by gmt_publish desc
+		limit #max#
+	</select>
+	
+	<select id="queryNewestNewsByCategory" parameterClass="java.util.HashMap" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news n
+		where pause_status=1
+		<isNotEmpty property="categoryCode" prepend="and">
+			category_code like concat(#categoryCode#,'%')
+		</isNotEmpty>
+		order by gmt_publish desc
+		limit #max#
+	</select>
+	
+	<select id="queryOnNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        gmt_publish > (select gmt_publish from news where id = #id#)
+        and category_code=#categoryCode#
+		and pause_status=1
+        order by gmt_publish asc limit 1;
+	</select>
+	
+	<select id="queryDownNewsById" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,title from news
+        where 
+        (select gmt_publish from news where id = #id#) > gmt_publish
+        and category_code=#categoryCode#
+		and pause_status=1
+        order by gmt_publish desc limit 1;
+	</select>
+	
+	<select id="queryNewsByTitle" parameterClass="java.util.HashMap" resultMap="newsWithRecommendResult">
+		select 
+		<include refid="news.column"/>
+		from news n
+		where title like concat(#title#,'%') 
+		and pause_status=1
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<update id="updateViewCount" parameterClass="java.lang.Integer">
+		update news set view_count = view_count+1 where id=#value#
+	</update>
+	
+	<select id="queryNewByKeywords" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select 
+		id,title
+		from news n
+		where pause_status=1 and title like concat('%',#keywords#,'%')
+		order by gmt_created desc 
+		limit #size#
+	</select>
+	 -->
+	
+	<select id="queryNewDetailsById" parameterClass="java.lang.Integer" resultMap="newsResult">
+		select 
+		<include refid="news.fullColumn"/>
+		from news n
+		where id=#id#
+	</select>
+	
+	<select id="queryNewsByTitleCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from news n
+		where title like concat(#title#,'%')
+		and pause_status=1
+	</select>
+	
+	<!-- 后台使用 -->
+	<insert id="insertNewsByAdmin" parameterClass="news">
+		insert into `news`
+		(
+		`title`,
+		`title_index`,
+		`category_code`,
+		`description`,
+		`details`,
+		`tags`,
+		`news_source`,
+		`news_source_url`,
+		`view_count`,
+		`pause_status`,
+		`admin_account`,
+		`admin_name`,
+		`gmt_publish`,
+		`gmt_created`,
+		`gmt_modified`)
+		value
+		(
+		#title#,
+		#titleIndex#,
+		#categoryCode#,
+		#description#,
+		#details#,
+		#tags#,
+		#newsSource#,
+		#newsSourceUrl#,
+		#viewCount#,
+		#pauseStatus#,
+		#adminAccount#,
+		#adminName#,
+		#gmtPublish#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateNews" parameterClass="news">
+		update `news`
+		set
+		`title` = #title#,
+		`title_index` = #titleIndex#,
+		`category_code` = #categoryCode#,
+		`description` = #description#,
+		`tags` = #tags#,
+		`news_source` = #newsSource#,
+		`news_source_url` = #newsSourceUrl#,
+		`view_count` = #viewCount#,
+		`admin_account` = #adminAccount#,
+		`admin_name` = #adminName#,
+		`gmt_publish` = #gmtPublish#,
+		`pause_status` = #pauseStatus#,
+		`details` = #details#,
+		`gmt_modified`= now()
+		where id=#id#
+	</update>
+	
+	<delete id="deleteNewsById" parameterClass="java.lang.Integer" >
+		delete from `news`
+		where id=#id#
+	</delete>
+	
+	<update id="updateStatusOfNews" parameterClass="java.util.HashMap">
+		update news 
+		set pause_status=#status#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<sql id="dynamicNews">
+		<dynamic prepend="where">
+		
+			<isNotEmpty property="dto.news.categoryCode" prepend="and">
+				n.category_code like concat(#dto.news.categoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.news.title" prepend="and">
+				n.title like concat(#dto.news.title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.news.pauseStatus" prepend="and">
+				n.pause_status=#dto.news.pauseStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryNewsByAdmin" parameterClass="java.util.HashMap" resultMap="newsDtoResult">
+		select 
+		n.id,n.title,n.title_index,n.category_code,n.description,n.pause_status,n.view_count,n.admin_name,n.tags,
+		n.gmt_publish,n.news_source
+		<isNotEmpty property="dto.newsRecommend.type">
+			,nrr.id as rid
+		</isNotEmpty>
+		<isEmpty property="dto.newsRecommend.type">
+			,0 as rid
+		</isEmpty>
+		from news n
+		<isNotEmpty property="dto.newsRecommend.type">
+			inner join (select nr.id,nr.news_id from news_recommend nr where nr.type=#dto.newsRecommend.type#) nrr on nrr.news_id=n.id
+		</isNotEmpty>
+		<include refid="news.dynamicNews"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryNewsByAdminCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from news n
+		<isNotEmpty property="dto.newsRecommend.type">
+			inner join (select nr.id,nr.news_id from news_recommend nr where nr.type=#dto.newsRecommend.type#) nrr on nrr.news_id=n.id
+		</isNotEmpty>
+		<include refid="news.dynamicNews"/>
+	</select>
+	
+	<select id="queryRecommendNewByWeekly" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select n.id,n.title from `news` n 
+		<isNotEmpty property="recommend">
+		inner join news_recommend nr on nr.news_id=n.id 
+		</isNotEmpty>
+		where n.pause_status=1 
+		<isNotEmpty prepend="and" property="category">
+			n.category_code=#category#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="recommend">
+		nr.type=#type#
+		order by nr.gmt_created desc
+		</isNotEmpty>
+		<isEmpty property="recommend">
+		order by n.gmt_publish desc
+		</isEmpty>
+		limit #size#
+	</select>
+	
+	<select id="countBytitle" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*)
+		from news
+		where title = #title#
+		and gmt_created > #today#
+	</select>
+	
+	<select id="queryListByFromTo" parameterClass="java.util.Map" resultMap="newsWithRecommendResult">
+		select
+		<include refid="column"/>
+		FROM news n
+		where gmt_created &gt; #from# and #to# &gt; gmt_created
+	</select>
+	
+</sqlMap>

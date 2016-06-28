@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeLog">
+	<typeAlias alias="tradeLogDO" type="com.ast.feiliao91.domain.trade.TradeLog" />
+	<resultMap class="tradeLogDO" id="tradeLogResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="money" column="money" />
+		<result property="remark" column="remark" />
+		<result property="status" column="status" />
+		<result property="type" column="type" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,
+		gmt_created,
+		gmt_modified,
+		company_id,
+		remark,
+		status,
+		money,
+		type
+	</sql>
+	
+	<sql id="whereCaulse">
+		<dynamic prepend="where"> 
+			<isNotEmpty prepend="and" property="search.companyId">
+				company_id = #search.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.status">
+				status = #search.status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.type">
+				type = #search.type#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	
+	<insert id="insert" parameterClass="tradeLogDO">
+		INSERT INTO `feiliao91`.`trade_log`
+		(
+		`gmt_created`,
+		`gmt_modified`,
+		`company_id`,
+		`remark`,
+		`status`,
+		`money`,
+		`type`)
+		VALUES
+		(
+		now(),
+		now(),
+		#companyId#,
+		#remark#,
+		#status#,
+		#money#,
+		#type#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+	
+	<!--搜索交易明细 -->
+	<select id="queryTradeLogList" parameterClass="java.util.Map" resultMap="tradeLogResult">
+		select
+		<include refid="tradeLog.fullColumn" />
+		from trade_log
+		<include refid="tradeLog.whereCaulse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--搜索交易明细条数 -->
+	<select id="countTradeLogList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from trade_log
+		<include refid="tradeLog.whereCaulse"/>
+	</select>
+</sqlMap>

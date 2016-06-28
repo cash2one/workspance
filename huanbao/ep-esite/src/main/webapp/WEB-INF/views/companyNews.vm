@@ -1,0 +1,82 @@
+#set($layout="/layout/defaultS.vm")
+<div class="contain">
+
+	<div class="location">
+		#parse('/common/esitenavigation.vm')
+		>
+		<a href="#springUrl('/companyNews')$!{mid}.htm" >公司动态</a>		
+	</div>
+	<div class="mainblock">
+		#parse("/common/esiteleft.vm")
+		<div class="mk-body">
+			<div class="panel">
+				<h3>
+					<table>
+						<tr>
+							<td>公司动态</td>
+						</tr>
+					</table>
+					<span style="right:16px;top:4px;">
+						<form action="#springUrl('/companyNews.htm')" method="post">
+							<input name="keywords" type="text" class="list_input" value="$!{keywords}"/>
+							<input name="cid" type="hidden" value="$!{cid}"/>
+							<input type="submit" value="搜索" class="list_search"/>
+						</form>
+					</span>
+				</h3>
+				<div class="panel-body">
+					<div class="succ_time">
+						#if ($!{page.totals}==0)
+							<span class="st_span1">环保网最新公司动态</span>
+						#else
+							<span class="st_span1">公司动态</span>
+						#end
+						<span class="st_span2">发布时间</span>
+					</div>
+					<ul class="pb-ulpage ul-point">
+					#if ($!{page.totals}==0)
+						#cacheFragment("$!{address.fragment}/fragment/company/newestCompNews.htm?size=16&nw","","","600")
+                               #foreach($l in $list)
+                            	<li>
+        							<table class="suct_tab">
+        								<tbody>
+        									<tr>
+        										<td class="suct_td"><a href="$!{address.esite}/newsDetails$!{l.id}.htm" target="_blank" title="${l.title}">$!{l.title}</a></td>
+        										<td>#printFragmentDate("yyyy-MM-dd" $!{l.gmtPublish})</td>
+        									</tr>
+        								</tbody>
+        							</table>
+        						</li>
+							   #end
+                		#end
+					#end
+					#foreach($list in $!{page.records})
+						<li>
+							<table class="suct_tab">
+								<tbody>
+									<tr>
+										<td class="suct_td"><a href="#springUrl('/newsDetails')$!{list.id}.htm" >$!{list.title}</a></td>
+										<td>#printFragmentDate("yyyy-MM-dd" $!{list.gmtPublish})</td>
+									</tr>
+								</tbody>
+							</table>
+						</li>
+					#end
+					</ul>
+					#if ($!{page.totals}>0)
+					<div class="msb3_page">
+						<table>
+							<tbody>
+								<tr>
+									#newStaticPageNav(${page} "#springUrl('/companyNews')$!{mid}--$!{keywords}" "" "")
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					#end
+				</div>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>

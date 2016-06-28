@@ -1,0 +1,307 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1201","40","00")
+<script language="javascript">
+	var Const = new function(){
+		this.Address = {images:"$!{address.images}"};
+	}
+	function chkfrm(frm){
+		if(jQuery('#name').val()==""){
+			alert("请输入公司名称");
+			jQuery('#name').focus();
+			return false;
+		}
+		
+		if(jQuery('#sex').val()==""){
+			alert("请选择性别");
+			jQuery('#sex').focus();
+			return false;
+		}
+
+		if(jQuery('#contact').val().length<=0){
+			alert("请输入联系人!");
+			jQuery('#contact').focus();
+			return false;
+		}
+
+		if(jQuery('#telAreaCode').val()==""){
+			alert("请输入电话区号");
+			jQuery('#telAreaCode').focus();
+			return false;
+		}
+
+		if(jQuery('#tel').val().length<=0){
+			alert("请输入电话!");
+			jQuery('#tel').focus();
+			return false;
+		}
+
+		if(jQuery('#introduction').val().length<=0){
+			alert("请输入公司简介!");
+			jQuery('#introduction').focus();
+			return false;
+		}
+	
+		if(jQuery('#industryCode').val()==""){
+			alert("请选择主营行业");
+			jQuery('#industryCode').focus();
+			return false
+		}
+
+		if (jQuery('#serviceCode').val()==""){
+			alert("请选择公司类型！")
+			jQuery('#serviceCode').focus()
+			return false;
+		}
+	
+		if(jQuery('#address').val().length<=0){
+			alert("请输入地址!");
+			jQuery('#address').focus();
+			return false;
+		}
+
+		if(jQuery('#addressZip').val().length<=0){
+			alert("请输入邮编!");
+			jQuery('#addressZip').focus();
+			return false;
+		}
+	
+		if (jQuery('#business').val()==""){
+			alert("请选择主营业务！");
+			jQuery('#business').focus()
+			return false
+		}
+		
+		setAreaCode();
+		
+		return true;
+	}
+	
+	jQuery(document).ready(function(){
+		var regarea = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')",
+			assistUrl:"#springUrl('/category/gardenChild.htm')"
+    	});
+    	
+    	regarea.init({
+    		rootCode:"1001",
+    		initCode:"$!{company.areaCode}",
+			initAssistCode:"$!{company.categoryGardenId}",
+			assistSelects:["#reg-garden"],
+    		selects:["#reg-area-0","#reg-area-1","#reg-area-2","#reg-area-3"]
+    	});
+		
+		var industry = new zz91Selector({
+			url:"#springUrl('/category/categoryChild.htm')"
+		});
+		
+		industry.init({
+			rootCode:"1000",
+			initCode:"$!{company.industryCode}",
+			selects:["#industryCode"]
+		});
+		
+		var service=new zz91Selector({
+			url:"#springUrl('/category/categoryChild.htm')"
+		});
+		
+		service.init({
+			rootCode:"1020",
+			initCode:"$!{company.serviceCode}",
+			selects:["#serviceCode"]
+		});
+	});
+	
+	function setAreaCode(){
+		var areacode=jQuery("#reg-area-0").val();
+		if(jQuery("#reg-area-1").val()!=""){
+			areacode=jQuery("#reg-area-1").val();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			areacode=jQuery("#reg-area-2").val();
+		}
+		if(jQuery("#reg-area-3").val()!=""){
+			areacode=jQuery("#reg-area-3").val();
+		}
+		jQuery("#areaCode").val(areacode);
+	}
+</script>
+<div class="myrcNormalFrame">
+			<form name="form1" method="post" action="#springUrl('/mycompany/update.htm')" onSubmit="return chkfrm(this)">
+				<div class="officetitle" style="margin-top:0">修改联系方式(打<font style="color:red">*</font>为必填项)</div>
+				<div class="productskuang">
+						<script language="javascript">
+						//显示隐藏对象
+						function showhidefun(obj){
+							if(eval(document.getElementById(obj))){
+								if(document.getElementById(obj).style.display!=""){
+									document.getElementById(obj).style.display=""
+								}else{
+									document.getElementById(obj).style.display="none";
+								}
+							}
+						}
+						</script>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="contact"><font color="RED">*</font> 联系人姓名：</label></div>
+							<div class="products_fill">
+								<input type="hidden" name="id" id="id" value="$!{company.id}"/>
+								<input name="contact" type="text" id="contact" value="$!{companyAccount.contact}" size="20" maxlength="48"/>
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label><font color="RED">*</font> 性别：</label></div>
+							<div class="products_fill">
+								<input type="radio" id="sex" name="sex" value="0" #if($!{companyAccount.sex}=='0') checked #end style="border:none"/>男
+								<input type="radio" id="sex" name="sex" value="1" #if($!{companyAccount.sex}=='1') checked #end style="border:none"/>女
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="position">职位：</label></div>
+							<div class="products_fill"><input name="position" type="text" id="position" value="$!{companyAccount.position}"/></div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label><font color="RED">*</font> 固定电话：</label></div>
+							<div class="products_fill" style="position:relative">
+								<label for="telCountryCode"  class="fixPositionA" id="telCountryCodeFor">国家区号</label>
+								<label for="telAreaCode" class="fixPositionB" id="telAreaCodeFor">地区区号</label>
+								<label for="tel" class="fixPositionC" id="telFor">电话号码</label>
+								<input name="telCountryCode" type="text" id="telCountryCode" value="$!{companyAccount.telCountryCode}"  style="width:62px" onfocus="jQuery('#telCountryCodeFor').fadeOut(500)"/>
+								<input name="telAreaCode" type="text" id="telAreaCode" size="5" value="$!{companyAccount.telAreaCode}" style="width:62px;" onfocus="jQuery('#telAreaCodeFor').fadeOut(500)"/>
+								<input name="tel" type="text" id="tel" value="$!{companyAccount.tel}" maxlength="96" style="width:120px;" onfocus="jQuery('#telFor').fadeOut(500)"/>
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="faxCountryCode">传真：</label></div>
+							<div class="products_fill" style="position:relative">
+								<label for="faxCountryCode" class="fixPositionA" id="faxCountryCodeFor">国家区号</label>
+								<label for="faxAreaCode" class="fixPositionB" id="faxAreaCodeFor">地区区号</label>
+								<label for="fax" class="fixPositionC" id="faxFor">传真号码</label>
+								<input name="faxCountryCode" type="text" id="faxCountryCode" value="$!{companyAccount.faxCountryCode}" value="86" style="width:62px" onfocus="jQuery('#faxCountryCodeFor').fadeOut(500)"/>
+								<input name="faxAreaCode" type="text" id="faxAreaCode" value="$!{companyAccount.faxAreaCode}" style="width:62px" onfocus="jQuery('#faxAreaCodeFor').fadeOut(500)"/>
+								<input name="fax" type="text" id="fax" value="$!{companyAccount.fax}" maxlength="96" style="width:120px" onfocus="jQuery('#faxFor').fadeOut(500)" />
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="mobile">手机：</label></div>
+							<div class="products_fill"><input name="mobile" type="text" id="mobile" value="$!{companyAccount.mobile}" size="30" maxlength="96"/></div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><font color="RED">*</font> 电子邮箱：</div>
+							<div class="products_fill">
+								<input name="isUseBackEmail" type="radio" value="0"  #if($!{companyAccount.isUseBackEmail}=='0') checked #end class="radioPositionFix" style="border:none"/>
+								<input name="email" type="text" id="cemail" value="$!{companyAccount.email}" size="30" style="background-color:#CCC" maxlength="48" readonly />
+								<font style="color:#AAA">（不能修改）</font>
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="backEmail"> 备用电子邮箱：</label></div>
+							<div class="products_fill">
+								<input type="radio" id="isUseBack" name="isUseBackEmail" value="1" #if($!{companyAccount.isUseBackEmail}=='1') checked #end class="radioPositionFix" style="border:none"/>
+								<input name="backEmail" type="text" id="backEmail" value="$!{companyAccount.backEmail}" size="30" maxlength="48"/>
+								<font style="color:#AAA">（该Email必须有效）</font>
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title">&nbsp;</div>
+                            <div class="products_fill"><font style="color:#AAA">选择一个备用邮箱，该邮箱可以接收所有客户对你的询盘</font></div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label>是否公开电子邮箱：</label></div>
+							<div class="products_fill">
+									<input type="radio" name="isShowEmail" id="radio" value="0" #if($!{companyAccount.isShowEmail}==0) checked="checked" #end class="radioPositionFix" style="border:none"/>是
+									<input type="radio" name="isShowEmail" id="radio2" value="1" #if($!{companyAccount.isShowEmail}==1) checked="checked" #end class="radioPositionFix" style="border:none"/>否
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label>是否公开联系方式：</label></div>
+							<div class="products_fill">
+								<input type="radio" name="hiddenContacts" id="hiddenContacts" value="0" #if($!{companyAccount.hiddenContacts}==0) checked="checked" #end class="radioPositionFix" style="border:none"/>是
+                                <input type="radio" name="hiddenContacts" id="radio2" value="1" #if($!{companyAccount.hiddenContacts}==1) checked="checked"  #end class="radioPositionFix" style="border:none"/>否 <font style="color:#AAA"> (只接收站内留言) </font>
+							</div>
+						</div>
+						<div class="publishFormItems">
+							<div class="products_title"><label for="website">网站：</label></div>
+							<div class="products_title"><input name="website" type="text" id="website" value="$!{company.website}" size="50" maxlength="255"/></div>
+						</div>
+						<div style="clear:both"></div>
+				</div>
+
+				<div class="officetitle">修改公司信息</div>
+				<div class="productskuang">
+					<div class="publishFormItems">
+						<div class="products_title"><label for="name"><font color="RED">*</font> 公司名称：</label></div>
+						<div class="products_fill"><input name="name" type="text" id="name" size="30" value="$!{company.name}"/></div>
+					</div>
+					<div class="publishFormItems">
+                        <div class="products_title"><label for="industryCode"><font color="RED">*</font> 主营行业：</label></div>
+						<div class="products_fill">
+							<select name="industryCode" id="industryCode" style="width:150px"  >
+								<option value="">请选择</option>
+							</select>
+						</div>
+					</div>
+					<div class="publishFormItems">
+						<div class="products_title"><label for="serviceCode"><font color="RED">*</font>公司类型：</label></div>
+						<div class="products_fill">
+							<select name="serviceCode" id="serviceCode" style="width:150px"  >
+								<option value="">请选择</option>
+							</select>
+						</div>
+					</div>
+					<div class="publishFormItems">
+						<div class="products_title"><label><font color="RED">* </font>国家/地区：</label></div>
+						<div class="products_fill">
+							<select id='reg-area-0'>
+								<option value="">请选择国家</option>
+							</select>
+							<select id='reg-area-1' >
+								<option value="">请选择省份</option>
+							</select>
+							<select id='reg-area-2'>
+								<option value="">请选择城市</option>
+							</select>
+							<select id='reg-area-3'>
+								<option value="">请选择区县</option>
+							</select>
+							<input type="hidden" name="areaCode" id="areaCode" value="$!{company.areaCode}" />
+						</div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title">园区、集散地、市场：</div>
+						<div class="products_fill">
+							<select id='reg-garden' name="categoryGardenId">
+								<option value="">请选择集散地</option>
+							</select>
+						</div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="address"><font color="RED">*</font> 地址：</label></div>
+						<div class="products_fill"><input name="address" type="text" id="address" value="$!{company.address}" size="50" maxlength="255"/></div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="addressZip"><font color="RED">* </font>邮编：</label></div>
+						<div class="products_fill"><input name="addressZip" type="text" id="addressZip" value="$!{company.addressZip}" size="30" maxlength="20"/></div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="qq">QQ：</label></div>
+						<div class="products_fill"><input name="qq" type="text" id="qq" value="$!{companyAccount.qq}" size="30" maxlength="20"/></div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="msn">MSN：</label></div>
+						<div class="products_fill"><input name="msn" type="text" id="msn" value="$!{companyAccount.msn}" size="30" maxlength="20"/></div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="introduction"><font color="RED">*</font> 公司简介：</label></div>
+						<div class="products_fill" style="padding-bottom:8px;"><textarea name="introduction" id="introduction" cols="60" rows="5" style="width:480px; height:120px;"> $!{company.introduction}</textarea></div>
+					</div>
+					<div class="publishFormItems" id="mygarden">
+						<div class="products_title"><label for="business"><font color="RED">*</font> 主营业务：</label></div>
+						<div class="products_fill"><textarea name="business" id="business" cols="60" rows="5" style="width:480px; height:120px;">$!{company.business}</textarea></div>
+					</div>	
+					<div style="clear:both"></div>
+                </div>
+				<div class="publishFormSub"> <input name="Submit2" type="submit" class="buttonMax" onclick="setAreaCode()" value=" 确认无误，提交 " /></div>
+			</form>
+</div>
+
+	

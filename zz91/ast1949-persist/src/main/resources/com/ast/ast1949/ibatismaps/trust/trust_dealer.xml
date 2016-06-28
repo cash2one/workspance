@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustDealer">
+	<typeAlias alias="trustDealerDO" type="com.ast.ast1949.domain.trust.TrustDealer" />
+
+	<resultMap class="trustDealerDO" id="trustDealerResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="tel" column="tel" />
+		<result property="qq" column="qq" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		name,
+		tel,
+		qq,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="trustDealerResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_dealer
+		where id = #value#
+	</select>
+	
+	<insert id="insert" parameterClass="trustDealerDO">
+		INSERT INTO trust_dealer
+		(
+		name,
+		tel,
+		qq,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(	
+		#name#,
+		#tel#,
+		#qq#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="trustDealerDO" >
+		update trust_dealer 
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="name">
+			name = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="qq">
+			qq = #qq#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tel">
+			tel = #tel#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+		</dynamic>
+	</sql>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="trustDealerResult">
+		select 
+		<include refid="defaultColumn"/>
+		from trust_dealer
+		<include refid="whereCaluse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<!--检索所有的交易员-->	
+	<select id="queryAllDealer" resultMap="trustDealerResult">
+		select 
+		<include refid="defaultColumn"/>
+		from trust_dealer		
+	</select>	
+	
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0)
+		from trust_dealer
+		<include refid="whereCaluse"/>
+	</select>
+	<delete id="deleteDealer" parameterClass="java.lang.Integer">
+		delete from trust_dealer
+		where id=#id#		
+	</delete>
+</sqlMap>

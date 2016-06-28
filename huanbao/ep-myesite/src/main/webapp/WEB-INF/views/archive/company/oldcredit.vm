@@ -1,0 +1,112 @@
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  <tr>
+	    <td><img src="$!{address.img}/huanbao/images/myesite/certifititle.jpg" width="197" height="75" /></td>
+	  </tr>
+	  <tr>
+	    <td>&nbsp;</td>
+	  </tr>
+	</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	    <tr>
+	      <td>
+	      <div style="padding-left:20px;">
+	       <ul>
+	        <li class="hbnyleft"><a href="$!{address.myesite}/company/addCredit.htm">上传荣誉证书</a></li>
+	        <li class="hbnylefts"><a href="$!{address.myesite}/company/credit.htm">已上传荣誉证书</a></li>
+	       </ul>
+	      </div>
+	      </td>
+	    </tr>
+	</table>
+    </td>
+    <td valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">已上传荣誉证书</td>
+      </tr>
+    </table>
+      <table width="740" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr><td height="20">&nbsp;</td></tr>
+        <tr>
+          <td>
+          #foreach($list in $!{creditList})
+          <div id="creditField${list.id}" class="hbceff">
+          <div class="hbceffimg">
+          	<img src="$!{address.thumb}$!{address.resource}$!{list.picture}&width=290&height=200" width="290" height="200" />
+          </div>
+          <div class="hbceffspe">
+          <input id="fileNameText${list.id}" type="hidden" value="$!{list.fileName}"/>
+          <input id="path${list.id}" type="hidden" value="$!{list.picture}"/>
+          </div>
+          <div id="fileNameDiv${list.id}" class="hbceffcomname">$!{list.fileName}</div>
+          <div class="hbceffcz"><a href="javascript:doDeleteFile(${list.id})">删除</a>&nbsp;&nbsp;&nbsp;<a href="javascript:doUpdateFile(${list.id})">修改名称</a></div>
+          </div>
+          #end
+          </td>
+        </tr>
+      </table>
+      <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50">&nbsp;</td>
+        </tr>
+    </table></td>
+  </tr>
+</table>
+<script>
+	function doDeleteFile(id) {
+        jQuery.ajax({
+	        url:'#springUrl('/company/doDelete.htm')',
+	        data:{"id":id,"path":jQuery("#path"+id).val()},
+	        cache:false,
+	        dataType:"json",
+	        type:"post",
+	        success:function(req){
+	                if(req.success){
+	                    jQuery("#creditField"+id).remove();
+	                    hb.util.Message.show({
+					        msg:"删除成功！",
+					        autoClose:100000
+						 });
+	                }
+	            },
+	        failure:function(){
+                hb.util.Message.show({
+			        msg:"删除失败！",
+			        autoClose:100000
+				 });
+	        }
+       });
+	}
+	function doUpdateFile(id) {
+		var filename = jQuery("#fileNameText"+id).val();
+		jQuery("#fileNameDiv"+id).html("<input id='fileName"+id+"' type='text' onchange='doUpdate("+id+")' value='"+filename+"' />");
+	}
+	function doUpdate(id) {
+		var fileName = jQuery("#fileName"+id).val();
+	    jQuery.ajax({
+		        url:'#springUrl('/company/updateCredit.htm')',
+		        data:{"id":id,"fileName":fileName},
+		        cache:false,
+		        dataType:"json",
+		        type:"post",
+		        success:function(req){
+		        	jQuery("#fileNameDiv"+id).html(fileName);
+		        	jQuery("#fileNameText"+id).val(fileName)
+		             hb.util.Message.show({
+				         msg:"更新成功！",
+				         autoClose:100000
+					 });
+		        },
+		        failure:function(){
+		             hb.util.Message.show({
+				         msg:"更新失败！",
+				         autoClose:100000
+					 });
+		        }
+		   });
+		
+	}
+
+</script>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="param">
+
+	<typeAlias alias="paramType" type="com.zz91.util.domain.ParamType"/>
+	<typeAlias alias="param" type="com.zz91.util.domain.Param"/>
+
+	<resultMap id="paramResult" class="param">
+	    <result property="id" column="id" />
+	    <result property="name" column="name" />
+	    <result property="types" column="types" />
+	    <result property="key" column="key" />
+	    <result property="value" column="value" />
+	    <result property="sort" column="sort" />
+	    <result property="isuse" column="isuse" />
+  	</resultMap>
+
+  	<resultMap id="paramTypeResult" class="paramType">
+  		<result property="key" column="key" />
+  		<result property="name" column="name" />
+	</resultMap>
+
+	<!-- list param by condition-->
+	<select id="listParam" parameterClass="param" resultMap="paramResult">
+	 	select p.id,p.name,p.types,p.`key`,p.value,p.sort,p.isuse
+	 	from param p
+	 	<dynamic prepend="where">
+   			<isNotNull property="id" prepend="and" >
+            	p.id = #id#
+        	</isNotNull>
+        	<isNotEmpty property="name" prepend="and">
+            	p.name like concat(#name#,'%')
+        	</isNotEmpty>
+        	<isNotEmpty property="types" prepend="and">
+            	p.types = #types#
+        	</isNotEmpty>
+        	<isNotEmpty property="key" prepend="and">
+            	p.`key` = #key#
+        	</isNotEmpty>
+        	<isNotNull property="isuse" prepend="and">
+            	p.isuse = #isuse#
+        	</isNotNull>
+        </dynamic>
+  	</select>
+
+  	<!-- insert one param -->
+	<insert id="insertParam" parameterClass="param" >
+		insert into param (name,types,`key`,value,sort,isuse,gmt_created,gmt_modified)
+		values (#name#,#types#,#key#,#value#,#sort#,#isuse#,now(),now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  select last_insert_id()
+		</selectKey>
+	</insert>
+
+	<!-- update param,id is need -->
+	<update id="updateParam" parameterClass="param" >
+		update param
+	    	set name=#name#,
+	    	`key`=#key#,
+	    	value = #value#,
+	    	sort = #sort#,
+	    	isuse = #isuse#,
+	    	gmt_modified=now()
+	    where id = #id#
+	</update>
+
+	<!-- delete one param by id -->
+	<delete id="deleteParamById" parameterClass="java.lang.Integer" >
+		    delete from param where id = #value#
+	</delete>
+
+	<!-- delete one param by param type -->
+	<delete id="deleteParamByTypes" parameterClass="java.lang.String" >
+		    delete from param where types = #value#
+	</delete>
+
+  	<!-- list alll paramType -->
+  	<select id="listAllParamType" resultMap="paramTypeResult">
+	 	select t.key,t.name from param_type t
+  	</select>
+
+  	<select id="listOneParamTypeByKey" resultMap="paramTypeResult" parameterClass="java.lang.String">
+	 	select t.key,t.name from param_type t
+	 	where `key`=#value#
+  	</select>
+
+  	<select id="listOneParamById" resultMap="paramResult" parameterClass="java.lang.Integer">
+	 	select p.id,p.name,p.types,p.`key`,p.value,p.sort,p.isuse
+	 	from param p
+	 	where p.id = #value#
+  	</select>
+
+  	<!-- create param type -->
+  	<insert id="createParamType" parameterClass="paramType" >
+  		insert into param_type(`key`,name,gmt_created,gmt_modified)
+  			values(#key#,#name#,now(),now())
+  	</insert>
+
+  	<update id="updateParamType" parameterClass="paramType">
+  		update param_type set
+  			name=#name#,
+  			gmt_modified=now()
+  		where `key`=#key#
+  	</update>
+
+  	<delete id="deleteParamType" parameterClass="java.lang.String" >
+  		delete from param_type
+  			where `key`=#value#
+	</delete>
+
+</sqlMap>

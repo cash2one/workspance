@@ -1,0 +1,438 @@
+##设置head标签里，添加属性
+#set($pageHeadFlag=1)
+#if($!{bbs.bbsPostCategoryId}==1)
+	#set($layout="/layout/wendaLayout.vm")
+#elseif($!{bbs.bbsPostCategoryId}==2)
+	#set($layout="/layout/shequLayout.vm")
+#elseif($!{bbs.bbsPostCategoryId}==3)
+	#set($layout="/layout/xueyuanLayout.vm")
+#elseif($!{bbs.bbsPostCategoryId}==106)
+	#set($layout="/layout/shangquanLayout.vm")
+	      <div class="sq-nav">
+            <div class="nav-man clearfix">
+                <div class="nav-left fl">
+                    <ul class="nav-ul">
+                        <li><a href="#springUrl('/shangquan1/')" #if($flagpp==1) class="thisnav" #end>商圈首页</a></li>
+                        <li><a href="#springUrl('/shangquan2/')" #if($flagpp==2) class="thisnav" #end>最新商机</a></li>
+                        <li><a href="#springUrl('/shangquan3/')" #if($flagpp==3) class="thisnav" #end>热门关注</a></li>
+                        <li><a href="#springUrl('/shangquan4/')" #if($flagpp==4) class="thisnav" #end>热门回复</a></li>
+                    </ul>
+                </div>
+                <div class="nav-right fr">
+                    <a href="#springUrl('/shangquan/fatie.html')" targer="_blank"><span class="fbbtn">我要发帖</span></a>
+                </div>
+            </div>
+        </div>
+#else
+	#set($layout="/layout/shequLayout.vm")
+#end
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+<script src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor.js"></script>
+<script src="http://img0.zz91.com/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<link href="$!{address.img}/bbs/css/zz91.bbs.dialog.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+	var ckeditor
+    jQuery(document).ready(function() {
+        	CKEDITOR.replace("conmmentId",{
+            toolbar : 'Basic',
+			uiColor : '#fff',
+            language : 'zh-cn'
+        });
+	});
+function change_zan(a,b){
+ 		jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/zan.htm?")'+"replyId="+a,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.mark>0){ 
+					var mark=reg.mark;
+					var imgObj = document.getElementById("zan"+b);
+						if(imgObj.getAttribute("src",2)=="http://img0.zz91.com/zz91/newhuzhu/images/img0_zan.jpg"){
+							imgObj.src="http://img0.zz91.com/zz91/newhuzhu/images/img0_zan_qx.jpg";
+							document.getElementById('count'+b).innerHTML=mark;
+						}
+					}else if(reg.mark==-1){
+						var url=window.location.href;
+						window.location.href="$!{address.www}/login.htm?url="+url;
+					}else{
+					   alert("您已对该回答点过赞了！");
+					}
+				}
+			});
+}
+function deal(a,b,c){
+    #if(!$!{sessionUser})
+        Asto.util.Callback.setSubmitCallback(function(success, data){
+			 offer(a,b,c);
+        });
+        openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+    #else
+		 offer(a,b,c);
+    #end
+}
+function quoteReply(obj,id) {
+		
+		var alink=document.getElementById("rename"+id).innerHTML;
+		var text = document.getElementById("replyContent"+id).innerText;
+		var flag="@";
+		var context=flag+alink+text;
+		CKEDITOR.instances.conmmentId.setData(context);
+		CKEDITOR.instances.conmmentId.focus();
+}
+function viewReplychk() {
+		var frm = document.getElementById("form1");
+		var result = CKEDITOR.instances.conmmentId.getData();
+		if (result.length==0) {
+			alert("请输入回复内容");
+			return false;
+		}
+		
+		if(jQuery("#loginFlag").val()==0){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				closeoverlay();
+				jQuery("#loginFlag").val(1);
+			});
+			openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031029&loginType=1','注册/登录',750,430,0);
+			return false;
+		}else{
+			frm.submit();
+		}
+	}
+	function offer(a,b,c){
+	     var d=0;
+		 if(b==2){
+		 	 d=1;
+		 }else if(b==3){
+		 	 d=4;
+		 }
+		 jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/inserNoticeOrRecom.htm?")'+"type="+a+"&category="+d+"&contentId="+c,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.i>0&&reg.i>0){
+					   if(a==1){
+					  	 alert("关注成功！");
+						 jQuery("#noc").html(reg.i+"人关注");
+					   }else{
+					  	 alert("推荐成功！");
+						 jQuery("#recomnd").html("推荐（"+reg.i+")");
+					   }
+					}else{
+					if(reg.nr==1){
+						alert("您已关注！");
+					}else{
+						alert("您已推荐！");
+					}
+					}
+				}
+			});
+	}                                      
+</script>
+<script type="text/javascript">
+function mycollect(a,b){
+	#if(!$!{sessionUser})
+        Asto.util.Callback.setSubmitCallback(function(success, data){
+		var c="";
+        if(a==1){
+           c="10091010";
+        }else if(a==2){
+           c="10091005";
+        }else{
+           c="10091011";
+        }
+		 jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/addMyCollect.htm?")'+"favoriteTypeCode="+c+"&contentId="+b,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.i>0){
+                		alert("收藏成功！");
+                	}else{
+                					
+                		alert("您已收藏！");
+                	}
+				}
+			});
+                });
+                      openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+          #else
+		 var c="";
+        if(a==1){
+           c="10091010";
+        }else if(a==2){
+           c="10091005";
+        }else{
+           c="10091011";
+        }
+		 jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/addMyCollect.htm?")'+"favoriteTypeCode="+c+"&contentId="+b,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.i>0){
+                		alert("收藏成功！");
+                	}else if(reg.i==-1){			
+                		alert("收藏失败，该帖子不存在或已被删除！");
+                	}else{
+						alert("您已收藏！");
+					}
+				}
+			});
+          #end
+	}
+</script>
+<style>
+	strong {
+		font-weight: bold;
+	}
+</style>
+
+  <!--end hz-header-->
+	#if($!{sessionUser})
+		<input type="hidden" id="loginFlag" value="1" />
+	#else
+		<input type="hidden" id="loginFlag" value="0" />
+	#end
+  <div class="hz_nav">
+		当前位置：<a href="$!{address.huzhu}" target="_blank">互助</a>
+		#foreach($!{path} in $!{listPath})
+			#if($!{path.get("name")}!="手机互助"&&$velocityCount!=${listPath.size()})
+				&nbsp;>>&nbsp;<a href="#springUrl('/')$!{path.get("path")}/" target="_blank">$!{path.get("name")}</a>
+			#else
+				&nbsp;>>&nbsp;$!{path.get("name")}</a>
+			#end
+		#end
+  </div>
+  <!--end hz_nav-->
+  <div class="huzhu">
+  	<div class="hz-left fl">
+    	<div class="mainblock">
+        	<div class="mb-block">
+            	<h2><span class="bold f16">$!{bbs.title}</span> <span class="fr f12">#if($!{bbs.bbsPostCategoryId}==1)提问者#else 发帖人 #end: #if($!{bbs.companyId}==0) 互助管理员 #else<a href="#springUrl('/personIndex')$!{bbs.companyId}.htm" target="_blank">$!{bbs.nickname}</a> #end</span></h2>
+            </div>
+            <!--end mb-block-->
+            <div class="mb-block" style="padding-bottom:15px;">
+            	<div class="mb-block-item fl" style="width:320px">
+                	<div class="mi-text fl">#set($a=$!{listTag})#if($a.size()>0)标签:&nbsp;#end</div>
+					#foreach($!{tag} in $!{listTag})
+						<div class="mi-label fl"><a href="#springUrl('/viewTags')-$!{tag.id}.htm" target="_blank" title="$!{tag.tagName}">$!{tag.tagName}</a></div>
+					#end
+                    <!--end mi-label-->
+                </div>
+                <!--end mb-block-item fl-->
+                <div class="mb-block-item fl">浏览：#if($!{bbs.visitedCount})$!{bbs.visitedCount}#else 0 #end  | #if($!{bbs.bbsPostCategoryId}==1)回答 #else 评论 #end：$!{bbs.replyCount}</div>
+                <!--end mb-block-item fl-->
+                <div class="mb-block-item fr">$!date.format('yyyy-MM-dd HH:mm',$!{bbs.postTime})</div>
+                <!--end mb-block-item fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-block-->
+            <div class="mb-block" style="border-bottom:1px dashed #dddddd;padding-bottom:15px">
+            	<ul class="item7">
+                	$!{bbs.content}
+                </ul>
+            </div>
+            <!--end mb-block-->
+            <div class="mb-block" style="padding:15px 0">
+            	<div class="mb-block-item fl" style="width:320px">
+                	<ul>
+                        <div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare">
+							<a class="bds_qzone" title="分享到QQ空间" href="#"></a>
+                            <a class="bds_tsina" title="分享到新浪微博" href="#"></a>
+							<a class="bds_tqq" title="分享到腾讯微博" href="#"></a>
+                            <a class="bds_renren" title="分享到人人网" href="#"></a>
+							<span class="bds_more"></span>
+                            <a class="shareCount" href="#" title="累计分享0次">0</a>
+						</div>
+                     <script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=613114" src="http://bdimg.share.baidu.com/static/js/bds_s_v2.js?cdnversion=393294"></script>
+                     <script type="text/javascript">
+                         document.getElementById("bdshell_js").src = "http://share.baidu.com/static/js/shell_v2.js?cdnversion=" + new Date().getHours();
+                    </script>
+                         <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end mb-block-item fl-->
+                <div class="mb-block-item fr">
+                	<div class="mi-follow" id="notice"  onclick="deal(1,$!{bbs.bbsPostCategoryId},$!{bbs.id})">关注</div>
+                    <!--end mi-follow-->
+                </div>
+                <!--end mb-block-item fr-->
+                <div class="mb-block-item fr mr8">
+                    <div class="mi-follow" id="collect"  onclick="mycollect('$!{bbs.bbsPostCategoryId}','$!{bbs.id}')">收藏</div>
+                    <!--end mi-follow-->
+                </div>
+                <!--end mb-block-item fr-->
+                <div class="mb-block-item fr mr8">
+                    <span id="recomnd" onclick="deal(0,$!{bbs.bbsPostCategoryId},$!{bbs.id})">推荐（#if($!{bbs.recommendCount})$!{bbs.recommendCount}#else 0 #end）</span>丨<span class="grey" id="noc">#if($!{bbs.noticeCount})$!{bbs.noticeCount}#else 0 #end人关注</span></div>
+                <!--end mb-block-item fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-block-->
+        </div>
+        <!--end mainblock-->
+		#if($!{page.totalRecords}>0)
+    	<div class="mainblock">
+        	<div class="mi5-tle blue">#if($!{bbs.bbsPostCategoryId}==1)回答 #else 评论 #end（$!{page.totalRecords}）</div>
+            <!--end mi5-tle-->
+        	<ul class="item5">
+				#foreach($preply in ${page.records})	
+            	<li style="margin:10px 0">
+                	<div class="mi5-box">
+                    	<div class="mi5-box-img fl">
+                        	<div class="mg-case">
+                            	<div class="mg-case-img">
+                                	<a href="#" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img0_head.jpg" /></a>
+                                </div>
+                                <!--end mg-case-img-->
+								#set($foo=$!{page.totalRecords}-${page.startIndex}-${velocityCount}+1)
+                                <div class="mg-case-text">$!{foo}楼</div>
+                                <!--end mg-case-text-->
+                            </div>
+                            <!--end mg-case-->
+                        </div>
+                        <!--end mi5-box-img fl-->
+                        <div class="mi5-box-info fr">
+                        	<div class="mo-case">
+                                <div class="mo-case-aut fl" id=name$!{foo}><span class="grey">回复人：</span><span id="rename$!{foo}"><a href="#springUrl('/personIndex')$!{preply.reply.companyId}.htm" class="blue" target="_blank">
+								#if($!{preply.profiler.nickname}&&$!{preply.profiler.nickname}!="")
+									$!{preply.profiler.nickname}
+								#elseif($!{preply.companyAccount.contact}&&$!{preply.companyAccount.contact}!="")
+									$!{preply.companyAccount.contact}
+								#else
+									匿名
+								#end
+								</span>
+								</a></div>
+                                <!--end mo-case-aut fl-->
+                                <div class="mo-case-time fr" id=time$!{foo}><span class="grey"></span>$!date.format('yyyy-MM-dd HH:mm:ss ',$!{preply.reply.gmtCreated})</div>
+								<input type="hidden" id="bcompanyId$!{foo}" name="bcompanyId" value="$!{preply.reply.companyId}"/>
+                                <!--end mo-case-time fr-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end mo-case-->
+                            <div class="mo-content" id="replyContent$!{foo}">
+                            	$!{preply.reply.content}
+                            </div>
+                            <!--end mo-content-->
+                            <div class="mo-interaction">
+                            	<span>
+                                	<a href="javascript:;"><img class="zan" #if($!{preply.reply.zanCount}>0)src="http://img0.zz91.com/zz91/newhuzhu/images/img0_zan_qx.jpg" #else src="http://img0.zz91.com/zz91/newhuzhu/images/img0_zan.jpg" #end id="zan$velocityCount" onclick="change_zan($!{preply.reply.id},$velocityCount)"/></a>
+                                	（<em id="count$velocityCount">#if($!{preply.reply.zanCount})$!{preply.reply.zanCount}#else 0 #end</em>）
+                                </span>
+                            	&nbsp;<a href="#"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img0_zf.jpg" /></a>
+                                &nbsp;<a href="javascript:return false;" onClick="quoteReply(this,'$!{foo}')" class="blue" target="_blank">引用回复</a>
+                            </div>
+                            <!--end mo-interaction-->
+                        </div>
+                        <!--end mi5-box-info fr-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mi5-box-->
+                </li>
+				#end
+            </ul>
+			
+            <div class="page">
+      			#pageViewQA($page "#springUrl('/detail/')" "$!{bbs.id}" "")
+    		 </div>
+            <!--end page-->
+        </div>
+		#end
+        <!--end mainblock-->
+        <div class="mainblock">
+        	<div class="mb-comment">
+            	<h2 class="bold f16 posttile">您的#if($!{bbs.bbsPostCategoryId}==1)回答 #else评论 #end</h2>
+				<form id="form1" name="form1" method="post" action="#springUrl('/replyBbs.htm')" >			
+					 <textarea name="content" cols="119" rows="7" class="mb-comment-area" id="conmmentId"></textarea>
+					 <div class="mb-comment-btn">
+						<div class="mc-btn">
+							<div class="mc-btn-text" onClick="viewReplychk()">发布</div>
+						</div>
+    				<!--end quickComment-info-->
+						<div class="cb"></div>
+						<input type="hidden" name="bbsPostId" value="$!{bbs.id}"/>
+						<input type="hidden" name="title" value="$!{bbs.title}"/>
+						<input type="hidden" name="toCompanyId" value="$!{bbs.companyId}"/>
+					 </div>
+				</form>
+               
+                    <!--end mc-btn-->
+            </div>
+            <!--end mb-comment-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+    <div class="hz-right fr">
+		<div class="sublock2">
+			<img src="http://img0.zz91.com/zz91/price/images/app_logo.jpg" />
+		</div>
+		<!--end -->
+    	<div class="sublock">
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px">#if($!{categoryId}==1||$!{categoryId}==3)相关问答#else 相关帖子#end</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:0px">
+            	<ul class="item6">
+					#foreach($!{li} in $!{postPage})
+                	<li>
+						#if($!{categoryId}==2)
+                    	<div class="i6-tle"><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="blue" target="_blank" title="$!{li.title}">$!{li.title}</a></div>
+                        <!--end i6-tle-->
+                        <span class="grey">作者：$!{li.account}</span>
+						#else
+							<a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank">#printTitle($!{li.title} 22 "")</a>&nbsp;&nbsp;&nbsp;<span class="grey">$!{li.replyCount}回答</span>
+						#end
+                    </li>
+                  #end
+                </ul>
+				
+            </div>
+            <!--end sub-post gclear mb-->
+			#if($!{categoryId}==1)
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px;padding-top:10px; ">热门问答</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:10px 0 25px 0">
+            	<ul class="item9">
+					#cacheFragment("$!{address.fragment}/huzhu/hotQuestion.htm?categoryId=1" "" "" "")
+					#foreach($!{hq} in $!{HotQuestion})
+                	<li><a #if($!{hq.url}&&$!{hq.url}!="")href="$!{hq.url}" #else href="#springUrl('/detail/')$!{hq.id}.html"#end target="_blank">$!{hq.title}</a>&nbsp;&nbsp;&nbsp;<span class="grey">$!{hq.replyCount}回答</span></li>
+					#end
+					#end
+				</ul>
+            </div>
+			#end
+            #if($!{categoryId}==3)
+				<div class="sublock">
+        	<div class="sub-daoh f16" style="border-bottom:1px solid #dddddd;padding-bottom:10px;padding-top:10px;">相关帖子</div>
+            <!--end sub-daoh-->
+            <div class="sub-post gclear mb" style="margin:0px">
+            	<ul class="item6">
+					#foreach($li in $!{bbsPage})
+                	<li>
+                    	<div class="i6-tle"><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="blue" target="_blank" title="$!{li.title}">$!{li.title}</a></div>
+                        <!--end i6-tle-->
+                        <span class="grey">作者：$!{li.account}</span>
+                    </li>
+					#end
+                </ul>
+            </div>
+            <!--end sub-post gclear mb-->
+        </div>
+        <!--end sublock-->
+			#end
+            <!--end sub-post gclear mb-->
+        </div>
+        </div>
+        <!--end sublock-->
+    </div>
+    <!--end hz-right-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->
+

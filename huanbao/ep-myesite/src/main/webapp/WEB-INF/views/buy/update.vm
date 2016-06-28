@@ -1,0 +1,154 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/supply/index.htm')">产品管理</a><span class="divider">/</span></li>
+			<li><a href="#springUrl('/buy/index.htm')">管理求购信息</a><span class="divider">/</span></li>
+			<li>修改求购信息</li>
+		</ul>
+		
+		<form id="editBuyForm" name="editBuyForm" method="post" action="#springUrl('/buy/doUpdate.htm')">
+			<h3 class="divide">求购产品基本信息</h3>
+			<input id="id" name="id" type="hidden" value="$!{buy.id}"/>
+			<input id="categoryCode" name="categoryCode" type="hidden" value="$!{buy.categoryCode}"/>
+			<input type="hidden" id="quantityYear" name="quantityYear" value="$!{buy.quantityYear}"/>
+			<div class="control-group">
+				<label for="tags" class="control-label">
+					<span class="red">*</span>产品名称：
+				</label>
+				
+				<div class="controls">
+					<input name="title" type="text" id="title" class="field input-xlarge validate[required,maxSize[30]]" value="$!{buy.title}"/>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label for="quantity" class="control-label">
+					<span class="red">*</span>求购数量：
+				</label>
+				
+				<div class="controls">
+					<input name="quantity" type="number" id="quantity" value="$!{buy.quantity}" class="field input-small validate[required,custom[number]]" />
+						<select id="quantityUntis" name="quantityUntis" class="ptfe_ipt_select" >
+							<option value="">--请选择数量单位--</option>
+							<option value="套" #if("$!{buy.quantityUntis}"=="套") selected #end >套</option>
+							<option value="台" #if("$!{buy.quantityUntis}"=="台") selected #end >台</option>
+							<option value="件" #if("$!{buy.quantityUntis}"=="件") selected #end>件</option>
+							<option value="吨" #if("$!{buy.quantityUntis}"=="吨") selected #end>吨</option>
+							<option value="个" #if("$!{buy.quantityUntis}"=="个") selected #end>个</option>
+							<option value="斤" #if("$!{buy.quantityUntis}"=="斤") selected #end>斤</option>
+							<option value="千克" #if("$!{buy.quantityUntis}"=="千克") selected #end>千克</option>
+							<option value="袋" #if("$!{buy.quantityUntis}"=="袋") selected #end>袋</option>
+							<option value="盒" #if("$!{buy.quantityUntis}"=="盒") selected #end>盒</option>
+						</select>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">
+					<span class="red">*</span>收货地区：
+				</label>
+				
+				<div class="controls">
+					<select id="provinceCode" name="provinceCode">
+						<option value="">--请选择省份--</option>
+					</select>
+					<select id="areaCode" name="areaCode" class="ptfe_ipt_select validate[required] ">
+						<option value="">--请选择城市--</option>
+					</select>
+				</div>
+			</div>
+		
+			<div class="control-group">
+				<label class="control-label">
+					期望供应商所在地区：
+				</label>
+				<div class="controls">
+					<select id="supplyProvinceCode" name="supplyProvinceCode">
+						<option value="">--请选择省份--</option>
+					</select>
+					<select id="supplyAreaCode" name="supplyAreaCode" class="ptfe_ipt_select">
+						<option value="">--请选择城市--</option>
+					</select>
+				</div>
+			</div>
+		
+			<div class="control-group">
+				<label class="control-label">
+					有效期：
+				</label>
+				<div class="controls">
+					<label class="radio">
+						<input type="radio" value="3" name="validDays" #if("$!{buy.validDays}"=="3") checked #end />3天
+					</label>
+					<label class="radio">
+						<input type="radio" value="5" name="validDays" #if("$!{buy.validDays}"=="5") checked #end />5天
+					</label>
+					<label class="radio">
+						<input type="radio" value="7" name="validDays" #if("$!{buy.validDays}"=="7") checked #end />7天
+					</label>
+					<label class="radio">
+						<input type="radio" value="10" name="validDays" #if("$!{buy.validDays}"=="10") checked #end />10天
+					</label>
+					<label class="radio">
+						<input type="radio" value="0" name="validDays" #if("$!{buy.validDays}"=="0") checked #end />长期有效
+					</label>
+				</div>
+			</div>
+				
+			<div class="control-group">
+				<label for="details" class="control-label"><span class="red">*</span>信息描述：</label>
+				<div class="controls">
+					<textarea name="details" cols="80" rows="5" id="details" class="validate[required,maxSize[500]]">$!{buy.details}</textarea>
+					<div><span class="fontblue" id="readTerms">填写详细具体采购要求的买家收到的报价数量是其他买家的</span></div>
+				</div>
+			</div>
+			
+			<div class="form-actions">
+					<input type="submit" id="submitBtn" class="btn btn-primary" value="修改信息">
+			</div>
+			
+		</form>
+	</div>
+</div>
+
+#parse("/common/importValidate.vm")
+<script type="text/javascript">
+    jQuery("document").ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(2, 5);
+		
+		jQuery("#editBuyForm").validationEngine("attach");
+		
+		//初始化收货地区
+		//TODO area init
+		var selector = new Asto.util.Selector({
+			url:"#springUrl('/common/getAreaCode.htm')",
+			selects:["#provinceCode","#areaCode"],
+			field:{code:"code",label:"name"}
+		});
+
+		selector.init({
+			rootCode:"10011000",
+			#if($!{buy.areaCode} != "")
+			initCode:"$!{buy.areaCode}"
+			#end
+		});
+
+		//初始化供货地区
+		//TODO area init
+		var selector = new Asto.util.Selector({
+			url:"#springUrl('/common/getAreaCode.htm')",
+			selects:["#supplyProvinceCode","#supplyAreaCode"],
+			field:{code:"code",label:"name"}
+		});
+
+		selector.init({
+			#if($!{buy.supplyAreaCode} != "")
+			initCode:"$!{buy.supplyAreaCode}",
+			#end
+			rootCode:"10011000"
+		});
+	});
+</script>

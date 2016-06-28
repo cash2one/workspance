@@ -1,0 +1,166 @@
+#set($layout="/layout/inquiryLayout.vm")
+
+<div class="wangbox">
+    <div class="GongSiJianJie">
+		#if($productDetails)
+			#parse("/common/inquiry/product.vm")
+		#elseif($!{yuanliaoId})
+			#parse("/common/inquiry/yuanliao.vm")
+		#else
+			#parse("/common/inquiry/company.vm")
+		#end
+		
+		#if($!{memberShip} && $!{memberShip} =='10051003')
+	    <div class="laidianbao">
+			<div class="laidianbao-name">
+				$!{contact}
+			</div>
+			<div class=showtext>
+			 免费热线：
+			<span class="showText">
+                $!{phone.frontTel}   
+            </span>
+			</div>
+        </div>
+	   <div class="ldb01">
+		   <a href="http://www.zz91.com/ppc/index$!{companyId}.htm">进入企业网站</a>
+	   </div>
+		#else  
+		<div class="zi41">
+            填写询价内容
+        </div>
+        <!--end zi41-->
+        <div class="zi42">
+            <form  action="doInquiryApi.htm" method="post" id="form_question" >
+                <div class="GongSiXunJia">
+                    <div class="XunJia">
+                        <div class="XunJia_title">
+                            询价内容<a name="messeges"></a>
+                        </div>
+                        <div class="XunJia_item">
+                            <span class="zi28">*</span>
+                            <span class="zi29">询价标题：</span>
+                            <input type="text" class="XunJia_text" id="XunJia_text" onClick="d()" name="title" #if(!$!{yuanliaoId})value="$!{inquiry.title}"#else value="$!{title}" #end />
+                            <br/>
+                            <span class="zi30">建议标题简洁，突出询盘主题，优先获得回复！</span>
+                        </div>
+						#if($!{companyPriceId})
+							#set($s=1)
+						#else
+							#set($s=0)
+						#end
+                        <div class="XunJia_item">
+                            <span class="zi28">*</span>
+                            <span class="zi29">我想了解的产品信息有：</span>
+                            <input name="info" type="checkbox" class"XunJia_chenckbox" onClick="a($s)" id="XunJia_chenckbox0" value="1" />
+                            <label class="zi51" onClick="selectcheckbox(0);a(0)">#if(!$!{yuanliaoId})产品规格、型号#else 厂家、牌号 #end</label>
+                            <input name="info" type="checkbox" class"XunJia_chenckbox" onClick="a($s)" id="XunJia_chenckbox1" value="2" />
+                            <label class="zi51" onClick="selectcheckbox(1);a(0)" >价格</label>
+                            <input name="info" type="checkbox" class"XunJia_chenckbox" onClick="a($s)" id="XunJia_chenckbox2" value="3" />
+                            <label class="zi51" onClick="selectcheckbox(2);a(0)">数量</label>
+                            <input name="info" type="checkbox" class"XunJia_chenckbox" onClick="a($s)" id="XunJia_chenckbox3" value="4" />
+                            <label class="zi51" onClick="selectcheckbox(3);a(0)">#if(!$!{yuanliaoId}) 颜色 #else 图片#end</label>
+                            <input name="info" type="checkbox" class"XunJia_chenckbox" onClick="a($s)" id="XunJia_chenckbox4" value="5" />
+                            <label class="zi51" onClick="selectcheckbox(4);a(0)">#if(!$!{yuanliaoId})图片 #else 产品测试报告#end</label>
+                        </div>
+                        <div class="XunJia_item">
+                            <span class="zi28">*</span>
+                            <span class="zi29">补充信息：</span>
+                            <select class="XunJia_select" id="XunJia_select" onChange="b()">
+                                <option>请选择常用问题</option>
+								#if($product)
+									<option>我想了解产品规格、型号，能否发一份详细资料给我参考，谢谢！</option>
+									<option>请您发一份比较详细的产品规格说明，谢谢！</option>
+									<option>请问贵公司产品是否可以代理？代理条件是什么？</option>
+									<option>我公司有意购买此产品，可否提供此产品的报价单和最小起订量？</option>
+								#else
+									<option>我对贵公司的产品非常感兴趣，能否发一份公司详细资料给我参考！</option>
+									<option>请问贵公司产品是否可以代理？代理条件是什么？</option>
+									<option>我公司有意购买此产品，可否提供此产品的报价单和最小起订量？</option>
+								#end
+								
+                            </select>
+                            <span class="zi50">懒得打字？ “快速提问”帮你忙！</span>
+                        </div>
+                        <textarea name="content" cols="" rows="" class="XunJia_textaera" id="XunJia_textaera" onClick="e()" ></textarea>
+                        <span style="margin-left:110px" class=post_error></span>
+                        <div style="margin-bottom:16px"></div>
+                        <input type="button" id="xunjiaSub" class="XunJia_ok" value="发送" />
+                    </div>
+                    <!--end XunJia-->
+                </div>
+                <!--end GongSiXunJia-->
+				<input type="hidden" name="companyId" value="$!{company.id}" />
+				<input type="hidden" name="productId" value="$!{productId}" />
+				<input type="hidden" name="companyPriceId" value="$!{companyPriceId}" />
+				<input type="hidden" name="yuanliaoId" value="$!{yuanliaoId}" />
+				#if($!{sessionUser})
+					<input type="hidden" id="loginFlag" value="1" />
+				#else
+					<input type="hidden" id="loginFlag" value="0" />
+				#end
+            </form>
+        </div>
+        <!--end zi41-->
+		#end
+    </div>
+    <!--end mainblock3-->
+</div>
+<div style="display:none" id="hide"></div>
+<!--end hide-->
+<script type="text/javascript">
+$("#xunjiaSub").click(function() {
+
+	var n=0;
+	for(var i=0;i<5;i++){
+		if($("#XunJia_chenckbox"+i).is(':checked')===true){
+			n=1;
+		}
+	}
+	
+	if($("#XunJia_textaera").val()==="" && n===0){
+		var self = $("#XunJia_textaera");
+		self.parent().find(".post_error").html("请至少选择一项");
+		self.parent().find(".post_error").css("color", "#ff0000");
+		self.css("font-size", "12px");
+		questioncheck1 = false;
+	}else{
+		sub();
+	}
+});
+function sub()
+{	
+	var aa=jQuery.getScript("$!{address.front}/getLoginStatus.htm",function() {
+		if(success=="true"){
+			jQuery("#loginFlag").val(1);
+			
+			jQuery.ajax({
+					"type": "GET",
+					"url": "$!{address.front}/validate/validateCompanyInfo.htm",
+					"dataType": "json",
+					"success": function(json) {
+						if (json.success==false) {
+							openoverlay('$!{address.front}/mini/showMessage.htm?destUrl=$!{address.front}/submitCallback.htm&regfrom=10031003','注册/登录',750,400,0);
+						} else{
+							jQuery("#form_question").submit();
+							
+						}
+					},
+					"error": function() {
+
+						// alert("服务不可用!");
+					}
+				});
+			
+			
+		}else{
+			jQuery("#loginFlag").val(0);
+			openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.front}/submitCallback.htm&regfrom=10031003','注册/登录',750,400,0);
+		}
+	});
+	return false;
+}
+
+
+
+</script>

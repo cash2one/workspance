@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="chs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-header"><h2>芒果广告平台</h2><small>请到网站控制台云编译体验</small></div>
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button  tapmode="" type="button" onclick="showbanner()" class="btn btn-primary">
+                        展示横幅广告<label id='bannerstatuslab'></label>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button  tapmode="" type="button" onclick="hiddenad()" class="btn btn-primary">
+                        隐藏广告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button tapmode="" type="button" onclick="showad()" class="btn btn-primary">
+                        展示广告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button tapmode="" type="button" onclick="showlog()" class="btn btn-primary">
+                        调用日志广告
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button  tapmode="" type="button" onclick="setlistener()" class="btn btn-primary">
+                        设置监听
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                <div class="btn-group">
+                    <button  tapmode="" type="button" onclick="shownext()" class="btn btn-primary">
+                        进入插屏展示
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+	
+    function shownext(){
+        api.openWin({
+                    name: 'interstitial',
+                    url: 'adsMogo.html',
+                    pageParam: {
+                        isSub: true
+                    }
+                    });
+    }
+    
+    
+    
+    
+
+    function showbanner(){
+        
+        
+        var banner  = api.require('adsMogoBanner');
+        
+    /*
+     adtype:
+     
+     0: AdViewTypeNormalBanner; 320x50 iPhone
+     1: AdViewTypeMediumBanner; 468x60 iPad
+     2: AdViewTypeLargeBanner; 728x90 iPad
+     4: AdViewTypeRectangle; 300x250 iPad
+     8: AdViewTypeiPadNormalBanner; 320x50 iPad
+     14: AdViewTypeiPhoneRectangle; 300x250 iPhone
+     
+     
+     positiontype:
+     left_top  //上居左
+     center_top  //上居中
+     right_top  //上居右
+     left_bottom  //下居左
+     center_bottom  //下居中
+     right_bottom  //下居右
+
+     
+     
+     */
+        var param = {
+            mogoId:"f6a60b7be69b4cd69c785d06d1bca6c3",
+            adsize:"0",
+            positiontype:"center_bottom"
+        };
+        banner.initBanner(param,bannerStatusCallback);
+    }
+
+    function hiddenad(){
+        var banner  = api.require('adsMogoBanner');
+        banner.hiddenBanner(
+                                function(ret,err){
+                                    if(ret.status){
+                                        alert("调用隐藏广告成功");
+                                    }else{
+                                        alert("调用隐藏广告失败msg:"+err.msg);
+                                   }
+                                }
+                            );
+    }
+
+    function showad(){
+        var banner  = api.require('adsMogoBanner');
+        banner.showBanner(
+                          function(ret,err){
+                            if(ret.status){
+                                alert("调用展示广告成功");
+                            }else{
+                                alert("调用展示广告失败msg:"+err.msg);
+                          }
+                          });
+    }
+
+    function showlog(){
+        var banner  = api.require('adsMogoBanner');
+        banner.setLog({
+                       debug:true
+                       },
+                      function(ret,err){
+                        if(ret.status){
+                            alert("调用设置日志成功");
+                        }else{
+                            alert("调用设置日志失败msg:"+err.msg);
+                        }
+                       });
+    }
+
+    function ishiddenbanner(){
+        var hid_type_var = $api.byId('hid_sel');
+        var select_value = hid_type_var.value;
+        var banner  = api.require('adsmogoiosplugin');
+        var param = {
+            hidden:select_value
+        };
+        banner.setBannerHidden(param);
+    }
+
+    function setlistener(){
+         var banner  = api.require('adsMogoBanner');
+         banner.setListener(bannerStatusCallback);
+    }
+
+    function goToNext(){
+
+    }
+
+    function bannerStatusCallback(ret, err){
+        if (ret.status) {
+            var bannerlab = $api.byId('bannerstatuslab');
+            bannerlab.innerText = ret.status;
+        }else{
+            var bannerlab = $api.byId('bannerstatuslab');
+            bannerlab.innerText = JSON.stringify(err);
+        }
+    }
+
+
+
+    apiready = function(){
+        
+    };
+</script>
+</html>

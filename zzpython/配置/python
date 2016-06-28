@@ -1,0 +1,539 @@
+upstream searchServer {
+    #server 7006.zz91server.com:8000;
+	#server 7009.zz91server.com:8000;
+	#server 7012.zz91server.com:8000;
+	server 100.98.112.169:816;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name s.zz91.com ss.zz91.com sss.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		rewrite ^/trade/(.*)$ http://trade.zz91.com/trade/$1 permanent;
+        proxy_pass http://searchServer/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+    }
+	include /etc/nginx/err.conf;
+}
+
+upstream tagsServer {
+	server 100.98.112.169:819;
+	#server 7006.zz91server.com:819;
+	#server 7009.zz91server.com:819;
+	#server 7012.zz91server.com:819;
+}
+server {
+	listen  80;
+	server_name tags.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://tagsServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	access_log  /mnt/var/log/nginx/tags.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream daohangServer {
+	server 100.98.112.169:810;
+	#server 7006.zz91server.com:810;
+	#server 7009.zz91server.com:810;
+	#server 7012.zz91server.com:810;
+}
+server {
+	listen  80;
+	server_name daohang.zz91.com;
+	rewrite /hjzw/ http://www.zz91.com/hjzw/ permanent;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://daohangServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	access_log  /mnt/var/log/nginx/daohang.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+upstream adminastoServer {
+	server 100.98.112.169:801;
+    #server 7006.zz91server.com:801;
+	#server 7012.zz91server.com:801;
+}
+server {
+    listen  80;
+	server_name adminasto.zz91.com;
+    access_log  /mnt/var/log/nginx/localhost.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://adminastoServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+		allow 127.0.0.1;
+		allow 192.168.110.119;
+		allow 61.234.184.252;
+		allow 115.236.188.99;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		deny all;
+	}
+}
+
+upstream appServer {
+ip_hash;	
+server 100.98.112.169:808;
+   # server 7006.zz91server.com:808;
+	#server 7009.zz91server.com:808;
+   # server 7012.zz91server.com:808;
+}
+server {
+    listen  80;
+    server_name app.zz91.com;
+    access_log  /mnt/var/log/nginx/app.zz91.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://appServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+}
+
+server {
+    listen  80;
+    server_name apptest.zz91.com;
+    access_log  /mnt/var/log/nginx/app.zz91.access.log;
+        include /etc/nginx/deny.conf;
+    location / {
+	#add_header Access-Control-Allow-Origin '*, *:*';
+                proxy_pass http://7009.zz91server.com:808/;
+                include /etc/nginx/proxy.conf;
+                expires 1h;
+    }
+}
+
+server {
+        listen       80;
+        server_name zjfriend.com;
+        access_log off;
+        rewrite ^/(.*)$ http://www.zjfriend.com/$1 permanent;
+}
+server {
+    listen  80;
+    server_name www.zjfriend.com;
+    access_log  /mnt/var/log/nginx/zjfriend.access.log;
+    include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://7006.zz91server.com:833/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+		include /etc/nginx/err.conf;
+    }
+}
+upstream appzjfriendServer {
+	server 100.98.112.169:808;
+    #server 7006.zz91server.com:808;
+	#server 7012.zz91server.com:808;
+}
+server {
+    listen 80;
+    server_name app.zjfriend.com;
+    access_log  /mnt/var/log/nginx/app.zjfriend.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://appzjfriendServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+}
+
+upstream mobileServer {
+	ip_hash;
+	server 100.98.112.169:805;
+	#server 7006.zz91server.com:805;
+	#server 7012.zz91server.com:805;
+}
+server {
+    listen 80;
+    server_name m.zz91.com;
+    access_log  /mnt/var/log/nginx/m.zz91.access.log;
+	include /etc/nginx/deny.conf;
+	if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot") {  
+		#return 403;  
+	}
+    location / {
+		rewrite /caigou/ http://m.zz91.com/trust/ permanent;
+		proxy_pass http://mobileServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+	location /jiage/ {
+		proxy_pass http://mobileServer/jiage/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	location /company/ {
+		proxy_pass http://mobileServer/company/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	location /huzhu/ {
+		proxy_pass http://mobileServer/huzhu/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	location /trust/ {
+		proxy_pass http://mobileServer/trust/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	location /trade/ {
+		proxy_pass http://mobileServer/trade/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	location /images/ {
+		proxy_pass http://mobileServer/images/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	location /js/ {
+		proxy_pass http://mobileServer/js/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	location /css/ {
+		proxy_pass http://mobileServer/css/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	location /choujiang/ {
+		proxy_pass http://mobileServer/choujiang/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	location /registerSave/ {
+                proxy_pass http://mobileServer/registerSave/;
+                include /etc/nginx/proxy.conf;
+                expires -1;
+    }
+	
+	include /etc/nginx/proxy.conf;
+	error_page   500 502 503 504 404 /mobile.html;
+	location = /mobile.html {
+		root   /var/www/error/;
+	}
+	location /2016zadanplay/ {
+                proxy_pass http://mobileServer/2016zadanplay/;
+                include /etc/nginx/proxy.conf;
+                expires 1d;
+    }
+}
+
+server {
+    listen 80;
+    server_name app4.zz91.com;
+    access_log  /mnt/var/log/nginx/m.zz91.access.log;
+    include /etc/nginx/deny.conf;
+    location / {
+        root /mnt/var/www/;        
+	expires -1;
+    }
+    include /etc/nginx/proxy.conf;
+}
+
+server {
+    listen 80;
+    server_name mmm.zz91.com;
+    access_log  /mnt/var/log/nginx/m.zz91.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://7012.zz91server.com:805/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+	include /etc/nginx/proxy.conf;
+}
+
+upstream zz91yinyongServer {
+	server 100.98.112.169:831;
+	#server 7006.zz91server.com:831;
+	#server 7012.zz91server.com:831;
+}
+server {
+    listen 80;
+    server_name pyapp.zz91.com;
+    access_log  /mnt/var/log/nginx/m.zz91.access.log;
+	include /etc/nginx/deny.conf;
+	if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot") {  
+		return 403;  
+	}
+    location / {
+		proxy_pass http://zz91yinyongServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	include /etc/nginx/proxy.conf;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen   80;
+	index index.html index.htm;
+	server_name webcms.zz91.com;
+	location /{
+		proxy_pass http://7006.zz91server.com:822/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	access_log  /mnt/var/log/nginx/webcms.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream newsServer {
+    server 100.98.112.169:813;
+	#server 7006.zz91server.com:813;
+	#server 7009.zz91server.com:813;
+	#server 7012.zz91server.com:813;
+	#server www.zz91server.com:6111;
+}
+
+server {
+	listen 80;
+	server_name news.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://newsServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	access_log  /mnt/var/log/nginx/news.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream helpServer {
+	server 100.98.112.169:811;
+	#server 7006.zz91server.com:811;
+	#server 7009.zz91server.com:811;
+	#server 7012.zz91server.com:811;
+	#server www.zz91server.com:6112;
+}
+server {
+    listen 80;
+    server_name help.zz91.com;
+	include /etc/nginx/deny.conf;
+    access_log  /mnt/var/log/nginx/help.zz91.access.log;
+    location / {
+		proxy_pass http://helpServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	include /etc/nginx/err.conf;
+}
+
+upstream subjecthuanbaoServer {
+	server 100.98.112.169:804;
+	#server 7006.zz91server.com:804;
+	#server 7009.zz91server.com:804;
+	#server 7012.zz91server.com:804;
+	#server www.zz91server.com:6113;
+}
+
+server {
+    listen 80;
+    server_name subject.huanbao.com;
+	include /etc/nginx/deny.conf;
+    access_log  /mnt/var/log/nginx/subject.huanbao.access.log;
+    location / {
+		proxy_pass http://subjecthuanbaoServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2d;
+	}
+	include /etc/nginx/err.conf;
+}
+server {
+        listen       80;
+        server_name feiliao123.com;
+        access_log off;
+        rewrite ^/(.*)$ http://www.feiliao123.com/$1 permanent;
+}
+
+upstream feiliao123Server {
+	server 100.98.112.169:814;
+	#server 7006.zz91server.com:814;
+	#server 7012.zz91server.com:814;
+	#server 7009.zz91server.com:814;
+	#server www.zz91server.com:6114;
+}
+
+server {
+    listen 80;
+    server_name www.feiliao123.com;
+	include /etc/nginx/deny.conf;
+    access_log  /mnt/var/log/nginx/www.feiliao123.access.log;
+    location / {
+		proxy_pass http://feiliao123Server/;
+		include /etc/nginx/proxy.conf;
+	}
+	location /feiliao123 {
+		proxy_pass http://feiliao123Server/feiliao123/;
+		include /etc/nginx/proxy.conf;
+		allow 115.236.188.98;
+		allow 115.236.188.99;
+		expires -1;
+		deny all;
+	}
+	include /etc/nginx/err.conf;
+}
+
+upstream aqsiqServer {
+	server 100.98.112.169:800;
+	#server 7006.zz91server.com:800;
+	#server 7009.zz91server.com:800;
+	#server 7012.zz91server.com:800;
+	#server www.zz91server.com:6115;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name aqsiq.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://aqsiqServer/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	access_log  /mnt/var/log/nginx/aqsiq.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream zz91seowebServer {
+	server 100.98.112.169:817;
+	#server 7006.zz91server.com:817;
+	#server 7009.zz91server.com:817;
+	#server 7012.zz91server.com:817;
+	#server www.zz91server.com:6116;
+}
+
+server {
+	listen 80;
+	server_name *.m.zz91.com;
+	proxy_redirect off;
+	index  index.htm default.htm;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://zz91seowebServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	access_log  /mnt/var/log/nginx/esite.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen  80;
+	server_name www.zz91.net zz91.net zz91.cn www.zz91.cn zz91.com.cn www.zz91.com.cn;
+	access_log off;
+	include /etc/nginx/deny.conf;
+	location /{
+		proxy_pass http://zz91seowebServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	include /etc/nginx/err.conf;
+}
+
+upstream astowebServer {
+	server 100.98.112.169:802;
+	#server 7006.zz91server.com:802;
+	#server 7009.zz91server.com:802;
+	#server 7012.zz91server.com:802;
+	#server www.zz91server.com:6117;
+}
+
+server {
+    listen  80;
+    access_log  /mnt/var/log/nginx/www.asto.access.log;
+	server_name www.asto.com.cn asto.com.cn www1.asto.com.cn;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://astowebServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+	}
+	include /etc/nginx/err.conf;
+}
+
+upstream aboutServer {
+	server 100.98.112.169:807;
+	#server 7006.zz91server.com:807;
+	#server 7009.zz91server.com:807;
+	#server 7012.zz91server.com:807;
+	#server www.zz91server.com:6118;
+}
+
+server {
+    listen  80;
+    server_name about.zz91.com;
+    index index.html;
+    access_log  /mnt/var/log/nginx/about.zz91.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://aboutServer/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+	}
+	include /etc/nginx/err.conf;
+}
+server {
+    listen  80;
+    server_name *.zz91.net;
+    index index.html;
+    proxy_redirect off;
+    access_log  /mnt/var/log/nginx/esite.zz91.net.access.log;
+	include /etc/nginx/deny.conf;
+    location / {
+		proxy_pass http://zz91seowebServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	include /etc/nginx/err.conf;
+}
+
+server {
+    listen  80;
+    server_name h5.zz91.com;
+    index index.html;
+    proxy_redirect off;
+    access_log  /mnt/var/log/nginx/esite.zz91.net.access.log;
+        include /etc/nginx/deny.conf;
+    location / {
+                proxy_pass http://zz91seowebServer/;
+                include /etc/nginx/proxy.conf;
+                expires 30m;
+        }
+        include /etc/nginx/err.conf;
+}
+
+upstream jiageServer {
+	server 100.98.112.169:815;
+	#server 7006.zz91server.com:815;
+	#server 7009.zz91server.com:815;
+	#server 7012.zz91server.com:815;
+	#server www.zz91server.com:6119;
+}
+
+server {
+	listen  80;
+	index index.html index.htm;
+	server_name jiage.zz91.com;
+	include /etc/nginx/deny.conf;
+	location /{
+		proxy_pass http://jiageServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	access_log  /mnt/var/log/nginx/jiage.zz91.access.log;
+	include /etc/nginx/err.conf;
+}

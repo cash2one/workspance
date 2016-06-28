@@ -1,0 +1,194 @@
+<style>
+	h1 {
+		font-size:20px;
+	}
+</style>
+<div class="header hb_dhkey">
+	您所在的位置：
+	<a href="$!{address.www}">环保网</a> > 
+	<a href="$!{address.trade2}">产品中心</a> >
+	#foreach($nav in $!{categoryPath})
+		<a href="#springUrl('/list')-$!{nav.id}.htm">$!{nav.name}</a> > 
+	#end
+	#if($tradeSupply.supply.title)
+		<a href="#">$!{tradeSupply.supply.title}</a></div>
+	#end
+	
+	<div class="header">
+        <div class="hb_detl floatleft">
+			#cacheFragment("$!{address.fragment}/fragment/esite/contact.htm?cid=$!{cid}&ertdf","","","600")
+			<div class="hb_classr_infolist">
+				<div class="hb_category_rt">公司名片</div>
+				<div class="hb_detlcompay">
+					<ul>
+						<li class="hb_detlcompanyname"><a href="$!{address.esite}/index$!{cid}.htm" target="_blank" title="$!{compProfileDto.compProfile.name}">#printTitle($!{compProfileDto.compProfile.name} 14 "")</a></li>
+						<li class="hb_detlcompanyde">
+							联系人：$!{compProfileDto.contacts}
+							#if("$!{compProfileDto.qq}" != "")
+								<a rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?v=3&amp;uin=$!{compProfileDto.qq}&amp;site=www.huanbao.com.com&amp;menu=yes" title="QQ:$!{compProfileDto.qq}">
+									<img border="0" src="http://wpa.qq.com/pa?p=2:$!{compProfileDto.qq}:4" alt="QQ:$!{compProfileDto.qq}" onerror="this.src='${address.img}/zz91/china/images/qq.gif'" />
+								</a>
+							#end
+							<br />
+							座  机：$!{compProfileDto.phoneArea} $!{compProfileDto.phone}<br />
+							手  机：$!{compProfileDto.mobile}<br />
+							地  址：#printTitle($!{compProfileDto.compProfile.address} 10 "")
+						</li>
+						<li><span class="hb_detlly floatleft"><a href="$!{address.esite}/message$!{cid}.htm" target="_blank">给他留言</a></span><span class="hb_detlsm floatleft">联系时请说明<br />来自中国环保网</span></li>
+						<div class="clear"></div>
+					</ul>
+				</div>
+			</div>
+			#end
+            <div class="hb_classr_infolist margintop8">
+                <div class="hb_category_rt">相关类别</div>
+                <div class="contents_lists hb_category_otrinfo">
+                     <ul>
+						#foreach($tradeCategory in $!{broCode})
+                         <li><a href="#springUrl('/list')-$!{tradeCategory.id}.htm" target="_blank">$!{tradeCategory.name}</a></li>
+						 #end
+                     </ul>
+                </div>
+            </div>
+            <div class="hb_classr_infolist margintop8">
+                <div class="hb_detlcompay">
+                     <ul>
+                         <li class="hb_detlpagede">
+                         本页信息是我们为您提供的$!{tradeSupply.supply.title}产品信息，如您想了解更多关于$!{tradeSupply.supply.title}的价格、型号、厂家等信息，请联系厂家，或给厂家留言。
+                         </li>
+                         <li><span class="hb_detlcomtent floatleft">
+								<a href="$!{address.esite}/companyContact$!{cid}.htm">查看联系方式</a>
+						 </span>
+							<span class="hb_detlly floatleft"><a href="$!{address.esite}/message$!{cid}.htm" target="_blank">给他留言</a></span></li>
+                         <div class="clear"></div>
+                     </ul>
+                </div>
+            </div>
+        </div>
+        <div class="hb_detr floatright">
+        <div class="hb_detltitle"><h1><a href="#">#printTitle($!{tradeSupply.supply.title} 23 "")</a></h1></div>
+		<div class="margintop16">
+				<div class="hb_detlinfoimg floatleft">
+						#if($!{tradeSupply.supply.photoCover}=="")
+    						<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" alt="$!{tradeSupply.supply.title}" style="width:280px;height:230px;"/>
+						#else
+    						<img src="$!{address.thumb}$!{address.resource}$!{tradeSupply.supply.photoCover}&width=280&height=230" onclick="window.open('$!{address.resource}$!{tradeSupply.supply.photoCover}')" alt="$!{tradeSupply.supply.title}" />
+    					#end
+				</div>
+				<div class="hb_detlinfocon floatright">
+					<ul class="hb_detlinfocom_s">
+						<li><span>产品名称：</span><font color="#f27800" title="$!{tradeSupply.supply.title}">#printTitle($!{tradeSupply.supply.title} 23 "")</font></li>
+						<li><span>所 在 地：</span>$!{tradeSupply.provinceName} $!{tradeSupply.areaName}</li>
+						<li><span>数&nbsp;&nbsp;&nbsp;&nbsp;量：</span>
+						                                        #if($!{tradeSupply.supply.totalNum}!=0)
+						                                        $!{tradeSupply.supply.totalNum}$!{tradeSupply.supply.totalUnits}
+						                                        #else
+						                                                                                 不限
+						                                        #end</li>                                      
+						<li><span>价&nbsp;&nbsp;&nbsp;&nbsp;格：</span>
+							#if("$!{tradeSupply.supply.priceFrom}" != "" && "$!{tradeSupply.supply.priceTo}" != ""&&$!{tradeSupply.supply.priceTo}!="0")
+								$!{tradeSupply.supply.priceFrom}至$!{tradeSupply.supply.priceTo}
+								#if("$!{tradeSupply.supply.priceUnits}"=="")
+									元
+								#else
+									$!{tradeSupply.supply.priceUnits}
+								#end
+							#else
+								#if("$!{tradeSupply.supply.priceNum}"=="" || "$!{tradeSupply.supply.priceNum}"=="0")
+									面议
+								#else
+									$!{tradeSupply.supply.priceNum}
+									#if("$!{tradeSupply.supply.priceUnits}"=="")
+										元
+									#else
+										$!{tradeSupply.supply.priceUnits}
+									#end
+								#end
+							#end
+						</li>
+						<li><span>发布时间：</span>#printFragmentDate("yyyy年MM月dd日" $!{tradeSupply.supply.gmtRefresh})</li>
+						<li><span>有 效 期：</span>#if("$!{tradeSupply.supply.validDays}"=="0") 长期有效 #else $!{tradeSupply.supply.validDays}天#end</li>
+					</ul>
+					<ul class="margintop16">
+						<li class="hb_detlyxp floatleft"><a href="$!{address.esite}/message$!{cid}.htm" target="_blank">点此询盘</a></li>
+						<li class="hb_detqqmsn floatright">
+							<!-- JiaThis Button BEGIN -->
+							<div class="jiathis_style">
+								<a class="jiathis_button_qzone"></a>
+								<a class="jiathis_button_tsina"></a>
+								<a class="jiathis_button_tqq"></a>
+								<a class="jiathis_button_renren"></a>
+								<a class="jiathis_button_kaixin001"></a>
+								<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+								<a class="jiathis_counter_style"></a>
+							</div>
+							<script type="text/javascript" src="http://v3.jiathis.com/code_mini/jia.js?uid=1334651216375975" charset="utf-8"></script>
+							<!-- JiaThis Button END -->
+						</li>
+					</ul>
+					<div class="clear"></div>
+				</div>
+                <div class="clear"></div>
+        </div>
+        <div class="hb_detldlis margintop16">详细介绍</div>
+        <div class="hb_detrcon margintop16">$!{tradeSupply.supply.details}</div>
+        <div>
+            <table width="100%" border="1" cellspacing="1" cellpadding="0" bordercolor="#e7e7e7">
+            <tr>
+              <td width="60" height="30" align="right" bgcolor="#eeefee"><b>产地</b>&nbsp;</td>
+              <td bgcolor="#FFFFFF">&nbsp;$!{tradeSupply.provinceName} $!{tradeSupply.areaName}</td>
+              <td width="80" align="right" bgcolor="#EEEFEE"><b>产品说明:</b>&nbsp;</td>
+              <td bgcolor="#FFFFFF">&nbsp;$!{tradeSupply.supply.useTo}</td>
+            </tr>
+            </table>
+        </div>
+		
+		#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?cid=$!{cid}&uid=$!{uid}&size=10&tesd", "", "", "300")
+		<div class="hb_detothercp margintop16">本公司其他产品</div>
+        <div class="margintop8">
+			#foreach($supply in $!{list})
+			<div class="hb_detothercon floatleft">
+				<a href="$!{address.trade2}/supply/detail$!{supply.id}.htm" target="_blank">
+			#if("$!{supply.photoCover}" == "")
+				<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif "/>
+				#else
+				<img src="$!{address.thumb}$!{address.resource}$!{supply.photoCover}&width=100&height=100"/>
+			#end
+        	<br />#printTitle($!{supply.title} 10 "")<br />￥<span>$!{supply.priceNum}$!{supply.priceUnits}</span></a>
+			</div>
+			#end
+                <div class="clear"></div>
+        </div>
+		#end
+		<div class="hb_detothercp">相关产品</div>
+		<div class="margintop8">
+			#foreach($rsupply in $!{rlist})
+				<div class="hb_detothercon floatleft">
+					#if("$!{rsupply.photoCover}" == "")
+						<a href="#springUrl('/supply/detail')$!{rsupply.id}.htm" target="_blank">
+						<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif "/>
+					#else
+						<img src="$!{address.thumb}$!{address.resource}$!{rsupply.photoCover}&width=100&height=100"/>
+						</a>
+					#end
+					<br />
+					<a href="#springUrl('/supply/detail')$!{rsupply.id}.htm" target="_blank">
+						#printTitle($!{rsupply.title} 10 "")
+					</a>
+					<br />
+					#if(!$!{rsupply.priceNum} || $!{rsupply.priceNum} == "")
+						<span>面议</span>
+					#else
+						￥<span>$!{rsupply.priceNum}$!{rsupply.priceUnits}</span>
+					#end
+				</div>
+             #end
+			 <div class="clear"></div>
+			</div>    
+		</div>
+		<div class="clear"></div>
+	</div>
+
+<div class="header hbdetotherbot marginbottom8">以上信息由企业自行提供，信息内容的真实性、准确性和合法性由相关企业负责，中国环保网对此不承担任何责任</div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeKeyword">
+
+    <typeAlias alias="tradeKeyword" type="com.zz91.ep.domain.trade.TradeKeyword"/>
+    
+     <resultMap class="tradeKeyword" id="simplyColumnResultMap">
+    	<result property="id" column="id"/>
+    	<result property="cid" column="cid"/>
+    	<result property="targetId" column="target_id"/>
+    	<result property="start" column="start"/>
+    	<result property="end" column="end"/>
+    	<result property="keywords" column="keywords"/>
+    	<result property="type" column="type"/>
+    	<result property="status" column="status"/>
+    	<result property="cname" column="cname"/>
+    	<result property="title" column="title"/>
+    	<result property="photoCover" column="photo_cover"/>
+    	<result property="areaCode" column="area_code"/>
+    	<result property="provinceCode" column="province_code"/>
+    	<result property="priceNum" column="price_num"/>
+    	<result property="priceUnits" column="price_units"/>
+    	<result property="memberCode" column="member_code"/>
+    	<result property="gmtRegister" column="gmt_register"/>
+    	<result property="creditFile" column="credit_file"/>
+    	<result property="domainTwo" column="domain_two"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <resultMap class="tradeKeyword" id="fullColumnResultMap" extends="simplyColumnResultMap">
+    	<result property="detailsQuery" column="details_query"/>
+    </resultMap>
+    
+    <sql id="simpColumn">
+    	`id`,
+		`cid`,
+		`target_id`,
+		`start`,
+		`end`,
+		`keywords`,
+		`type`,
+		`status`,
+		`cname`,
+		`title`,
+		`photo_cover`,
+		`area_code`,
+		`province_code`,
+		`price_num`,
+		`price_units`,
+		`member_code`,
+		`gmt_register`,
+		`credit_file`,
+		`domain_two`,
+		`gmt_created`,
+		`gmt_modified`
+    </sql>
+    <insert id="insertTradeKeyword" parameterClass="tradeKeyword">
+    	insert into `trade_keyword`
+		(
+		`cid`,
+		`target_id`,
+		`start`,
+		`end`,
+		`keywords`,
+		`type`,
+		`status`,
+		`cname`,
+		`title`,
+		`photo_cover`,
+		`details_query`,
+		`area_code`,
+		`province_code`,
+		`price_num`,
+		`price_units`,
+		`member_code`,
+		`gmt_register`,
+		`credit_file`,
+		`domain_two`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#cid#,
+		#targetId#,
+		#start#,
+		#end#,
+		#keywords#,
+		#type#,
+		#status#,
+		#cname#,
+		#title#,
+		#photoCover#,
+		#detailsQuery#,
+		#areaCode#,
+		#provinceCode#,
+		#priceNum#,
+		#priceUnits#,
+		#memberCode#,
+		#gmtRegister#,
+		#creditFile#,
+		#domainTwo#,
+		now(),
+		now()
+		)
+    	<selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <sql id="dynamicWhere">
+    	<dynamic prepend="where">
+			<isNotEmpty property="keyword" prepend="and">
+				keywords=#keyword#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				status=#status#
+			</isNotEmpty>
+			<isNotEmpty property="start" prepend="and">
+				#start# >= start
+			</isNotEmpty>
+			<isNotEmpty property="end" prepend="and">
+				end >= #end#
+			</isNotEmpty>
+		</dynamic>
+    </sql>
+ 
+    <select id="queryTradeKeyword" parameterClass="java.util.HashMap" resultMap="simplyColumnResultMap">
+    	select
+		<include refid="tradeKeyword.simpColumn"/>
+		from `trade_keyword`
+		<include refid="tradeKeyword.dynamicWhere"/>
+		<include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+    </select>
+  
+    <select id="queryTradeKeywordCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(id) 
+    	from  trade_keyword
+    	<include refid="tradeKeyword.dynamicWhere"/>
+    </select>
+    
+    <select id="queryTradeKeywordById" parameterClass="java.lang.Integer" resultMap="fullColumnResultMap">
+       select 
+       <include refid="tradeKeyword.simpColumn"/>
+       ,details_query
+	   from `trade_keyword`
+	   where id=#id#
+    </select>
+      
+    <update id="updateStatusById" parameterClass="java.util.HashMap" >
+       update `trade_keyword`
+       set
+       `status` =#status#,
+       `gmt_modified` =now()
+		where id=#id#
+    </update>
+    
+    <update id="updateTradeKeyword" parameterClass="tradeKeyword">
+    	update `trade_keyword` set 
+        `cid` = #cid#,
+        `target_id` = #targetId#,
+        `start` =#start#,
+        `end` =#end#,
+        `keywords` =#keywords#,
+        `type` =#type#,
+        `status` =#status#,
+        `cname` =#cname#,
+        `title` =#title#,
+        `photo_cover` =#photoCover#,
+        `details_query` =#detailsQuery#,
+        `area_code` =#areaCode#,
+        `province_code` =#provinceCode#,
+        `price_num` =#priceNum#,
+        `price_units` =#priceUnits#,
+        `member_code` =#memberCode#,
+        `credit_file` =#creditFile#,
+        `domain_two` =#domainTwo#,
+        `gmt_modified` =now()
+        where id = #id#
+    </update>
+</sqlMap>

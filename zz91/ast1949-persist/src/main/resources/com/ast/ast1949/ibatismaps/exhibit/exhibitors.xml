@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="exhibitors">
+	<typeAlias alias="exhibitorsDo" type="com.ast.ast1949.domain.exhibit.Exhibitors" />
+	<resultMap class="exhibitorsDo" id="ExhibitorsDoResult">
+		<result property="id" column="id" />
+		<result property="companyName" column="companyName" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="job" column="job" />
+		<result property="area" column="area" />
+		<result property="address" column="address" />
+		<result property="addressZip" column="address_zip" />
+		<result property="fex" column="fex" />
+		<result property="mobile" column="mobile" />
+		<result property="tel" column="tel" />
+		<result property="email" column="email" />
+		<result property="website" column="website" />
+		<result property="type" column="type" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="defaultColumn">
+			id,
+			companyName,
+			name, 
+			sex, 
+			job, 
+			area,
+			address,
+			address_zip,
+			mobile,
+			tel,
+			fex,
+			email,
+			website,
+			type,
+			gmt_created,
+			gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="exhibitorsDo">
+		INSERT INTO exhibitors 
+		(
+			companyName,
+			name, 
+			sex, 
+			job, 
+			area,
+			address,
+			address_zip,
+			mobile,
+			tel,
+			fex,
+			email,
+			website,
+			type,
+			gmt_created,
+			gmt_modified
+		)
+		VALUES
+		(
+			#companyName#,
+			#name#, 
+			#sex#, 
+			#job#, 
+			#area#,
+			#address#,
+			#addressZip#,
+			#mobile#,
+			#tel#,
+			#fex#,
+			#email#,
+			#website#,
+			#type#,
+			now(),
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="exhibitors.type">
+				type = #exhibitors.type#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryAllExhibitors" parameterClass="java.util.Map" resultMap="ExhibitorsDoResult">
+		select 
+		<include refid="defaultColumn"/>
+		from exhibitors
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAllExhibitorsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select 
+		count(0)
+		from exhibitors
+		<include refid="whereClause" />
+	</select>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="ExhibitorsDoResult">
+		select 
+		<include refid="defaultColumn"/>
+		from exhibitors
+		where type=#type#
+	</select>
+	
+</sqlMap>

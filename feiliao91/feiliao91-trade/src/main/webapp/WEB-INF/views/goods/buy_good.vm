@@ -1,0 +1,560 @@
+#set($layout="/layout/default.vm")
+ <link rel="stylesheet" href="http://img0.zz91.com/trade/buypay/css/pay-list.css" />
+ <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/selectJr.css" />
+        #parse("/common/buy_menu.vm")
+        <div class="content clearfix">
+            <div class="pay-steps">
+                <ul class="pay-steps-list clearfix">
+                    <li class="clearfix frist-step this-paystep">
+                        <span>1<em class="stepname">确认订单</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>2<em class="stepname">付款</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>3<em class="stepname">卖家发货</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>4<em class="stepname">确认收货</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>5<em class="stepname">评价</em></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="choose-ads clearfix">
+                <h3 class="choose-h3">选择收货地址</h3>
+                <ul class="clearfix ads-alllist j_thisads">
+                #foreach($li in $addrList)
+	                     <li #if($!{li.address.isDefault}=='1') class="fl thisads" #else class="fl" #end>
+	                        <div class="ads-ft">$!{li.areaLabel}   （$!{li.address.name}  收）</div>
+	                        <p class="ads-two">$!{li.address.address}</p>
+	                        <p class="ads-two">$!{li.address.mobile} #if(!$!{li.address.mobile}||$!{li.address.mobile}=="") $!{li.address.tel} #end</p>
+	                        <a href="javascript:;" index="$!{li.address.id}" class="blue j_rma">修改</a>
+	                    </li>
+                 #end
+                </ul>
+                <div class="add-ads j_rma"><span>+</span>添加新地址</div>
+            </div>
+			<form action="#springUrl('/orders/subOrders.htm')" method="post" id="subOrd">
+                <div class="express-mail clearfix">
+                    <div class="express-title clearfix">
+                        <span class="truedd-tt fl">确认订单信息</span>
+                        <div class="fr">发票抬头：
+                            <span class="info-ddtrue">
+                            <input class="give-info-ipt" name="buyInvoiceTitle"/>
+                            <i class="remove-if iconfont">&#xe60a;</i></span>
+                        </div>
+                    </div>
+                    <div class="replace-old">
+                        <dl class="res-info">
+                            <dt class="clearfix">
+                                <div class="res-seller fl">卖家：<a href="$!{address.www}/compInfo$!{dto.companyInfo.id}.htm" target="_blank">$!{dto.companyInfo.name}</a></div>
+                                <div class="res-color fl">&nbsp;</div>
+                                <div class="res-unit fl">单价（元）</div>
+                                <div class="res-number fl">数量</div>
+                                <div class="res-moery fl">小计（元）</div>
+                                <div class="res-moery-lgs fl">物流费用</div>
+                            </dt>
+                            <dd class="clearfix">
+                                <div class="res-seller fl clearfix">
+    								<a href="$!{address.www}/goods$!{dto.goods.id}.htm" target="_blank">
+    									<img src="$!{address.img}$!{dto.picAddress}" class="seller-img"/>
+    								</a>
+                                    <p class="res-jj">
+    									<a href="$!{address.www}/goods$!{dto.goods.id}.htm" target="_blank">
+    										$!{dto.goods.title}
+    									</a>
+    								</p>
+                                    <p class="res-icon">
+                                    	#if($!{dto.bzjFlag})
+                                    		<i class="res-iconimg1"></i>
+                                    	#end
+                                    	#if($!{dto.sevenDayFlag})
+                                    		<i class="res-iconimg1 res-iconimg2"></i>
+                                    	#end
+                                    </p>
+                                </div>
+                                <div class="res-color fl">
+                                    <p>$!{attribute}</p>
+                                </div>
+                                <div class="res-unit fl res-unitbu">$!{dto.goods.price}</div>
+                                <div class="res-number fl sumnum"><a href="javascript:void(0)" class="chenge-num fl down-num">_</a><input class="buynum fl" value="$!{number}" name="number"/><a href="javascript:void(0)" class="chenge-num fl up-num">+</a></div>
+                                <div class="res-moery fl xiaoji">150.00</div>
+								#if($!{dto.goods.fare}&&$!{dto.goods.fare}!="0"&&$!{dto.goods.fare}!="-1")
+                                <div class="res-moery-lgs fl fare">$!{dto.goods.fare}</div>
+								#elseif($!{dto.goods.fare}&&$!{dto.goods.fare}=='0'||!$!{dto.goods.fare})
+								<div class="res-moery-lgs fl fare">包邮</div>
+								#elseif($!{dto.goods.fare}&&$!{dto.goods.fare} =='-1'||$!{dto.goods.fare}=="")
+								<div class="res-moery-lgs fl fare">商议后调整</div>
+								#end
+								<input type="hidden" value="$!{dto.goods.number}" id="sumid"/>
+								<input type="hidden"   value="$!{dto.goods.quantity}" id="quantity"/>
+                            </dd>
+                        </dl>
+                        <div class="address">
+                            <div class="fl addresslyan">
+                                买家留言：
+                                <span class="info-ddtrue">
+                        		<input placeholder="选填，可填写您和卖家达成一致的要求" class="give-info-ipt" name="buyMessage"/>
+                        		<input type="hidden" name="id" id="goodsId" value="$!{dto.goods.id}" />
+                        		<input type="hidden" name="attribute" value="$!{attribute}" />
+                        		<input type="hidden" name="addressId" value="" />
+                                <i class="remove-if iconfont">&#xe60a;</i>
+                                </span>
+    
+                            </div>
+                            <div class="fr right-do heji">合计（含运费）：¥151000.00</div>
+                        </div>
+                        <div class="replace-main right-do">
+                            <div class="replace-list clearfix">
+                                <div class="fl old-moery">
+									
+                                    <span>实付款：</span>
+                                    <span class="old-moery-num"></span>
+									
+                                </div>
+                            </div>
+                            <a href="$!{address.www}/goods$!{dto.goods.id}.htm" class="black-old">返回</a><span class="replace-btn">确定</span>
+                        </div>
+                    </div>
+                </div>
+			</form>
+        </div>
+        <div class="estopDiv "></div>
+        <div class="pop-main">
+            <div class="ads-pop">
+                <div class="ads-pop-top clearfix">
+                    <h3 class="ads-pop-h3">使用新地址</h3>
+                    <a href="javascript:void(0)" class="ads-close j_close">x</a>
+                </div>
+				<form action="#" method="post" id="form1">
+                    <div class="ads-pop-cnt">
+                        <ul>
+                            <li>
+                                <span class="pop-cnt-title blue">新增收货地址</span>
+                                电话号码、手机号选填一项，其余都为必填项
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title"><i>*</i>所在地区</span>
+                                <div class="controls">
+                					<p>
+                						<select id='reg-area-0'>
+                							<option value="">请选择省份</option>
+                						</select>
+                						<select id='reg-area-1'>
+                							<option value="">请选择城市</option>
+                						</select>
+                						<select id='reg-area-2'>
+                							<option value="">请选择县区</option>
+                						</select>
+                						<input name="areaCode" type="hidden" id="areaCode"  /><span style="color:red" id="areaCodeerro"></span>
+                					</p>
+    						   </div>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title"><i>*</i>详细地址</span>
+                                <textarea id="address" placeholder="建议您如实填写详细收货地址，例如街道名称、门牌号码、楼层和房间号等" class="detaads" name="address"></textarea><span style="color:red" id="addresserro"></span>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title">邮政编码</span>
+                                <input placeholder="如果您不清楚邮递区域，请填写000000" class="pop-cnt-ipt" name="zipCode" id="email"/><span style="color:red" id="emailerro"></span>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title"><i>*</i>收货人姓名</span>
+                                <input placeholder="长度不超过25个字符" class="pop-cnt-ipt" name="name" id="name"/><span style="color:red" id="nameerro"></span>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title">手机号码</span>
+                                <select class="zone-opt">
+                                    <option>中国大陆 +86</option>
+                                </select>
+                                <input placeholder="电话号码、手机号码必须填一项" class="pht-ipt" name="mobile" id="mobile"/><span style="color:red" id="mobileerro"></span>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title">电话号码</span>
+                                <select class="zone-opt">
+                                    <option>中国大陆 +86</option>
+                                </select>
+                                <input placeholder="区号" class="tell-pht nifo-rf" name="code" id="code"/> -
+                                <input placeholder="电话号码" class="tell-pht" name="phone" id="phone"/> -
+                                <input placeholder="分机" class="tell-pht" name="phoneCode" id="phoneCode"/><span style="color:red" id="phoneerro"></span>
+                            </li>
+                            <li>
+                                <span class="pop-cnt-title">&nbsp;</span>
+                                <label><input name="address" type="checkbox" value="" onclick="checkout()"  id="chea" class="mr-ads"/>设置为默认收货地址</label> 
+    							<input type="hidden" value="0" name="isDefault" id="chenck"/>
+                            </li>
+    						<input type="hidden" name="addressType" value="0" />
+    						<input type="hidden" name="isDel" value="0" />
+    						<input type="hidden" name="id" id="id"/>
+                        </ul>
+    					<span style="color:red" id="error"></span>
+                        <div class="bc-btn">保存</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <script type="text/javascript">
+	
+		##数量进行减
+		$(".down-num").click(function(){
+		var sum=Number($("#sumid").val());
+		var num=Number($(".buynum").val());
+		if(num>sum){
+		$("#erronumber").html("");
+		num=num-1;
+		$(".buynum").val(num);
+		getMoney();
+		}else{
+		alert("小于最低起订量")
+		}
+		});
+		
+		##数量进行加
+		$(".up-num").click(function(){
+		var sum=Number($("#quantity").val());
+		var num=Number($(".buynum").val());
+		$("#erronumber").html("");
+		if(num<sum){
+		num=num+1;
+		$(".buynum").val(num);
+		getMoney();
+		}else{
+		alert("库存不足")
+		}
+		});
+		
+		$(".buynum").change(function(){
+		var sum=Number($("#sumid").val());
+		var num=Number($(".buynum").val());
+		var sum1=Number($("#quantity").val());
+		if(num<sum){
+		alert("小于最低起订量")
+		$(".buynum").val(sum);
+		}
+		if(num>sum1){
+		alert("库存不足")
+		$(".buynum").val(sum1);
+		}
+		getMoney();
+		})
+		
+    	##小计计算
+		function getMoney(){
+		var xj =$(".res-unitbu").html();
+		var num = Number($(".buynum").val());;
+		var sum =0;
+		if(xj.indexOf("-")!=-1){
+		var cc = xj.split("-");
+		xj = Number(cc[0])+Number(cc[1]);
+		sum=xj*num;
+		}else{
+		sum=xj*num;
+		}
+    	jQuery(".xiaoji").html(sum+".00");
+		var fare = jQuery(".fare").html();
+		if(!isNaN(fare)){
+    	var hj = Number(sum) + Number(jQuery(".fare").html());
+		jQuery(".heji").html("合计（含运费）：¥"+hj +".00");
+    	jQuery(".old-moery-num").html("￥"+hj + ".00");
+		}else{
+		jQuery(".heji").html("合计（含运费）：¥"+Number(sum) +".00");
+		jQuery(".old-moery-num").html("￥"+Number(sum) + ".00");
+		}
+		}
+		
+		
+		
+		$(document).ready(function(){
+    	getMoney();
+		})
+		
+		## 现货物所在地
+		var regarea = new Asto.util.Selector({
+			selects: ["#reg-area-0","#reg-area-1", "#reg-area-2"],
+			url: "#springUrl('/goods/catChild.htm')",
+			changeCallback: function (c, idx) {
+			setAreaCode();
+			}
+		});
+		
+		
+		function checkout(){
+        if(document.getElementById("chea").checked){
+    	document.getElementById("chenck").value="1";
+        }else{
+    	document.getElementById("chenck").value="0";
+    	}
+        }
+		
+	    ## 组装地址code
+ 	    function setAreaCode(){
+		var areacode="";
+		if(jQuery("#reg-area-0").val()!=""){
+			areacode=jQuery("#reg-area-0").val();
+		}
+		if(jQuery("#reg-area-1").val()!=""){
+			areacode=jQuery("#reg-area-1").val();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			areacode=jQuery("#reg-area-2").val();
+		}
+		jQuery("#areaCode").val(areacode);
+		
+	}
+	
+		
+        $(".j_rma").bind("click",function(){
+            var wHight = $(document).height();
+            var wWidth = $(document).width();
+            var scrollTop = $(document).scrollTop();
+            $(".estopDiv").height(wHight).width(wWidth).show();
+            var left_pop = (wWidth - $(".pop-main").width())/2
+            var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+            $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+            var cls = $(this).attr("class");
+            if(cls.indexOf("add-ads")<0){
+				jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+            	addr($(this).attr("index"));
+				inputTS();
+				jQuery("input,textarea").each(function(i,item){
+    				if(jQuery(item).val()!=jQuery(item).attr("placeholder")){
+    					jQuery(item).css("color","#000");
+    				}
+    			})
+            }else{
+				jQuery("#areaCodeerro").val("");
+				jQuery("#address").val("");
+				jQuery("#email").val("");
+				jQuery("#name").val("");
+				jQuery("#mobile").val("");
+				jQuery("#code").val("");
+				jQuery("#phone").val("");
+				jQuery("#phoneCode").val("");
+				jQuery("#id").val("");
+            	jQuery("#reg-area-0,#reg-area-1,#reg-area-2,.detaads").val("");
+            	regarea.init({
+					rootCode: "10011000"
+			    });
+            	jQuery("input[type=checkbox]").attr("checked",false);
+				inputTS();
+            }
+        })
+        $(".j_close").bind("click",function(){
+            $(".estopDiv").hide();
+            $(".pop-main").hide();
+        })
+        $(".j_thisads li").bind("click",function(){
+            $(".thisads").removeClass("thisads")
+            $(this).addClass("thisads");
+        })
+        $(".give-info-ipt").bind("keyup",function(){
+            if(!$(this).val()==""){
+                $(this).parent().find(".remove-if").show();
+            }else{
+                $(this).parent().find(".remove-if").hide();
+            }
+        });
+        $(".remove-if").bind("click",function(){
+            $(this).hide().parent().find(".give-info-ipt").val("")
+        })
+        //selectJr();
+		
+		## 验证标志
+		var submitFlag = false;
+		
+        ##获取地址信息
+        function addr(a){
+        	jQuery.ajax({
+        		url:"#springUrl('/goods/getAddr.htm')",
+      			data:{"id":a},
+    			type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+					if(!reg.address){
+						alert("获取失败");
+						return false;
+					}
+					regarea.init({
+					    initCode:reg.address.areaCode,
+						rootCode: "10011000"
+					});
+					jQuery("textarea[name=address]").val(reg.address.address);
+					jQuery("input[name=zipCode]").val(reg.address.zipCode);
+					jQuery("input[name=name]").val(reg.address.name);
+					jQuery("input[name=mobile]").val(reg.address.mobile);
+					jQuery("input[name=code]").val(reg.preTel);
+					jQuery("input[name=phone]").val(reg.midTel);
+					jQuery("input[name=phoneCode]").val(reg.postTel);
+					jQuery("input[name=companyId]").val(reg.address.companyId);
+					jQuery("input[name=id]").val(reg.address.id);
+					jQuery("input[name=areaCode]").val(reg.address.areaCode);
+					if(reg.address.isDefault==1){
+						jQuery("input[type=checkbox]").attr("checked",true);
+						document.getElementById("chenck").value="1";
+					}else{
+						jQuery("input[type=checkbox]").attr("checked",false);
+						document.getElementById("chenck").value="0";
+					}
+					jQuery(".bc-btn").attr("style","background:rgb(2, 124, 255);color:white;")
+					submitFlag = true;
+				}
+        	});
+        }
+        ##验证
+        $(document).ready(function(){
+            $("form :input").blur(function() {
+                if(jQuery("#reg-area-0").find("option:selected").text()=="请选择省份"){
+                $("#areaCodeerro").html("请完善公司 ”国家/地区“ 至城市");
+        		jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+                return false;
+                }else{
+                $("#areaCodeerro").html("");
+                }
+                if($("#address").val()==""){
+                $("#addresserro").html("请填写地址");
+        		jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+                return false;
+                }else{
+                $("#addresserro").html("");
+                }
+                if($("#name").val()==""){
+                $("#nameerro").html("请填写联系人");
+        		jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+                return false;
+                }else{
+                $("#nameerro").html("");
+                }
+##                var ph =/^\d{3,5}$/;
+##                var c = $(".nifo-rf").val();
+##                if(c!=""){
+##                    if(!ph.test(c)){
+##        				$("#phoneerro").html("请填写正确的区号");
+##        				jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+##        				submitFlag = false;
+##                	}else{
+##        				$("#phoneerro").html("");
+##                	}
+##                }
+##                if($("#phone").val()!=""){
+##                    var ph4 =/^\d{7,8}$/;
+##                    if(!ph4.test($("#phone").val())){
+##            			$("#phoneerro").html("请填写正确的电话号码");
+##            			submitFlag = false;
+##            		}else{
+##            			$("#phoneerro").html("");
+##            		}
+##                }
+                if($("#mobile").val()!=""){
+                     var ph3 =/^\d{10,11}$/;   
+                   if(!ph3.test($("#mobile").val())){
+                   $("#mobileerro").html("请填写正确的手机号");
+        		   jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+                   return false;
+                   }else{
+                    $("#mobileerro").html("");
+                   }
+                }
+                if($("#mobile").val()==""&&$("#phone").val()==""){
+                $("#mobileerro").html("请填写其中一种联系方式");
+                $("#phoneerro").html("请填写其中一种联系方式");
+        		jQuery(".bc-btn").attr("style","background:rgb(230, 230, 230);color:balck;");
+                 submitFlag = false;
+                }else{
+                $("#mobileerro").html("");
+                $("#phoneerro").html("");
+                }
+                jQuery(".bc-btn").attr("style","background:rgb(2, 124, 255);color:white;")
+				submitFlag = true;
+            });
+        });
+        	
+        	
+        $("body").delegate(".bc-btn","click",function(){
+        if(jQuery("#reg-area-0").find("option:selected").text()=="请选择省份"){
+        $("#areaCodeerro").html("请完善公司 ”国家/地区“ 至城市");
+        }else{
+        $("#areaCodeerro").html("");
+        }
+        if($("#address").val()==""){
+        $("#addresserro").html("请填写地址");
+        }else{
+        $("#addresserro").html("");
+        }
+        if($("#name").val()==""){
+        $("#nameerro").html("请填写联系人");
+        }else{
+        $("#nameerro").html("");
+        }
+##        var ph =/^\d{3,5}$/;
+##        var c=$(".nifo-rf").val();
+##        if(c!=""){
+##            if(!ph.test(c)){
+##        	  $("#phoneerro").html("请填写正确的区号");
+##        	}else{
+##        	  $("#phoneerro").html("");
+##        	}
+##        }
+##        if($("#phone").val()!=""){
+##        var ph4 =/^\d{7,8}$/;
+##        if(!ph4.test($("#phone").val())){
+##             $("#phoneerro").html("请填写正确的电话号码");
+##        }else{
+##              $("#phoneerro").html("");
+##        }
+##        }
+        if($("#mobile").val()!=""){
+             var ph3 =/^\d{10,11}$/;   
+           if(!ph3.test($("#mobile").val())){
+           $("#mobileerro").html("请填写正确的手机号");
+           }else{
+            $("#mobileerro").html("");
+           }
+        }
+        if($("#mobile").val()==""&&$("#phone").val()==""){
+        $("#mobileerro").html("请填写其中一种联系方式");
+        $("#phoneerro").html("请填写其中一种联系方式");
+        }else{
+        $("#mobileerro").html("");
+        $("#phoneerro").html("");
+        }
+		
+			var da=$("#form1").serialize();
+			if(submitFlag){
+    			jQuery.ajax({
+    				url:"#springUrl('/address/addAddress.htm')",
+    				type:'post',
+    				dataType:'json',
+    				data:da,
+    				cache:false,
+    				success:function(data){
+    					var b=data.success;
+    					var c=data.data;
+    					if(b){
+    						window.location.reload();
+    					}else{
+    						$("#error").html(c);
+    					}
+    				}
+    			});
+			}
+		});
+        
+        ##提交订单
+        $("body").delegate(".replace-btn","click",function(){
+        	//1、收获地址
+        	var i = jQuery(".thisads .j_rma").attr("index");
+        	if(!i){
+        		alert("请选择收获地址");
+        		return false;
+        	}else{
+        		jQuery("input[name=addressId]").val(i);
+        	}
+			jQuery("#goodsId").val($!{dto.goods.id});
+			jQuery("input[name=attribute]").val("$!{attribute}");
+        	jQuery("#subOrd").submit();
+        });
+        
+    </script>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tags" >
+	<typeAlias alias="tags" type="com.zz91.tags.domain.Tags"/>
+	
+	<resultMap class="tags" id="tagsResult">
+		<result property="id" column="id" />
+		<result property="tags" column="tags" />
+		<result property="tagsEncode" column="tags_encode" />
+		<result property="clickCount" column="click_count" />
+		<result property="searchCount" column="search_count" />
+		<result property="citedCount" column="cited_count" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="keywords" column="keywords" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,	
+		tags,
+		tags_encode,
+		click_count,
+		search_count, 
+		cited_count,
+		gmt_created,
+		gmt_modified,
+		keywords
+	</sql>
+	
+	<resultMap class="tags" id="simpleTagsResult">
+		<result property="tags" column="tags" />
+		<result property="tagsEncode" column="tags_encode" />
+	</resultMap>
+	
+	<sql id="simpleColumn">
+		tags,tags_encode
+	</sql>
+	
+	<insert id="insertTags" parameterClass="tags">
+		insert into tags (
+			tags,
+			tags_encode,
+			click_count,
+			search_count,
+			cited_count,
+			keywords,
+			gmt_created,
+			gmt_modified
+		)
+		values (
+			#tags#,
+			#tagsEncode#,
+			#clickCount#,
+			#searchCount#,
+			#citedCount#,
+			#keywords#,
+			now(),
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteTags" parameterClass="java.lang.String">
+		delete from tags 
+		where tags=#tags#
+	</delete>
+	
+	<select id="queryTags" parameterClass="java.util.HashMap" resultMap="tagsResult">
+		select 
+			<include refid="tags.fullColumn" />
+		from tags
+			<dynamic prepend="where">
+				<isNotEmpty  property="tags">
+					tags like concat('%',#tags# ,'%')
+				</isNotEmpty>
+			</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryTagsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from tags 
+		<dynamic prepend="where">
+				<isNotEmpty  property="tags">
+					tags like concat('%',#tags# ,'%')
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	<select id="countTagsByName" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from tags
+		where tags=#tags#
+	</select>
+	
+	<update id="updateCitedCount" parameterClass="java.lang.String">
+		update tags set 
+		cited_count=cited_count+1,
+		gmt_modified=now()
+		where tags=#tags#
+	</update>
+	
+	<update id="updateClickCount" parameterClass="java.lang.String">
+		update tags set
+			click_count=click_count+1,
+			gmt_modified=now()
+		where tags=#value#
+	</update>
+	
+	<update id="updateSearchCount" parameterClass="java.lang.String">
+		update tags set
+			search_count=search_count+1,
+			gmt_modified=now()
+		where tags=#value#
+	</update>
+	
+	<select id="queryTagsByKeywords" parameterClass="java.util.HashMap" resultMap="simpleTagsResult">
+		select tags,tags_encode from tags
+		where keywords like concat('%',#keywords#,'%')
+		order by $sort$ desc
+		limit #size#
+	</select>
+	
+	<select id="queryTagsByTag" parameterClass="java.util.HashMap" resultMap="simpleTagsResult">
+		select tags,tags_encode from tags
+		where tags like concat(#tag#,'%')
+		order by $sort$ desc
+		limit #size#
+	</select>
+	
+	<select id="queryTagsForHot" parameterClass="java.util.HashMap" resultMap="simpleTagsResult">
+		select tags,tags_encode from tags
+		where gmt_modified > #from#
+		order by search_count desc
+		limit #size#
+	</select>
+	
+	<update id="updateTags" parameterClass="tags">
+		update tags set
+			tags=#tags#,
+			tags_encode=#tagsEncode#,
+			keywords=#keywords#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,285 @@
+#set($layout='/layout/regist_StpTwoLayout.vm')
+<header class="regheader hb_mainblock"> 
+    <div class="reglogo">
+        <h1 class="reg_sitename">中国环保网-$!{address.www}</h1>
+        <p class="reg_logoimg"><a href="$!{address.www}" target="_blank"><img alt="中国环保网" src="$!{address.img}/huanbao/images/logo/hb_logo_min.gif"/></a></p>
+        <p class="hbreg">|注册</p> 
+        <div class="clear"></div> 
+    </div>
+    
+    <div class="regserv">
+        <div class="regtipls"><a href="$!{address.www}" class="backwww">返回首页</a>|<a href="javascript:void(0)">客服中心</a>|<a href="javascript:void(0)" class="regproposal">提意见</a></div>
+        <div class="regservtel">客服电话:<span class="fontorange fontbold">0571-56633090</span></div>
+    </div>
+    <div class="clear"></div>
+</header>
+<!-- header end-->
+
+<nav class="regnav hb_mainblock  margintop8">
+	<span class="regstep">第二步:填写公司基本信息及联系方式</span>
+	<span class="regnavtip">( 以下带*为必填 )</span>
+</nav>
+
+<article class="regblock hb_mainblock margintop16">
+     <!--
+	<section class="susscesreg html5radius">
+    	<span class="susscesinfo">恭喜你已经注册成功，完善一下信息，可以获得更多商机！</span>
+    </section>
+ -->
+	<section class="reg2form">
+    	<form method="post" id="regStpTwo" action="#springUrl('/doRegStpTwo.htm')">
+			
+			<div class="reg2_block">
+            	<div class="reg2_blcoktit">公司基本信息</div>
+                <div class="reg2_items reg2_items_hover">
+                    <div class="reg2i_label"><label for="reg2company" class="reg2label"><em class="fontorange">*</em>公司名称：</label></div>
+                    <div class="reg2i_input"><input type="text" value="$!{compProfile.name}" name="company" class="validate[required,minSize[2],maxSize[40]] reg2ipt" id="reg2company"></div>
+					
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label class="reg2label"><em class="fontorange">*</em>公司所在地区：</label></div>
+                    <div class="reg2i_input">
+						<select id="provinceCode" name="provinceCode" class="validate[required] reg2select"   id="reg2provinc" >
+								<option value>省份</option>
+						</select>
+						<select id="areaCode" name="areaCode" class="validate[required] reg2select" id="reg2city">
+							<option value>城市</option>
+						</select>
+                    </div>
+                </div>
+				
+				<div class="reg2_items" id="industryChain">
+                    <div class="reg2i_label"><label class="reg2label"><em class="fontorange"></em>产业链：</label></div>
+                    <div class="reg2i_input" id = "industryChains">
+						
+                    </div>
+					
+					
+                </div>
+				
+				<div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2address" class="reg2label"><em class="fontorange">*</em>详细地址：</label></div>
+                    <div class="reg2i_input" id="adrDetails">
+                        <input type="text" value="$!{compProfile.address}" name="address" class="validate[required] reg2ipt" id="reg2address" >
+                    </div>
+                </div>
+                <input id="userid" name="userid" type="hidden" value="$!{account.id}"/>
+                <div class="reg2_items reg2_items_hover">
+                    <div class="reg2i_label"><label for="reg2linkbody" class="reg2label"><em class="fontorange">*</em>联系人姓名：</label></div>
+                    <div class="reg2i_input"><input type="text" name="linkname" class="validate[required,minSize[2]] reg2ipt" id="linkname" value="$!{account.name}" ></div>
+                </div>
+                <div class="reg2_items">
+                    <div class="reg2i_label">&nbsp;</div>
+                    <div class="reg2i_input">
+                    	<input type="radio" value="0" name="sex" class="reg2sex" id="reg2sexman" #if($!{account.sex} != 1) checked #end/>
+                        <label for="reg2sexman">先生</label>
+                        <input type="radio" value="1" name="sex" class="reg2sex" id="reg2sexwoman" #if($!{account.sex} ==1) checked #end/>
+                        <label for="reg2sexwoman">女士</label>
+                    </div>
+                </div>
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2industry" class="reg2label"><em class="fontorange">*</em>所处行业：</label></div>
+                    <div class="reg2i_input">
+                    	<select name="industryCode" class="validate[required] reg2select" id="reg2industry">
+                        	<option value="">-----请选择-----</option>
+	                         #foreach($list in $!{companyIndustry})
+	                         <option value="$!{list.code}" #if("$!{list.code}"=="$!{compProfile.industryCode}") selected #end>$!{list.name}</option>
+	                         #end
+                        </select>
+                    </div>
+                </div>
+				
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2product" class="reg2label"><em class="fontorange">*</em>
+							#if("${compProfile.mainSupply}"=="1")
+								主营产品：
+							#else
+								求购产品：
+							#end
+					</label></div>
+                    <div class="reg2i_input">
+						#if("${compProfile.mainSupply}"=="1")
+                    	<div class="reg2i_input_expansion">
+                            <input type="text" value="$!{compProfile.mainProductSupply}" name="mainProductSupply" class="validate[required] reg2ipt" id="reg2product">
+                        </div>
+						#else
+    						<div class="reg2i_input_expansion">
+                            	<input type="text" value="$!{compProfile.mainProductBuy}" name="mainProductBuy" class="validate[required] reg2ipt" id="reg2product">
+                            </div>
+						#end
+                    </div>
+                </div>
+				
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2introduct" class="reg2label"><em class="fontorange">*</em>公司简介：</label></div>
+                    <div class="reg2i_input" id="comDetails">
+					<textarea name="details" class="validate[required,minSize[4],maxSize[1500]]  reg2introduct" id="reg2introduct">$!{compProfile.details}</textarea></div>
+                </div>
+                
+
+                <div class="clear"></div>
+            </div>
+			
+			<div class="reg2_blcoktitsho" id="clickme"></div>
+            <div class="reg2_blockdy" id="book">
+				<div class="reg2_blcoktit">其他详细信息</div>
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2business" class="reg2label">公司类型：</label></div>
+                    <div class="reg2i_input">
+                    	<select name="business" class="reg2select" id="reg2business">
+                        	<option value="">-----请选择-----</option>
+                        	#foreach($list in $!{companyCategory})
+                         	<option value="$!{list.value}">$!{list.name}</option>
+                         	#end
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2comurl" class="reg2label">公司网址：</label></div>
+                    <div class="reg2i_input"><input type="text" value="http://www." name="comurl" class="reg2ipt" id="reg2conurl"></div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="regcapital" class="reg2label">注册资金：</label></div>
+                    <div class="reg2i_input"><input type="text" value="" name="regcapital" class="reg2ipt" id="reg2regcapital"></div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="regcapital" class="reg2label">法人：</label></div>
+                    <div class="reg2i_input"><input type="text" value="" name="legal" class="reg2ipt" id="reg2legal"></div>
+                </div>
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2tel" class="reg2label">座机：</label></div>
+                    <div class="reg2i_input">
+							<input type="text" value="86" name="phoneCountry" class="phoneCountry" id="reg2tel" maxlength="3">
+							<input type="text" value="$!{account.phoneArea}" name="phoneArea" class="phoneArea" id="reg2tel" maxlength="4">
+							<input type="text" value="$!{account.phone}" name="phone" class="phone" id="reg2tel">
+					</div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2faxCountry" class="reg2label">传真：</label></div>
+                    <div class="reg2i_input">
+						<input type="text" value="86" name="faxCountry" class="phoneCountry" id="reg2faxCountry" maxlength="3">
+                        <label></label>
+						<input type="text" value="$!{account.faxArea}" name="faxArea" class="phoneArea" id="reg2faxArea" maxlength="4">
+						<input type="text" value="$!{account.fax}" name="fax" class="phone" id="reg2fax">
+					</div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2linkother" class="reg2label">其他联系方式：</label></div>
+                    <div class="reg2i_input">
+                    	#if(!$!{account.contact})<label for="reg2linkother" class="reg2linkotherlabel">QQ/MSN/微博</label> #end
+                    	<input type="text" value="$!{account.contact}" name="linkother" class="reg2ipt" id="reg2linkother">
+                    </div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2department" class="reg2label">部门：</label></div>
+                    <div class="reg2i_input"><input type="text" value="$!{account.dept}" name="department" class="reg2ipt" id="reg2department"></div>
+                </div>
+                
+                <div class="reg2_items">
+                    <div class="reg2i_label"><label for="reg2office" class="reg2label">职位：</label></div>
+                    <div class="reg2i_input"><input type="text" value="$!{account.position}" name="office" class="reg2ipt" id="reg2office"></div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            
+            
+            
+            <div class="reg2_block reg2sub">
+            	<input type="submit" value="保   存" class="reg2sub_btn"> <span class="skipstep2"><a href="$!{address.myesite}/newbie.htm" ref="nofollow">跳过</a></span>
+            </div>
+        </form>
+    </section>
+    
+</article>
+
+<!----------footer start------->
+    #cacheFragment("$!{address.fragment}/fragment/page/footer.htm", "", "", "")
+      $!{fragmentContext}
+    #end
+
+<script>
+
+jQuery(document).ready(function(){
+
+	jQuery("#regStpTwo").validationEngine();
+	
+	jQuery("#industryChain").hide();
+	//地区初始化
+	var _selectAreaCode=["#provinceCode","#areaCode"];
+		var selectAreaCode=new hb.util.Selector({
+			selects:_selectAreaCode,
+			url:"$!{address.myesite}/common/getAreaCode.htm",
+			field:{code:"code",label:"name"}
+		});
+		
+	selectAreaCode.init({
+			rootCode:"10011000",
+			initCode:"$!{compProfile.areaCode}"
+		});
+		
+	jQuery('#reg2linkother').focus(function(){
+		$(this).prev('.reg2linkotherlabel').fadeOut(200);
+	}).blur(function(){
+		if($(this).val()==''){
+			$(this).prev('.reg2linkotherlabel').fadeIn(200);
+		}
+	});
+	
+	jQuery("#provinceCode").change(function(){
+		jQuery("#industryChains").html("");
+		jQuery("#industryChain").hide();
+	});
+	
+	
+	jQuery("#areaCode").change(function(){
+		
+		var areaCode = jQuery("#areaCode").val();
+		if(areaCode!=""){
+		jQuery.ajax({
+			type : "post",
+			url : "$!{address.myesite}/common/getIndustryChains.htm",
+			data : {"areaCode" : areaCode},
+			dataType : "json",
+			success : function(data){
+				jQuery("#industryChains").html("");
+				if(data!=""){
+					jQuery("#industryChain").show();
+					
+					jQuery.each(data,function(index,value){
+						jQuery("#industryChains").append("<input type='checkbox' class='validate[maxCheckbox[3]]' name = 'industryChain' value='"+value.industryChain.id+"'/>"+value.industryChain.areaName+value.industryChain.categoryName);
+					})
+				}else{
+					jQuery("#industryChain").hide();
+				}
+			}
+		});
+		}else{
+			jQuery("#industryChains").html("");
+			jQuery("#industryChain").hide();
+		}
+	});
+});
+
+
+$(".reg2_blcoktitsho").click(function(){
+		$("#book").slideToggle("slow");
+		$(this).toggleClass("reg2_blcoktithid"); return false;
+});
+
+ //
+ var behavior =new hb.reg.mouseBehavior();
+ behavior.ishover({regform:'#regStpTwo'})
+ 
+ 
+ //validate init
+ //var valiForm = new hb.reg.validate();
+ //	 valiForm.FormSubmitTwo({subform:'#regStpTwo'})
+	
+</script>

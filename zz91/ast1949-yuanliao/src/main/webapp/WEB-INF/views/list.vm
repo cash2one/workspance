@@ -1,0 +1,390 @@
+#set($layout="layout/yuanliaoLayout.vm")
+#set($in="2")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+    <div class="content">
+    	<div class="wrapper clearfix">
+        	<div class="hd_box layer clearfix">
+					#parse("/common/left.vm")
+            	<div class="layer_header">
+                	<div class="layer_title">
+                		<h3>当前位置：<a href="$!{address.yuanliao}">首页</a>&nbsp;&gt;&nbsp;<a href="$!{address.yuanliao}/gy/">产品库</a>
+							#if($!{fisrtCode})&nbsp;&gt;&nbsp;<a href="#springUrl('/')$!{mapMain.get($!{fisrtCode})}/gy/">$!{fisrtLabel}</a>#end
+							#if($!{secondLabel})&nbsp;&gt;&nbsp;<font class="bold">$!{secondLabel}</font>#end
+						</h3>
+                    </div>
+                    <div class="layer_btn clearfix">
+                    	<a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布供应信息</a>
+                        <a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布求购信息</a>
+                    </div>
+                </div>
+                <!--end layer_header-->
+                <div class="layer_block">
+                	<div class="layer_title2 clearfix">
+                    	<h3>塑料原料<font class="black">筛选</font></h3>
+                        <div class="selected">
+                        	<span class="fl">已选择：</span>
+                            <div id="condition">
+								#if($!{secondLabel})
+									<a class="inbtn" name="second"><span>$!{secondLabel}</span></a>
+									#if($!{thirdLabel})
+										<a class="inbtn" name="third"><span>$!{thirdLabel}</span></a>
+									#end
+								#end
+								#if($!{provineLabel})
+									<a class="inbtn" name="four"><span>$!{provineLabel}</span></a>
+								#end
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="layer_info clearfix" id="filter">
+                    	<div class="rowbp">
+                    	<div class="row" id="J_NavCommonRow2">
+                        	<div class="rowhead">
+                               	<h4 class="bold">  
+                                   	<span class="title" #if($!{codelength}<13)title="产品类目"#else title="厂家（产地）" #end>#if($!{codelength}<13)产品类目#else 厂家（产地） #end</span>：                                                
+                            	</h4>
+                            </div>
+                            <div class="rowbody">
+                            	<div class="rb_items">
+                                    <div class="item_inner g-clearfix" id="brand">
+										#foreach($li in $mapc.keySet())
+											#if($!{codelength}<13)
+												<a class="item tip" id="b$velocityCount" rel="addr" title="$mapc.get($li)" name="$!{mapMain.get($li)}" #if($li==$!{search.code})style="color:#fff;background-color:#ff500b;"#end>$mapc.get($li)</a> 
+											#else
+												<a class="item tip" id="b$velocityCount" rel="addr" title="$mapc.get($li)" name="$!{mapC.get($li)}" #if($li==$!{search.code})style="color:#fff;background-color:#ff500b;"#end>$mapc.get($li)</a> 
+											#end
+										#end
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rowfoot" id="footSale">
+                               	<span class="show-more" id="more2">+ 更多</span>
+                                <span class="show-less" id="less2">- 收起</span>
+                            </div>
+                        </div>
+                        <!--end row-->
+                        </div>
+                        <!--end rowbp-->
+                        <div class="row" id="J_NavCommonRow">
+                        	<div class="rowhead">
+                               	<h4 class="bold">  
+                                   	<span class="title" title="地区分类">地区分类</span>：                                                
+                            	</h4>
+                            </div>
+                            <div class="rowbody">
+                            	<div class="rb_items">
+                                    <div class="item_inner g-clearfix" id="addr">
+										#foreach($li in $mapp.keySet())
+											<a class="item tip" id="a$velocityCount" rel="type" title="$mapp.get($li)" name="$!{propinyin.get($li)}" #if($li==$!{search.province})style="color:#fff;background-color:#ff500b;"#end>$mapp.get($li)</a>
+										#end
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rowfoot" id="footSale">
+                               	<span class="show-more" id="more">+ 更多</span>
+                                <span class="show-less" id="less">- 收起</span>
+                            </div>
+                        </div>
+                        <!--end row-->
+                    </div>
+                </div>
+                <!--end layer_block-->
+				#if($!{codelength}>8)
+				<div class="nav-layer clearfix">
+					<div style="float:left;margin-left:20px;line-height:20px;">你还可以查看：</div>
+					<ul>
+						
+						#foreach($li in $maps.keySet())
+							#if($li!=$!{search.code})
+								<li><a href="#springUrl('/')$!{mapMain.get($li)}/gy/">$maps.get($li)</a></li>
+							#end
+						#end
+					</ul>
+				</div>
+				#end
+            </div>
+            <!--end hd_box-->
+            <div class="hd_box whole clearfix">
+            	<div class="whole_block">
+                	<div class="whole_title clearfix">
+                    	<h3>塑料原料<font class="black">供求</font></h3>
+                        <div class="wt_item fr" id="gongqiu">
+                        	<label id="gong" class="tip">
+                            	<a href="$!{hrefUrl}" #if(!$!{search.type}||$!{search.type}=="10331000")class="msg cur"#else class="msg" #end name="10331000">供应信息</a>
+                                <a href="$!{hrefUrl}" #if($!{search.type}=="10331001")class="msg cur" #else class="msg" #end name="10331001">求购信息</a>
+                                <a href="$!{hrefUrl}" #if($!{search.dir}=="down")data-order="down" class="price down"#elseif($!{search.dir}=="up") data-order="up" class="price up"#else data-order="disorder" class="price disorder" #end>价格</a>                   
+                            	<select class="time_sel tip" id="time">
+                            		<option value="0">发布时间</option>
+									<option value="1" #if($limit==1) selected #end>1天内</option>
+									<option value="3" #if($limit==3) selected #end>3天内</option>
+									<option value="7" #if($limit==7) selected #end>7天内</option>
+									<option value="15" #if($limit==15) selected #end>15天内</option>
+									<option value="30" #if($limit==30) selected #end>30天内</option>
+                            	</select>
+								<span class="record">有 <font class="red">$!{page.totalRecords}</font> 条相关供求信息</span>
+							</label>                            
+                        </div>
+                    </div>
+                    <!--end whole_title-->
+                    <div class="whole_head">
+                    	<ul>
+                        	<li class="w15">产品图片</li>
+                            <li class="w35">产品信息</li>
+                            <li class="w15">价格</li>
+                            <li class="w15">数量</li>
+                            <li class="w10">操作</li>
+                        </ul>
+                    </div>
+                    <!--end whole_head-->
+                    <div class="whole_list clearfix">
+					#foreach($li in $page.records)
+                    	<div class="whole_item clearfix">
+                        	<div class="wi2">
+                            	<a href="#springUrl('/detail')/$!{li.yuanliao.id}.html" target="_blank">
+									#if($!{li.picAddress})
+										<img src="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=140&height=140"/>
+									#else
+										<img src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" width="140" height="140" />
+									#end
+								</a>
+                            </div>
+                            <div class="wi4">
+                            	<dl>
+                                	<dt><a href="#springUrl('/detail')/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})</a></dt>
+                                    <dd class="mb15">
+                                    	<p><font class="grey">厂家(产地)：</font>$!{li.categoryMainLabel}&nbsp;&nbsp;|&nbsp;&nbsp;<font class="grey">牌号：</font>$!{li.yuanliao.tradeMark}&nbsp;&nbsp;|&nbsp;&nbsp;#if($!{li.typeLabel}&&$!{li.typeLabel}!="")<font class="grey">类型：</font>$!{li.typeLabel}#end</p>
+                                        #if($!{li.processLabel}||$!{li.charaLabel}||$!{li.usefulLabel})<p>#if($!{li.processLabel})<font class="grey">加工级别：</font>$!{li.processLabel}&nbsp;&nbsp;|&nbsp;&nbsp;#end #if($!{li.charaLabel})<font class="grey">特性级别：</font>$!{li.charaLabel}&nbsp;&nbsp;|&nbsp;&nbsp;#end #if($!{li.usefulLabel})<font class="grey">用途级别：</font>$!{li.usefulLabel}#end</p>#end
+                                        <p>#if($!{li.address})<font class="grey">所在地：</font>$!{li.address}&nbsp;&nbsp;|&nbsp;&nbsp;#end<font class="grey">发布时间：</font>$!date.format('yyyy-MM-dd',$!{li.yuanliao.refreshTime})</p>
+                                    </dd>
+                                    <dd>
+                                    <p class="h22 oow #if($!{li.company.membershipCode}=="100510021000")
+												icon_yin">
+										   #elseif($!{li.company.membershipCode}=="100510021001")
+												icon_gold">
+										   #elseif($!{li.company.membershipCode}=="100510021002")
+												zuanshi">
+										   #elseif($!{li.company.membershipCode}=="10051001")
+												icon_zst">
+										   #elseif($!{li.company.membershipCode}=="10051003")
+												icon_ldb">
+										   #else
+												">
+										   #end
+										   #if($!{li.company.membershipCode}=="10051000")
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #elseif($!{li.company.membershipCode}=="10051003")
+												<a href="$!{address.www}/ppc/index$!{li.yuanliao.companyId}.htm" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #else
+												<a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank" title="$!{li.company.name}">$!{li.company.name}</a>
+										   #end
+										   &nbsp;&nbsp;[$!{li.location}]
+										</p>
+                                        <p>
+											#if($!{li.company.membershipCode}=="10051000")
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.company}/compinfo.htm?id=$!{li.yuanliao.companyId}&flag=1" target="_blank">更多产品</a>
+											#elseif($!{li.company.membershipCode}=="10051003")
+												<a href="$!{address.www}/ppc/index$!{li.yuanliao.companyId}.htm" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.www}/ppc/contact$!{li.yuanliao.companyId}.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="$!{address.www}/ppc/zxgq$!{li.yuanliao.companyId}.htm" target="_blank">更多产品</a>
+											#else
+												<a href="http://$!{li.company.domainZz91}.zz91.com" target="_blank">企业商铺</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="http://$!{li.company.domainZz91}.zz91.com/lxfs.htm" target="_blank">公司地址</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+												<a href="http://$!{li.company.domainZz91}.zz91.com/zxgq.htm" target="_blank">更多产品</a>
+											#end
+										</p>
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="wi6 tc">
+                            	<br />
+                                <br />
+                            	<p><font>
+										#if($!{li.yuanliao.minPrice})
+											$!{li.yuanliao.minPrice}-$!{li.yuanliao.maxPrice}
+										#else
+											#if($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')
+												$!{li.yuanliao.price}
+											#else
+												面议
+											#end
+										#end
+								   </font>
+								   #if(($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')||$!{li.yuanliao.minPrice}) $!{li.yuanliao.priceUnit}/$!{li.yuanliao.unit}#end</p>
+                                <br />
+                                <p><a href="$!{address.www}/inquiry/inquiryApi.htm?yuanliaoId=$!{li.yuanliao.id}#messeges" class="inquiry" target="_blank">在线询价</a></p>
+                            </div>
+                            <div class="wi6 tc">
+                            	<br />
+                                <br />
+                            	<p><font>#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.quantity}#else 不限#end</font>#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.unit}#end</p>
+                            </div>
+                            <div class="wi6">
+                            	<br />
+                            	<div class="wi6_link">
+									<a href="#springUrl('/detail')/$!{li.yuanliao.id}.html?q=0" target="_blank" class="qq">联系方式</a>	
+                                	#if($!{li.qq}&&$!{li.qq}!="")<a class="qq_link" rel="nofollow" target="_blank" href="http://wpa.qq.com/msgrd?V=1&uin=$!{li.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes" title="请注明您是在ZZ91与我洽谈！"><img border="0" src="http://wpa.qq.com/pa?p=2:413318087:4" alt="请注明您是在ZZ91与我洽谈！" onerror="this.src='http://img0.zz91.com/zz91/china/images/qq.gif'" /></a>#end
+								</div>
+                                <div class="wi6_cang"><a href="javascript:;" id="$!{li.yuanliao.id}" class="shoucang" onclick="mycollect($!{li.yuanliao.id})">收藏</a></div>
+                            </div>
+                        </div>
+                        <!--end whole_item-->
+					#end
+                    </div>
+                    <!--end whole_list-->
+                </div>
+                <!--end whole_block-->
+				#if($page.totalRecords>0)
+						<div class="page_block">
+							<div class="page_a02">
+								#pageYuanliao($page)
+							</div>
+						</div>
+				#end
+                <!--end page_block-->
+				#if($page.totalRecords<1)
+						<div class="search_block">抱歉，未找到 "<font class="red">$!{codelabel} $!{provineLabel} $!{typeLabel}</font>" 相关的信息</div>
+				#end
+            </div>
+            <!--end hd_box-->
+        </div>
+    </div>
+<script>
+$(document).ready(function() {
+		initcollect();
+});
+jQuery(".inbtn").click(function(){
+	var name = jQuery(this).attr("name");
+	var code = "$!{headCode}";
+	var mainCode = "$!{mainCode}";
+	var aid = "$!{aId}";
+	var p = "$!{pro}/";
+	var url = window.location.href.split('?')[0];
+	if(name=="second"){
+		if(aid){
+			url = url.replace(mainCode+"/"+"c"+aid,code);
+		}else{
+			url = url.replace(mainCode,code);
+		}
+	}else if(name=="third"){
+		url = url.replace("c"+aid+"/","");
+	}else{
+		url = url.replace(p,"");
+	}
+	jQuery(this).remove();
+	location.href=url;
+	
+});
+jQuery(".tip").click(function(){
+	var limit = jQuery("#gongqiu").find("select").val();
+	if(jQuery(this).attr("id")=="time"){
+		if(limit=="0"||limit=="$!{search.limit}"){
+			limit = "";
+			return false;
+		}
+	}
+	if(limit=="0"){
+		limit = "$!{search.limit}";
+	}
+	var currentPage = '';
+	if(jQuery(this).parent().attr("class") == "page_box" && jQuery(this).attr("class")=="tip"){
+		currentPage = jQuery(this).attr("name");
+	}
+	if(jQuery(this).attr("class")=="go tip"){
+		var num = Number(jQuery(".jump_page").val());
+		if(num<0){
+			alert("页码不能小于零");
+			return false;
+		}
+		if(num>$totalPage){
+			num = $totalPage;
+		}
+		if(num > 0){
+			currentPage = num ;
+		}
+	}
+	//跳转链接
+	var url = "#springUrl('/')";
+	//省份
+	var province = jQuery("#addr").find(".on").attr("name")||"$!{pro}";
+	if(province){
+		url = url + province + "/";
+	}
+	//类别
+	var mainCode = "$!{mainCode}";
+	//类目or产地
+	var aId = jQuery("#brand").find(".on").attr("name")||"$!{aId}";
+	if(!isNaN(aId)&&mainCode){
+		url = url + mainCode + "/";
+	}else if(aId){
+		url = url + aId + "/";
+	}
+	if(aId&&!isNaN(aId)){
+		url = url + "c" + aId + "/";
+	}
+	//供求类型
+	var type = jQuery("#gongqiu #gong .cur").attr("name");
+	if(type=="10331000"){
+		url = url + "gy/";
+	}else{
+		url = url + "qg/";
+	}
+	if(currentPage > 0){
+		url = url + "pn" + currentPage + ".html";
+	}
+	var price = jQuery("#gongqiu #gong .up").attr("data-order")||jQuery("#gongqiu #gong .down").attr("data-order");
+	if(price){
+		url = url + "?dir=" + price;
+	}
+	if(price&&limit){
+		url = url + "&limit=" + limit;
+	}else if(limit){
+		url = url + "?limit=" + limit;
+	}
+	location.href=url;
+});
+function initcollect(){
+	jQuery.ajax({
+           	url:"#springUrl('/yuanliao/initCollect.htm')",
+			dataType:"json",
+           	success:function(reg){
+				var array = jQuery(".shoucang");
+				for(var i=0;i<array.length;i++){
+					var sc = array[i].id;
+					if(reg.idlist.indexOf(','+sc+',')!=-1){
+						jQuery("#"+sc).html("已收藏");
+					}
+				}
+			}
+		})
+}
+function mycollect(a){
+		jQuery.ajax({
+           	url:"#springUrl('/yuanliao/collectYuanliao.htm')",
+            data:{"yuanliaoId":a},
+			dataType:"json",
+           	success:function(reg){
+				if(reg.collect=="has"){
+					alert("您已经收藏过该信息！");
+				}else if(reg.collect=="success"){
+					alert("收藏成功");
+					jQuery("#"+a).html("已收藏");
+				}else if(reg.collect=="login"){
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						closeoverlay();
+                		jQuery("#loginFlag").val(1);
+						initcollect();
+						mycollect(a);
+        			});
+        			openoverlay('$!{address.front}/mini/login.htm?destUrl=#springUrl('/submitCallback.htm')&regfrom=10031019&loginType=1','注册/登录',750,430,0);
+				}
+			}
+		})
+}
+
+
+
+
+</script>

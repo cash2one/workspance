@@ -1,0 +1,416 @@
+#set($layout="/layout/defaultS.vm")
+<div class="te_body lineheight30">当前位置：
+	<a href="$!{address.www}" >ZZ91再生网</a>
+	>
+	<a href="#springUrl('')" >交易中心</a> 
+	>
+	<a href="#springUrl('/waste.htm')" >综合废料</a>
+</div>
+<div class="te_body">
+	
+	#set($categoryFlag="100310001003")
+	#parse("/commonImpt/item/productCategory.vm")
+	
+    <!--te_class-->
+    <div class="te_cen">
+		#parse("/commonImpt/sliderAd.vm")
+		<!--#3786 -->
+        <div class="te_banner_info te_tit_border">
+            <div class="te_tit_name">
+                <ul>
+                    <li style="width:410px; float:left;">综合废料热门供求 <!-- $!{gyProductList_1.size()} && $!{qgProductList_1.size()} --></li>
+                    <li style="float:left; height:22px; padding-top:2px;">
+                        <img src="$!{address.img}/zz91/trade/images/zz91te_left.jpg" width="23" height="22" style="cursor:pointer;"  class="plistChange" />
+                    </li>
+                    <li style="width:50px; padding-top:2px; height:22px; text-align:center; float:right;">
+                        <img src="$!{address.img}/zz91/trade/images/zz91te_right.jpg" width="23" height="22" style="cursor:pointer;"  class="plistChange" />
+                    </li>
+                </ul>
+            </div>
+            <div class="listscrpic" id="ISL_Cont">
+                <div class="ScrCont">
+					
+			#if($!{gyProductList_1.size()}>3 && $!{qgProductList_1.size()}>3)
+					#foreach($list in [$gyProductList_1,$qgProductList_1 ])
+					<div id="plist$velocityCount" #if(1 < $velocityCount ) style="display:none" #end>
+							#foreach($obj in $list)
+								<div class="listcont">
+									<ul>
+										<li>
+											<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+												#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+													<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=100&height=100" width="100" height="100" />
+												#else
+													<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="100" height="100" />
+												#end
+											</a>
+										</li>
+										<li>
+											<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">
+												#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 6 "")
+											</a>
+											<br />
+											<span>数量：</span>
+											<font color="#FF0000">$!{obj.products.quantity}</font>
+										</li>
+									</ul>
+								</div>
+							#end
+					</div>
+					#end	
+					
+			#else					
+					#foreach($code in [1003100510021000,1003100510021001])
+					<div id="plist$velocityCount" #if(1 < $velocityCount ) style="display:none" #end>
+						#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=$code&size=4&td", "", "", "")
+							#foreach($obj in $list)
+                                <div class="listcont">
+                                    <ul>
+                                        <li>
+                                            <a href="#springUrl('productdetails')$!{obj.productsId}.htm" target="_blank">
+												#if($!{obj.pic} && $!{obj.pic}!="")
+        											<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=100&height=100" width="100" height="100" />
+        										#else
+        											<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="100" height="100" />
+        										#end
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#springUrl('productdetails')$!{obj.productsId}.htm" target="_blank" title="$!{obj.title}">
+												#printProductType($!{obj.productsType} "" "")#printTitle($!{obj.title} 6 "")
+											</a>
+                                            <br />
+                                            <span>数量：</span>
+                                            <font color="#FF0000">$!{obj.quantity} $!{obj.quantityUnit}</font>
+                                        </li>
+##                                        <li>
+##                                            <a href="#" class="te_alla">给我留言</a>
+##                                        </li>
+                                    </ul>
+                                </div>
+							#end
+						#end
+					</div>
+				    #end
+			#end
+                </div>
+            </div>
+			
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+    <!--te_banner-->
+	#set($hotType="100310021002")
+    #parse("/commonImpt/item/hot7day.vm")
+	
+	<!--te_7rx-->
+</div>
+<div style="clear:both"></div>
+<div class="te_body">
+    <div class="teclasleft">
+		
+		#set($hotType="综合废料")
+		#parse("/commonImpt/item/hotProduct.vm")
+		
+        <div style="height:8px;"></div>
+        <!--行情价格-->
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=综合废料&showborder=1&showposition=1&m=4&padding=8&w=718&num=4&adposition=684"></script>
+        <div class="te_tit_border" style="width:708px;">
+            <div class="te_tit_name">综合废料行情价格</div>
+            <div class="xq_xqjg">
+				#cacheFragment("$!{address.fragment}/price/overPrice.htm?parentId=13&size=18&td", "", "1", "")
+                <ul>
+                	#foreach($obj in $overPrice)
+                		#if($velocityCount<=18)
+                            <li>
+                                <span>[</span>
+                                <a href="$!{address.price}/moreList_p$!{obj.typeId}_paper.htm" target="_blank">$!{obj.typeName}</a>
+                                <span>]</span>
+                                <a href="$!{address.jiage}/detail/$!{obj.id}.html" target="_blank">$obj.title</a>
+                    			<a href="#springUrl('/priceList_t')$!{obj.id}_metal.htm" target="_blank" title="$!{obj.name}">
+									$!{obj.name}
+                    			</a>
+                            </li>
+                		#end
+                	#end
+                </ul>
+                #end
+                <div style="clear:both;"></div>
+            </div>
+            <!--xq_xqjg-->
+        </div>
+        <!--结束行情价格--> 
+##        <div style="height:8px;"></div>
+##        <div>
+##            <img src="images/ads.jpg" width="710" height="115" />
+##        </div>
+        <div style="height:8px;"></div>
+        <div class="te_tit_border" style="width:708px;"><!--日评周评 标题-->
+            <div class="te_tit_name">
+                <div class="cl_rmtitl">综合废料行情日评</div>
+                <div class="cl_rmtitr">综合废料行情周评</div>
+            </div>
+            <!--te_tit_name结束标题-->
+            <div><!--列表信息-->
+                <div style="width:330px; padding:10px; border-right:solid 1px #caebd0; line-height:26px; float:left;" class="xq_listl">
+						#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{dayId}&size=7&td", "", "", "")
+                    <ul>
+							#foreach($day in $list)
+                                <li>
+                                    <font color="#005d11">·</font>
+                                    <span>
+                                        <a target="_blank" href="$!{address.jiage}/detail/$!{day.id}.html" title="$!{day.title}" class="a1">$!{day.title}</a>
+                                    </span>
+                                </li>
+							#end
+                    </ul>
+						#end
+                </div>
+                <!--xq_listl结束左边信息-->
+                <div class="xq_listr">
+						#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{weekId}&size=7&td", "", "", "")
+                    <ul>
+                            #foreach($week in $list)
+    							<li>
+                                    <font color="#005d11">·</font>
+                                    <span>
+                                        <a target="_blank" href="$!{address.jiage}/detail/$!{week.id}.html" title="$!{week.title}" class="a1">$!{week.title}</a>
+                                    </span>
+								</li>
+							#end
+                    </ul>
+    					#end
+                </div>
+                <!--xq_listr结束右边信息-->
+                <div style="clear:both;"></div>
+            </div>
+            <!--结束列表信息-->
+        </div>
+        <div style="height:8px;"></div>
+		#set($hotType="综合废料")
+		#parse("/commonImpt/item/hotProduct2.vm")
+		
+##        <div class="te_tit_border" style="width:708px;"><!--优质综合废料商家推荐-->
+##            <div class="te_tit_name">优质综合废料商家推荐</div>
+##            <div class="sjtj_titbox">
+##                <div class="sjtj_title">
+##                    <div class="sjtj_titles">优质综合废料供应商</div>
+##                </div>
+##                <!--sjtj_title-->
+##                <div class="sjtj_titimg">
+##					#foreach($obj in $gyProductList)
+##                        #if($velocityCount<=5)
+##                        <div class="sjtj_titcon">
+##                            <ul>
+##                                <li>
+##                                    <a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+##                                        <img src="images/002.jpg" width="120" height="100" />
+##                                    </a>
+##                                </li>
+##                                <li style="line-height:16px;">
+##                                    <a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">#printTitle($obj.products.title 12 "")</a>
+##                                </li>
+##                                <li>
+##                                    <span>
+##										$!{obj.products.minPrice}#if($!{obj.products.maxPrice})-$!{obj.products.maxPrice}#end$!{obj.products.priceUnit}#if($!{productDetails.products.quantityUnit})/$!{productDetails.products.quantityUnit}#end
+##									</span>
+##                                </li>
+##                                <li>
+##									<input type="button" class="messageBtn" value="给我留言" />
+##                                </li>
+##                            </ul>
+##                        </div>
+##						#end
+##					#end
+##                </div>
+##                <!--sjtj_titimg-->
+##                <div style="clear:both;"></div>
+##            </div>
+##            <!--sjtj_titbox-->
+##            <div class="sjtj_titbox">
+##                <div class="sjtj_title">
+##                    <div class="sjtj_titles">优质综合废料采购商</div>
+##                </div>
+##                <!--sjtj_title-->
+##                <div class="sjtj_titimg">
+##					#foreach($obj in $qgProductList)
+##                        #if($velocityCount<=5)
+##                            <div class="sjtj_titcon">
+##                                <ul>
+##                                    <li>
+##                                        <a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+##                                            <img src="images/002.jpg" width="120" height="100" />
+##                                        </a>
+##                                    </li>
+##                                    <li style="line-height:16px;">
+##                                        <a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">#printTitle($obj.products.title 12 "")</a>
+##                                    </li>
+##                                    <li>
+##                                        <span>$!{obj.products.price}$!{obj.products.priceUnit}</span>
+##                                    </li>
+##                                    <li>
+##                                        <input type="button" class="messageBtn" value="给我留言" />
+##                                    </li>
+##                                </ul>
+##                            </div>
+##						#end
+##					#end
+##                </div>
+##                <!--sjtj_titimg-->
+##                <div style="clear:both;"></div>
+##            </div>
+##        </div>
+		
+        <div style="height:8px;"></div>
+		#parse("/commonImpt/item/tags.vm")
+		
+    </div>
+    <!--teclasleft-->
+    <div class="terightinfo">
+		
+		#parse("/commonImpt/item/joinus.vm")
+        <div style="height:8px;"></div>
+        #parse("/commonImpt/item/vipCompany.vm")
+        <div style="height:8px;"></div>
+		
+		#set($hotType="综合废料")
+		#parse("/commonImpt/item/compPrice.vm")
+        <div style="height:8px;"></div>
+		
+        #set($hotType="综合废料")
+		#parse("/commonImpt/item/price0.vm")
+		
+        <div style="height:8px;"></div>
+        <!--综合废料热门产品-->
+        <div class="te_tit_border">
+            <div class="te_tit_name">综合废料热门产品</div>
+            <div>
+                <ul>
+                    <li>
+                        <div class="rmcp_tabline">
+                            <ul>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feidianping/" target="_blank">废电瓶</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feiluntai/" target="_blank">废轮胎</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/bangongshebei/" target="_blank">办公设备</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/niupizhi/" target="_blank">牛皮纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/tongbanzhi/" target="_blank">铜版纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/weishengzhi/" target="_blank">卫生纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/biaoqianzhi/" target="_blank">标签纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/jinkoufeizhi/" target="_blank">进口废纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/baibanzhi/" target="_blank">白板纸</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/xiangjiaokeli/" target="_blank">橡胶颗粒</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/fuxiangjiao/" target="_blank">氟橡胶</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/hechengxiangjiao/" target="_blank">合成橡胶</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/zaishengjiao/" target="_blank">再生胶</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/hunlianjiao/" target="_blank">混炼胶</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feijiushouji/" target="_blank">废旧手机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/ershoujichuangshebei/" target="_blank" title="二手机床设备">二手机床</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/liche/" target="_blank">立车</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/mosuiji/" target="_blank">磨碎机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/milianji/" target="_blank">密炼机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feijinshudabaoji/" target="_blank" title="综合废料打包机">综合废料打</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/jichuji/" target="_blank">挤出机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feilvdabaoji/" target="_blank" title="废铝打包机">废铝打包</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feizhidabaoji/" target="_blank" title="废纸打包机">废纸打包</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/posuiji/" target="_blank">破碎机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/tuoshuiji/" target="_blank">脱水机</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/feiyou/" target="_blank">废油</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/jiuyifu/" target="_blank">旧衣服</a>
+                                </li>
+								<li>
+                                    <a href="http://daohang.zz91.com/jiuyifu/" target="_blank">二手衣服</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/aqsiq/" target="_blank">aqsiq</a>
+                                </li>
+                                <li>
+                                    <a href="http://daohang.zz91.com/jiudiannao/" target="_blank">旧电脑</a>
+                                </li>
+                            </ul>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </li>
+                    <li class="terightege">
+                        <a href="#" class="te_classoone">更多>></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--结束综合废料热门产品-->
+        <div style="height:8px;"></div>
+		
+        #parse("/commonImpt/item/search.vm")
+    </div>
+    <!--terightinfo-->
+</div>
+<!--te_body-->
+#parse("/commonImpt/floatMenu.vm")
+#parse("/commonImpt/returnTop.vm")
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+		jQuery(".plistChange").click(function(){
+			if($("#plist1").css("display")=="block"){
+				jQuery("#plist1").fadeToggle(function(){
+					jQuery("#plist2").fadeToggle();
+				});
+			}else{
+				jQuery("#plist2").fadeToggle(function(){
+					jQuery("#plist1").fadeToggle();
+				});
+			}
+		});
+	});
+</script>

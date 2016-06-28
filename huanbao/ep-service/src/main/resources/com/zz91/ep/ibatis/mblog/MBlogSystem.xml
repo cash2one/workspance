@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogSystem">
+	<typeAlias alias="mblogSystem" type="com.zz91.ep.domain.mblog.MBlogSystem" />
+	<typeAlias alias="mblogSystemDto" type="com.zz91.ep.dto.mblog.MBlogSystemDto" />	
+    <resultMap class="mblogSystem" id="mblogSystemMap">
+    	<result property="id" column="id"/>
+    	<result property="fromId" column="from_id"/>
+    	<result property="toId" column="to_id"/>
+    	<result property="type" column="type"/>
+    	<result property="isRead" column="is_read"/>
+    	<result property="content" column="content"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <resultMap class="mblogSystemDto" id="mblogSystemDtoMap">
+    	<result property="mBlogSystem" resultMap="mblogSystem.mblogSystemMap"/>
+    </resultMap>
+    
+    <resultMap class="mblogSystem" id="simpleMblogSystemMap">
+    	<result property="toId" column="to_id"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	from_id,
+    	to_id,
+    	type,
+    	is_read,
+    	content,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+     <insert id="insert" parameterClass="mblogSystem">
+		insert into mblog_system
+		(
+		from_id,
+		to_id,
+		type,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#fromId#,
+		#toId#,
+		#type#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+    
+    <select id="queryById" parameterClass="java.util.Map" resultMap="mblogSystemMap">
+    	select
+    	<include refid="defaultColumn"/> 
+        from mblog_system
+    	where to_id = #toId#
+    	and type = #type#
+    	and is_read = 0
+    	order by gmt_modified desc
+    	limit #start#,#size#
+    </select>
+    
+    <select id="queryCountById" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+    	select
+    	count(*)
+    	from mblog_system
+    	where to_id = #toId#
+    	and type = #type#
+    	<isNotEmpty property="isRead">
+    	and is_read = #isRead#
+    	</isNotEmpty> 
+    </select>
+    
+    <update id="updateIsReadStatus" parameterClass="java.lang.Integer">
+    	update mblog_system 
+    	set
+    	is_read = 1
+    	where id = #id#
+    </update>
+    
+    <select id="querySystemByisReadAndType" parameterClass="java.util.Map" resultMap="mblogSystemMap">
+    	select
+    	<include refid="defaultColumn"/>
+    	from mblog_system
+    	where to_id = #toId#
+    	and type = #type#
+    	<isNotEmpty property="isRead">
+    	and is_read = #isRead#
+    	</isNotEmpty> 
+    </select>
+    
+      <select id="querySystemById" parameterClass="java.util.Map" resultMap="mblogSystemDtoMap">
+    	select
+    	<include refid="defaultColumn"/> 
+        from mblog_system
+    	where to_id = #toId#
+    	and type = #type#
+    	<isNotEmpty property="isRead">
+    	and is_read = #isRead#
+    	</isNotEmpty>
+    	order by gmt_created desc
+    	<include refid="common.pageLimit"/>
+    </select>
+   
+    
+    <select id="queryAnteAndCountByfromId" parameterClass="java.util.Map" resultMap="simpleMblogSystemMap">
+    	select
+    	ms.to_id,count(0) as count1
+        from mblog_system ms
+        where
+        exists (select * from ep.mblog_system ms1  where ms.to_id=ms1.to_id)
+        and ms.from_id=#fromId#
+    	group by ms.to_id
+    	order by count1 desc
+    	limit #size#
+    </select>
+  
+  	<select id="queryMessageByConditions" parameterClass="java.util.Map" resultMap="mblogSystemMap">
+  		select
+  		<include refid="defaultColumn"/>
+  		from
+  		mblog_system
+  		where to_id = #toId#
+    	and type = #type#
+    	<isNotEmpty property="isRead">
+    	and is_read = #isRead#
+    	</isNotEmpty>
+    	order by gmt_created desc
+    	<include refid="common.pageLimit"/>
+  	</select>
+    
+</sqlMap>

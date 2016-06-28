@@ -1,0 +1,153 @@
+    #set($layout="/layout/wendaLayout.vm")
+
+    
+	  <!--
+	  <div class="tips">
+          <h3 class="tips_tips1">#if($!{signName})$!{signName}#elseif($!{title})$!stringUtil.controlLength($!{title},15)#else $!{bbsTagsDO.name}#end </h3>
+          <div class="reply_tips">
+       		共有<span class="infor_textcolor3">$!{totalRecords}</span>位网商发表了#if($!{signName})$!{signName}#else关于
+			<span class="infor_textcolor3">#if($!{title})$!stringUtil.controlLength($!{title},60)#else $!{bbsTagsDO.name}#end</span> 的话题#end
+          </div>
+      #parse("/bbs/bbs_top_quick_nav.vm")
+      </div>
+	  -->
+	  <div class="tips_nav">
+		当前位置：<a href="#springUrl('/')">互助社区</a> >#if($!{signName})$!{signName}#elseif($!{title})#printTitle($!{title} 30 "")#else $!{bbsTagsDO.name}#end 
+	  </div>
+          <!--tips_content start-->
+          <div class="tips_content">
+              <!--tipsleft start-->
+              <div class="tipsright">
+              	  <div class="tipsright_header">
+                       <span class="tipsright_header1" >共有<font class="infor_textcolor3"> $!{page.totalRecords} </font>篇关于
+						<font class="infor_textcolor3">$!{keywords}</font> 的话题</span>
+                       <span class="tipsright_header2">作者</span>
+                       <span class="tipsright_header3">时间</span>
+                       <span class="tipsright_header4">访问&frasl;回复</span>
+                       <span class="tipsright_header5"></span>
+                  </div>
+
+                  <div class="tipsright_content">
+                   	  <ul>
+						#foreach($b in ${page.records})
+						<li>
+                        	 <div class="tipsright_content1">
+						<a href="#springUrl('/viewReply')$!{b.post.id}.htm" target="_blank">
+            				#printTitle($!{b.post.title} 28 "")
+                             </a></div>
+                              <div class="tipsright_content2">
+                           	    <span class="tipsright_textcolor2">
+									#if(!$!{b.post.companyId} || $!{b.post.companyId}==0)
+            							互助管理员
+            						#else
+            						<a href="#springUrl('/othersposted')$!{b.profiler.id}.htm">
+            							#if($!{b.profiler.nickname})$!{b.profiler.nickname} #else $!{b.account} #end
+										#if(!$!{b.profiler.nickname} && !$!{b.account} )&nbsp;#end
+            						</a>
+            						#end
+									</span>
+                             </div>
+                              <div class="tipsright_content3">
+								<span class="tipsright_textcolor3" title="$!date.format('yyyy-MM-dd HH:mm:ss ',$!{b.post.postTime})">$!date.format('yyyy-MM-dd ',$!{b.post.postTime})</span>
+                             </div>
+                              <div class="tipsright_content4">
+                              	  <span class="tipsright_textcolor3">#if($!{b.post.visitedCount})$!{b.post.visitedCount}#else 0#end/#if($!{b.post.replyCount})$!{b.post.replyCount}#else 0#end</span>
+                             </div>
+                              <div class="tipsright_content5">
+                           	    <a href="#springUrl('/bbsCategory')$!{b.bbsPost.bbsPostCategoryId}.htm" target="_blank">$!{b.categoryName}</a>
+                              </div>
+
+                              <div class="tipsright_content6">
+								##$!{b.post.content}
+								#if($!{b.post.content}&&$!{b.post.content}!="")
+									#printTitle($!{b.post.content} 250 "")
+								#end
+							</div>
+                        </li>
+
+						#end
+                    </ul>
+                  </div>
+                  <div class="tips_content2">
+						#myrcPageNav($page "#springUrl('/search.htm')" "keywords=$!{encodeKeywords}" "")
+                  </div>
+                  <div style="clear:both"></div>
+                  <div class="tips_content3">
+                      <div class="tips_content3_div1">
+                          <span class="text_color10">查看更多内容</span>
+						  <input type="hidden"  id="tagsId" name="tagsId" value="$!{tagsId}" />
+                         <input type="text" class="tips_input5" id="title1" name="title1" />
+						 <input type="button" value="" class="tips_text_color12" onClick="javascript:searchBbs(encodeURI(jQuery('#title1').val()))"/>
+                  	   </div>
+                  </div>
+              </div>
+
+      	  <div class="tipsleft">
+              <div class="tipsleft2">
+ 				   <div class="tips_left2_1"></div>
+                   <div class="tips_left2_2">
+					<!--24小时热贴-->
+					#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=10&s" "" "" "")
+                      <div class="tips_left2_21">
+                      		<ul>
+							#foreach($!{postlist} in $!{postDailylist})
+								#set($countVal = $velocityCount+1)
+	                            #if($velocityCount<4)
+                            	<li class="noticeli1" style="background:url($!{address.img}/bbs/images/bbs/icon$!{countVal}.jpg) no-repeat; background-position:center left;">
+									<a href="#springUrl('/viewReply')$!{postlist.id}.htm" target="_blank">#printTitle($!{postlist.title} 13 "")</a>
+								</li>
+	                            #end
+                            #end
+                            </ul>
+                      </div>
+                        <ul class="tips_left2_21_ul1">
+							#foreach($!{postlist} in $!{postDailylist})
+		                    	#set($countVal = $velocityCount+1)
+		                    	#if($velocityCount>=4)
+                            	<li>
+								<a href="#springUrl('/viewReply')$!{postlist.id}.htm" target="_blank" title="$!{postlist.title}">·
+									#printTitle($!{postlist.title} 13 "")
+							  </a>
+								</li>
+                              	#end
+		                    #end
+                       </ul>
+					#end
+                   </div>
+			  </div>
+		  <div class="right4">
+					<div class="right4_title"><span><a href="http://trade.zz91.com/" target="_blank">查看更多>></a>
+					</span><b>最新废料商机</b></div>
+					<div class="right4_info">
+    					<ul>
+    					#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=&typeCode=10331000&size=6&priced00150", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>供应</font>#printTitle($!{products.title} 6 "")
+								</a>
+							</li>
+						#end
+    					#end
+    					</ul>
+    					<ul class="margintop">
+    					#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=&typeCode=10331001&size=6&priced0015", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>求购</font>#printTitle($!{products.title} 6 "")
+								</a>
+							</li>
+						#end
+    					#end
+
+    					</ul>
+					</div>
+          </div>
+           </div>
+          </div>
+          <!--end-->
+### 百度分享
+#parse("/common/baiduShare.vm")

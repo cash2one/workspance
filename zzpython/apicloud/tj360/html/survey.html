@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>调查评估</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right {
+		width:50px;
+		display: -webkit-box;
+		background: url(../image/survey_search.png) no-repeat center;
+		-webkit-background-size: contain;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.keyword{
+		-webkit-box-flex: 1;
+		width: 100%;
+		display: -webkit-box;
+		-webkit-box-align: center;
+		padding: 5px 0 2px 10px;
+		border: 1px solid #CCCCCC;
+		border-radius: 4px;
+		background-color: #FFFFFF;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+	#middle input[type="submit"]{
+		display: none;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<form onsubmit="searchSurvey()">
+						<input type="search" id="qname" class="keyword" placeholder="输入问卷名或关键字" />
+						<input type="submit">
+					</form>
+				</div>
+				<a id="right" tapmode="" onclick="searchSurvey()">
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	apiready = function() {
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var header = $api.byId('header');
+		var headerPos = $api.offset(header);
+		api.openFrame({
+			name: 'survey_frame',
+			url: 'survey_frame.html',
+			bounces: true,
+			rect: {
+				x: 0,
+				y: headerPos.h,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	};
+	
+	function searchSurvey(){
+		var qname = $api.val($api.byId('qname'));
+		api.execScript({name: 'survey', frameName: 'survey_frame', script: 'searchSurvey("' + qname + '")'});
+	}
+</script>
+</html>

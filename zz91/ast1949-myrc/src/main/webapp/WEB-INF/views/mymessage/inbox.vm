@@ -1,0 +1,375 @@
+#set( $layout = "/layout/default.vm" )
+<script src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay.css">
+<div class="container mt clearfix">
+	<div class="grid_12">
+		#set($pt="收件箱")
+		#if($!{isRubbish}=="1")
+			#set($pt="垃圾邮件")
+		#end
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/mymessage/inbox.htm')">询价管理</a><span class="divider">/</span>
+			</li>
+			<li class="active">$pt</li>
+		</ul>
+		#if($!{isRubbish}=="1")
+		<div class="alert alert-info">
+	    	<p>
+	            <strong>提示：</strong>
+				您现在正在垃圾邮箱处理垃圾邮件！
+				<a href="#springUrl('/mymessage/inbox.htm')">点击这里可以回到收件箱</a>
+	    	</p>
+	    </div>
+		#else
+		<div class="alert alert-info">
+	    	<a href="http://help.zz91.com/detail-45/" target="_blank">如何管理已收到的询价</a>
+			<a href="http://help.zz91.com/detail-46/" target="_blank">如何回复已收到的询价</a>
+		</div>
+		#end
+		#parse("/commonImpt/inquiry/filterTopBar.vm")
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="3%"></th>
+					<th width="4%">状态</th>
+					<th width="16%">发件人</th>
+					<th width="47%">内容</th>
+					<th width="15%" class="tac">时间</th>
+					<th width="15%" class="tac">询盘目标信息</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($inquiry in ${page.records})
+				<tr>
+					<td class="tac va">
+						<input name="select" type="checkbox" value="$!{inquiry.inquiry.id}"/>
+					</td>
+					<td class="va">
+						#if($!{inquiry.inquiry.isReplyed}=="1")
+							<img src="$!{address.img}/zz91/myrc/images/reply.png" width="16" height="16" />
+						#elseif($!{inquiry.inquiry.isViewed}=="0")
+							<img src="$!{address.img}/zz91/myrc/images/unread.png" width="16" height="16" />
+						#set($unreadflag="bold")
+						#else
+							<img src="$!{address.img}/zz91/myrc/images/read.png" width="16" height="16" />
+						#end
+					</td>
+					<td class="va">
+					#set($unreadflag="")
+						<a target="_blank" href="$!{address.company}/compinfo.htm?a=$!{inquiry.inquiry.senderAccount}" class="grey" >
+		    				#if($!{inquiry.senderContact}!="")
+		    					$!{inquiry.senderContact}
+		    				#else
+		    					$!{inquiry.inquiry.senderAccount}
+		    				#end
+		    			</a>
+						<br />
+						<a target="_blank" href="$!{address.company}/compinfo.htm?a=$!{inquiry.inquiry.senderAccount}" class="grey" >
+							$!{inquiry.senderCompanyName}
+		    			</a>
+					</td>
+	        		<td>
+	        			<strong>
+							<a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}">
+								#if(${inquiry.inquiry.exportPerson}&&${inquiry.inquiry.exportPerson}!="")
+									[系统匹配]
+								#end
+								$!{inquiry.inquiry.title}
+							</a>
+						</strong>
+						<p class="grey nomargin">
+							#printTitle($!{inquiry.inquiry.content} 500 "......")
+						</p>
+	        		</td>
+	        		<td class="tac va">$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})</td>
+	        		<td class="tac va">
+	    			#if($!{inquiry.inquiry.beInquiredType}=="0")
+						<a href="$!{address.trade}/productdetails$!{inquiry.inquiry.beInquiredId}.htm" target="_blank">查看被询盘的供求</a>
+					#elseif($!{inquiry.inquiry.beInquiredType}=="1")
+						通过公司详细页面询盘
+					#elseif($!{inquiry.inquiry.beInquiredType}=="3")
+						<a href="$!{address.price}/companyprice/priceDetails.htm?id=$!{inquiry.inquiry.beInquiredId}" target="_blank">查看被询盘的报价</a>
+					#elseif($!{inquiry.inquiry.beInquiredType}=="4")
+						<a href="$!{address.yuanliao}/detail/$!{inquiry.inquiry.beInquiredId}.html" target="_blank">查看被询盘的原料供求</a>
+					#end
+	        		</td>
+	        	</tr>
+	        	#end
+	        </tbody>
+		</table>
+		#if($!{page.records.size()}==0)
+			<div class="alert alert-error">没有收到询价信息</div>
+		#end
+		#parse("/commonImpt/inquiry/filterBar.vm")
+		<div class="alert alert-info">
+			<p><strong>提示：</strong>您可基于询价直接回复，请打开有明确交易意向的询价，点击"回复"</p>
+			<p>询价的有效期为1年，系统将自动删除超出有效期的询价。请注意保存重要询价！</p>
+		</div>
+		#myrcPageNav($!{page} "#springUrl('/mymessage/inbox.htm')" "groupId=$!{groupId}&isViewed=$!{isViewed}&isRubbish=$!{isRubbish}&inquiredType=$!{inquiredType}&isReplyed=$!{isReplyed}&keywords=$!{keywordsEN}" "")
+	</div>
+</div>
+#if($!{isRubbish}=="1")
+<script>
+jQuery(function(){
+	myrc.menu(4, 4);	
+})
+</script>
+#else
+<script>
+jQuery(function(){
+	myrc.menu(4, 1);	
+})
+</script>
+#end
+<script>
+	<!--微信验证-->
+	function openweixinyz()
+	{
+		openoverlay('http://pyapp.zz91.com/weixin/zz91weixin_yz.html?account=$!{sessionUser.account}&destUrl=http://myrc.zz91.com/submitCallback.htm','微信验证',550,300,0);	
+	}
+	jQuery(function(){
+		jQuery(".Js_checkAll").click(function(){
+    		var check = jQuery(this).attr("checked");
+    		jQuery("input[name='select']").each(function(index, obj){
+    			obj.checked = check;
+    		});
+    	});
+		
+    	//TODO
+    	var manageBox = new Asto.util.PopupBox({
+    		url:"#springUrl('/mymessage/groups.htm')",
+    		destUrl:"#springUrl('/submitCallback.htm')",
+    		modal:true,
+    		height:300,
+    		title:'询价分组设置',
+    		width:475,
+			buttons: {
+				"关闭": function() {
+					jQuery( this ).dialog( "close" );
+				}
+			}
+    	});
+    	
+    	jQuery(".js_manage").click(function(){
+    		manageBox.show("#springUrl('/mymessage/groups.htm')");
+    	});
+		
+		jQuery(".groupSel").change(function(){
+			window.location.href = "#springUrl('/mymessage/inbox.htm')?isViewed=$!{isViewed}&isRubbish=$!{isRubbish}&groupId="+jQuery(this).val();
+		});
+		
+		jQuery(".groupSelView").change(function(){
+			if(jQuery(this).val()==2){
+				window.location.href = "#springUrl('/mymessage/inbox.htm')?isViewed=$!{isViewed}&isRubbish=$!{isRubbish}&groupId=$!{groupId}&isReplyed=1";
+			}else{
+				window.location.href = "#springUrl('/mymessage/inbox.htm')?isViewed="+jQuery(this).val()+"&isRubbish=$!{isRubbish}&groupId=$!{groupId}";
+			}
+		});
+		
+			
+		jQuery("#subToSearch").click(function(){
+			var keywords = jQuery("#searchLabel").val();
+			window.location.href = "#springUrl('/mymessage/inbox.htm')?isViewed=$!{isViewed}&isRubbish=$!{isRubbish}&groupId=$!{groupId}&isReplyed=$!{isReplyed}&keywords="+encodeURI(keywords);
+		});
+		
+	});
+	
+	function groupInquiry(){
+		//选择所有选中项
+		var ids = getAllInquiryIds();
+		if(ids.length <= 0){
+			alert("请选选择要分组的询价信息");
+			return false;
+		}
+		
+		var win = new Asto.util.PopupBox({
+    		url:"#springUrl('/mymessage/groupInquiry.htm?ids=')"+ids.join(","),
+    		destUrl:"#springUrl('/submitCallback.htm')",
+    		modal:true,
+    		title:'将询价归入分组',
+    		width:450,
+    		height:300,
+			callbackFn:function(success, data){
+				win.close();
+				window.location.reload();
+			}
+    	});
+		
+		win.show();
+	}
+	
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = [];
+		jQuery.each(jQuery("[name=select]"), function(index, obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+	
+	//删除信息
+	function deleteInfo(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length === 0){
+			alert ("请选择要删除的询价信息！");
+			return false;
+		}
+		if (confirm("你选中" + inquiryIds.length + "条询价,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/removeReceiveInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg != null && msg.success == true){
+    					window.location.reload();
+    				} else {
+    					Asto.util.Message.show({
+							msg:"发生错误，您的操作没有正确执行",
+							msgType:Asto.util.Message.ERROR,
+							bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+								Asto.util.Message.clear();
+							}}],
+							autoClose:5000
+						});
+    				}
+    			}
+			});
+		}
+	}
+ 
+	//取消询盘分组 Nozhufrm(form)
+	function unGroupInquiry(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length === 0){
+			alert ("选择你要取消分组设置的信息！");
+			return false;
+		}
+		
+		var flag = true;
+		jQuery.ajax({
+			url:"#springUrl('/mymessage/checkGroupExists.htm')",
+			type:"POST",
+			cache:false,
+			async:false,
+			data:{ids:inquiryIds.join(',')},
+			dataType:"json",
+			success:function(msg){
+				if(msg!=null&&msg.success!=true){
+					flag = false;
+				}
+			}
+		});
+		if(!flag){
+			Asto.util.Message.show({
+				msg:"该询价尚未分组，不能移除！",
+				msgType:Asto.util.Message.INFO,
+				bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+					Asto.util.Message.clear();
+				}}],	
+				autoClose:5000
+			});
+			return false;
+		}
+		
+		if (confirm("你选中"+inquiryIds.length+"条询价,确实要取消该分组设置?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/doUnGroupInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+    				if(msg!=null&&msg.success==true){
+						Asto.util.Message.show({
+							msg:"您的询价已从分组中移除！",
+							msgType:Asto.util.Message.INFO,
+							bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+								Asto.util.Message.clear();
+							}}],	
+							autoClose:5000
+						});
+						window.location.reload();
+    				} else {
+						Asto.util.Message.show({
+							msg:"发生错误，您的操作没有正确执行！",
+							msgType:Asto.util.Message.ERROR,
+							bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+								Asto.util.Message.clear();
+							}}],
+							autoClose:5000
+						});
+    				}
+    			}
+			});
+		}
+	}
+ 	
+	//设置为垃圾询盘并以后该客户询价自动转为垃圾询价
+	function setInquiryToRubbish(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length === 0){
+			alert ("请选择需要转为垃圾询价的询价！")
+			return false;
+		}
+		if (confirm("确定要将所选询价转为垃圾询价?")){
+			jQuery.ajax({
+    			url:"#springUrl('/mymessage/spamInquiry.htm')",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{ids:inquiryIds.join(","), isRubbish:"1"},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					Asto.util.Message.show({
+							msg:"发生错误，您的操作没有正确执行！",
+							msgType:Asto.util.Message.ERROR,
+							bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+								Asto.util.Message.clear();
+							}}],
+							autoClose:5000
+						});
+    				}
+    			}
+    		});
+		}
+	}
+	
+	function toInbox(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length === 0){
+			alert ("请选择需要移动到收件箱的询价！")
+			return false;
+		}
+		if (confirm("确定要将所选询价移到收件箱吗?")){
+			jQuery.ajax({
+    			url:"#springUrl('/mymessage/spamInquiry.htm')",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{ids:inquiryIds.join(","), isRubbish:"0"},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					Asto.util.Message.show({
+							msg:"发生错误，您的操作没有正确执行！",
+							msgType:Asto.util.Message.ERROR,
+							bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+								Asto.util.Message.clear();
+							}}],
+							autoClose:5000
+						});
+    				}
+    			}
+    		});
+		}
+	}
+	
+</script> 

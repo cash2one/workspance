@@ -1,0 +1,66 @@
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsStar">
+
+	<typeAlias alias="productsStarDO" type="com.ast.ast1949.domain.products.ProductsStar" />
+
+	<resultMap class="productsStarDO" id="productsStarResult">
+		<result property="id" column="id" />
+		<result property="productsId" column="products_id" />
+		<result property="score" column="score" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		products_id,
+		score,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="productsStarDO">
+		INSERT INTO products_star
+		(
+		`products_id`,
+		`score`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#productsId#,
+		#score#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="productsStarResult" >
+		select 
+		<include refid="defaultColumn"/>
+		from products_star
+		where id = #value#
+	</select>
+	
+	<select id="queryByProductsId" parameterClass="java.lang.Integer" resultMap="productsStarResult" >
+		select 
+		<include refid="defaultColumn"/>
+		from products_star
+		where products_id = #value#
+		limit 1
+	</select>
+	
+	<update id="updateByProductsId" parameterClass="java.util.Map" >
+		update products_star
+		set gmt_modified = now(),
+		score = #score#
+		where products_id = #productsId#
+	</update>
+	
+</sqlMap>

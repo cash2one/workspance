@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<title>首页-导航</title>
+		<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/index.css" />
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="main"></div>
+			<!--<div id="footer">
+				<ul>
+					<li tapmode="active" class="active" onclick="randomSwitchBtn(this,'cloud',0)">
+						<a class="bottom_btn cloud"><i></i><span>首页</span></a>
+					</li>
+					<li tapmode="active" onclick="randomSwitchBtn(this,'cloud',1)">
+						<a class="bottom_btn client "><i></i><span>帮你找</span></a>
+					</li>
+					<li tapmode="active" onclick="randomSwitchBtn(this,'cloud',2)">
+						<a class="bottom_btn dev "><i></i><span>消息</span></a>
+					</li>
+					<li tapmode="active" onclick="randomSwitchBtn(this,'cloud',3)">
+						<a class="bottom_btn doc "><i></i><span>管家</span></a>
+					</li>
+				</ul>
+			</div>-->
+		</div>
+		<footer class="aui-nav" id="aui-footer">
+	        <ul class="aui-bar-tab" style="background-color: #fcfcfc;">
+	            <li class="active-warning" id="tabbar1" tapmode onclick="randomSwitchBtn(this,'tabbar1',0)">
+	                <span class="aui-iconfont aui-icon-homefill"></span>
+	                <p>首页</p>
+	            </li>
+	            <li id="tabbar2" tapmode onclick="randomSwitchBtn(this,'tabbar2',1)">
+	                <span class="aui-iconfont aui-icon-attention"></span>
+	                <p>帮你找</p>
+	            </li>
+	            <li id="tabbar3" tapmode onclick="randomSwitchBtn(this,'tabbar3',2)">
+	                <span class="aui-iconfont aui-icon-mark"></span>
+	                <p>消息</p>
+	            </li>
+	            <li id="tabbar4" tapmode onclick="randomSwitchBtn(this,'tabbar4',3)">
+	                <span class="aui-iconfont aui-icon-my"></span>
+	                <p>管家</p>
+	            </li>
+	        </ul>
+	    </footer>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			
+			var socketManager = api.require('socketManager');
+			socketManager.createSocket({
+				//type : "udp",
+			    host: '121.40.103.220',
+			    //udpMode : "broadcast",
+			    port: 5000,
+			    //localPort : 8000
+			}, function(ret, err){
+			    if(ret){
+			    	//alert(JSON.stringify(ret))
+			        var state = ret.state;
+			        var sid = ret.sid;
+			        var data = ret.data;
+			        var stateStr = "";
+			        if(101 === state){
+			            stateStr = "创建成功";
+			        }else if(102 === state){
+			            stateStr = "连接成功";
+			        }else if(103 === state){
+			            stateStr = "收到消息";
+			        }else if(201 === state){
+			            stateStr = "创建失败";
+			        }else if(202 === state){
+			            stateStr = "连接失败";
+			        }else if(203 === state){
+			            stateStr = "异常断开";
+			        }else if(204 === state){
+			            stateStr = "正常断开";
+			        }else if(205 === state){
+			            stateStr = "发生未知错误";
+			        }
+			        var msg = 'sid: '+sid+'\nstate: '+stateStr+'\ndata: '+(data?data:'');
+			        //api.alert({msg:msg});
+			        $api.setStorage("socketsid", sid);
+			        if (state==103){
+			        	if(typeof data === 'string'){
+				        	var returnvalue=eval("(" + data + ")");
+				        	questionnum=0;
+				        	if (returnvalue){
+				        		questionnum=returnvalue.questionnum
+				        	}
+					        api.execScript({
+								frameName : 'my-home',
+								script : "showquestionnum('"+questionnum+"')"
+							});
+						}
+					}
+			    }
+			});
+			openFrameGroup();
+			$(".category").on("click", function() {
+				var pageParam = {
+					wintitle : "产品类目",
+					type : "product-category",
+					bounces : false
+				};
+				openWin("product-category", "../trade/product-category.html", pageParam);
+			})
+			//消息中心
+			$(".my-info").on("click", function() {
+				var pageParam = {
+					wintitle : "消息中心",
+					type : "heart-info"
+				};
+				if (UserInfo.has_login()) {
+					openWin("heart-info", "../comm/heart-info.html", pageParam);
+				} else {
+					pageParam.nextUrl = "widget://html/comm/heart-info.html";
+					pageParam.winName = "heart-info";
+					openWin("frm-login", "../myrc/frm-login.html", pageParam);
+				}
+			})
+			//发布页面
+			$(".my-gout").on("click", function() {
+				var pageParam = {
+					wintitle : "发布信息",
+					type : "issue-info",
+					module : "发布"
+				};
+				openWin("issue-info", "../myrc/issue-info.html", pageParam);
+			})
+			
+			//退出
+			var first;
+			api.addEventListener({
+			    name:'keyback'
+			},function(ret,err){
+			    if (!first) {
+					first = new Date().getTime();
+					api.toast({
+					    msg: '再按一次退出应用',
+					    duration: 2000,
+					    location: 'bottom'
+					});
+					setTimeout(function() {
+						first = null;
+					}, 1000);
+				} else {
+					if (new Date().getTime() - first < 1000) {
+						api.closeWin();
+					}
+				}
+				return false;
+			});
+			
+		}
+		//打开openFrameGroup
+		function openFrameGroup() {
+			//var $header = $api.dom('header');
+			//$api.fixIos7Bar($header);
+			var $body = $api.dom('body');
+			//var $footer = $api.byId('footer');
+			var $footer = $api.dom('footer');
+			//var header_h = $api.offset($header).h;
+			var header_h = 0;
+			var body_h = $api.offset($body).h;
+			var footer_h = $api.offset($footer).h;
+			var rect_h = body_h - header_h - footer_h;
+			var pageParam = {
+				wintitle : "帮你找",
+				type : "help-list",
+				nav_list : [{
+					"typename" : "看行情",
+					"id" : 0
+				}, {
+					"typename" : "找供求",
+					"id" : 1
+				}],
+				module : "发布需求",
+				guandu : {'height':header_h,'bottom':footer_h},
+				frame_url : ["../price/offer-list.html","../trade/trade-list.html"], //,"../trade/help-list.html","../trade/help-list-sj.html"
+				topnumber : 2 //滚动Nav栏数码
+			};
+			api.openFrameGroup({
+				name : 'indexgroup',
+				rect : {
+					x : 0,
+					y : header_h,
+					w : 'auto',
+					h : rect_h
+				},
+				index : 0,
+				preload:0,
+				scrollEnabled:true,
+				frames : [{
+					name : 'index-frame',
+					bounces : true,
+					url : '../html/index-frame.html'
+				}, {
+					name : 'help',
+					bounces : true,
+					pageParam : pageParam,
+					url : '../html/trade/help-main.html'
+				}, {
+					name : 'quote',
+					bounces : false,
+					url : '../html/comm/heart-info.html'
+				}, {
+					name : 'my-home',
+					bounces : false,
+					url : '../html/myrc/my-home.html'
+				}]
+			}, function(ret, err) {
+				var footer = $api.byId('aui-footer');
+	            var footerAct = $api.dom(footer, '.aui-bar-tab li.active-warning');
+	            $api.removeCls(footerAct, 'active-warning');
+	            var index = ret.index;
+	            $api.addCls($api.byId('tabbar'+(index+1).toString()), 'active-warning');
+	            
+	            if (index == 1) {
+					api.execScript({
+						frameName : 'help',
+						script : "getNavlist()"
+					});
+				}else{
+					api.closeFrameGroup({
+						name : 'help-group'
+					});
+					//api.execScript({
+					//	frameName : 'help',
+					//	script : "closehelp()"
+					//});
+				}
+	            for (i=0;i<=3;i++){
+		        	if (i==0){
+		        		$("#tabbar1 span").removeClass("aui-icon-homefill");
+		        		$("#tabbar1 span").addClass("aui-icon-home")
+		        	}
+		        	if (i==1){
+		        		$("#tabbar2 span").removeClass("aui-icon-attentionfill");
+		        		$("#tabbar2 span").addClass("aui-icon-attention")
+		        	}
+		        	if (i==2){
+		        		$("#tabbar3 span").removeClass("aui-icon-markfill");
+		        		$("#tabbar3 span").addClass("aui-icon-mark")
+		        	}
+		        	if (i==3){
+		        		$("#tabbar4 span").removeClass("aui-icon-myfill");
+		        		$("#tabbar4 span").addClass("aui-icon-my")
+		        	}
+		        	if (i==index){
+		        		var noobj=$("#tabbar"+(i+1).toString()+" span");
+		        		var noclass=noobj.attr("class").replace("aui-iconfont ","");
+		        		noobj.removeClass(noclass)
+		        		noobj.addClass(noclass+"fill");
+		        	}
+		        }
+			});
+		}
+		function pro_xzleimu(k){
+		}
+		// 随意切换按钮
+		function randomSwitchBtn(obj, name, index) {
+			
+			if (index == 1) {
+				//api.execScript({
+				//	frameName : 'help',
+				//	script : "getNavlist()"
+				//});
+				//return;
+			}else{
+				api.execScript({
+					frameName : 'help',
+					script : "closehelp()"
+				});
+			}
+			/*
+			var footer = $api.byId('aui-footer');
+	        var footerAct = $api.dom(footer, '.aui-bar-tab li.active-warning');
+	        $api.removeCls(footerAct, 'active-warning');
+	        $api.addCls(obj, 'active-warning');
+	        for (i=0;i<=3;i++){
+	        	if (i==0){
+	        		$("#tabbar1 span").removeClass("aui-icon-homefill");
+	        		$("#tabbar1 span").addClass("aui-icon-home")
+	        	}
+	        	if (i==1){
+	        		$("#tabbar2 span").removeClass("aui-icon-samefill");
+	        		$("#tabbar2 span").addClass("aui-icon-same")
+	        	}
+	        	if (i==2){
+	        		$("#tabbar3 span").removeClass("aui-icon-markfill");
+	        		$("#tabbar3 span").addClass("aui-icon-mark")
+	        	}
+	        	if (i==3){
+	        		$("#tabbar4 span").removeClass("aui-icon-myfill");
+	        		$("#tabbar4 span").addClass("aui-icon-my")
+	        	}
+	        	if (i==index){
+	        		var noobj=$("#tabbar"+(i+1).toString()+" span");
+	        		var noclass=noobj.attr("class").replace("aui-iconfont ","");
+	        		noobj.removeClass(noclass)
+	        		noobj.addClass(noclass+"fill");
+	        	}
+	        }
+			*/
+			api.setFrameGroupIndex({
+				name : 'indexgroup',
+				index : index,
+				scroll:true
+			});
+		}
+
+		//生意管家调用方法
+		function myHome() {
+			$("#footer").find("li").eq(3).on('click', function() {
+				randomSwitchBtn(this, 'cloud', 3)
+			});
+			$("#footer").find("li").eq(3).click();
+		}
+		//返回标志重置
+		function keybackFun(flag){
+			keybackflag=flag;
+		}
+	</script>
+</html>

@@ -1,0 +1,162 @@
+#set($layout="/layout/default.vm")
+<div class="nav nav2">
+	<div class="nav-main">
+		<div class="fl logoimg"><img src="$!{address.css}/trade/comm/logo_3.png" /></div>
+		<div class="fr pay-steps">
+			<ul class="pay-steps-list clearfix">
+				<li class="clearfix frist-step this-paystep">
+					<span>1<em class="stepname">第一步：选择产品类别</em></span>
+				</li>
+				<li class="clearfix">
+					<span>2<em class="stepname">第二步：填写产品详情</em></span>
+				</li>
+				<li class="clearfix">
+					<span>3<em class="stepname">第三步：发布成功</em></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="content clearfix">
+	<div class="gettype-tt">为您的产品信息选择合适的类别</div>
+	<div class="get-tpmo">
+		<i class="jgget">*</i> 选择产品类别：
+		<span class="give-sp">
+			<input class="keyword give-info-ipt" placeholder="请输入产品关键字，我们为您推荐产品类别"/>
+			<i class="icon-delete iconfont">&#xe60a;</i>
+		</span>
+		<span class="typebtn j_bigtype" index="1">查找类别</span>
+		或
+		<span class="typebtn j_bigtype" index="2">您常用的类别</span>
+		<!-- <span class="blackbtn j_bigtype" index="0">返回</span> -->
+	</div>
+	<div class="cptype-list">
+		<div class="cptype-mo clearfix" style="display:block">
+			<select id='c1' name='c1' size='10' class="fl oneget">
+				<option value="" >--一级分类--</option>
+			</select>
+			<select id='c2' name='c2' size='10' class="fl oneget">
+				<option value="" >--二级分类--</option>
+			</select>
+			<select id='c3' name='c3' size='10' class="fl oneget">
+				<option value="">--三级分类--</option>
+			</select>
+		</div>
+		<div class="cptype-mo">
+			<div class="moreget j_moreget">
+				<a href="javascript:void(0)" class="goblack j_typeblack" index="0" id="cate1">x</a>
+			</div>
+		</div>
+		<div class="cptype-mo">
+			<div class="moreget j_moreget">
+				<a href="#" class="goblack j_typeblack" index="0">x</a>
+				#foreach($li in $maps.keySet())
+					<label for="$li">
+						<input id="$li" name="moretype" type="radio" value="$li" cate="$maps.get($li)"/> 
+						$maps.get($li)
+					</label> 
+				#end
+			</div>
+		</div>
+	</div>
+	<div class="dcsion-type">
+		您当前选择的产品类别为：
+		<span class="xztype "><b class="j_xztype"></b><span>
+	</div>
+	<form action="$!{address.trade}/goods/post_step2.htm" method="post" id="subform">
+		<input  type="hidden" name="mainCategory" id="main_category"/>
+		<div class="nextdiv">
+			<span class="nextbtn">下一步，填写信息详情</span>
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+jQuery(".nextbtn").click(function(){
+		var a = jQuery("#main_category").val().replace(/\s+/g,"");
+		if(a){
+			jQuery("#subform").submit();
+		}else{
+			alert("请选择类别");
+		}
+});
+jQuery(function(){
+	var category = new Asto.util.Selector({
+		selects : ["#c1", "#c2", "#c3"],
+		url : "#springUrl('/goods/goodsChild.htm')",
+		changeCallback : function(c, idx) {
+			jQuery("#main_category").val(category.getValue());
+			var str = "";
+			for (var obj in category.getTexts()){
+				if(str==""){
+					str = category.getTexts()[obj];
+				}else{
+					str = str +" &gt; " + category.getTexts()[obj];
+				}
+			}
+			$(".j_xztype").html(str)
+		}
+	});
+	
+	category.init({
+		initCode:"1000",
+		rootCode:"1000"
+	});
+});
+
+    $(".j_bigtype,.j_typeblack").bind("click",function(){
+        var string = "";
+        var index = $(this).attr("index");
+		jQuery("#cate1").parent().find("label").remove();
+		jQuery("#main_category").val("");
+        if(index == 1){
+        	var key = jQuery(".keyword").val().replace(/\s+/g,"");
+        	key = encodeURI(key);
+        	if(key == ""){
+        		alert("请填写关键字");
+        		return false;
+        	}
+        	jQuery.ajax({
+        		url:'#springUrl("/goods/search.htm")',
+        		data:{"keyword":key},
+        		type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+					for(var i = 0; i < reg.length; i ++){
+						string = string +"<label for=\""+reg[i].code+"\"><input id=\""+reg[i].code+"\" name=\"choseLabel\" name=\"cptype\" type=\"radio\" value=\""+reg[i].code+"\" cate=\""+reg[i].label+"\"/>"+reg[i].label+" </label> ";
+					}
+					if(reg.length>0){
+						cptype(index);
+					}
+				}
+        	});
+        	jQuery("#cate1").after(string);
+        }else{
+			##if($maps.size()>0)
+				cptype(index);
+			##end
+		}
+    })
+    function cptype(index){
+        $(".cptype-mo").hide().eq(index).show()
+    }
+
+    jQuery(".j_moreget").click(function(){
+        var xzText = $(this).find("input:checked").attr("cate");
+		$(".j_xztype").html(xzText);
+        jQuery("#main_category").val($(this).find("input:checked").val());
+    });
+
+    $(".give-info-ipt").bind("keyup",function(){
+        if('placeholder' in document.createElement('input')){
+            if(!$(this).val()==""){
+                $(this).parent().find(".icon-delete").show();
+            }else{
+                $(this).parent().find(".icon-delete").hide();
+            }
+        }    
+    });
+    $(".icon-delete").bind("click",function(){
+        $(this).hide().parent().find(".give-info-ipt").val("")
+    })
+</script>

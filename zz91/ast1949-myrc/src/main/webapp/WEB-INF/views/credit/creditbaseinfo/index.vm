@@ -1,0 +1,625 @@
+#set( $layout = "/layout/default.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sincerity/css/authentication.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sincerity/js/authentication.js"></script>
+<script language="javascript" type="text/javascript" src="http://img0.zz91.com/zz91/sincerity/js/calendar.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+
+<div class="main">
+	<div class="mainblock1">
+    	<a href="#springUrl('/credit/creditbaseinfo/index.htm')">诚信档案</a> <span class="divider">/</span>基本信息
+    </div>
+    <!--end mainblock1-->
+    <div class="mainblock2">
+    	<div class="m2-title">
+        	<ul class="m2-button">
+            	<li style="background:url(http://img0.zz91.com/zz91/sincerity/images/botton_bg_click.jpg) repeat-x;font-weight:bold">
+					<a href="#springUrl('/credit/creditbaseinfo/index.htm')">
+						认证信息
+						<span class="m-orange">
+    						#if($!{companyAttest.checkStatus} == "0")
+    							[认证中]
+    						#elseif($!{companyAttest.checkStatus} == "1")
+    							[已认证]
+    						#elseif($!{companyAttest.checkStatus} == "2")
+    							[认证不通过]
+							#else
+								[待认证]
+    						#end
+                        </span>
+					</a>
+				</li>
+				<li> <a href="#springUrl('/credit/creditbaseinfo/indexQualification.htm')">企业自传资质</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end m2-title-->
+        <div class="submitIndividual">
+			<input type="hidden" id="pageFlg" value= "$!{pageFlg}"/>
+        	<div class="si-radio">
+				#if($!{pageFlg} == "0" || $!{companyAttest.attestType} == "1")
+				<div class="si-info1" id = "gsInfo">
+					#if($!{sessionUser.membershipCode}!="10051000")
+						根据工商注册实际情况，如实填写以下信息。
+						以下部分选项选择不显示，网站将不会完全公开这些信息。
+					#else
+    					根据工商注册实际情况，如实填写以下信息，网站核实后，贵司将被标记“已认证”。
+    					该信息只用于网站诚信备案，将不会用于其他途径或泄露给第三方。
+					#end
+                </div>
+                <!--end si-item-info-->
+            	<div class="fl mr30 ml50">
+            		<input type="radio" class="si-radio-style" name = "attestType"  #if($!{pageFlg} == "0" || $!{companyAttest.attestType} == "1")  checked="checked" #end id="gongshang"/>工商注册信息
+                </div>
+				#end
+				#if($!{pageFlg} == "0" || $!{companyAttest.attestType} == "0")
+                <div class="fl">
+                	<input type="radio" class="si-radio-style" name = "attestType"  #if($!{companyAttest.attestType} == "0") checked="checked" #end id="geti"/>个体
+                </div>
+				#end
+                <div class="cb"></div>
+            </div>
+            <!--end si-radio-->
+##			#if($!{companyAttest.attestType} == "1" || $!{pageFlg} == "0")
+                <form method="post" id="submitIndividual" action="#springUrl('/credit/creditbaseinfo/attestSubmit.htm?attestType=1')">
+                <div id="gongshang_box">
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>公司名称：
+                    </div>
+                    <div class="si-item-content">
+                    	<input type="text" class="si-item-text" id="companyName" name="companyName" value = "$!{companyAttest.companyName}"/>
+                    </div>
+    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>注册号：
+                    </div>
+                    <div class="si-item-content2">
+                    	<input type="text" class="si-item-text2" id="registerNum" name="registerCode" value = "$!{companyAttest.registerCode}"/>
+                    </div>
+                    <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                    	是否显示：<input type="radio" class="si-radio-yesno"  name="showCode" #if($!{companyAttest.showCode} == "1")  checked="checked" #end value='1'/>是<span class="mr30"></span>
+                        <input type="radio" class="si-radio-yesno" name="showCode" #if($!{pageFlg} == "0" || $!{companyAttest.showCode} == "0")  checked="checked" #end value='0'/>否
+                    </div>
+                    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                
+                
+                
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>注册地址：
+                    </div>
+                    <div class="si-item-content">
+                    	<input type="text" class="si-item-text" id="registerAddress" name="registerAddr" value = "$!{companyAttest.registerAddr}"/>
+                    </div>
+                    <!--end si-item-content-->
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>法定代表人：
+                    </div>
+                    <div class="si-item-content2">
+                    	<input type="text" class="si-item-text2" id="LegalRepresentative" name="legal" value = "$!{companyAttest.legal}"/>
+                    </div>
+                    <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                    	是否显示：<input type="radio" class="si-radio-yesno"  name="showLegal" #if($!{companyAttest.showLegal} == "1")  checked="checked" #end  value='1'/>是<span class="mr30"></span>
+                        <input type="radio" class="si-radio-yesno" name="showLegal" #if($!{pageFlg} == "0" || $!{companyAttest.showLegal} == "0")  checked="checked" #end value='0'/>否
+                    </div>
+                    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>注册资本：
+                    </div>
+                    <div class="si-item-content2">
+                    	<input type="text" class="si-item-text2" id="RegisteredCapital" name="registerCapital" value="$!{companyAttest.registerCapital}"/>
+                    </div>
+                    <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                    	是否显示：<input type="radio" class="si-radio-yesno"  name="showCapital" #if($!{companyAttest.showCapital} == "1") checked="checked" #end  value='1'/>是<span class="mr30"></span>
+                        <input type="radio" class="si-radio-yesno" name="showCapital" #if($!{pageFlg} == "0" || $!{companyAttest.showCapital} == "0")  checked="checked" #end value='0'/>否
+                    </div>
+                    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    
+                    <div class="cb"></div>
+                    <div class="si-item-info">
+                    	注册资本的单位默认为“万元”，货币类型为“人民币”，请根据实际情况填写。
+                    </div>
+                    <!--end si-item-info-->
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>公司类型：
+                    </div>
+                    <div class="si-item-content">
+                    	<input type="text" class="si-item-text" id="companyIndustries" name="serviceType" value="$!{companyAttest.serviceType}"/>
+                    </div>
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>成立时间：
+                    </div>
+                    <div class="si-item-content">
+                    	<div class="si-item-setupTime">
+                        	<input type="text" class="si-item-setupTdate" id="FoundDate" name="establishTimeStr"  value = "#printFragmentDate("yyyy-MM-dd" $!{companyAttest.establishTime})"/>
+                        </div>
+                        <!--end si-item-setupTime-->
+                        
+                    </div>
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>营业期限：
+                    </div>
+                    <div class="si-item-content">
+                    	<div class="si-item-setupTime fl">
+                        	<input type="text" class="si-item-setupTdate" value = "#printFragmentDate("yyyy-MM-dd" $!{companyAttest.startTime})" id="businessDate" name="startTimeStr"/>
+                        </div>
+                        <!--end si-item-setupTime-->
+                        <div class="si-item-setupTimeText fl">
+                        	至
+                        </div>
+                        <!--end si-item-setupTimeText-->
+                        
+                        <div class="si-item-setupTime fl">
+                        	<input type="text" class="si-item-setupTdate" value = "#printFragmentDate("yyyy-MM-dd" $!{companyAttest.endTime})" id="businessDate_end" name="endTimeStr"/>
+                        </div>
+                        <!--end si-item-setupTime-->
+                        <div class="cb"></div>
+                    </div>
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>登记机关：
+                    </div>
+                    <div class="si-item-content2">
+                    	<input type="text" class="si-item-text2" id="registrationAuthority" name="organization" value = "$!{companyAttest.organization}"/>
+                    </div>
+                    <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                    	是否显示：<input type="radio" class="si-radio-yesno"  name="showOrg" #if($!{companyAttest.showOrg} == "1")  checked="checked" #end  value='1'/>是<span class="mr30"></span>
+                        <input type="radio" class="si-radio-yesno" name="showOrg" #if($!{pageFlg} == "0" || $!{companyAttest.showOrg} == "0")  checked="checked" #end value='0'/>否
+                    </div>
+                    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>年检时间：
+                    </div>
+                    <div class="si-item-content2">
+                    	<div class="si-item-setupTime fl">
+                        	<input type="text" class="si-item-setupTdate" value = "#printFragmentDate("yyyy-MM-dd" $!{companyAttest.inspectionTime})" id="examinationTime" name = "inspectionTimeStr"/>
+                        </div>
+                        <!--end si-item-setupTime-->
+                    </div>
+                    <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                    	是否显示：<input type="radio" class="si-radio-yesno"  name="showInspection" #if($!{companyAttest.showInspection} == "1")  checked="checked" #end  value='1'/>是<span class="mr30"></span>
+                        <input type="radio" class="si-radio-yesno" name="showInspection" #if($!{pageFlg} == "0" || $!{companyAttest.showInspection} == "0")  checked="checked" #end value='0'/>否
+                    </div>
+                    
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>经营范围：
+                    </div>
+                    <div class="si-item-content">
+                    	<textarea class="si-item-textarea" id="businessScope" name="business">$!{companyAttest.business}</textarea>
+                    </div>
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+                <div class="si-item">
+                	<div class="si-item-title">
+                    	 <span class="red">*</span>申请人：
+                    </div>
+                    <div class="si-item-content">
+                    	<input type="text" class="si-item-text" id="Applicant" name="applicant" value = "$!{companyAttest.applicant}"/>
+                    </div>
+                    <div class="si-info"></div>
+                    <!--end si-info-->
+                    <div class="cb"></div>
+                </div>
+                <!--end si-item-->
+				<div class="si-item" style="overflow:hidden;">
+						<div class="si-item-title">
+							<span class="red">*</span>上传证书图片：
+						</div>
+						<div class="si-item-content">
+							<div class="si-item-UploadPicture">
+								#if($!{companyAttest.picAddress} && $!{companyAttest.picAddress}!="")
+									<img id="preview_Img" src="$!{address.resource}/$!{companyAttest.picAddress}" name="imag" width="231" height="160" border="1">
+								#else
+									<img id="preview_Img" src="$!{address.images}/global/noimage.gif" name="imag" width="231" height="160" border="1">
+								#end
+                   			 </div>
+							 <input type="hidden" id="picName_ui" name="picAddress" class="addinfoinput"  value = "$!{companyAttest.picAddress}">
+							<!--end si-item-UploadPicture-->
+							<div class="ss-info red"></div>
+							<input type="button" class="si-ok-button Js_uploadBtn bb" value="上传"/>
+							<div class="si-Upload-text">
+								您可将证书扫描、或用数码相机拍成照片。证书上传所花费时间是
+								由图片大小决定的，大的图片会占用比较长的上传时间。
+							</div>
+						</div>
+						<!--end si-Upload-text-->
+               	   </div>
+				   <div class="si-ok">
+						<input type="submit" class="si-ok-submit" value="提交" />
+					</div>
+					<!--end si-ok-->
+                </div>
+                <!--end gongshang-->
+                </form>
+##			#elseif($!{companyAttest.attestType} == "0" || $!{pageFlg} == "0")
+                <form method="post" id="submitIndividual_geti" action="#springUrl('/credit/creditbaseinfo/attestSubmit.htm?attestType=0')">
+                <div id="geti_box">
+                	<div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>公司名称：
+                        </div>
+                        <div class="si-item-content">
+							#if($!{pageFlg} == "0") 
+								#set($compName = $!{compDto.company.name} )
+							#else
+								#set($compName = $!{companyAttest.companyName} )
+							#end
+                            <input type="text" class="si-item-text" id="companyName_geti" name="companyName" value="$!{compName}"/>
+						</div>
+        
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>公司地址：
+                        </div>
+                        <div class="si-item-content">
+							#if($!{pageFlg} == "0") 
+								#set($compAddr = $!{compDto.company.address})
+							#else 
+								#set($compAddr = $!{companyAttest.companyAddr})
+							#end
+                            <input type="text" class="si-item-text" id="companyAddress_geti" name="companyAddr" value="$!{compAddr}"/>
+                        </div>
+                        
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>身份证号码：
+                        </div>
+                        <div class="si-item-content2">
+                            <input type="text" class="si-item-text2" id="idNum_geti" name="idNumber" value = "$!{companyAttest.idNumber}"/>
+                        </div>
+                        <div class="si-item-yesno" #if($!{sessionUser.membershipCode}=="10051000") style="display:none"  #end>
+                            是否显示：<input type="radio" class="si-radio-yesno"  name="showIdNumber" #if($!{companyAttest.showIdNumber} == "1")  checked="checked" #end  value='1'/>是<span class="mr30"></span>
+                            <input type="radio" class="si-radio-yesno" name="showIdNumber" #if($!{pageFlg} == "0" || $!{companyAttest.showIdNumber} == "0")   checked="checked" #end value='0'/>否
+                        </div>
+                        
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        
+                        <div class="cb"></div>
+                        <div class="si-item-info">
+                            是否显示，选择否，您的身份证号码不会在网站上全部公开，会显示为330108************
+                        </div>
+                        <!--end si-item-info-->
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>联系人：
+                        </div>
+                        <div class="si-item-content3">
+							#if($!{pageFlg} == "0") 
+								#set($contact = $!{compDto.account.contact})
+							#else
+								#set($contact = $!{companyAttest.contact})
+							#end
+                            <input type="text" class="si-item-text3" id="contacts_geti" name="contact" value="$!{contact}"/>
+                        </div>
+                        <div class="si-item-yesno">
+                            <input type="radio" class="si-radio-yesno" name="sex" #if(($!{pageFlg} == "0" && $!{compDto.account.sex}=="0") ||  $!{companyAttest.sex} =="0") checked="checked" #end value='0'/>
+								先生
+							<span class="mr20"></span>
+                            <input type="radio" class="si-radio-yesno" name="sex" #if(($!{pageFlg} == "0" && $!{compDto.account.sex}=="1" ) || $!{companyAttest.sex} =="1") checked="checked" #end value='1'/>女士
+                        </div>
+                        <!--end si-item-yesno-->
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                        
+                    </div>
+                    <!--end si-item-->
+                    
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             电话：
+                        </div>
+                        <div class="si-item-content3">
+							#set($telCountry ="")
+							#if($!{pageFlg} == "0")
+								#set($telCountry = $!{compDto.account.telCountryCode})
+							#else
+								#set($telCountry = $!{companyAttest.telCountryCode})
+							#end
+                            <input type="text" class="si-item-text3" name ="telCountryCode" value="$!{telCountry}"/>
+                        </div>
+                        <div class="si-item-line fl">
+                            —
+                        </div>
+                        
+                        <div class="si-item-content3">
+							#set($telArea ="")
+							#if($!{pageFlg} == "0") 
+								#set($telArea = $!{compDto.account.telAreaCode})
+							#else 
+								#set($telArea = $!{companyAttest.telAreaCode})
+							#end
+                            <input type="text" class="si-item-text3" name ="telAreaCode" value="$!{telArea}"/>
+                        </div>
+                        <!--end si-item-content-->
+                        <div class="si-item-line fl">
+                            —
+                        </div>
+                        <div class="si-item-content4">
+							#set($telNum ="")
+							#if($!{pageFlg} == "0") 
+								#set($telNum = $!{compDto.account.tel} )
+							#else
+								#set($telNum = $!{companyAttest.telNum} )
+							#end
+                            <input type="text" class="si-item-text4" name ="telNum" value="$!{telNum}"/>
+                        </div>
+                        <div class="cb"></div>
+                        <div class="si-item-info">
+                            例如：86-0571-56612345
+                        </div>
+                        <!--end si-item-info-->
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>手机：
+                        </div>
+                        <div class="si-item-content">
+							#if($!{pageFlg} == "0") 
+								#set($mobile = $!{compDto.account.mobile})
+							#else 
+								#set($mobile = $!{companyAttest.mobile})
+							#end
+                            <input type="text" class="si-item-text" id="mobilePhone_geti" name="mobile" value="$!{mobile}"/>
+                        </div>
+                        <!--end si-item-content-->
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>主营行业：
+                        </div>
+                        <div class="si-item-content">
+							#if($!{pageFlg} == "0")
+								#set($industry = $!{compDto.industryLabel})
+							#else 
+								#set($industry = $!{companyAttest.industry})
+							#end
+                            <input type="text" class="si-item-text" id="industries_geti" name="industry"  value="$!{industry}"/>
+                        </div>
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>服务类型：
+                        </div>
+                        <div class="si-item-content">
+							#if($!{pageFlg} == "0") 
+								#set($service = $!{compDto.serviceLabel})
+							#else
+								#set($service = $!{companyAttest.serviceType})
+							#end
+                            <input type="text" class="si-item-text" id="serviceType_geti" name="serviceType"  value="$!{service}"/>
+                        </div>
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>经营范围：
+                        </div>
+                        <div class="si-item-content">
+                            <textarea class="si-item-textarea" id="businessScope_geti" name="business">$!{companyAttest.business}</textarea>
+                        </div>
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+                    <div class="si-item">
+                        <div class="si-item-title">
+                             <span class="red">*</span>申请人：
+                        </div>
+                        <div class="si-item-content">
+                            <input type="text" class="si-item-text" id="Applicant_geti" name="applicant" value = "$!{companyAttest.applicant}"/>
+                        </div>
+                        <div class="si-info"></div>
+                        <!--end si-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end si-item-->
+					<div class="si-item">
+						<div class="si-item-title">
+							<span class="red">*</span>上传身份证图片：
+						</div>
+						<div class="si-item-content">
+							<div class="si-item-UploadPicture">
+								#if($!{companyAttest.picAddress} && $!{companyAttest.picAddress}!="")
+									<img id="previewImg" src="$!{address.resource}/$!{companyAttest.picAddress}" name="imag" width="231" height="160" border="1">
+								#else
+									<img id="previewImg" src="$!{address.images}/global/noimage.gif" name="imag" width="231" height="160" border="1">
+								#end
+                   			 </div>
+							 <input type="hidden" id="picName" name="picAddress" class="addinfoinput"  value = "$!{companyAttest.picAddress}">
+							<!--end si-item-UploadPicture-->
+							<div class="sx-info red"></div>
+							<input type="button" class="si-ok-button Js_uploadBtn aa" value="上传"/>
+							<div class="si-Upload-text">
+								您可将证书扫描、或用数码相机拍成照片。证书上传所花费时间是
+								由图片大小决定的，大的图片会占用比较长的上传时间。
+							</div>
+						</div>
+						<!--end si-Upload-text-->
+               	   </div>
+				   <!--end si-info-->
+				   <div class="cb"></div>
+				   <div class="si-ok">
+                        <input type="submit" class="si-ok-submit" value="提交" />
+                    </div>
+                    <!--end si-ok-->
+					</div>
+           <!--end si-item-->
+                </form>
+##		#end
+        </div>
+        <!--end submitIndividual-->
+    </div>
+    <!--end mainblock2-->
+</div>
+<!--end main-->
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	    //ie条件下，display属性的兼容问题
+		window.document.execCommand('RespectVisibilityInDesign',false,true);
+   		myrc.menu(9, 0);
+		##成立时间
+		var establishTime = jQuery("#FoundDate").val();
+		if(establishTime!="") {
+			 jQuery("#FoundDate").val(establishTime);
+		} else {
+			 jQuery("#FoundDate").val("");
+		}
+		##营业时间开始
+		var startTime = jQuery("#businessDate").val();
+		if(startTime!="") {
+			 jQuery("#businessDate").val(startTime);
+		} else {
+			 jQuery("#businessDate").val("");
+		}
+		##营业时间结束
+		var endTime = jQuery("#businessDate_end").val();
+		if(endTime!="") {
+			 jQuery("#businessDate_end").val(endTime);
+		} else {
+			 jQuery("#businessDate_end").val("");
+		}
+		##年检时间
+		var inspectionTime = jQuery("#examinationTime").val();
+		if(inspectionTime!="") {
+			 jQuery("#examinationTime").val(inspectionTime);
+		} else {
+			 jQuery("#examinationTime").val("");
+		}
+		## 加载时显示工商或个体
+		if(jQuery("#gongshang").attr("checked")) {
+			$("#gongshang_box").css("display","block");
+			$("#geti_box").css("display","none");
+		} else if (jQuery("#geti").attr("checked")) {
+			$("#gongshang_box").css("display","none");
+			$("#geti_box").css("display","block");
+		}
+		jQuery(".Js_uploadBtn").click(function(obj){
+			var btn = jQuery(this);
+			var btt = jQuery(this).attr("class");
+			Asto.util.Callback.setSubmitCallback(function (success, data) {
+					if(btt.indexOf("aa") != -1){
+						jQuery("#previewImg").attr("src","$!{address.resource}/"+data.picAddress);
+						jQuery("#picName").val(data.picAddress);
+					}else{
+						jQuery("#preview_Img").attr("src","$!{address.resource}/"+data.picAddress);
+						jQuery("#picName_ui").val(data.picAddress);
+					}
+					btn.val("重新上传");
+
+					var paths=data.picAddress;
+					var pathArr=paths.split(",");
+					for(var i=1;i<pathArr.length;i++){
+						if(btt.indexOf("aa") != -1){
+							jQuery("#previewImg").attr("src","$!{address.img3}/231x160/"+pathArr[i]);
+							jQuery("#picName").val(data.picAddress);
+						}else{
+							jQuery("#preview_Img").attr("src","$!{address.img3}/231x160/"+pathArr[i]);
+							jQuery("#picName_ui").val(data.picAddress);
+						}
+						btn.val("重新上传");
+					}
+					parent.closeoverlay();
+			});
+			var url="$!{address.myrc}/sys/upload/myrcUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=5&limitCount=1&uploadFlag=0";
+			//将弹框关闭等字显示出来
+			parent.overtitle("上传图片");
+			openoverlay(url,'上传图片',700,500,0);
+		});
+	});
+</script>
+

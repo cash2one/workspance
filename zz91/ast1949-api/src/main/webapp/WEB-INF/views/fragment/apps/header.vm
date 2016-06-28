@@ -1,0 +1,143 @@
+#set($layout="/layout/blank.vm")
+<!--header start-->
+<div class="clear"></div>
+<div id="header">
+	## 通用广告 js
+	#parse("/common/ads.vm")
+	<div id="logo">
+		#if($!{ik}=="index"||!$!{ik})
+			<span class="logo_adv"><script src="http://gg.zz91.com/show?p=458"></script></span>
+			<span class="logo">
+				<a href="$!{address.www}" target="_blank"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+			</span>
+		#else
+			<span class="logo">
+				<a href="$!{address.www}" target="_blank"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+				<a href="http://$!{ik}.zz91.com" target="_blank"><img src="$!{address.img}/zz91/$!{ik}/images/logo.png" alt="$!{modelMap}" /></a>
+			</span>
+		#end
+		##if($!{ik}=="trade")
+		##end
+##		#if($!{ik}=="company")
+##            <span class="logo">
+##    			<a href="$!{address.www}"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+##    			<img src="$!{address.images}/company/qyhy.png" alt="公司黄页" />
+##            </span>
+##		#end
+##		#if($!{ik}=="price")
+##            <span class="logo">
+##    			<a href="$!{address.www}"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+##    			<img src="$!{address.images}/price/hqbj.png" alt="价格行情" />
+##            </span>
+##		#end
+##		#if($!{ik}=="tags")
+##            <span class="logo">
+##    			<a href="$!{address.www}"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+##    			<img src="$!{address.images}/tags/tags.png" alt="价格行情" />
+##            </span>
+##		#end
+##		#if($!{ik}=="exhibit")
+##            <span class="logo">
+##    			<a href="$!{address.www}"><img src="$!{address.img}/zz91/images/logo.png" alt="$!{siteInfo.site_name}" width="115" height="45" /></a>
+##    			<img src="$!{address.images}/exhibit/exhibit.png" alt="价格行情" />
+##            </span>
+##		#end
+	</div>
+	<div id="zz91-searchWeb">
+		<form id="searchForm" action="#" onsubmit="return topSearch();">
+			<fieldset>
+				<legend style="display:none">ZZ91搜索</legend>
+				<div class="searchList">
+					<ul id="search_tab">
+						<li class="searchSelected">
+							<a href="javascript:void(0)">供应</a>
+						</li>
+						<li>
+							<a href="javascript:void(0)">求购</a>
+						</li>
+						<li>
+							<a href="javascript:void(0)">报价</a>
+						</li>
+					</ul>
+				</div>
+				<div class="searchNotice">
+					<div id="marquee">
+						<marquee behavior="scroll" direction="left" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="3" height="24" width="293">
+							#foreach($inquiry in $list)
+								<span class="searchNoticeList">
+									#printFragmentDate("HH:mm:ss" $!{inquiry.inquiry.sendTime})（$!{inquiry.receiverCompanyName}）收到（$!{inquiry.senderCompanyName}）的询盘商机
+								</span>
+							#end
+						</marquee>
+					</div>
+				</div>
+				<div class="searchArea">
+					<label id="search_label" for="search" class="search_label">输入你感兴趣的产品</label>
+					<input name="search" id="search" type="text" value="" class="ZZ91Search" />
+					<input type="submit" value="" class="ZZ91SearchSub" name="TopSeaSubmit"  id="TopSeaSubmit" onmouseover="this.className='ZZ91SearchSubOver'"  onmouseout="this.className='ZZ91SearchSub'"/>
+					<input type="hidden" value="1" name="TopSeaType"  id="TopSeaType" />
+				</div>
+			</fieldset>
+		</form>
+	</div>
+	<div style="clear:both"></div>
+</div>
+<!--head end-->
+<script type="text/javascript">
+$(document).ready(function(){
+	new zz91SearchSlide("#zz91-searchWeb","TopSeaType","search");
+	
+	$('li.treasureBox').mousemove(function() {
+        $(this).find('ul').slideDown("fast"); //you can give it a speed
+        $(this).find('a').first().addClass('ishover');
+        $(this).find('a').first().removeClass('nohover');
+    });
+    $('li.treasureBox').mouseleave(function() {
+        $(this).find('ul').slideUp("fast");
+        $(this).find('a').first().removeClass('ishover');
+        $(this).find('a').first().addClass('nohover');
+    });
+	
+})
+
+//以下为搜索相关
+function topSearch() {
+    var keyWord = document.getElementById("search").value;
+    var type = document.getElementById("TopSeaType");
+    
+    if (keyWord == "" || keyWord.substring(0, "请输入您感兴趣的".length) == "请输入您感兴趣的") {
+        alert("请您输入关键字！");
+        return false;
+    }
+	
+    if (type.value == "1") {
+        zz91Search.products({
+            contextpath:"${address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"1"
+            }
+        });
+    } else if (type.value == "2") {
+        zz91Search.products({
+            contextpath:"$!{address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"2"
+            }
+        });
+    } else if (type.value == "3") {
+        zz91Search.price({
+            contextpath:"$!{address.jiage}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord
+            }
+        });
+    }
+	
+	return false;
+}
+</script>

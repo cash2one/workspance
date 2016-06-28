@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogGroup">
+	<typeAlias alias="mblogGroup" type="com.zz91.ep.domain.mblog.MBlogGroup" />	
+    <resultMap class="mblogGroup" id="mblogGroupMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="groupName" column="group_name"/>
+    	<result property="isDelete" column="is_delete"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	group_name,
+    	is_delete,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+	<update id="updateIsDeleteStatus" parameterClass="java.util.Map">
+		update mblog_group
+		set
+		is_delete = #isDelete#,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+	
+	<insert id="insert" parameterClass="mblogGroup">
+		insert into mblog_group
+		(
+		info_id,
+		group_name,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#infoId#,
+		#groupName#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryAllById" resultMap="mblogGroupMap" parameterClass="java.util.Map">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog_group
+		where info_id = #infoId#
+		and
+		is_delete = 0
+		order by gmt_created desc
+	</select>
+	<select id="queryOneByConditions" resultMap="mblogGroupMap" parameterClass="java.util.Map">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog_group
+		where 
+		is_delete = 0
+		<isNotEmpty property="infoId">
+		and info_id = #infoId#
+		</isNotEmpty>
+		<isNotEmpty property="groupName">
+		and group_name = #groupName#
+		</isNotEmpty>
+		<isNotEmpty property="id">
+		and id = #id#
+		</isNotEmpty>
+		limit 1
+	</select>
+</sqlMap>

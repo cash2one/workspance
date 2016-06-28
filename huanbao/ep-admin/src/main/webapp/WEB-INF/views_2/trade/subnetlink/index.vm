@@ -1,0 +1,39 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app_2/trade/subnetlink.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+	
+		var childGrid=Ext.create("com.zz91.ep.subnetLink.ChildGrid",{
+			id:"childGrid",
+			region:"center",
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				childGrid2.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var mainGrid=Ext.create("com.zz91.ep.subnetLink.MainGrid",{
+			id:"mainGrid",
+			region:"west",
+    		width:350,
+    		split:true,
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				childGrid.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout : "border",
+			border : true,
+			items:[mainGrid,childGrid]
+		});
+		
+	});
+</script>

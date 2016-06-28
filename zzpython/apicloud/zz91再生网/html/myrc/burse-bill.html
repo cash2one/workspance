@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的账单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/myrc/burse-bill.css"/>
+</head>
+<body>
+	<div class="moery-black clear">
+		<div><span class="ftcolor">进账</span> <span class="j_jz">0.00</span></div>
+		<div><span class="ftcolor">消费</span> <span class="j_xf">0.00</span></div>
+		<div><span class="ftcolor">充值</span> <span class="j_cz">0.00</span></div>
+	</div>
+	<ul class="bill-list">
+		<!-- <li>
+			<div class="clear"><span>查看联系方式</span><span class="fr moery-bill">-5.00</span></div>
+			<div class="clear"><span class="ftcolor">2015-10-09</span><span class="fr ftcolor">查看该供求</span></div>
+		</li> -->
+	</ul>
+</body>
+<script id="info-list" type="text/html">
+	<li>
+		<div class="clear"><span>{{ d.ftypename }}</span><span class="fr moery-bill">{{ d.fee }}</span></div>
+		<div class="clear"><span class="ftcolor">{{ d.gmt_date }}</span><span class="fr ftcolor">查看该供求</span></div>
+	</li>
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+var currPage = 1;
+apiready = function(){
+	api.showProgress({title:'加载中',modal:false});
+	ajaxInfo();
+	api.addEventListener({
+		name : 'scrolltobottom'
+	}, function(ret, err) {
+		currPage += 1;
+		if($(".mui-spinner").length==0){
+			$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+		}
+		
+		setTimeout(function(){
+			ajaxInfo();
+		},1000)
+	});
+	//页面刷新
+	api.setRefreshHeaderInfo({
+		visible : true,
+		// bgColor: '#F2F2F2',
+		bgColor : '#E6E6E6',
+		textColor : '#000000',
+		textDown : '下拉刷新',
+		textUp : '释放刷新',
+	}, function(ret, err) {
+		currPage = 1;
+		ajaxInfo();
+		api.refreshHeaderLoadDone();
+		api.hideProgress();
+		api.toast({
+			msg : '数据已是最新！',
+			duration : 3000,
+			location : 'bottom'
+		});
+	});
+}
+function ajaxInfo(){
+	var company_id =  UserInfo.memberID();
+	var usertoken = UserInfo.token();
+	api.ajax({
+	    url : hosturl + 'qianbao/zhangdan.html?company_id='+ company_id +'&usertoken='+ usertoken +'&appsystem='+ api.systemType +'&datatype=json&page='+ currPage,
+	    method : 'get',
+	    timeout : 30,
+	    dataType : 'json',
+	    returnAll : false
+	}, function(ret, err) {
+	    if (ret) {
+	    	$(".j_jz").text(ret.infeegmtnowmonth);
+	    	$(".j_xf").text(ret.outfee5gmtnowmonth)
+	    	$(".j_cz").text(ret.outfee5gmtnowmonth)
+	    	var pageHtml = "";
+	        $.each(ret.payfeelist.list, function(index, item) {
+		        var getTpl = $api.html($api.byId("info-list"));
+		        laytpl(getTpl).render(item, function(html) {
+		            pageHtml = pageHtml + html;
+		        });
+	        })
+	        if(currPage == 1){
+	        	if(ret.payfeelist.list.length == 0){
+	    			pageHtml = "<li style='text-align:center'>暂无数据</li>"
+	    		}
+	        	$(".bill-list").html(pageHtml);
+	        }else{
+	        	$(".bill-list").append(pageHtml)
+	        }
+	        api.hideProgress();
+	        $(".mui-spinner").remove();
+	        $(".moery-bill").each(function(index,item){
+				var number = + $(this).text();
+				if(number<0){
+					$(this).css("color","#01ba2e")
+				}else{
+					$(this).css("color","#fe0000")
+				}
+			})
+	    } else {
+	    	api.hideProgress();
+	    };
+	});
+}
+</script>
+</html>

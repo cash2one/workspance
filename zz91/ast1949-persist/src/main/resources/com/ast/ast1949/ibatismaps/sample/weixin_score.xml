@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="weixin_score" >
+  <resultMap id="WeixinScoreResult" class="com.ast.ast1949.domain.sample.WeixinScore" >
+    <result column="id" property="id"/>
+    <result column="account" property="account"/>
+    <result column="rules_code" property="rulesCode"/>
+    <result column="score" property="score"/>
+    <result column="gmt_created" property="gmtCreated" />
+    <result column="validity" property="validity" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="WeixinScoreResult" parameterClass="com.ast.ast1949.domain.sample.WeixinScore" >
+    select id, account, rules_code, score, gmt_created, validity
+    from weixin_score
+    where id = #id#
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinScore" >
+    delete from weixin_score
+    where id = #id#
+  </delete>
+  
+  <insert id="insert" parameterClass="com.ast.ast1949.domain.sample.WeixinScore" >
+    insert into weixin_score (id, account, rules_code, score, gmt_created, validity)
+    values (#id#, #account#, #rulesCode#, #score#, now() , #validity#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>  	
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinScore" >
+    update weixin_score
+    set account = #account#,
+      rules_code = #rulesCode#,
+      score = #score#,
+    where id = #id#
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterClass="com.ast.ast1949.domain.sample.WeixinScore" >
+    update weixin_score
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="account" >
+        account = #account#
+      </isNotNull>
+      <isNotNull prepend="," property="rulesCode" >
+        rules_code = #rulesCode#
+      </isNotNull>
+      <isNotNull prepend="," property="score" >
+        score = #score#
+      </isNotNull>
+      <isNotNull prepend="," property="validity" >
+        validity = #validity#
+      </isNotNull>
+    </dynamic>
+    where id = #id#
+  </update>
+  
+   <sql id="defaultColumn">
+    	id, account, rules_code, score, gmt_created, validity
+    </sql>
+     
+	<sql id="dynamicSearch">
+		<dynamic>
+		where 1 = 1
+			
+      <isNotEmpty prepend="and " property="account" >
+        s.account = #account#
+      </isNotEmpty>    
+			
+      <isNotEmpty prepend="and " property="rulesCode" >
+         s.rules_code = #rulesCode#
+      </isNotEmpty>    
+      
+      <isNotEmpty prepend="and " property="from">
+       s.gmt_created >= #from#
+      </isNotEmpty>
+      
+      <isNotEmpty prepend="and " property="to">
+        #to# > s.gmt_created
+      </isNotEmpty>
+	</dynamic>
+	</sql>  	    
+  
+    	<!-- queryListByFilter  start   -->
+  	<select id="queryListByFilter" parameterClass="java.util.Map" resultMap="WeixinScoreResult">
+		select 
+		<include refid="defaultColumn"/>
+		from weixin_score  s  
+    <include refid="dynamicSearch" />
+	<include refid="common.pageOrderBy"/>
+	<include refid="common.pageLimit"/>
+	</select>
+	
+  	<select id="queryListByFilterCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select  count(0) 
+		from weixin_score  s  
+		<include refid="dynamicSearch" />
+	</select>
+	<!-- queryListByFilter  end   -->
+	
+  	<select id="totalAvailableScore" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select sum(score)
+		from weixin_score  s  
+		where  account = #account#    and  validity >= now() 
+	</select>
+	
+</sqlMap>

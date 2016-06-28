@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>底部导航</title>
+    <link rel="stylesheet" type="text/css" href="css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+</head>
+<body>
+<div id="wrap">
+  <header>
+      <div id="cloud" class="topbar  activebar">
+        <div tapmode="hover-category" class="category">
+          <i></i>
+          <p>类目</p>
+        </div>
+        <div class="select">
+          <input type="text" placeholder="点此输入搜索产品" class="select-ipt">
+          <i></i>
+        </div>
+        <div tapmode="hover-category" class="infonumber">
+          <i></i>
+          <p>消息</p>
+          <s></s>
+        </div>
+      </div>
+      <div id="client" class="topbar  ">
+          端API
+      </div>
+      <div id="dev" class="topbar ">
+        开发
+      </div>
+      <div id="doc" class="topbar ">
+        文档
+      </div>
+  </header>
+  <div id="main">
+
+  </div>
+  <div id="footer">
+      <ul>
+          <li tapmode="active" class="active" onclick="randomSwitchBtn(this,'cloud',0)">
+              <a class="bottom_btn cloud"><i></i><span>首页</span></a>
+          </li>
+
+          <li tapmode="active" onclick="randomSwitchBtn(this,'client',1)">
+              <a class="bottom_btn client "><i></i><span>交易</span></a>
+          </li>
+
+          <li tapmode="active" onclick="randomSwitchBtn(this,'dev',2)">
+              <a class="bottom_btn dev "><i></i><span>价格</span></a>
+          </li>
+
+          <li tapmode="active" onclick="randomSwitchBtn(this,'doc',3)">
+              <a class="bottom_btn doc "><i></i><span>管家</span></a>
+          </li>
+      </ul>
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/zepto.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var $header = $api.dom('header');
+        $api.fixIos7Bar($header);
+        var $body = $api.dom('body');
+        var $footer = $api.byId('footer');
+        var header_h = $api.offset($header).h;
+        var body_h = $api.offset($body).h;
+        var footer_h = $api.offset($footer).h;
+        var rect_h = body_h - header_h - footer_h;
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {x: 0, y: header_h, w: 'auto', h: rect_h},
+            index: 0,
+            frames: [
+                {
+                    name: 'index-frame',
+                    url: 'html/index-frame.html'
+                },
+                {
+                    name: 'frame2',
+                    url: 'html/frame2.html'
+                },
+                {
+                    name: 'frame3',
+                    url: 'html/frame3.html'
+                },
+                {
+                    name: 'frame4',
+                    url: 'html/frame4.html'
+                }
+            ]
+        }, function (ret, err) {
+        });
+      $(".category").on("click",function(){
+        var pageParam = {
+          wintitle:"产品类目",
+          type:"product-category"
+        };
+        openWin("product-category","product-category.html",pageParam);
+      })  
+    }
+    // 随意切换按钮
+    function randomSwitchBtn(obj, name, index) {
+        var $header = $api.dom('header');
+        var $titleBar = $api.domAll($header, '.topbar');
+        for (var i = 0; i < $titleBar.length; i++) {
+            $api.removeCls($titleBar[i], 'activebar');
+        }
+        $api.addCls($api.byId(name), 'activebar');
+        var $footer = $api.byId('footer');
+        var $footerBar = $api.domAll($footer, 'li');
+        for (var j = 0; j < $footerBar.length; j++) {
+            $api.removeCls($footerBar[j], 'active');
+        }
+        $api.addCls(obj, 'active');
+        api.setFrameGroupIndex({
+            name: 'group',
+            index: index
+        });
+
+    }
+</script>
+</html>

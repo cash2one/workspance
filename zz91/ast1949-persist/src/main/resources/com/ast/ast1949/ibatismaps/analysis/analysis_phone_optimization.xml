@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisphoneoptimization">
+	<typeAlias alias="AnalysisPhoneOptimization"
+		type="com.ast.ast1949.domain.analysis.AnalysisPhoneOptimization" />
+	<typeAlias alias="phoneLog" type="com.ast.ast1949.domain.phone.PhoneLog" />
+	<typeAlias alias="AnalysisPhoneOptimizationDto"
+		type="com.ast.ast1949.dto.analysis.AnalysisPhoneOptimizationDto" />
+    
+	<resultMap class="AnalysisPhoneOptimization" id="AnalysisPhone">
+		<result property="id" column="id" />
+		<result property="phoneLogId" column="phone_log_id" />
+		<result property="ip" column="ip" />
+		<result property="utmSource" column="utm_source" />
+		<result property="utmTerm" column="utm_term" />
+		<result property="utmContent" column="utm_content" />
+		<result property="utmCampaign" column="utm_campaign" />
+		<result property="isValid" column="is_valid" />
+		<result property="isFirst" column="is_first" />
+		<result property="pageFirst" column="page_first" />
+		<result property="pageLast" column="page_last" />
+		<result property="pageCalling" column="page_calling" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="area" column="area" />
+	</resultMap>
+
+	<resultMap class="phoneLog" id="phoneLogResult">
+		<result property="callerId" column="caller_id" />
+		<result property="tel" column="tel" />
+		<result property="callFee" column="call_fee" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="callSn" column="call_sn" />
+		<result property="state" column="state" />
+		<result property="province" column="province" />
+		<result property="city" column="city" />
+		<result property="companyId" column="company_id" />
+	</resultMap>
+
+	<resultMap class="AnalysisPhoneOptimizationDto" id="AnalysisPhoneOptimizationDtoResult">
+		<result property="analysisPhoneOptimiza" resultMap="analysisphoneoptimization.AnalysisPhone" />
+		<result property="phonelog" resultMap="analysisphoneoptimization.phoneLogResult" />
+	</resultMap>
+    
+    <select id="selectByAnalysisPhone" resultMap="AnalysisPhone" parameterClass="java.util.Map">
+         select id,phone_log_id,ip,utm_source,utm_term,utm_content,utm_campaign,is_valid,is_first,page_first,page_last,page_calling,gmt_target,gmt_created,gmt_modified,area
+         from analysis_phone_optimization
+        <dynamic prepend="where">
+           <isNotEmpty prepend="and" property="analysisSerchDto.id">
+              phone_log_id=#analysisSerchDto.id#
+           </isNotEmpty>
+           <isNotEmpty prepend="and" property="analysisSerchDto.utmterm">
+              utm_term like '%${analysisSerchDto.utmterm}%'
+           </isNotEmpty>
+        </dynamic>
+        <include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+    </select>  
+      
+    <select id="selectByAnalysisPhoneSzie" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+         select count(0) from analysis_phone_optimization
+         <dynamic prepend="where">
+           <isNotEmpty prepend="and" property="analysisSerchDto.id">
+              phone_log_id=#analysisSerchDto.id#
+           </isNotEmpty>
+           <isNotEmpty prepend="and" property="analysisSerchDto.utmterm">
+              utm_term like '%${analysisSerchDto.utmterm}%'
+           </isNotEmpty>
+        </dynamic>
+    </select>  
+      
+	<insert id="createOneRecord" parameterClass="AnalysisPhoneOptimization">
+		insert into analysis_phone_optimization
+		(`phone_log_id`
+		, `ip`
+		, `utm_source`
+		, `utm_term`
+		, `utm_content`
+		, `utm_campaign`
+		, `is_valid`
+		, `is_first`
+		, `page_first`
+		, `page_last`
+		, `page_calling`
+		, `gmt_target`
+		, `gmt_created`
+		, `gmt_modified`
+		, area
+		) values (
+		#phoneLogId#
+		, #ip#
+		, #utmSource#
+		, #utmTerm#
+		, #utmContent#
+		, #utmCampaign#
+		, #isValid#
+		, #isFirst#
+		, #pageFirst#
+		, #pageLast#
+		, #pageCalling#
+		, curdate()
+		, now()
+		, now()
+		, #area#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+   
+    <select id="selectSize" parameterClass="java.util.Map" resultMap="phoneLogResult">
+       select company_id,caller_id,province,city,tel,call_fee,start_time,end_time,gmt_created,gmt_modified,call_sn,state
+       from phone_log  where id =#id#
+    </select>
+   
+	<select id="selectOneRecord" parameterClass="AnalysisPhoneOptimization"
+		resultClass="java.lang.Integer">
+		select count(0) from analysis_phone_optimization where
+		ip=#ip# and
+		gmt_target=curdate()
+	</select>
+	<select id="selectIp" parameterClass="AnalysisPhoneOptimization"
+		resultClass="java.lang.Integer">
+		select count(0) from analysis_phone_optimization where
+		ip=#ip#
+	</select>
+</sqlMap>

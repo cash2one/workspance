@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的社区-我的回复</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/myrc/shequ-xx.css"/>
+</head>
+<body>
+	<div class="box">
+		<ul class="back-ul">
+			<!-- <li>
+				<div class="back-me"> 刘勤男士 </div>
+				<div class="back-info">15398917186</div>
+				<div class="my-hf-info"><span>回复于：9-18 10:24</span><span>回复：90</span><span>贴主：BBS管理员</span></div>
+				<span class="btn">查看</span>
+			</li> -->
+		</ul>
+	</div>
+</body>
+<script id="info-list" type="text/html">
+	<li>
+		<div class="back-me"> {{ d.post_title }} </div>
+		<div class="back-info">{{ d.content }}</div>
+		<div class="my-hf-info"><span>回复于：{{ d.gmt_created }}</span><span>回复：{{ d.reply_count }}</span><span>贴主：{{ d.nickname }}</span></div>
+		<span class="btn">查看</span>
+	</li>
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+	var currPage = 1;
+	apiready = function(){
+		api.showProgress({title:'加载中',modal:false});
+		ajaxInfo();
+		api.addEventListener({
+			name : 'scrolltobottom'
+		}, function(ret, err) {
+			currPage += 1;
+			if($(".mui-spinner").length==0){
+				$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+			}
+			
+			setTimeout(function(){
+				ajaxInfo();
+			},1000)
+		});
+		//页面刷新
+		api.setRefreshHeaderInfo({
+			visible : true,
+			// bgColor: '#F2F2F2',
+			bgColor : '#E6E6E6',
+			textColor : '#000000',
+			textDown : '下拉刷新',
+			textUp : '释放刷新',
+		}, function(ret, err) {
+			currPage = 1;
+			ajaxInfo();
+			api.refreshHeaderLoadDone();
+			api.hideProgress();
+			api.toast({
+				msg : '数据已是最新！',
+				duration : 3000,
+				location : 'bottom'
+			});
+		});
+	}
+	function ajaxInfo(){
+		var company_id =  UserInfo.memberID();
+		var usertoken = UserInfo.token();
+		api.ajax({
+		    url : hosturl + 'myrc_myreply/?company_id='+ company_id +'&usertoken='+ usertoken +'&appsystem='+ api.systemType +'&datatype=json&page='+ currPage,
+		    method : 'get',
+		    timeout : 30,
+		    dataType : 'json',
+		    returnAll : false
+		}, function(ret, err) {
+		    if (ret) {
+		    	// alert(JSON.stringify(ret))
+		        var pageHtml = "";
+		        $.each(ret.list, function(index, item) {
+			        var getTpl = $api.html($api.byId("info-list"));
+			        laytpl(getTpl).render(item, function(html) {
+			            pageHtml = pageHtml + html;
+			        });
+		        })
+		        if(currPage == 1){
+		        	if(ret.list.length == 0){
+		    			pageHtml = "<li style='text-align:center'>暂无数据</li>"
+		    		}
+		        	$(".back-ul").html(pageHtml);
+					// var numberList = {
+					// 	step:0,
+					// 	number:ret.qlistall.count
+					// }
+					// numberList = JSON.stringify(numberList);
+		   //      	api.execScript({
+					//     name: 'infomation-heart-2',
+					//     frameName:'infomation-heart-2_',
+					//     script: "getXp("+ numberList +")"
+					// });
+		        }else{
+		        	$(".back-ul").append(pageHtml)
+		        }
+		        api.hideProgress();
+		        $(".mui-spinner").remove();
+		    } else {
+		    	api.hideProgress();
+		    };
+		});
+	}
+</script>
+</html>

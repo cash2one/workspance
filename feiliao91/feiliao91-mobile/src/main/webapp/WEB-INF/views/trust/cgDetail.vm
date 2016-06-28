@@ -1,0 +1,141 @@
+<header data-am-widget="header" class="am-header am-header-default">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:void(0)" class="" onClick="javascript :history.back(-1)">
+            <i class="am-header-icon am-icon-chevron-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title">
+        我要报价
+    </h1>
+</header>
+
+<ul class="am-list am-list-static am-list-border am-list-striped am-margin-xs">
+    <li class="am-form-group am-text-sm">
+       <i class="iconfont">&#xe601;</i>$!{trustPoint.address} <span id="disResult"></span> 的客户需要 $!{trustBuy.title}
+    </li>
+    <li class="am-padding-left-0 am-padding-right-0 am-cf">
+        <div class="am-g">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm  am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">我的报价</label>
+            <div class="am-u-sm-7 am-padding-left-0 am-u-md-9 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="" />
+            </div>
+            <label for="doc-ipt-4" class="am-u-sm-2 am-form-label am-text-sm  am-text-left am-padding-left-0 am-u-md-1 am-u-lg-1">/吨</label>
+        </div>
+        <div class="am-g am-margin-top-sm">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm  am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">运费</label>
+            <div class="am-u-sm-7 am-padding-left-0 am-u-md-9 am-u-lg-11">
+                <input type="text" class="am-form-field am-radius" placeholder="" />
+            </div>
+            <label for="doc-ipt-4" class="am-u-sm-2 am-form-label am-text-sm  am-text-left am-padding-left-0 am-u-md-1 am-u-lg-1">元</label>
+        </div>
+        <div class="am-g am-margin-top-sm">
+            <label for="doc-ipt-4" class="am-u-sm-3 am-form-label am-text-sm  am-text-right am-padding-left-0 am-u-md-2 am-u-lg-1">详细信息</label>
+            <div class="am-u-sm-9 am-padding-left-0 am-u-md-10 am-u-lg-11">
+                <textarea placeholder="请简述产品的优点，及各方面的服务" class="width-all"></textarea>
+            </div>
+        </div>
+    </li>
+    <li class="am-form-group am-cf">
+        <h3 class="am-margin-bottom-xs">给他看货</h3>
+        <div class="am-padding-0 img-sub" id="am-pic">
+            <i class="am-icon-camera am-phone-pic" onclick="jQuery('#uploadId').click();"></i>
+			<input type="file" id="uploadId" accept="image/png,image/gif,image/jpg,image/jpeg" style="display:none" />
+        </div>
+        <div class="am-text-xs am-margin-top-xs am-text-red">（点击添加图片，最多可添加5张图片）</div>
+    </li>
+</ul>
+
+<div class="am-padding-sm">
+    <button type="button" class="am-btn am-btn-primary am-btn-block am-radius" id="getBtn">提交报价</button>
+</div>
+
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+    <a href="#top" title="">
+        <img class="am-gotop-icon-custom" src="http://img0.zz91.com/trade/assets/images/goTop.gif" />
+    </a>
+</div>
+<!--在这里编写你的代码-->
+
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=702632E1add3d4953d0f105f27c294b9"></script>
+<script type="text/javascript">
+    $(function(){
+        init();
+		getLocation(ye)
+    })
+    function init(){
+        $("#getBtn").on("click",function(){
+            location.href = "gouqiu-success.html"
+        })
+    }
+	function getLocation(callback){
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+                    function(p){
+                        callback(p.coords.latitude, p.coords.longitude);
+                    },
+                    function(e){
+                        var msg = e.code + "\n" + e.message;
+                    }
+            );
+        }
+    }
+	
+	function ye(latitude,longitude){
+		var map = new BMap.Map("allmap");
+    	var pointA = new BMap.Point($!{trustPoint.lng},$!{trustPoint.lat});  // 创建点坐标A--大渡口区
+    	var pointB = new BMap.Point(longitude,latitude);  // 创建点坐标B--江北区
+		var result = (map.getDistance(pointA,pointB)).toFixed(0);
+		result = parseInt(result)/1000;
+		jQuery("#disResult").html("（距您约为"+result+"公里）");
+	}
+	
+	//上传图片
+	jQuery("#uploadId").change(function(event){
+		var files = event.target.files, file;
+        if (files && files.length > 0) {
+            // 获取目前上传的文件
+            file = files[0];
+            if(file.size > 1024 * 1024 * 2) {
+                alert('图片大小不能超过 2MB!');
+                return false;
+            }
+			formDataUpLoad(file);
+        }
+	});
+	
+	//上传图片
+	function formDataUpLoad(file){
+		var data = new FormData($('#publish-form')[0]);
+		jQuery.ajax({
+			url : "#springUrl('/upload/ieupload.htm')",
+			type : 'POST',
+			contentType: false, //必须
+			processData: false, //必须
+			data: data,
+			success: function(data) {
+				//成功 id插入
+				html = "<input type='hidden' value='"+jQuery.parseJSON(data).pid+"' name='pImg'>";
+				//$(".img-sub").append(html);
+				//图片 插入
+				var URL = window.URL || window.webkitURL;
+				var imgURL = URL.createObjectURL(file);
+				var picHtml = '<i class="am-pic-box am-inline-block" ><i class="am-icon-minus am-pic-minus"></i><img src="'+ imgURL +'" />'+html+'</i>';
+				$("#am-pic").prepend(picHtml)
+			}
+		});
+	}
+	
+	$("#am-pic").on("click",".am-pic-minus",function(){
+        $(this).parent().remove();
+    });
+	
+</script>

@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="orders">
+	<typeAlias alias="orders" type="com.ast.feiliao91.domain.goods.Orders" />
+	<resultMap class="orders" id="ordersResult">
+		<result property="id" column="id" />
+		<result property="goodsId" column="goods_id" />
+		<result property="sellCompanyId" column="sell_company_id" />
+		<result property="orderNo" column="order_no" />
+		<result property="details" column="details" />
+		<result property="buyMessage" column="buy_message" />
+		<result property="buyPricePay" column="buy_price_pay" />
+		<result property="logisticsNo" column="logistics_no" />
+		<result property="buyPriceLogistics" column="buy_price_logistics" />
+		<result property="buyInvoiceTitle" column="buy_invoice_title" />
+		<result property="buyQuantity" column="buy_quantity" />
+		<result property="buyCompanyId" column="buy_company_id" />
+		<result property="isDel" column="is_del" />
+		<result property="status" column="status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="allColumn">
+		id, goods_id, sell_company_id, order_no, details,
+		buy_message, buy_price_pay,logistics_no,buy_price_logistics,
+		buy_invoice_title,
+		buy_quantity, buy_company_id, is_del, status, gmt_created,
+		gmt_modified
+	</sql>
+	<sql id="orderJoinColumn">
+		o.id, o.goods_id, o.sell_company_id, o.order_no, o.details,
+		o.buy_message, o.buy_price_pay,o.logistics_no,o.buy_price_logistics,
+		o.buy_invoice_title,
+		o.buy_quantity, o.buy_company_id, o.is_del, o.status, o.gmt_created as gmt_created,
+		o.gmt_modified as gmt_modified
+	</sql>
+	<insert id="insertOrders" parameterClass="orders">
+		insert into orders
+		(
+			goods_id,
+			sell_company_id,
+			order_no,
+			details,
+			buy_message,
+			buy_price_pay,
+			buy_quantity,
+			buy_company_id,
+			buy_invoice_title,
+			status,
+			buy_is_del,
+			sell_is_del,
+			gmt_created,
+			gmt_modified	
+		)
+		values
+		(
+			#goodsId#,
+			#sellCompanyId#,
+			#orderNo#,
+			#details#,
+			#buyMessage#,
+			#buyPricePay#,
+			#buyQuantity#,
+			#buyCompanyId#,
+			#buyInvoiceTitle#,
+			#status#,
+			0,
+			0,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<!-- 产品成交列表 -->
+	<select id="queryOrdersByGoodsId" parameterClass="java.util.Map"
+		resultMap="ordersResult">
+		select
+		<include refid="orders.allColumn" />
+		from orders
+		where is_del='0' and status='66' and goods_id=#goodsId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<!-- 产品成交列表总条数 -->
+	<select id="countOrdersByGoodsId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from orders
+		where is_del='0' and status='66'
+		and goods_id=#goodsId#
+	</select>
+	
+	<sql id="whereCaluse">
+		where is_del=0
+		<isNotNull prepend="and" property="searchDto.buyIsDel">
+			buy_is_del = #searchDto.buyIsDel#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.sellIsDel">
+			sell_is_del = #searchDto.sellIsDel#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.buyCompanyId">
+			buy_company_id = #searchDto.buyCompanyId#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.sellCompanyId">
+			sell_company_id = #searchDto.sellCompanyId#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.countThreeMonth">
+			DATE_SUB(CURDATE() , INTERVAL 90 DAY) &lt;= date(gmt_created) 
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.status">
+			status = #searchDto.status#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.orderNo">
+			order_no = #searchDto.orderNo#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchDto.hasNoJudge">
+			not exists(select j.id from judge j where orders.id = j.order_id)
+		</isNotNull>
+	</sql>
+	
+	<!-- 后台订单搜索条件 -->
+	<sql id="whereCaluseAdmin">
+		where o.is_del=0
+		<isNotEmpty prepend="and" property="searchDto.orderNo">
+			o.order_no = #searchDto.orderNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.status">
+			o.status = #searchDto.status#
+		</isNotEmpty>
+	</sql>
+	
+	<select id="queryOrdersByUser" parameterClass="java.util.Map"
+		resultMap="ordersResult">
+		select
+		<include refid="orders.allColumn" />
+		from orders
+		<include refid="whereCaluse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="countOrdersByUser" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from orders
+		<include refid="whereCaluse"/>
+	</select>
+	
+	<!-- 后台取订单（要改）zhujq -->
+	<select id="queryOrdersByAdmin" parameterClass="java.util.Map"
+		resultMap="ordersResult">
+		select
+		<include refid="orders.orderJoinColumn" />
+		from orders o
+		left join goods g on g.id = o.goods_id
+		<isNotEmpty property="searchDto.companyType">
+			<isEqual compareValue="0" property="searchDto.companyType">
+				<!-- 选择公司类型为供应商 -->
+				left join company_info ci on ci.id = o.sell_company_id
+			</isEqual>
+			<isEqual compareValue="1" property="searchDto.companyType">
+				<!-- 选择公司类型为采购商 -->
+				left join company_info ci on ci.id = o.buy_company_id
+			</isEqual>
+		</isNotEmpty>
+		where o.is_del=0
+		<isNotEmpty prepend="and" property="searchDto.sellCompanyId">
+				o.sell_company_id = #searchDto.sellCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.buyCompanyId">
+				o.buy_company_id = #searchDto.buyCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.orderNo">
+				o.order_no = #searchDto.orderNo#
+		</isNotEmpty>
+		<isNotEmpty property="searchDto.companyType">
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				ci.name like concat('%',#searchDto.companyName#,'%') 
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.title">
+				g.title = #searchDto.title#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.status">
+				o.status = #searchDto.status#
+		</isNotEmpty>
+		<!-- 后台时间条件 -->
+		<isNotEmpty prepend="and" property="searchDto.from">
+			<isNotEmpty property="searchDto.dateType">
+				$searchDto.dateType$ >=  #searchDto.from#
+			</isNotEmpty>
+			<isEmpty property="searchDto.dateType">
+				gmt_created >=  #searchDto.from#
+			</isEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.to">
+			<isNotEmpty property="searchDto.dateType">
+				#searchDto.to# >= $searchDto.dateType$
+			</isNotEmpty>
+			<isEmpty property="searchDto.dateType">
+				#searchDto.to# >= gmt_created
+			</isEmpty>
+		</isNotEmpty>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!-- 后台取订单条数 -->
+	<select id="countOrdersByAdmin" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from orders o
+		left join goods g on g.id = o.goods_id
+		<isNotEmpty property="searchDto.companyType">
+			<isEqual compareValue="0" property="searchDto.companyType">
+				<!-- 选择公司类型为供应商 -->
+				left join company_info ci on ci.id = o.sell_company_id
+			</isEqual>
+			<isEqual compareValue="1" property="searchDto.companyType">
+				<!-- 选择公司类型为采购商 -->
+				left join company_info ci on ci.id = o.buy_company_id
+			</isEqual>
+		</isNotEmpty>
+		where o.is_del=0
+		<isNotEmpty prepend="and" property="searchDto.sellCompanyId">
+				o.sell_company_id = #searchDto.sellCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.buyCompanyId">
+				o.buy_company_id = #searchDto.buyCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.orderNo">
+				o.order_no = #searchDto.orderNo#
+		</isNotEmpty>
+		<isNotEmpty property="searchDto.companyType">
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				ci.name like concat('%',#searchDto.companyName#,'%') 
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.title">
+				g.title = #searchDto.title#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.status">
+				o.status = #searchDto.status#
+		</isNotEmpty>
+		<!-- 后台时间条件 -->
+		<isNotEmpty prepend="and" property="searchDto.from">
+			<isNotEmpty property="searchDto.dateType">
+				$searchDto.dateType$ >=  #searchDto.from#
+			</isNotEmpty>
+			<isEmpty property="searchDto.dateType">
+				gmt_created >=  #searchDto.from#
+			</isEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="searchDto.to">
+			<isNotEmpty property="searchDto.dateType">
+				#searchDto.to# >= $searchDto.dateType$
+			</isNotEmpty>
+			<isEmpty property="searchDto.dateType">
+				#searchDto.to# >= gmt_created
+			</isEmpty>
+		</isNotEmpty>
+	</select>
+	
+	<select id="OrdersByUser" parameterClass="java.util.Map"
+		resultMap="ordersResult">
+		select
+		<include refid="orders.allColumn" />
+		from orders
+		<include refid="whereCaluse"/>
+	</select>
+
+	<!-- 交易量 -->
+	<select id="countTradeQuality" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Float">
+		select sum(buy_quantity)
+		from orders
+		where status='66' and
+		is_del='0' and goods_id=#goodsId#
+	</select>
+
+	<select id="selectById" parameterClass="java.lang.Integer" resultMap="ordersResult">
+		select 
+		<include refid="orders.allColumn" />
+		from orders
+		where id=#id#
+	</select>
+
+	<update id="updatePrice" parameterClass="orders">
+		update orders set gmt_modified = now()
+		<isNotEmpty prepend="," property="buyPricePay">
+			buy_price_pay=#buyPricePay#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="buyPriceLogistics">
+			buy_price_logistics=#buyPriceLogistics#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="details">
+			details = #details#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="status">
+			status = #status#
+		</isNotEmpty>
+		    where id = #id#
+	</update>
+	
+	<update id="updateDetails" parameterClass="orders">
+		update orders 
+		set gmt_modified = now(),
+		details = #details#
+		where id = #id#
+	</update>
+	
+	<update id="updateStatusByOrderNo" parameterClass="java.util.Map">
+		update orders 
+		set gmt_modified = now(),
+		status = #status#
+		where order_no = #orderNo#
+	</update>
+	
+	<update id="updateUserDelByOrderNo" parameterClass="java.util.Map">
+		update orders 
+		set gmt_modified = now()
+		<isNotNull prepend="," property="buyIsDel">
+			buy_is_del = #buyIsDel#
+		</isNotNull>
+		<isNotNull prepend="," property="sellIsDel">
+			sell_is_del = #sellIsDel#
+		</isNotNull>
+		where order_no = #orderNo#
+	</update>
+	
+	<!-- 根据订单编号获得订单集合 -->
+	<select id="queryOrdersByOrderNo" parameterClass="java.lang.String"
+		resultMap="ordersResult">
+		select
+		<include refid="orders.allColumn" />
+		from orders
+		where is_del='0' and order_no=#orderNo#
+	</select>
+	
+	<!-- update状态:0等待卖家审核、买家已下单; -->
+	<update id="updateStatusBuyXD" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='0'
+		where id = #id# and is_del='0' and buy_company_id=#buyCompanyId#
+	</update>
+	
+	<!-- update状态:1等待付款、 等待买家付款、 -->
+	<update id="updateStatusSellPass" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='1'
+		where id = #id# and is_del='0' and sell_company_id=#sellCompanyId#
+	</update>
+	
+	<!-- update状态:2等待卖家发货、 买家已付款、 -->
+	<update id="updateStatusBuyPaySuc" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='2'
+		where id = #id# and is_del='0' and buy_company_id=#buyCompanyId#
+	</update>
+	
+	<!-- 物流运输中,等待买家确认收货、 -->
+	<update id="updateStatusSellPostGoods" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='3',logistics_no=#logisticsNo#
+		where id = #id# and is_del='0' and sell_company_id=#sellCompanyId#
+	</update>
+	
+	<!-- 货物已揽收、等待买家确认收货、 -->
+	<update id="updateStatusBuyGetGoods" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='4'
+		where id = #id# and is_del='0' 
+	</update>
+	
+	<!-- 交易成功、 交易成功; -->
+	<update id="updateStatusTradeOver" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#,status='66'
+		where id = #id# and is_del='0' and buy_company_id=#buyCompanyId#
+	</update>
+	
+	<!-- 更新为已读标记; -->
+	<update id="updateHaveRead" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#
+		where id = #id# and is_del='0' 
+	</update>
+
+	<select id="getDetailsForBuy" parameterClass="java.lang.Integer" resultMap="ordersResult">
+		select 
+		<include refid="allColumn"/>
+		from orders
+		where buy_company_id = #companyId#
+		and 66 > status
+	</select>
+
+	<select id="getDetailsForSell" parameterClass="java.lang.Integer" resultMap="ordersResult">
+		select 
+		<include refid="allColumn"/>
+		from orders
+		where 
+		sell_company_id = #companyId#
+		and 66 > status
+	</select>
+	
+	<update id="updateDetailsByorderId" parameterClass="java.util.Map" >
+		update orders set gmt_modified = now(),details=#details#
+		where id = #id# and is_del='0' 
+	</update>
+	
+	<select id="selecJudge" parameterClass="java.util.Map" resultMap="ordersResult">
+	    select
+	    <include refid="allColumn"/>
+	    from orders
+		where 
+	    buy_company_id = #companyId# and 
+	    goods_id = #goodsId# and
+	    66 = status
+	</select>
+	
+	<select id="queryByLogistics" parameterClass="java.lang.String" resultMap="ordersResult">
+		select
+		<include refid="allColumn"/>
+		from orders 
+		where logistics_no=#logisticsNo#
+	</select>
+	
+	<select id="queryByAllByCompanyId" parameterClass="java.util.Map" resultMap="ordersResult">
+		select
+		<include refid="allColumn"/>
+		from orders
+		where buy_company_id = #companyId# and status >=1
+		UNION ALL
+		select
+		<include refid="allColumn"/>
+		from orders
+		where sell_company_id = #companyId# and status >=1
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="countByAllByCompanyId" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0) as count
+		from orders
+		where buy_company_id = #companyId# and status >=1
+		UNION ALL
+		select count(0)
+		from orders
+		where sell_company_id = #companyId# and status >=1
+	</select>
+	
+	<!-- 根据order获得主id -->
+	<select id="queryFistIdByOrderNo" parameterClass="java.lang.String" resultMap="ordersResult">
+		select 
+		<include refid="allColumn"/>
+		from orders
+		where order_no=#orderNo# limit 1
+	</select>
+	
+	<update id="updateStatus" parameterClass="java.util.Map">
+		update orders set status=#status#,gmt_modified=now()
+		where id=#orderId#
+	</update>
+</sqlMap>

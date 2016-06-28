@@ -1,0 +1,581 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+			</li>
+			<li class="active">管理供求信息</li>
+		</ul>
+		<div class="alert">
+			【公告】ZZ91可以发布塑料原料产品啦，并且可以在原料供求管理对塑料原料信息进行管理。<a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank">点击查看</a>
+		</div>
+        <div class="alert alert-info mt">
+            <p><strong>教您如何修改信息，如何争取排名更靠前：</strong></p>
+            <p><strong>修改：</strong>仅修改信息内容，经审核通过更新上网，信息排名不变。</p>
+			<p><strong>刷新：</strong>信息内容保持不变，仅更新发布时间#if($!{sessionUser.membershipCode}!="10051003")，让您的信息排名靠前，再生通会员每隔10分钟可刷新一次，普通会员每天限刷新一次#end！</p>
+        </div>
+		#if($!{sessionUser.membershipCode}=="10051000")
+		<div class="alert mt">
+			普通会员一天发布信息数上限为<b>10</b> 条。想要无限制发布信息？<a href="http://www.zz91.com/service/newzst/apply.asp" target="_blank">点此成为高级会员</a>
+		</div>
+		#end
+		<div id="messagediv" class="alert mt hidden">请按照提示操作，操作按钮在下方！</div>
+		<div class="table-select mt">
+			<input type="text" class="field" id="searchMyrcText" value="$!{title}" />
+			##<button id="groupCreateBtn" class="btn btn-small">新增分组</button>
+			<input type="button" value="点击搜索！" id="searchMyrcBtn" class="btn btn-small"/>
+			<script type="text/javascript">
+				jQuery("#searchMyrcBtn").click(function(){
+					var url = "#springUrl('/myproducts/office_post_list.htm?checkStatus=')"+$!{checkStatus} + "&isExpired="+$!{isExpired}+"&isPause="+$!{isPause} +"&title=" + encodeURI(jQuery("#searchMyrcText").val());
+					##alert(url);
+					window.location = url;
+				});
+			</script>
+		</div>
+		<div class="table-select mt">
+			<div class="group">
+				<span>排序:</span>
+				<select id="sortTime">
+					<option value="real_time" #if($!{page.sort}=="real_time")selected#end>发布日期</option>
+					<option value="refresh_time" #if($!{page.sort}=="refresh_time")selected#end>刷新日期</option>
+				</select>
+				<select id="sortType">
+					<option value="desc" #if($!{page.dir}=="desc")selected#end>降序</option>
+					<option value="asc" #if($!{page.dir}=="asc")selected#end>升序</option>
+                </select>
+				<select id="groupSel">
+                    <option value="" #if(!$!{groupId} || $!{groupId}=="") selected #end>全部供求</option>
+					#foreach($list in $!{seriesList})
+                        <option value="$!{list.id}" #if($!{groupId}==$!{list.id})selected#end>$!{list.name}</option>
+					#end
+                </select>
+				<button id="groupCreateBtn" class="btn btn-small">新增分组</button>
+			</div>
+			<div class="btn-group">
+				<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')"  #if($!{checkStatus}=="1") class="btn btn-small btn_active" #else class="btn btn-small" #end >已审核($!{productsCount.get("checkStatus1")})</a>
+	    		<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=0&isExpired=0&isPause=0')"  #if($!{checkStatus}=="0") class="btn btn-small btn_active" #else class="btn btn-small" #end>审核中($!{productsCount.get("checkStatus0")})</a>
+	    		<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=2&isExpired=0&isPause=0')"  #if($!{checkStatus}=="2") class="btn btn-small btn_active" #else class="btn btn-small" #end>审核未通过($!{productsCount.get("checkStatus2")})</a>
+	    		<a href="#springUrl('/myproducts/office_post_list.htm?isExpired=1&isPause=0')" #if($!{isExpired}==1) class="btn btn-small btn_active" #else class="btn btn-small" #end>已过期($!{productsCount.get("expired")})</a>
+	    		<a href="#springUrl('/myproducts/office_post_list.htm?isPause=1')"  #if($!{isPause}==1) class="btn btn-small btn_active" #else class="btn btn-small" #end>暂不发布($!{productsCount.get("pause")})</a>
+			</div>
+		</div>
+        <table class="table table-bordered table-condensed mt" id="myTable">
+        	<thead>
+                <tr>
+                    <th width="4%" class="tac"><input type="checkbox" id="checkAllToggle" /></th>
+					#if($!{checkStatus}=="1" || $!{isExpired}=="1")
+    					<th width="10%" class="tac">
+							<label for="checkAllToggle">刷新</label>
+                        </th>
+                    <th width="39%">标题名称</th>
+                    #else
+                    <th width="46%">标题名称</th>
+					#end
+					<th width="12%" class="tac" >信息完整度</th>
+					<th width="13%" class="tac" >刷新日期</th>
+					<th width="13%" class="tac" >发布日期</th>
+					<th width="14%" class="tac">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            	#foreach($products in $!{page.records})
+				<tr>
+                    <td class="tac">
+                        <input type="checkbox" value="$!{products.id}" name="postcheck">
+                    </td>
+					#if($!{checkStatus}=="1" || $!{isExpired}=="1")
+    					<td  class="tac" id="refreshFlag$!{products.id}" >
+            				#if($refreshMap.get($!{products.id}))
+    							#if($!{products.chRefreshFlag}=="1"||$!{products.exRefreshFlag}=="1")
+        						<a href="javascript:void(0)" onClick="refreshOneProducts($!{products.id})" class="red" align="center">建议立即刷新</a>
+    							#else
+    							<a href="javascript:void(0)" onClick="refreshOneProducts($!{products.id})" class="red">刷新</a>
+    							#end
+        					#else
+        						#if($wxFlag==2)
+    								<span class="grey">现在绑定微信 可随时刷新</span>
+        						#elseif($wxFlag==3)
+    								<span class="grey">一天后继续刷新</span>
+        						#else
+    								<span class="grey">10分钟后继续刷新</span>
+        						#end
+        						
+        					#end
+    					</td>
+					#end
+                    <td>
+                        #if($!{checkStatus}==2)
+							<div>
+        						<span class="product-type-$!{products.productsTypeCode}">
+        							#printProductType($!{products.productsTypeCode} "" "" )
+        						</span>
+								<span class="product-type-$!{products.productsTypeCode} red">
+									#if($!{products.isYP})
+										<a href="$!{address.yang}/sale/$!{products.id}.htm" target="_blank"  title="$!{products.title}">[样品]</a>
+									#end
+        						</span>
+								<del>$!{products.title}</del>
+    						</div>
+                            <div class="red">
+    							<img src="$!{address.img}/front/images/global/icon/question-mark.gif" align="absmiddle" title="未通过原因"/> $!{products.unpassReason}
+							</div>
+						#elseif($!{isExpired}=="1")
+							#if($!{products.exRefreshFlag}=="1")
+								<a href='$!{address.trade}/productdetails$!{products.id}.htm' title="点击我查看发布后的供应信息" target="_blank">
+									<img src="$!{address.img}/front/images/global/icon/url.gif" align="absmiddle" />
+								</a>
+								<span class="product-type-$!{products.productsTypeCode}">
+									#printProductType($!{products.productsTypeCode} "" "" )
+								</span>
+								<span class="product-type-$!{products.productsTypeCode} red">
+									#if($!{products.isYP})
+										<a href="$!{address.yang}/sale/$!{products.id}.htm" target="_blank"  title="$!{products.title}">[样品]</a>
+									#end
+								</span>
+								<a href="$!{address.trade}/productdetails$!{products.id}.htm" target="_blank">$!{products.title}</a>
+									#if($!{products.hide}==1)
+										<span class="product-type-$!{products.productsTypeCode} red">
+											[已隐藏]
+										</span>
+										<div class="red" id="e$!{products.id}">
+											<span class="red">*</span>该条信息由于过长时间未更新而已过期，系统已经自动隐藏，您将在ZZ91上无法搜索到该条信息，建议您尽快刷新。
+										</div>
+									#else
+										<div class="red" id="e$!{products.id}">
+											<span class="red">*</span>该条信息已过期，系统将在30天后自动隐藏已过期信息，客户在ZZ91上将无法搜索到该条信息，建议您在30天内刷新已过期信息
+										</div>
+									#end
+								
+							#else
+								<a href='$!{address.trade}/productdetails$!{products.id}.htm' title="点击我查看发布后的供应信息" target="_blank">
+									<img src="$!{address.img}/front/images/global/icon/url.gif" align="absmiddle" />
+								</a>
+								<span class="product-type-$!{products.productsTypeCode}">
+									#printProductType($!{products.productsTypeCode} "" "" )
+								</span>
+								<span class="product-type-$!{products.productsTypeCode} red">
+									#if($!{products.isYP})
+										<a href="$!{address.yang}/sale/$!{products.id}.htm" target="_blank"  title="$!{products.title}">[样品]</a>
+									#end
+								</span>
+								<a href="$!{address.trade}/productdetails$!{products.id}.htm" target="_blank">$!{products.title}</a>
+								#if($!{products.isPicPass}==0)
+									<div class="grey">
+										<span class="red">*</span>该产品图片不符合本网站审核规则，无法正常显示，详见<a href="#springUrl('/myproducts/office_img.htm?productsId=')$!{products.id}">图片修改</a>
+									</div>
+								#end
+								#if($!{products.sampleReason}&&$!{products.sampleReason}!="")
+									<div class="grey">
+										<span class="red">*</span>$!{products.sampleReason}
+									</div>
+								#end
+							#end
+						#elseif($!{checkStatus}=="1")
+							<a href='$!{address.trade}/productdetails$!{products.id}.htm' title="点击我查看发布后的供应信息" target="_blank">
+							<img src="$!{address.img}/front/images/global/icon/url.gif" align="absmiddle" />
+							</a>
+    						<span class="product-type-$!{products.productsTypeCode}">
+    							#printProductType($!{products.productsTypeCode} "" "" )
+    						</span>
+							<span class="product-type-$!{products.productsTypeCode} red">
+								#if($!{products.isYP})
+									<a href="$!{address.yang}/sale/$!{products.id}.htm" target="_blank"  title="$!{products.title}">[样品]</a>
+								#end
+							</span>
+    						<a href="$!{address.trade}/productdetails$!{products.id}.htm" target="_blank">$!{products.title}</a>
+							
+							#if($!{products.chRefreshFlag}=="1")
+								<a href="javascript:return false;"  title="选择定期刷新，有利于紧跟市场行情，抓住商机" id="m$!{products.id}"><span style="color:#FF802C">[优化建议]</span></a>
+							#end
+							
+						#else
+							<a href='$!{address.trade}/productdetails$!{products.id}.htm' title="点击我查看发布后的供应信息" target="_blank">
+							<img src="$!{address.img}/front/images/global/icon/url.gif" align="absmiddle" />
+							</a>
+    						<span class="product-type-$!{products.productsTypeCode}">
+    							#printProductType($!{products.productsTypeCode} "" "" )
+    						</span>
+							<span class="product-type-$!{products.productsTypeCode} red">
+								#if($!{products.isYP})
+									<a href="$!{address.yang}/sale/$!{products.id}.htm" target="_blank"  title="$!{products.title}">[样品]</a>
+								#end
+							</span>
+    						<a href="$!{address.trade}/productdetails$!{products.id}.htm" target="_blank">$!{products.title}</a>
+							#if($!{products.isPicPass}==0)
+    							<div class="grey">
+        							<span class="red">*</span>该产品图片不符合本网站审核规则，无法正常显示，详见<a href="#springUrl('/myproducts/office_img.htm?productsId=')$!{products.id}">图片修改</a>
+    							</div>
+							#end
+							#if($!{products.sampleReason}&&$!{products.sampleReason}!="")
+								<div class="grey">
+        							<span class="red">*</span>$!{products.sampleReason}
+    							</div>
+							#end
+						#end
+					</td>
+					#set($score=${products.score}/20)
+					<td class="tac slv">
+						<img src="$!{address.img}/zz91/myrc/images/Star_LV$!{score}.png" />
+						#if(4>$score)
+							<a href="#springUrl('/myproducts/office_post_edit.htm?productsId=')$!{products.id}" target="_blank">建议立即完善信息</a>
+						#end
+					</td>
+					<td class="tac" id="refreshTimeFlag$!{products.id}">$!date.format('yyyy-MM-dd HH:mm:ss', $!{products.refreshTime})</td>
+					<td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss', $!{products.realTime})</td>
+					<td class="tac">
+						#if($!{products.isYP})
+							<a href="#" onclick="javascript:delYP($!{products.id})" >取消样品</a>
+						#elseif($!{products.categoryProductsMainCode})
+							#set($code = $!{products.categoryProductsMainCode})
+							#if($code.length()>=8)
+								#set($code = $code.substring(0,8))
+								#if($code =="10011004")
+									<a href="#springUrl('/myproducts/office_post_edit.htm?productsId=')$!{products.id}&ypStatus=1"><b>添加样品</b></a>
+								#end
+							#end
+						#end
+						#set($confirmTitle="您修改后的信息必须通过本站重新审核，")
+						#if($!{sessionUser.membershipCode}!="10051000")
+							#set($confirmTitle="")
+						#end
+						<a href="#springUrl('/myproducts/office_post_edit.htm?productsId=')$!{products.id}" onClick="javascript:return confirm('$!{confirmTitle}确定要修改吗?')" title="普通用户修改后的信息必须通过本站重新审核">编辑</a>
+						#set($count = $!{productsPicCount.get($!{products.id})})
+						<a href="#springUrl('/myproducts/office_img.htm?productsId=')$!{products.id}" title="#if($count>0)您已上传$count张图片#else 您还未上传图片#end" >图片($count)</a>
+					</td>
+				</tr>
+				#end
+            </tbody>
+        </table>
+		#if($!{page.records.size()}==0)
+		<div class="alert alert-error mt"> 
+			<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+			#if($!{isExpired}==1)
+				没有已过期的供求信息！
+			#elseif($!{checkStatus}==1)
+				没有已审核的供求信息！
+			#elseif($!{checkStatus}==2)
+				没有审核未通过的供求信息！
+			#elseif($!{unPublish}==1)
+				没有暂不发布的供求信息！
+			#else
+				没有未审核的供求信息！
+			#end
+			<a href="#springUrl('/myproducts/office_post1.htm')" class="publishGoon">&gt;&gt;点此发布供求信息</a>
+    	</div>
+		#end
+        <div class="table-select mt">
+        	<div class="btn-group">
+			#if($!{checkStatus}==1 || $!{isExpired}==1)
+				<a href="javascript:void(0)" onclick="refreshProducts()" id="refreshSub" class="btn btn-small">刷 新</a>
+				#if($!{sessionUser.membershipCode}!="10051000"&&$!{isExpired}==0)
+					<a href="javascript:void(0)" onClick="refreshProductsOfCompany()" value="一键刷新" id="onKeyRefreshSub" class="btn btn-small">一键刷新</a>
+				#end
+			#end
+				<a href="javascript:void(0)" onClick="createGroupContact()" id="seriesBtn" class="btn btn-small">归入系列</a>
+				<a href="javascript:void(0)" onClick="deleteGroupContact()" id="deleteSeriesBtn" class="btn btn-small">从系列中移除</a>
+			#if($!{isPause}=="1")
+				<a href="javascript:void(0)" onClick="pauseProducts(false);" id="repostSub" class="btn btn-small">重新发布信息</a>
+			#else
+				#if($!{checkStatus}=="1" || $!{isExpired}=='1')
+				<a href="javascript:void(0)" onClick="pauseProducts(true);" id="nopostSub" class="btn btn-small">暂不发布信息</a>
+				#end
+			#end
+			#if($!{checkStatus}!=0)
+				<a href="javascript:void(0)" onclick='deleteProductInfos()' id="deleteSub" class="btn btn-small">删 除</a>
+			#end
+			</div>
+       	</div>
+		#if($!{sessionUser.membershipCode}!="10051003")
+			<div class="alert alert-info">不会刷新？<a href="http://help.zz91.com/detail-63/" target="_blank" title="点击查看在线帮助，教你如何使用刷新功能"> 让我来教你如何使用刷新功能</a> </div>
+		#end
+        #myrcPageNav($!{page} "#springUrl('/myproducts/office_post_list.htm')" "checkStatus=$!{checkStatus}&isExpired=$!{isExpired}&isPause=$!{isPause}&groupId=$!{groupId}&title=$!{titleEncode}&sort=$!{page.sort}&dir=$!{page.dir}" "")
+    </div>
+</div>
+##<script src="$!{address.img}/lib/jquery/ux/jquery.tablesorter.min.js"></script>
+<script> 
+	jQuery(function(){
+		myrc.menu(2, 2);
+		jQuery("#checkAllToggle").click(function(){
+			var chk=jQuery(this).attr("checked");
+			jQuery("input[name=postcheck]").each(function(index, obj){
+				obj.checked=chk;
+			});
+		});
+		
+		jQuery("#groupSel").change(function(){
+			window.location.href="#springUrl('/myproducts/office_post_list.htm')?checkStatus=$!{checkStatus}&isExpired=$!{isExpired}&isPause=$!{isPause}&groupId="+jQuery(this).val()+"&title=$!{titleEncode}";
+		});
+		
+		jQuery("#sortType").change(function(){
+			var sort=jQuery("#sortTime").val();
+			var type=jQuery("#sortType").val();
+			var groupId=jQuery("#groupSel").val();
+			window.location.href="#springUrl('/myproducts/office_post_list.htm')?checkStatus=$!{checkStatus}&isExpired=$!{isExpired}&isPause=$!{isPause}&groupId="+groupId+"&title=$!{titleEncode}&sort="+sort+"&dir="+type+"&startIndex="+$!{page.startIndex}+"";
+		});
+		jQuery("#sortTime").change(function(){
+			var sort=jQuery("#sortTime").val();
+			var type=jQuery("#sortType").val();
+			var groupId=jQuery("#groupSel").val();
+			window.location.href="#springUrl('/myproducts/office_post_list.htm')?checkStatus=$!{checkStatus}&isExpired=$!{isExpired}&isPause=$!{isPause}&groupId="+groupId+"&title=$!{titleEncode}&sort="+sort+"&dir="+type+"&startIndex="+$!{page.startIndex}+"";
+		});
+		
+		jQuery("#groupCreateBtn").click(function(){
+			var groupWin=new Asto.util.PopupBox({
+				title:"创建供求系列",
+				url:"#springUrl('/myproducts/createGroup.htm')",
+				destUrl:Asto.DEST_URL,
+				width:500,
+				height:270,
+				modal:true,
+				callbackFn:function(success, data){
+					groupWin.close();
+					window.location.reload();
+				}
+			});
+			groupWin.show();
+		});
+		
+		//供求系列选择 groupSel
+		
+		// 判断是否加入促销区
+    	#if($!{result}=="2")
+    		jQuery("#messagediv").html("<b style='color:red'>促销申请失败：您的现货供求已经发布至现货商城促销区或正在审核中。。。</b>");
+			jQuery("#messagediv").removeClass("hidden");
+		#elseif($!{result}=="3")
+			jQuery("#messagediv").html("<b style='color:red'>竞拍申请失败：您的现货供求已经发布至现货商城竞拍区或正在审核中。。。</b>");
+			jQuery("#messagediv").removeClass("hidden");
+		#elseif($!{result}=="5")
+			jQuery("#messagediv").html("<b style='color:red'>现货申请成功：您的现货已经成功发布至现货商城。请等待审核。</b>");
+			jQuery("#messagediv").removeClass("hidden");
+    	#end
+    });
+	
+	//获取所有选中信息ID
+	function getAllProductIds(){
+		var productIds = new Array();
+		jQuery.each(jQuery("[name=postcheck]"),function(index,obj){
+			if(obj.checked){
+    			productIds.push(obj.value);
+			}
+		});
+		return productIds;
+	}
+	
+	function refreshOneProducts(id){
+		var ids = new Array();
+		ids.push(id);
+		var s = 0;
+		var e = 0;
+		recursiveRefresh(ids.pop(),ids,s,e);
+	}
+	
+	function recursiveRefresh(id,ids,s,e){
+		var now=new Date();
+		//刷新供求信息
+		jQuery.ajax({
+			url:'#springUrl('/myproducts/refreshProducts.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					s++;
+					if(jQuery("#refreshFlag"+id)!="undifined"){
+						#if($wxFlag==2)
+							jQuery("#refreshFlag"+id).html("<div style='color:#999999'>现在绑定微信 可随时刷新</div>");
+						#elseif($wxFlag==3)
+							jQuery("#refreshFlag"+id).html("<div style='color:#999999'>一天后继续刷新</div>");
+						#else
+							jQuery("#refreshFlag"+id).html("<div style='color:#999999'>10分钟后继续刷新</div>");
+						#end
+						jQuery("#refreshTimeFlag"+id).html(formatDate(now));
+						jQuery("#e"+id).hide();
+						jQuery("#et"+id).hide();
+						jQuery("#m"+id).hide();
+					}
+				}else{
+					e++;
+				}
+				jQuery("#messagediv").html("<b style='color:red'>已经刷新了"+(s+e)+"条信息,其中成功刷新"+s+"条，失败"+e+"条。</b>");
+				if(e>0){
+					jQuery("#messagediv").html(jQuery("#messagediv").html()+"失败原因可能是未超过刷新时间限制！");
+				}
+				jQuery("#messagediv").removeClass("hidden");
+				if(ids.length>0){
+					recursiveRefresh(ids.pop(),ids,s,e);
+				}
+				
+				// 刷新成功 打勾取消
+				jQuery("#checkAllToggle").attr("checked",false);
+				jQuery("input[name=postcheck]").each(function(index, obj){
+					obj.checked=false;
+				});
+			},
+			failure:function(){
+				jQuery("#messagediv").html("发生错误，刷新任务被中断！");
+			}
+		});
+	}
+	
+	function refreshProducts(){
+		var ids=getAllProductIds();
+		jQuery("#messagediv").html("");
+		if(ids.length<=0){
+			return ;
+		}
+		var s=0;
+		var e=0;
+		recursiveRefresh(ids.pop(),ids,s,e);
+	}
+	
+	function refreshProductsOfCompany(){
+		jQuery.ajax({
+			url:'#springUrl('/myproducts/productsIdOfCompany.htm')',
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				var ids=req.data;
+        		jQuery("#messagediv").html("");
+        		if(ids.length<=0){
+        			return ;
+        		}
+        		var s=0;
+        		var e=0;
+        		recursiveRefresh(ids.pop(),ids,s,e);
+			},
+			failure:function(){
+				jQuery("#messagediv").html("发生错误，刷新任务被中断！");
+			}
+		});
+	}
+	
+	function pauseProducts(isPause){
+		var ids=getAllProductIds();
+		if(ids==""||ids==null){
+			alert("请选择您需要操作的供求");
+			return false;
+		}
+		if(isPause){
+			isPause="1";
+		}else{
+			isPause="0";
+		}
+		
+		jQuery.ajax({
+			url:'#springUrl('/myproducts/pauseProducts.htm')',
+			data:{"ids":ids.join(","),"isPause":isPause},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					window.location.reload();
+				}else{
+					alert("信息没有被刷新,或是所选样品信息中还有尚未完成的订单，暂时无法做此操作!")
+				}
+			},
+			failure:function(){
+				jQuery("#messagediv").html("发生错误，刷新任务被中断！");
+			}
+		});
+	}
+	
+	//删除信息
+	function deleteProductInfos(){
+		var productIds=getAllProductIds();
+		if(productIds.length==0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("确认删除信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/myproducts/deleteProducts.htm')",
+				type:"POST",
+				data:{productIds:productIds.join(',')},
+				dataType:"json",
+				success:function(response){
+    				if(response.success){
+    					window.location.reload();
+    				}else{
+						alert("所选样品信息中还有尚未完成的订单，暂时无法做此操作!")
+					}
+				}
+			});
+		}
+	}
+
+	//归入系列[归类]
+	function createGroupContact(){
+		var productIds=getAllProductIds();
+		//alert ("选中以下供求信息："+productIds.join(','));
+		if(productIds.length==0){
+			alert ("选择你要归类的信息！");
+			return false;
+		}else{
+			var groupWin=new Asto.util.PopupBox({
+				url:"#springUrl('/myproducts/createGroupContact.htm?ids=')"+productIds.join(','),
+				destUrl:Asto.DEST_URL,
+				width:500,
+				height:300,
+				modal:true,
+				title:"选择要归入的系列，并点击提交",
+				callbackFn:function(success, data){
+					groupWin.close();
+					window.location.reload();
+				}
+			});
+			groupWin.show();
+			// 弹出对话框
+			//dialog("归入系列设置", "iframe:#springUrl('/myproducts/offer_group_go.htm?ids=')"+productIds.join(',')+"&time="+ new Date(), "450", "350", "iframe");
+		}
+	}
+	
+	function deleteGroupContact(){
+		var productIds=getAllProductIds();
+		if(productIds.length==0){
+			alert ("选择你要归类的信息！");
+			return false;
+		}else{
+			jQuery.ajax({
+				url:"#springUrl('/myproducts/doDeleteGroupContact.htm')",
+				type:"POST",
+				data:{ids:productIds.join(',')},
+				dataType:"json",
+				success:function(response){
+					window.location.reload();
+				}
+			});
+		}
+	}
+
+	function formatDate(now)   {   
+          var year=now.getFullYear();   
+          var month=now.getMonth()+1;   
+          var date=now.getDate();   
+          var hour=now.getHours();   
+          var minute=now.getMinutes();   
+          var second=now.getSeconds();   
+          return year+"-"+month+"-"+date+"   "+hour+":"+minute+":"+second;   
+    }
+	
+	function delYP(productId){
+		if(confirm('取消样品后，该条样品信息将不在样品中心显示。确定取消么？')){
+			jQuery.ajax({
+				url:'#springUrl("/myproducts/delYP.htm?productId=")'+productId,
+				dataType:"json",
+				success:function(data){
+				if(data.success){
+					window.location.reload();
+				}else{
+					alert("您的样品信息还有尚未完成的订单，暂时无法做此操作!");
+				}
+				}
+			});
+		}
+		return false;
+	}
+
+</script> 

@@ -1,0 +1,262 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importSlider.vm")
+<style >
+	#slider-center li {width:420px;}
+</style>
+
+<div class="wrapper mt clearfix">
+	<div class="col1">
+		<div class="wrap st1 predict">
+			<div class="wt">
+				<h3>会展预告</h3>
+				<a href="#springUrl('/list10371002.htm')" class="more" target="_blank">更多...</a>
+			</div>
+			<div class="wc">
+				<span>
+					#foreach($notice in $!noticeExhibitList)
+						<img src="$!{address.resource}/$!{notice.exhibitDO.photoCover}" width="80" height="75" />
+					#end
+				</span>
+				#foreach($notice in $!noticeExhibitList)
+					#if($velocityCount==1)
+					<a href="#springUrl('/details')$!{notice.exhibitDO.id}.htm" target="_blank" title="$!{notice.exhibitDO.name}">
+						#printTitle($!{notice.exhibitDO.name} 10 "...")
+					</a>
+					<p>#printTitle($!{notice.exhibitDO.content} 102 "...")</p>
+					#end
+				#end
+			</div>
+		</div>
+	</div>
+	<div class="col2 ml">
+		<script src="$!{address.img}/lib/jquery/ux/anim/jq_anim.js"></script>
+		<dl id="fader" class="st1">
+			<dt>
+				<ul><script src="http://gg.zz91.com/show?p=209"></script></ul>
+			</dt>
+			<dd>
+			</dd>
+		</dl>
+		<script>
+		var fader = new Asto.util.Fader("fader");
+		</script>
+	</div>
+	<div class="col3">
+		#parse("/exhibit/common/pindaodaohang.vm")
+		#parse("/exhibit/common/baoming.vm")
+	</div>
+</div>
+<div class="wrapper mt clearfix">
+	<!-- 参展企业/展会供求tab标签切换-->
+	<div class="col1">	
+		<div id="titleDiv1">
+            <ul>
+                <li><a href="#" id="TabTitle1_1" onmouseover="showTabs(1,2,1)" class="selected_1">参展企业</a></li>
+                <li><a href="#springUrl('/list10371010.htm')" target="_blank" id="TabTitle1_2" onmouseover="showTabs(1,2,2)">展会供求</a></li>
+            </ul>
+        </div>
+        <div id="tabDiv1">
+            <div id="Tabs1_1">
+        		#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10021006&size=6", "", "", "")
+                <ul>
+        			#foreach($!index in $!list)
+                    <li><a href="$!{index.link}" target="_blank">#printTitle($!{index.title} 18 " ")</a></li>
+        			#end
+                </ul>
+        		#end
+            </div>
+            <div style="display:none"id="Tabs1_2">
+                <ul>
+        			#foreach($!news in $!tradeExhibitList)
+                    <li><a href="#springUrl('/details')$!{news.exhibitDO.id}.htm" target="_blank" title="$!{news.exhibitDO.name}">
+        				#printTitle($!{news.exhibitDO.name} 18 " ")</a></li>
+        			#end
+                </ul>
+            </div>
+        </div>
+	</div>
+	<!-- 热门资讯-->
+	<div class="col2 ml">
+		<div class="wrap st1">
+            <div class="wt">
+				<h3>热门资讯</h3>
+            </div>
+            <div class="wc clearfix">
+				#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10021010&size=6&idx", "", "", "")
+					<ul id="slider_hg_new" class="point_list">
+						#foreach($!index in $!list)
+							<li>
+								<a href="$!{index.link}" target="_blank" title="$!{index.title}" style="$!{index.style}">
+								#printTitle($!{index.title} 26 " ") 
+								</a>
+							</li>
+						#end
+					</ul>
+				#end
+            </div>
+        </div>
+	</div>
+	<!-- 展会回顾-->
+	<div class="col3">
+		#parse("/exhibit/common/zhanhuihuigu.vm")
+	</div>	
+</div>
+<div class="wrapper mt clearfix">
+	<div class="col1">
+		<!-- 展会推荐-->
+    	<div class="wrap st1">
+            <div class="wt">
+    			<h3>展会推荐</h3>
+    			<a href="#springUrl('/list10371008.htm')" class="more" target="_blank">更多...</a>
+            </div>
+            <div class="wc clearfix">
+    			<ul class="point_list"> 
+    				#foreach($news in $!recommendExhibitList)
+    				<li><a href="#springUrl('/details')$!{news.exhibitDO.id}.htm" target="_blank" title="$!{news.exhibitDO.name}">
+    						#printTitle($!{news.exhibitDO.name} 14 "")</a>
+    					<span>$!date.format('MM-dd',$!{news.exhibitDO.startTime})</span>
+    				</li>
+    				#end
+                </ul>
+            </div>
+        </div>
+		<!-- 展会会刊-->
+    	<div class="wrap mt st1">
+            <div class="wt">
+        		<h3>展会会刊</h3>
+            </div>
+            <div class="wc clearfix">
+                <script type="text/javascript" src="http://gg.zz91.com/show?p=212"></script>
+            </div>
+    	</div>
+    	<!-- 企业访谈-->
+		<div class="wrap mt st1">
+            <div class="wt">
+    			<h3>企业访谈</h3>
+    			<a href="http://www.zz91.com/cn/news_More20.html" class="more" target="_blank">更多...</a>
+            </div>
+            <div class="wc clearfix">
+				#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=10&size=10&e" "" "" "")
+    			<ul class="point_list"> 
+					#foreach($post in $!{list})
+    				<li><a href="$!{address.huzhu}/viewReply$!{post.post.id}.htm" target="_blank" title="$!{post.post.title}">
+						#printTitle($!{post.post.title} 17 " ")</a></li>
+    				#end
+                </ul>
+    				#end
+            </div>
+        </div>
+    	<!-- 参展指南-->
+		<div class="wrap mt st1">
+            <div class="wt">
+    			<h3><a href="#springUrl('/list10371011.htm')" target="_blank">参展指南</a></h3>
+    			<a href="#springUrl('/list10371011.htm')" class="more" target="_blank">更多...</a>
+            </div>
+            <div class="wc clearfix">
+    			<ul class="point_list"> 
+				#foreach($!news in $!guideExhibitList)
+    				<li><a href="#springUrl('/details')$!{news.exhibitDO.id}.htm" target="_blank" title="$!{news.exhibitDO.name}">
+						#printTitle($!{news.exhibitDO.name} 22 " ")</a></li>
+    				#end
+                </ul>
+            </div>
+        </div>
+	</div>
+	<div class="col7 ml">
+    	<!-- 废塑料展会-->
+		<div class="wrap st2">
+			<div class="wt">
+				<h3><a href="#springUrl('/list.htm?category=10381002')" target="_blank">废塑料展会</a></h3>
+			</div>
+			<div class="wc clearfix zhwc">
+                <ul class="over">
+    				<li><span class="wd370 wct">展会标题</span>
+    				<span class="wd90 wct">开始时间</span>
+    				<span class="wd90 wct">结束时间</span>
+    				<span class="wd90 wct">地区</span></li>
+    			</ul>
+                <ul class="point_list">
+    				#foreach($exhibit in $!plasticExhibitList)
+    				<li><span class="wd370"><font>[$!{exhibit.exhibitCategoryName}]</font>
+    						<a href="#springUrl('/details')$!{exhibit.exhibitDO.id}.htm" target="_blank">
+    						#printTitle($!{exhibit.exhibitDO.name} 23 " ")</a></span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.startTime})</span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.endTime})</span>
+    					<span class="wd90">$!{exhibit.areaName}</span></li>
+    				#end
+    			</ul>
+            </div>
+		</div>
+    	<!-- 废金属展会-->
+		<div class="wrap st2 mt">
+			<div class="wt">
+				<h3><a href="#springUrl('/list.htm?category=10381001')" target="_blank">废金属展会</a></h3>
+			</div>
+			<div class="wc clearfix zhwc">
+                <ul class="over">
+    				<li><span class="wd370 wct">展会标题</span>
+    				<span class="wd90 wct">开始时间</span>
+    				<span class="wd90 wct">结束时间</span>
+    				<span class="wd90 wct">地区</span></li>
+    			</ul>
+                <ul class="point_list">
+    				#foreach($exhibit in $!metalExhibitList)
+    				<li><span class="wd370"><font>[$!{exhibit.exhibitCategoryName}]</font>
+    						<a href="#springUrl('/details')$!{exhibit.exhibitDO.id}.htm" target="_blank">
+    						#printTitle($!{exhibit.exhibitDO.name} 23 " ")</a></span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.startTime})</span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.endTime})</span>
+    					<span class="wd90">$!{exhibit.areaName}</span></li>
+    				#end
+    			</ul>
+            </div>
+		</div>
+    	<!-- 综合废料展会-->
+		<div class="wrap st2 mt">
+			<div class="wt">
+				<h3><a href="#springUrl('/list.htm?category=10381000')" target="_blank">综合废料展会</a></h3>
+			</div>
+			<div class="wc clearfix zhwc">
+                <ul class="over">
+    				<li><span class="wd370 wct">展会标题</span>
+    				<span class="wd90 wct">开始时间</span>
+    				<span class="wd90 wct">结束时间</span>
+    				<span class="wd90 wct">地区</span></li>
+    			</ul>
+				<ul class="point_list">
+    				#foreach($exhibit in $!complexExhibitList)
+    				<li><span class="wd370"><font>[$!{exhibit.exhibitCategoryName}]</font>
+    						<a href="#springUrl('/details')$!{exhibit.exhibitDO.id}.htm" target="_blank">
+    						#printTitle($!{exhibit.exhibitDO.name} 23 " ")</a></span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.startTime})</span>
+    					<span class="wd90">$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.endTime})</span>
+    					<span class="wd90">$!{exhibit.areaName}</span></li>
+    				#end
+    			</ul>
+            </div>
+		</div>
+	</div>
+</div>
+<div class="wrapper mt">
+	<!-- ZZ91所有展会集锦-->
+	<div class="wrap st1">
+		<div class="wt">
+			<h3>ZZ91所有展会集锦</h3>
+		</div>
+		<div class="wc" style="height: 123px; overflow: hidden">
+			#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10021005&size=10&f", "", "", "")
+			<ul id="slid-zz91zj" >
+				#foreach($!index in $!list)
+				<li style="width:117px;text-align:center;">
+					<a href="$!{index.link}" title="$!{index.title}"  target="_blank">
+                        <img src="$!{address.resource}$!{index.pic}" title="$!{index.title}" style="width:105px;height:100px;" alt="105*100"/>
+                    </a>
+                    <a href="$!{index.link}" title="$!{index.title}"  target="_blank">
+                    #printTitle($!{index.title} 8 " ")
+                    </a></li>
+				#end
+			</ul>
+			#end
+		</div>
+	</div>
+</div>

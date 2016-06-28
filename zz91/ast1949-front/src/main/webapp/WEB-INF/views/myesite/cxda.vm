@@ -1,0 +1,196 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+<div id="content2" class="bodyRight filter filterDom">
+    <div class="bodyCont moveChild" style="margin-bottom:7px;">
+        <div class="clr"></div>
+        <div class="bodyContTitle"> 
+            <span class="fl b titleLinkColor titleName">诚信积分</span>
+        </div>
+        <div class="bodyContContent rel rightConteWidth">
+            <div class="bodyContContentRightCont fl tal mainTextColor break" style="line-height:22px; ">
+				<table width="100%"  border="0" cellpadding="5" cellspacing="1" bgcolor="#71AB29">
+					<tr bgcolor="#ffffff">
+						<td width="150" align="right" >企业身份认证：</td>
+						<td width="30">$!{integral_company} 分</td>
+						<td>#if($!{integral_company}>0) 身份已认证 #else 待认证 #end</td>
+					</tr>
+					<tr bgcolor="#ffffff">
+						<td width="150" align="right"  >再生通年限：</td>
+						<td width="30">$!{integral_service_zst} 分</td>
+						<td></td>
+					</tr>
+					<tr bgcolor="#ffffff">
+						<td width="150" align="right"  >客户评价：</td>
+						<td width="30">$!{integral_customer_vote} 分</td>
+						<td>
+							好评<span style="color:#197b30;font-weight:bold;">$!{vote_0}</span>条，
+							中评<span style="color:#ff9900;font-weight:bold;">$!{vote_1}</span>条，
+							差评<span style="color:#ff0000;font-weight:bold;">$!{vote_2}</span>条。
+						</td>
+					</tr>
+					<tr bgcolor="#ffffff">
+						<td width="150" align="right"  >证书荣誉：</td>
+						<td width="30">$!{integral_credit_file} 分</td>
+						<td>
+						#foreach($category in ${categoryMap.entrySet()})
+							#set($listCount=0)
+							#foreach($credit in $!fileList)
+								#if(${credit.categoryCode} == ${category.key} && ${credit.checkStatus} == "1")
+									#set($listCount=$listCount+1)
+								#end
+							#end
+							${category.value}：$listCount 张
+						#end
+						</td>
+					</tr>
+				</table>
+            </div>
+			<div class="clr"></div>
+        </div>
+    </div>
+	
+	<div class="bodyCont moveChild" style="margin-bottom:7px;">
+        <div class="clr"></div>
+        <div class="bodyContTitle"> 
+            <span class="fl b titleLinkColor titleName">荣誉证书</span>
+        </div>
+        <div class="bodyContContent rel rightConteWidth">
+            <div class="bodyContContentRightCont fl tal mainTextColor break" style="line-height:22px">
+				#foreach($category in ${categoryMap.entrySet()})
+					<table width="100%"  border="0" cellpadding="5" cellspacing="1" bgcolor="#71AB29" style="margin-bottom:10px;">
+                        <tr >
+							<td colspan="3" bgcolor="#EAF7DB">
+							<strong>${category.value}</strong>
+							</td>
+						</tr>
+						<tr bgcolor="#f2f2f2">
+                            <td>证书名称</td>
+                            <td width="250">发证机构</td>
+                            <td width="120">有效期限</td>
+                        </tr>
+                		#set($listCount=0)
+                        #foreach($credit in $!fileList)
+                			#if(${credit.categoryCode} == ${category.key} && ${credit.checkStatus} == "1")
+                            <tr bgcolor="#FFFFFF">
+                                <td>
+                                    <a href="#" onClick="window.open('$!{resourceUrl}/$!{credit.picName}','_blank','width=800,height=450')">
+                                        $!{credit.fileName}
+                                    </a>
+                                </td>
+                                <td>$!{credit.organization}</td>
+                                <td>$!date.format('yyyy-MM-dd',$!{credit.endTime})</td>
+                            </tr>
+                			#set($listCount=$listCount+1)
+                			#end
+                		#end
+                		#if($listCount==0)
+                			<tr bgcolor="#FFFFFF">
+                                <td colspan="3" align="center">
+                					暂无
+                                </td>
+                            </tr>
+                		#end
+                    </table>
+				#end
+            </div>
+			<div class="clr"></div>
+        </div>
+    </div>
+	
+	<div class="bodyCont moveChild" style="margin-bottom:7px;">
+        <div class="clr"></div>
+        <div class="bodyContTitle"> 
+            <span class="fl b titleLinkColor titleName">资信参考人</span>
+        </div>
+        <div class="bodyContContent rel rightConteWidth">
+            <div class="bodyContContentRightCont fl tal mainTextColor break" style="line-height:22px">
+				<table width="100%"  border="0" cellpadding="5" cellspacing="1" bgcolor="#71AB29">
+					<tr bgcolor="#ffffff">
+						<th width="160">参考人姓名</th>
+						<th>所在公司</th>
+						<th width="120">联系方式</th>
+					</tr>
+					#foreach($!{reference} in $!{referenceList})
+						#if($!{reference.checkStatus} == "1")
+        					<tr bgcolor="#ffffff">
+        						<td>$!{reference.name}</td>
+        						<td>$!{reference.companyName}</td>
+        						<td>$!{reference.tel}</td>
+        					</tr>
+						#end
+					#end
+				</table>
+            </div>
+			<div class="clr"></div>
+        </div>
+    </div>
+	
+	<div class="bodyCont moveChild" style="margin-bottom:7px;">
+        <div class="clr"></div>
+        <div class="bodyContTitle"> 
+            <span class="fl b titleLinkColor titleName">客户评价</span>
+        </div>
+        <div class="bodyContContent rel rightConteWidth">
+            <div class="bodyContContentRightCont fl tal mainTextColor break" style="line-height:22px">
+				#myrcPageNav($page "$!{esiteAddress}/myesite/cxda.htm" "" "")
+				<table width="100%"  border="0" cellpadding="5" cellspacing="1" bgcolor="#71AB29">
+					<tr bgcolor="#ffffff">
+						<th >评价内容</th>
+						<th width="100">评价时间</th>
+						<th width="160">评价方</th>
+					</tr>
+					#set($countshow=0)
+					#foreach($!{voteDto} in $!{page.records})
+						#set($showFlag = true)
+						#if($!{voteDto.vote.status}!="0")
+							#if(15>=$!{voteDto.dateDiff})
+								#set($showFlag = false)
+							#end
+						#end
+						#if($showFlag)
+        					<tr bgcolor="#ffffff">
+        						<td>
+        							<div>
+										#if($!{voteDto.vote.status}=='0')
+                                            <img height=16 src="$!{address.images}/myrc/good.gif" width="16" align="absMiddle" title="好评"/>
+                                        #elseif($!{voteDto.vote.status}=='1')
+                                            <img height=16 src="$!{address.images}/myrc/common.gif" width="16" align="absMiddle" title="中评"/>
+                                        #else 
+                                            <img height=16 src="$!{address.images}/myrc/bad.gif" width="16" align="absMiddle" title="差评"/>
+										#end
+										$!{voteDto.vote.content}
+									</div>
+									#if($!{voteDto.vote.replyContent} && $!{voteDto.vote.replyContent} != "" )
+									<div>
+										回复：
+										$!{voteDto.vote.replyContent}
+									</div>
+									#end
+        						</td>
+        						<td>$!date.format('yyyy-MM-dd',$!{voteDto.vote.gmtCreated})</td>
+        						<td>
+									<a href="$!{address.server}/company/compinfo$!{voteDto.vote.fromCompanyId}.htm" target="_blank">
+										$!{voteDto.company.name}
+									</a>
+								</td>
+                            </tr>
+							#set($countshow=1)
+						#end
+					#end
+					#if($countshow==0)
+						<tr bgcolor="#ffffff">
+							<td colspan="3" >暂时没有人做出评价！</td>
+						</tr>
+					#end
+				</table>
+				#myrcPageNav($page "$!{esiteAddress}/myesite/cxda.htm" "" "")
+				<div style="text-align:center;margin-top:10px;">
+					<img src="$!{address.images}/esite/pingjia.gif" /><br />
+					<a href="$!{esiteAddress}/myesite/cxdavote.htm" target="_blank" style="cursor:pointer;">
+						<img src="$!{address.images}/esite/put_1.gif" />
+					</a>
+				</div>
+            </div>
+			<div class="clr"></div>
+        </div>
+    </div>
+</div>

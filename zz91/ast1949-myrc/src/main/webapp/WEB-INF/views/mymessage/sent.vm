@@ -1,0 +1,173 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/mymessage/inbox.htm')">留言管理</a><span class="divider">/</span>
+			</li>
+			<li class="active">发件箱</li>
+		</ul>
+		<div class="alert alert-info">
+	    	<p>
+	    		<strong>提示：</strong>
+				您现在正在发件箱处理已发出的留言信息！
+				<a href="#springUrl('/mymessage/inbox.htm')">点击这里可以回到收件箱</a>
+    		</p>
+    	</div>
+	#if($!{error}==0)
+		<div class="alert alert-success mt"> 
+    		<p><strong>提示：</strong>您刚刚的操作成功了！</p>
+		</div>
+	#end
+	#parse("/commonImpt/inquiry/filterBarSent.vm")
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="3%"></th>
+					<th width="4%">状态</th>
+					<th width="16%">收件人</th>
+					<th width="47%">内容</th>
+					<th width="15%" class="tac">时间</th>
+					<th width="15%" class="tac">询盘目标信息</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($inquiry in ${page.records})
+				<tr>
+					<td class="tac va">
+						<input name="select" type="checkbox" value="$!{inquiry.inquiry.id}"/>
+					</td>
+					<td class="va">
+						#if($!{inquiry.inquiry.isReplyed}=="1")
+							<img src="$!{address.img}/zz91/myrc/images/reply.png" width="16" height="16" />
+						#elseif($!{inquiry.inquiry.isViewed}=="0")
+							<img src="$!{address.img}/zz91/myrc/images/unread.png" width="16" height="16" />
+						#set($unreadflag="bold")
+						#else
+							<img src="$!{address.img}/zz91/myrc/images/read.png" width="16" height="16" />
+						#end
+					</td>
+					<td class="va">
+					#set($unreadflag="")
+						<a target="_blank" href="$!{address.company}/compinfo.htm?a=$!{inquiry.inquiry.receiverAccount}" class="grey" >
+		    				#if($!{inquiry.receiverContact}!="")
+		    					$!{inquiry.receiverContact}
+		    				#else
+		    					$!{inquiry.inquiry.receiverAccount}
+		    				#end
+		    			</a>
+						<br />
+						<a target="_blank" href="$!{address.company}/compinfo.htm?a=$!{inquiry.inquiry.receiverAccount}" class="grey" >
+							$!{inquiry.receiverCompanyName}
+		    			</a>
+					</td>
+	        		<td>
+	        			<strong>
+							<a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}">
+								#if($!{inquiry.inquiry.inquiredType}=="2")
+									（系统匹配）
+								#end
+								$!{inquiry.inquiry.title}
+							</a>
+						</strong>
+						<p class="grey nomargin">
+							#printTitle($!{inquiry.inquiry.content} 100 "......")
+						</p>
+	        		</td>
+	        		<td class="tac va">$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})</td>
+	        		<td class="tac va">
+	    			#if($!{inquiry.inquiry.beInquiredType}=="0")
+						<a href="$!{address.trade}/productdetails$!{inquiry.inquiry.beInquiredId}.htm" target="_blank">查看被询盘的供求</a>
+					#elseif($!{inquiry.inquiry.beInquiredType}=="1")
+						通过公司详细页面询盘
+					#elseif($!{inquiry.inquiry.beInquiredType}=="3")
+						<a href="$!{address.price}/companyprice/priceDetails.htm?id=$!{inquiry.inquiry.beInquiredId}" target="_blank">查看被询盘的报价</a>
+					#end
+	        		</td>
+##					<td class="tac va">
+##						<input name="select" type="checkbox" value="$!{inquiry.inquiry.id}"/>
+##					</td>
+##					<td>
+##						<div>
+##							<a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}" style="font-weight:$!unreadflag;">
+##								$!{inquiry.inquiry.title}
+##							</a>
+##							<span style="color:gray;">
+##							$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})
+##							</span>
+##						</div>
+##						<div style="color:gray;">
+##							$!{inquiry.inquiry.content}
+##						</div>
+##		            </td>
+##		            <td class="va">
+##						<a target="_blank" href="$!{address.company}/compinfo.htm?a=$!{inquiry.inquiry.receiverAccount}">
+##							$!{inquiry.receiverCompanyName}
+##						</a>
+##		            </td>
+
+				</tr>
+				#end
+		    </tbody>
+		</table>
+    #if($!{page.records.size()}==0)
+    	<div class="alert alert-error">
+    		没有发出留言！给有意向的客户发送留言将给您大大增加交易机会！
+    		<a href="$!{address.trade}" target="_blank">到交易中心看看</a>
+    		<a href="$!{address.company}" target="_blank">到公司库看看</a>
+    	</div>
+    #end
+	#parse("/commonImpt/inquiry/filterBarSent.vm")
+	#myrcPageNav($!{page} "#springUrl('/mymessage/sent.htm')" "groupId=$!{groupId}&isViewed=$!{isViewed}&isRubbish=$!{isRubbish}" "")
+	</div>
+</div>
+<script>
+	jQuery(function(){
+		myrc.menu(4, 2);
+
+		jQuery(".checkAllToggle").click(function(){
+    		var chk=jQuery(this).attr("checked");
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+	});
+	
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name='select']"), function(index, obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+	//删除信息
+	function deleteInfo(){
+		var inquiryIds = getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length == 0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中" + inquiryIds.length + "条留言,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/removeSentInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+</script>

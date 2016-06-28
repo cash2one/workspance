@@ -1,0 +1,470 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importJqueryUI.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+<script>
+    function changeSubCate(id){
+    for(var i=1;i<=4;i++){
+        var a=document.getElementById("a"+i);
+        if(i==id){
+            a.className="active";
+        } else{
+            a.className="";
+        }
+        }
+    }
+    function displaySubMenu(li) {
+        var subMenu = li.getElementsByTagName("ul")[0];
+        subMenu.style.display = "block";
+        var subMenu1 = li.getElementsByTagName("div")[0];
+        subMenu1.className="droptxt_on"
+    }
+    function hideSubMenu(li) {
+        var subMenu = li.getElementsByTagName("ul")[0];
+        subMenu.style.display = "none";
+        var subMenu1 = li.getElementsByTagName("div")[0];
+        subMenu1.className="droptxt_off"
+    }
+</script>
+<div class="main_box">
+    <div class="zz91leader">当前位置:$!{categoryCompanyPrice.label}
+        <a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a>
+        &gt;
+        <a href="#springUrl('/companyprice/index.htm')">企业报价</a>
+        #if($!{categoryCompanyPrice.label})
+            &gt;<a href='#springUrl("/companyprice/list.htm?categoryCompanyPriceCode=")$!{categoryCompanyPriceCode}' >$!{categoryCompanyPrice.label}</a>
+			&gt;$!{companyPriceDO.title}
+        #end
+        #if($!{categoryCompanyPrice.label}=="废塑料"||"塑料颗粒")<a href='http://www.kl91.com/' style='color:red;' target='_blank'>精确报价,上游商家,下游厂家尽在再生塑料网,快来寻找商机吧!</a>
+        #end
+    </div>
+	#if($!{categoryCompanyPrice.label}=="废金属")
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废金属&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=691"></script>
+    #elseif($!{categoryCompanyPrice.label}=="废塑料")
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废塑料&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=692"></script>
+	#else
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=综合废料&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=693"></script>
+	#end
+</div>
+#parse("/companyprice/top.vm")
+<div class="main_box" id="companyPrice">
+    <div class="left">
+        <div class="list_left">
+            <div class="infoboxDetails subDiv" style="margin-top:0">
+                <div class="title">
+					<div class="nav3_l"></div>
+                    <h3>$!{categoryCompanyPrice.label}产品报价</h3>
+					<div class="nav3_r"></div>
+                </div>
+                <div class="content keywords" >
+                    #foreach($category  in $categoryList)
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{categoryCompanyPriceCode}&title=$!{category.label}" title="$!{category.label}">
+                            $!{category.label}
+                        </a>
+					#end
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+            <div class="infoboxDetails subDiv">
+                <div class="title">
+					<div class="nav3_l"></div>
+                    <h3>各地$!{categoryCompanyPrice.label}报价</h3>
+					<div class="nav3_r"></div>
+					<div style="clear:both"></div>
+                </div>
+				
+                <div class="content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/price/overPrice.htm?parentId=$!{parentId}&size=6", "", "", "")
+                        #foreach($over in $overPrice)
+                            <li>
+                                <a href="#springUrl('/priceDetails_')$!{over.id}.htm" target='_blank' title="$!{over.title}">
+                                    #printTitle($!{over.title} 15 "")
+                                </a>
+                            </li>
+						#end
+					#end	
+						<div style="clear:both"></div>
+                    </ul>
+                </div>
+            </div>
+			<div class="infoboxDetails">
+                <div class="title subDiv">
+					<div class="nav3_l"></div>
+                    <h3>行情综述</h3>
+					<div class="nav3_r"></div>
+                    <div style="clear:both"></div>
+                </div>
+				<div style="clear:both"></div>
+                <div class="content">
+					#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{typeId}", "", "", "")
+					<ul>
+            		  #foreach($b in $!list)
+            	         <li>
+								<a href='#springUrl("/priceDetails")_$!{b.id}_$!{code}.htm' target='_blank' title='$!{b.title}'>
+								#printTitle($!{b.title} 12 "")</a>
+						 </li>
+                      #end
+            		 </ul>
+					#end 
+                </div>
+            </div>
+			<div class="infoboxDetails">
+				<script type="text/javascript">
+                /*企业报价详细页 左下 200*90，创建于2013-3-13*/
+                var cpro_id = "u1233049";
+                </script>
+                <script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+            </div>
+        </div>
+        <div class="p_details">
+            <div id="details" class="subDiv">
+                <div class="title">
+					<div class="nav3_l"></div>
+					<h3>产品报价</h3>
+					<div class="nav3_r"></div>
+                    <div style="clear:both"></div>
+                </div>
+				<div class="p_content">
+					
+##					#if(${isLimitDisplay} =="1")
+##                        <div class="content">
+##                			<div class="ui-state-error ui-corner-all" style="margin-top: 5px;padding: 5px;"> 
+##                				<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+##                				<b>注意:</b>本站所有信息免费向所有用户开放，但您需登录后查看此条信息！
+##                			</div>
+##                            <div style="text-align:center; margin-top:10px;">
+##								<input type="button" value="点此登录" class="loginBtn" />
+##								&nbsp;&nbsp;&nbsp;&nbsp;
+##								<a href="$!{address.front}/accessToQQLogin.htm" target="_blank">
+##									<img src="$!{address.img}/zz91/china/images/qq_login_common.gif" width="124" height="24" alt="使用QQ号码登录" />
+##								</a>
+##							</div>
+##                		</div>
+##                        <script >
+##                			jQuery(document).ready(function(){
+##                				
+##                				var loginBox=new Asto.util.PopupBox({
+##                        			url:"$!{address.front}/miniLogin.htm?regfrom=10031022",
+##                        			destUrl:"$!{address.price}/submitCallback.htm",
+##                					title:"请先登录再查看报价信息",
+##                        			modal:true,
+##									callbackFn:function(success,data){
+##                						loginBox.close();
+##                						Asto.util.Message.show({
+##                							msg:"正在加载，请稍候！"
+##                						});
+##                						window.location.reload();
+##                					},
+##                        			height:450,
+##                        			width:631
+##                        		});
+##                				
+##                				jQuery(".loginBtn").button();
+##                				jQuery(".loginBtn").click(function(){
+##                					loginBox.show();
+##                				});
+##                				
+##                			});
+##                		</script>
+##                    #else
+                        <ul>
+                            <li class="top">
+                                <span class="tit">产品名称：</span>
+                                <b>$!{companyPriceDO.title}</b>
+                            </li>
+    						<li>
+                                <span class="tit">产品价格：</span>
+								#if($!{companyPriceDO.minPrice} && $!{companyPriceDO.minPrice} != ""
+									&&$!{companyPriceDO.minPrice} !="None")
+    								$!{companyPriceDO.minPrice}
+									#if($!{companyPriceDO.maxPrice}&&$!{companyPriceDO.maxPrice}!="" && $!{companyPriceDO.maxPrice} != "0.0")
+										至$!{companyPriceDO.maxPrice}
+									#end
+									$!{companyPriceDO.priceUnit}
+								#elseif($!{companyPriceDO.price} && $!{companyPriceDO.price} != ""
+									&& $!{companyPriceDO.price} != "None")
+									$!{companyPriceDO.price}
+								#end
+##								$!{companyPriceDO.minPrice}
+##								#if($!{companyPriceDO.maxPrice}&&$!{companyPriceDO.maxPrice}!="")
+##									至$!{companyPriceDO.maxPrice}
+##								#end$!{companyPriceDO.priceUnit}
+##								#if($!{companyPriceDO.minPrice}=="" || $!{companyPriceDO.maxPrice}=="")
+##									$!{companyPriceDO.price}$!{companyPriceDO.priceUnit}
+##								#else
+##									$!{companyPriceDO.minPrice}至$!{companyPriceDO.maxPrice}$!{companyPriceDO.priceUnit}
+##								#end	
+    						</li>
+    						<li>
+                                <span class="tit">公司所在地：</span>
+                                $!{provinceName} $!{cityName}
+    						</li>
+    						<li>
+    							<span class="tit">发布时间：</span>
+    							$!date.format('yyyy-MM-dd  HH:MM:ss',$!companyPriceDO.refreshTime)
+    						</li>
+    						<li>
+                                <span class="tit">产品描述：</span>
+                                $!{companyPriceDO.details}
+    						</li>
+							#if($!{companyContactsDO})
+                            <li>
+                                <span class="tit">联系电话：</span>
+                                $!{companyContactsDO.mobile},
+                                $!{companyContactsDO.tel_country_code}-$!{companyContactsDO.tel_area_code}-$!{companyContactsDO.tel}
+                            </li>
+                            <li>
+                                <span class="tit">联 系 人：</span>
+                                $!{companyContactsDO.contact}
+    						</li>
+							#end
+                        </ul>
+##    				#end
+                    <div class="byb">
+                        ##<a class="button1" id="inquiryBtn" title="直接询盘">直接询盘</a>##$!{address.company}/compinfo.htm?id=$!{companyPriceDO.companyId} target="_blank" 
+						#if($!{sessionUser})
+							<a class="button1" href="javascript:openoverlay('$!{address.front}/inquiry/questionCompanyPrice.htm?companyPriceId=$!{companyPriceDO.id}&destUrl=$!{address.price}','在线询价',800,500,0);">在线询价</a>
+						#else
+							<a class="button1" href="javascript:openoverlay('$!{address.front}/inquiry/questionCompanyPrice.htm?companyPriceId=$!{companyPriceDO.id}&destUrl=$!{address.price}','询价/注册/登录',800,500,0);">在线询价</a>
+						#end
+##                        <a class="button1" id="inquiryBtn" title="在线询价">在线询价</a>##$!{address.company}/compinfo.htm?id=$!{companyPriceDO.companyId} target="_blank" 
+                        #if($!{company.membershipCode}!='10051000' && $!{company.domainZz91} && $!{company.domainZz91}!="")
+                             <a target="_blank" href="http://$!{company.domainZz91}.zz91.com" class="button1" title="逛逛门市部">逛逛门市部</a>
+						#elseif($!{company.membershipCode} =='10051000')
+							 <a target="_blank" href="http://company.zz91.com/compinfo$!{company.id}.htm" class="button1" title="该公司信息">该公司信息</a>
+                        #end
+						
+                        ##<a href="#springUrl('/companyprice/index--')$!{encodeTitle}--pc$!{categoryCompanyPriceCode}--area--int--pr.htm" class="button1" class="与其他商家报价比一比">其他商家报价</a>
+                        <a href="/companyprice/list.htm?categoryCompanyPriceCode=$!{categoryCompanyPriceCode}" class="button1" class="与其他商家报价比一比">其他商家报价</a>
+						<div style="clear:both"></div>
+						<div><img src='http://img0.zz91.com/zz91/weixin/images/companypriceweixin.jpg'></div>
+					</div>
+                </div>
+            </div>
+			
+            <div id="details" class="subDiv" style="margin-top:8px;">
+				<div class="title">
+					<div class="nav3_l"></div>
+                    <h3>该公司其他报价</h3>
+					<div class="nav3_r"></div>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="p_content p_contentA" id="companypriceList">
+                    <ul>
+                        #foreach($other in $otherPrice)
+                            <li>
+                                <span class="comPriceProd">
+                                    <a href="priceDetails$!{other.id}.htm" title="$!{other.title}">#printTitle($!{other.title} 13 "")</a>
+                                </span>
+                                <span class="comPriceUnit">$!{other.price}</span>
+                                <span class="comPriceDate">$!date.format('yyyy-MM-dd',$!other.refreshTime)</span>
+                            </li>
+						#end
+                        <div style="clear:both"></div>
+                    </ul>
+					 <div style="clear:both"></div>
+                </div>
+				
+                <div class="zz91tips">
+                    <h6>ZZ91.COM友情提示:</h6>
+                    <p>该展示的信息由企业自行提供，内容的真实性、准确性和合法性由发布企业负责，ZZ91.COM-中国再生资源交易网对此不承担任何保证责任。我们原则上建议您选择再生通高级会员.</p>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+		</div>
+	</div>
+    <div class="right">
+        <div class="infobox subDiv" style="margin-top:0;">
+            <div class="title">
+				<div class="nav3_l"></div>
+                <h3>最热门$!{categoryCompanyPrice.label}产品</h3>
+				<div class="nav3_r"></div>
+            </div>
+            <div style="clear:both"></div>
+            <div class="content">
+                <ul id="tagsList">
+                    <li>
+                        #foreach($tag in $!mostList)
+                            #set($css=$velocityCount%6)
+                            <a href="$!{address.tags}/s/$!{mostListEncode.get($!{tag.id})}/" class="tag$css" target="_blank">#printTitle($!{tag.name} 10 "")</a>
+                        #end
+                    </li>
+                    <div style="clear:both"></div>
+                </ul>
+            </div>
+        </div>
+		
+        <div class="infobox subDiv">
+            <div class="title">
+				<div class="nav3_l"></div>
+                <h3>$!{categoryCompanyPrice.label}网上报价</h3>
+				<div class="nav3_r"></div>
+            </div>
+			<div style="clear:both"></div>
+            <div class="content">
+                <ul>
+					#cacheFragment("$!{address.fragment}/price/onlinePrice.htm?typeId=$!{priceTypeId}", "", "", "")
+                    #foreach($onPrice in $onlinePrice)
+                        <li>
+                            <a href="#springUrl('/priceDetails_')$!{onPrice.id}.htm" target='_blank'>$!{onPrice.title}</a>
+                        </li>
+					#end
+				  #end	
+					<div style="clear:both"></div>
+                </ul>
+            </div>
+        </div>
+        <div class="infobox">
+                <div class="title">
+                    <div class="nav3_l"></div>
+                    <h3>最新$!{categoryCompanyPrice.label}供求信息</h3>
+                    <div class="nav3_r"></div>
+                    <a href="http://trade.zz91.com/offerlist--a--p--$!{categoryCompanyPrice.label}.htm" class="more">查看更多</a>
+                    <div style="clear:both"></div>
+                </div>
+                <div style="clear:both"></div>
+				#set($theCode="#printTitle($!{categoryCompanyPriceCode} 4 '')")
+				#if($theCode=='1000')
+					#set($theCode='1001')
+				#elseif($theCode=='1001')
+					#set($theCode='1000')
+				#end
+                <div class="content">
+                    <ul class="pr_list wa">
+						#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{theCode}&keywords=$!{keywordsUrl}&typeCode=10331000&size=3&1priced1111", "", "", "")
+						#foreach($products in $list)
+								<li>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.title}">
+									<font color='#CC6600'>供应</font>#printTitle($!{products.products.title} 15 "")
+								</a>
+								<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+							</li>
+						#end
+						#end
+                    </ul>
+                    <ul class="pr_list wa">
+                      #cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{theCode}&keywords=$!{keywordsUrl}&typeCode=10331001&size=3&1priced10112", "", "", "")
+						#foreach($products in $list)
+							<li>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.title}">
+									<font color='#CC6600'>求购</font>#printTitle($!{products.products.title} 15 "")
+								</a>
+								<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+							</li>
+							#end
+					#end
+                    </ul>
+                </div>
+            </div>
+		
+        #*<div class="infobox subDiv">
+            <div class="title">
+				<div class="nav3_l"></div>
+                <h3>$!{categoryCompanyPrice.label}交易链接</h3>
+				<div class="nav3_r"></div>
+            </div>
+            <div class="content">
+                <ul>
+                    #foreach($products in $productsList)
+                        <li>
+                            #printProductType($!{products.productsTypeCode} "[" "]")
+                            <a target='_blank' href='$!{address.trade}/productdetails$!{products.id}.htm' class='a1'>#printTitle($!{products.title} 17 "")</a>
+                        </li>
+                    #end	
+                    <div style="clear:both"></div>
+                </ul>
+            </div>
+        </div>
+		*#
+    </div>
+    <div style="clear:both"></div>
+</div>
+<script>
+jQuery(document).ready(function(){
+	$("#companypriceList li").mouseover(function(){
+		$(this).css({"background-color":"#F5FAF8"});
+	});
+	$("#companypriceList li").mouseout(function(){
+		$(this).css({"background-color":"#FFF"})
+	});
+	
+	#if($!{sessionUser})
+		var loginStatus=true;
+	#else
+		var loginStatus=false;
+	#end
+
+	## 留言框
+	var messageBox= new Asto.util.PopupBox({
+		url:"$!{address.front}/inquiry/companyPrice.htm?id=$!{companyPriceDO.id}",
+		destUrl:"$!{address.price}/submitCallback.htm",
+		modal:true,
+		height:370,
+		width:660
+	});
+	
+	## 登录弹出框
+	var loginBox=new Asto.util.PopupBox({
+		url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+		destUrl:"$!{address.price}/submitCallback.htm",
+		modal:true,
+		height:450,
+		width:631
+	});
+	
+	jQuery("#inquiryBtn").click(function(){
+		if(!loginStatus){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					messageBox.close();
+				});
+				loginBox.close();
+    			messageBox.show("$!{address.front}/inquiry/companyPrice.htm?id=$!{companyPriceDO.id}&destUrl=$!{address.price}/submitCallback.htm");
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.price}/submitCallback.htm");
+		}else{
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				messageBox.close();
+			});
+			messageBox.show("$!{address.front}/inquiry/companyPrice.htm?id=$!{companyPriceDO.id}&destUrl=$!{address.price}/submitCallback.htm");
+		}
+	});
+		
+##	jQuery("#inquiryBtn").click(function(){
+##		if(loginStatus){
+##    		var inquiryBox= new Asto.util.PopupBox({
+##				title:"给对方留言",
+##    			url:"$!{address.front}/inquiry/companyPrice.htm?id=$!{companyPriceDO.id}",
+##    			destUrl:"$!{address.price}/submitCallback.htm",
+##    			modal:true,
+##    			height:370,
+##    			width:660,
+##				callbackFn:function(){
+##    				inquiryBox.close();
+##				}
+##    		});
+##			inquiryBox.show(); 
+##		}else{
+##			var loginBox=new Asto.util.PopupBox({
+##				title:"登录/注册",
+##    			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+##    			destUrl:"$!{address.price}/submitCallback.htm",
+##    			modal:true,
+##    			height:450,
+##    			width:631,
+##				callbackFn:function(success,data){
+##					loginBox.close();
+##					Asto.util.Message.show({
+##						msg:"您已登录成功，正在载入页面！"
+##					});
+##					messageBox.show("$!{address.front}/inquiry/companyPrice.htm?id=$!{companyPriceDO.id}");
+##				}
+##			});
+##		}
+##	});
+	
+})
+</script>

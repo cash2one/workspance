@@ -1,0 +1,148 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/message/index.htm')">留言管理</a>
+				<span class="divider">/</span>
+			</li>
+			<li>我发出的留言</li>
+
+		</ul>
+		<div class="table-select mt clearfix">
+			<div class="group">
+				<select class="groupSel" >
+					<option value="" selected >全部留言</option>
+					<option value="0" >供应留言</option>
+					<option value="1" >求购留言</option>
+					<option value="2" >公司留言</option>
+					<option value="3" >客服留言</option>
+					<option value="5">技术文章留言</option>
+					</select>
+				</div>
+				<div class="btn-toolbar">
+					<div class="btn-group">
+						<a href="javascript:void(0)" onclick="deleteInfo()" class="btn btn-small">删除</a>
+					</div>
+				</div>
+		</div>
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="20" class="tac"><input type="checkbox" class="Js_checkAll" /></th> ## width="20"
+					<th >留言标题</th>
+					<th width="250" class="tac">留言接收</th> ## width="250"
+					<th width="40" class="tac"></th>
+					<th width="60" class="tac">留言时间</th> ## width="100"
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($list in $!{page.records})
+				<tr id="records$!{list.message.id}">
+					<td class="tac va">
+						<input name="select" type="checkbox" value="$!{list.message.id}"/>
+					</td>
+					<td style="word-wrap: break-word;word-break:break-all;">
+							##<a href="#springUrl('/message/messageDetails.htm')?id=$!{list.message.id}&sendStatus=$!{sendStatus}">
+								#if($!{list.message.replyStatus} == 1)
+									<strong>
+										$!{list.message.title}
+									</strong>
+							#if($!{list.message.replyStatus}==1)
+							<span class="label" >已回复</span>
+							#end
+								#else
+									$!{list.message.title}
+								#end
+							##</a>
+						<p class="nomargin">
+							<span class="label label-info">留言</span>
+							$!{list.message.details}
+						</p>
+						#if($!{list.message.replyDetails} != "")
+						<p class="red nomargin">
+							<span class="label label-important">回复</span>
+							$!{list.message.replyDetails}
+						</p>
+						#end
+					</td>
+					<td class="tac va"><a href = "$!{address.esite}/index$!{list.message.targetCid}.htm">$!{list.cname}</a></td>
+					<td class="tac va">
+						#if($!{list.message.targetType}==0)
+							<span class="label" >供应</span>
+						#end
+						#if($!{list.message.targetType}==1)
+							<span class="label" >求购</span>
+						#end
+						#if($!{list.message.targetType}==2)
+							<span class="label" >公司</span>
+						#end
+						#if($!{list.message.targetType}==3)
+							<span class="label" >客服</span>
+						#end
+						#if($!{list.message.targetType}==5)
+							<span class="label" >技术文章</span>
+						#end	
+					</td>
+					<td class="tac va">$!date.format('yyyy-MM-dd',$!{list.message.gmtCreated})</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+		
+		#myrcPageNav($!page "#springUrl('/message/send.htm')" "type=$!{type}&readStatus=$!{readStatus}&replyStatus=$!{replyStatus}" "")
+	</div>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(3, 2);
+		
+		##jQuery(".groupSel").attr("value","$!{type}"); 
+		
+		jQuery('.groupSel').val("$!{type}");
+		
+		jQuery(".groupSel").change(function(){
+			var type = jQuery(".groupSel").val();
+			window.location.href = "#springUrl('/message/send.htm')?type="+type
+		});
+	});
+	
+	function deleteInfo(){
+		var ids = jQuery("input[name='select']:checked");
+		if(ids.length < 1){
+			alert("请至少选择一个进行删除!");
+			return false;
+		}
+		
+		if(confirm("确认删除信息?")){
+			ids.each(function(){
+				id = jQuery(this).val();
+				if(id!=null){
+					doDeleteInfo(id);
+				//	window.location="#springUrl('/message/send.htm')";
+				}
+			});
+		}
+		
+	}
+	
+	function doDeleteInfo(id){
+		jQuery.ajax({
+			url:'#springUrl("/message/delete.htm")',
+			data:{"id":id,"type":0},
+			cache:false,
+			dataType:"json",
+			success:function(req){
+				if(req.success){
+					jQuery("#records"+id).remove();
+				}
+			},
+			failure:function(){
+				//jQuery("#info").html("").append("删除失败");
+			}
+		});
+
+	}
+</script>

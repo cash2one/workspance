@@ -1,0 +1,691 @@
+#set($compulsiveUpdate="1")
+#set($layout="/layout/defaultS.vm")
+## relevant import
+#parse("/common/importValidate.vm")
+#parse("/common/importCkeditor.vm")
+<link rel="stylesheet" type="text/css" href="http://subject.zz91.com/comm/css/jquery.alert.css"/>
+<script type="text/javascript" src="http://subject.zz91.com/comm/js/jquery.easydrag.js"></script>
+<script type="text/javascript" src="http://subject.zz91.com/comm/js/jquery.alert.js"></script>
+<script type="text/javascript">
+ jQuery(document).ready(function(){
+    	// 验证标题是否重复方法
+ ##  	if(jQuery.validationEngineLanguage == undefined || jQuery.validationEngineLanguage.allRules == undefined ){
+ ##  	}else {
+ ##  		jQuery.validationEngineLanguage.allRules["ajaxTitle"] = {
+ ##			"url":"/myesite/common/ajaxTitle.htm",
+ ## 			"alertTextOk": "信息标题可以使用",
+ ##			"alertText": "请不要填写相同的信息标题",
+ ##		"alertTextLoad": "正在确认标题是否重复，请稍等。"
+ ##		};
+ ##	}
+ 	});
+	function submt(frm){
+			if(jQuery("#title").val().length==0){
+				jQuery("#title").focus();
+				alert("信息标题不能为空")
+				return false;
+				
+			}
+			if(jQuery("#tags").val().length==0){
+				jQuery("#tags").focus();
+				alert("搜索标签不能为空")
+				return false;
+				
+			}
+			if(jQuery("#totalNum").val().length==0){
+				jQuery("#totalNum").focus();
+				alert("供货总量不能为空")
+				return false;
+				
+			}
+			jQuery.ajax({
+    			url:'#springUrl("/validationcode/validateCode.htm")',
+    			data:{code:jQuery("#verifyCode").val()}, 
+    			dataType:'json',
+    			success:function(data){
+    				if(data.success==false){
+						jQuery("#codeImg").attr("src", "$!{address.myesite}/validationcode/vcode.htm?" + new Date());
+    					jQuery("#verifyCode").focus();
+						alert("验证码输入错误！");
+						return false;
+    				}else{
+						//判断微信验证
+						var ajaxurl="http://pyapp.zz91.com/weixin/huanbaoweixin_yzfront.html?account=$!{epAuthUser.account}&flag=1";
+						jQuery.getScript(ajaxurl, function() {
+						var result = _suggest_result_.result;
+						if (result=="0"){
+							jIframe('http://pyapp.zz91.com/weixin/huanbaoweixin_yz.html?account=$!{epAuthUser.account}', '微信验证','550','300');
+							return false;
+						}else{
+							buildPropertyQuery();
+							frm.submit();
+						}
+					});
+					  
+					}
+    			}
+    		});	
+    }
+</script>
+
+<div class="clearfix"></div>
+
+## page title
+<section class="container mt">
+	<ul class="breadcrumb">
+		<li><strong>发布供应信息：填写详细信息</strong></li>
+	</ul>
+</section>
+
+## page navigate
+<section class="container">
+    <div class="process-bar">
+        <ul class="clearfix">
+            <li>第一步：选择类别<s class="l"></s><s class="r"></s></li>
+            <li class="active">第二步：填写详细信息<s class="l"></s><s class="r"></s></li>
+            <li>第三步：发布成功<s class="l"></s><s class="r"></s></li>
+        </ul>
+    </div>	
+</section>
+
+## category review
+<section class="container">
+	<div class="alert alert-info">
+		您当前选择的类别是：<strong><span id="selectresult">$!{categoryPath}</span></strong>
+        <a href="#springUrl('/supply/publish_StpOne.htm')?category=$!{category}&choiceType=$!{choiceType}" ref="nofollow">返回重选栏目</a>
+        （返回重选类目，可能会造成信息丢失，请谨慎操作）<br/>
+		 为了提高您发布信息的审核通过率，请您不要在信息标题，标签用途及详细说明（含图片）中加入联系方式，及其他特殊字符等内容，否则可能导致相关信息被删除。
+	</div>
+    <div style="text-algin:center;padding:10px">
+
+	</div>
+</section>
+
+<form name="publishForm" id="publishForm" action="#springUrl('/supply/doStpTwo.htm')" method="post">
+    
+## basic information
+   
+	<section class="container mt">
+		<h3 class="divide">基本信息</h3>
+
+		<div class="control-group">
+            <label class="control-label">
+                <span class="red">*</span>信息标题：
+            </label>
+            <div class="controls">
+                <input id="title" name="title" type="text" style="width:350px;"  class="field input-xxlarge validate[required,maxSize[50]] "/>##,ajax[ajaxTitle]
+				<input id="titleValidate" type="hidden" />
+				<font id="titleMsg">&nbsp;&nbsp;&nbsp;建议在标题中包含产品名称及型号，突出产品特点，且要与详细说明内容一致</font>
+				##<font>&nbsp;&nbsp;&nbsp;请不要填写相同的信息标题</font>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                <span class="red">*</span>搜索标签：
+            </label>
+            <div class="controls">
+            	<input id="tags" name="tags" type="text" style="width:350px;" class="field input-xxlarge validate[required,maxSize[50]]"/>
+                <font >&nbsp;&nbsp;&nbsp;建议填写关键信息</font>
+                <p >例如标题为：宜兴xx型旋转式滗水器 标签可以设置为滗水器，旋转式滗水器，xx型旋转式滗水器</p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                供货地区：
+            </label>
+            <div class="controls">
+            	<select id="provinceCode" name="provinceCode">
+                    <option value="">--请选择省份--</option>
+                </select>
+                <select id="areaCode" name="areaCode" class="ptfe_ipt_select">
+                    <option value="">--请选择城市--</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                <span class="red">*</span>供货总量：
+            </label>
+            <div class="controls">
+            	<input type="number" id="totalNum" name="totalNum" class="field input-xlarge validate[required,custom[integer],min[1],maxSize[10]]"/>
+            	<select  id="totalUnits" name="totalUnits" class="ptfe_ipt_select">
+                  	<option value="">--请选择数量单位--</option>
+                  	<option value="套" >套</option>
+                  	<option value="台" >台</option>
+                  	<option value="件" >件</option>
+                  	<option value="吨" >吨</option>
+                  	<option value="个" >个</option>
+                  	<option value="斤" >斤</option>
+                  	<option value="千克" >千克</option>
+                  	<option value="袋" >袋</option>
+                  	<option value="盒" >盒</option>
+              	  </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                供货单价：
+            </label>
+            <div class="controls">
+            	<input type="number" id="priceNum" name="priceNum" class="field input-xlarge validate[custom[integer],min[0],maxSize[10]]"/>
+            	<select  id="priceUnits" name="priceUnits" class="ptfe_ipt_select">
+        			<option value="">--请选择价格单位--</option>
+                  	<option value="元">元</option>
+                  	<option value="美元">美元</option>
+          	  	</select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                报价范围：
+            </label>
+            <div class="controls">
+            	<input id="priceFrom" name="priceFrom" type="number" class="field input-medium validate[custom[integer],min[0],maxSize[10]]"> 
+            	至
+				<input id="priceTo" name="priceTo" type="number" class="field input-medium validate[custom[integer],min[0],maxSize[10]]"/> 
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                新旧：
+            </label>
+            <div class="controls">
+            	<label class="radio">
+            		<input type="radio" value="0" name="usedProduct" checked />新
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="1" name="usedProduct" />旧
+            	</label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">
+                有效期：
+            </label>
+            <div class="controls">
+            	<label class="radio">
+            		<input type="radio" value="10" name="validDays" />10天
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="20" name="validDays" checked />20天
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="30" name="validDays" />一个月
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="90" name="validDays" />三个月
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="180" name="validDays" />六个月
+            	</label>
+            	<label class="radio">
+            		<input type="radio" value="0" name="validDays" />长期有效
+            	</label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">
+                用途说明：
+            </label>
+            <div class="controls">
+            	<textarea id="useTo" name="useTo" cols="35" rows="5" class="validate[maxSize[100]]"></textarea>
+            </div>
+        </div>
+	</section>
+
+## professional properties
+#if($!{propertys.size()} > 0)
+	<section class="container mt">
+		<h3 class="divide">专业属性</h3>
+		#set($paracout=1)
+        #foreach($item in $!{propertys})
+			<div class="control-group">
+	            <label class="control-label">
+	                #if($!{item.inputRequired} == 1)
+					<span class="red">*</span>
+					#end $!{item.name}
+	            </label>
+	            <div class="controls">
+	            	#if($!{item.vtype} == 'text')
+		                  <input name="property$!{item.id}" id="property$!{item.id}" type="text" class="field input-xlarge #if($!{item.inputRequired} == 1) validate[required,maxSize[20]] #else validate[maxSize[20]] #end"/>
+		            #end
+		            #if($!{item.vtype} == 'combo')
+		                  <select id="property$!{item.id}" class="ptfe_ipt_select"> ###if($!{item.inputRequired} == 1) validate[required] #end
+		                  	<option value="">--请选择${item.name}--</option>
+		                    #foreach($value in $vtypeMap.get($!{item.id}))
+		                          <option value="${value.k}">${value.v}</option>
+		                    #end
+		                  </select>
+		            #end
+		            #if($!{item.vtype} == 'checkbox')
+		                #foreach($value in $vtypeMap.get($!{item.id}))
+		                   <label for="" class="checkbox"><input name="property$!{item.id}" type="checkbox" value="$!{value.k}"/>$!{value.v}</label>
+		                #end
+		                <label id="label$!{item.id}" for="property$!{item.id}" style="color:red"></label>
+		            #end
+		            #if($!{item.vtype} == 'radio')
+		                 #foreach($value in $vtypeMap.get($!{item.id}))
+		                 	<label class="radio">
+		                    	<input name="property$!{item.id}" type="radio" value="$!{value.k}" checked />$!{value.v}
+		                 	</label>
+		                 #end
+		            #end
+	            </div>
+	        </div>
+        #set($paracout=$paracout+1)
+        #end
+</section>
+#end
+
+	<section class="container mt">
+		<h3 class="divide">产品图片</h3>
+		<div class="control-group">
+            <label class="control-label">
+               	插入图片：
+            </label>
+			
+            <div class="controls clearfix">
+				
+            	<input type="text" name="photos" id="photos" value="" />
+            	<input type="text" name="photoCover" id="photoCover" value="" />
+            	<input type="button" class="btn btn-small btn-primary" name="uploadRelevantPhotoBtn" id="uploadRelevantPhotoBtn" value="上传图片" />
+                <input type="button" class="btn btn-small " name="relevantPhotoSelectBtn" id="relevantPhotoSelectBtn" value="插入相册图片" /><font style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;你最多只能上传四张图片,第一张为默认显示图片</font>
+                <div id="uploadPreview">
+            		
+            	</div>
+				<div class='upload-wrap' id="uploadPreview1"><img src="http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif"  width='100' height='100' /></div> 
+				<div class='upload-wrap'id="uploadPreview2" ><img src="http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif"  width='100' height='100'  /></div> 
+				<div class='upload-wrap'id="uploadPreview3" ><img src="http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif"  width='100' height='100' /></div> 
+				<div class='upload-wrap'id="uploadPreview4" ><img src="http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif"  width="100" height='100' /></div> 
+				
+			</div>
+        </div>
+	</section>
+## supply details
+	<section class="container mt">
+		<h3 class="divide">详细说明</h3>
+		<div class="control-group">
+            <label class="control-label">
+               	详细说明：
+            </label>
+            <div class="controls">
+				<input type="button" class="btn" name="detailPhotoUploadBtn" id="detailPhotoUploadBtn" value="插入上传图片" />
+				<input type="button" class="btn" name="detailPhotoSelectBtn" id="detailPhotoSelectBtn" value="插入相册图片" />
+				&nbsp;&nbsp;&nbsp;&nbsp;请插入680×680大小以内的图片，否则可能影响您发布的信息！
+                <div>
+					<p style="color:red">
+                    1.建议您从产品性能、用途、包装等方面来描述，字数建议在100-3000字内 <br/>
+					2.避免只有图片，没有详细描述的情况
+					</p>
+			   </div> 
+				<div class="mt">
+					<textarea id="details" name="details"></textarea>
+				</div>
+            </div>
+        </div>
+	</section>
+
+## suggesture
+	<section class="container mt">
+		<div class="alert alert-info">
+			<strong>建议：</strong>优质的信息更能得到买家的青睐，以下方面建议您发布前可以再检查一下
+			<br />
+			<ul>
+				<li>&gt; 在详细说明中插入产品细节图片，彰显产品专业品质</li>
+				<li>&gt; 优化您的信息标题，突出产品特点，使标题更具有吸引力</li>
+				<li>&gt; 上传更多精美的产品图片，让买家对产品印象深刻</li>
+				<li>&gt; 填写更详细的产品属性，增加被买家搜索到的机会</li>
+				<li>&gt; <strong>买家更青睐优质信息，早发布优质信息早受益！</strong></li>
+			</ul>
+		</div>
+	</section>
+
+	<section class="container mt">
+		<div class="form-actions">
+			
+			## 验证码
+			<input name="verifyCodeKey" id="verifyCodeKey" type="hidden">
+			<input name="verifyCode" id="verifyCode" class="field input-small validate[required]" type="text">
+			<img id='codeImg' src='$!{address.img}/front/images/global/loading.gif' class="image3" width="100" height="28" title="看不清楚?点击图刷新验证码！" style="cursor:pointer;vertical-align:middle" />
+			<span class="textcolor2" id="changImg">看不清楚?换一张。</span>
+			<p><strong class="red">请将上方图片里显示的信息填入框中。</strong></p>
+			
+			<input type="button" class="btn btn-primary btn-large" name="publishBtn" id="publishBtn" value="现在发布"  onclick="return submt(this.form)"/>
+            <input id="categoryCode" name="categoryCode" type="hidden" value="$!{category}"/>
+            <input id="propertyQuery" name="propertyQuery" type="hidden" value=""/>
+            <input id="integrity" name="integrity" type="hidden" value="4"/>
+			<input id="saveuuid" name="saveuuid" type="hidden" value="$!{saveuuid}"/>
+		</div>
+	</section>
+	<input type="hidden" value="0" id="titleValidate" />
+</form>
+
+
+## script
+<script type="text/javascript">
+	
+	jQuery(document).ready(function(){
+	
+		// 验证码
+		var imgCode = (function(){
+			var img = document.getElementById("codeImg");
+			var changeTime = function(){
+				img.src = "$!{address.myesite}/validationcode/vcode.htm?" + new Date();
+			}
+			changeTime();
+			jQuery(img).on("click", changeTime);
+			jQuery("#changImg").on("click", changeTime);
+		})();
+	
+    	//TODO init system menu
+		myrc.select("Js_select");
+    	myrc.menu(2, 1);
+		
+		//TODO area init
+		var selector = new Asto.util.Selector({
+			url:"#springUrl('/common/getAreaCode.htm')",
+			selects:["#provinceCode","#areaCode"],
+			field:{code:"code",label:"name"}
+		});
+
+		selector.init({
+			rootCode:"10011000"
+		});
+
+
+		//TODO CKEDITOR init
+		var editor=CKEDITOR.replace("details",{
+			toolbar:[
+				['Styles','Format','FontSize'],  
+                ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList'],
+        		['TextColor','BGColor'],
+        		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+        		['Table','Image'],['Maximize']
+			],
+			height:200,
+			language:"zh-cn",
+			enterMode:CKEDITOR.ENTER_BR,
+			shiftEnterMode:CKEDITOR.ENTER_P
+		});
+
+		//TODO Form validate init
+		
+		jQuery("#publishForm").validationEngine("attach");
+
+		
+		jQuery("#title").blur(function(){
+    		jQuery.ajax({
+    			url:"/myesite/common/ajaxTitle.htm",
+    			data:{"fieldValue":jQuery("#title").val()},
+    			dataType:"json",
+    			success:function(data){
+    				if(data[1]===false){
+    					jQuery("#titleValidate").val("1");
+						jQuery("#titleMsg").removeClass("green");
+						jQuery("#titleMsg").addClass("red");
+						jQuery("#titleMsg").html("&nbsp;&nbsp;&nbsp;请不要填写相同的信息标题");
+    				}else{
+						jQuery("#titleValidate").val("0");
+						jQuery("#titleMsg").removeClass("red");
+						jQuery("#titleMsg").addClass("green");
+						jQuery("#titleMsg").html("&nbsp;&nbsp;&nbsp;信息标题可以使用");
+					}
+    			}
+    		});
+		});
+		
+		//TODO init professional properties when submit form
+		//因加入微信绑定的异步提交方法，导致获取不到jquery封装的editor 详细说明
+        jQuery("#verifyCode").blur(function(){
+            //验证详细说明
+            if(editor.getData().length < 1){
+                jQuery("#details").focus();
+				jQuery("#codeImg").attr("src", "$!{address.myesite}/validationcode/vcode.htm?" + new Date());
+                alert("详细说明不能为空！");
+                return false;
+            }
+
+            if(editor.getData().length > 3000) {
+                jQuery("#details").focus();
+				jQuery("#codeImg").attr("src", "$!{address.myesite}/validationcode/vcode.htm?" + new Date());
+                alert("详细说明过长,最多3000字符！");
+				
+                return false;
+            }
+			
+		});
+		
+		//TODO photo upload, preview and remove
+		jQuery("#uploadRelevantPhotoBtn").click(function(){
+			
+			//TODO caculate max upload allow
+
+            var max=4;
+            if(jQuery("#photos").val()!=""){
+                var uploadedPhoto=jQuery("#photos").val();
+                var length=uploadedPhoto.split(",").length;
+                max=max-length;
+                
+                if(max<=0){
+                    alert("您已经上传了"+length+"张图片，一个供应信息最多只能上传4张图片！");
+                    return false;
+                }
+            }
+
+			var uploadBox = uploadPhoto("supply", max);
+
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+				//TODO show preview photo
+                var photos=new Array();
+                if(jQuery("#photos").val()!=""){
+                    photos.push(jQuery("#photos").val());
+                }
+				
+
+				for(var key in uploadedFile){
+					var imgsrc = "http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif";
+					for(var i=1;i<=4;i++){
+					     var imgsSrc = $("#uploadPreview"+i+" img").attr("src"); 
+						if(imgsSrc==imgsrc){
+						var btn = jQuery("<input type='button' class='btn btn-mini remove' id="+'butImg'+key+" value='移除' onclick='removePhoto(this,"+key+")' />" );	
+						 $("#uploadPreview"+i+" img").attr("src","$!{address.resource}/"+uploadedFile[key]); 
+						  	jQuery("#uploadPreview"+i).append(btn);
+						  break;
+						}
+					}
+					photos.push(key);
+                    jQuery("#photoCover").val(uploadedFile[key]);
+				}
+
+                jQuery("#photos").val(photos.join(","));
+
+				uploadBox.close();
+
+			});
+		});
+
+		// photo uploaded btn event
+        jQuery("#detailPhotoUploadBtn").click(function(){
+            
+            var uploadBox = uploadPhoto("supplyDetail", 1);
+
+            Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+                for(var key in uploadedFile){
+                    var imgUrl="$!{address.resource}"+uploadedFile[key];
+                    var img="<a href='"+imgUrl+"' target='_blank' ><img src='"+imgUrl+"' alt=''/></a>"
+                    editor.insertHtml(img);
+                }
+                uploadBox.close();
+            });
+        });
+		
+		jQuery("#relevantPhotoSelectBtn").click(function(){
+			var max=4;
+            if(jQuery("#photos").val()!=""){
+                var uploadedPhoto=jQuery("#photos").val();
+                var length=uploadedPhoto.split(",").length;
+                max=max-length;
+                
+                if(max<=0){
+                    alert("您已经上传了"+length+"张图片，一个供应信息最多只能上传4张图片！");
+                    return false;
+                }
+            }
+			
+			var uploadBox = promptPhoto(0, max, "-2");
+
+			//TODO caculate max upload allow
+			
+			//alert(1);
+			
+            var max=4;
+            if(jQuery("#photos").val()!=""){
+                var uploadedPhoto=jQuery("#photos").val();
+                var length=uploadedPhoto.split(",").length;
+                max=max-length;
+                
+                if(max<=0){
+                    alert("您已经上传了"+length+"张图片，一个供应信息最多只能上传4张图片！");
+                    return false;
+                }
+            }
+
+			//var uploadBox = uploadPhoto("supply", max);
+
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+				//TODO show preview photo
+                var photos=new Array();
+                if(jQuery("#photos").val()!=""){
+                    photos.push(jQuery("#photos").val());
+                }
+
+##				for(var key in uploadedFile){
+##					
+##                    var btn = jQuery("<input type='button' class='btn btn-mini remove' value='移除' onclick='removePhoto(this,"+key+")' />" );
+##					var prediv=jQuery("<div class='upload-wrap' ><img src='$!{address.resource}"+uploadedFile[key]+"' width='100' height='100' /></div> ");
+##					prediv.append(btn);
+##					jQuery("#uploadPreview").append(prediv);
+##
+##                    photos.push(key);
+##                    jQuery("#photoCover").val(uploadedFile[key]);
+##				}
+				
+				for(var key in uploadedFile){
+					var imgsrc = "http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif";
+					for(var i=1;i<=4;i++){
+					     var imgsSrc = $("#uploadPreview"+i+" img").attr("src"); 
+						if(imgsSrc==imgsrc){
+						var btn = jQuery("<input type='button' class='btn btn-mini remove' id="+'butImg'+key+" value='移除' onclick='removePhoto(this,"+key+")' />" );	
+						 $("#uploadPreview"+i+" img").attr("src","$!{address.resource}/"+uploadedFile[key]); 
+						  	jQuery("#uploadPreview"+i).append(btn);
+						  break;
+						}
+					}
+					photos.push(key);
+                    jQuery("#photoCover").val(uploadedFile[key]);
+				}
+
+                jQuery("#photos").val(photos.join(","));
+
+				uploadBox.close();
+				
+			});
+		});
+
+		
+		jQuery("#detailPhotoSelectBtn").click(function(){
+			
+			var uploadBox = promptPhoto("" , 4, "");
+			
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+                for(var key in uploadedFile){
+                    var imgUrl="$!{address.resource}"+uploadedFile[key];
+                    var img="<a href='"+imgUrl+"' target='_blank' ><img src='"+imgUrl+"' alt=''/></a>"
+                    editor.insertHtml(img);
+                }
+                uploadBox.close();
+            });
+		});
+	
+	});
+	
+	function promptPhoto(queryTarget, maxphoto, albumId){
+		return new Asto.util.Modal({
+            title:"上传图片",
+	    	url:"#springUrl('/photo/promptPhotos.htm')?queryTarget="+queryTarget+"&max="+maxphoto+"&albumId="+albumId,
+	    	modal:true,
+	    	width:650,
+	    	height:300
+	    });
+	}
+
+	function uploadPhoto(photoType, maxphoto){
+		return new Asto.util.Modal({
+            title:"上传图片",
+	    	url:"#springUrl('/photo/promptUpload.htm')?targetType="+photoType+"&max="+maxphoto,
+	    	modal:true,
+	    	width:550,
+	    	height:350
+	    });
+	}
+
+    function removePhoto(btn,id){
+	
+		## jQuery(btn).parent().fadeOut();  
+		## var a = jQuery(btn).parent().find("img").attr("src");
+		##alert(a);
+		jQuery(btn).parent().find("img").attr("src","http://img0.huanbao.com/huanbao/images/trade/tradelist/noprod.gif");
+		jQuery(btn).fadeOut();
+		var uploadedPhoto=jQuery("#photos").val().split(","); 
+		//console.debug("del id>>>>>>>>>>>"+id);
+
+        jQuery(uploadedPhoto).each(function(idx,element){
+            if(id==element){
+                uploadedPhoto.splice(idx,1);
+                return ;
+            }
+        });
+
+        jQuery("#photos").val(uploadedPhoto.join(","));
+                        
+    }
+
+    function buildPropertyQuery(){
+        var propertyString = "";
+        #foreach($item in $!{propertys})
+            #if($!{item.vtype} == 'checkbox')
+                var a=new Array();
+                jQuery.each(jQuery("input[name=property$!item.id]"),function(idx,e){
+                    if(e.checked){
+                        a.push(e.value)
+                    }
+                });
+                if(a.length > 0){
+                    propertyString = propertyString+"$!{item.id}" + "_" + a.join(",") + ";";
+                }
+            #end
+            #if($!{item.vtype} == 'radio')
+                var item = $("input[name='property$!{item.id}']:checked").val();
+                propertyString = propertyString + "$!{item.id}" + "_" + item + ";";
+            #end
+            #if($!{item.vtype} == 'combo')
+                if(jQuery("#property$!{item.id}").val() != '') {
+                    propertyString = propertyString + "$!{item.id}" + "_" + jQuery("#property$!{item.id}").val() + ";";
+                }
+            #end
+            #if($!{item.vtype} == 'text' )
+                var proStr = jQuery("#property$!{item.id}").val();
+                if( proStr!= '') {
+                    re=new RegExp("[_;]","g"); 
+                    proStr=proStr.replace(re," ");
+                    propertyString = propertyString + "$!{item.id}" + "_" + proStr + ";";
+                }
+            #end
+        #end
+        jQuery("#propertyQuery").val(propertyString);
+    }
+</script>
+##  
+##  
+

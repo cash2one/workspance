@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="weixin_prize" >
+  <resultMap id="WeixinPrizeResult" class="com.ast.ast1949.domain.sample.WeixinPrize" >
+    <result column="id" property="id" />
+    <result column="account" property="account"/>
+    <result column="pic" property="pic"/>
+    <result column="webpic" property="webpic"/>
+    <result column="title" property="title"/>
+    <result column="score" property="score" />
+    <result column="num" property="num" />
+    <result column="numall" property="numall" />
+    <result column="content" property="content"/>
+    <result column="ord" property="ord" />
+    <result column="closeflag" property="closeflag" />
+    <result column="gmt_created" property="gmtCreated" />
+    <result column="type" property="type" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="WeixinPrizeResult" parameterClass="com.ast.ast1949.domain.sample.WeixinPrize" >
+    select id, account, pic, webpic,title, score, num, numall, content, ord, closeflag, gmt_created,type
+    from weixin_prize
+    where id = #id#
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinPrize" >
+    delete from weixin_prize
+    where id = #id#
+  </delete>
+  
+  <insert id="insert" parameterClass="com.ast.ast1949.domain.sample.WeixinPrize" >
+    insert into weixin_prize (id, account, pic, webpic,title, score, num, numall, content, ord, closeflag,   gmt_created)   values (#id#, #account#, #pic#, #title#, #score#,#num#, #numall#, #content#, #ord#, #closeflag#, now())
+	<selectKey keyProperty="id" resultClass="java.lang.Integer">
+		select LAST_INSERT_ID()
+	</selectKey>
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinPrize" >
+    update weixin_prize
+    set account = #account#,
+      pic = #pic#,
+      webpic = #webpic#,
+      title = #title#,
+      score = #score#,
+      num = #num#,
+      numall = #numall#,
+      content = #content#,
+      ord = #ord#,
+      closeflag = #closeflag#,
+      type = #type#
+    where id = #id#
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterClass="com.ast.ast1949.domain.sample.WeixinPrize" >
+    update weixin_prize
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="account" >
+        account = #account#
+      </isNotNull>
+      <isNotNull prepend="," property="pic" >
+        pic = #pic#
+      </isNotNull>
+      <isNotNull prepend="," property="webpic" >
+        webpic = #webpic#
+      </isNotNull>
+      <isNotNull prepend="," property="title" >
+        title = #title#
+      </isNotNull>
+      <isNotNull prepend="," property="score" >
+        score = #score#
+      </isNotNull>
+      <isNotNull prepend="," property="num" >
+        num = #num#
+      </isNotNull>
+      <isNotNull prepend="," property="numall" >
+        numall = #numall#
+      </isNotNull>
+      <isNotNull prepend="," property="content" >
+        content = #content#
+      </isNotNull>
+      <isNotNull prepend="," property="ord" >
+        ord = #ord#
+      </isNotNull>
+      <isNotNull prepend="," property="closeflag" >
+        closeflag = #closeflag#
+      </isNotNull>
+      <isNotNull prepend="," property="type" >
+        type = #type#
+      </isNotNull>
+    </dynamic>
+    where id = #id#
+  </update>
+  
+     <sql id="defaultColumn">
+    	 id, account, pic, webpic,title, score, num, numall, content, ord, closeflag, gmt_created,type
+    </sql>
+     
+	<sql id="dynamicSearch">
+		<dynamic>
+		where 1 = 1   and closeflag = 0
+      
+      <isNotEmpty prepend="and " property="type">
+       s.type >= #type#
+      </isNotEmpty>
+      
+      <isNotEmpty prepend="and " property="from">
+       s.gmt_created >= #from#
+      </isNotEmpty>
+      
+      <isNotEmpty prepend="and " property="to">
+        #to# > s.gmt_created
+      </isNotEmpty>
+      
+	</dynamic>
+	</sql>  	    
+  
+    	<!-- queryListByFilter  start   -->
+  	<select id="queryListByFilter" parameterClass="java.util.Map" resultMap="WeixinPrizeResult">
+		select 
+		<include refid="defaultColumn"/>
+		from weixin_prize  s  
+    <include refid="dynamicSearch" />
+	<include refid="common.pageOrderBy"/>
+	<include refid="common.pageLimit"/>
+	</select>
+	
+  	<select id="queryListByFilterCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select  count(0) 
+		from weixin_prize  s  
+		<include refid="dynamicSearch" />
+	</select>
+	<!-- queryListByFilter  end   -->
+  
+</sqlMap>

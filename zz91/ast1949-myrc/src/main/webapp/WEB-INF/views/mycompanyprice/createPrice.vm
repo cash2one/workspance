@@ -1,0 +1,184 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<!--需要判断客户的公司资料是否填写完整，如果填写不完整，则只显示一张被覆盖的图片的层。  $!{show}是临时放在这用的-->
+	#if($!{checkInfo} && $!{checkInfo}=="1")
+	<div class="container-info">
+        	<div class="container-info-title">
+            	重要提示：
+            </div>
+            <!--end container-info-title-->
+            <div class="container-info-content">
+            	您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+            </div>
+            <!--end container-info-content-->
+        </div>
+        <!--end ontainer-info-->
+	#else
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">企业报价</li>
+        </ul>
+		<form id="editForm" name="editForm" method="post" action="#springUrl('/mycompanyprice/doCreate.htm')">
+			##<input type="hidden" value="$!{products.id}" name="productId">
+			<input type="hidden" value="0" name="productId">
+			<input type="hidden" value="" name="categoryCompanyPriceCode" id="categoryCompanyPriceCode">
+        	<div class="control-group">
+				<label for="title" class="control-label"><span class="red">*</span>产品名称：</label>
+				<div class="controls">
+            		<input type="text" name="title" id="title" class="field input-xlarge validate[required,maxSize[30]]" value="$!{products.title}">
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="c1" class="control-label"><span class="red">*</span>类别：</label>
+				<div class="controls">
+            		<select id='c1' name='c1' size='10' class="validate[required]">
+						<option value="" >--请选择--</option>
+                    </select>
+            		<select id='c2' name='c2' size='10' class="validate[required]">
+						<option value="" >--请选择--</option>
+                    </select>
+                    <select id='c3' name='c3' size='10'>
+						<option value="" >--请选择--</option>
+                    </select>
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="minPrice" class="control-label"><span class="red">*</span>产品价格：</label>
+				<div class="controls">
+            		<input name="minPrice" type="text" id="minPrice"  value="$!{products.minPrice}" class="field input-small validate[required,custom[number],min[1]]">
+					<span id="priceFlag" style='display:none;'>
+						至
+						<input name="maxPrice" type="text" id="maxPrice"   value="$!{productsDO.maxPrice}"class="field input-small validate[required,custom[number],funcCall[checkMaxPrice]]"/>
+					</span>
+					<p class="red">（请写明价格，如：50000，如果是一个价格范围，请选中以下&ldquo;支持价格范围&rdquo;）</p>
+					<label class="checkbox"><input type="checkbox" name="togglePrice" id="togglePrice" value="1" onclick="if(this.checked){jQuery('#priceFlag').show();}else{jQuery('#priceFlag').hide();}"/> 支持价格范围</label>
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="priceUnitSel" class="control-label"><span class="red">*</span>价格单位：</label>
+				<div class="controls">
+            		<select id="priceUnitSel" class="validate[required]">
+                        <option value=''>请选择单位</option>
+						<option value='元/吨'>元/吨</option>
+						<option value='元/千克'>元/千克</option>
+						<option value='美元/吨'>美元/吨</option>
+						<option value='日元/吨'>日元/吨</option>
+						<option value='美元/千克'>美元/千克</option>
+						<option value='日元/千克'>日元/千克</option>
+						<option value='元/台'>元/台</option>
+						<option value='元/辆'>元/辆</option>
+						<option value='-1'>其他</option>
+					</select>
+					<input type="text" id="otherPriceUnit" class="field validate[required]" name="otherPriceUnit" style="display:none;"/>
+					<input type="hidden" id="priceUnit" name="priceUnit" class="field">
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="area-1" class="control-label"><span class="red">*</span>地区：</label>
+				<div class="controls">
+					<select id='area-0' class="validate[required]">
+						<option value="">请选择国家</option>
+					</select>
+					<select id='area-1'>
+						<option value="">请选择省份</option>
+					</select>
+					<select id='area-2'>
+						<option value="">请选择城市</option>
+					</select>
+					<input type="hidden" name="areaCode" id="areaCode" value="$!{areaCode}"/>
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="expired" class="control-label"><span class="red">*</span>有效期：</label>
+				<div class="controls">
+            		<select name='expired'>
+						<option value=''>--请选择--</option>
+						<option value='10'>10天</option>
+						<option value='20' selected >20天</option>
+						<option value='30'>1个月</option>
+						<option value='90'>3个月</option>
+						<option value="180">6个月</option>
+						<option value='-1'>长期有效</option>
+					</select>
+            	</div>
+			</div>
+        	<div class="control-group">
+				<label for="details" class="control-label"><span class="red">*</span>产品描述：</label>
+				<div class="controls">
+            		<textarea name="details" style="width:90%" rows="5" id="details" class="validate[required]">$!{products.details}</textarea>
+            	</div>
+			</div>
+        	<div class="form-actions">
+				<input type="submit" id="submitBtn" class="btn btn-primary" value="提 交">
+			</div>
+		</form>
+	</div>
+	#end
+</div>
+#parse("/common/importValidate.vm")
+<script>
+	jQuery(function() {
+		myrc.menu(2, 4);		
+		jQuery("#editForm").validationEngine("attach");
+		
+		jQuery("#priceUnitSel").change(function(){
+			if(jQuery(this).val()=="-1"){
+				jQuery("#otherPriceUnit").show();
+			}else{
+				jQuery("#otherPriceUnit").hide();
+				jQuery("#priceUnit").val(jQuery(this).val());
+			}
+		});
+		
+		jQuery("#otherPriceUnit").blur(function(){
+			jQuery("#priceUnit").val(jQuery(this).val());
+		});
+		
+		var category=new Asto.util.Selector({
+			selects:["#c1","#c2","#c3"],
+			url:"#springUrl('/mycompanyprice/queryCategoryCompanyPriceByCode.htm')",
+			changeCallback:function(c,idx){
+				jQuery("#categoryCompanyPriceCode").val(category.getValue());
+			}
+		});
+		
+		category.init({
+			initCode:"",
+			rootCode:""
+		});
+		
+		var areaSelector = new Asto.util.Selector({
+			selects:["#area-0","#area-1","#area-2"],
+    		url:"#springUrl('/category/areaChild.htm')",
+			changeCallback:function(c,idx){
+				jQuery("#areaCode").val(areaSelector.getValue());
+			}
+    	});
+	
+		areaSelector.init({
+    		##rootCode:"10011000",
+			rootCode:"1001",
+    		initCode:"$!{areaCode}"
+    	});
+	});
+	
+	## 判断最大价格
+	function checkMaxPrice(field, rules, i, options){
+		var min = parseInt(jQuery("#minPrice").val());
+		var max = parseInt(jQuery("#maxPrice").val());
+		if(min>0&&max>0&&min<max){
+			##jQuery("#maxError").hide();
+		}else{
+			##jQuery("#maxError").html("<span>* 必须大于最小价格： "+min+"</span>")
+			##jQuery("#maxError").show();
+			##var str = "<span>* 必须大于最小价格： "+min+"</span>"
+			##jQuery(".maxPriceformError").html("<div class='formErrorContent'><span>"+str+"</span></div>");
+			rules.push('required');
+			return "价格范围填写不正确";
+		}
+	}
+	
+</script>

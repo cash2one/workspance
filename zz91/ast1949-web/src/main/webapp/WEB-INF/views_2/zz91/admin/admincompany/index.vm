@@ -1,0 +1,120 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/admin/company.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		var companyGrid=Ext.create("ast.ast1949.admin.company.MainGrid",{
+			region:"center",
+			myToolbar:[{
+				text:"手动注册",
+				iconCls:"add16",
+				handler:function(btn){
+					window.open(Context.ROOT+"/zz91/admin/admincompany/registByAdmin.htm");
+				}
+			},{
+				text:"更改活动",
+				iconCls:"edit16",
+				handler:function(){
+					var row=companyGrid.getSelectionModel().getLastSelected();
+					if(row==null || typeof(row)=="undefined"){
+						return false;
+					}
+					
+					var companyId=row.get("id");
+					
+					// TODO 更改活动情况
+					var tree=Ext.create("ast.ast1949.util.Tree",{
+						rootCode:"2003",
+						rootexpanded:true,
+						selType:"checkboxmodel",
+						multiSelect:true
+					});
+					
+					var win=Ext.create("Ext.Window",{
+						width:250,
+						height:350,
+						modal:true,
+						layout:"fit",
+						items:[tree],
+						buttons:[{
+							text:"选择",
+							iconCls:"accept16",
+							handler:function(btn,e){
+								//给出提示变更
+								
+								//tree选中项
+								var model=tree.getSelectionModel().getSelection();
+								var codeArr=new Array();
+								var labelArr=new Array();
+								for(var i=0;i<model.length;i++){
+									codeArr.push(model[i].getId());
+									labelArr.push(model[i].data.text);
+								}
+								
+								//保存最新的
+								Ext.Ajax.request({
+                					url: Context.ROOT+"/zz91/admin/admincompany/reAssignActiveFlag.htm",
+                					params: {
+                						activeFlag: labelArr.join(","),
+										activeFlagCode:codeArr.join(","),
+										companyId:companyId
+                					},
+                					success: function(response){
+                						companyGrid.getStore().load();
+                					}
+                				});
+								
+								this.up("window").close();
+							}
+						},{
+							text:"关闭",
+							iconCls:"close16",
+							handler:function(btn,e){
+								this.up("window").close();
+							}
+						}]
+					});
+					
+					win.show();
+				}
+			},{
+				text:"高级搜索",
+				iconCls:"find16",
+				id:"adsearch",
+				handler:function(){
+					companyGrid.advanceSearch(this);
+				}
+			},"-",{
+				text:"编辑",
+				iconCls:"edit16",
+				handler:function(){
+					var record=this.up("grid").getSelectionModel().getLastSelected();
+					window.open(Context.ROOT+"/zz91/crm/company/detail.htm?companyId="+record.get("id")); 
+				}
+				
+			},"->",{
+				text:"导出参与活动公司",
+				handler:function(){
+					
+					//选择活动，跳转到导出页面
+					var activeCode=companyGrid.getStore().proxy.extraParams["activeFlag"];
+					if(typeof(activeCode)=="undefined"){
+						Ext.Msg.alert(Context.MSG_TITLE, "只能时出参与活动的公司信息，请先查找出相关活动的公司信息！");
+						return false;
+					}
+					
+					window.open(Context.ROOT+"/zz91/admin/admincompany/exportCompany.htm?activeFlag="+activeCode);
+					
+				}
+			}],
+			queryUrl:Context.ROOT+"/zz91/admin/admincompany/queryCompany.htm"
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[companyGrid]
+		});
+		
+	});
+</script>

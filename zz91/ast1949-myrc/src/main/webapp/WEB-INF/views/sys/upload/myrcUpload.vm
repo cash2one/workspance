@@ -1,0 +1,277 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN">
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/base.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/myrc_album.css" />
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script>
+<style type="text/css">
+	#uploadImg{width:80px; font-size:12px; overflow:hidden;}
+	#file{ position:absolute; z-index:100; margin-left:0px; font-size:60px;opacity:0;filter:alpha(opacity=0); margin-top:-5px;}
+</style>
+<style>
+/*file容器样式*/
+a.files {
+width:80px;
+height:80px;
+line-height:80px;
+text-align:center;
+display:block;
+border:1px solid #BEBEBE;
+text-decoration:none;
+position:relative;
+overflow:hidden;
+}
+##a.files:hover {
+##background-color:#FFFFEE;
+##background-position:0 -30px;
+##}
+/*file设为透明，并覆盖整个触发面*/
+a.files input {
+width:80px;
+height:84px;
+font-size:30px;
+cursor:pointer;
+filter:alpha(opacity=0);
+opacity:0;
+position:absolute;
+left:-4px;
+top:-2px;
+border:none;*border:#ffffff;
+outline:none;
+}
+</style>
+
+</head>
+<body style="padding:0px">
+	
+    <div class="overlaylist" id="upload4" >
+      <div class="albtn mb20" > <span class="f14">选择您要上传图片的来源</span>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok bold" font-weight:bold value="本地上传"  id="LocalUpload" />
+        &nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok" value="相册上传" id="AlbumUpload" onclick="albumUpload()"/>
+		<input type="hidden" id="num" value=""/>
+      </div>
+      <!--end albtn-->
+		<div class="alblock clearfix" min-width:0px; >
+		<form  id="uploadForm" action="#springUrl('/sys/upload/ieupload.htm')" method="post" enctype="multipart/form-data" target="uploadActionForm" >
+        <div class="alblock-box mt8">
+          <ul class="list_small" id="add">
+            <li id="after">
+			   <a href="javascript:void(0);" class="files">+添加图片<input type="file" name="uploadfile" id="file1" style="border:0"/></a>
+            </li>
+          </ul>
+		  <input type="hidden" id="albumId" name="albumId" value="$!{albumId}"/>
+        </div>
+		<iframe id="uploadActionForm" name="uploadActionForm" style="display: none;"></iframe>
+        </form>
+        <!--end alblock-box-->
+        <div class="page cb"> </div>
+      </div>
+      <!--end alblock-->
+	  <form id="form1" method="post" action="#springUrl('/sys/upload/doMyrcUpload.htm')">
+      <div class="albtn mt15"><a id="upload5" class="btn btn-small" style="padding:5px 22px;color:#ccc;cursor:pointer;" onclick="submt(form1)">上传</a>
+		#if($!{uploadFlag}==1&&$!{memberShipCode}!="10051000")
+		<span style=" color:#FF0000 ;display: none" id="showId">最多可上传5张</span>
+		#else
+		<span style=" color:#FF0000 ;display: none" id="showId">最多可上传1张</span>
+		#end
+	  </div>
+	  <input type="hidden" id="uploadCount" name="uploadCount" value="0"/>
+	  <input type="hidden" id="photoPath" name="photoPath" value=""/>
+	  <input type="hidden" id="photoIds" name="photoIds" value=""/>
+	  <input type="hidden" id="limitCount" name="limitCount" value="$!{limitCount}"/>
+	  <input type="hidden" id="uploadFlag" name="uploadFlag" value="$!{uploadFlag}"/>
+	  </form>
+      <!--end albtn-->
+      <div class="alhint mt15">提示：支持.jpg,.jpeg,.gif,.bmp,.png格式的图片，图片大小不超过2M，建议使用jpg格式的图片，重复图片只能上传1次</div>
+     <!--end alhint--> 
+    </div>
+    <!--end overlaylist--> 
+  </div>
+ 
+  <!--end mbox--> 
+
+  <!--end nbox--> 
+<!--end overlaybox--> 
+  <script src="http://img0.zz91.com/zz91/myrc/js/album.js"></script> 
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery("#continueUploadBtn").click(function(){
+			jQuery("#uploadWell").show();
+		});
+	
+		jQuery("#yesBtn").click(function(){
+		
+			//parent.uploadCallback("$!{success}",uploadedFile);
+			window.parent.Asto.util.Callback.submit("true", uploadedFile);
+		});
+		
+		##jQuery("#upload5").click(function(){
+		##	var g=$("ul li:eq(0)").attr("id");
+		##	var t="after"
+		##	if(g!=t){
+			 
+		##	}
+			
+		##})
+		
+}); 
+
+var uploadedFile = {};
+var uploadedNum=0;
+
+//处理托拽上传
+(function(){
+		jQuery("#file1").bind("change",function(){
+			jQuery("#uploadForm").submit();
+		});
+})();
+function delayPicChange(id, address) {
+	jQuery("#previewImg" + id).attr("src", "$!{address.resource}/" + address);
+}
+function ieuploadresult(id, path){
+	if(id!="" && path!=""){
+		//改变上传按钮的颜色
+		var a=jQuery("#uploadCount").val();
+		if(a==0){
+			document.getElementById("upload5").style.color="#000000";
+		}
+	    var num=Number(jQuery("#uploadCount").val())+Number(1);
+		var numCount=Number(jQuery("#num").val())+Number(1);
+		//点击上传图片多少次
+		jQuery("#num").val(numCount);
+	    //最多上传多少张
+	    jQuery("#uploadCount").val(num);
+		//图片地址
+		var paths=jQuery("#photoPath").val()+","+path;
+		jQuery("#photoPath").val(paths);
+		//图片id
+		var pIds=jQuery("#photoIds").val()+","+id;
+		jQuery("#photoIds").val(pIds);
+					 
+		var t="<li  id=\" uy"+id+"\" onclick=\"delPhoto("+id+")\"><img src=\"http://img0.zz91.com/zz91/myrc/images/upload.gif\" width=\"80\" height=\"80\" id=\"previewImg"+id+"\"/><input type=\"hidden\" id=\"num"+id+"\" value=\""+numCount+"\"/></li>"
+		jQuery("#after").before(t);
+			if(num==$!{limitCount}){
+				jQuery("#showId").show();
+			    jQuery("#after").hide();
+			 }
+		var url = "delayPicChange('" +id + "','" + path+ "')";
+		setTimeout(url, 2000);
+	}
+}
+
+function deleteUploadedPhoto(node,id){
+
+	jQuery(node).parent().parent().fadeOut();
+	
+	if(id!=null){
+		delete uploadedFile[id];
+		if(uploadedNum>0){
+			uploadedNum--;
+		}
+		jQuery.ajax({
+			url:"#springUrl('/photo/doAjaxRemove.htm')",
+			data:{"id":id},
+			dataType:"json",
+			success:function(output){
+			}
+		});
+	}
+
+}
+ function delPhotoAbum(id){
+ 	if(confirm("确定要删除吗？")){
+ 		jQuery.ajax({
+			url:'#springUrl('/photoabum/delPhotoAbum.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			async:false,
+			success:function(req){
+				if(req.success){
+					jQuery("#uu"+id).hidden();
+				}
+			}
+			
+		})
+	}
+ }
+ 
+ function albumUpload(){
+ 	window.location="#springUrl('/sys/upload/albumUpload.htm?albumId=')"+$!{albumId}+"&groupId=1&limitCount=$!{limitCount}&uploadFlag=$!{uploadFlag}";
+ }
+ 
+ function delPhoto(id){
+ 		jQuery.ajax({
+			url:'#springUrl('/photoabum/delPhotoAbum.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			async:false,
+			success:function(req){
+				if(req.success){
+				    //图片地址
+					var str = jQuery("#photoPath").val();
+					var arr = str.split(",");
+					//图片id
+					var pid = jQuery("#photoIds").val();
+					var pids = str.split(",");
+					
+					var path="";
+					var ids=""
+					var numvalue=jQuery("#num"+id).val();
+					for(var i=1;i<arr.length;i++){
+					if(i==numvalue){
+						arr[i]="";
+						pids[i]="";
+					}
+					path=path+","+arr[i];
+					ids=ids+","+pids[i];
+					}
+					var str = jQuery("#photoPath").val(path);
+				    jQuery("#photoIds").val(ids);
+					var num=Number(jQuery("#uploadCount").val())-Number(1);
+					if(num==0){
+						document.getElementById("upload5").style.color="#ccc";
+					}
+					jQuery("#uploadCount").val(num);
+					jQuery("#uy"+id).hide();
+					if(num<$!{limitCount}){
+						jQuery("#after").show();
+						jQuery("#showId").hide();
+					}
+					//改变file的值可以一张图片多次上传
+					jQuery("#file1").val("");
+				}
+			}
+			
+		})
+ }
+ function submt(frm){
+	var g=$("ul li:eq(0)").attr("id");
+	var t="after"
+	if(g!=t){
+		frm.submit();
+	}
+			 
+		
+ }
+function refersh(){
+	window.parent.location.reload();
+ }
+jQuery(function(){
+	myrc.menu();	
+})
+</script>
+	
+  <!--end yangContent-->
+</body>
+</html>

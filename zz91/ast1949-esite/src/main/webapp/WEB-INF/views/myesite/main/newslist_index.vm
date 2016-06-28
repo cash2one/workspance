@@ -1,0 +1,41 @@
+<div id="newslist_index" class="bodyCont moveChild mb"> 
+	<div class="bodyContTitle"> 
+		#set($navTitle="公司动态")
+		#foreach($!{obj} in $!{navColumnConfig})
+			#if($!{obj.id}=="gsdt")
+				#set($navTitle=$!{obj.t})
+			#end
+		#end
+##        #foreach($main in $!{mainConfig})
+##            #if(${main.id} == "newslist_index")
+##                #set($navTitle=${main.title})
+##            #end
+##        #end
+        <span class="titleLinkColor titleName t" onclick="Move.editTitle(this.parentNode.parentNode);">$!{navTitle}</span>
+        <a href="#springUrl('/gsdt.htm')" class="titleLinkColor more">更多 >></a>
+    </div>
+	<div class="bodyContContent rightConteWidth">
+		<div class="bodyContContentRightCont mainTextColor">
+           #cacheFragment("$!{address.esiteFragment}/esite/newsList.htm?cid=$!{cid}","","","")
+			#if(${listSize}==0)
+                <div style="text-align: center">
+                    尚未发布过公司动态,<a href="$!{address.myrc}/esite/esitenews/index.htm" class="topicLink" target="_blank">点击此处发布！</a>
+                </div>
+            #end
+            <div class="contacts">
+                <ul>
+                    #foreach($esiteNewsList in $!{list})
+                        <li>
+   ##                         <a href="#springUrl('/gsdtdetail.htm')?id=${esiteNewsList.id}" class="topicLink">${esiteNewsList.title}</a>
+                            <a href="#springUrl('/')news$!{esiteNewsList.id}.htm" class="topicLink">${esiteNewsList.title}</a>
+							<span class="grey">
+								#printFragmentDate('yyyy-MM-dd HH:mm:ss',$!{esiteNewsList.postTime})
+							</span>
+                        </li>
+                    #end
+                </ul>
+            </div>
+			#end
+        </div>
+    </div>
+</div>

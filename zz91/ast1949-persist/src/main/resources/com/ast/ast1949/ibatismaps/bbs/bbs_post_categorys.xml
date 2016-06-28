@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPostCategory">
+
+	<typeAlias alias="bbsPostCategory" type="com.ast.ast1949.domain.bbs.BbsPostCategory" />
+	<resultMap id="bbsPostCategoryResult" class="bbsPostCategory">
+		<result property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="state" column="state" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--根据父类别获取所有子类别-->
+	<select id="queryCategoryByParentId" parameterClass="java.lang.Integer" resultMap="bbsPostCategoryResult">
+		select id,parent_id,name,state,gmt_created,gmt_modified
+		from bbs_post_categorys
+		where parent_id=#parentId# and state=0
+		order by gmt_created asc
+	</select>
+	<!--更新类别信息-->
+	<update id="updateCategoryById" parameterClass="bbsPostCategory">
+		update bbs_post_categorys
+		set gmt_modified=now()
+		<isNotEmpty prepend="," property="name">
+			 name=#name#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="state">
+			 state=#state#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+	<!--添加类别 -->
+	<insert id="insertCategory" parameterClass="bbsPostCategory">
+		insert into `bbs_post_categorys`
+		(
+		`parent_id`,
+		`name`,
+		`state`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#parentId#,
+		#name#,
+		#state#,
+		now(),
+		now()
+		)	
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<!--根据父类别获取最大子类别的结点id -->
+	<select id="queryMaxCategoryIdByParentId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select max(id)
+		from bbs_post_categorys
+		where parent_id=#parentId# and state=0
+	</select>
+	<!--根据id获取结点信息-->
+	<select id="querySimpleCategoryById" parameterClass="java.lang.Integer" resultMap="bbsPostCategoryResult">
+		select id,parent_id,name,state,gmt_created,gmt_modified
+		from bbs_post_categorys
+		where id=#id#
+	</select>
+	<!--类别库的所有记录-->
+	<select id="queryAllCategory" resultMap="bbsPostCategoryResult">
+		select id,parent_id,name,state,gmt_created,gmt_modified
+		from bbs_post_categorys
+		where state='0'
+	</select>
+</sqlMap>

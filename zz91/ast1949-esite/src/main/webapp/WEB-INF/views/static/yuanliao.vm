@@ -1,0 +1,272 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+ <script>
+    var firstpic = "";
+    function showPic(url) {
+         var pdefautl = document.getElementById("pdefault");
+           if (url) {
+                    pdefautl.src = url;
+           }
+           if (pdefautl.height > 250) {
+                   pdefautl.height = 250;
+           }
+    }
+ </script>
+     <div id="content2" class="bodyRight  filterDom">
+		<div id="company_index" class="bodyCont moveChild mb">
+			<div class="bodyContTitle">
+				<span class="titleLinkColor titleName t"> 您所在的位置： <a href="#springUrl('index.htm')" target="_blank" class="titleLinkColor">首页</a> &gt; <a href="#springUrl('zxgq.htm?mark=1')" class="titleLinkColor">最新原料供求</a> &gt; #printProductType($!{yld.yuanliao.yuanliaoTypeCode} "" $!{yld.yuanliao.title}) </span>
+			</div>
+			<div class="bodyContContent rightConteWidth">
+				<div class="bodyContContentRightCont mainTextColor">
+					<div class="p_box1">
+						<div class="p_pic_main">
+							<div class="p_pic_default">
+								<img src="$!{address.images}/global/noimage.gif" width="250" height="250" id="pdefault" alt="#printProductType($!{yld.yuanliao.yuanliaoTypeCode} "" $!{yld.yuanliao.title})" data-bd-imgshare-binded="1" />
+                             </div>
+							 <div class="p_pic">
+								#if($!{list.size()}>0)
+									#foreach($li in $!{list})
+										<div class="thumb">
+											<img src="$!{address.thumb}$!{address.resource}/$!{li.picAddress}&width=56&height=56" width="56" height="56" onclick="showPic('$!{address.thumb}$!{address.resource}/$!{li.picAddress}&width=250&height=250')" />
+										</div>
+										#if($velocityCount==1)
+											<script>
+	                    	       				 firstpic="$!{address.thumb}$!{address.resource}/$!{li.picAddress}&width=250&height=250";
+											</script>
+										#end
+									#end
+								#else
+									<div class="thumb">
+										<img src="$!{address.images}/global/noimage.gif" width="56" height="56" />
+									</div>
+								#end
+								<script>
+                                     showPic(firstpic);
+                                 </script>
+							 </div>
+						</div>
+						<div class="p_rightmain">
+							<h2>#printProductType($!{yld.yuanliao.yuanliaoTypeCode} "" $!{yld.yuanliao.title})</h2>
+							<p style="margin-top: 8px;">
+								<span class="ct">供应价格：</span>
+								<span class="cc"> 
+									<span class="detailsInfo"> 
+										#if($!{yld.yuanliao.minPrice})
+											$!{yld.yuanliao.minPrice}-$!{yld.yuanliao.maxPrice}$!{yld.yuanliao.priceUnit}/$!{yld.yuanliao.unit} 
+										#else
+											#if($!{yld.yuanliao.price}&&$!{yld.yuanliao.price}!='0')
+												$!{yld.yuanliao.price}$!{yld.yuanliao.priceUnit}/$!{yld.yuanliao.unit} 
+											#else
+												面议
+											#end
+										#end 
+									</span> 
+								</span>
+							</p>
+							<p>
+								<span class="ct"> 供应数量：</span>
+								<span class="cc"> 
+									<span class="detailsInfo">
+										#if(!$!{yld.yuanliao.quantity}||$!{yld.yuanliao.quantity}==0)不限 #else $!{yld.yuanliao.quantity}#end#if($!{yld.yuanliao.quantity}&&$!{yld.yuanliao.quantity}!=0)$!{yld.yuanliao.unit}#end
+									</span>
+								</span>
+							</p>
+							#if($!{yld.yuanliao.provideStatus})
+							<p>
+								<span class="ct">供应情况：</span>
+								<span class="cc"> <span class="detailsInfo">#if($!{yld.yuanliao.provideStatus}=='0') #printProductType($!{yld.yuanliao.yuanliaoTypeCode} "长期" "") #else #printProductType($!{yld.yuanliao.yuanliaoTypeCode} "不定期" "") #end  </span> </span>
+							</p>
+							#end
+							#if($!{yld.categoryMainLabel})
+							<p>
+								<span class="ct">厂家（产地）：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.categoryMainLabel} </span> </span>
+							</p>
+							#end
+							<p>
+								<span class="ct">牌号：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.yuanliao.tradeMark} </span> </span>
+							</p>
+							#if($!{yld.typeLabel})
+							<p>
+								<span class="ct">类型：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.typeLabel} </span> </span>
+							</p>
+							#end
+							#if($!{yld.address})
+							<p>
+								<span class="ct">货物所在地：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.address} </span> </span>
+							</p>
+							#end
+							#if($!{yld.yuanliao.sendTime})
+							<p>
+								<span class="ct">发货时间：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.yuanliao.sendTime}天内发货 </span> </span>
+							</p>
+							#end
+							#if($!{yld.gmtSend})
+							<p>
+								<span class="ct">发布日期：</span>
+								<span class="cc"> <span class="detailsInfo"> $!{yld.gmtSend} </span> </span>
+							</p>
+							#end
+							<p>
+								<span class="ct">信息有效期：</span>
+								<span class="cc"> <span class="detailsInfo"> 截止$!date.format('yyyy-MM-dd',$!{yld.yuanliao.expireTime})</span> </span>
+							</p>
+							<div class="action">
+								<a href="#springUrl('lxfs.htm')" class="contact_btn">查看联系方式</a>
+								<a href="javascript:void(0)" onclick="proYuanliaoMessage($!{yld.yuanliao.id})" class="msg_btn">点击留言</a>
+								<a href="javascript:void(0)" id="Js_collectBtn1" title="点此收藏" class="collection_btn">收藏此#printProductType($!{yld.yuanliao.yuanliaoTypeCode})</a>
+							</div>
+						</div>
+					</div>
+					<div style="clear:both"></div>
+					<div class="p_dtitle">
+						<span>详细内容</span>
+					</div>
+					<div class="Product_Details_Content">
+						<p>
+							牌号：$!{yld.yuanliao.tradeMark}
+						</p>
+						#if($!{yld.typeLabel}&&$!{yld.typeLabel}!="")
+						<p>
+							产品类型：$!{yld.typeLabel}
+						</p>
+						#end
+						#if($!{yld.processLabel}&&$!{yld.processLabel}!="")
+						<p>
+							加工级别：$!{yld.processLabel}
+						</p>
+						#end
+						#if($!{yld.charaLabel}&&$!{yld.charaLabel}!="")
+						<p>
+							特性级别：$!{yld.charaLabel}
+						</p>
+						#end
+						#if($!{yld.usefulLabel}&&$!{yld.usefulLabel}!="")
+						<p>
+							用途级别：$!{yld.usefulLabel}
+						</p>
+						#end
+						#if($!{yld.yuanliao.color}&&$!{yld.yuanliao.color}!="")
+						<p>
+							颜色：$!{yld.yuanliao.color}
+						</p>
+						#end
+						#if($!{yld.yuanliao.density}&&$!{yld.yuanliao.density}!="")
+						<p>
+							密度：$!{yld.yuanliao.density}
+						</p>
+						#end
+						#if($!{yld.yuanliao.hardness}&&$!{yld.yuanliao.hardness}!="")
+						<p>
+							硬度：硬度高
+						</p>
+						#end
+						#if($!{yld.yuanliao.tensile}&&$!{yld.yuanliao.tensile}!="")
+						<p>
+							拉伸强度：拉伸高
+						</p>
+						#end
+						#if($!{yld.yuanliao.bending}&&$!{yld.yuanliao.bending}!="")
+						<p>
+							弯曲强度：弯曲高
+						</p>
+						#end
+						<h4 class="line"></h4>
+						$!{yld.yuanliao.description}
+					</div>
+					<div style="height:80px"></div>
+					<div class="p_dtitle">
+						<span>相关供求</span>
+					</div>
+					<div>
+						<ul class="plist clearfix">
+							#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?companyId=$!{yld.yuanliao.companyId}&size=5", "", "", "")
+								#foreach($li in $list)
+								<li class="bodyContContentImgLi">
+									<div class="image imgBorder">
+										<a class="topicLink" href="#springUrl('/yuanliao')$!{li.yuanliao.id}.htm" target="_blank"> 
+											#if($!{li.picAddress}&&$!{li.picAddress}!="")
+												<img src="$!{address.thumb}$!{address.resource}/$!{li.picAddress}&width=104&height=93" width="104" height="93" class="border" alt="#if($!{li.yuanliao.yuanliaoTypeCode}=="10331001")求购#else供应#end$!{li.yuanliao.title}" />
+											#else
+												<img src="$!{address.images}/global/noimage.gif" width="100" height="80" class="border" alt="#if($!{li.yuanliao.yuanliaoTypeCode}=="10331001")求购#else供应#end$!{li.yuanliao.title}" />
+											#end
+										</a>
+									</div>
+									<p>
+										<a class="topicLink" href="#springUrl('/yuanliao')$!{li.yuanliao.id}.htm" target="_blank">#if($!{li.yuanliao.yuanliaoTypeCode}=="10331001")求购#else供应#end$!{li.yuanliao.title} </a>
+									</p>
+								</li>
+								#end
+							#end
+						</ul>
+					</div>
+					<iframe name="actionFrame" src="javascript:void(0);" height="0" width="0" frameborder="0" scrolling="auto"></iframe>
+				</div>
+			</div>
+		</div>
+	 </div>
+#if($!{sessionUser})
+    <input type="hidden" id="loginFlag" value="1" />
+ #else
+    <input type="hidden" id="loginFlag" value="0" />
+ #end
+<script>
+	$(document).ready(function(){
+		## 登录弹出框
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{esiteAddress}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+			
+		
+		jQuery("#loginBtn").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				loginBox.close();
+				window.parent.location.reload();
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+		});
+		
+		## 收藏按钮 点击弹出 收藏页面
+		var collectBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{yld.yuanliao.id}&favoriteTypeCode=10091014&title=$!{yld.yuanliao.title}",
+			destUrl:"$!{esiteAddress}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+		jQuery("#Js_collectBtn1").click(function(){
+			var id = ${yld.yuanliao.id};
+			var title = "$!{yld.yuanliao.title}";
+			title = encodeURI(title);
+			if(jQuery("#loginFlag").val()==0){
+    			Asto.util.Callback.setSubmitCallback(function(success, data){
+					jQuery("#loginFlag").val(1);
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						collectBox.close();
+					});
+					loginBox.close();
+					collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091014&title="+title+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+				});
+				
+				loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+			}else{
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+					if(success=="false"){
+						jQuery("#loginFlag").val(0);
+					}
+				});
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091014&title="+title+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+			}
+		});
+		
+	});
+</script>

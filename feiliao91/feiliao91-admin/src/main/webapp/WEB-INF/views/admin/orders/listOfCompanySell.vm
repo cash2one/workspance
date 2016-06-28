@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>该公司产品信息</title>
+	<script type="text/javascript" src="#springUrl('/js/ext/adapter/jquery/jquery.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/js/ext/adapter/jquery/ext-jquery-adapter.js')" ></script>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<!--new import S-->
+	<script type="text/javascript" src="#springUrl('/js/admin/lib/ComboTree.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/js/admin/lib/RowExpander.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/app/orders/orders.js')"></script>
+	<!--new import E-->
+	<script type="text/javascript">
+		Ext.onReady(function() {
+    	var grid = new ast.feiliao91.admin.orders.ResultGrid({
+			id:_C.RESULT_GRID,
+			layout:"fit",
+			region:"center"
+		});
+		grid.searchByCompanySell("$!{companyId}");
+		
+		grid.on('cellclick', function (grid, rowIndex, columnIndex, e) {
+				var btn = e.getTarget('.orderDetailBtn');
+				if(btn){
+					row = grid.getSelectionModel().getSelected();
+					var infoform=new ast.feiliao91.admin.orders.OrdersInfoForm({
+					});
+					infoform.loadInit(row);
+					var win = new Ext.Window({
+						id:"updatephonewin",
+						title:"订单详情",
+						width:800,
+						modal:true,
+						autoHeight:true,
+						items:[infoform]
+    				});
+    				win.show();
+				}
+			},this);
+		
+		var viewport = new Ext.Viewport({
+			layout : "border",
+			items : [grid]
+		});
+		
+		var form = new ast.feiliao91.admin.orders.SearchForm({
+        		title:"搜索订单信息",
+        		collapsible: true,
+                animCollapse: false,
+                frame:true,
+                titleCollapse:true,
+                style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+                height:300,
+                width:300,
+                targetGrid:grid
+    		});
+    
+    		form.render(Ext.getBody());
+    
+        	form.resizer = new Ext.Resizable(form.el, {
+                minHeight:50,
+                minWidth:100,
+                handles: "n",
+                pinned: true,
+                transparent:true,
+                resizeElement : function(){
+                    var box = this.proxy.getBox();
+                    this.proxy.hide();
+                    form.setHeight(box.height);
+                    return box;
+                }
+            });
+		
+    });
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+    <table width="100%"  border="0" cellpadding="0" cellspacing="0" style="WORD-BREAK: break-all;">
+        <tr>
+            <td align="left" height="28" style="border-bottom:2px solid #FF7E00; padding:0 8px; font-weight:bold;font-family:Microsoft YaHei;"><span style="font-size:14px">给我留言</span></td>
+        </tr>
+        <tr>
+            <td></td>
+        </tr>
+        <tr>
+            <td background="img/img/bg.gif">
+                <table width="100%"  border="0" cellpadding="0" cellspacing="0" bgcolor="#CEECC4">
+                    <tr>
+                        <td>
+                            <form name="onlineMessageForm" id="onlineMessageForm" method="post" action="#" onsubmit="return false;">
+                                <table width="100%"  border="0" cellpadding="3" cellspacing="0">
+                                    <tr>
+                                        <td bgcolor="#FAFDF9"></td>
+                                        <td bgcolor="#FAFDF9" height="80">
+                                           <img src="$!{address.img}/front/images/common/look_link.gif" />
+										</td>
+									</tr>
+									<tr>
+										<td width="130" align="right" nowrap bgcolor="#FAFDF9" class="ttext_b1">
+											<font color="RED">*</font>
+											留言内容：
+										</td>
+										<td bgcolor="#FAFDF9" height="120">
+											<textarea name="content" cols="60" rows="6" class="blak" id="content" style="border:1px solid #CCC;padding:5px;line-height:18px;height:80px; width:540px;background:url($!{address.images}/global/logobg.gif) right -10px no-repeat;overflow:hidden;" >$!{content}</textarea>
+										</td>
+									</tr>
+									<tr>
+										<td align="right" nowrap bgcolor="#FAFDF9" class="ttext_b1">
+											<font color="RED">*</font>
+											您的邮箱：
+										</td>
+										<td bgcolor="#FAFDF9" height="28">
+                                            <table>
+                                                <tr>
+                                                    <td>
+														<input name="email" type="text" id="email" style="border:1px solid #CCC;height:16px; padding:2px;line-height:16px;" value="$!{sessionUser.email}" size="30" maxlength="40" #if($!{sessionUser}) disabled="true" #end />
+													</td>
+                                                    <td style="padding:5px;">
+														<span class="emailtishi_fload" id="tishi">
+															<font style=" color:#FF0000">非常重要！</font>
+															<br />
+															请输入您的注册EMAIL，如果您还未注册，请务必填写真实电子邮件<br />
+															<font color="#999999" >
+																没有电子邮件？推荐使用免费的
+																<a href="http://reg.163.com/register/Register.jsp?url=http://mscan.163.com/QuickCreateMail.jsp" target="_blank" class="NOL">网易邮箱</a>
+															</font>
+														</span>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									#if(!$!{sessionUser})
+                                    <tr>
+                                        <td align="right" nowrap bgcolor="#FAFDF9" class="ttext_b1">
+                                            <font color="RED">*</font>
+                                            您的密码：
+                                    	</td>
+                                        <td bgcolor="#FAFDF9" height="28">
+                                            <input name="password" type="password" style="border:1px solid #CCC;height:16px; padding:2px;line-height:16px;" id="password" value="" size="30" maxlength="40" />
+                                    	</td>
+                                    </tr>
+									#end
+                                    <tr>
+                                        <td align="right" nowrap bgcolor="#FAFDF9" class="ttext_b1"></td>
+                                        <td bgcolor="#FAFDF9" height="28">
+                                            <input class="submit" type="submit" name="onlineMessageSubmitBtn" id="onlineMessageSubmitBtn" value="确 定" style="border:1px solid #CCC;height:24px; width:120px;cursor:pointer" />
+                                    	</td>
+                                    </tr>
+                                   
+                                    <tr>
+                                        <td bgcolor="#FAFDF9" class="ttext_b1">&nbsp;</td>
+                                        <td bgcolor="#FAFDF9"></td>
+                                    </tr>
+								</table>
+                                <input type="hidden" name="title" id="title" value="$!{inquiry.title}" />
+                                <input type="hidden" name="receiverAccount" id="receiverAccount" value="$!{inquiry.receiverAccount}" />
+                                <input type="hidden" name="beInquiredId" id="beInquiredId" value="$!{inquiry.beInquiredId}" />
+                                <input type="hidden" name="beInquiredType" id="beInquiredType" value="$!{inquiry.beInquiredType}" />
+							</form>
+						</td>
+					</tr>
+				</table>
+            </td>
+        </tr>
+	</table>
+	
+
+<script type="text/javascript">
+function cTrim(sInputString,iType) {
+	var sTmpStr = ' '
+	var i = -1
+	if(iType == 0 || iType == 1) {
+        while(sTmpStr == ' ') {
+            ++i
+            sTmpStr = sInputString.substr(i,1)
+        }
+        sInputString = sInputString.substring(i)
+    }
+	
+    if(iType == 0 || iType == 2) {
+        sTmpStr = ' '
+        i = sInputString.length
+        while(sTmpStr == ' ') {
+            --i
+            sTmpStr = sInputString.substr(i,1)
+        }
+        sInputString = sInputString.substring(0,i+1)
+    }
+    return sInputString
+}
+
+
+	jQuery(document).ready(function(){
+		jQuery("#onlineMessageForm").submit(function(){
+			var _content = jQuery("#content").val();
+			if (_content == "请不要在留言内容（此方格内）中留下您公司的信息或联系方式，否则对方客户有可能收不到您所发送的信息" ||  _content == ""){
+            	alert("请输入留言内容");
+           		jQuery("#content").focus();
+            	return false;
+            }
+			
+			if(cTrim(_content,0).length<=0) {
+				alert("请输入留言内容");
+           		jQuery("#content").focus();
+            	return false;
+			}
+			//alert(cTrim(jQuery("#content").val(),0).length);
+			if(jQuery("#email").val().length<=0) {
+                alert("请输入电子邮件!");
+                jQuery("#email").focus();
+                return false;
+            }
+			
+			if(!/^(.+)@(.+)(\.\w+)+$/ig.test(jQuery("#email").val())){
+                alert("电子邮箱格式错误!");
+                jQuery("#email").focus();
+                return  false;
+            }
+			
+			if(typeof(jQuery("#password").val())!="undefined"){
+                /*
+				if(jQuery("#password").val()==""){
+              		alert("请输入登录密码!");
+                	jQuery("#password").focus();
+            	}
+				*/
+				checklogin(jQuery("#email").val(),jQuery("#password").val(),"","","","","$!{address.server}",function(response){
+                    if(response.success){
+                        inquiry();
+                    }else{
+                        alert(response.data);
+                    }
+                });
+			}else{
+				inquiry();
+			}
+		});
+	});
+
+    function inquiry(){
+    	var _data={
+        	receiverAccount:jQuery("#receiverAccount").val(),
+        	beInquiredId:jQuery("#beInquiredId").val(),
+        	beInquiredType:jQuery("#beInquiredType").val(),
+        	title:jQuery("#title").val(),
+        	content:jQuery("#content").val()
+        };
+    
+        jQuery.ajax({
+        	url:"$!{address.server}/inquiry/createInquiry.htm",
+        	type:"POST",
+        	data:_data,
+        	dataType:"json",
+        	success:function(response){
+            	if(response.success){
+            		alert("留言成功");
+            		jQuery("#content").val("");
+            	}else{
+					zz91Util.showmsg(response.data);
+				}
+        	}
+        });
+    }
+</script>

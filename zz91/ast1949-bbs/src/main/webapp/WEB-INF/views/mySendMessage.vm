@@ -1,0 +1,186 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>$!{bbsUserProfilerDO.nickname}_再生互助_$!{siteInfo.site_name}</title>
+<meta name="keywords" content="再生互助,$!{bbsUserProfilerDO.nickname}" />
+<meta name="description" content="欢迎来到$!{bbsUserProfilerDO.nickname}在$!{siteInfo.site_name}-互助社区安的新家" />
+
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+##<script src="http://img0.zz91.com/zz91/tradedetails/js/Png.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="huzhu">
+	#parse("/common/head_search.vm")    	
+    <div class="huzhu_geren">
+		#parse("/common/bbs_info_center.vm")
+        <div class="hg-div3">
+        	<div class="hg-Answer-left">
+            	<div class="myCollection">
+                	<div class="myCollection-title">
+                    	我的私信
+                    </div>
+                   
+                    <div class="cb"></div>
+                </div>
+                <!--end myCollection-->
+                <div class="hg-div3-box">
+                	<div class="hg-div2-nav">
+                        <ul class="fl">
+                            <li><a href="message.htm">收信箱</a></li>
+                            <li>|</li>
+                            <li class="fb"><a href="mySendMessage.htm">发信箱</a></li>
+                            <div class="cb"></div>
+                        </ul>
+                        <div class="hg-write">
+                        	<a href="sendMessage.htm">写私信</a>
+                        </div>
+                        <!--end hg-write-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end hg-div2-nav-->
+                    <div class="PrivateLetter">
+                    	<div class="PrivateLetter-button">
+                        	<ul>
+                            	<li><a onclick="deleteMessage()">删除</a></li>
+                                <li><a onclick="closeEmail();">清空发件箱</a></li>
+                                <div class="cb"></div>
+                            </ul>
+                        </div>
+                        <!--end PrivateLetter-button-->
+                        <div class="PrivateLetter-email">
+                        	<ul id="PrivateLetter_email">
+                            	<li>
+                                	<div class="PrivateLetter-email-div1">
+                                    	<input type="checkbox" class="PrivateLetter-email-checkbox" id="email" />
+                                    </div>
+                                    <div class="PrivateLetter-email-div2 fb">
+                                    	收信人
+                                    </div>
+                                    <div class="PrivateLetter-email-div3 fb">
+                                    	主题
+                                    </div>
+                                    <div class="cb"></div>
+                                    <div class="blackLine"></div>
+                                    <!--end blackLine-->
+                                </li>
+								
+								#foreach($!{inquiry} in $!{page.records})
+                                <li #if($!{inquiry.inquiry.isViewed} == '1') #else class="fb" #end>
+                                	<div class="PrivateLetter-email-div1">
+                                    	<input type="checkbox" class="PrivateLetter-email-checkbox" id="email$!{velocityCount}" name="select" value="$!{inquiry.inquiry.id}"/>
+                                    </div>
+                                    <div class="PrivateLetter-email-div2">
+                                    	#if($!{inquiry.inquiry.receiverAccount}!=0)$!{inquiry.inquiry.receiverAccount}#else 互助社区 #end 
+                                    </div>
+                                    <div class="PrivateLetter-email-div3">
+                                    	<a href="#springUrl('/showmessage')$!{inquiry.inquiry.id}.htm">$!{inquiry.inquiry.title}</a>
+                                    </div>
+                                    <div class="cb"></div>
+                                </li>
+								#end
+##                                <li class="fb">
+##                                	<div class="PrivateLetter-email-div1">
+##                                    	<input type="checkbox" class="PrivateLetter-email-checkbox" id="email5" />
+##                                    </div>
+##                                    <div class="PrivateLetter-email-div2">
+##                                    	SDFSAF
+##                                    </div>
+##                                    <div class="PrivateLetter-email-div3">
+##                                    	<a href="#" target="_blank">谁用灵魂谁用灵魂谁用灵魂谁用灵魂谁用灵魂谁用灵魂</a>
+##                                    </div>
+##                                    <div class="cb"></div>
+##                                </li>
+                            </ul>
+                        </div>
+                        <!--end PrivateLetter-email-->
+                    </div>
+                    <!--end PrivateLetter-->
+                    <div class="hg-page">
+                      #bbsPageNav($page "#springUrl('/mySendMessage.htm')" "" "")
+                    </div>
+                    <!--end hg-page-->
+                </div>
+                <!--end hg-div3-box-->
+            </div>
+			#parse("/common/message_right.vm")
+            <div class="cb"></div>
+        </div>
+        <!--end hg-div3-->
+		#parse("/common/bbs_info_left.vm")
+    </div>
+    <!--end huzhu_geren-->
+    
+</div>
+<!--end huzhu-->
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+
+
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+<script >
+
+
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name='select']"), function(index, obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+
+	//删除信息
+	function deleteMessage(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length == 0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中" + inquiryIds.length + "条私信,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/removeSentInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+
+
+</script>
+
+
+

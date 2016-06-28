@@ -1,0 +1,115 @@
+#set( $layout = "/layout/myrcLayout.vm")
+#leftMenu("1603","","00")
+<div class="myrcNormalFrame">
+	<div class="commTip">
+		<span class="commTipRight">
+			<a href="#springUrl('/credit/creditreference/index.htm')" class="commArrowNews">返回资信参考人列表</a>
+		</span>
+		<div style="clear:both"></div>
+	</div>
+	
+    <form id="form1" name="form1" action="#springUrl('/credit/creditreference/updateReference.htm')" method="post" onsubmit="return false;">
+		<input name="id" type="hidden" id="id" value="$!{reference.id}" />
+		<div class="officetitle">修改资信参考人(打<font style="color:red">*</font>为必填项)</div>
+		<div class="productskuang">
+			<div class="tishiWarn" style="margin:0 0 8px 0;">请务必确认，您所添加的资信参考人，是经过其本人同意的！ </div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="details"><font color="red">*</font>您与资信参考人的关系：</label></div>
+				<div class="products_fill" style="padding-bottom:8px;">
+					<textarea id="details" name="details" rows="8" cols="60" maxlength="250" style="width:480px; height:120px;">$!{reference.details}</textarea>
+                    <div style="clear:both"></div>
+					<span class="grayed" style="line-height:18px;">（不超过250字）参考格式：<br />
+						&quot;某某银行&quot;是本公司开户行，可以证明本公司的金融信用<br />
+						本公司隶属&quot;某某商会/组织&quot;，可作为本公司经营状况的参考<br />
+						&quot;某某公司&quot;是本公司的投资商/采购商/供货商/代理商……，足以证明…… <br />
+					</span>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="name"><font color="red">*</font>参考人姓名：</label></div>
+				<div class="products_fill"><input  id="name" maxLength="50" size="45" name="name" value="$!{reference.name}" /></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="companyName"><font  color=red>*</font>所在公司：</label></div>
+				<div class="products_fill"><input  id="companyName" maxLength="150" size="45" name="companyName" value="$!{reference.companyName}" /></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="address"><font color=red>*</font>联系地址：</label></div>
+				<div class="products_fill"><input id="address" maxLength="127" size="45" name="address" value="$!{reference.address}" /></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="address">电话：</label></div>
+				<div class="products_fill"><input id="address" maxLength="50" size="45" name="tel"  value="$!{reference.tel}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="fax">传真：</label></div>
+				<div class="products_fill"><input class="S" id="fax" maxLength="50" size="45" name="fax" value="$!{reference.fax}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="email">电子邮件：</label></div>
+				<div class="products_fill"><input class="S" id="email" maxLength="50" size="45" name="email" value="$!{reference.email}"/></div>
+			</div>
+			<div style="clear:both"></div>
+			<div class="publishFormSub"> <input type="submit"  value=" 提  交 " name="send" class="buttonMax" /></div>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript" >
+
+jQuery(document).ready(function(){
+	jQuery("#form1").submit(function(){
+		if(!chkfrm()){
+			return false;
+		}
+		
+		jQuery.ajax({
+			url:'#springUrl('/credit/creditreference/updateReference.htm')',
+			data:jQuery("#form1").serialize(),
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					//保存成功后给出提示 或 跳转到提示页面
+					window.location.href="#springUrl('/credit/creditreference/index.htm')";
+				}else{
+					msg.show(req.data);
+					if(req.data="sessionTimeOut"){
+						window.open("#springUrl('/login.htm')");
+					}
+				}
+			},
+			failure:function(){
+				msg.show("commonError");
+			}
+		});
+	});
+});
+
+function chkfrm(){
+	if(jQuery("#details").val().length<=0){
+		alert("请输入您与资信参考人的关系!");
+		jQuery("#details").focus();
+		return false;
+	}
+	if(jQuery("#name").val().length<=0){
+		alert("请输入参考人姓名！");
+		jQuery("#name").focus();
+		return false;
+	}
+	if(jQuery("#companyName").val().length<=0){
+		alert("请输入所在公司！");
+		jQuery("#companyName").focus();
+		return false;
+	}
+	
+	if(jQuery("#address").val().length<=0){
+		alert("请输入联系地址!");
+		jQuery("#address").focus();
+		return false;
+	}
+	
+	return true;
+}
+</script>

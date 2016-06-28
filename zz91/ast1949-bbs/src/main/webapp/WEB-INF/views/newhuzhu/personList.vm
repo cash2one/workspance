@@ -1,0 +1,116 @@
+#set($layout="/layout/personalLayout.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+<script type="text/javascript">
+function deal(c){
+    #if(!$!{sessionUser})
+        Asto.util.Callback.setSubmitCallback(function(success, data){
+			 offer(c);
+        });
+        openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+    #else
+		 offer(c);
+    #end
+}
+function offer(c){
+      jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/inserNoticeOrRecom.htm?")'+"type="+1+"&category="+2+"&contentId="+c,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.i>0){
+						alert("关注成功"); 
+				 	}else if(){
+						alert("不能对自己进行关注！");
+					}else{
+						alert("您已关注！");
+					}
+				}
+			});
+}
+</script>
+  <div class="huzhu">
+  	<div class="huzhu-lt fl">
+    	<div class="hz-block">
+        	<div class="hz-bk-name bold">$!{nickname}</div>
+            <!--end hz-bk-name-->
+            <div class="hz-bk-img">
+				#if(!$!{profiler}||!$!{profiler.picturePath}||$!{profiler.picturePath}=="")
+					<img src="http://img0.zz91.com/zz91/newhuzhu/images/hz_bk_head.jpg" />
+				#else
+					<img src="$!{address.thumb}$!{address.resource}/$!{profiler.picturePath}" width="224px" height="186px"/>
+				#end
+			</div>
+            <!--end hz-bk-img-->
+            <div class="hz-bk-bar">
+            	<div class="hb-bar-bg">LV$!{level}</div>
+                <!--end hb-bar-bg-->
+            </div>
+            <!--end hz-bk-bar-->
+            <div class="hz-bk-btn">
+            	<div class="hb-btn-gz fl"><a href="javascript:;" onclick="deal($!{companyId})" class="white">关注</a></div>
+                <!--end hb-btn-gz fl-->
+                <div class="hb-btn-mail fr"><a href="#springUrl('myhuzhu/send_message')$!{companyId}.htm" class="white f14">发私信</a></div>
+                <!--end hb-btn-mail fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end hz-bk-btn-->
+            <div class="hz-bk-list f14">
+            	<p><span class="blue">回答：</span>$!{answer}条</p>
+                <p><span class="blue">提问：</span>$!{que}条 </p>
+                <p><span class="blue">帖子：</span>$!{bbs}个</p>
+            </div>
+            <!--end hz-bk-list-->
+    	</div>
+        <!--end hz-block-->
+        <div class="hz-box">
+        	<div class="hz-box-tle">关注（全部$!{allNum}人）</div>
+            <!--end hz-box-tle-->
+        	<ul class="gz-item">
+            	#foreach($!{li} in $!{list})
+                <li>
+                	<div class="gz-item-img"><a href="#" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/gz_head.jpg" /></a></div>
+                    <!--end gz-item-img-->
+                    <div class="gz-item-text"><a href="#springUrl('/personIndex')$!{li.contentId}.htm" target="_blank" title="$!{li.contentTitle}.htm">$!{li.contentTitle}</a></div>
+                    <!--end gz-item-text-->
+                </li>
+				#end
+            </ul>
+        </div>
+        <!--end hz-box-->
+    </div>
+    <!--huzhu-lt fl-->
+    <div class="huzhu-gt fr">
+    	<div class="mainblock">
+        	<div class="mb-dh lt3">
+            	<div class="d_tit fl bold">#if($!{flag}==1) 提问 #elseif($!{flag}==2) 帖子 #elseif($!{flag}==3) 动态 #else 回答 #end</div>
+                <!--end d_tit fl bold-->
+                <div class="d_link fr"></div>
+                <!--end d_link fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-content">
+				#foreach($!{li} in $!{page.records})
+            	<dl>
+					<!--此处的checkPerson是类别-->
+                	<dt><span class="green f14">[#if($!{li.bbsPostCategoryId}==2)<a href="#springUrl('/shequ/')$!{mapPath.get($!{li.bbsPostAssistId})}/" target="_blank">$!{li.checkPerson}</a>#else 废料问答 #end]</span> <a href="#springUrl('/detail/')$!{li.id}.html" class="blue bold f14" target="_blank" title="$!{li.title}">#printTitle($!{li.title} 30 "...")</a></dt>
+                    <dd class="grey">#printTitle($!{li.content} 115 "...")</dd>
+                    <dd class="grey">$!date.format('yyyy-MM-dd HH:mm:ss', $!{li.replyTime})</dd>
+                </dl>
+				#end
+            </div>
+            <!--end mb-content-->
+            <div class="page">
+      			#pageViewQA($page "#springUrl('/personList')" "$!{companyId}-$!{flag}" "" "")
+    		 </div>
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end huzhu-gt fr-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

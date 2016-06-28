@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="oauthAccess">
+	<typeAlias alias="oauthaccess" type="com.ast.ast1949.domain.oauth.OauthAccess" />
+
+	<resultMap class="oauthaccess" id="defaultResult">
+		<result column="open_id" property="openId" />
+		<result column="open_type" property="openType" />
+		<result column="target_account" property="targetAccount" />
+		<result column="code" property="code" />
+		<result column="gmt_created" property="gmtCreated" />
+		<result column="gmt_modified" property="gmtModified" />
+	</resultMap>
+	<sql id="defaultColumn">
+		open_id,
+		open_type,
+		target_account,
+		code,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryAccessByOpenIdAndType" parameterClass="java.util.Map"
+		resultMap="defaultResult">
+		select
+		<include refid="defaultColumn" />
+		from oauth_access 
+		where
+		open_id = #openId# and open_type = #openType#
+		order by id desc
+		limit 1
+	</select>
+	
+	<select id="countAccessByOpenId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from oauth_access 
+		where
+		open_id = #openId# and open_type = 'mobile'
+		and gmt_created > #from# and #to# > gmt_created 
+	</select>
+	
+	<select id="queryAccessByAccountAndType" parameterClass="java.util.Map"
+		resultMap="defaultResult">
+		select
+		<include refid="defaultColumn" />
+		from oauth_access 
+		where
+		target_account = #account# and open_type = #openType#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="oauthaccess">
+		INSERT INTO ast.oauth_access
+		(
+		open_id,
+		open_type,
+		target_account,code,
+		gmt_created,gmt_modified
+		)
+		VALUES
+		(
+		#openId#,
+		#openType#,
+		#targetAccount#,#code#,
+		now(),now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateByOpenId" parameterClass="java.util.Map">
+		UPDATE oauth_access
+		SET
+		gmt_modified = now()
+		<isNotEmpty property="targetAccount" prepend=",">
+			target_account = #targetAccount#
+		</isNotEmpty>
+		WHERE open_id = #openId#
+	</update>
+	
+	<select id="queryByWXCode" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select id 
+		from 
+		oauth_access
+		where open_type = 'weixin.qq.com'
+		and target_account = '0'
+		and code = #code#
+		and gmt_created >= #gmtLimit#
+		order by id desc
+		limit 1
+	</select>
+	
+	<update id="updateWXTargetAccountById" parameterClass="java.util.Map">
+		update oauth_access
+		set gmt_modified = now(),
+		target_account = #targetAccount#
+		where id = #id# and open_type = 'weixin.qq.com'
+	</update>
+	 <select id="queryTargetAccount" parameterClass="java.util.HashMap" resultMap="defaultResult">
+		select 
+		<include refid="defaultColumn" />
+		from oauth_access  oa
+		where oa.target_account !='0' and oa.open_type = 'weixin.qq.com'
+		<include refid="common.pageOrderBy"/>
+	    <include refid="common.pageLimit"/>
+		
+	</select>
+	<select id="queryTargetAccountCount" resultClass="java.lang.Integer">
+		select count(0)
+		from oauth_access oa
+		where oa.target_account !='0' and oa.open_type = 'weixin.qq.com'
+	</select>
+	<delete id="deleteByTargetAccount" parameterClass="java.lang.String">
+		delete from
+		oauth_access where target_account=#targetAccount#
+	</delete>
+</sqlMap>

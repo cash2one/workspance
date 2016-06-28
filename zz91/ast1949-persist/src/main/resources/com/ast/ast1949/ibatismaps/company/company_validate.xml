@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyValidate">
+
+	<typeAlias alias="companyValidate" type="com.ast.ast1949.domain.company.CompanyValidate" />
+
+	<insert id="insert" parameterClass="companyValidate" >
+		INSERT INTO `company_validate` 
+			(`company_id`, `account`, `vcode`, `vcode_key`, `actived`, `actived_type`, `register_ip`, 
+			`register_ip_num`, `referer`, `refurl`, `gmt_active`, `gmt_register`, `gmt_created`, `gmt_modified`) 
+		VALUES 
+			( #companyId#, #account#, #vcode#, #vcodeKey#, #actived#, #activedType#, #registerIp#, 
+			#registerIpNum#, #referer#, #refurl#, #gmtActive#, #gmtRegister#, now(), now());
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<resultMap class="companyValidate" id="commonResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="vcode" column="vcode" />
+		<result property="vcodeKey" column="vcode_key" />
+		<result property="actived" column="actived" />
+		<result property="activedType" column="actived_type" />
+		<result property="registerIp" column="register_ip" />
+		<result property="gmtActive" column="gmt_active" />
+		<result property="gmtRegister" column="gmt_register" />
+	</resultMap>
+	
+	<sql id="commonColumn">
+		cv.id,cv.company_id,cv.account,cv.vcode,cv.vcode_key,cv.actived,
+		cv.actived_type,cv.register_ip,gmt_active,gmt_register
+	</sql>
+	
+	<select id="queryOneByKey" parameterClass="java.lang.String" resultMap="commonResult">
+		select 
+			<include refid="commonColumn"/>
+		from company_validate cv
+		where cv.vcode_key=#value#
+		limit 1
+	</select>
+	
+	<select id="queryOneByAccount" parameterClass="java.lang.String" resultMap="commonResult">
+		select 
+			<include refid="commonColumn"/>
+		from company_validate cv
+		where cv.account=#value#
+	</select>
+	
+	<update id="updateActived" parameterClass="java.util.HashMap" >
+		update company_validate
+			set actived=1,
+			actived_type=#activedType#,
+			gmt_active=now(),
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<select id="queryActived" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select actived from company_validate where account=#value# limit 1
+	</select>
+	
+	<select id = "queryValidateByCompanyId" parameterClass="java.lang.Integer" resultMap="commonResult">
+			select 
+				<include refid="commonColumn"/>
+			from company_validate cv
+			where cv.company_id=#value#
+			order by id desc
+			limit 1
+	</select>
+	
+	<select id="countValidateByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0)
+		from company_validate
+		where account=#account# and actived_type=#activedType#  and gmt_created>#gmtCreated#
+	</select>
+</sqlMap>

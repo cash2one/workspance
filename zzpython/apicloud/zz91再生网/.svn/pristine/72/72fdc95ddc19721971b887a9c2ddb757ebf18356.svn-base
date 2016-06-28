@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>再生网登录</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/frm-login.css"/>
+</head>
+<body>
+  <div class="logo">
+  	<div class="logo-pic">
+  	</div>
+  	<p class="hint">您需要等录后才可继续操作！</p>
+  </div>
+  <div class="login-form">
+  	<ul class="login-form-ul">
+  		<li>
+  			<div class="input-mo">
+  				<div class="input-title">
+  					<i class="title-code"></i>账号
+  				</div>
+  				<input type="text" class="import-ipt code-inpt">
+  				<t class="dlet"></t>
+  			</div>
+  		</li>
+  		<li>
+  			<div class="input-mo">
+  				<div class="input-title">
+  					<i class="title-password"></i>密码
+  				</div>
+  				<input type="password" class="import-ipt psword-input">
+  				<t class="pswoed-type">显示</t>
+  			</div>
+  		</li>
+  		<li>
+  			<span class="login-btn" tapmode="login-btn-click">登 录</span>
+  		</li>
+  		<li>
+  			<div class="cannot-login clear">
+  				<span class="forget">忘记密码？</span>
+  				<span class="enroll">快速注册<i></i></span>
+  			</div>
+  		</li>
+  	</ul>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/zepto.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+apiready = function () {
+   	var oDlet = $(".dlet");
+   	var pswoedType = $(".pswoed-type");
+   	var cInpt = $(".code-inpt");
+   	var psInput = $(".psword-input");
+    //注册帐号
+    $(".enroll").on("click",function(){
+        var pageParam = {
+          wintitle:"注册帐号",
+          type:"register"
+        };
+        openWin("register","register.html",pageParam);
+    })
+    //忘记密码
+    $(".forget").on("click",function(){
+        var pageParam = {
+          wintitle:"密码重置",
+          type:"passage-revise",
+        };
+        openWin("passage-revise","passage-revise.html",pageParam);
+    })
+   	//当输入账户显示删除按钮
+   	cInpt.keyup(function(){
+   		if($(this).val().length!=0){
+   			oDlet.show();
+   		}else{
+   			oDlet.hide();
+   		}
+   	})
+   	oDlet.on("click",function(){
+   		cInpt.val("");
+   		$(this).hide();
+      cInpt.focus();
+   	})
+   	//当输密码弹出显示字样
+   	psInput.keyup(function(){
+   		if($(this).val().length!=0){
+   			pswoedType.show();
+   		}else{
+   			pswoedType.hide();
+   		}
+   	})
+   	//点击显示，密码成文字
+   	pswoedType.on("click",function(){
+      if(psInput.attr("type") == "password"){
+        psInput.attr("type","text");
+        psInput.focus();
+        $(this).text("隐藏")
+      }else{
+        psInput.attr("type","password");
+        psInput.focus();
+        $(this).text("显示")
+      }
+   	})
+   	psInput.blur(function(){
+      if(psInput.val().length==0){
+        $(this).attr("type","password")
+      }
+   	})
+}
+</script>
+</html>

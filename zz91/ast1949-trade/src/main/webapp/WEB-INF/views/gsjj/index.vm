@@ -1,0 +1,363 @@
+#set($layout="/layout/defaultS.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+<div class="te_body menu_ul">当前位置：
+	<a href="$!{address.www}" >ZZ91再生网</a>
+	>
+	<a href="#springUrl('/index.htm')" >交易中心</a> 
+	>
+	<a href="#springUrl('/')offerlist--mc$!{mainCode}.htm" >$!{mainLabel}</a>
+	>$!{company.name}
+</div>
+
+<div class="member_info borange ">
+		<span>
+			#if($!{company.membershipCode}!="10051000")
+				再生通 第#if($!{company.zstYear} && $!{company.zstYear}!="")$!{company.zstYear}#else 1 #end 年
+			#else
+				普通会员
+			#end
+		</span>
+		$!{company.name}
+</div>
+<div class="main">
+	<div class="main_left">
+		<table cellpadding="0" cellspacing="0" border="0">
+			<tbody>
+				<tr>
+					<td class="menu_t" id="Js_tab">
+						<div #if($!{tab} != 2 && $!{tab} != 1&& $!{tab} != 3) class="cur" #end>公司简介</div>
+						<div #if($!{tab} == 1) class="cur" #end>供应信息</div>
+						<div #if($!{tab} == 2) class="cur" #end>求购信息</div>
+						<div #if($!{tab} == 3) class="cur" #end>联系方式</div>
+						<div>
+							<a href="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{company.id}&destUrl=$!{address.trade}','在线询价',800,500,0);">
+								在线询价
+							</a>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td id="Js_tab_content">
+						<div class="menugtab" #if($!{tab} == 2 || $!{tab} == 1|| $!{tab} == 3) style="display:none" #end>
+							<p>&nbsp;&nbsp;&nbsp;&nbsp;$!{company.introduction}</p><br/><br/>
+                        	<span class="s_bottom ms_content">查看更多供求产品信息，尽在废料交易中心：<a href="$!{address.trade}" target="_blank">$!{address.trade}</a></span>
+                        	<span class="d_bottom ms_content"><strong>公司名称：</strong>$!{company.name}</span>
+                        	<span class="d_bottom ms_content"><strong>主营业务：</strong>$!{company.business}</span>
+                        	<span><strong>所在地区：</strong>$!{company.address} </span>
+                        </div>
+						
+						<div class="menugtab" #if($!{tab} != 1 && $!{tab} != 2) style="display:none" #end>
+                        	<ul class="menu_ul menu_ul_bg">
+                        		#foreach($!{p} in $!{page.records})
+								<li>
+									<span>$!date.format("yyyy-MM-dd",$!{p.refreshTime})</span>
+									<a class="topicLink" href="/productdetails$!{p.id}.htm" target="_blank" >
+										#if($!{p.productsTypeCode}=="10331001")求购#else 供应#end$!{p.title}
+									</a>
+								</li>
+								#end
+                        	</ul>
+                        	<br/><br/>
+							<div class="quotes">
+								#if($!{productTypeCode}=="10331000")
+									#tradePageNav1($page "#springUrl('/gy')$!{id}-s" "" "")	
+								#else
+									#tradePageNav1($page "#springUrl('/qg')$!{id}-s" "" "")	
+								#end
+								###tradePageNav($page "#springUrl('/gsjj-s" "p$!{page.pageSize}c=$!{id}t$!{productTypeCode}tab$!{tab}" "")	
+							</div>
+                        </div>
+                        <div class="menugtab" #if($!{tab} < 3) style="display:none" #end>
+                            <div>
+							#if($!{isSee})
+								<p class="d_bottom">联系我时，请一定说是在ZZ91再生网看到的，谢谢！</p>
+								<p>联系人：$!{account.contact}</p>
+								<p>电话：#if($!{ldbTel})<b style="color:red">${ldbTel}</b>#else$!{account.telAreaCode}  $!{account.tel}#end</p>
+								<p>移动电话：$!{account.mobile}</p>
+								<p>电子邮箱：$!{account.email}</p>
+								<p>地址：$!{company.address}</p>
+								<p>公司商铺：
+									#if($!{company.membershipCode}!="10051000"&&$!{company.domainZz91}!="")
+										<a href="http://$!{company.domainZz91}.zz91.com">http://$!{company.domainZz91}.zz91.com</a>
+									#else
+										<a href="$!{address.company}/compinfo$!{company.id}.htm">$!{address.company}/compinfo$!{company.id}.htm</a>
+									#end
+								</p>
+							#elseif($!{ssoUser}&&$!{ssoUser.membershipCode}!="10051000"&&$!{ssoUser.membershipCode}!="10051003")
+								<p class="d_bottom">联系我时，请一定说是在ZZ91再生网看到的，谢谢！</p>
+								<p>联系人：$!{account.contact}</p>
+								<p>电话：#if($!{ldbTel})<b style="color:red">${ldbTel}</b>#else$!{account.telAreaCode}  $!{account.tel}#end</p>
+								<p>移动电话：$!{account.mobile}</p>
+								<p>电子邮箱：$!{account.email}</p>
+								<p>地址：$!{company.address}</p>
+								<p>公司商铺：
+									#if($!{company.membershipCode}!="10051000"&&$!{company.domainZz91}!="")
+										<a href="http://$!{company.domainZz91}.zz91.com">http://$!{company.domainZz91}.zz91.com</a>
+									#else
+										<a href="$!{address.company}/compinfo$!{company.id}.htm">$!{address.company}/compinfo$!{company.id}.htm</a>
+									#end
+								</p>
+							#else
+								<p class="d_bottom tcenter">联系我时，请一定说是在ZZ91再生网看到的，谢谢！</p>
+								<p class="yello tcenter">您还不是网站的付费会员,请联系0571-56611111</p>
+								#if($!{ldbFlag}==1)
+									<p class="check_l tcenter">
+										<a id="showme" href="#this" class="y-reg" title="来电宝点击查看联系方式">
+											点击查看联系方式
+										</a>
+									</p>
+								#else
+									<p class="check_l tcenter">
+										<a href="$!{address.www}/service/newzst/" target="_blank">马上申请高会查看</a>
+									</p>
+								#end
+							#end
+                        	</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+<div class="bord mt10">
+	<script type="text/javascript">
+    /*640*60,trademsb*/
+    var cpro_id = "u1124866";
+    </script>
+    <script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+</div>
+
+<div class="pt10">
+	<h1 class="title_f w125">同类行业推荐公司</h1>
+	<ul class="bline companyList">
+		#foreach($company in $!{companyList})
+			<li>
+				<a href="http://$!{company.domainZz91}.zz91.com" target="_blank" title="${company.name}">#printTitle(${company.name} 12 "")</a>
+				<span>#printTitle($!{company.business} 18 "...")</span>
+			</li>
+		#end
+	</ul>
+</div>
+
+<div class="pt10">
+	<h1 class="title_f w125">热门产品推荐频道</h1>
+	<div class="scrap mr12">
+		<h1 class="title_f_a">
+			<span><a href="#springUrl('/')offerlist--mc1000.htm" target="_blank">更多》</a></span>
+            <a href="#springUrl('/')metal.htm" target="_blank" >废金属</a>
+		</h1>
+		<div class="scrap_content">
+			<ul>
+				<li><a href="#springUrl('/')offerlist--mc10001001.htm" target="_blank">有色金属</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001000.htm" target="_blank">废钢铁</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001008.htm" target="_blank">硅</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001002.htm" target="_blank">稀有金属</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001003.htm" target="_blank">贵金属</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001005.htm" target="_blank">金属混合</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001004.htm" target="_blank">再生金属</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001007.htm" target="_blank">金属助剂</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10001006.htm" target="_blank">金属处理设备</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="scrap mr12">
+		<h1 class="title_f_a">
+			<span><a href="#springUrl('/')offerlist--mc1001.htm" target="_blank">更多》</a></span>
+            <a href="#springUrl('/')plastic.htm" target="_blank">废塑料</a>
+		</h1>
+		<div class="scrap_content">
+			<ul>
+				<li><a href="#springUrl('/')offerlist--mc10011000.htm" target="_blank">通用废塑料</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011002.htm" target="_blank">特种废塑料</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011001.htm" target="_blank">工程废塑料</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011003.htm" target="_blank">塑料混合</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011004.htm" target="_blank">再生颗粒</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011006.htm" target="_blank">塑料处理设备</a></li>
+				<li><a href="#springUrl('/')offerlist--mc10011005.htm" target="_blank">塑料助剂</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="scrap">
+		<h1 class="title_f_a">
+			<span><a href="#springUrl('/')offerlist--mc1008.htm" target="_blank">更多》</a></span>
+			<a href="#springUrl('/')waste.htm"  target="_blank">综合废料</a>
+		</h1>
+		<div class="scrap_content">
+			<ul>
+				<li><a href="#springUrl('/')offerlist--mc1002.htm" target="_blank">废橡胶</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1002.htm" target="_blank">废纸</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1003.htm" target="_blank">废纺织品</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1006.htm" target="_blank">废玻璃</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1005.htm" target="_blank">废电子电器</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1007.htm" target="_blank">废旧二手设备</a></li>
+				<li><a href="#springUrl('/')offerlist--mc1009.htm" target="_blank">废料服务</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+</div>
+
+<div class="main_right">
+	<div class="bord">
+		<h1 class="title_f w275">最新相关供求信息</h1>
+		<div>
+			<ul class="menu_ul menu_over">
+				#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=$!{mainCode}&typeCode=10331001&size=5&p10s", "", "", "")
+    				#foreach($products in $productsList)
+                    <li>
+						<span>#printFragmentDate('MM.dd' $!{products.refreshTime})</span>
+						<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+							#printProductType($!{products.productsTypeCode} "" "")#printTitle($!{products.title} 14 "...")
+						</a>
+                    </li>
+    				#end
+    			#end
+				<li class="btop"></li>
+				#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=$!{mainCode}&typeCode=10331000&size=5&p12s", "", "", "")
+    				#foreach($products in $productsList)
+                    <li>
+						<span>#printFragmentDate('MM.dd' $!{products.refreshTime})</span>
+						<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+							#printProductType($!{products.productsTypeCode} "" "")#printTitle($!{products.title} 14 "...")
+						</a>
+                    </li>
+    				#end
+    			#end
+			</ul>
+		</div>
+	</div>  
+	
+	<div class="bord mt10">
+		<h1 class="title_f w275">最新行情报价信息</h1>
+		<div>
+			<ul class="menu_ul menu_over">
+				#foreach($o in $!{priceList})
+					<li>
+						<span class="d">$!date.format('MM.dd',$!{o.gmtOrder})</span><a href="$!{address.price}/priceDetails_$!{o.id}.htm" target="_blank" title='$!{o.title}'>#printTitle($!{o.title} 18 "...")</a>
+					</li>
+				#end
+			</ul>
+		</div>
+	</div> 
+		
+	<div class="bord mt10">
+		<h1 class="title_f w275">最新相关资讯信息</h1>
+		<div>
+			<ul class="menu_ul menu_over">
+				#foreach($obj in $postList)
+					<li><span>$!date.format("MM.dd" ,$obj.post.postTime)</span><a  target="_blank" href="$!{address.huzhu}/viewReply$!{obj.post.id}.htm" taget="_blank" title="$!{obj.post.title}" >#printTitle($!{obj.post.title} 18 "...")</a></li>
+				#end
+			</ul>
+		</div>
+	</div>  
+</div>
+</div>
+
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	tab();
+	
+	#if($!{sessionUser})
+		var loginStatus=true;
+	#else
+		var loginStatus=false;
+	#end
+	
+	jQuery(".inquiryBtn").click(function(){
+		
+		var inquiryBox= new Asto.util.PopupBox({
+			title:"给对方留言",
+			url:"$!{address.front}/inquiry/company.htm?id=$!{company.id}",
+			destUrl:"$!{address.trade}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+		
+		var loginBox=new Asto.util.PopupBox({
+			title:"登录/注册",
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{address.trade}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+	
+		if(loginStatus){
+    		Asto.util.Callback.setSubmitCallback(function(success, data){
+				inquiryBox.close();
+				if(success=="false"){
+					jQuery("#loginFlag").val(0);
+				}
+			});
+			inquiryBox.show("$!{address.front}/inquiry/company.htm?id=$!{company.id}&destUrl=$!{address.trade}/submitCallback.htm");
+		}else{
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				jQuery("#loginFlag").val(1);
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					inquiryBox.close();
+				});
+				loginBox.close();
+    			inquiryBox.show("$!{address.front}/inquiry/company.htm?id=$!{company.id}&destUrl=$!{address.trade}/submitCallback.htm");
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.trade}/submitCallback.htm");
+		}
+	});
+	
+	## ppc 付费点击
+	jQuery("#showme").click(function(){
+    	#if($!{ldbFlag}=="1")
+    		if(confirm("查看客户联系方式，将会扣除“来电宝”信息点击费$!{clickFee}元，确定要查看吗？")){
+    			jQuery.ajax({
+    				url:'#springUrl("/markToClick.htm")',
+    				data:{"targetId":$!{company.id}}
+    			});
+				location.reload();
+    		}else{
+    			return false;
+    		}
+    	#elseif($!{ldbFlag}=="0")
+    		alert("“来电宝”信息费余额不足！请您充值后再试。");
+    		return false;
+    	#end
+	});
+	
+});
+function tab(){
+	var tabs = jQuery("#Js_tab").find("div"),
+		conts = jQuery("#Js_tab_content").find(".menugtab"),
+		index,
+		j;
+	tabs.click(function(){
+		index = tabs.index(jQuery(this));
+		if (index === 2 || index === 1) {
+			var url = "";
+			if(index==1){
+				url = "#springUrl('/')gy$!{id}.htm";
+			}
+			if(index==2){
+				url = "#springUrl('/')qg$!{id}.htm";
+			}
+			window.location.href=url;	
+		}else if(index === 4){
+			// 给我留言
+		}
+		else {
+			jQuery(this).addClass("cur").siblings("div").removeClass("cur");
+			index = index > 2 ? index - 1 : index;
+			jQuery(conts.get(index)).show().siblings(".menugtab").hide();
+			var url="";
+			if(index==0){
+				 url = "#springUrl('/')gsjj$!{id}.htm";
+			}else{
+				 url = "#springUrl('/')lxfs$!{id}.htm";
+			}
+			window.location.href=url;	
+		}
+	})
+}
+</SCRIPT>
+

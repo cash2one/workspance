@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="chs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
+    <title>apicloudMAP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <style>
+    	.btn-normal {
+		    background-color: #EEEEEE;
+		    background-image: -webkit-linear-gradient(top, #EEEEEE, #CCCCCC);
+		    border-color: #CCCCCC #CCCCCC #BBBBBB;
+		    border-image: none;
+		    -webkit-border-radius: 4px;
+		    border-style: solid;
+		    border-width: 1px;
+		    color: #333333;
+		    font: bold 18px;
+		    padding: 8px 0;
+		    text-align: center;
+		    text-shadow: 0 1px 0 #EEEEEE;
+		    width: 150px;
+		}
+
+		.btn-active {
+		    background-color: #CCCCCC;
+		    background-image: -webkit-linear-gradient(top, #CCCCCC, #DDDDDD);
+		    border-color: #CCCCCC #CCCCCC #BBBBBB;
+		    border-image: none;
+		    -webkit-border-radius: 4px;
+		    border-style: solid;
+		    border-width: 1px;
+		    color: #333333;
+		    font: bold 18px;
+		    padding: 8px 0;
+		    text-align: center;
+		    text-shadow: 0 1px 0 #EEEEEE;
+		    width: 150px;
+		}
+    
+    </style>
+    <script type="text/javascript">
+
+		function showErr(content){
+		   api.alert({title:'出错了', msg:content});
+		}
+
+		function showMsg(content, cb){
+		   if(cb){
+				api.alert({title:'提示', msg:content}, cb);
+		   }else{
+				api.alert({title:'提示', msg:content});
+		   }
+		}
+
+		function showProgress(text, modal){
+		   var param = {animationType:'zoom'};
+		   if(text){
+				param.text = text;
+		   }
+		   if(modal){
+				param.modal = modal;
+		   }
+		   api.showProgress(param);
+		}
+
+		function hideProgress(){
+		   
+		   api.hideProgress();
+		}
+
+		var push = null;
+		var mam = null;
+        var msm = null;
+		var pro = null;
+
+		apiready = function(){
+	    	push = api.require('push');
+	    	mam = api.require('mam');
+            msm = api.require('msm');
+			pro = document.getElementById('pro');
+	    }
+	    
+		function check(){
+			api.showProgress({text:'检查中'});
+			mam.checkUpdate(function(ret, err){
+				api.hideProgress();
+                if (ret && ret.status) {
+					var result = ret.result;
+					if(!result.update && !result.closed){
+						api.alert({msg:'暂无更新'});
+					}else if(result.update && !result.closed){
+						var umsg = "最新版本：" + result.version + "\n" 
+						+ "本次更新：" + result.updateTip + "\n" 
+						+ "发布时间：" + result.time;
+						api.confirm({title:'有更新', msg:umsg,buttons:['取消','立即更新']}, function(ret, err){
+							if(2 == ret.buttonIndex){
+								toDownload(result.source);
+							}
+						});
+					}else if(result.update && result.closed){
+						var umsg = "最新版本：" + result.version + "\n" 
+						+ "本次更新：" + result.updateTip + "\n" 
+						+ "发布时间：" + result.time;
+						api.alert({title:'强制更新', msg:umsg,buttons:['立即更新']}, function(ret, err){
+							toDownload(result.source);
+						});
+					}else if(!result.update && result.closed){
+						var umsg = "该应用被强制关闭!\n原因：" + result.closeTip;
+						api.alert({title:'强制关闭', msg:umsg}, function(ret, err){
+							api.closeWidget();
+						});
+					}else{
+						api.alert({msg:'数据错误'});
+					}
+                } else{
+					if(ret){
+						api.alert({msg:ret.status});
+					}else if(err){
+						api.alert({msg:err.msg});
+					}else{
+						api.alert({msg:'数据错误'});
+					}
+                    
+                };
+			});
+		}
+
+		function toDownload(downUrl){
+			api.download({url:downUrl, report:true}, function(ret, err){
+        		if(ret){
+        			pro.innerText = "下载进度：" + ret.percent + "%";
+        			if(1 == ret.state){
+        				pro.innerHTML = '下载完成';
+        				var path = ret.savePath;
+						api.installApp({appUri:path});
+        			}else if(2 == ret.state){
+        				pro.innerHTML = '下载出错，请重试!';
+        			}
+        		}else{
+        			showErr("下载出错，请重试!");
+        		}
+        	});
+		}
+		
+		function BindPush(){
+            api.showProgress({text:'提交中'});
+			push.bind({userName:'uzmap',userId:'uzmapId'},
+                function(ret,err){
+                    api.hideProgress();
+                    if(ret){
+                        api.alert({msg:ret.status});
+                　　}else{
+                        api.alert({msg:err.msg});
+                　　}
+                }
+            );
+		}
+		
+		function JoinGroup(){
+            api.showProgress({text:'提交中'});
+			push.joinGroup({groupName:'department'},
+                function(ret,err){
+                    api.hideProgress();
+                    if(ret){
+                        api.alert({msg:ret.status});
+                　　}else{
+                        api.alert({msg:err.msg});
+                　　}
+                }
+            );
+		}
+		
+		function LeaveGroup(){
+            api.showProgress({text:'提交中'});
+			push.leaveGroup({groupName:'department'},
+                function(ret,err){
+                    api.hideProgress();
+                    if(ret){
+                        api.alert({msg:ret.status});
+                　　}else{
+                        api.alert({msg:err.msg});
+                　　}
+                }
+            );
+		};
+        function checkPushStatus(){
+            push.checkPushStatus(
+                function(ret,err){
+                    if(ret){
+                        api.alert({msg:'状态值:'+ret.status});
+                　　}else{
+                        api.alert({msg:'错误码:'+err.code+'错误描述:'+err.msg});
+                　　}
+                }
+            );
+        };
+        function pushStart(){
+            push.start(
+                function(ret,err){
+                    if(ret){
+                        api.alert({msg:'状态值:'+ret.status});
+                　　}else{
+                        api.alert({msg:'错误码:'+err.code+'错误描述:'+err.msg});
+                　　}
+                }
+            );
+        };
+        function pushStop(){
+            push.stop(
+                function(ret,err){
+                    if(ret){
+                        api.alert({msg:'状态值:'+ret.status});
+                　　}else{
+                        api.alert({msg:'错误码:'+err.code+'错误描述:'+err.msg});
+                　　}
+                }
+            );
+        };
+        function setListener(){
+            push.setListener(
+                function(ret,err){
+                    if(ret){
+                        api.alert({msg:'消息类型:'+ret.type+';消息内容:'+ret.data});
+                　　}else{
+                        api.alert({msg:'错误码:'+err.code+'错误描述:'+err.msg});
+                　　}
+                }
+            );
+        }
+        function removeListener(){
+            push.removeListener();
+        }
+        function getAuthInfo(){
+            msm.getAuthInfo(
+                 function(ret,err){
+                     if(ret){
+                         var str = '操作成功状态值:'+ret.status+';认证方式:'+ret.result.authType+';认证状态:'+ret.result.authStatus;
+                         api.alert({msg:str});
+                 　　}else{
+                         api.alert({msg:err.msg});
+                 　　}
+                 }
+             );
+        }
+        function certApply(){
+            msm.certApply({photo:'widget://image/food.png',description:'柚子科技',group:'Group B',name:'kenny',email:'aaa@163.com'},
+                function(ret,err){
+                   if(ret){
+                        var str = '操作成功状态值:'+ret.status;
+                        api.alert({msg:str});
+                　　}else{
+                        api.alert({msg:err.msg});
+                　　}
+                }
+            );
+        }
+        function certVerify(){
+            msm.certVerify({authCode:'afsaeoajfsafj'},
+                  function(ret,err){
+                      if(ret){
+                          var str = '操作成功状态值:'+ret.status;
+                          api.alert({msg:str});
+                  　　}else{
+                          api.alert({msg:err.msg});
+                  　　}
+                  }
+            );
+        }
+        function login(){
+            msm.login({userName:'kenny',password:'111111'},
+               function(ret,err){
+                   if(ret){
+                       var str = '操作成功状态值:'+ret.status;
+                       api.alert({msg:str});
+               　　}else{
+                       api.alert({msg:err.msg});
+               　　}
+               }
+           );
+        }
+
+	</script>
+</head>
+<body>
+    <div id="wrap">
+        <div id="main"> 
+            <div  >
+            	<p>MAM</p><hr>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="check()" value="检查widget更新" /><div id="pro">下载进度：0%</div><br><br>
+            	<p>PUSH HTTP</p><hr>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="BindPush()" value="BindPush" /><br><br> 
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="JoinGroup()" value="JoinGroup" /><br><br>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="LeaveGroup()" value="LeaveGroup" /><br><br>
+                <!-- <input class="btn-normal" tapmode="btn-active" type="button" onclick="checkPushStatus()" value="checkPushStatus" /><br><br>
+                <input class="btn-normal" tapmode="btn-active" type="button" onclick="pushStart()" value="start" /><br><br>
+                <input class="btn-normal" tapmode="btn-active" type="button" onclick="pushStop()" value="stop" /><br><br>
+                <input class="btn-normal" tapmode="btn-active" type="button" onclick="setListener()" value="setListener" /><br><br>
+                 <input class="btn-normal" tapmode="btn-active" type="button" onclick="removeListener()" value="removeListener" /><br><br> -->
+            	<p>MSM HTTP</p><hr>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="getAuthInfo()" value="getAuthInfo" /><br><br>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="certApply()" value="certApply" /><br><br>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="certVerify()" value="certVerify" /><br><br>
+            	<input class="btn-normal" tapmode="btn-active" type="button" onclick="login()" value="login" /><br><br>
+            </div>
+
+        </div>   
+    </div>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmLog">
+
+	<typeAlias alias="crmLog" type="com.zz91.crm.domain.CrmLog"/>
+	<typeAlias alias="crmLogDto" type="com.zz91.crm.dto.CrmLogDto"/>
+	
+	<resultMap class="crmLog" id="fullResultMap">
+		<result property="id" column="id"/>
+		<result property="callType" column="call_type"/>
+		<result property="saleDept" column="sale_dept"/>
+		<result property="saleAccount" column="sale_account"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="cid" column="cid"/>
+		<result property="star" column="star"/>
+		<result property="gmtNextContact" column="gmt_next_contact"/>
+		<result property="nextContact" column="next_contact"/>
+		<result property="situation" column="situation"/>
+		<result property="operation" column="operation"/>
+		<result property="operationDetails" column="operation_details"/>
+		<result property="transaction" column="transaction"/>
+		<result property="transactionDetails" column="transaction_details"/>
+		<result property="feedback" column="feedback"/>
+		<result property="suggestion" column="suggestion"/>
+		<result property="issueStatus" column="issue_status"/>
+		<result property="issueDetails" column="issue_details"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="kp" column="kp"/>
+	</resultMap>
+	
+	<resultMap class="crmLog" id="simpleMap2">
+		<result property="id" column="id"/>
+		<result property="saleAccount" column="sale_account"/>
+	</resultMap>
+	
+	<resultMap class="crmLog" id="simplyMap">
+		<result property="saleName" column="sale_name"/>
+		<result property="saleAccount" column="sale_account"/>
+	</resultMap>
+	
+	<resultMap class="crmLog" id="mergerResultMap">
+		<result property="id" column="id"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="star" column="star"/>
+		<result property="gmtNextContact" column="gmt_next_contact"/>
+		<result property="situation" column="situation"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="contactType" column="contact_type"/>
+	</resultMap>
+	
+	<resultMap class="crmLog" id="simplyTurnStarResultMap">
+		<result property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="gmtNextContact" column="gmt_next_contact"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="saleName" column="sale_name"/>
+	</resultMap>
+	
+	<resultMap class="crmLog" id="simplyColumnResultMap">
+		<result property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="starOld" column="star_old"/>
+		<result property="star" column="star"/>
+		<result property="situation" column="situation"/>
+		<result property="saleAccount" column="sale_account"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="saleDept" column="sale_dept"/>
+	</resultMap>
+	
+	<resultMap class="crmLogDto" id="simplyResultMap">
+		<result property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="star" column="star"/>
+		<result property="situation" column="situation"/>
+		<result property="saleAccount" column="sale_account"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="saleDept" column="sale_dept"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		`id`,
+		`call_type`,
+		`sale_dept`,
+		`sale_account`,
+		`sale_name`,
+		`cid`,
+		`star`,
+		`gmt_next_contact`,
+		`next_contact`,
+		`situation`,
+		`operation`,
+		`operation_details`,
+		`transaction`,
+		`transaction_details`,
+		`feedback`,
+		`suggestion`,
+		`issue_status`,
+		`issue_details`,
+		`remark`,
+		`gmt_created`,
+		`gmt_modified`,
+		`kp`
+	</sql>
+	
+	<insert id="createCrmLog" parameterClass="crmLog">
+		insert into `crm_log`
+		(
+		`call_type`,
+		`sale_dept`,
+		`sale_account`,
+		`sale_name`,
+		`cid`,
+		`star_old`,
+		`star`,
+		`gmt_next_contact`,
+		`next_contact`,
+		`situation`,
+		`operation`,
+		`operation_details`,
+		`transaction`,
+		`transaction_details`,
+		`feedback`,
+		`suggestion`,
+		`issue_status`,
+		`issue_details`,
+		`source`,
+		`maturity`,
+		`promote`,
+		`remark`,
+		`gmt_created`,
+		`gmt_modified`,
+		`kp`,
+		`contact_type`)
+		values
+		(
+		#callType#,
+		#saleDept#,
+		#saleAccount#,
+		#saleName#,
+		#cid#,
+		#starOld#,
+		#star#,
+		#gmtNextContact#,
+		#nextContact#,
+		#situation#,
+		#operation#,
+		#operationDetails#,
+		#transaction#,
+		#transactionDetails#,
+		#feedback#,
+		#suggestion#,
+		#issueStatus#,
+		#issueDetails#,
+		#source#,
+		#maturity#,
+		#promote#,
+		#remark#,
+		now(),
+		now(),
+		#kp#,
+		#contactType#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryCrmLogByCid" parameterClass="java.util.HashMap" resultMap="mergerResultMap">
+		select * from (SELECT id,sale_name,star,gmt_next_contact,situation,remark,gmt_created,contact_type FROM crm_log where cid=#cid# and call_type=#callType#
+		Union all 
+		SELECT id,null sale_name,null star,null gmt_next_contact,null situation,null remark,gmt_created,null contact_type FROM sys_log
+		 where target_id=#cid# and operation=0) as result order by gmt_created desc
+	</select>
+	
+	<select id="queryAccountByDeptCode" parameterClass="java.lang.String" resultMap="simpleMap2">
+		select id,sale_account from crm_log
+		where date_format(gmt_created,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d') 
+		and sale_dept like concat(#deptCode#,'%')
+		group by sale_account
+	</select>
+	
+	<select id="querytomContactCount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from crm_log
+		where sale_account=#account# 
+		and date_format(gmt_next_contact,'%Y-%m-%d') = date_format(date_add(now(), interval 1 day),'%Y-%m-%d')
+	</select>
+	
+	<sql id="simplySql">
+		where sale_account=#account# and date_format(gmt_created,'%Y-%m-%d')=date_format(#tdate#,'%Y-%m-%d')
+		<isNotEmpty property="disable">
+			<isEqual compareValue="0" prepend="and" property="disable">
+				situation=0
+			</isEqual>
+			<isEqual compareValue="1" prepend="and" property="disable">
+				situation!=0
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="star">
+			star=#star#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="type">
+			contact_type=#type#
+		</isNotEmpty>
+	</sql>
+	
+	<select id="queryCrmLogByToday" parameterClass="java.util.HashMap" resultMap="simplyResultMap">
+		select * from (select id,sale_dept,sale_account,sale_name,cid,star,
+		situation,remark,gmt_created,gmt_modified from crm_log
+		<include refid="crmLog.simplySql"/>
+		order by gmt_created desc) tmp group by cid
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryCrmLogCountByToday" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from (select count(*),cid from crm_log
+		<include refid="crmLog.simplySql"/>
+		order by gmt_created desc) tmp group by cid
+	</select>
+	
+	<select id="queryTurnStarCompByStar" parameterClass="java.util.HashMap" resultMap="simplyTurnStarResultMap">
+		select * from (select id,cid,gmt_next_contact,gmt_created,sale_name,star_old,star from crm_log 
+		where date_format(gmt_created,'%Y-%m-%d')=date_format(#tDate#,'%Y-%m-%d') 
+		and sale_account=#account# order by gmt_created desc ) tmp  
+		<dynamic prepend="where">
+			<isEqual compareValue="4" property="star" prepend="and">
+				star_old!=4 and star_old!=5 and star=4
+			</isEqual>
+			<isEqual compareValue="5" property="star" prepend="and">
+				star_old!=5 and star=5
+			</isEqual>
+		</dynamic>
+		group by cid
+	</select>
+	
+	<select id="queryTurnFourOrFiveAccountByToday" resultMap="simplyMap">
+		select sale_account,sale_name from crm_log 
+		where date_format(gmt_created,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d') 
+		group by sale_account
+	</select>
+	
+	<select id="queryFourOrFiveBySaleAccountToday" parameterClass="java.lang.String" resultMap="simplyColumnResultMap">
+		select * from (select id,cid,star_old,star,situation,sale_account,sale_name,sale_dept from crm_log 
+		where date_format(gmt_created,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+		and sale_account = #saleAccount# order by gmt_created desc) tmp 
+		group by cid
+	</select>
+</sqlMap>

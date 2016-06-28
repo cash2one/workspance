@@ -1,0 +1,41 @@
+#set($layout="/layout/innerPageLayout.vm")
+#if($!{error}=="1")
+<div class="alert alert-error"> <strong>提示：</strong>发生错误，您刚刚的操作没有成功！</div>
+#elseif($!{error}=="2")
+<div class="alert alert-success"> <strong>提示：</strong>您刚刚的操作成功了！</div>
+#end
+<table class="table table-bordered table-condensed">
+    <thead>
+        <tr>
+            <th width="80%">分组名称</th>
+    		<th width="20%">
+                操作
+    			<button class="btn btn-mini" id="groupCreateBtn">新增</button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        #foreach($rs in $sysGroups)
+        <tr>
+            <td>$!{rs.name}</td>
+            <td></td>
+        </tr>
+    #end
+    #foreach($rs in $groups)
+        <tr>
+            <td>$!{rs.name}</td>
+            <td class="tac">
+                <a href="#springUrl('/mymessage/updateGroup.htm?id=')$!{rs.id}">编辑</a>
+                <a href="#springUrl('/mymessage/deleteGroup.htm?id=')$!{rs.id}" onclick="javascript:return confirm('您确定要删除这个系列吗?');">删除</a>
+            </td>
+        </tr>
+    #end
+    </tbody>
+</table>
+<script>
+jQuery(function(){
+	jQuery("#groupCreateBtn").click(function(){
+		window.location.href="#springUrl('/mymessage/createGroup.htm')";
+	});
+});
+</script>

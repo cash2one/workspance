@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sysArea">
+
+    <typeAlias alias="sysArea" type="com.zz91.crm.domain.SysArea" />
+    
+    <sql id="fullColumn" >
+    	sa.id,
+    	sa.code,
+    	sa.name,
+    	sa.leaf,
+    	sa.details,
+    	sa.gmt_created,
+    	sa.gmt_modified
+    </sql>
+    
+    <resultMap class="sysArea" id="fullSysAreaResult">
+	    <result property="id" column="id" />
+	    <result property="code" column="code" />
+	    <result property="name" column="name" />
+	    <result property="leaf" column="leaf" />
+	    <result property="details" column="details" />
+	    <result property="gmtCreated" column="gmt_created" />
+	    <result property="gmtModified" column="gmt_modified" />
+    </resultMap>
+    
+    <select id="querySysAreaByCode" parameterClass="java.util.HashMap" resultMap="fullSysAreaResult">
+        select 
+        <include refid="sysArea.fullColumn"/>  
+        from sys_area sa
+        where 
+        <isEqual property="type" compareValue="0">
+            sa.code=#code#
+        </isEqual>
+        <isEqual property="type" compareValue="1">
+            sa.code like concat(#code#,'____')
+        </isEqual>
+        <isEqual property="type" compareValue="2">
+            sa.code like concat(#code#,'%')
+        </isEqual>
+    </select>
+    <insert id="insertSysArea" parameterClass="sysArea">
+    	insert into sys_area 
+    	(`id`,`code`,`name`,`leaf`,`details`,`gmt_created`,`gmt_modified`) value
+    	(#id#,#code#,#name#,#leaf#,#details#,now(),now())
+    </insert>
+    
+    <select id="queryNameByCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+    	select name from sys_area where code=#code#
+    </select>
+    
+   	<select id="queryCodeByName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select code from sys_area where name = #value#
+	</select>
+</sqlMap>

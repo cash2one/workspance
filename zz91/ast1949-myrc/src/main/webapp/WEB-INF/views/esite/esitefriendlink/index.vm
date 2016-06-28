@@ -1,0 +1,65 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/esite/esitenews/index.htm')">商铺管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">管理友情链接</li>
+        </ul>
+		<div class="alert alert-info">
+			您当前友情链接个数为<span class="red">$!{esiteFriendLinkList.size()}</span>##友情链接个数最多为 <span class="red">10</span>个,
+		</div>
+##		#if($!{esiteFriendLinkList.size()} < 1000)
+			<p><button id="frendlinkCreateBtn" class="btn btn-mini">新增</button></p>
+##		#end
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+				<tr>
+					<th width="5%" class="tac"><input type="checkbox" id="checkAllToggle"></th>
+					<th width="45%">链接标题</th>
+					<th width="35%">链接地址</th>
+					<th width="15%" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($!{esiteFriendLinkList} in $!{esiteFriendLinkList})
+				<tr>
+					<td class="tac">
+						<input type="checkbox" value="$!{products.id}" name="postcheck">
+					</td>
+					<td>
+						<a href="#springUrl('/esite/esitefriendlink/initFriendLink.htm?id=')$!{esiteFriendLinkList.id}">$!{esiteFriendLinkList.linkName}</a>
+					</td>
+					<td>
+						<a href="$!{esiteFriendLinkList.linkAddress}" target="_blank">$!{esiteFriendLinkList.linkAddress}</a>
+					</td>
+					<td class="tac">
+						<a href="#springUrl('/esite/esitefriendlink/initFriendLink.htm?id=')$!{esiteFriendLinkList.id}">编辑</a>
+						<a href="#springUrl('/esite/esitefriendlink/deleteFriendLink.htm?id=')$!{esiteFriendLinkList.id}" onclick="return confirm('确定要删除吗？')">删除</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+	#if(${esiteFriendLinkList.size()} ==0)
+	<div class="alert alert-error mt">您还没有添加任何链接！</div>
+	#end
+</div>
+
+<script>
+    jQuery(function() {
+    	myrc.menu(6, 4);
+		//全选
+		jQuery("#checkAllToggle").click(function(){
+			var chk=jQuery(this).attr("checked");
+			jQuery("input[name=postcheck]").each(function(index, obj){
+				obj.checked=chk;
+			});
+		});
+		
+		jQuery("#frendlinkCreateBtn").click(function(){
+			location.href="#springUrl('/esite/esitefriendlink/createFriendLink.htm')";
+		});
+    });
+</script>

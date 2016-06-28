@@ -1,0 +1,106 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/other/css/service.css" />
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script>
+        <script src="http://img0.zz91.com/trade/comm/input-plt.js"></script>
+        <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img');
+            </script>  
+        <![endif]-->
+        <div class="nav">
+            <div class="nav-main">
+                <div class="fl"><img src="http://img0.taozaisheng.com/trade/comm/logo_5.png"></div>
+                <div class="pagetitle fr clearfix">
+                    支付保证金
+                </div>
+            </div>
+        </div>
+        <div class="content clearfix">
+            <div class="pay-title">选择支付方式</div>
+            <ul class="pay-type">
+                <li class="clearfix this-pay-li">
+                    <i class="this-type fl"></i>
+                    <span class="fl pay-bank">结算宝</span>
+                    <span class="fl bank-num"></span>
+                    <span class="fl bank-type"></span>
+                    <div class="fr pay-ts">
+                        <span>支付</span> 
+                        <span class="money-num">5000.00</span> 
+                        <span>元</span>
+                    </div>
+                </li>
+                <li class="clearfix this-pay-li2">
+                    <i class="this-type fl type-img3"></i>
+                    <span class="fl pay-bank">易付宝</span>
+                    <span class="fl bank-num"></span>
+                    <span class="fl bank-type"></span>
+                    <div class="fr pay-ts">
+                        <span>支付</span> 
+                        <span class="money-num">5000.00</span> 
+                        <span>元</span>
+                    </div>
+                </li>
+            </ul>
+			<form id="payForm" method="post" action="#springUrl('/service/doPay.htm')" target="_blank">
+			#if($!{companyAccount.sumMoney} > 5000)
+            <div class="password-tl">结算宝支付密码：</div>
+            <div class="password-main"><input class="pass-ipt" type="password" name="payPassword"/>#if($!i==1)<a href="#springUrl('/security/resetPayPwdStp_1.htm')" class="blue">忘记密码?</a>#else <a href="#springUrl('/security/setPayPassword.htm')" class="blue">没有支付密码？点此设置</a>#end</div>
+			<input type="hidden" name="GoodName" value="$!{GoodName}"/>
+			<input type="hidden" name="orderNo" value="$!{orderNo}"/>
+			#if($flag=="404")
+				<span style="color:red">密码错误</span>
+			#end
+			<span class="pay-btn" onclick="jQuery('#payForm').submit();">确认付款</span>
+			#else
+			<span class="pay-btn" style="background-color:grey">余额不足</span>
+			#end
+            </form>
+			
+			<form id="onlinePayForm1" action="#springUrl('/service/payMoney.htm')" style="display:none" method="post" target="_blank">
+				<input type="hidden" name="GoodName" value="$!{GoodName}"/>
+				<input type="hidden" name="orderNo" value="$!{orderNo}"/>
+				<input type="hidden" name="payOrder" value="$!{orderNo}"/>
+				<span class="pay-btn" onclick="Money()">确认付款</span>
+            </form>
+        </div>  
+    </body>
+    <script type="text/javascript">
+       $(".pay-type li").bind("click",function(){
+            $(".this-pay-li").removeClass("this-pay-li");
+            $(this).addClass("this-pay-li");
+			var st=$(this).html();
+			if(st.indexOf("type-img3")!=-1){
+				$("#payForm").hide();
+				jQuery("#onlinePayForm1").show();
+			}else{
+				$("#payForm").show();
+				jQuery("#onlinePayForm1").hide();
+			}
+       })
+	   
+	   #if(!($!{companyAccount.sumMoney} > 5000))
+		   $(".this-pay-li").removeClass("this-pay-li");
+		   $(".this-pay-li2").addClass("this-pay-li");
+		   jQuery("#payForm").hide();
+		   jQuery("#onlinePayForm1").show();
+		#end
+
+		function Money(){
+		var da=$("#onlinePayForm1").serialize();
+			jQuery.ajax({
+			url:"#springUrl('/service/insetYfb.htm')",
+			type:'post',
+			dataType:'json',
+			data:da,
+			cache:false,
+			success:function(data){
+			if(data.success){
+			jQuery('#onlinePayForm1').submit();
+			}
+			}
+			})
+		}
+    </script>
+</html>

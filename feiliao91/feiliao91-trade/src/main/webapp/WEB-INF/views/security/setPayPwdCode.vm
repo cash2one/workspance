@@ -1,0 +1,122 @@
+#set($layout="/layout/default.vm")
+<link rel="stylesheet" href="$!{address.css}/trade/capital/css/moneyMg.css" />
+	   #if($!{re}=="1")
+			<div class="nav nav2">
+       <div class="nav-main" style="margin-top:10px;">
+        <div class="fl">
+            <img src="$!{address.css}/trade/comm/logo_15.png" />
+        </div>
+
+		#else
+			<div class="nav nav2">
+				<div class="nav-main" style="margin-top:10px;">
+			<div class="fl">
+				<img src="$!{address.css}/trade/comm/logo_6.png" />
+			</div>
+		#end
+        <div class="fr pay-steps">
+            <ul class="pay-steps-list clearfix">
+                <li class="clearfix frist-step this-paystep">
+                    <span>1<em class="stepname">验证身份</em>
+                    </span>
+                </li>
+                <li class="clearfix">
+					#if($!{re}=="1")
+						<span>2<em class="stepname">重置支付密码</em>
+					#else
+						<span>2<em class="stepname">设置支付密码</em>
+					#end
+                    </span>
+                </li>
+                <li class="clearfix">
+                    <span>3<em class="stepname">设置成功</em>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="content">
+	<div class="setup-main">
+		<form action="#" id="cgForm">
+    		<div class="set-yanzhe">
+    			您需要先进行 <span class="blue">“验证短信”</span>
+    			后，才可设置支付密码。
+    		</div>
+    		<div class="setup-li clearfix">
+    			<span class="setup-li-title">手机号：</span>
+    			<span class="setNam">$!{account.mobile}</span>
+    		</div>
+    		<div class="setup-li clearfix">
+    			<span class="setup-li-title line-title">验证码：</span>
+    			<input class="yanz-num" name="code" id="code" />
+				<input type="hidden" name="mobile" id="mobile" value="$!{account.mobile}" />
+    			<span class="get-yanz j_getyz" onclick="settime()">验证码</span>
+    		</div>
+    		<a class="setbtn" href="javascript:void(0)" onclick="clickToValidate()" >确定</a>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+	
+	##验证码倒计时
+	var wait=60;
+	var vtime;
+	function settime(){
+		if(wait==59){
+			sendCode();//发送验证码
+		}
+		if(wait==0){
+		$(".j_getyz").attr("onclick","settime(this)");
+		$(".j_getyz").html("验证码");
+		wait=60;
+		return false;
+		}else{
+		$(".j_getyz").attr("onclick","null");
+		$(".j_getyz").html(wait+"秒");
+		wait--;
+		vtime=setTimeout(function(){
+		settime()
+		},1000)
+		}
+		
+	}
+	
+	function sendCode(){
+		var mobile=$("#mobile").val();
+			if(mobile==""){
+					alert("手机号码不存在");
+					return false;
+			}
+			jQuery.ajax({
+				url:'#springUrl("/security/getPhoneCode.htm")',
+				data:{"mobile":mobile},
+				type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+				}
+			});
+	}
+	
+	
+
+	function clickToValidate(){
+		jQuery.ajax({
+			url:"#springUrl('/security/doValidPhone.htm')",
+			dataType:"json",
+			data:{
+				"mobile":jQuery("#mobile").val(),
+				"vcode":jQuery("#code").val()
+				},
+			success:function(data){
+				if(data.success){
+					window.location="#springUrl('/security/setPayPwd.htm?re=')" + "$!{re}"+"&url=$!{url}";
+				}else{
+					alert("验证码错误!");
+				}
+			}
+		});
+	}
+	
+</script>

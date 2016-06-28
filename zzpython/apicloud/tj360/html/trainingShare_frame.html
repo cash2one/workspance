@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>分享</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	#main{
+		display: -webkit-box;
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+	#footer{
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-box-flex: 1;
+		-webkit-box-pack: end;
+	}
+	#footer section{
+		width: 100%;
+		display: -webkit-inline-box;
+		margin-bottom: 10px;
+	}
+	.wrap{
+		display: -webkit-box;	
+		width: 100%;
+	}
+	.content, .btn{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		-webkit-box-pack: center;
+		-webkit-box-orient: vertical;
+		width: 100%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+	.content{
+		background-color: #F1F1F1;
+		padding: 15px;
+		border: 1px solid #F1F1F1;
+		border-radius: 4px;
+	}
+	.content div{
+		display: -webkit-inline-box;
+		width: 100%;
+	}
+	.content div:nth-child(1){
+		font-size: 16px;
+	}
+	.content div:nth-child(2){
+		height: 60px;
+		margin-top: 5px;
+	}
+	.wechat, .sinaweibo, .qzone{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		margin: 5px;
+	}
+	.wechat{
+		background: url(../image/wechat.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.wechatActive{
+		background: url(../image/wechat_hov.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.sinaweibo{
+		background: url(../image/sinaweibo.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.sinaweiboActive{
+		background: url(../image/sinaweibo_hov.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.qzone{
+		background: url(../image/qzone.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.qzoneActive{
+		background: url(../image/qzone_hov.png) no-repeat center;
+		-webkit-background-size: contain;
+	}
+	.btn button{
+		background-color: #F1F1F1;
+		padding-top: 15px;
+		padding-bottom: 15px;
+		border: 1px solid #F1F1F1;
+		border-radius: 4px;
+		width: 100%;
+		font-size: 18px;
+		color: #007AFF;
+	}
+	.cancelBtnActive{
+		background-color: #007AFF !important;
+		color: #F1F1F1 !important;
+		border: 1px solid #007AFF !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<footer id="footer">
+			<section>
+				<div class="wrap">
+					<div class="content">
+						<div>分享至：</div>
+						<div>				
+							<a class="wechat" tapmode="wechatActive" onclick="shareToWeixin()">
+							
+							</a>
+							<a class="sinaweibo" tapmode="sinaweiboActive" onclick="shareToSinaWeibo()">
+							
+							</a>
+							<a class="qzone" tapmode="qzoneActive" onclick="shareToQQ()">
+							
+							</a>
+						</div>				
+					</div>				
+				</div>
+			</section>
+			<section>
+				<div class="wrap">
+					<div class="btn">
+						<button tapmode="cancelBtnActive" onclick="api.closeFrame();">取消</button>
+					</div>
+				</div>		
+			</section>
+		</footer>
+	</div>
+</body>
+<script>
+	var url = serverUrl + '/Download';
+	var title = '美丽管家';
+	var thumbUrl = 'widget://res/icon.png';
+	var description = '我在#美丽管家#上学习了一篇文章，学习到很多新鲜有趣的知识，你也赶快下载一个吧！';
+	apiready = function() {
+		loadShareContent();
+	};
+	
+	function loadShareContent(){
+		api.ajax({
+	    	url: serverUrl + '/Share',
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, function(ret, err){
+	    	if(ret && ret.status){
+	    		description = ret.body.courseShare;
+	    	}
+	    });
+	}
+	
+	function shareToWeixin(){
+		var weiXin = api.require('weiXin');
+		weiXin.registerApp(function(ret, err){
+			if(ret && ret.status){
+				shareWebPageToWeixin();
+			}else{
+				if(ret){
+	    			api.toast({msg: ret.status, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+			}
+		});
+	}
+	
+	//内容类型为web_page
+	function shareWebPageToWeixin(){
+		var weiXin = api.require('weiXin');
+		weiXin.sendRequest({
+			scene: 'timeline',
+			contentType: 'web_page',
+			title: description,
+			description: description,
+			thumbUrl: thumbUrl,
+			contentUrl: url
+		}, function(ret, err){
+			if(ret && ret.status){
+				api.closeFrame({name: 'trainingShare_frame'});
+			}
+		});
+	}
+	
+	function shareToSinaWeibo(){
+		var sinaWeiBo = api.require('sinaWeiBo');
+        sinaWeiBo.auth({
+        	redirectUrl: 'http://www.tj360.org'
+        },function(ret,err){
+			if(ret.status) {
+				shareWebPageToSina();
+            }else{
+                if(ret){
+	    			api.toast({msg: ret.status, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+            }
+        });
+	}
+
+	function shareWebPageToSina(){
+		var sinaWeiBo = api.require('sinaWeiBo');
+		sinaWeiBo.sendRequest({
+			contentType: 'web_page',
+			text: description,
+			media: {
+				title: title,
+				description: description,
+				thumbUrl: thumbUrl,
+				webpageUrl: url
+			}
+		},function(ret,err){
+			if (ret.status) {
+				api.closeFrame({name: 'trainingShare_frame'});
+			}else{
+				if(ret){
+	    			api.toast({msg: ret.status, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+		    };
+		});
+	}
+	
+	function shareToQQ(){
+		var qq = api.require('qq');
+		qq.login(function(ret, err){
+			if(ret && ret.status){
+				shareNewsToQzone();
+			}else{
+				if(ret){
+	    			api.toast({msg: ret.status, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+			}
+		});
+	}
+	
+	function shareNewsToQzone(){
+		var qq = api.require('qq');
+		qq.shareNews({
+			url: url,
+			title: title,
+			description: description,
+			imgUrl: serverUrl + '/images/icon.png'
+		});
+		qq.logout(function(ret, err){api.closeFrame({name: 'trainingShare_frame'});});
+	}
+</script>
+</html>

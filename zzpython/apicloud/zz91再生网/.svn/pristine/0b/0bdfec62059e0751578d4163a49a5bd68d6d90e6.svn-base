@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>密码重置</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/passage-revise.css"/>
+</head>
+<body>
+<div class="box">
+	<span class="top-tishi">填写账号名 ，获取短信验证码</span><!-- 您的手机已通过验证，请输入新密码 -->
+	<p class="user">手机号：18779171234</p>
+	<p class="user">登录账号：18779171234</p>
+	<input type="text" class="newpass first-input" placeholder="请输入手机或用户名或邮箱"> <!-- 请输入密码 -->
+	<input type="text" class="newpass secd-input" placeholder="再次确认输入验证码">
+	<p class="content-tishi">验证短信已发送到您的手机！</p>
+	<span class="btn" step="1">获取短信验证码</span>
+	<p class="tishi-one">每天限发5条验证码短信</p>
+	<p class="tishi-two">或咨询电话：0571-56612345</p>
+</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/zepto.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/laytpl.js"></script>
+<script>
+	apiready = function(){
+		$(".btn").on("click",function(){
+			var step = $(this).attr("step");
+			switch(step){
+				case "1":
+				getCode($(this));
+				break;
+				case "2":
+				sureCode($(this));
+				break;
+				case "3":
+				surePassword($(this))
+				break;
+				case "4":
+				gologin()
+				break;
+			}
+		})
+	}
+	function getCode(obj){
+		$(".top-tishi").hide();
+		$(".user").show();
+		$(".content-tishi").hide();
+		$(".first-input").attr("placeholder","请输入验证码");
+		obj.attr("step","2").text("确 认");
+		$(".tishi-one").show()
+	}
+	function sureCode(obj){
+		$(".top-tishi").text("您的手机已通过验证，请输入新密码").show();
+		$(".first-input").attr("placeholder","请输入密码");
+		$(".secd-input").show();
+		$(".tishi-one").show();
+		obj.attr("step","3").text("重置密码");
+	}
+	function surePassword(obj){
+		obj.attr("step","4").text("确 认");
+		$("top-tishi").text("您已重置密码成功！您可以使用新密码登录")
+		$(".box *").not("span").hide();
+	}
+	function gologin(){
+		api.closeWin();
+	}
+</script>
+</html>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmSvrApply">
+	<typeAlias alias="crmSvrApply" type="com.zz91.ep.domain.crm.CrmSvrApply" />
+	<typeAlias alias="crmCsComp" type="com.zz91.ep.domain.crm.CrmCsComp" />
+	
+	<resultMap id="crmSvrApplyResult" class="crmSvrApply">
+		<result property="id" column="id" />
+		<result property="applyGroup" column="apply_group"/>
+		<result property="targetEmail" column="target_email"/>
+		<result property="targetAccount" column="target_account"/>
+		<result property="targetCid" column="target_cid"/>
+		<result property="gmtIncome" column="gmt_income"/>
+		<result property="amount" column="amount"/>
+		<result property="amountDetails" column="amount_details"/>
+		<result property="saleStaff" column="sale_staff"/>
+		<result property="saleStaffName" column="sale_staff_name"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<sql id="crmSvrApplySql" >
+		csv.id,
+		csv.apply_group,
+		csv.target_email,
+		csv.target_account,
+		csv.target_cid,
+		csv.gmt_income,
+		csv.amount,
+		csv.amount_details,
+		csv.sale_staff,
+		csv.sale_staff_name,
+		csv.remark,
+		csv.gmt_created,
+		csv.gmt_modified
+		
+	</sql>
+	
+	<insert id="insertApply" parameterClass="crmSvrApply">
+		insert into crm_svr_apply
+		(`apply_group`,`target_email`,`target_account`,`target_cid`,`gmt_income`,`amount`,`amount_details`,`sale_staff`,`sale_staff_name`,`remark`,`gmt_created`,`gmt_modified`)
+		values
+		(#applyGroup#,#targetEmail#,#targetAccount#,#targetCid#,#gmtIncome#,#amount#,#amountDetails#,#saleStaff#,#saleStaffName#,#remark#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryApplyByGroup" parameterClass="java.lang.String" resultMap="crmSvrApplyResult">
+		select <include refid="crmSvrApply.crmSvrApplySql" />
+		from crm_svr_apply csv
+		where csv.apply_group = #applyGroup#
+	</select>
+	
+	<insert id="assignApplyToCs" parameterClass="crmCsComp">
+		insert into crm_cs_comp
+		(`sale_staff`,`sale_staff_name`,`cid`,`del_status`,`gmt_created`,`gmt_modified`)
+		values
+		(#saleStaff#,#saleStaffName#,#cid#,#delStatus#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryCompWithCs" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select id from crm_cs_comp where cid=#id# and del_status=0
+	</select>
+	
+	<update id="updateDelStatus" parameterClass="java.lang.Integer">
+		update crm_cs_comp set
+		del_status=1,
+		gmt_modified=now() 
+		where id=#id#
+	</update>
+</sqlMap>

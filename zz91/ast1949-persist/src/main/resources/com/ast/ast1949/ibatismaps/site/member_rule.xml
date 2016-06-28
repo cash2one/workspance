@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="memberRule">
+	<typeAlias alias="memberRuleDO" type="com.ast.ast1949.domain.site.MemberRuleDO" />
+	<resultMap class="memberRuleDO" id="memberRuleResult">
+		<result property="id" column="id" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="operation" column="operation" />
+		<result property="operationCode" column="operation_code" />
+		<result property="results" column="results" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<select id="queryMemberRuleByCondition" parameterClass="memberRuleDO" resultMap="memberRuleResult">
+		select
+		id,membership_code,operation,operation_code,results,gmt_created,gmt_modified
+		from member_rule
+		where membership_code=#membershipCode#
+		<dynamic prepend="">
+			<isNotEmpty property="operation" prepend="and">
+				operation=#operation#
+		  </isNotEmpty>
+			<isNotEmpty property="operationCode" prepend="and">
+				operation_code=#operationCode#
+		  </isNotEmpty>
+		</dynamic>
+
+	</select>
+	
+	<insert id="insertMemberRule" parameterClass="memberRuleDO">
+		INSERT INTO member_rule 
+			(membership_code,
+			operation,
+			operation_code,
+			results,
+			gmt_created)
+		VALUES
+			(#membershipCode#,
+			#operation#,
+			#operationCode#,
+			#results#,
+			now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey> 
+	</insert>
+	
+	<update id="updateMemberRule" parameterClass="memberRuleDO">
+		UPDATE member_rule
+		SET
+			<isNotEmpty property="membershipCode">
+				membership_code = #membershipCode#,
+			</isNotEmpty>
+			<isNotEmpty property="operation">
+				operation = #operation#,
+			</isNotEmpty>
+			<isNotEmpty property="operationCode">
+				operation_code = #operationCode#,
+			</isNotEmpty>
+			<isNotEmpty property="results">
+				results = #results#,
+			</isNotEmpty>
+			gmt_modified = now()
+		WHERE id=#id#
+
+	</update>
+ 
+ 	<delete id="deleteMemberRuleById" parameterClass="int">
+ 		DELETE FROM member_rule
+ 		WHERE id=#id#
+ 	</delete>
+ 	
+ 	<!--查询所有规则-->
+ 	<select id="queryMemberRuleList" resultMap="memberRuleResult">
+ 		SELECT
+		    id,
+		    membership_code,
+		    operation,
+		    operation_code,
+		    results,
+		    gmt_created,
+		    gmt_modified
+		FROM member_rule
+ 	</select>
+ 	
+ 	<!--查询指定会员类型的所有参数-->
+ 	<select id="queryAllMemberRuleByType" parameterClass="string" resultMap="memberRuleResult">
+ 		SELECT
+		    id,
+		    membership_code,
+		    operation,
+		    operation_code,
+		    results,
+		    gmt_created,
+		    gmt_modified
+		FROM member_rule
+		WHERE membership_code=#memberTypeCode#
+ 	</select>
+ 	
+ 	<!--根据会员类型和规则类型获取规则-->
+ 	<select id="queryMemberRuleByTypeAndCode" parameterClass="map" resultMap="memberRuleResult">
+ 		SELECT
+		    id,
+		    membership_code,
+		    operation,
+		    operation_code,
+		    results,
+		    gmt_created,
+		    gmt_modified
+		FROM member_rule
+		WHERE membership_code=#memberTypeCode#
+		and operation_code=#ruleCode#
+ 	</select>
+ 	<!--清除所有信息-->
+	<delete id="clearAllData">
+		DELETE FROM member_rule
+	</delete>
+		
+</sqlMap>

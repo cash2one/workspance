@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" type="text/css" href="../../css/mui.min.css">
+	<script type="text/javascript" charset="utf-8" src="../../js/mui.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/zepto.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/laytpl.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/laytpl/common.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../js/laytpl/DBapi.js"></script>
+    <title>厂家直购-ZZ91再生网</title>
+    <link href="../../media/trust/css/caigou.m.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav" id="apptop">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="closewindow()"></a>
+		<a id="rightbutton" class="mui-icon mui-icon-close mui-pull-right" onclick="closewindow()"></a>
+		<h1 class="mui-title" id="apptopname">厂家直购</h1>
+	</header>
+	<div class="wrapper mui-content">
+    <div class="supply-nav">
+    	<h4>委托采购热线：<a href="tel:0571-56600066">0571-56600066</a>&nbsp;&nbsp;&nbsp;&nbsp;<img src="../../media/trust/images/icon_phone.png" />&nbsp;&nbsp;<span style="color: #999;font-size: 10px;">周一到周五 8:30-18:00</span></h4>
+    	<ul>
+        	<li class="nav-item"><a href="javascript:postsupply('supplyPub.html')">免费发布</a></li>
+            <li class="nav-item"><a href="javascript:mycaigou('listmycaigou.html')" style="background:none;color:#333">我的采购单</a></li>
+            <li class="nav-item"><a href="javascript:mysupply('listmysupply.html')" style="background:none;color:#333">我的供货单</a></li>
+        </ul>
+    </div>
+    <!--end supply-nav-->
+    <div class="wrap">
+    	<section class="supply-con">
+    	<div id="pagelist" style="margin-bottom: 50px;"></div>
+    	
+        <script id="pageTpl" type="text/html">
+        	<div class="mt15">
+        		<ul class="supply-sub current">
+                	<li>
+                		<a class="sub-item react"><strong class="title">{{d.title}}</strong></a>
+                	</li>
+                	<li>
+                		<a class="sub-item react"><strong class="title">{{d.useful}}</strong></a>
+                	</li>
+                	<li><a class="sub-item react"><strong class="title">{{d.quantity}}吨/月</strong></a></li>
+                	<li><a class="sub-item react"><span class="grey">价   格：</span>{{d.price}}元/吨</a></li>
+                	<li><a class="sub-item react"><span class="grey">所在地：</span>{{d.area}}</a></li>
+                	<li><a class="sub-item react"><span class="grey">No.{{d.buy_no}}</span></a></li>
+                	<li><a class="sub-item react"><span class="grey">颜   色：</span>{{d.color}}</a></li>
+                	<li><a class="sub-item react"><span class="grey">级&nbsp;&nbsp;&nbsp;&nbsp;别：</span>{{d.level}}</a></li>
+                	<li><a class="sub-item react"><span class="grey">{{d.differ_time}}前</span></a></li>
+                	<li class="pb"><a class="sub-item react">{{d.status}}</a></li>
+                	<li class="pb"><a class="sub-item react" href="tel:{{d.dealertel}}"><img src="../../media/trust/images/icon_phone.png" />&nbsp;{{d.dealername}}</a></li>
+                	<li class="pb"><a class="supply-btn sub-item react" href="javascript:getsupply('supplyForm.html',{{d.id}})" title="{{d.status}}">我要供货</a></li>
+            	</ul>
+            </div>
+        </script>
+        
+        <div class="page" style="line-height: 35px;margin: 0;margin-top: 20px;position:fixed;bottom:0px;z-index: 999;width: 100%; background-color: #f2f2f2;">
+       		<ul>
+				<li class="page_prev" onclick='loadCommlisttplData("/trust/list.html","pageTpl","pagelist","pageup")'>上一页</li>
+				<li class="page_prev" id="pages">1</li>
+				<li class="page_next" onclick='loadCommlisttplData("/trust/list.html","pageTpl","pagelist","pagedown")'>下一页</li>
+            </ul>
+        </div>
+        </section>  
+    </div>
+   </div>
+   <script>
+	mui.init({
+		swipeBack:true //启用右滑关闭功能
+	});
+	
+	mui.plusReady(function() {
+		var self = plus.webview.currentWebview();
+		company_id = self.company_id;
+		loadcompanyid(company_id);
+	   	loadCommlisttplData("/trust/list.html","pageTpl","pagelist","");
+	});
+	function postsupply(url){
+		if (company_id == 0 || company_id == "0") {
+			jsstr="postsupply('"+url+"')";
+			jsstr=escape(jsstr);
+			gotourl("/login/?jsstr="+jsstr, "blank");
+		}else{
+			openwindow(url,defaultqueryString)
+			return false;
+		}
+	}
+	function getsupply(url,buy_id){
+		if (company_id == 0 || company_id == "0") {
+			jsstr="getsupply('"+url+"',"+buy_id+")";
+			jsstr=escape(jsstr);
+			gotourl("/login/?jsstr="+jsstr, "blank");
+		}else{
+			defaultqueryString['buy_id']=buy_id;
+			openwindow(url,defaultqueryString)
+			return false;
+		}
+	}
+	function mysupply(url){
+		if (company_id == 0 || company_id == "0") {
+			jsstr="mysupply('"+url+"')";
+			jsstr=escape(jsstr);
+			gotourl("/login/?jsstr="+jsstr, "blank");
+		}else{
+			//defaultqueryString['buy_id']=buy_id;
+			openwindow(url,defaultqueryString)
+			return false;
+		}
+	}
+	function mycaigou(url){
+		if (company_id == 0 || company_id == "0") {
+			jsstr="mycaigou('"+url+"')";
+			jsstr=escape(jsstr);
+			gotourl("/login/?jsstr="+jsstr, "blank");
+		}else{
+			openwindow(url,defaultqueryString)
+			return false;
+		}
+	}
+   </script>
+</body>
+</html>

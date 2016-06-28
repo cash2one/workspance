@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+为了改进性能，可以采取以下几种措施：
+    1,将所有只用于搜索的，而不需要作为结果的field（特别是一些比较大的field）的stored设置为false
+    2,将不需要被用于搜索的，而只是作为结果返回的field的indexed设置为false
+    3,删除所有不必要的copyField声明
+    4,为了索引字段的最小化和搜索的效率，将所有的 text fields的index都设置成false，然后使用copyField将他们都复制到一个总的 text field上，然后
+      对他进行搜索。
+    5,为了最大化搜索效率，使用java编写的客户端与solr交互（使用流通信）
+    6,在服务器端运行JVM（省去网络通信），使用尽可能高的Log输出等级，减少日志量。
+-->
+
+<schema name="db" version="1.1">
+  <!--
+     sortMissingLast和sortMissingFirst两个属性是用在可以内在使用String排序的类型上,
+     sortMissingLast="true"，没有该field的数据排在有该field的数据之后，而不管请求时的排序规则。
+     sortMissingFirst="true"，跟上面倒过来。 (2个值默认是设置成false)
+     StrField类型不被分析，而是被逐字地索引/存储。
+     StrField和TextField都有一个可选的属性“compressThreshold”，保证压缩到不小于一个大小（单位：char）
+     solr.TextField 允许用户通过分析器来定制索引和查询，分析器包括 一个分词器（tokenizer）和多个过滤器
+     positionIncrementGap：可选属性，定义在同一个文档中此类型数据的空白间隔，避免短语匹配错误。
+  -->
+  <types>
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="integer" class="solr.IntField" omitNorms="true"/>
+    <fieldType name="long" class="solr.LongField" omitNorms="true"/>
+    <fieldType name="float" class="solr.FloatField" omitNorms="true"/>
+    <fieldType name="double" class="solr.DoubleField" omitNorms="true"/>
+    <fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sfloat" class="solr.SortableFloatField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sdouble" class="solr.SortableDoubleField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="date" class="solr.DateField" omitNorms="true"/>
+    <!--solr.TextField 允许用户通过分析器来定制索引和查询，分析器包括 一个分词器（tokenizer）和多个过滤器-->
+     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+     </fieldType>
+    <!--Solr的analysis包并没有带支持中文的包，需要自己添加中文分词器(详细请看webapps/solr/dic/README)-->
+   <fieldtype name="textComplex" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" mode="complex"
+                       dicPath="/usr/tools/tomcat/huanbao-search/dic">
+            </tokenizer>
+        </analyzer>
+    </fieldtype>
+    <fieldtype name="textMaxWord" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" mode="maxword" 
+                       dicPath="/usr/tools/tomcat/huanbao-search/dic"/>
+        </analyzer>
+    </fieldtype>
+    <fieldtype name="textSimple" class="solr.TextField" positionIncrementGap="100">
+        <analyzer>
+            <tokenizer class="com.chenlb.mmseg4j.solr.MMSegTokenizerFactory" mode="simple"
+                       dicPath="/usr/tools/tomcat/huanbao-search/dic"/>
+        </analyzer>
+    </fieldtype>
+ </types>
+
+
+ <fields>
+   <!--fields节点内定义具体的字段（类似数据库的字段），含有以下属性：
+        name：标识而已。
+        type：先前定义的类型。
+        indexed：是否被用来建立索引（关系到搜索和排序）
+        stored：是否储存
+        compressed：[false]，是否使用gzip压缩（只有TextField和StrField可以压缩）
+        mutiValued：是否包含多个值
+        omitNorms：是否忽略掉Norm，可以节省内存空间，只有全文本field和need an index-time boost的field需要norm。（具体没看懂，注释里有矛盾）
+        termVectors：[false]，当设置true，会存储 term vector。当使用MoreLikeThis，用来作为相似词的field应该存储起来。
+        termPositions：存储 term vector中的地址信息，会消耗存储开销。
+        termOffsets：存储 term vector 的偏移量，会消耗存储开销。
+        default：如果没有属性需要修改，就可以用这个标识下。
+   -->
+   <field name="id" type="integer" indexed="true" stored="true" required="true"/>
+   <field name="name" type="textSimple" indexed="true" stored="true"/>
+   <field name="plateCategoryCode"   type="text" indexed="false"  stored="true" />
+   <field name="details" type="textComplex" indexed="false" stored="true"/>
+   <field name="industryCode" type="text" indexed="true"  stored="true" />
+   <field name="showName" type="text" indexed="false"  stored="true" />
+   <field name="organizers" type="text" indexed="false"  stored="true" />
+   <field name="provinceCode" type="text" indexed="true" stored="true" />
+   <field name="areaCode" type="text" indexed="true" stored="true"/>
+   <field name="pauseStatus" type="sint" indexed="true" stored="true"/>
+   <field name="gmtStart" type="date" indexed="true" stored="true"/>
+   <field name="gmtEnd" type="date" indexed="true" stored="true"/>
+   <field name="gmtPublish" type="date" indexed="true" stored="true"/>
+   <field name="gmtSort" type="date" indexed="true" stored="true"/>
+   <!--拷贝字段-->
+   <field name="allText" type="textComplex" indexed="true" stored="false" multiValued="true"/>
+ </fields>
+
+ <!-- 文档的唯一标识， 必须填写这个field（除非该field被标记required="false"），否则solr建立索引报错。 -->
+ <uniqueKey>id</uniqueKey>
+
+ <!-- 如果搜索参数中没有指定具体的field，那么这是默认的域 -->
+ <defaultSearchField>allText</defaultSearchField>
+ 
+ <!-- 配置搜索参数短语间的逻辑，可以是"AND|OR" -->
+ <solrQueryParser defaultOperator="AND"/>
+ 
+  <!--建议建立一个拷贝字段，将所有的 全文本 字段复制到一个字段中，以便进行统一的检索-->
+ <copyField source="name" dest="allText"/>
+ <copyField source="showName" dest="allText"/>
+ <copyField source="organizers" dest="allText"/>
+ <copyField source="details" dest="allText"/>
+</schema>

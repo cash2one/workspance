@@ -1,0 +1,31 @@
+<script type="text/javascript" src="#springUrl('/app/exhibit/category.js')" ></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+	
+	var tree=new com.zz91.ep.category.TreePanel({
+		id:CATEGORY.TREE,
+		region:"west",
+		width:300
+	});
+	
+	var grid=new com.zz91.ep.exhibit.grid({
+		id:CATEGORY.COLLECTION_GRID,
+		region:"center"
+	});
+	
+	new Ext.Viewport({
+		layout:"border",
+		items:[tree,grid]	
+	});
+	
+	tree.on('click',function(node,event){
+		var code = node.attributes['data'];
+		if(code!=""){
+			grid.getStore().baseParams["plateCategoryCode"]=code;
+		}else{
+			grid.getStore().baseParams["plateCategoryCode"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+})
+</script>

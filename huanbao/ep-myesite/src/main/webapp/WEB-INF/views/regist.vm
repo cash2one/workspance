@@ -1,0 +1,226 @@
+#set($layout='/layout/registLayout.vm')
+<!-- header end-->
+<nav class="regnav hb_mainblock margintop8">
+    <span class="regstep">第一步:填写账户信息</span>
+    <span class="regnavtip">(加星为必填)</span>
+</nav>
+
+<article class="regblock hb_mainblock margintop16">
+	<section class="regformblock">
+		
+		#if($!{error})
+		<div class="reg_items">
+			<div class="regi_label">
+				&nbsp;
+			</div>
+			<div class="regi_input" style="color:red;font-weight:bold;font-size:14px;">
+				$!{error}
+			</div>
+		</div>
+		#end
+		
+		<form method="post" id="regform" name="regform" action="#springUrl('/doRegist.htm')">
+
+			<div class="reg_items">
+				<div class="regi_label">
+					<em class="fontorange">*</em>注册类型：
+				</div>
+				<div class="regi_input">
+					<span class="item-input" style="font-size:14px;">
+						<label>
+							<input type="radio" name="mainProduct" value="mainSupply" checked="checked" /> 卖家
+						</label>
+						&nbsp;&nbsp;
+						<label>
+							<input type="radio" name="mainProduct" value="mainBuy" /> 买家
+						</label>
+					</span>
+				</div>
+			</div>
+			
+			<div class="reg_items reg_items_hover">
+				<div class="regi_label">
+					<em class="fontorange">*</em>用户名：
+				</div>
+				<div class="regi_input">
+					<input type="text" name="account" id="account" class="regipt validate[required,custom[vaccount],minSize[4],maxSize[20],ajax[ajaxAccount]]" value="$!{compAccount.account}" />
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label psdstrength">
+					<em class="fontorange">*</em>密码：
+				</div>
+				<div class="regi_input">
+					<input type="password" value="" name="passwordClear" class="regipt validate[required,minSize[6],maxSize[16]]" id="passwordClear" />
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+					<em class="fontorange">*</em>确认密码：
+				</div>
+				<div class="regi_input">
+					<input type="password" value="" name="confirmpassword" class="regipt validate[required,equals[passwordClear]]" id="confirmpassword" />
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+					<em class="fontorange">*</em>邮箱：
+				</div>
+				<div class="regi_input">
+					<input type="text" name="email" class="regipt validate[required,custom[email],ajax[ajaxEmail]]" id="email" value="$!{compAccount.email}" />
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+					<em class="fontorange">*</em>手机号码：
+				</div>
+				<div class="regi_input">
+					<input type="text" name="mobile" class="regipt validate[required,custom[mobile]]" id="mobile" value="$!{compAccount.mobile}"/>
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+						<em class="fontorange">*</em>公司名称：
+				</div>
+				<div class="regi_input">
+					<input type="text" name="name" class="regipt validate[required,maxSize[100]]" id="name" value="$!{profile.name}"/>
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+						QQ：
+				</div>
+				<div class="regi_input">
+					<input type="text" name="qq" class="regipt validate[custom[onlyNumberSp],minSize[5],maxSize[12]]" id="qq" value="$!{compAccount.qq}"/>
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_label">
+					<em class="fontorange">*</em>验证码：
+				</div>
+				<div class="regi_input">
+					<span class="item-input">
+						
+						<input name="verifyCode" id="verifyCode" class="regipt validate[required]" style="width:50px;" type="text" size="10" />
+						
+						<span id="vtip">点击输入框显示验证码</span>
+        				<span id="vspan" style="display:none;">
+        					<img id="vcodeimg" src="$!{address.img}/front/images/global/loading.gif" align="absmiddle" width="90" height="28" title="看不清楚？点击图片换一张"/>
+        					<a id="changeImg" href="javascript:void(0);" >看不清楚？换一张</a>
+        				</span>
+##<img src="$!{address.myesite}/common/registMathcode.htm?ts=0.07746430183760822" height="28px;" align="absmiddle" id="codeImg" style="cursor:pointer" title="看不清楚?点击图刷新验证码！" onclick="javascript:changeImg();" />
+						
+					</span>
+				</div>
+			</div>
+			<div class="reg_items">
+				<div class="regi_input">
+					<input type="checkbox" name="agreeterms" class="agreeterms" id="agreeterms" checked />
+					<label for="agreeterms">
+						我已经阅读&lt;&lt;<a href="javascript:void(0);" class="readertermsbtn" title="点击查看中国环保环注册服务条款">中国环保网服务条款</a>&gt;&gt;
+					</label>
+				</div>
+			</div>
+			<div class="reg_items_sub">
+				<input type="submit" class="regsub" name="registBtn" value="立即注册" />
+				<input type="hidden" name="token" value="$!{token}" />
+				<input type="hidden" name="registerCode" value="$!{registerCode}" />
+				<input type="hidden" name="refurl" value="$!{refurl}" />
+				<input type="hidden" name="mainSupply" id="mainSupply" value="1" />
+				<input type="hidden" name="mainBuy" id="mainBuy" value="0" />
+			</div>
+		</form>
+	</section>
+	
+	<section class="regtip">
+		<article class="regtipbox">
+			<header class="rtb_t">
+				<h3>为什么要注册环保网会员？</h3>
+			</header>
+            <ul class="rtb_ls">
+                <li>获得优质货源信息</li>
+                <li>浏览最新市场行情</li>
+                <li>建立个性化企业网站</li>
+                <li>拓展全球商业人脉</li>
+            </ul>
+		</article>
+        <article class="regtipbox intavalregbox">
+            <header class="rtb_t">
+                <h3>为什么要邮箱验证？</h3>
+            </header>
+            <ul class="rtb_ls">
+                <li>邮箱验证完全免费</li>
+                <li>可以用邮箱找回密码</li>
+                <li>支持邮箱账号登陆</li>
+                <li>可用于订阅最新行情资讯</li>
+            </ul>
+        </article>
+	</section>
+	
+	<div class="clear"></div>
+	
+	#parse("/common/regist/protocol.vm")
+	#parse("/common/importValidateOriginal.vm")
+	<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/hb.psds.strength.min.js"></script>
+</article>
+<script type="text/javascript">
+	
+	jQuery(document).ready(function(){
+		
+		//密码强度
+		jQuery('#passwordClear').pstrength();
+		
+		//表单样式
+		jQuery("#regform .reg_items").click(function(){
+    		if(jQuery(this).attr('class')!='reg_items_hover'){
+    			jQuery(this).addClass('reg_items_hover').siblings().removeClass('reg_items_hover')
+    		}
+    	});
+		
+		jQuery("#regform :submit").mouseover(function(){
+			jQuery(this).attr({'class':'regsubhover'});
+		}).mouseout(function(){
+			jQuery(this).attr({'class':'regsub'});
+		});
+		
+		//默认焦点
+		jQuery("#account").focus();
+		
+		//表单验证
+		jQuery("#regform").validationEngine("attach",{
+			//promptPosition:"centerRight",
+			scroll:true
+		});
+		
+		//控制验证码显示与切换
+		jQuery("#vcodeimg").click(function(){
+            jQuery(this).attr("src", "#springUrl('/validate/vcode.htm')?"+new Date());
+        });
+		
+		jQuery("#changeImg").click(function(){
+            jQuery("#vcodeimg").attr("src", "#springUrl('/validate/vcode.htm')?"+new Date());
+        });
+		
+		jQuery("#verifyCode").click(function(){
+			jQuery("#vtip").hide();
+			jQuery("#vspan").show();
+			
+			if(jQuery("#vcodeimg").attr("src")=="$!{address.img}/front/images/global/loading.gif"){
+				jQuery("#vcodeimg").attr("src", "#springUrl('/validate/vcode.htm')?"+new Date());
+			}
+		});
+		
+		//处理买家与卖家标记
+		jQuery("input[name=mainProduct]").click(function(){
+			if(jQuery(this).val()=="mainSupply"){
+				jQuery("#mainSupply").val(1);
+				jQuery("#mainBuy").val(0);
+			}else{
+				jQuery("#mainSupply").val(0);
+				jQuery("#mainBuy").val(1);
+			}
+		});
+		
+	});
+	
+</script>

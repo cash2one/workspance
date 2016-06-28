@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="goodsCategory">
+	<typeAlias alias="goodsCategory" type="com.ast.feiliao91.domain.goods.GoodsCategory"/>
+	<resultMap class="goodsCategory" id="goodsCategoryResult">
+			<result property="id" column="id"/>
+			<result property="code" column="code"/>
+			<result property="parentCode" column="parent_code"/>
+			<result property="label" column="label"/>
+			<result property="pinyin" column="pinyin"/>
+			<result property="isDel" column="is_del"/>
+			<result property="gmtCreated" column="gmt_created"/>
+			<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<!-- 创建产品类别记录 -->
+	<insert id="insertGoodsCategory" parameterClass="goodsCategory">
+		insert into goods_category
+		(
+			code,
+			parent_code,
+			label,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#code#,
+			#parentCode#,
+			#label#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 表中所有列 -->
+	<sql id="allColumn"> 
+			id, code, parent_code, label, pinyin, is_del, gmt_created, gmt_modified
+	</sql>
+	
+	<!-- 获取父类下的所有子类 -->
+	<select id="queryCategoryByParentCode" parameterClass="java.lang.String" resultMap="goodsCategoryResult">
+		select 
+			<include refid="goodsCategory.allColumn"/>
+		from goods_category
+		where is_del = '0' and parent_code=#parentCode#
+	</select>
+	
+	<!-- 模糊匹配类别 -->
+	<select id="queryGoodsCategoryByKeyword" parameterClass="java.util.Map" resultMap="goodsCategoryResult">
+			select
+				<include refid="goodsCategory.allColumn"/>
+			from goods_category
+			where is_del = '0' and label like concat("%",#keyword#,"%")
+			<isNotEmpty prepend="and" property="length">
+					length(code) > #length#
+			</isNotEmpty>
+			order by id desc
+			limit #size#
+	</select>
+	<!-- 检索所有记录 -->
+	<select id="queryAllGoodsCategory" resultMap="goodsCategoryResult">
+		select 
+		<include refid="goodsCategory.allColumn"/>
+		from goods_category
+		where is_del = '0'
+		order by id asc
+	</select>
+	
+	<!-- 根据code获得 GoodsCategory-->
+	<select id="queryCategoryByCode" parameterClass="java.lang.String"
+		resultMap="goodsCategoryResult">
+		select
+		<include refid="goodsCategory.allColumn"/>
+		from goods_category
+		where is_del = '0' and code = #code#
+	</select>
+</sqlMap>

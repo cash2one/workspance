@@ -1,0 +1,292 @@
+<link rel="stylesheet" href="http://img0.zz91.com/trade/priceindex/css/deal.css" />
+<link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm-pop.css" />
+#set($layout="/layout/default.vm")
+#parse("/common/menu.vm")
+<div class="content clearfix">
+	#set($pageName="post_list")
+	#parse("/common/left.vm")
+	<div class="ads-main fr ads-qh" id="tt">
+		<div class="manage-info clearfix">
+			<div class="state fl">
+				<a href="#springUrl('/goods/post_list.htm?isSell=1&isGarbage=0&checkStatus=1')" #if($!{searchDto.isSell}==1) class="now-hear" #end>已上架</a>|
+				<a href="#springUrl('/goods/post_list.htm?isSell=0&isGarbage=0&checkStatus=1')" #if($!{searchDto.isSell}==0) class="now-hear" #end>已下架</a>|
+				<a href="#springUrl('/goods/post_list.htm?checkStatus=0&isGarbage=0')" #if($!{searchDto.checkStatus}==0) class="now-hear" #end>审核中</a>|
+				<a href="#springUrl('/goods/post_list.htm?checkStatus=2&isGarbage=0')" #if($!{searchDto.checkStatus}==2) class="now-hear" #end>退回</a>|
+			</div>
+			<a class="fr hushou blue" href="#springUrl('/goods/post_list.htm?isDel=1&isGarbage=0')">
+				<i class="icon-hushou iconfont">&#xe60f;</i>回收站
+			</a>
+		</div>
+		<div class="product-title clearfix">
+			<div class="fl pdct-tt1">
+				<label class="all-get">
+					<input name="frim" type="checkbox" value="" class="getall-input"/>全选 
+				</label>
+				<span class="tt1-name">商品信息</span>
+			</div>
+			<div class="fl pdct-tt2">
+				<span>单价（元）</span>
+			</div>
+			<div class="fl pdct-tt3">
+				<span>库存</span>
+			</div>
+			<div class="fl pdct-tt4">
+				<span>状态</span>
+			</div>
+			<div class="fl pdct-tt5">
+				<span>操作</span>
+			</div>
+		</div>
+		<ul class="cplist-ul">
+			#foreach($obj in $page.records)
+				<li>
+					<div class="clearfix">
+						<div class="fl pdct-tt1">
+							<input name="frimlist" type="checkbox" value="$!{obj.goods.id}" class="onecheack"/>
+							<div class="cpdetail">
+								<a href="$!{address.www}/goods$!{obj.goods.id}.htm" target="_blank">
+									<img src="$!{address.img}$!{obj.picAddress}" width="80" height="80" class="cpdetail-img" />
+								</a>
+								<a class="cpdetail-wen" href="$!{address.www}/goods$!{obj.goods.id}.htm" target="_blank">$!{obj.goods.title}</a>
+								<p class="cpdetail-baoz">
+									#if($obj.bzjFlag)
+										<i class="res-iconimg1"></i>
+									#end
+									#if($obj.sevenDayFlag)
+										<i class="res-iconimg1 res-iconimg2"></i>
+									#end
+								</p>
+							</div>
+						</div>
+						<div class="fl pdct-tt2">
+							<p>$!{obj.goods.price} 元</p>
+							<p class="deatil-loat color-99">(不含税)</p>
+							#if($obj.goods.isDel&&$obj.goods.isDel==1)
+								<p class="deatil-loat color-99">删除时间：#printFragmentDate("yyyy-MM-dd HH:mm" $!{obj.goods.refreshTime})</p>
+							#else
+								<p class="deatil-loat color-99">刷新时间：#printFragmentDate("yyyy-MM-dd HH:mm" $!{obj.goods.refreshTime})</p>
+							#end
+						</div>
+						<div class="fl pdct-tt3">
+							<p>$!{obj.goods.quantity}$!{obj.goods.unit}</p>
+						</div>
+						<div class="fl pdct-tt4">
+							#if($obj.goods.isSell==1)
+								<p class="color-99">已上架</p>
+							#end
+							#if($obj.goods.isSell==0)
+								<p class="color-99">已下架</p>
+							#end
+							#if($obj.goods.checkStatus==0)
+								<p class="color-99">审核中</p>
+							#end
+							#if($obj.goods.checkStatus==2)
+								<p class="color-99">退回</p>
+							#end
+							#if($!{obj.goods.isDel}==1)
+								<p class="color-99">已删除</p>
+							#end
+						</div>
+						<div class="fl pdct-tt5">
+							###if($searchDto.isSell==0||$!{searchDto.checkStatus}==0||$!{searchDto.checkStatus}==2||$searchDto.isSell==1)
+							<p><a href="#springUrl('/goods/post_edit.htm?id=')$!{obj.goods.id}" class="blue" target="_blank">修改</a></p>
+							###end
+							#if($obj.goods.isDel&&$obj.goods.isDel==1&&$obj.goods.isGarbage==0)
+								<p><a href="javascript:void(0)" class="blue" onclick="clickToStatus($!{obj.goods.id},1)">还原</a></p>
+								<p><a href="javascript:void(0)" class="blue" onclick="mDeleteOne($!{obj.goods.id})">清空</a></p>
+							#end
+							#if($obj.goods.isSell==0||$!{obj.goods.checkStatus}==0||$!{obj.goods.checkStatus}==2)
+								<p><a href="javascript:void(0)" class="blue" onclick="clickToStatus($!{obj.goods.id},2)">删除</a></p>
+							#end
+							#if($obj.goods.isSell==1)
+								<p><a href="javascript:void(0)" class="blue" onclick="clickToStatus($!{obj.goods.id},3)">下架</a></p>
+							#end
+							#if($obj.goods.isSell==0)
+								<p><a href="javascript:void(0)" class="blue" onclick="clickToStatus($!{obj.goods.id},4)">上架</a></p>
+							#end
+						</div>
+    					<script type="text/javascript">
+    						function clickToStatus(id,type){
+    							if(type==undefined){
+    								return false;
+    							}
+    							jQuery.ajax({
+    								url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+    								data:{"id":id,"type":type},
+    								dataType:"json",
+    								success:function(data){
+    									if(data.success){
+    										location.reload();
+    									}
+    								}
+    							});
+    						}
+    					</script>
+					</div>
+				</li>
+			#end
+		</ul>
+		
+		## 分页开始
+		#postListPageNav($page "#springUrl('/goods/post_list.htm')" "isSell=$!{searchDto.isSell}&isGarbage=$!{searchDto.isGarbage}&checkStatus=$!{searchDto.checkStatus}&isDel=$!{searchDto.isDel}" "")
+		
+        <div class="deal-retive">
+            <div class="deal-info clearfix">
+                <label class="all-get fl">
+                    <input name="frim" type="checkbox" value="" class="getall-input"/>全选 
+                </label>
+				#if($searchDto.isSell==0||$!{searchDto.checkStatus}==0||$!{searchDto.checkStatus}==2)
+				<a href="javascript:void(0)" class="blue more-deat fl" onclick="deleteAll(2)">删除</a>
+				#end
+				#if($searchDto.isSell==0)
+				<a href="javascript:void(0)" class="blue more-deat fl" onclick="shelves(4)">上架</a>
+				#end
+				#if($searchDto.isSell==1)
+				<a href="javascript:void(0)" class="blue more-deat fl" onclick="shelvesTwo(3)">下架</a>
+				#end
+				#if($searchDto.isSell==2||$searchDto.isSell==0||$!{searchDto.checkStatus}==0||$!{searchDto.checkStatus}==2)
+				<span class="fl color-66 delete-zs">注：同一宝贝7天内只能恢复一次，删除时请谨慎！</span>
+				#end
+				#if($searchDto.isDel==1)
+				<a href="javascript:void(0)" class="blue more-deat fl" onclick="mPublish()">还原</a>
+                <a href="javascript:void(0)" class="blue more-deat fl" onclick="mDelete()">清空</a>
+				#end
+                <span class="fr">已选商品 <span class="red j_cdnumber">0</span> 件</span>
+            </div>
+        </div>
+        <div class="deal-fixed"></div>
+    </div>
+</div>  
+<script type="text/javascript">
+    $(".getall-input").bind("click",function(){
+        if($(this).is(':checked')){
+            $(".getall-input").prop("checked",true);
+            $(".onecheack").prop("checked","true");
+        }else{
+            $(".getall-input").prop("checked",false);
+            $(".onecheack").prop("checked",false);
+        }
+        checkedNumber();
+    })
+    $(".onecheack").bind("click",function(){
+        if(!$(this).is(':checked')){
+            $(".getall-input").prop("checked",false);
+        }
+        checkedNumber();
+    })
+	
+	function mPublish(){
+		$(".onecheack:checked").each(function(){
+			jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":this.value,"type":1},
+				dataType:"json",
+				cache:false
+			});
+		});
+		location.reload();
+	}
+	
+	##删除
+	function deleteAll(type){
+	  $(".onecheack:checked").each(function(){
+	    jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":this.value,"type":type},
+				dataType:"json",
+				cache:false
+			});
+	     });
+		 location.reload();
+	}
+	
+	##上架
+	function shelves(type){
+	  $(".onecheack:checked").each(function(){
+	    jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":this.value,"type":type},
+				dataType:"json",
+				cache:false
+			});
+	     });
+		 location.reload();
+	}
+	
+	##下架
+	function shelvesTwo(type){
+	  $(".onecheack:checked").each(function(){
+	    jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":this.value,"type":type},
+				dataType:"json",
+				cache:false
+			});
+	     });
+		 location.reload();
+	}
+	
+	function mDelete(){
+		$(".onecheack:checked").each(function(){
+			jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":this.value,"type":5},
+				dataType:"json",
+				cache:false
+			});
+		});
+		window.location.reload();
+	}
+	
+	function mDeleteOne(id){
+			jQuery.ajax({
+				url:"#springUrl('/goods/updateGoodsByStatus.htm')",
+				data:{"id":id,"type":5},
+				dataType:"json",
+				cache:false,
+				success:function(){
+				window.location.reload();
+				}
+		});
+	}
+    function checkedNumber(){
+        var cedNuber =0;
+        $(".onecheack").each(function(){
+            if($(this).is(':checked')){
+                cedNuber +=1;
+            }
+        })
+        $(".j_cdnumber").html(cedNuber)
+    }
+
+    //底部信息条的位置
+    var winHight = $(window).height();//页面高度
+    var retiveHight = $(".deal-retive").offset().top;
+    if(retiveHight>winHight){
+        $(".deal-info").clone(true).appendTo(".deal-fixed");
+        $(".deal-retive .deal-info").remove();
+    }
+    $(document).scroll(function(){
+        var sollTop = $(document).scrollTop();//滚动条高度
+        if(sollTop + winHight>=retiveHight){
+            if($(".deal-fixed .deal-info").length==1){
+                $(".deal-info").clone(true).appendTo(".deal-retive");
+                $(".deal-fixed .deal-info").remove();
+            } 
+        }else{
+            if($(".deal-retive .deal-info").length==1){
+                $(".deal-info").clone(true).appendTo(".deal-fixed");
+                $(".deal-retive .deal-info").remove();
+            } 
+        }
+    })
+
+
+    //弹认证窗口
+    var cerTified = false; //是否认证
+    $(".j_release").bind("click",function(){
+        if(!cerTified){
+##            popPd();
+        }
+    })
+</script>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneChangeLog">
+	<typeAlias alias="phoneChangeLogDO" type="com.ast.ast1949.domain.phone.PhoneChangeLog" />
+	<typeAlias alias="phoneChangeLogDto" type="com.ast.ast1949.dto.phone.PhoneChangeLogDto" />
+	<resultMap class="phoneChangeLogDO" id="phoneChangeLogResult">
+		<result property="id" column="id" />
+		<result property="changeType" column="change_type" />
+		<result property="changeContent" column="change_content" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="checkStatus" column="check_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+    <resultMap class="phoneChangeLogDto" id="phoneChangeLogDtoResult">
+		<result property="phoneChangeLog" resultMap="phoneChangeLog.phoneChangeLogResult"/>
+    </resultMap>
+	<sql id="defaultColumn">
+		id,
+		change_type,
+		change_content,
+		company_id,
+		target_id,
+		check_status,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="phoneChangeLogDO">
+		INSERT INTO phone_change_log
+		(
+		change_type,
+		change_content,
+		company_id,
+		target_id,
+		check_status,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#changeType#,
+		#changeContent#,
+		#companyId#,
+		#targetId#,
+		#checkStatus#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="phoneChangeLogDO">
+		UPDATE phone_change_log
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="changeContent">
+			change_content = #changeContent#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status = #checkStatus#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="phoneChangeLogResult">
+		SELECT
+		<include refid="defaultColumn"/>
+		FROM phone_change_log
+		where id = #value#
+	</select>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="phoneChangeLogResult">
+		SELECT
+		<include refid="defaultColumn"/>
+		FROM phone_change_log
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<sql id="dynamicSearch">
+		<dynamic prepend="where">
+			<isNotEmpty property="checkStatus" prepend="and">
+				check_status=#checkStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		SELECT count(0)
+		FROM phone_change_log
+		<include refid="dynamicSearch"/>
+	</select>
+	<select id="queryAllPhoneChangeLogs" parameterClass="java.util.Map" resultMap="phoneChangeLogDtoResult">
+		select
+		<include refid="defaultColumn"/>
+		from phone_change_log
+		<include refid="dynamicSearch"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+</sqlMap>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>收藏</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%; 
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	#main section{
+		display: -webkit-box;
+		border-bottom: 1px solid #CCCCCC;
+		background-color: #FFFFFF;
+	}
+	#main section .left{
+		padding-top: 12px;
+		padding-bottom: 12px;
+		padding-left: 8px;		
+		display: -webkit-box;
+		width: 100%;
+		-webkit-box-flex: 1;
+	}
+	#main section .left div{
+		display: -webkit-box;
+	}
+	#main section .left div:nth-child(2){
+		width: 100%;
+		-webkit-box-flex: 1;
+		-webkit-box-orient: vertical;
+	}
+	#main section .left img{
+		margin-right: 10px;
+		border: 1px solid #B3B3B3;
+		border-radius: 4px;
+	}
+	#main section .right{
+		width: 40px;
+		display: -webkit-box;
+		padding-top: 12px;
+		padding-bottom: 12px;
+		padding-right: 8px;
+	}
+	#main section .right a{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: end;
+		-webkit-box-flex: 1;
+		font-size: 14px;
+		color: rgb(225, 66, 116);
+	}
+	.title{
+		font-weight: bold;
+		color: #00b8ff;
+		text-overflow:ellipsis;
+		overflow:hidden;
+		white-space:nowrap;
+		-webkit-box-flex: 1;
+		margin-bottom: 7px;
+	}
+	.content{
+		font-size: 14px;
+		line-height: 18px;
+		word-wrap: break-word;
+		word-break: break-all;
+	}
+	.nodata{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		background-color: #FAFAFA;
+		-webkit-box-flex: 1;
+		font-size: 14px;
+		padding-top: 40px;
+	}
+	.deleteBtnActive{
+		color: #00b8ff !important;
+	}
+	.listActive{
+		background-color: #CCCCCC;
+	}
+</style>
+</head>
+<body>
+	<input type='hidden' value='0' id='listlen' />
+	<div id="main">
+	</div>
+</body>
+<script>
+	var pageIndex = 0;
+	var inLoading = false;
+	var needLoadMore = false;
+	var listlen = 0;
+	var jsonList = [];
+	
+	apiready = function() {
+		api.showProgress({modal: false});
+		//下拉到页面底部，加载更多
+		api.addEventListener({name:'scrolltobottom'}, function(){
+	        if (needLoadMore) {
+	            loadData(false);
+	        }
+	    });
+	    //下拉刷新
+	    api.setRefreshHeaderInfo({
+	    	visible:true, 
+	    	bgColor: '#F2F2F2', 
+	    	textColor: '#000000',
+	    	textDown: '下拉刷新',
+	    	textUp: '释放刷新',
+	    },function(ret,err){
+	        loadData(true);
+	    });
+	    loadData(true);
+	};
+
+	function loadData(isReload_){
+		if (inLoading) {//如果还在加载中，不执行操作
+	        return;
+	    }
+	    inLoading = true;
+	    if (isReload_) {//下拉刷新，即重新载入,pageIndex为0
+	        pageIndex = 0;
+	    }
+	    
+	    function ajaxBack(ret,err){
+	    	inLoading = false;
+	    	if(ret && ret.status){
+	    		if(ret.body.list.length > 0){
+	    			jsonList = ret.body.list;	    									
+	    			pageIndex++;
+	    			var html = createContent();
+					if(isReload_){//如果是刷新
+						listlen = ret.body.list.length;
+						$api.val($api.byId('listlen'), listlen);
+						$api.html($api.byId('main'), html);
+						
+						api.refreshHeaderLoadDone();
+						setTimeout(function(){api.hideProgress();}, 300);
+					}else{//如果是加载更多
+						listlen += ret.body.list.length;
+						$api.val($api.byId('listlen'), listlen);
+						$api.append($api.byId('main'), html);
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					api.parseTapmode();
+	    		}else if(ret.body.list.length == 0){
+	    			api.refreshHeaderLoadDone();
+	    			api.hideProgress();
+	    			if(isReload_){//如果是刷新
+						var html = '<div class="nodata">暂无收藏</div>';
+						$api.html($api.byId('main'), html);
+					}
+	    		}
+	    		
+	    		if(pageIndex < ret.pages){
+	    			needLoadMore = true;
+	    		}else{
+	    			needLoadMore = false;
+	    		}
+	    	}else{
+	    		api.refreshHeaderLoadDone();
+	    		api.hideProgress();
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    		var html = '<div class="nodata">数据错误，请下拉刷新重试！</div>';
+	    		$api.html($api.byId('main'), html);
+	    	}
+	    }
+	    
+    	api.ajax({
+	    	url: serverUrl + '/user/FavoritesList?uid=' + $api.getStorage('usr').uid + '&pageIndex='+ pageIndex,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, ajaxBack);
+	}
+	
+	function createContent(){
+		var html = '';
+		for(var i=0; i<jsonList.length; i++){
+			var subS = subStr2(jsonList[i].mdescription);
+			html += '<section>';
+			html += '<div tapmode="listActive" class="left" onclick="beforeCourseDetail(' + i + ')">';
+			html += '<div><img src="' + serverUrl + jsonList[i].micon + '" width="75px" height="75px"/></div>';
+			html += '<div>';
+			html += '<label class="title">' + jsonList[i].mname + '</label>';
+			html += '<label class="content">' + subS + '</label>';
+			html += '</div></div>';
+			html += '<div tapmode="listActive" class="right" onclick="deleteFavorite(this, \'' + jsonList[i]._id + '\')">';
+			html += '<a>删除</a></div></section>';
+		}
+		return html;
+	}
+	
+	function beforeCourseDetail(index){
+		courseDetail(jsonList[index]);
+	}
+	
+	function deleteFavorite(el, mid){
+		api.confirm({
+			title: '删除确认',
+			msg: '确定要删除该条收藏吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){
+				var listlen = $api.val($api.byId('listlen'));
+	
+				var values = {
+					mid: mid,
+					uid: $api.getStorage('usr').uid,
+					favorite: 0
+				};
+				api.ajax({
+			    	url: serverUrl + '/user/Favorites',
+				    method:'post',
+				    cache:false,
+				    timeout:15,
+				    dataType:'json',
+				    data: {values: values}
+			    }, function(ret, err){
+			    	if(ret && ret.status){
+			    		$api.remove(el.parentNode);
+			    		//删除一条收藏，listlen长度减一，当listlen长度为0时，设置内容为暂无收藏
+			    		listlen--;
+			    		$api.val($api.byId('listlen'), listlen);
+			    		if( listlen == 0){
+			    			var html = '<div class="nodata">暂无收藏</div>';
+							$api.html($api.byId('main'), html);
+			    		}	    		
+			    	}else{
+			    		if(ret){
+			    			api.toast({msg: ret.msg, location: 'middle'});
+			    		}else if(err){
+			    			api.toast({msg: err.msg, location: 'middle'});
+			    		}else{
+			    			api.toast({msg: '数据错误', location: 'middle'});
+			    		}
+			    	}
+			    });
+			}
+		});
+	}
+	
+	function deleteAll(){
+		var values = {
+			uid: $api.getStorage('usr').uid,
+			favorite: 2
+		};
+		api.ajax({
+	    	url: serverUrl + '/user/Favorites',
+		    method:'post',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json',
+		    data: {values: values}
+	    }, function(ret, err){
+	    	if(ret && ret.status){	    		
+				var html = '<div class="nodata">暂无收藏</div>';
+				$api.html($api.byId('main'), html);
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    	}
+	    });
+	}
+
+	function courseDetail(item){
+		if(valid()){
+			return;
+		}			
+		api.openWin({name: 'trainingDetail', url: 'trainingDetail.html', pageParam: {item:item}});
+	}
+</script>
+</html>

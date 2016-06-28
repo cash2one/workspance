@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="yuanliao">
+	<typeAlias alias="yuanliao" type="com.ast.ast1949.domain.yuanliao.Yuanliao" />
+	<resultMap id="yuanliaoResult" class="yuanliao">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="title" column="title" />
+		<result property="tags" column="tags" />
+		<result property="salesMode" column="sales_mode" />
+		<result property="categoryYuanliaoCode" column="category_yuanliao_code" />
+		<result property="categoryMainDesc" column="category_main_desc" />
+		<result property="categoryAssistDesc" column="category_assist_desc" />
+		<result property="yuanliaoTypeCode" column="yuanliao_type_code" />
+		<result property="sourceTypeCode" column="source_type_code" />
+		<result property="tradeMark" column="trade_mark" />
+		<result property="processLevel" column="process_level" />
+		<result property="charaLevel" column="chara_level" />
+		<result property="usefulLevel" column="useful_level" />
+		<result property="type" column="type" />
+		<result property="color" column="color" />
+		<result property="density" column="density" />
+		<result property="hardness" column="hardness" />
+		<result property="tensile" column="tensile" />
+		<result property="bending" column="bending" />
+		<result property="quantity" column="quantity" />
+		<result property="unit" column="unit" />
+		<result property="price" column="price" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="provideStatus" column="provide_status" />
+		<result property="goodsTypeCode" column="goods_type_code" />
+		<result property="tradeIntro" column="trade_intro" />
+		<result property="location" column="location" />
+		<result property="description" column="description" />
+		<result property="sendTime" column="send_time" />
+		<result property="checkStatus" column="check_status" />
+		<result property="isDel" column="is_del" />
+		<result property="isPause" column="is_pause" />
+		<result property="checkPerson" column="check_person" />
+		<result property="postTime" column="post_time" />
+		<result property="checkTime" column="check_time" />
+		<result property="expireTime" column="expire_time" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="unpassReason" column="unpass_reason" />
+	</resultMap>
+
+	<sql id="allColumn">
+		id,
+		company_id,
+		account,
+		title,
+		tags,
+		sales_mode,
+		category_yuanliao_code,
+		category_main_desc,
+		category_assist_desc,
+		yuanliao_type_code,
+		source_type_code,
+		trade_mark,
+		process_level,
+		chara_level,
+		useful_level,
+		type,
+		color,
+		density,
+		hardness,
+		tensile,
+		bending,
+		quantity,
+		unit,
+		price,
+		min_price,
+		max_price,
+		price_unit,
+		provide_status,
+		goods_type_code,
+		location,
+		trade_intro,
+		description,
+		send_time,
+		check_status,
+		is_del,
+		is_pause,
+		check_person,
+		post_time,
+		check_time,
+		expire_time,
+		refresh_time,
+		gmt_created,
+		gmt_modified,
+		unpass_reason
+	</sql>
+
+	<!--添加一条原料的供求记录 -->
+	<insert id="insertYuanliao" parameterClass="yuanliao">
+		insert into yuanliao
+		(
+		company_id,
+		account,
+		title,
+		tags,
+		sales_mode,
+		category_yuanliao_code,
+		category_main_desc,
+		category_assist_desc,
+		yuanliao_type_code,
+		source_type_code,
+		trade_mark,
+		process_level,
+		chara_level,
+		useful_level,
+		type,
+		color,
+		density,
+		hardness,
+		tensile,
+		bending,
+		quantity,
+		unit,
+		price,
+		min_price,
+		max_price,
+		price_unit,
+		provide_status,
+		goods_type_code,
+		location,
+		trade_intro,
+		description,
+		send_time,
+		post_time,
+		expire_time,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#companyId#,
+		#account#,
+		#title#,
+		#tags#,
+		#salesMode#,
+		#categoryYuanliaoCode#,
+		#categoryMainDesc#,
+		#categoryAssistDesc#,
+		#yuanliaoTypeCode#,
+		#sourceTypeCode#,
+		#tradeMark#,
+		#processLevel#,
+		#charaLevel#,
+		#usefulLevel#,
+		#type#,
+		#color#,
+		#density#,
+		#hardness#,
+		#tensile#,
+		#bending#,
+		#quantity#,
+		#unit#,
+		#price#,
+		#minPrice#,
+		#maxPrice#,
+		#priceUnit#,
+		#provideStatus#,
+		#goodsTypeCode#,
+		#location#,
+		#tradeIntro#,
+		#description#,
+		#sendTime#,
+		now(),
+		#expireTime#,
+		now(),
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<!--更新原料供求信息 -->
+	<update id="updateYuanliao" parameterClass="yuanliao">
+		update yuanliao
+		set gmt_modified = now()
+		<isNotNull prepend="," property="unpassReason">
+			unpass_reason =
+			#unpassReason#
+		</isNotNull>
+		<isNotNull prepend="," property="title">
+			title = #title#
+		</isNotNull>
+		<isNotEmpty prepend="," property="tags">
+			tags = #tags#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="salesMode">
+			sales_mode = #salesMode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="categoryYuanliaoCode">
+			category_yuanliao_code =
+			#categoryYuanliaoCode#
+		</isNotEmpty>
+		<isNotNull prepend="," property="categoryMainDesc">
+			category_main_desc =
+			#categoryMainDesc#
+		</isNotNull>
+		<isNotNull prepend="," property="categoryAssistDesc">
+			category_assist_desc =
+			#categoryAssistDesc#
+		</isNotNull>
+		<isNotEmpty prepend="," property="yuanliaoTypeCode">
+			yuanliao_type_code =
+			#yuanliaoTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tradeMark">
+			trade_mark = #tradeMark#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="processLevel">
+			process_level =
+			#processLevel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="charaLevel">
+			chara_level = #charaLevel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="usefulLevel">
+			useful_level =
+			#usefulLevel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="type">
+			type = #type#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="color">
+			color = #color#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="density">
+			density = #density#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="hardness">
+			hardness = #hardness#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tensile">
+			tensile = #tensile#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="bending">
+			bending = #bending#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="unit">
+			unit = #unit#
+		</isNotEmpty>
+		,price = #price#
+		<isNotEmpty prepend="," property="location">
+			location = #location#
+		</isNotEmpty>
+		,min_price = #minPrice#
+		,max_price = #maxPrice#
+		<isNotEmpty prepend="," property="priceUnit">
+			price_unit = #priceUnit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="provideStatus">
+			provide_status =
+			#provideStatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="goodsTypeCode">
+			goods_type_code =
+			#goodsTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tradeIntro">
+			trade_intro = #tradeIntro#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="description">
+			description =
+			#description#
+		</isNotEmpty>
+		,send_time = #sendTime#
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isPause">
+			is_pause = #isPause#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status =
+			#checkStatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkPerson">
+			check_person =
+			#checkPerson#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkTime">
+			check_time = #checkTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="expireTime">
+			expire_time = #expireTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="refreshTime">
+			refresh_time =
+			#refreshTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="gmtModified">
+			gmt_modified =
+			#gmtModified#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+
+	<!--根据id检索供求信息 -->
+	<select id="queryYuanliaoById" parameterClass="java.lang.Integer"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn" />
+		from yuanliao
+		where id = #id#
+	</select>
+
+	<!--检索供求的条件 -->
+	<sql id="yuanliaoList">
+		<isEqual prepend="and" property="search.isExpire"
+			compareValue="1">
+			now() > expire_time
+		</isEqual>
+		<isNotEmpty prepend="and" property="search.yuanliaoTypeCode">
+			yuanliao_type_code =
+			#search.yuanliaoTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="search.keyword">
+			title like
+			concat("%",#search.keyword#,"%")
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="yuanliao.isDel">
+			is_del =
+			#yuanliao.isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="yuanliao.isPause">
+			is_pause =
+			#yuanliao.isPause#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="yuanliao.checkStatus">
+			check_status =
+			#yuanliao.checkStatus#
+		</isNotEmpty>
+	</sql>
+
+	<!--某公司的原料供求 -->
+	<select id="queryYuanliaoList" parameterClass="java.util.Map"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn" />
+		from yuanliao
+		where company_id = #yuanliao.companyId#
+		<include refid="yuanliao.yuanliaoList" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<!--某公司的原料供求条数 -->
+	<select id="countYuanliaoList" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(id)
+		from yuanliao
+		where company_id = #yuanliao.companyId#
+		<include refid="yuanliao.yuanliaoList" />
+	</select>
+
+	<select id="queryYuanliaoForCategory" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select distinct(category_yuanliao_code)
+		from yuanliao
+		where
+		company_id = #companyId#
+		order by gmt_created desc
+		limit 5
+	</select>
+	<sql id="adminYuanliao">
+		<dynamic prepend="where">
+			<isEqual prepend="and" property="search.isVip" compareValue="1">
+				exists(select c.id from company c where c.id=company_id and
+				c.membership_code!="10051000")
+			</isEqual>
+			<isNotEmpty property="search.checkArrays" prepend="and">
+				<iterate property="search.checkArrays" open="(" close=")"
+					conjunction="OR">
+					check_status = #search.checkArrays[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="search.companyId" prepend="and">
+				<isNotEqual property="search.companyId" compareValue="0">
+					company_id = #search.companyId#
+				</isNotEqual>
+			</isNotEmpty>
+			<isEmpty prepend="and" property="search.isDel">
+				is_del = '0'
+			</isEmpty>
+			<isNotEmpty prepend="and" property="search.isDel">
+				is_del = #search.isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.checkStatus">
+				check_status =
+				#search.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.isPause">
+				is_pause =
+				#search.isPause#
+			</isNotEmpty>
+			<isEqual prepend="and" property="search.isExpire"
+				compareValue="1">
+				now() > expire_time
+			</isEqual>
+			<isEqual prepend="and" property="search.isExpire"
+				compareValue="0">
+				expire_time > now()
+			</isEqual>
+			<isNotEmpty prepend="and" property="search.sourceTypeCode">
+				source_type_code =
+				#search.sourceTypeCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.keyword">
+				title like
+				concat('%',#search.keyword#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.yuanliaoTypeCode">
+				yuanliao_type_code =
+				#search.yuanliaoTypeCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.startTime">
+				<isNotEmpty property="search.sort">
+					$search.sort$>=#search.startTime#
+				</isNotEmpty>
+				<isEmpty property="search.sort">
+					post_time >= #search.startTime#
+				</isEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.endTime">
+				<isNotEmpty property="search.sort">
+					#search.endTime#>=$search.sort$
+				</isNotEmpty>
+				<isEmpty property="search.sort">
+					#search.endTime#>=post_time
+				</isEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.categoryYuanliaoCode">
+				category_yuanliao_code
+				like concat(#search.categoryYuanliaoCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+
+	</sql>
+	<!--后台原料列表检索 -->
+	<select id="queryYuanliaoListByAdmin" parameterClass="java.util.Map"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn" />
+		from yuanliao
+		<include refid="yuanliao.adminYuanliao" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryYuanliaoSearchDto" parameterClass="java.util.Map"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn" />
+		from yuanliao
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="search.companyId">
+				company_id=#search.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.categoryYuanliaoCode">
+				category_yuanliao_code
+				like #search.categoryYuanliaoCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.title">
+				title
+				like
+				concat("%",#search.title#,"%")
+			</isNotEmpty>
+			and is_del = '0' and is_pause='0' and
+			check_status='1'
+			<include refid="common.pageOrderBy" />
+			<include refid="common.pageLimit" />
+		</dynamic>
+	</select>
+
+	<select id="queryYuanliaoSearchDtoCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from yuanliao
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="search.companyId">
+				company_id=#search.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.categoryYuanliaoCode">
+				category_yuanliao_code
+				like #search.categoryYuanliaoCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.title">
+				title
+				like
+				concat("%",#search.title#,%)
+			</isNotEmpty>
+			and is_del = '0' and is_pause='0' and
+			check_status='1'
+		</dynamic>
+	</select>
+
+	<!--后台原料列表检索记录数 -->
+	<select id="countYunaliaoListByAdmin" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from yuanliao
+		<include refid="yuanliao.adminYuanliao" />
+	</select>
+	<sql id="allColumn1">
+		yl.id,
+		yl.company_id,
+		yl.account,
+		yl.title,
+		yl.tags,
+		yl.sales_mode,
+		yl.category_yuanliao_code,
+		yl.category_main_desc,
+		yl.category_assist_desc,
+		yl.yuanliao_type_code,
+		yl.source_type_code,
+		yl.trade_mark,
+		yl.process_level,
+		yl.chara_level,
+		yl.useful_level,
+		yl.type,
+		yl.color,
+		yl.density,
+		yl.hardness,
+		yl.tensile,
+		yl.bending,
+		yl.quantity,
+		yl.unit,
+		yl.price,
+		yl.min_price,
+		yl.max_price,
+		yl.price_unit,
+		yl.provide_status,
+		yl.goods_type_code,
+		yl.location,
+		yl.trade_intro,
+		yl.description,
+		yl.send_time,
+		yl.check_status,
+		yl.is_del,
+		yl.is_pause,
+		yl.check_person,
+		yl.post_time,
+		yl.check_time,
+		yl.expire_time,
+		yl.refresh_time,
+		yl.gmt_created,
+		yl.gmt_modified,
+		yl.unpass_reason
+	</sql>
+	<!--原料供求 -->
+	<select id="queryYuanLiaoByCondition" parameterClass="java.util.Map"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn1" />
+		from yuanliao yl
+		where yl.is_del='0' and yl.check_status='1' and
+		yl.is_pause='0'
+		<isNotEmpty prepend="and" property="search.categoryYuanliaoCode">
+			yl.category_yuanliao_code = #search.categoryYuanliaoCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="search.yuanliaoTypeCode">
+			yl.yuanliao_type_code=#search.yuanliaoTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="search.companyId">
+			yl.company_id =
+			#search.companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="search.noCompanyId">
+			yl.company_id!=#search.noCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="search.hasPic">
+			exists(select
+			p.id from
+			yuanliao_pic p where p.yuanliao_id=yl.id and p.is_del='0'
+			and
+			p.check_status='1')
+		</isNotEmpty>
+		<!-- <isEqual prepend="and" property="search.isVip" compareValue="1"> &gt; 
+			"10051000") </isEqual> -->
+		order by yl.refresh_time desc
+		limit #size#
+	</select>
+	<!--获取该公司所有的原料供求 -->
+	<select id="queryYuanliaoBYCompanyId" parameterClass="java.lang.Integer"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn1" />
+		from yuanliao yl
+		where yl.is_del='0' and yl.check_status='1' and
+		yl.yuanliao_type_code='10331000' and
+		yl.is_pause='0' and
+		yl.company_id=#companyId#
+		and not exists (select id
+		from company where
+		yl.company_id = id and
+		is_block='1')
+		order by
+		yl.refresh_time desc
+		limit
+		100
+	</select>
+
+	<!-- 刷新原料供求 -->
+	<update id="updateRefreshTime" parameterClass="java.util.Map">
+		update yuanliao
+		set expire_time = #expireTime#,refresh_time = now(),gmt_modified =
+		now()
+		where id = #id#
+	</update>
+
+	<select id="queryNewSize" parameterClass="java.lang.Integer"
+		resultMap="yuanliaoResult">
+		select
+		<include refid="yuanliao.allColumn1" />
+		from yuanliao yl where yl.is_del='0' and yl.check_status='1' and
+		yl.yuanliao_type_code='10331000' and
+		yl.is_pause='0' order by
+		yl.gmt_created desc limit 0,#size#
+	</select>
+</sqlMap>

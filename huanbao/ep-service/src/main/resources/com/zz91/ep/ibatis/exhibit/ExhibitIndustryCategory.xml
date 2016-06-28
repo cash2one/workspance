@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="exhibitindustrycategory">
+	<typeAlias alias="exhibitIndustryCategory" type="com.zz91.ep.domain.exhibit.ExhibitIndustryCategory" />
+	
+	<resultMap id="fullResultMap" class="exhibitIndustryCategory">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="code" column="code"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap id="simpleResult" class="exhibitIndustryCategory">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="code" column="code"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		i.id,
+		i.name,
+		i.code,
+		i.gmt_created,
+		i.gmt_modified
+	</sql>
+	
+	<select id="queryExhibitIndustryCategoryAll" resultMap="fullResultMap">
+		select 
+			 <include refid="fullColumn" />
+		from exhibit_industry_category i
+		<include refid="common.pageOrderBy" />
+	</select>
+	
+	<select id="queryExhibitIndustryCategoryById" parameterClass="java.lang.String" resultMap="simpleResult">
+		select id,name,code from exhibit_industry_category where code = #value#
+	</select>
+</sqlMap>

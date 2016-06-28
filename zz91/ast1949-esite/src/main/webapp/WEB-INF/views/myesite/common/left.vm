@@ -1,0 +1,150 @@
+<div id="content1" class="bodyLeft filterDom">
+	#cacheFragment("$!{address.esiteFragment}/esite/companyInfo.htm?cid=$!{cid}&left","","1","")
+	<div id="category_nav" class="bodyCont moveChild mb">
+		<div class="bodyContTitle"><span class="titleLinkColor titleName">供应商信息</span></div>
+		<div class="bodyContContent">
+			<div>
+				## 高会的服务年限标志
+				#if( $!{flag})
+					#if($!{lifeFlag}==true && $!{isGOLD}=="1")
+						<img src="$!{address.img}/zz91/images/king.png"/><img src="$!{address.img}/zz91/images/zs2.png" />
+					#elseif($!{lifeFlag}==true && $!{isSILVER}=="1")
+						<img src="$!{address.img}/zz91/images/yin.png"/><img src="$!{address.img}/zz91/images/zs2.png" />
+					#elseif($!{lifeFlag}==true && $!{isDIAMOND}=="1")
+    					<img src="$!{address.img}/zz91/images/zuan.png"/><img src="$!{address.img}/zz91/images/zs2.png" />
+    				#elseif($!{lifeFlag}==true && $!{company.membershipCode}=="10051001")
+    					<img src="$!{address.img}/zz91/images/zzst.png"/><img src="$!{address.img}/zz91/images/zs2.png" />
+    				#elseif($!{isVIP}=="1")
+						#if($!{company.zstYear}>0)
+							#set($year=${company.zstYear})
+						#else
+							#set($year=1)
+						#end
+    						
+						#if($!{isGOLD}=="1")
+							<img src="$!{address.img}/zz91/esite/images/newimg/g$!{year}.png" alt="再生通第$!{year}年" width="173" height="31">
+						#elseif($!{isSILVER}=="1")
+							<img src="$!{address.img}/zz91/esite/images/newimg/s$!{year}.png" alt="再生通第$!{year}年" width="173" height="31">
+						#elseif($!{isDIAMOND}=="1")
+							<img src="$!{address.img}/zz91/esite/images/newimg/d$!{year}.png" alt="再生通第$!{year}年" width="173" height="31">
+						#else
+							<img src="$!{address.img}/zz91/esite/images/newimg/no$!{year}.png" alt="再生通第$!{year}年" width="173" height="31">
+						#end
+    				#end
+				#else
+				#end
+			</div> 
+            <ul class="comp_ul mainTextColor">
+                <li class="companyname">
+                    $!{company.name} #if($!{isAttest})<span style="font-weight:normal;color:red;font-size:12px">[已认证]</span>#end
+					<br>
+                    #if ($!{zst10001001}=="1")
+	                <img src="$!{address.img}/front/images/esite/fqr.gif">
+                    #end
+                </li>
+                <li>联 系 人：$!{account.contact}#if($!{account.sex}==0)&nbsp;&nbsp;先生#elseif($!{account.sex}==1)&nbsp;&nbsp;女士#end</li>
+				##// 高会过期 （未登录||普会）
+				#if(!$!{isOut}||$isOut==0)
+					<li>电话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li>移动电话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+				##//高会未过期 || 高会登录
+				#else 
+					#if($!{account.tel}!="" && $!{account.tel})
+					<li>电&nbsp;&nbsp;&nbsp; 话：<img src='#springUrl('/viewContactInfo.htm')?type=telKey&key=$!{account.companyId}' /></li>
+					#end
+					#if($!{account.mobile} && $!{account.mobile}!="")
+					<li>
+						<div style="padding-top:0px;float:left">移动电话：</div>
+						<div style="float:left">
+							<img src='#springUrl('/viewContactInfo.htm')?type=mobileKey&key=$!{account.companyId}&position=left&time=$time' />
+						</div>
+						<div style="clear:both"></div>
+					</li>
+					#end
+				#end
+                <li class="line">
+					诚信指数：$!{attestIntegral}
+				</li>
+                <li>经营范围：<span title="$!{company.business}">#printTitle($!{company.business} 200 "")</span></li>
+                <li class="line">所在地区：$!{province} $!{city}</li>
+				#if($market)
+					<li class="line">所在市场：<a href="$!{address.market}/$!{market.words}/" target="_blank">$!{market.name}</a></li>
+				#end
+                <li style="text-align:center">
+                    <a href="javascript:void(0)" id="Js_collectBtn" class="collectBtn" title="点此收藏"> 收藏此商铺</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+	#end
+	#foreach($sideBarConfigList in $!{sideBarConfig})
+		#if($!{sideBarConfigList.id}!="")
+			#parse("/myesite/sidebar/$!{sideBarConfigList.id}.vm")
+		#end
+	#end
+</div>
+ #if($!{sessionUser})
+                <input type="hidden" id="loginFlag" value="1" />
+            #else
+                <input type="hidden" id="loginFlag" value="0" />
+ #end
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		## 登录弹出框
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{esiteAddress}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+			
+		
+		jQuery("#loginBtn").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				loginBox.close();
+				window.parent.location.reload();
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+		});
+		
+		## 收藏按钮 点击弹出 收藏页面
+		var collectBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{company.id}&favoriteTypeCode=10091003&title=$!{company.name}",
+			destUrl:"$!{esiteAddress}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+		
+		
+		jQuery("#Js_collectBtn").click(function(){
+			var id = $!{company.id};
+			var title = "$!{company.name}";
+			title = encodeURI(title);
+			if(jQuery("#loginFlag").val()==0){
+    			Asto.util.Callback.setSubmitCallback(function(success, data){
+					jQuery("#loginFlag").val(1);
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						collectBox.close();
+					});
+					loginBox.close();
+					collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091003&title="+title+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+				});
+				
+				loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+			}else{
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+					if(success=="false"){
+						jQuery("#loginFlag").val(0);
+					}
+				});
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091003&title="+title+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+			}
+		});
+		
+	});
+</script>

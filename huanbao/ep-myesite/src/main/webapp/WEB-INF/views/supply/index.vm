@@ -1,0 +1,536 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/supply/index.htm')">产品管理</a><span class="divider">/</span></li>
+			<li>管理供应信息</li>
+		</ul>
+		
+		#if($result==1)
+    		<section class="container ">
+    			<div class="alert alert-info">
+    				<span style="color:red">对不起，普通会员一天最多发布20条供应信息,您今天的免费发布信息次数已使用完毕，成为<a href="http://www.huanbao.com/fudus/vpindex.htm" target="_blank">中环通会员</a>，将不再有数量限制。</span>
+    			</div>
+    		</section>
+		#end
+		#if($result==2)
+    		<section class="container ">
+    			<div class="alert alert-info">
+    				<span style="color:red">信息标题相同，发布失败，请重新发布。点击<a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_self">此处</a>，谢谢！。</span>
+    			</div>
+    		</section>
+		#end
+		#if($result==3)
+    		<section class="container ">
+    			<div class="alert alert-info">
+    				<span style="color:red">您输入的验证码有错误！点击<a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_self">此处</a>，谢谢！。</span>
+    			</div>
+    		</section>
+		#end
+		#if($result==4)
+    		<section class="container ">
+    			<div class="alert alert-info">
+    				<span style="color:red">您输入的供货总量不能为负数！点击<a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_self">此处</a>，谢谢！。</span>
+    			</div>
+    		</section>
+		#end
+		
+		<div class="table-select mt clearfix">
+			<div class="group">
+				<select class="groupSel" id="group" onchange="selectGroup()">
+					<option value=""  selected >全部类别</option>
+					#foreach($group in $!{groups})
+					<option value="$!{group.id}" #if($!{groupId}==$!{group.id}) selected #end>
+						$!{group.name}
+					</option>
+					#end
+				</select>
+				
+				<select class="groupSel" id="changeGroup" onchange="moveGroup()">
+					<option value=""  selected >移动至</option>
+					#foreach($group in $!{groups})
+					<option value="$!{group.id}" #if($!{groupId}==$!{group.id}) selected #end>
+						$!{group.name}
+					</option>
+					#end
+				</select>
+				
+				<a href="#springUrl('/supply/tradeGroup.htm')" class="btn btn-small" >管理类别</a>
+			</div>
+			
+			
+			<div class="btn-toolbar">
+				<a href="#springUrl("/supply/index.htm")" class="btn btn-small #if(!$!{pauseStatus} && !$!{checkStatus} && !$!{overdueStatus}) btn_active #end">全部($!{productsCount.get("all")})</a>
+				<div class="btn-group">
+					<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=0&checkStatus=1&overdueStatus=1")" class="btn btn-small #if($!{checkStatus}==1) btn_active #end">已审核($!{productsCount.get("checkStatus1")})</a>
+					<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=0&checkStatus=0&overdueStatus=1")" class="btn btn-small #if($!{checkStatus}==0) btn_active #end">未审核($!{productsCount.get("checkStatus0")})</a>
+					<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=0&checkStatus=2&overdueStatus=1")" class="btn btn-small #if($!{checkStatus}==2) btn_active #end">审核未通过($!{productsCount.get("checkStatus2")})</a>
+					<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=1")" class="btn btn-small #if($!{pauseStatus}==1) btn_active #end">暂不发布($!{productsCount.get("pauseStatus1")})</a>
+					##<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=0&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}")" class="btn btn-small #if($!{pauseStatus}==0) btn_active #end">已发布</a>
+					##<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=1")" class="btn btn-small #if($!{overdueStatus}==1) btn_active #end">未过期</a>
+					<a href="#springUrl("/supply/index.htm?groupId=$!{groupId}&overdueStatus=0")" class="btn btn-small #if($!{overdueStatus}==0) btn_active #end">已过期($!{productsCount.get("overdueStatus0")})</a>
+					<a href="#springUrl("/supply/index.htm?groupId=&recommend=1")" class="btn btn-small #if($!{recommend}==1) btn_active #end">推荐产品</a>
+				</div>
+			</div>
+		</div>
+		
+		<table class="table table-bordered table-condensed">
+			<thead>
+					<tr>
+						<th width="20" class="tac va" ><input id="selectAllCheckbox" type="checkbox" class="Js_checkAll" onclick="selectAll('select')"></th>
+						<th width="50">产品图片</th>
+						<th >标题名称</th>
+						<th width="120" class="tac">刷新时间</th>
+						<th width="50" class="tac">有效期</th>
+						<th width="140" class="tac">状态</th>
+						<th width="160" class="tac">操作</th>
+					</tr>
+				</thead>
+				<tbody id="J_list">
+					#foreach($supply in $!{page.records})
+					<tr id="supply$!{supply.tradeSupply.id}">
+						<td class="tac va">
+							<input name="select" type="checkbox" value="$!{supply.tradeSupply.id}"/>
+						</td>
+						<td >
+							##<img src="$!{address.thumb}$!{address.resource}$!{supply.tradeSupply.photoCover}&width=50&height=50" alt="$!{supply.tradeSupply.title}" width="50" height="50" class="cover hide">
+							<img src="$!{address.thumb}$!{address.resource}$!{supply.tradeSupply.photoCover}&width=50&height=50" alt="$!{supply.tradeSupply.title}" width="50" height="50">
+						</td>
+						<td class="va">
+							<a target="_blank" href="$!{address.esite}/detail$!{supply.tradeSupply.id}.htm" title="点击我查看供应信息">
+								<strong >$!{supply.tradeSupply.title}</strong>
+							</a>
+							#if($!{supply.tradeSupply.checkStatus}==2)
+								<p class="red">$!{supply.tradeSupply.checkRefuse}</p>
+							#end
+							#if($!{supply.tradeSupply.isPicPass}==0)
+    							<div class="grey">
+        							<span class="red">*</span>该产品图片不符合本网站审核规则，无法正常显示，详见<a href="#springUrl('/supply/supply_img.htm')?id=$!{supply.tradeSupply.id}">图片修改</a>
+    							</div>
+							#end
+						</td>
+						<td class="tac va">$!date.format('yyyy-MM-dd HH:mm:ss',$!{supply.tradeSupply.gmtRefresh})</td>
+						<td class="tac va">
+							#if($!{supply.tradeSupply.validDays}=="0")
+								长期有效
+							#else
+							$!{supply.tradeSupply.validDays} 天
+							#end
+						</td>
+						<td class="tac va">
+							#if($!{supply.tradeSupply.checkStatus} == 0)
+								<span class="label">未审核</span>
+							#elseif($!{supply.tradeSupply.checkStatus} == 1)
+								<span class="label label-success">已审核</span>
+							#elseif($!{supply.tradeSupply.checkStatus} == 2)
+								<span class="label label-warning">未通过</span>
+							#end
+							#if($!{supply.tradeSupply.pauseStatus} == 1)
+								<span class="label label-warning">未发布</span>
+							#end
+##							#if($!{date.SystemTime} > $!{supply.gmtExpired.time})
+##								<span class="label label-important">过期</span>
+##							#end
+							
+						</td>
+						<td class="tac va"> 
+							<a href="#springUrl('/supply/update.htm')?id=$!{supply.tradeSupply.id}">编辑</a> 
+							<a href="#springUrl('/supply/message.htm')?id=$!{supply.tradeSupply.id}">查看留言 <lable style="color:red">($!{supply.count})</lable></a>
+							#set($count = $!{supplyPicCount.get($!{supply.tradeSupply.id})})
+							<a href="#springUrl('/supply/supply_img.htm')?id=$!{supply.tradeSupply.id}">图片($count)</a>
+						</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+			
+			<div class="btn-toolbar">
+					<div class="btn-group">
+						<a href="javascript:refresh()" class="btn btn-small">刷新</a>
+						##<a href="javascript:void(0)" class="btn btn-small">一键刷新</a>
+						##<a href="javascript:void(0)" class="btn btn-small">归入系列</a>
+						##<a href="javascript:void(0)" class="btn btn-small">从系列中移除</a>
+						#if($!{pauseStatus} == 1)
+						<input type="button" class="btn btn-small" value="重新发布信息" onclick="publish(0)" />
+						#elseif($!{pauseStatus} == 0)
+						<input type="button" class="btn btn-small" value="暂不发布信息" onclick="publish(1)" />
+						#else
+							<input type="button" class="btn btn-small" value="重新发布信息" onclick="publish(0)" />
+							<input type="button" class="btn btn-small" value="暂不发布信息" onclick="publish(1)" />
+						#end
+						#if($!{recommend}==1)
+            	      	<a href="javascript:deleteRecommendSupplys()" class="btn btn-small">取消推荐</a>
+            	      	#else
+            	      	<a href="javascript:recommendSupplys()" class="btn btn-small">推荐</a>
+            	      	#end
+						<a href="javascript:deleteSupply()" class="btn btn-small">删除</a>
+					</div>
+			</div>
+		</div>
+		#myrcPageNav($!{page} "#springUrl('/supply/index.htm')" "groupId=$!{groupId}&pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}" "")
+	</div>
+</div>
+
+
+<script langue="text/javascript">
+
+//全选
+function selectAll(name) {
+    var el = document.getElementsByName(name);
+    if (document.getElementById("selectAllCheckbox").checked) {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = true;
+        }
+    } else {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = false;
+        }
+    }
+}
+			
+//获取所有选中值
+function getAllProductIds(){
+	var productIds = new Array();
+	jQuery("input[name='select']:checked").each(function(){
+		productIds.push(jQuery(this).val());
+	});
+	
+	return productIds;
+}
+	
+
+jQuery(document).ready(function(){
+	myrc.select("Js_select");
+	myrc.menu(2, 2);
+
+##	jQuery("#J_list").on("mouseenter", "tr", function(){
+##		$(this).find(".cover").show();
+##	});
+##	jQuery("#J_list").on("mouseleave", "tr", function(){
+##		$(this).find(".cover").hide();
+##	});
+});
+
+//删除信息
+function deleteSupply() {
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要操作的供应信息！");
+		return ;
+	}
+	
+	if(!confirm("信息被删除后将无法被搜索到，您确定要这么做吗？")){
+		return ;
+	}
+	
+	for(var i=0;i<ids.length;i++){
+		doDelete(ids[i]);
+	}
+	
+}
+
+function doDelete(id){
+	jQuery.ajax({
+		url:'#springUrl("/supply/doDelete.htm")',
+		data:{"id":id},
+		cache:false,
+		dataType:"json",
+		type:"post",
+		success:function(req){
+			if(req.success){
+				jQuery("#supply"+id).hide();
+			}else{
+    			Asto.util.Message.show({
+        			msg:"删除失败！",
+        			autoClose:10000
+    			});
+			}
+		},
+		failure:function(){
+			Asto.util.Message.show({
+			msg:"删除失败！",
+			autoClose:10000
+			});
+		}
+	});
+}
+var s = 0;
+var e = 0;
+//刷新信息
+function refresh(id){
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要刷新的供应信息！");
+		return ;
+	}
+	var idlength=ids.length;
+	for(var i=0;i<idlength;i++){
+    	doRefresh(ids[i],idlength)
+	}
+}
+
+function doRefresh(id,idlength) {
+	jQuery.ajax({
+		url:'#springUrl("/supply/doRefresh.htm")',
+		data:{"id":id},
+		cache:false,
+		dataType:"json",
+		type:"post",
+		success:function(req){
+			if(req.success){
+				s++;
+			}else{
+				e++;
+			}
+			
+			var _msg="已经刷新了"+s+"条信息";
+			if(e>0){
+				_msg=_msg+",失败"+e+"条";
+			}
+			Asto.util.Message.show({
+				msg:_msg,
+				autoClose:10000
+			});
+
+			if((s+e)==idlength){
+				window.location.reload();
+			}
+			
+##			jQuery("#info").html("<b style='color:red'>已经刷新了"+(s+e)+"条信息,其中成功刷新"+s+"条，失败"+e+"条。</b>");
+##				
+##			if(e>0){
+##				jQuery("#info").html(jQuery("#info").html()+"失败原因可能是未超过刷新时间限制！");
+##			}
+				
+##			jQuery("#checkAllToggle").attr("checked",false);
+##			jQuery("input[name='select']:checked").each(function(index, obj){
+##				obj.checked=false;
+##			});
+		},
+		failure:function(){
+			Asto.util.Message.show({
+				msg:"发生错误，您的信息没有被刷新，请重试！",
+				autoClose:10000
+			});
+			e++;
+			
+			if((s+e)==idlength){
+				window.location.reload();
+			}
+		}
+	});
+}
+
+function publish( pauseStatus){
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要操作的供应信息！");
+		return ;
+	}
+	
+	for(var i=0;i<ids.length;i++){
+    	doPublish(ids[i], pauseStatus);
+	}
+}
+
+
+function doPublish(id, status){
+    jQuery.ajax({
+        url:'#springUrl("/supply/doPause.htm")',
+        data:{"id":id,"status":status},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+			#if(!$!{pauseStatus})
+				window.location.href="#springUrl('/supply/index.htm')?groupId=$!{groupId}&pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}";
+			#else
+				jQuery("#supply"+id).hide();
+			#end
+##            if(req.success){
+##                if (status == 0) {
+##                    //jQuery("#pauseStatusDiv"+id).html("<a href='javascript:doPublish("+id+", 1)' id='pauseStatusDiv"+id+"' >暂不发布</a>");
+##                	Asto.util.Message.show({
+##				       msg:"发布成功！",
+##				       autoClose:10000
+##					});
+##                } else {
+##                    //jQuery("#pauseStatusDiv"+id).html("<a href='javascript:doPublish("+id+", 0)' id='pauseStatusDiv"+id+"'>发布</a>");
+##                    Asto.util.Message.show({
+##				        msg:"取消发布成功！",
+##				        autoClose:10000
+##					});
+##                }
+##            }
+        },
+        failure:function(){
+	        Asto.util.Message.show({
+		        msg:"操作失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+//推荐
+function recommendSupplys() {
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要操作的供应信息！");
+		return ;
+	}
+	
+	jQuery("input[name='select']:checked").each(function(){
+		var id = jQuery(this).val();
+		if(id!=null){
+		recommendSupply(id);
+		}
+	});
+}
+
+function recommendSupply(id) {
+        jQuery.ajax({
+        url:'#springUrl("/supply/doRecommend.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    Asto.util.Message.show({
+				        msg:"推荐成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        Asto.util.Message.show({
+		        msg:"推荐失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+//取消推荐
+function deleteRecommendSupplys(id) {
+	jQuery("input[name='select']:checked").each(function(){
+		var id = jQuery(this).val();
+		if(id!=null){
+		deleteRecommendSupply(id);
+		}
+	});	
+}
+
+function deleteRecommendSupply(id) {
+        jQuery.ajax({
+        url:'#springUrl("/supply/doDeleteRecommend.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#supplyDiv"+id).remove();
+                    Asto.util.Message.show({
+				        msg:"取消推荐成功！",
+				        autoClose:10000
+					});
+					window.location.reload();
+                }
+            },
+        failure:function(){
+	        Asto.util.Message.show({
+		        msg:"取消推荐失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+//类别筛选
+function selectGroup(){
+	var groupid = document.getElementById("group").value;
+	window.location = "#springUrl("/supply/index.htm?groupId=")"+groupid;
+}
+
+function moveGroup(){
+	
+	##jQuery("#changeGroup").val("");
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要操作的供应信息！");
+		jQuery("#changeGroup").val("0");
+		return ;
+	}
+	var groupid = jQuery("#changeGroup").val();
+	jQuery("#changeGroup").val("$!{groupId}");
+	for(var i=0;i<ids.length;i++){
+		jQuery.ajax({
+            url:'#springUrl("/supply/group.htm")',
+            data:{"id":ids[i].value,"gid":groupid},
+            cache:false,
+            dataType:"json",
+            type:"post",
+            success:function(req){
+				#if($!{groupId} > 0)
+					jQuery("#supply"+ids[i]).hide();
+				#else
+					Asto.util.Message.show({
+						msg:"您的信息已被归入选中的分组！",
+						autoClose:10000
+					});
+				#end
+##                    if(req!=null && req.success){
+##                        Asto.util.Message.show({
+##						      msg:"分组成功！",
+##						      autoClose:10000
+##						});
+##						if ("$!{groupId}" !="" && "$!{groupId}" != groupid) {
+##							jQuery("#supply"+req.data).remove();
+##						}
+##					}
+				},
+			failure:function(){
+				Asto.util.Message.show({
+				      msg:"分组失败！",
+				      autoClose:10000
+				});
+			}
+		});
+	}
+	
+    if (groupid != "") {
+        var el = document.getElementsByName("select");
+        for(var i=0; i<el.length; i++) {
+            if(el[i].checked){
+                jQuery.ajax({
+                    url:'#springUrl("/supply/group.htm")',
+                    data:{"id":el[i].value,"gid":groupid},
+                    cache:false,
+                    dataType:"json",
+                    type:"post",
+                    success:function(req){
+                            if(req!=null && req.success){
+                                Asto.util.Message.show({
+								      msg:"分组成功！",
+								      autoClose:10000
+								});
+								if ("$!{groupId}" !="" && "$!{groupId}" != groupid) {
+									jQuery("#supply"+req.data).remove();
+								}
+							}
+						},
+					failure:function(){
+						Asto.util.Message.show({
+						      msg:"分组失败！",
+						      autoClose:10000
+						});
+					}
+				});
+			}
+		}
+	}
+}
+
+</script>

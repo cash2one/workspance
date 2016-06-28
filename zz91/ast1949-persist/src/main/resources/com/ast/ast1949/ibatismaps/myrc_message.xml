@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="myrcMessage">
+
+	<typeAlias alias="myrcMessage" type="com.ast.ast1949.domain.MyrcMessage" />
+	<resultMap id="myrcMessageResult" class="myrcMessage">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="type" column="type" />
+		<result property="isRead" column="is_read" />
+		<result property="content" column="content" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<!--添加弹框信息-->
+	<insert id="insertMyrcMessage" parameterClass="myrcMessage">
+		insert into myrc_message
+		(
+		company_id,
+		type,
+		is_read,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#companyId#,
+		#type#,
+		#isRead#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<select id="queryMyrcMessageByCIdAndType" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from myrc_message
+		where company_id=#companyId# and type=#type#
+		<isNotEmpty prepend="and" property="content">
+			content=#content#
+		</isNotEmpty>
+	</select>
+</sqlMap>

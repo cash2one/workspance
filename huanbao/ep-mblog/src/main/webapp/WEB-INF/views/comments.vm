@@ -1,0 +1,229 @@
+#set($layout='/layout/normLayout1.vm')
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/jquery.alert.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.alert.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery-position.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.easydrag.js"></script>
+
+
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index').htm">首页</a></li>
+                <li><a href="#springUrl('/mblog').htm">个人主页</a></li>
+                <li><a href="#springUrl('/info').htm">账户设置</a></li>
+            </ul>
+        </div>
+        
+        <form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+        
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="comment">
+    	<div class="c-left">
+        	<div class="c-left-box">
+            	<ul>
+                	<li><a href="#springUrl('/index.htm')" style="font-weight:100">主页</a></li>
+                    <li><a href="#" style="font-weight:100" style="background:#f7f5f7;margin-left:-5px;padding-left:25px">消息中心</a></li>
+                    <li><a href="#springUrl('/newfans.htm')" style="font-weight:100">粉丝请求</a></li>
+                    <li><a href="#springUrl('/comments.htm')" style="font-weight:700">评论/回复</a></li>
+                    <li><a href="#springUrl('/ante.htm')" style="font-weight:100">@到我的</a></li>
+                </ul>
+            </div>
+            <!--end c-left-box-->
+        </div>
+        <!--end c-left-->
+		 
+        <div class="c-center">
+			#foreach($l in $!{page.records})
+        	<div class="c-center-item">
+            	<div class="c-item-img">
+                	<a href="#springUrl('/ublog')$!{l.tragetInfo.id}.htm" onmouseover="heada(this,$!{l.tragetInfo.id});" onmouseout="headb(this);">
+						#if($!{l.tragetInfo.headPic})
+						 <img src="$!{address.thumb}$!{address.resource}$!{l.tragetInfo.headPic}" style="width:50px;height:50px;"/>
+						#else
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />
+						#end
+					</a>
+                   <div class="heada" onmouseover="head1(this);" onmouseout="head2(this);"></div>
+                    <div class="cb"></div>
+                </div>
+                <div class="c-item-box">
+                    <div class="c-item-bgbox">
+                        <div class="c-item-topbox">
+                        	<div class="c-topbox-title">
+                            	<a href="#springUrl('/ublog')$!{l.tragetInfo.id}.htm"><span class="greed">$!{l.tragetInfo.name}</span></a>：
+								<span >
+									$!{l.tragetComment.content}
+								</span>
+                            </div>
+                            <!--end c-topbox-title-->
+                            <div class="c-topbox-content">
+								#if($!{l.comment})
+                            	回复我的评论“<a href="#springUrl('/originalMblog')$!{l.comment.mblogId}.htm"><span class="greed">$!{l.comment.content}</span></a>”
+								#else
+								评论我的微文“<a href="#springUrl('/originalMblog')$!{l.mBlog.id}.htm"><span class="greed">$!{l.mBlog.content}</span></a>”	
+								#end
+                            </div>
+                            <!--end c-topbox-content-->
+                            <div class="c-topbox-time">
+                            	<div class="c-time-left fl">
+                                	   #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetComment.gmtCreated}) ##10月9日&nbsp;20:25
+                                </div>
+                                <div class="c-time-right fr">
+                                	<span onclick='reply_comments2(this)'>回复</span>
+                                </div>
+                                <!--end c-time-right-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end c-topbox-time-->
+                        
+                        <div class="c-item-comments" style="display:none">
+                                <div class="c-comments-top测试需求15"></div>
+                                <div class="c-comments-content">
+									  回复:@$!{l.tragetInfo.name}
+                                     <textarea class="c-comments-textarea" onclick="TextWeibo(this);"></textarea>
+                                     <div class="c-comments-box1">
+                                        <ul class="fl">
+                                            <li class="c-icon1" onclick="face(this);"></li>
+                                            <li><input type="checkbox" class="c-icon3" id="sentType$!{l.mBlog.id}"/>同时转发到我的微文</li>
+                                            <div class="cb"></div>
+                                        </ul>
+                                        <div class="c-comments-140 fl">最多输入140个字</div>
+                                        <div class="c-comments-send fr" onclick="reply_commments(this,$!{l.tragetComment.id}, $!{l.mBlog.id},$!{l.tragetInfo.id});"></div>
+                                        <div class="bc-face">
+                                            <div class="bc-face-top">
+                                                <div class="bc-close3 fr" onclick="closeface(this);"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                                <div class="cb"></div>
+                                            </div>
+											#parse("/common/showface.vm")                                    
+											<!--end sm-face-box-->                                            <!--end bc-face-box-->											
+                                        </div>
+                                        <!--end bc-face-->
+                                        <div class="cb"></div>
+                                    </div>
+                                    <div class="item"></div>
+                                </div>
+                            	<!--end c-comments-content-->
+                            </div>
+                        	<!--end c-item-topbox-->
+                        </div>
+                        <!--end c-item-comments-->
+                    </div>
+                    <!--end c-item-bgbox-->
+                    <div class="c-item-downbox"></div>
+                </div>
+                <!--c-item-box-->
+                <div class="cb"></div>
+            </div>
+            <!--end c-center-item-->
+        #end
+			
+			
+		#mBlogPageNav(${page} "#springUrl('/comments')" "" "")
+##            <div class="ff-page">
+##            	<ul>
+##                	<li>上一页</li>
+##                	<li>1</li>
+##                    <li>2</li>
+##                    <li>3</li>
+##                    <li>下一页</li>
+##                </ul>
+##            </div>
+            <!--end ff-page-->
+        </div>
+        <!--end c-center-->
+        <div class="c-right">
+        	<div class="bl-notice">
+            	<div class="bl-notice-title">
+                	公告
+                </div>
+                <!--end bl-notice-title-->
+                <ul>
+                	<li><a href="#">1.欢迎来到环保微交流</a></li>
+                    <li><a href="#">2.环保微交流规则</a></li>
+                    <li><a href="#">3.环保微交流等级规则</a></li>
+                </ul>
+            </div>
+            <!--end 公告-->
+        </div>
+        <!--end c-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end comment-->
+</div>
+<!--end main-->
+
+
+<div id='textHide1'></div>
+<div id='tagBox1'>
+<div class="bc-tagBox-title">请选择最近@的人或者直接输入</div>
+    <li>5135351</li>
+    <li>5135351</li>
+</div>
+<input type="hidden" id="text_left">
+<input type="hidden" id="text_right">
+<input type="hidden"  id="textInfo" value="" />
+
+
+
+
+#if(($!{newFansCount} && $!{newFansCount}>0) || ($!{commentCount} && $!{commentCount}>0) || $!{anteCount} && $!{anteCount}>0)
+	
+<div class="FloatBox">
+	<div class="fb-close">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/close3.jpg" />
+    </div>
+    <!--end fb-close-->
+    <div class="cb"></div>
+	#if($!{newFansCount} && $!{newFansCount}>0)
+	<div class="fb-box">
+    	$!{newFansCount}位新粉丝，<a href="/mblog/newfans.htm">查看粉丝</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{commentCount} && $!{commentCount}>0)
+    <div class="fb-box">
+    	$!{commentCount}条新评论，<a href="/mblog/comments.htm">查看回复</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{anteCount} && $!{anteCount}>0)
+    <div class="fb-box">
+    	$!{anteCount}个新@我，<a href="/mblog/ante.htm">查看@我</a>
+    </div>
+	#end
+    <!--end fb-box-->
+</div>
+<!--end FloatBox-->
+#end
+
+<script >
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+</script>
+

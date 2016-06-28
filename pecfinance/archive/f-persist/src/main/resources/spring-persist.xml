@@ -1,0 +1,53 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	">
+	
+    <context:annotation-config />
+	<context:component-scan base-package="com.zz91.financial.persist" />
+	
+	<context:property-placeholder location="classpath*:persist.properties"
+		ignore-unresolvable="true" />
+	
+	<!-- beware that mapper-config.xml is not needed if you use injected mappers 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:mybatisMapper/**/*.xml" />
+	</bean>
+	-->
+	
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${username}"></property>
+		<property name="password" value="${password}"></property>
+	</bean>
+
+	<!-- MyBatis sqlSessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+            <property name="configLocation" value="classpath:SqlMapConfig.xml" />
+            <property name="dataSource" ref="dataSource" />
+
+    </bean>
+    
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+            <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+
+	
+	<!-- or you can scan for mappers and then inject them 
+	<bean class="org.mybatis.spring.annotation.MapperScannerPostProcessor">
+		<property name="basePackage" value="com.zz91.financial.mybatis" />
+	</bean>
+-->
+	
+</beans>

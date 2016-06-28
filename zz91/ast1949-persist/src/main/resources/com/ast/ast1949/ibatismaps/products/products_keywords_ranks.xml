@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsKeywordsRanks">
+	<typeAlias alias="productsKeywordsRankDO" type="com.ast.ast1949.domain.products.ProductsKeywordsRankDO"/>
+	<typeAlias alias="productsKeywordsRankDTO" type="com.ast.ast1949.dto.products.ProductsKeywordsRankDTO"/>
+	<typeAlias alias="productsCompanyDTO" type="com.ast.ast1949.dto.products.ProductsCompanyDTO"/>
+	<resultMap id="productsKeywordsRankDOResult" class="ProductsKeywordsRankDO">
+		<result property="id" column="id"/>
+		<result property="productId" column="product_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="applyAccount" column="apply_account" />
+		<result property="companyId" column="company_id" />
+		<result property="buyTime" column="buy_time" />
+		<result property="name" column="name" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="isChecked" column="is_checked" />
+		<result property="type" column="type" />
+	</resultMap>
+		
+	<resultMap id="productsKeywordsRankDTOResult" class="productsKeywordsRankDTO">
+		<result property="productsKeywordsRank" resultMap="productsKeywordsRanks.productsKeywordsRankDOResult"/>
+		<result property="companyName" column="company_name"/>
+		<result property="productsTitle" column="title"/>
+	</resultMap> 
+	<insert id="insertProductsKeywordsRank"  parameterClass="productsKeywordsRankDO">
+				insert into products_keywords_rank
+				(product_id,name,start_time,end_time,is_checked,gmt_created,gmt_modified,apply_account,company_id,type,buy_time)
+				values(#productId#,#name#,#startTime#,#endTime#,#isChecked#,sysdate(),sysdate(),#applyAccount#,#companyId#,#type#,#buyTime#)
+		<selectKey keyProperty="id" resultClass="int">
+							SELECT
+							LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+		
+	<delete id="deleteProductsKeywordsRankById" parameterClass="java.lang.Integer">
+				delete from products_keywords_rank
+				where
+				id = #id#
+	</delete>
+		
+	<update id="updateCheckedById" parameterClass="java.util.Map" >
+				update
+				products_keywords_rank
+				set
+				is_checked = #isChecked#,
+				gmt_modified = now()
+				where
+				id = #id# 
+	</update>
+		
+	<update id="updateProductsKeywordsRankById" parameterClass="productsKeywordsRankDO" >
+			 update  products_keywords_rank set
+			 name=#name#,
+			 start_time=#startTime#,
+			 end_time=#endTime#,
+			 is_checked=#isChecked#,
+			 gmt_modified = now(),
+			 type=#type#,
+			 buy_time=#buyTime#
+			 where
+			id = #id# 
+	</update>
+		
+	<select id="queryProductsKeywordsRankByConditions" parameterClass="productsKeywordsRankDTO" resultMap="productsKeywordsRankDTOResult">
+		 			select 
+					a.id,
+					a.product_id,
+					a.name,
+					a.start_time ,
+					a.end_time ,
+					a.is_checked,
+					a.gmt_created,
+					a.gmt_modified,
+					a.apply_account,
+					a.company_id ,
+					a.type ,
+					a.buy_time,
+					b.title,
+					c.name as company_name
+					from products_keywords_rank a
+					left join products b on a.product_id=b.id
+					left join company c on b.company_id=c.id
+		<dynamic prepend="where" >
+			<isEqual property="expire" compareValue="true" >
+									a.end_time>=now()
+			</isEqual>
+			<isEqual property="expire" compareValue="false">
+									now()>a.end_time
+			</isEqual>
+			<isNotEmpty property="productsKeywordsRank.name" prepend="and">
+								a.name like concat(#productsKeywordsRank.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.type" prepend="and">
+								a.type=#productsKeywordsRank.type#
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.productId" prepend="and">
+								a.product_id=#productsKeywordsRank.productId#
+			</isNotEmpty>
+							
+			<isNotEmpty property="productsKeywordsRank.startTime"  prepend="and">
+			<![CDATA[  a.start_time >= #productsKeywordsRank.startTime#]]> 
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.endTime"  prepend="and">
+			<![CDATA[ a.end_time<=#productsKeywordsRank.endTime# ]]>
+			</isNotEmpty>
+							
+			<isNotEmpty property="productsKeywordsRank.isChecked" prepend="and">
+				            	a.is_checked=#productsKeywordsRank.isChecked#
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+									c.name like concat(#companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsTitle" prepend="and">
+									b.title like concat(#productsTitle#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+		
+	<select id="countProductsKeywordsRankByConditions" parameterClass="productsKeywordsRankDTO" resultClass="java.lang.Integer">
+		  			select 
+					count(*)
+		            from products_keywords_rank a
+					left join products b on a.product_id=b.id
+					left join company c on b.company_id=c.id
+		<dynamic prepend="where" >
+			<isEqual property="expire" compareValue="true" >
+									a.end_time>=now()
+			</isEqual>
+			<isEqual property="expire" compareValue="false">
+									now()>a.end_time
+			</isEqual>
+			<isNotEmpty property="productsKeywordsRank.name" prepend="and">
+								a.name like concat(#productsKeywordsRank.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.type" prepend="and">
+								a.type=#productsKeywordsRank.type#
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.productId" prepend="and">
+								a.product_id=#productsKeywordsRank.productId#
+			</isNotEmpty>
+							
+			<isNotEmpty property="productsKeywordsRank.startTime"  prepend="and">
+			<![CDATA[  a.start_time >= #productsKeywordsRank.startTime#]]> 
+			</isNotEmpty>
+			<isNotEmpty property="productsKeywordsRank.endTime"  prepend="and">
+			<![CDATA[ a.end_time<=#productsKeywordsRank.endTime# ]]>
+			</isNotEmpty>
+							
+			<isNotEmpty property="productsKeywordsRank.isChecked" prepend="and">
+				            	a.is_checked=#productsKeywordsRank.isChecked#
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+									c.name like concat(#companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsTitle" prepend="and">
+									b.title like concat(#productsTitle#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+		   
+		
+		
+	<select id="queryProductsKeywordsRankById" resultMap="productsKeywordsRankDOResult" parameterClass="java.lang.Integer">
+				select 
+					id,
+					product_id,
+					name,
+					start_time,
+					end_time,
+					is_checked,
+					gmt_created,
+					gmt_modified,
+					apply_account,
+					company_id,
+					type,
+					buy_time
+					 FROM products_keywords_rank
+					 where id=#id#
+	</select>
+		
+		<!-- 
+	<select id="queryProductsKeywordsRankByProductId" resultClass="productsKeywordsRankDO" parameterClass="java.lang.Integer">
+				select 
+				product_id,
+				name,
+				start_time,
+				end_time,
+				is_checked,
+				gmt_created,
+				gmt_modified,
+				apply_account,
+				company_id,
+				type,
+				buy_time
+				 FROM products_keywords_rank
+				 where product_id=#id#
+	</select>
+		 -->
+	
+	<resultMap id="productsCompanyDTOResult" class="productsCompanyDTO">
+		<result property="productId" column="product_id"/>
+		<result property="productTypeCode" column="products_type_code"/>
+		<result property="productTitle" column="title"/>
+		<result property="productDetails" column="details"/>
+		<result property="price" column="price"/>
+		<result property="priceUnit" column="price_unit"/>
+		<result property="refreshTime" column="refresh_time"/>
+		<result property="companyId" column="company_id"/>
+		<result property="companyName" column="company_name"/>
+		<result property="membershipCode" column="membership_code"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="keywordsBuiedTypeCode" column="type"/>
+	</resultMap>
+	
+	<!--根据购买的关键字类型查询产品信息,在关键字的有效期内，审核通过,查询的关键字包含购买的关键字,-->
+	<!--1043 标王类别 10431000:金牌标王,10431001:银牌标王,10431002:铜牌标王 -->
+	<select id="queryProductsByKeywordsAndBuiedType" parameterClass="map" resultMap="productsCompanyDTOResult">
+			select 
+				kr.product_id,
+				p.company_id,
+				kr.type,
+				p.title,
+				p.products_type_code,
+				p.details,
+				p.price,
+				p.price_unit,
+				p.refresh_time,
+				c.name as company_name,
+				c.membership_code,
+				c.area_code
+			from products_keywords_rank kr,company c,products p
+			where p.check_status='1'
+			and p.is_del='0'
+			and kr.product_id=p.id
+			and p.company_id=c.id
+			and now()>=kr.start_time 
+			and kr.end_time>=now()
+			and kr.is_checked='1'
+			and kr.name=#keywords#
+			and kr.type=#keywordsBuiedType#
+			order by kr.start_time
+			limit #topNum# 
+	</select>
+	
+	<select id="queryProductsId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+			select 
+				kr.product_id
+			from products_keywords_rank kr
+			where 
+			now()>=kr.start_time 
+			and kr.end_time >= now()
+			and kr.is_checked='1'
+			and kr.name=#keywords#
+			<dynamic>
+				<isNotEmpty property="buiedType" prepend="and">
+					kr.type=#buiedType#
+				</isNotEmpty>
+			</dynamic>
+			order by kr.start_time
+			limit #maxSize# 
+	</select>
+	<resultMap id="productsKeywordsRankDTOResult1" class="productsKeywordsRankDTO">
+		<result property="productsKeywordsRank" resultMap="productsKeywordsRanks.productsKeywordsRankDOResult"/>
+		<result property="label" column="label"/>
+	</resultMap> 
+	<select id="queryProductsKeywordsRankByCompanyId" parameterClass="java.lang.Integer"  resultMap="productsKeywordsRankDTOResult1">
+	         select 
+			    a.id,
+				a.product_id,
+				a.name,
+				a.start_time ,
+				a.end_time ,
+				a.is_checked,
+				a.gmt_created,
+				a.gmt_modified,
+				a.apply_account,
+				a.type ,
+				a.buy_time,
+		        b.company_id,
+				c.label 
+			from products_keywords_rank a
+			        left join  products b on a.product_id=b.id
+				      join  category c on a.type=c.code
+		    where b.company_id=#companyId# 
+</select>
+</sqlMap>

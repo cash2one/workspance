@@ -1,0 +1,157 @@
+#set($layout='/layout/blank.vm')
+<script>
+//表情加载
+jQuery(document).ready(function(e) {
+$(".showface1 li").click(function(){
+	$("#textInfo").val($("#textInfo").val() + $(this).attr("action-data"));
+	var showFace=$(this).parent().parent().parent().parent().siblings("textarea").val();
+	var textleft=showFace.substring(0,$(this).parent().parent().parent().parent().siblings("textarea").position());
+	var textright=showFace.substring($(this).parent().parent().parent().parent().siblings("textarea").position(),showFace.length);
+	    
+	$("#text_left").val(textleft);
+	$("#text_right").val(textright);
+	$("#textHide1").html(textleft+$("#textInfo").val()+textright);
+	$("#textInfo").val("");
+	$(this).parent().parent().parent().parent().siblings("textarea").val($("#textHide1").html());
+	$(this).parent().parent().parent().css("display","none");
+ });
+})
+
+
+function textHide(obj){
+	$(document).ready(function(e) {
+			texta=$(this);
+			var textleft=$(this).val().substring(0,$(this).position());
+			var textright=$(this).val().substring($(this).position(),$(this).val().length);
+			var x=$(this).offset().left;
+			var y=$(this).offset().top;
+			$("#textHide1").css("left",x);
+			$("#textHide1").css("top",y);
+			$("#text_left").val(textleft);
+			$("#text_right").val(textright);
+		});
+}
+</script>
+
+#foreach( $l in $!{dtoList})
+ #if($!{velocityCount} <= 5)
+
+<div class="sm-Forward-comments2">
+    <div class="sm-Forward-img2">
+        <a href="#springUrl('/ublog')$!{l.info.id}.htm">
+			#if($!{l.info.headPic})
+			<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:30px;height:30px;"/>
+			#else
+			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img4.jpg" />	
+			#end
+		</a>
+    </div>
+    <div class="sm-Forward-box3">
+        <div class="sm-box3-1">
+			 #if($!{l.mBlogInfo.name})
+            <a class="greed" href="#springUrl('/ublog')$!{l.info.id}.htm">${l.info.name}</a> :回复<a class="greed" href="#springUrl('/ublog')$!{l.mBlogInfo.id}.htm">@${l.mBlogInfo.name}</a>：$!{l.comment.content}
+			#else
+			<a class="greed" href="#springUrl('/ublog')$!{l.info.id}.htm">${l.info.name}：</a>$!{l.comment.content}
+			#end
+        </a>	
+		</div>
+        <div class="sm-box3-2">
+            <div class="sm-box3-time">#printFragmentDate("yyyy-MM-dd HH:mm" $!{l.comment.gmtCreated})</div>
+            <div class="sm-box3-comments" onclick='sm_Forward2(this)'>回复</div>
+        </div>
+    </div>
+    <div class="cb"></div>
+</div>
+<!--end sm-Forward-comments2-->
+<div class="sm-ForwardComments-small">
+    <div class="sm-ForwardSmall-top"></div>
+    <div class="sm-ForwardSmall-content">
+		回复@${l.info.name}:
+        <textarea class="sm-ForwardSmall-textarea" onclick="TextWeibo(this);"></textarea>
+         <div class="sm-ForwardSmall-box1">
+            <ul class="fl">
+                <li class="sm-icon1" onclick="face(this);"></li>
+                <li><input type="checkbox" class="sm-icon3" id="sentType$!{l.comment.id}"/>同时转发到我的微文</li>
+                <div class="cb"></div>
+            </ul>
+            <div class="sm-ForwardSmall-send fr" onClick="sm_ForwardReply2(this,$!{l.info.id},$!{l.comment.id},$!{l.comment.mblogId},2);"></div>
+            <div class="bc-face">
+                <div class="bc-face-top">
+                    <div class="bc-close3 fr" onclick="closeface(this);"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                    <div class="cb"></div>
+                </div>
+				
+				<div class="bc-face-box">
+                   <ul class="showface1">
+                	<li action-data="[哈哈]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/laugh.gif" title="哈哈"/>
+                    </li>
+                    <li action-data="[太开心]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/mb_thumb.gif" title="太开心"  />
+                    </li>
+                    <li action-data="[爱你]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/lovea_thumb.gif"   title="爱你"/>
+                    </li>
+                    <li action-data="[闭嘴]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/bz_thumb.gif"   title="闭嘴"/>
+                    </li>
+                    <li action-data="[右哼哼]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/yhh_thumb.gif"   title="右哼哼"/>
+                    </li>
+                    <li action-data="[泪]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/sada_thumb.gif"  title="泪" />
+                    </li>
+                    <li action-data="[拜拜]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/88_thumb.gif"  title="拜拜"/>
+                    </li>
+                    <li action-data="[偷笑]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/heia_thumb.gif"  title="偷笑"/>
+                    </li>
+                    <li action-data="[惊讶]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/cj_thumb.gif" title="惊讶" />
+                    </li>
+                    <li action-data="[馋嘴]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/cza_thumb.gif" title="馋嘴"  />
+                    </li>
+                    <li action-data="[衰]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/cry.gif" title="衰"  />
+                    </li>
+                    <li action-data="[懒得理你]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/ldln_thumb.gif"   title="懒得理你"/>
+                    </li>
+                    <li action-data="[钱]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/money_thumb.gif"   title="钱"/>
+                    </li>
+                    <li action-data="[good]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/good_thumb.gif"   title="good"/>
+                    </li>
+                    <li action-data="[ok]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/ok_thumb.gif"   title="ok"/>
+                    </li>
+                    <li action-data="[耶]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/ye_thumb.gif"  title="耶"/>
+                    </li>
+                    <li action-data="[蛋糕]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/cake.gif"  title="蛋糕"/>
+                    </li>
+                    <li action-data="[怒骂]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/nm_thumb.gif" title="怒骂"/>
+                    </li>
+                    <li action-data="[抓狂]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/crazya_thumb.gif"  title="抓狂"/>
+                    </li>
+                    <li action-data="[汗]">
+                		<img src="http://img0.huanbao.com/huanbao/mblog/images/sweata_thumb.gif"  title="汗"/>
+                    </li>
+                </ul>
+                <div class="cb"></div>
+             </div>
+            </div>
+            <!--end sm-face-->
+            <div class="cb"></div>
+         </div>
+    </div>
+</div>
+<!--end sm-ForwardComments-small-->
+  #end
+ #end

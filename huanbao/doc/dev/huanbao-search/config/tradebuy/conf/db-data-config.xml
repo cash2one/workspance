@@ -1,0 +1,66 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.2.10:3306/ep"
+                user="root" password="zj88friend" batchSize="-1"/>
+    <document  name="trade_buy">
+			<!--
+			query是获取全部数据的SQL
+			deltaImportQuery是获取增量数据时使用的SQL（动态增加时必须配置deltaQuery，两个配置->效果）
+			deltaQuery是获取pk的SQL parentDeltaQuery是获取父Entity的pk的SQL
+		-->
+		<entity name="trade_buy" pk="id"
+			query="select 
+				    id,
+				    cid,
+				    title,
+				    province_code,
+				    area_code,
+				    quantity,
+				    quantity_year,
+				    quantity_untis,
+				    valid_days,
+				    details_query,
+				    gmt_refresh,
+				    gmt_expired,
+				    message_count,
+				    pause_status,
+				    check_status,
+				    del_status
+				from trade_buy"
+			deltaQuery="select id from trade_buy where gmt_modified > '${dataimporter.last_index_time}'"
+			deltaImportQuery="select 
+				    id,
+				    cid,
+				    title,
+				    province_code,
+				    area_code,
+				    quantity,
+				    quantity_year,
+				    quantity_untis,
+				    valid_days,
+				    details_query,
+				    gmt_refresh,
+				    gmt_expired,
+				    message_count,
+				    pause_status,
+				    check_status,
+				    del_status
+				from trade_buy where gmt_modified > '${dataimporter.last_index_time}'">
+			<field column="id" name="id" />
+			<field column="cid" name="cid" />
+			<field column="title" name="title" />
+			<field column="province_code" name="provinceCode" />
+			<field column="area_code" name="areaCode" />
+			<field column="quantity" name="quantity" />
+			<field column="quantity_year" name="quantityYear" />
+			<field column="quantity_untis" name="quantityUntis" />
+			<field column="details_query" name="detailsQuery" />
+			<field column="valid_days" name="validDays" />
+			<field column="gmt_refresh" name="gmtRefresh" />
+			<field column="gmt_expired" name="gmtExpired" />
+			<field column="message_count" name="messageCount" />
+			<field column="pause_status" name="pauseStatus" />
+			<field column="check_status" name="checkStatus" />
+			<field column="del_status" name="delStatus" />
+		</entity>
+    </document>
+</dataConfig>

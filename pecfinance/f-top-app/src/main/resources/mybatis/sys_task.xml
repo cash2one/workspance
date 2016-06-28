@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.zz91.top.app.persist.SysTaskMapper">
+
+	<insert id="insert" parameterType="sysTask"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into sys_task (
+			`access_token`,`task_id`,`gmt_read_start`,`gmt_read_end`,
+			`read_fields`,`gmt_submit`,`status`,`tb_error`,`tb_error_discription`,
+			`check_code`,`download_url`,`method`,`gmt_modified`,`gmt_created`,`nick`
+		)
+		values (
+			#{accessToken},#{taskId},#{gmtReadStart},#{gmtReadEnd},#{readFields},
+			#{gmtSubmit},#{status},#{tbError},#{tbErrorDiscription},#{checkCode},
+			#{downloadUrl},#{method},now(),now(),#{nick}
+		)
+	</insert>
+	
+	<update id="update" parameterType="sysTask">
+		update sys_task set 
+			`status`= #{status},
+			`gmt_modified`=now()
+		where id=#{id}
+	</update>
+
+	<select id="queryLastEndDate"  resultType="java.util.Date" >
+		select max(gmt_read_end) from sys_task
+		where nick=#{nick} and method=#{method} and 6 > `status`
+	</select>
+	
+	<select id="queryByTask" resultType="sysTask" >
+		select `id`,`task_id` as taskId,`status`,`nick` 
+		from sys_task
+		where `id`>#{fromId} and `method` = #{method} and  5 > `status`
+		order by id
+		limit #{limit}
+	</select>
+	
+	<select id="countByTaskId" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) as c from sys_task where task_id=#{taskId}
+	</select>
+	
+</mapper>
+

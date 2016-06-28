@@ -1,0 +1,31 @@
+<script type="text/javascript" src="#springUrl('/app/news/recommend.js')" ></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+
+	var listParam = new com.zz91.ep.recommend.listParamGrid({
+//		layout:"fit",
+		id:Const.PARAM_GRID,
+		region:"center"
+	});
+
+	var listParamType = new com.zz91.ep.recommend.listParamTypeGrid({
+		id:Const.PARAMTYPE_GRID,
+		region:"west",
+		width:330,
+		split:true,
+		listeners:{
+			"rowclick":function(grid,rowindex,e){
+				listParam.getStore().reload({
+					params:{types:grid.getStore().getAt(rowindex).get("key")}
+				});
+			}
+		}
+	});
+
+	var viewport = new Ext.Viewport({
+		layout : "border",
+//		border : true,
+		items:[listParam,listParamType]
+	});
+});
+</script>

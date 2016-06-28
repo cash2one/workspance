@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <title>多窗口测试</title>
+        <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+        <style>
+            #header .right{
+                position: absolute; bottom: 6px; right: 1em; margin-left: 0px; margin-top: 0px;
+            }
+        </style>
+<style>
+    #header {
+        background-color:#2DBD82;
+    }
+    #nav{
+        display:-webkit-box;
+        height:44px;
+    }
+    #left {
+        width:80px;
+        color:#fff;
+        background:url(../../image/navbtn_back.png) no-repeat 14px 12px;
+        -webkit-background-size:12px 20px;
+    }
+    #left>span {
+        margin-top:13px;
+        margin-left:36px;
+        font-size:18px;
+        height:18px;
+        line-height:18px;
+        color: #fff;
+    }
+    #middle {
+        -webkit-box-flex:1;
+        width:100%;
+        display:-webkit-box;
+        -webkit-box-pack:center;
+        -webkit-box-align:center;
+    }
+    #title {
+        font-size:18px;
+        text-align:center;
+        color:#fff;
+    }
+    #right {
+        width:80px;
+    }
+    section {
+        -webkit-box-flex:1;
+    }
+    .leftBtnActive {
+        background:url(../../image/navbtn_back_hov.png) no-repeat 14px 12px!important;
+        -webkit-background-size:12px 20px!important;
+        color:rgb(94,153,186)!important;
+    }
+    .rightBtnActive {
+    }
+</style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="header">
+                <a tapmode="active" onclick="api.openSlidPane({type:'left'});" class="btn btn-default back">左边</a>
+                <h3>侧边栏布局</h3>
+                <a tapmode="active" onclick="api.openSlidPane({type:'right'});" class="btn btn-default right">右边</a>
+            </div>
+            <div id="main">
+                <a tapmode="active" onclick="api.closeWin();" class="btn btn-default">返回</a>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="../../script/api.js"></script>
+    <script type="text/javascript">
+        function showFrame1() {
+            var header = $api.byId('header');
+            var offset = $api.offset(header);
+			api.addEventListener({name: 'keyback'}, function(ret, err){
+				api.closeWin();
+			});
+            api.openFrame({bounces: false,bounces: false,
+                name:'frame1',
+                url:'./frame1.html',
+                bounces:false,
+                rect:{x:0,y:offset.h+100,w:'auto',h:'auto'}
+            });
+            api.setFrameAttr({name:'frame1', hidden:false});
+            api.setFrameAttr({name:'frame2', hidden:true});
+        }
+        function showFrame2() {
+            var header = $api.byId('header');
+            var offset = $api.offset(header);
+            api.openFrame({bounces: false,bounces: false,
+                name:'frame2',
+                url:'./frame2.html',
+                bounces:false,
+                rect:{x:0,y:offset.h+100,w:'auto',h:'auto'}
+            });
+            api.setFrameAttr({name:'frame2', hidden:false});
+            api.setFrameAttr({name:'frame1', hidden:true});
+        }
+        apiready = function(){
+            var header = $api.byId('header');
+            $api.fixIos7Bar(header);
+            showFrame1();
+        };
+    </script>
+</html>

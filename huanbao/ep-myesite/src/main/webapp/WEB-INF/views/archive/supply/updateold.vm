@@ -1,0 +1,500 @@
+#set($layout="/layout/default.vm")
+#parse("/common/importValidate.vm")
+<link rel="stylesheet" type="text/css" href="$!{address.img}/lib/htmleditor/ckeditor/skins/kama/editor.css">
+<script src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor_basic.js"></script>
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/producttitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="#springUrl('/supply/publish_StpOne.htm')" target="_blank">发布供应信息</a></li>
+            <li class="hbnylefts"><a href="#springUrl('/supply/supply.htm')">管理供应信息</a></li>
+            <li class="hbnyleft"><a href="#springUrl('/supply/tradeGroup.htm')">管理供应信息类别</a></li>
+            <li class="hbnyleft"><a href="#springUrl('/buy/publish_StpOne.htm')" target="_blank">发布求购信息</a></li>
+            <li class="hbnyleft"><a href="#springUrl('/buy/buy.htm')">管理求购信息</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td height="500" valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">修改供应信息</td>
+      </tr>
+    </table>
+     <form method="post" id="categoryForm" action="#springUrl('/supply/doUpdateCategory.htm')" onsubmit="return false;">
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyconadd">
+        <tr>
+          <td valign="top" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>产品类别</strong></td>
+		  <input id="propertyQuery" name="propertyQuery" type="hidden" value=""/>
+          </tr>
+        <tr>
+          <td align="center" style="padding-top:10px;">
+             <select id="category1" class="hbinfoelect" multiple> 
+                     <option value="">--请选择--</option>
+             </select>
+             &nbsp;&nbsp;&nbsp;
+             <select id="category2" class="hbinfoelect" multiple> 
+                     <option value="">--请选择--</option>
+             </select>
+             &nbsp;&nbsp;&nbsp;
+             <select id="category3" class="hbinfoelect" multiple> 
+                     <option value="">--请选择--</option>
+             </select>
+           </td>
+          </tr>
+        <tr>
+          <td style="padding-left:150px;" id="selectresult">您当前选择的是：$!{categoryPath}</td>
+          </tr>
+        <tr>
+          <td bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>专业属性</strong></td>
+          </tr>
+        <tr>
+          <td>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" id="propertysDiv">
+			  #foreach($item in $!{propertys})
+	          <tr>
+	          	 <td width="160" align="right">#if($!{item.inputRequired} == 1)<span>*</span>#end $!{item.name}：</td>
+	          	 <td>
+	          	 #if($!{item.vtype} == 'text')
+	          	 	<input id="property$!{item.id}" type="text" value="" class="hbnyconinput hbnycontit50#if($!{item.inputRequired} == 1) validate[required,maxSize[20]] #else validate[maxSize[20]] #end"/>
+	          	 #end
+	          	 #if($!{item.vtype} == 'combo')
+	          	 	<select id="property$!{item.id}" class="hbnyconselect">
+		                #foreach($value in $propertyMap.get($!{item.id}))
+		                      <option value="${value.k}">${value.v}</option>
+		                #end
+		            </select>
+	          	 #end
+	          	 #if($!{item.vtype} == 'checkbox')
+	          	 	#foreach($value in $propertyMap.get($!{item.id}))
+	                   <input name="property$!{item.id}" type="checkbox" value="$!{value.k}" />$!{value.v}
+	                #end
+	          	 #end
+	          	 #if($!{item.vtype} == 'radio')
+	                  #foreach($value in $propertyMap.get($!{item.id}))
+	                     <input name="property$!{item.id}" type="radio" value="$!{value.k}"/>$!{value.v}
+	                  #end
+	          	 #end
+	          	 </td>
+	          </tr>
+	          #end
+          </table>
+           <table width="100%" border="0" cellspacing="0" cellpadding="0" id="propertysDiv">
+          	  <tr>
+          		<td height="50" colspan="2" align="center" bgcolor="#FFFFFF">
+          			<input id="categoryCode" name="categoryCode" type="hidden" value="$!{supply.supply.categoryCode}"/>
+          			<input type="button" name="categoryButton" id="categoryButton" value="修改" class="hbnyconan" onclick="javascript:updateCategory()"/>
+          		</td>
+        	  </tr>
+          </table>
+          </td>
+        </tr>
+    </table>
+    </form>
+    <form id="supplyForm" method="post" action="#springUrl('/supply/doUpdateBase.htm')" onsubmit="return false;">
+    <input id="id" name="id" type="hidden" value="$!{supply.supply.id}"/>
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyconadd">
+            <tr>
+              <td colspan="2" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>基本信息</strong></td>
+          </tr>
+            <tr>
+              <td width="160" align="right"><span>*</span> 信息标题：</td>
+              <td>
+              	<input id="title" name="title" type="text" value="$!{supply.supply.title}" class="hbnyconinput hbnycontit50 validate[required,maxSize[50]]"/>
+              </td>
+              </tr>
+            <tr>
+              <td width="160" align="right">&nbsp;</td>
+              <td>最长30个汉字（60个字节），建议您在标题中包含产品名称和相关关键词！</td>
+              </tr>
+            <tr>
+              <td width="160" align="right"><span>*</span> 搜索标签：</td>
+              <td><input id="tags" name="tags" type="text" value="$!{supply.supply.tags}" class="hbnyconinput hbnycontit50 validate[required,maxSize[50]]" /></td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top">供货地省份：</td>
+              <td>
+              <select id="provinceCode" name="provinceCode" class="hbnyconselect">
+                  <option value="">省份</option>
+              </select>
+              供货地地区：
+              <select id="areaCode" name="areaCode" class="hbnyconselect">
+                  <option value="">城市</option>
+              </select>
+              </td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top"><label for="totalNum"><span>*</span> 供货总量：</label></td>
+              <td>
+	              <input type="number" id="totalNum" name="totalNum" value="$!{supply.supply.totalNum}" class="hbnyconinput hbnycontit20 validate[required,maxSize[10]]"/>
+	              &nbsp;&nbsp;&nbsp;&nbsp;单位：
+	              <select  id="totalUnits" name="totalUnits" class="hbnyconselect hbnycontit20" value="$!{supply.supply.totalUnits}">
+                  	<option value="">请选择</option>
+                  	<option value="套" #if("$!{supply.supply.totalUnits}"=="套") selected #end>套</option>
+                  	<option value="台" #if("$!{supply.supply.totalUnits}"=="台") selected #end>台</option>
+                  	<option value="件" #if("$!{supply.supply.totalUnits}"=="件") selected #end>件</option>
+                  	<option value="吨" #if("$!{supply.supply.totalUnits}"=="吨") selected #end>吨</option>
+                  	<option value="个" #if("$!{supply.supply.totalUnits}"=="个") selected #end>个</option>
+                  	<option value="斤" #if("$!{supply.supply.totalUnits}"=="斤") selected #end>斤</option>
+                  	<option value="千克" #if("$!{supply.supply.totalUnits}"=="千克") selected #end>千克</option>
+                  	<option value="袋" #if("$!{supply.supply.totalUnits}"=="袋") selected #end>袋</option>
+                  	<option value="盒" #if("$!{supply.supply.totalUnits}"=="盒") selected #end>盒</option>
+              	  </select>
+              </td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top"><span>*</span> 供货单价：</td>
+              <td>
+	              <input id="priceNum" name="priceNum" type="number" value="$!{supply.supply.priceNum}" class="hbnyconinput hbnycontit20 validate[required,custom[number],maxSize[10]]"/>
+	              &nbsp;&nbsp;&nbsp;&nbsp;单位：
+	              <select  id="priceUnits" name="priceUnits" class="hbnyconselect hbnycontit20" value="$!{supply.supply.priceUnits}">
+                  	<option value="元">元</option>
+                  	<option value="美元">美元</option>
+              	  </select>
+              </td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top">新 旧：</td>
+              <td><select id="usedProduct" name="usedProduct">
+	                    <option value="0" #if("$!{supply.supply.usedProduct}" == "0") selected #end>新</option>
+	                    <option value="1" #if("$!{supply.supply.usedProduct}" == "1") selected #end>旧</option>
+	              </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;报价范围：
+	              <input id="priceFrom" name="priceFrom" type="number" value="$!{supply.supply.priceFrom}" class="hbnyconinput hbnycontit10 validate[custom[number],maxSize[10]]" /> 至 
+	              <input id="priceTo" name="priceTo" type="number" value="$!{supply.supply.priceTo}" class="hbnyconinput hbnycontit10 validate[custom[number],maxSize[10]]" />
+	          </td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top">用 途：</td>
+              <td><textarea name="useTo" class="hbnyconedit validate[maxSize[100]]" id="useTo" cols="45" rows="3">$!{supply.supply.useTo}</textarea></td>
+              </tr>
+            <tr>
+              <td width="160" align="right" valign="top">信息有效期：</td>
+              <td>
+              <select id="validDays" name="validDays" class="hbnyconselect">
+		                    <option value="10" #if("$!{supply.supply.validDays}"=="10") selected #end>10天</option>
+		                    <option value="20" #if("$!{supply.supply.validDays}"=="20") selected #end>20天</option>
+		                    <option value="30" #if("$!{supply.supply.validDays}"=="30") selected #end>一个月</option>
+		                    <option value="90" #if("$!{supply.supply.validDays}"=="90") selected #end>三个月</option>
+		                    <option value="180" #if("$!{supply.supply.validDays}"=="180") selected #end>六个月</option>
+		                    <option value="0" #if("$!{supply.supply.validDays}"=="0") selected #end>长期有效</option>
+		      </select>
+			  </td>
+              </tr>
+    		   <tr>
+                  <td colspan="2" valign="top" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>产品图片</strong></td>
+              </tr>
+            <tr>
+				<td width="160" align="right" valign="top">上传图片：</td>
+				<td id="imageUploadDiv">
+					<a href="javascript:selectPhoto()" class="pstf_sub_btnpic">上传图片</a>
+				</td>
+		  </tr>
+		  <tr>
+              <td colspan="2" valign="top" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>详细信息</strong></td>
+          </tr>
+            <tr>
+              <td colspan="2" align="center" style="padding-top:10px;">
+				<input type="button" name="detailPicBtn" id="detailPicBtn" value="插入图片" />
+              <textarea name="details" class="hbnyconedit validate[required,maxSize[3000]]" id="details" cols="45" rows="10">$!{supply.supply.details}</textarea>
+              </td>
+            </tr>
+            <tr>
+              <td height="50" colspan="2" align="center" bgcolor="#FFFFFF">
+              	<input type="button" name="baseButton" id="baseButton" onclick="updateSupply()" value="修改" class="hbnyconan" />
+              </td>
+          </tr>
+      </table>
+      </form>
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50">&nbsp;</td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<script language="javascript">
+var ckeditor;
+var categoryArr = null;
+jQuery(document).ready(function() {
+	ckeditor = CKEDITOR.replace("details",{
+		toolbar:
+        [
+            ['Styles','Format','FontSize'],  
+            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList'],
+    		['TextColor','BGColor'],
+    		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+    		['Maximize']
+        ],
+		height:'300px',
+		language : 'zh-cn'
+	});
+	// 初始化类别
+	var _selects=["#category1","#category2","#category3"];
+	var selector=new hb.util.Selector({
+		selects:_selects,
+		url:"#springUrl('/common/getTradeCategory.htm')",
+		changeCallback:function(sel,idx){
+			var vs=sel.getTexts();
+			jQuery("#selectresult").html("您当前选择的是："+vs.join(">"));
+			jQuery("#categoryCode").val(sel.getValue());
+			jQuery("#propertysDiv").html("");
+			changePropertys(jQuery("#categoryCode").val());
+		},
+		field:{code:"code",label:"name"}
+	});
+	selector.init({
+		rootCode:"1000",
+		#if($!{supply.supply.categoryCode} != "")
+		initCode:"$!{supply.supply.categoryCode}"
+		#else
+		initCode:"1000"
+		#end
+	});
+	// 初始化专业属性
+	categoryArr = eval($!{propertyInit});
+	var value = "";
+	#foreach($item in $!{propertys})
+	    value = "$!{propertyValueMap.get($!{item.id})}";
+		#if(${item.vtype}=="radio")
+		    jQuery.each(jQuery("input[name=property$!{item.id}]") ,function(idx,e){
+				if(e.value == value){
+					e.checked=true;
+				}
+			});
+		#elseif(${item.vtype}=="checkbox") 
+		    var va = value.split(",");
+			jQuery.each(jQuery("input[name=property$!{item.id}]") ,function(idx,e){
+				if(jQuery.inArray(e.value, va) >= 0){
+					e.checked=true;
+				}
+			});
+		#else
+			jQuery("#property$!{item.id}").attr({value:value});
+		#end
+	#end
+	// 地区下拉框初始化
+	var _selectAreaCode=["#provinceCode","#areaCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"#springUrl('/common/getAreaCode.htm')",
+		field:{code:"code",label:"name"}
+	});
+	selectAreaCode.init({
+		rootCode:"10011000",
+		#if($!{supply.supply.areaCode} != "")
+		initCode:"$!{supply.supply.areaCode}"
+		#else
+		initCode:"$!{supply.supply.provinceCode}"
+		#end
+	});
+	jQuery("#categoryForm").validationEngine("attach");
+	jQuery("#supplyForm").validationEngine("attach");
+	
+	jQuery("#detailPicBtn").click(function(){
+		uploadPhoto(function(photoCover, imageIds){
+			//插入图片到编辑器
+			##如果只有一张图片，可以直接使用photoCover,否则需要根据,分割后使用
+			var imgUrl="$!{address.resource}"+photoCover;
+			var img="<a href='"+imgUrl+"' target='_blank' ><img src='"+imgUrl+"' alt=''/></a>";
+			
+			ckeditor.insertHtml(img);
+    	}, "supplyDetail", 1, null);
+	});
+});
+function changePropertys(category) {
+	if (jQuery("#category3").val() != "") {
+		jQuery.ajax({
+			url:"#springUrl('/supply/getCategoryProperty.htm')",
+			data:{"category":category},
+	        cache:false,
+	        dataType:"json",
+	        type:"post",
+	        success:function(req){
+	            var propertys = eval(req.data);
+                var htmlString = "";
+                categoryArr = propertys;
+                jQuery.each(propertys, function(key, value) { 
+                    htmlString = "<tr><td width='160' align='right'>";
+                    if (value.inputRequired == '1') {
+                    	htmlString+="<span>*</span>";
+                    }
+                    htmlString+=value.name+"：</td><td>";
+                    if (value.vtype == 'text') {
+                    	if (value.inputRequired == '1') {
+                    		htmlString+="<input id='property"+value.id+"' type='text' value='' class='hbnyconinput hbnycontit50 validate[required,maxSize[20]]'/>"
+                    	} else {
+                    		htmlString+="<input id='property"+value.id+"' type='text' value='' class='hbnyconinput hbnycontit50 validate[maxSize[20]]'/>"
+                    	}
+                    }
+                    if (value.vtype == 'combo') {
+                    	htmlString+="<select id='property"+value.id+"' class='hbnyconselect'>";
+                    	jQuery.each(eval(value.vtypeValue), function(k, v) {
+                    		htmlString+="<option value='"+v.k+"'>"+v.v+"</option>";
+                    	});
+                    	htmlString+="</select>";
+                    }
+                    if (value.vtype == 'checkbox') {
+                    	jQuery.each(eval(value.vtypeValue), function(k, v) {
+                    		htmlString+="<input name='property"+value.id+"' type='checkbox' value='"+v.k+"'/>"+v.v;
+                    	});
+                    }
+                    if (value.vtype == 'radio') {
+                    	jQuery.each(eval(value.vtypeValue), function(k, v){
+                    		htmlString+="<input name='property"+value.id+"' type='radio' value='"+v.k+"' checked/>"+v.v;
+                    	});
+                    }
+                    htmlString+="</tr>";
+                    jQuery("#propertysDiv").append(htmlString);
+                });
+	        },
+	        failure:function(){
+	        }
+		});
+	}
+}
+// 更新供应信息类别
+function updateCategory() {
+	if($("#categoryForm").validationEngine('validate')){
+		var categoryCode = jQuery("#categoryCode").val();
+		var supplyId = jQuery("#id").val();
+		buildPropertyQuery();
+	    jQuery.ajax({
+	        url:'#springUrl('/supply/doUpdateCategory.htm')',
+	        data:{"id":supplyId,"category":categoryCode,"propertyQuery":jQuery("#propertyQuery").val()},
+	        cache:false,
+	        dataType:"json",
+	        type:"post",
+	        success:function(req){
+	                if(req.success){
+			            hb.util.Message.show({
+					        msg:"更新成功！",
+					        autoClose:10000
+						});
+	                } else {
+			            hb.util.Message.show({
+					        msg:"更新失败！",
+					        autoClose:10000
+						});
+	                }
+	            },
+	        failure:function(){
+				hb.util.Message.show({
+			        msg:"操作失败！",
+			        autoClose:10000
+				 });
+	        }
+	    });
+    }
+}
+
+function buildPropertyQuery(){
+	var propertyString = "";
+	jQuery.each(categoryArr, function(key, value) { 
+        if (value.vtype == 'radio') {
+			propertyString = propertyString + value.id + "_" + jQuery("input[name=property"+value.id+"][@checked]").val() + ";";
+        }else if (value.vtype == 'checkbox') {
+        	var a=new Array();
+			jQuery.each(jQuery("input[name=property"+value.id+"]"),function(idx,e){
+				if(e.checked){
+					a.push(e.value)
+				}
+			});
+			propertyString = propertyString + value.id + "_" + a.join(",") + ";";
+        }else if (value.vtype == 'combo') {
+			propertyString = propertyString + value.id + "_" + jQuery("#property"+value.id).val() + ";";
+		} else {
+			var proStr = jQuery("#property"+value.id).val();
+        	if( proStr!= '') {
+				re=new RegExp("[_;]","g"); 
+   				proStr=proStr.replace(re," ");
+				propertyString = propertyString + value.id + "_" + proStr + ";";
+			}
+        }
+    });
+	jQuery("#propertyQuery").val(propertyString);
+}
+
+function updateSupply(){
+	jQuery("#details").val(ckeditor.getData());
+	if($("#supplyForm").validationEngine('validate')){
+		if(ckeditor.getData().length < 3000) {
+			jQuery.ajax({
+			    url:'#springUrl('/supply/doUpdateBase.htm')',
+			    data:jQuery("#supplyForm").serialize(),
+			    cache:false,
+			    dataType:"json",
+			    type:"post",
+			    success:function(req){
+			            if(req.success){
+							hb.util.Message.show({
+						        msg:"更新成功！",
+						        autoClose:10000
+							 });
+			            } else {
+			            	hb.util.Message.show({
+						        msg:"更新失败！",
+						        autoClose:10000
+							 });
+			            }
+			        },
+			    failure:function(){
+					hb.util.Message.show({
+				        msg:"更新失败！",
+				        autoClose:10000
+					 });
+			    }
+			});
+		} else {
+			jQuery("#details").focus()
+			hb.util.Message.show({
+		        msg:"详细内容过长！",
+		        autoClose:10000
+			 });
+		}
+	}
+}
+
+function selectPhoto() {
+	uploadPhoto(function(photoCover,imageIds){
+		jQuery.ajax({
+            url:'#springUrl('/photo/updatePhotoCover.htm')',
+            data:{"id":"$!{supply.supply.id}","path":photoCover,"photos":imageIds,"type":'supply'},
+            cache:false,
+            dataType:"json",
+            type:"post",
+            success:function(req){
+            },
+            failure:function(){}
+        });
+	},"supply",4,"$!{supply.supply.id}");
+}
+
+function uploadPhoto(successFn,photoType,maxphoto,id){
+	var _url="#springUrl('/photo/uploadMini.htm?photoType=')"+photoType+"&max="+maxphoto;
+	if(id!=null){
+		_url=_url+"&id="+id;
+	}
+	var uploadBox=new Asto.util.PopupBox({
+    	url: _url,
+    	modal:true,
+    	callbackFn:function(photoCover, imageIds){
+			successFn(photoCover, imageIds);
+			uploadBox.close();
+		},
+    	width:830,
+    	height:500
+    });
+	uploadBox.show();
+}
+</script>

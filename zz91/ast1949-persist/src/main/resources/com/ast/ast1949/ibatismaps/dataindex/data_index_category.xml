@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dataIndexCategory">
+
+	<typeAlias alias="dataIndexCategoryDO"
+		type="com.ast.ast1949.domain.dataindex.DataIndexCategoryDO" />
+		
+	<resultMap class="dataIndexCategoryDO" id="dataIndexCategoryResult">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="label" column="label" />
+		<result property="isDelete" column="is_delete" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insertDataIndexCategory" parameterClass="dataIndexCategoryDO">
+		insert into data_index_category(
+		code,
+		label,
+		is_delete,
+		gmt_created,
+		gmt_modified
+		)values(
+		#code#,
+		#label#,
+		#isDelete#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<!-- 
+	<select id="queryDataIndexCategoryById" parameterClass="java.lang.Integer"
+		resultMap="dataIndexCategoryResult">
+		select id,code,label,is_delete,gmt_created,gmt_modified
+		from data_index_category
+		where id=#id:Integer#
+	</select>
+	 -->
+	
+	<select id="queryDataIndexCategoryByPreCode" parameterClass="java.lang.String"
+		resultMap="dataIndexCategoryResult">
+		select id,code,label,is_delete,gmt_created,gmt_modified
+		from data_index_category
+		where code like concat(#preCode#,'____')
+		order by code asc
+	</select>
+	
+	<!-- 根据父类code获取其最大子类别code,用于添加类别 -->
+	<select id="selectMaxCodeByPreCode" parameterClass="String"
+		resultClass="String">
+		select max(code) from data_index_category
+		where code like
+		concat(#preCode#,'____')
+	</select>
+	
+	<update id="updateDataIndexCategory" parameterClass="dataIndexCategoryDO">
+		update data_index_category
+		set
+		code=#code#,
+		label=#label#,
+		gmt_modified=now()
+		where id=#id:Integer#
+	</update>
+	
+	<!-- 
+	<update id="updateIsDelete" parameterClass="java.util.HashMap" >
+		update data_index_category
+		set is_delete=#isDelete#,gmt_modified=now()
+		where id=#id#
+	</update>
+	 -->
+	
+	<select id="queryDataIndexCode" resultClass="java.lang.String">
+		select code from data_index_category limit 1000;
+	</select>
+	
+	<select id="queryDataIndexCategoryByCode" parameterClass="java.lang.String"
+		resultMap="dataIndexCategoryResult">
+		select id,code,label,is_delete,gmt_created,gmt_modified
+		from data_index_category
+		where code=#code#
+	</select>
+	
+	<delete id="deleteCategoryByCode" parameterClass="java.lang.String" >
+		delete from data_index_category where code like concat (#value#,"%")
+	</delete>
+	
+</sqlMap>

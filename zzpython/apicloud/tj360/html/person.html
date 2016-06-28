@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>个人中心</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: #00b8ff !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="closeWin()">
+				</a>
+				<div id="middle">
+					<strong id="title">个人中心</strong>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="logoutConfirm()">
+					注销
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	var manager = '';
+	apiready = function() {
+		api.addEventListener({name: 'keyback'}, function(ret, err){
+			if(manager){
+				//如果打开了下载管理，点back的时候，关闭下载管理插件
+				manager.closeManagerView();
+				manager = '';
+				api.execScript({name: 'person', frameName: 'person_frame', script: 'getDownloadNums();loadData();'});
+			}else{
+				closeWin();
+			}
+		});
+		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		api.openFrame({
+			name: 'person_frame',
+			url: 'person_frame.html',
+			bounces: false,
+			pageParam: {y:headerPos.h},
+			rect: {
+				x: 0,
+				y: headerPos.h,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	};
+	
+	function closeWin(){
+		api.execScript({frameName: 'personal_frame', script:'closePersonalCenter()'});
+		api.closeWin();
+	}
+	
+	function openDownloadManager(){
+		manager = api.require('downloadManager');		
+		manager.openManagerView({'title': '下载管理'}, onItemClick);			
+	}
+	
+	function onItemClick(ret, err){
+    	if(ret){
+    		if(ret.event && ret.event == 1){//处理返回按钮事件
+    			api.execScript({name: 'person', frameName: 'person_frame', script: 'getDownloadNums();loadData();'});
+    		}else{
+	    		var mimeType = ret.mimeType;
+	    		var savePath = ret.savePath;
+	    		var uncompressPath = ret.uncompressPath;
+	    		if(uncompressPath){
+					//uncompressPath及压缩包内部资源目录层级开发者自己定义
+	    			uncompressPath = uncompressPath + "/Index.html";
+	    			api.openWin({
+						name: 'trainingDetailLocalHTML',
+						url: 'trainingDetailLocalHTML.html',
+						pageParam: {link:uncompressPath},
+						bgColor: '#FFFFFF'
+					});
+	    			return;
+	    		}else{
+	    			manager.openDownloadedFile({
+						id:	ret.id
+					}, function(ret, err){});
+	    		}
+    		}
+    	}
+    }
+	
+	function logoutConfirm(){
+		api.confirm({
+			title: '注销确认',
+			msg: '确定要注销登录吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){
+				logout();
+			}
+		});
+	}
+	
+	function logout(){
+		api.ajax({
+	    	url: serverUrl + '/user/LoginOut?uid=' + $api.getStorage('usr').uid,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, ajaxBack);
+	}
+	
+	function ajaxBack(ret,err){
+		if(ret && ret.status){
+			$api.rmStorage('logined');
+			api.execScript({name: 'root', script: 'updateHeader()'});
+			api.toast({msg: '注销成功', location: 'middle'});
+			setTimeout(function(){				
+				api.openWin({name:'login', url:'login.html'});
+			}, 2000);
+			setTimeout(function(){api.closeWin({name:'person'});}, 3000);
+    	}else{
+    		if(ret){
+    			api.toast({msg: ret.msg, location: 'middle'});
+    		}else if(err){
+    			api.toast({msg: err.msg, location: 'middle'});
+    		}else{
+    			api.toast({msg: '数据错误', location: 'middle'});
+    		}
+    	}
+	}
+</script>
+</html>

@@ -1,0 +1,349 @@
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/css/mgr_style.css"/>
+<link href="http://img0.zz91.com/zz91/sample/css/mgr_shou.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/jquery.alert.css">
+<style>
+	.slct{
+		font-weight:bold;
+	}
+</style>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/mgr_style.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/jquery.lightbox_me.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/jquery.1.4.2-min.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/payfor.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/admin/js/jquery.alert.js"></script>
+<script type="text/javascript">
+function isOnSubmit() {
+	if (typeof(document.all.addrId) == "undefined") {
+		alert("请填写收货地址");
+		return false;
+	}
+	
+    var a = document.getElementsByName("addrId");
+	var flag= true; 
+	for (i = 0; i < a.length; i++) {
+		var spn = document.getElementById('adr_' + a[i].value);
+		if (a[i].checked) {
+			flag= false;
+			spn.className = 'slct';
+			var a1 = document.getElementById('addr1_' + a[i].value).innerHTML;
+			var a2 = document.getElementById('addr2_' + a[i].value).innerHTML;
+			document.getElementById("curAddr").innerHTML = '<dl>寄送至：' + a1 + '</dl>' + '<dl>' + a2 + '</dl>';
+		} else {
+			spn.className = '';
+		}
+	}
+	
+	if(flag){
+		alert("请填写收货地址");
+		return false;
+	}
+	
+	
+	
+	if ($("#qty_item_1").attr("value") > $!{sample.amount}) {
+		alert("卖家库存不足");
+		return false;
+	}
+	
+	if($!{sendPrice} && $!{sendPrice} != '0'){
+        var chk=$("#isCashDelivery").attr("checked");
+        var chk2=$("#isCashDelivery2").attr("checked");
+        if(chk==true || chk2==true){
+        } else{
+    		alert("请选择运费支付方式");
+            return false;
+        }
+	}
+	
+	
+	var a = document.getElementsByName("bwflag");
+	for (i = 0; i < a.length; i++) {
+		if (a[i].checked) {
+			if (a[i].value == '1') {
+				if (document.getElementById('level').value == '') {
+					alert("请填写样品级别！");
+					return false;
+				}
+
+				if (document.getElementById('color').value == '') {
+					alert("请填写样品颜色！");
+					return false;
+				}
+
+			}
+		}
+	}
+
+	document.form.submit();
+}
+
+function changeAddr() {
+	var a = document.getElementsByName("addrId");
+	for (i = 0; i < a.length; i++) {
+		var spn = document.getElementById('adr_' + a[i].value);
+		if (a[i].checked) {
+			spn.className = 'slct';
+			var a1 = document.getElementById('addr1_' + a[i].value).innerHTML;
+			var a2 = document.getElementById('addr2_' + a[i].value).innerHTML;
+			document.getElementById("curAddr").innerHTML = '<dl>寄送至：' + a1 + '</dl>' + '<dl>' + a2 + '</dl>';
+		} else {
+			spn.className = '';
+		}
+	}
+}
+
+function showCo() {
+	alert("最多添加5个收货地址");
+}	
+</script>
+
+<body>
+	<div class="content">
+		<div class="item">
+			<div class="logo"><img src="http://img0.zz91.com/zz91/sample/images/zz91.png" /></div>
+			<!--end logo-->
+			<div class="step">
+				<ul>
+					<li>
+						<div class="si"><img src="http://img0.zz91.com/zz91/sample/images/1.png" /></div>
+						<!--end si-->
+						<div class="st_">确认订单信息</div>
+					</li>
+					<li>
+						<div class="si"><img src="http://img0.zz91.com/zz91/sample/images/2.png" /></div>
+						<!--end si-->
+						<div class="st">付款到平台中间账户</div>
+					</li>
+					<li>
+						<div class="si"><img src="http://img0.zz91.com/zz91/sample/images/3.png" /></div>
+						<!--end si-->
+						<div class="st">确认收货</div>
+					</li>
+					<li>
+						<div class="si"><img src="http://img0.zz91.com/zz91/sample/images/4.png" /></div>
+						<!--end si-->
+						<div class="st">交易完成</div>
+					</li>
+				</ul>
+			</div>
+			<!--end step-->
+			<div class="cb"></div>
+		</div>
+		<!--end item-->
+		<form   id="form"  name= "form"  action="#springUrl('/mngr/createOrderPayPro.htm')" method="post" > 
+			<div class="item">
+				<div class="i-tle">
+					<div class="t-left">确认收货地址</div>
+					<div class="t-right"><a href="#springUrl('/mngr/address.htm')?flag=B"   target="_blank">管理收货地址</a></div>
+					<div class="cb"></div>
+				</div>
+				
+				#if( $!{addressList.size()}==0) 
+					<!--end i-tle-->
+					<div class="i-addr">
+						<img src="http://img0.zz91.com/zz91/sample/images/add.png" />
+						#if($!{addressList.size()}<5)
+							<a href="javascript:jIframe('addressfront.htm?flag=B ', '添加收货地址','550','350');"  style="color:#0066cc" >添加收货地址</a>　　<span>您还没有填写收货地址，请填写收货地址</span>
+						#else
+							<a href="#" onclick="showCo()">添加收货地址</a>
+						#end
+					</div>
+					<!--end i-addr-->
+				#else
+					<table align="center" border="0" cellpadding="0" cellspacing="0" width="960" style="margin:15px 0">
+						<tr style="line-height:26px">
+							<td style="font-size:14px;width:105px;">买家收货地址：</td>
+							<td>
+								<table id="addr_all" width="100%" border="0" cellpadding="0" cellspacing="0" width="960" style="margin:10px 0">
+									#foreach($obj in $addressList)
+										<tr>
+											<td style="font-size:14px"  >
+												<input type="radio"   onclick="changeAddr()"  id="addrId"   name="addrId"  #if(1 == $!{obj.isdefault})  checked="checked"  #end  value="$!{obj.id}" />
+												<span id='adr_$!{obj.id}'  #if(1 == $!{obj.isdefault}) class='slct'  #end ><span id='addr1_$!{obj.id}'> $!{obj.address} #if($!{obj.addressZip} && $!{obj.addressZip}!="")邮编：$!{obj.addressZip}#end </span> <span id='addr2_$!{obj.id}'>收货人：$!{obj.contact}  $!{obj.mobile} </span></span>
+											</td>
+											<td style="color:#999999;width:130px;"  > 
+												<a href="javascript:jIframe('addressfrntEditPro.htm?flag=B&id=$!{obj.id} ', '修改收货地址','550','350');"  style="color:#0066cc" >修改</a> &nbsp;#if(1 == $!{obj.isdefault})默认地址 #else<a href="#springUrl('/mngr/addressSetDefault.htm')?id=$!{sample.id}&addrId=$!{obj.id}"  style="color:#0066cc" >设为默认</a>  #end 
+											</td>
+										</tr>
+									#end
+								</table>
+							</td>
+							<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="line-height:36px">
+							<td></td>
+							<td>
+								<img src="http://img0.zz91.com/zz91/sample/images/add.png" />
+								#if( $!{addressList.size()} < 5 )
+									<a href="javascript:jIframe('addressfront.htm?flag=B ', '添加收货地址','550','350');"  style="color:#0066cc" >添加收货地址</a>
+								#else
+									<a href="#" style="color:#0066cc" onclick="showCo()">添加收货地址</a>
+								#end
+                			</td>
+							<td></td>
+							<td></td>
+						</tr>
+	                </table>
+				#end
+				
+			</div>
+            <!--end item-->
+			<div class="item">
+				<div class="i-tle">确认订单信息</div>
+				<!--end i-tle-->
+				<div class="i-tle_">
+					卖家公司：
+					#if($!{sellerCompany.membershipCode}=="10051000")
+						<a href="$!{address.company}/compinfo$!{sellerCompany.id}.htm"   target="_blank">$!{sellerCompany.name}</a>
+					#else
+						<a href="http://$!{sellerCompany.domainZz91}.zz91.com"  target="_blank">$!{sellerCompany.name}</a>
+					#end
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+					卖家：
+					#if($!{sellerCompany.membershipCode}=="10051000")
+						<a href="$!{address.company}/compinfo$!{sellerCompany.id}.htm"   target="_blank">$!{companyAccount.contact} #if($!{companyAccount.contact.length()}==1)    #if($!{companyAccount.sex} && $!{companyAccount.sex}=='F')女士 #else 先生 #end   #end</a>
+					#else
+						<a href="http://$!{sellerCompany.domainZz91}.zz91.com"  target="_blank">$!{companyAccount.contact} #if($!{companyAccount.contact.length()}==1)    #if($!{companyAccount.sex} && $!{companyAccount.sex}=='F')女士 #else 先生 #end   #end</a>
+					#end
+				</div>
+				<!--end i-tle_-->
+				<table align="center" border="0" cellpadding="0" cellspacing="0" id="tab">
+					<tr>
+						<td class="td" style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center;width:330px">产品</td>
+						<td class="td"  style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center">单价（元/件）</td>
+						<td class="td"  style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center">数量（件）</td>
+						<td class="td"  style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center">总重量（千克）</td>
+						<td class="td"  style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center">运费（元）</td>
+						<td  style="line-height:32px;border-bottom:1px solid #ffcd9c;text-align:center">实付款（元）</td>
+					</tr>
+					<tr style="height:113px;text-align:center">
+						<td>
+							<div>
+								<div class="b-img">
+									#if($!{picList.picAddress} && $!{picList.picAddress}!="")
+										<img src="$!{address.img3}/80x80/$!{picList.picAddress}" width="64" height="63" />
+									#else
+										<img src="$!{address.img3}/227x227/$!{dto.coverPicUrl}&width=75&height=75" width="64" height="63" />
+									#end
+								</div>
+								<!--end b-img-->
+								<div class="b-txt"> 
+									<p class="tp_"><a href="#springUrl('/sale/')$!{dto.products.id}.htm" target="_blank"  title="$!{dto.products.title}">#printTitle($!{dto.products.title} 15 "")</a></p>
+									<p class="tp">颜色：#if($!{properties.get("颜色")} && $!{properties.get("颜色")}!="")  <a style="color:#b8b8b8"  title="$!{properties.get("颜色")}" >#printTitle($!{properties.get("颜色")} 12 "")</a>    #else 其他  #end</p>
+									<p class="tp">级别：#if($!{properties.get("级别")} && $!{properties.get("级别")}!="")  <a style="color:#b8b8b8"  title="$!{properties.get("级别")}" >#printTitle($!{properties.get("级别")} 12 "")</a>    #else 其他  #end</p>
+								</div>
+								<!--end b-txt-->
+								<div class="cb"></div>
+							</div>
+							<!--end i-box-->
+						</td>
+						<td><strong id="price_item_1" >#if($!{takePrice}) $!{takePrice}  #else  0.00  #end </strong></td>
+						<td>
+							<div class="f_l add_chose">
+								<a class="reduce" onClick="setAmount.reduce('#qty_item_1')" href="javascript:void(0)"><b> - </b> </a>
+								<input type="text" style="height:22px;width: 30px ;text-align:center;"  name="qty_item_1" value="1" id="qty_item_1" onKeyUp="setAmount.modify('#qty_item_1')" class="text" />
+								<a class="add" onClick="setAmount.add('#qty_item_1')" href="javascript:void(0)"> <b>+</b>  </a>   （共$!{sample.amount}件）
+							</div>
+						</td>
+						<td>$!{sample.weight}</td>
+						<td><span id="fee_item_1"   style="color:#ff0000;font-weight:bold" >#if($!{sendPrice}) $!{sendPrice}  #else  0.00  #end</span></td>
+						<td style="color:#ff0000;font-weight:bold"><span class="total-font" id="total_points">0.00</span></td>
+					</tr>
+				</table>
+				
+				
+				<div class="i-tle"   id="sdfdiv"  style="margin-top:15px;margin-bottom:5px;border-bottom:1px solid #ff9205;">选择运费支付方式</div>
+				<div class="i-tle_"  id="sdfdiv2"    >
+                <input type="radio"   id="isCashDelivery"   name="isCashDelivery"   checked    value="0" />在线支付	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"   id="isCashDelivery2"   name="isCashDelivery"   value="1"    #if($!{sample.isCashDelivery} !=1)  disabled   #end />货到付款（买家收到货后，由买家支付运费）<font color="red">  #if($!{sample.isCashDelivery} !=1)  此样品暂不支持货到付款   #end </font>	
+                </div>	
+				
+				<div class="remark">
+					<div class="r-tle">
+						<span style="color:#ff0000;font-weight:bold">*</span> <span style="font-weight:bold">是否需要补充您的需求</span>　　<input  value="1"    type="radio" name="bwflag"  onclick="show()" /> 是　<input  value="0"    type="radio" name="bwflag"  checked="checked"   onclick="mis()" /> 否
+					</div>
+					<!--end r-tle-->
+					<div class="r-box" id="box"   style="display:none">
+						<dt>
+							<dl>
+								<span style="color:#ff0000">*</span>样品级别：<input id="level"  name="level"  type="text" maxlength="45" placeholder="" />　　　　　　　　　　　用途：<input  name="useDes"  type="text" maxlength="45"  placeholder="" />
+							</dl>
+							<dl>
+								<span style="color:#ff0000">*</span>样品颜色：<input id="color" name="color"  type="text" maxlength="45"  placeholder="" />
+							</dl>
+							<dl>
+								<div style="padding-left:6px;float:left">详细描述：</div>
+								<div style="float:left">
+									<textarea  name="memo"  placeholder=""   maxlength="125" ></textarea>
+								</div>
+								<div class="cb"></div>
+							</dl>
+						</dt>
+					</div>
+					<!--end r-box-->
+				</div>
+				<!--end item-->
+			</div>
+			<!--end remark-->
+			<div class="block"> 
+				<input type="hidden"  name="sampleId"   value="$!{sample.id}"/>
+				<input type="hidden"  name="orderTitle"   value="$!{dto.products.title}"/>
+				<div class="message">
+					<dt>
+						<dl  id="dl_01"   >实付款(#if(!$!{sendPrice} || $!{sendPrice} == '0.00')免运费#else 含运费#end)： <span style="font-size:15px;color:#ff0000"   id="total_points">0.00</span> 元</dl>
+						<dl  id="dl_02"   style="display:none">实付款(不含运费)： <span style="font-size:15px;color:#ff0000"   id="total_item">0.00</span> 元</dl>
+					<span id='curAddr'>
+						#if(${sellerAddr}!="" && ${sellerAddr})
+								<dl>寄送至：${sellerAddr.address}　#if(${sellerAddr.addressZip} && ${sellerAddr.addressZip}!="")邮编：${sellerAddr.addressZip}#end</dl>
+								<dl>收货人：${sellerAddr.contact} ${sellerAddr.mobile}</dl>
+						#end
+					</span>
+					</dt>
+				</div>
+				<script type="text/javascript">
+    			$("#isCashDelivery2 ").click(function () {
+            		var s = $(":input[id='isCashDelivery2'][checked]").val();
+            		if (s == 1) {
+            			$("#dl_01").hide();
+            			$("#dl_02").show();
+            		} else {
+            			$("#dl_02").hide();
+            			$("#dl_01").show();
+            		}
+            	});
+				
+    			$("#isCashDelivery ").click(function () {
+            		var s = $(":input[id='isCashDelivery'][checked]").val();
+            		if (s == 1) {
+            			$("#dl_01").hide();
+            			$("#dl_02").show();
+            		} else {
+            			$("#dl_02").hide();
+            			$("#dl_01").show();
+            		}
+            	});
+				
+				if(!$!{sendPrice} ||  $!{sendPrice} == '0'){
+				$("#sdfdiv").hide();
+				$("#sdfdiv2").hide();
+				}
+			</script>
+				<!--end message-->
+			</div>
+			<!--end block-->
+			<div style="height:35px;margin-top: 5px;">
+				<a onclick="isOnSubmit();" class="order">提交订单</a>
+			</div>
+			<!--end order-->
+			<div class="bz">提示：提交订单之后，订单信息将不能再进行修改</div>
+			<!--end bz-->
+			<input type="hidden" name="orderSeq" value="$!{orderSeq}" />
+			<input type="hidden" name="billId" value="$!{billId}" />
+		</form>
+		<!--end b-suggest-->
+		<!--end b-complay-->
+		<!--end box-->
+	</div>
+	<!--end content-->
+</body>

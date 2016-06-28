@@ -1,0 +1,168 @@
+<div class="body">
+	
+	#parse("/common/newsearch.vm")
+	
+	#parse("/common/menu.vm")
+	
+    <div class="xiazainav">
+		当前位置：
+		<a href="$!{address.xiazai}" target="_blank">行情研究院中心</a>
+		#if($label) > $label #end
+	</div>
+    <div class="mesearch">
+		#parse("/common/total.vm")
+        <form id="form1" name="form1" method="post" action="">
+            <div class="xzsearch">
+                <div class="searchput">
+                    <input name="kw" type="text" id="xzserchname" value="行情研究院站内搜索" />
+                </div>
+                <div class="searchbar">
+                    <input type="image" name="imageField" id="imageField" src="$!{address.img}/zz91/xiazai/images/mesearche.jpg" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="clear:both"></div>
+    <div class="listmain">
+        <div class="listleft">
+            <div class="lbox">
+                <h3>最新文档</h3>
+                <ul>
+					#foreach($obj in $newestList)
+						<li><a href="#springUrl('/detail')$!{obj.id}.htm" target="_blank">$!{obj.title}</a></li>
+					#end
+                </ul>
+            </div>
+            <div class="lbox">
+                <h3>热门文档</h3>
+                <ul>
+					#foreach($obj in $hotList)
+						<li><a href="#springUrl('/detail')$!{obj.id}.htm" target="_blank">$!{obj.title}</a></li>
+					#end
+
+                </ul>
+            </div>
+            <div class="lbox bg33">
+                <h3>最新行情报价</h3>
+                <ul>
+					#foreach($obj in $priceList)
+						<li>
+							<a href="$!{address.price}/priceDetails_$!{obj.id}.htm" target="_blank">$!{obj.title}</a>
+						</li>
+					#end
+
+                </ul>
+                <hr size="1" color="#CCCCCC" />
+                <h3>最新供求</h3>
+                <ul>
+					#foreach($obj in $productList)
+						<li>
+							<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} "" "")$!{obj.products.title}</a>
+						</li>
+					#end
+
+                </ul>
+                <hr size="1" color="#CCCCCC" />
+                <h3>省物流、看货近，一键寻找商机</h3>
+                <ul class="wlbox">
+                    <li><a href="http://map.zz91.com/guangdong.htm" target="_blank" title="广东废料网">广东废料网</a></li>
+					<li><a href="http://map.zz91.com/zhejiang.htm" target="_blank" title="浙江废料网">浙江废料网</a></li>
+					<li><a href="http://map.zz91.com/shandong.htm" target="_blank" title="山东废料网">山东废料网</a></li>
+					<li><a href="http://map.zz91.com/jiangsu.htm" target="_blank" title="江苏废料网">江苏废料网</a></li>
+					<li><a href="http://map.zz91.com/beijing.htm" target="_blank" title="北京废料网">北京废料网</a></li>
+					<li><a href="http://map.zz91.com/shanghai.htm" target="_blank" title="上海废料网">上海废料网</a></li>
+					<li><a href="http://map.zz91.com/tianjin.htm" target="_blank" title="天津废料网">天津废料网</a></li>
+					<li><a href="http://map.zz91.com/hebei.htm" target="_blank" title="河北废料网">河北废料网</a></li>
+					<li><a href="http://map.zz91.com/henan.htm" target="_blank" title="河南废料网">河南废料网</a></li>
+					<li><a href="http://map.zz91.com/hunan.htm" target="_blank" title="湖南废料网">湖南废料网</a></li>
+                </ul>
+                <div style="clear:both"></div>
+                <hr size="1" color="#CCCCCC" />
+                <div class="bbox">
+                    <div style="margin-bottom:10px;">
+                        <ul>
+                            <li class="bbson" value="1" style="width:110px;">24小时热贴</li>
+                            <li value="2" style="width:110px;">历史牛帖</li>
+                        </ul>
+                        <div style="clear:both"></div>
+                    </div>
+                    <div id="bbs1" class="bbs">
+						#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=4" "" "" "")
+    						#foreach($post in $!{postDailylist})
+    							<div class="list">
+    								<a href="$!{address.huzhu}/viewReply$!{post.id}.htm" target="_blank" title="$!{post.title}">
+    									$!{post.title}
+    								</a>
+    							</div>
+    						#end
+        				#end
+
+                    </div>
+                    <div id="bbs2" class="bbs" style="display:none">
+						#cacheFragment("$!{address.fragment}/huzhu/mostPost.htm?size=4" "" "" "")
+    						#foreach($all in $!{allBbsPostList})
+    							<div class="list">
+    								<a href="$!{address.huzhu}/viewReply$!{all.id}.htm" target="_blank" title="$!{all.title}">
+    									#printTitle($!{all.title} 23 "")
+    								</a>
+    							</div>
+        					#end
+    					#end
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="listcontent">
+			#foreach($obj in $page.records)
+                <div class="list">
+                    <div class="listimg">
+                        <a href="#springUrl('/detail')$!{obj.id}.htm" target="_blank">
+                            <img src="$!{address.thumb}$!{address.resource}$!{obj.picThumb}&width=117" width="117" height="97" />
+                        </a>
+                        <br />
+                        <a href="#springUrl('/detail')$!{obj.id}.htm" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 14 "")</a>
+                        <div style="clear:both"></div>
+                    </div>
+                    <div class="listcontent">
+                        <h3>
+                            <a href="#springUrl('/detail')$!{obj.id}.htm" target="_blank">$!{obj.title}</a>
+                        </h3>
+                        <div class="content">
+							$!{obj.detail}
+						</div>
+						<ul>
+							<li>时间：#printFragmentDate("yyyy-MM-dd" $!{obj.gmtCreated})</li>
+							<li>类型：$!{obj.type}</li>
+							<li>大小：$!{obj.size}KB</li>
+						</ul>
+                    </div>
+                    <div style="clear:both"></div>
+                </div>
+			#end
+			<div style="text-align:center">
+				#if($code)
+					#set($fix="-c"+$code)
+				#elseif($titleEncode)
+					#set($fix="--"+$titleEncode)
+				#end
+				#staticPageNav($page "#springUrl('/list')" $fix "")
+			</div>
+			
+        </div>
+    </div>
+    <div style="clear:both"></div>
+	<div style="height:190px;">
+		#if($label=="金属")
+			<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废金属&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=707"></script>
+		#elseif($label=="塑料")
+			<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废塑料&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=708"></script>
+		#elseif($label=="早参")
+			<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=704"></script>
+		#elseif($label=="晚报")
+			<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=705"></script>
+		#elseif($label=="周报")
+			<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&showborder=1&showposition=1&m=6&padding=8&w=970&num=6&adposition=706"></script>		
+		#end
+	</div>
+</div>
+<div style="clear:both"></div>

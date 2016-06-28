@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneCsBs">
+	<typeAlias alias="phoneCsBsDO" type="com.ast.ast1949.domain.phone.PhoneCsBs"/>
+	<resultMap id="phoneCsBsResult" class="phoneCsBsDO">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="targetId" column="target_id"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		target_id,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<insert id="insert" parameterClass="phoneCsBsDO">
+		INSERT INTO phone_cs_bs
+		(
+		company_id,
+		target_id,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#companyId#,
+		#targetId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer" resultMap="phoneCsBsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from phone_cs_bs
+		where company_id = #value#
+		order by id desc
+		limit 1
+	</select>
+	
+</sqlMap>

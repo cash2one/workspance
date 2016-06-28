@@ -1,0 +1,160 @@
+#set( $layout = "/layout/default.vm" )
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">图片修改</li>
+        </ul>
+		<p>
+			<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">返回供求信息列表</a>
+	        <a href="#springUrl('/myproducts/office_post_edit.htm?productsId=')$!{productsId}">修改供求</a>
+	    </p>
+		<div class="alert">
+			<p>
+				注：审核不通过的图片，将无法正常显示。(图片审核不通过并不影响供求信息的正常显示。)
+			</p>
+		</div>
+		<input type="hidden" value="$!{limitCount}" name="limitCount" id="limitCount" >
+		<div class="well" style="margin-top:8px">
+			<div class="well-body">
+    			#if($!{canUploadStatus}==true)
+    				<input id="uploadBtn" class="btn btn-primary" type="button" value="上传更多图片" />
+    			#else
+    				<div class="alert"> 
+    					<strong>提示：</strong>
+						您已成功上传$!{listsize}张图片；目前系统允许一条信息只能上传5张图片
+##    					#if($!{sessionUser.membershipCode}=="10051000")
+##    						<a href="$!{address.www}/service/newzst/apply.asp" target="_blank" >升级成为高级会员可以上传更多图片</a>
+##   					    #end
+   				</div>
+    			#end	
+    			<div class="control-group clearfix">
+    				#if($!{piclist.size()}==0)
+    					<div class="upload-wrap" style="width:100px">
+    						<img src="$!{address.images}/global/noimage.gif" class="preview" name="imag$!{pic.id}" data-size="100, 100" />
+    						<p title="$!{pic.name}">您还没有上传图片</p>
+    					</div>
+    				#end
+    				#foreach($pic in $!piclist)
+    					<div style="margin: 8px 10px 0;text-align: left;" >##class="upload-wrap" style="width:100px"
+							<a href="$!{address.resource}/$!{pic.picAddress}" target="_blank">
+								<img src="$!{address.thumb}$!{address.resource}/$!{pic.picAddress}&width=100" class="preview" name="imag$!{pic.id}" data-size="100, 100" id="imag$!{pic.id}" />
+							</a>
+    						##<p title="$!{pic.name}">$!{pic.name}</p>
+    						<p>状态：
+								#if($!{pic.checkStatus}==0)
+									<span class="grey">【未审核】</span>
+								#elseif($!{pic.checkStatus}==1)
+									<span class="green">
+										【通过】
+										#if($!{pic.isDefault}==1)
+											【置顶】
+										#end
+									</span>
+								#elseif($!{pic.checkStatus}==2)
+									<span class="red">【<b>退回</b>】<br/>原因:$!{pic.unpassReason}</span>
+								#end
+							</p>
+							## 没置顶但是通过的 有置顶
+							#if($!{pic.checkStatus}==1&&$!{pic.isDefault}!=1)
+								<a href="#springUrl('/myproducts/stickiePic.htm?ids=')$!{pic.id}&productsId=$!{pic.productId}" onclick="return confirm('你确定要置顶这张图片吗？')" class="btn btn-small">置顶</a>
+							#end
+							<a href="#springUrl('/myproducts/deletePic.htm?ids=')$!{pic.id}&productsId=$!{pic.productId}" onclick="return confirm('你确定要删除这张图片吗？')" class="btn btn-small">删除</a>
+							##有两张图片的普会(过期高会)、置顶的有修改
+##							#if($!{piclist.size()}>1&&$!{sessionUser.membershipCode}=="10051000")
+##								#if($!{pic.isDefault}==1)
+##									<a onclick="editPic($!{pic.id})" class="btn btn-small">修改</a>
+##								#end
+##							#else
+##								<a onclick="editPic($!{pic.id})" class="btn btn-small">修改</a>
+##							#end
+	                        <a onclick="editPic($!{pic.id})" class="btn btn-small">修改</a>
+						</div>
+					#end
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+## 上传图片弹框
+var upload = new Asto.util.PopupBox({
+	url:"#springUrl('/sys/upload/product.htm?productId=')$!{productsId}",
+	callbackFn:function(success, data){
+		//关闭窗口
+		//保存图片信息
+		//成功后刷新页面
+		upload.close();
+		window.location.reload();
+	},
+	title:"上传产品图片",
+	width:450,
+	height:250,
+	modal:true
+});
+	
+jQuery(function(){
+	myrc.menu(2, 2);
+	myrc.imgSize();
+	
+	##jQuery("#uploadBtn").click(function(){
+	##	upload.show("#springUrl('/sys/upload/product.htm?productId=')$!{productsId}");
+	##});
+	jQuery("#uploadBtn").click(function(){
+		
+			Asto.util.Callback.setSubmitCallback(function (success, data) {
+			    var ids=data.picId
+				var idArr=ids.split(",");
+				var num=Number(jQuery("#limitCount").val())-Number(idArr.length-1);
+				jQuery("#limitCount").val(num);
+				jQuery.ajax({
+					url:"#springUrl('/myproducts/countScoreAfterAddPic.htm')",
+					data:{"productsId":$!{productsId},"score":$!{score}}
+				});
+				parent.closeoverlay();
+				window.location.reload();
+			});
+			var urls="$!{address.myrc}/photoabum/productsUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=3&productsId=$!{productsId}&limitCount=";
+			var url=urls+jQuery("#limitCount").val();
+			//将弹框关闭等字显示出来
+			parent.overtitle("上传图片");
+			openoverlay(url,'上传图片',700,500,0);
+	});
+	var previewImg=new Asto.util.PopupBox({
+		url:"#",
+		width:850,
+		height:450,
+		modal:true,
+		title:"大图预览"
+	});
+	
+	jQuery(".upload-wrap img").click(function(e){
+		previewImg.show(jQuery(this).attr("src"));
+	});
+	
+});
+
+// 编辑图片
+function editPic(id){
+	if(confirm('你确定要修改这张图片吗？')){
+			Asto.util.Callback.setSubmitCallback(function (success, data) {
+			    var ids=data.picId
+				var idArr=ids.split(",");
+				var num=Number(jQuery("#limitCount").val())-Number(idArr.length-1);
+				jQuery("#limitCount").val(num);
+				parent.closeoverlay();
+				window.location.reload();
+			});
+			var urls="$!{address.myrc}/photoabum/productsUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=3&editFlag=1&productsId=$!{productsId}&limitCount=1&id=";
+			var url=urls+id;
+			//将弹框关闭等字显示出来
+			parent.overtitle("上传图片");
+			openoverlay(url,'上传图片',700,500,0);
+	}
+}
+</script>

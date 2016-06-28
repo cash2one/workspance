@@ -1,0 +1,94 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		Ext.create("Ext.form.FieldSet",{
+			title:"选项",
+			layout:"hbox",
+			defaults: {
+				labelWidth: 60, 
+				align: 'stretch'
+            },
+			renderTo :"toolbar",
+			items:[
+        		Ext.create("Ext.form.field.Date",{
+        			name:"start",
+        			format:"Y-m-d H:i:s",
+        			emptyText:"请选择开始时间",
+        			value:"$!date.format('yyyy-MM-dd HH:mm:ss',$!{start})"
+        		}),
+				Ext.create("Ext.form.field.Date",{
+        			name:"end",
+					format:"Y-m-d H:i:s",
+        			emptyText:"请选择结束时间",
+        			value:"$!date.format('yyyy-MM-dd HH:mm:ss',$!{end})",
+					style:{"margin-left":"5px"}
+        		}),
+				Ext.create("Ext.button.Button",{
+        			name:"btn",
+        			text:"提交",
+					style:{"margin-left":"5px"},
+					handler:function(btn){
+						Ext.getDom("form1").submit();
+					}
+        		})
+			]
+		});
+		
+	});
+</script>
+<form action="#springUrl('/zz91/analysis/analysiscsrenewal/dayContact.htm')" method="post" id="form1">
+<div style="margin:10px 50px;font-size:15px;" id="toolbar">
+	
+</div>
+</form>
+
+<div style="margin:10px 50px;font-size:15px;">
+	每日安排情况：
+	<table border="1" style="background-color:#333333;">
+		<tr>
+            <td bgcolor="#ffffff">账户</td>
+			#foreach($day in $!{dayList})
+				<td bgcolor="#ffffff">$!{day}</td>
+			#end
+		</tr>
+		#foreach($!{cs} in $!{expiredCount.keySet()})
+    		#if($!{cs}!='total')
+        		<tr>
+        			<td bgcolor="#ffffff">
+        				#if($!{nameMap} &&$!{nameMap.get($!cs)})
+        					$!{nameMap.get($!cs)}
+        				#else
+        					$!{csName}
+        				#end
+        			</td>
+        			#foreach($day in $!{dayList})
+        				<td bgcolor="#ffffff">
+        					#if($!{expiredCount.get($!cs).get($!day)})
+								<a href="#springUrl('/zz91/crm/cs/index.htm')?cs=$!{cs}&nextVisitPhoneFrom=$!{day}&nextVisitPhoneTo=$!{day}" target="_blank">
+        						$!{expiredCount.get($!cs).get($!day)}
+                                </a>
+        					#else
+        						0
+        					#end
+        				</td>
+        			#end
+        		</tr>
+    		#end
+		#end
+		<tr>
+			<td bgcolor="#ffffff">
+				总计
+			</td>
+			#foreach($day in $!{dayList})
+				<td bgcolor="#ffffff">
+					#if($!{expiredCount.get("total").get($!day)})
+						$!{expiredCount.get("total").get($!day)}
+					#else
+						0
+					#end
+				</td>
+			#end
+		</tr>
+    </table>
+</div>

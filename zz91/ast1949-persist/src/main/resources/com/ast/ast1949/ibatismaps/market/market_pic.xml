@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="marketPic">
+
+	<typeAlias alias="marketPic" type="com.ast.ast1949.domain.market.MarketPic" />
+	<resultMap id="marketPicResult" class="marketPic">
+		<result property="id" column="id" />
+		<result property="marketId" column="market_id" />
+		<result property="picAddress" column="pic_address" />
+		<result property="picSource" column="pic_source" />
+		<result property="isDefault" column="is_default" />
+		<result property="name" column="name" />
+		<result property="checkStatus" column="check_status" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="defaultCoumn">
+			id,
+			market_id,
+			pic_address,
+			pic_source,
+			is_default,
+			name,
+		    check_status,
+			gmt_created,
+			gmt_modified
+	</sql>
+	<!--添加市场图片-->
+	<insert id="insert" parameterClass="marketPic">
+		insert into `market_pic`
+		(
+		`market_id`,
+		`pic_address`,
+		`pic_source`,
+		`is_default`,
+		`name`,
+		`check_status`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#marketId#,
+		#picAddress#,
+		#picSource#,
+		#isDefault#,
+		#name#,
+		#checkStatus#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<select id="queryPicByMarketId" parameterClass="java.lang.Integer" resultMap="marketPicResult">
+		select
+		<include refid="marketPic.defaultCoumn"/>
+		from market_pic
+		where market_id=#marketId# order by is_default desc
+	</select>
+	
+	<delete id="delMarketPicById" parameterClass="java.util.Map">
+		update market_pic set check_status=#checkStatus#,gmt_modified=now() where id=#id#
+	</delete>
+	
+	<update id="updateMarketDefaultPic" parameterClass="java.util.Map">
+		update market_pic set is_default=#isDefault# where  market_id=#marketId#
+
+	</update>
+	
+	<update id="updateMarketDefaultPicById" parameterClass="java.util.Map">
+		update market_pic set is_default=#isDefault# where id=#id#
+	</update>
+	
+	<update id="updateMarketIdById" parameterClass="java.util.Map">
+		update market_pic set market_id=#marketId# where id=#id#
+	</update>
+	
+	<select id="queryPicInfoByMarketId" parameterClass="java.lang.Integer" resultMap="marketPicResult">
+		select 
+		<include refid="marketPic.defaultCoumn"/>
+		from market_pic
+		where market_id=#marketId#
+	    order by id asc
+		limit 1
+	</select>
+	
+	<update id="updateDefaultById" parameterClass="java.util.Map">
+		update market_pic set is_default=#isDefault#,gmt_modified=now() where id=#id#
+	</update>
+</sqlMap>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adBooking">
+	<typeAlias alias="booking" type="com.zz91.ads.board.domain.ad.AdBooking"/>
+	
+	<resultMap id="bookingResult" class="booking">
+		<result property="id" column="id" />
+		<result property="positionId" column="position_id" />
+		<result property="crmId" column="crm_id" />
+		<result property="account" column="account" />
+		<result property="keywords" column="keywords" />
+		<result property="gmtBooking" column="gmt_booking" />
+		<result property="remark" column="remark" />
+		<result property="email" column="email" />
+	</resultMap>
+	
+	<sql id="bookingResultField">
+		ab.id,ab.position_id,ab.crm_id,ab.account,ab.keywords,ab.gmt_booking,ab.remark,ab.email
+	</sql>
+	
+	<sql id="queryBookingByConditions">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="booking.positionId">
+				ab.position_id = #booking.positionId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="booking.keywords">
+				ab.keywords=#booking.keywords#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="booking.gmtBooking">
+				ab.gmt_booking>=#booking.gmtBooking#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryBooking" parameterClass="java.util.HashMap" resultMap="bookingResult">
+		SELECT 
+			<include refid="bookingResultField" />
+		FROM ad_booking ab
+		<include refid="queryBookingByConditions" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryBookingCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM ad_booking ab
+		<include refid="queryBookingByConditions" />
+	</select>
+	
+	<insert id="insertBooking" parameterClass="booking" >
+		insert into ad_booking(position_id,crm_id,account,keywords,email,gmt_booking,remark,gmt_created,gmt_modified)
+		values(#positionId#,#crmId#,#account#,#keywords#,#email#,#gmtBooking#,#remark#,now(),now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteBooking" parameterClass="java.lang.Integer">
+		delete from ad_booking where id=#value#
+	</delete>
+	
+	<select id="countExistsBooking" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from ad_booking
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="positionId">
+				position_id >= #positionId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="gmtBooking">
+				gmt_booking >= #gmtBooking#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="keywords">
+				keywords=#keywords#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

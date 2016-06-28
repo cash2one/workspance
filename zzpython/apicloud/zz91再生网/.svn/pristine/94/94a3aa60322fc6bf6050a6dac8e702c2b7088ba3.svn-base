@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+		<link rel="stylesheet" href="../../css/comm/win_blank.css" type="text/css">
+		<style>
+			.trade_type {
+				width: 25%;
+				padding-left: 0px;
+			}
+			.fenxian{
+				padding-top: 10px;
+				font-size: 22px;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<header>
+			<div id="cloud" class="topbar  activebar">
+				<div tapmode="hover-category" class="category" onclick="api.closeWin();">
+					<i></i>
+				</div>
+				<div class="select">
+					<span class="select-ipt" onclick="openSearch()">点此输入搜索关键字</span>
+					<i></i>
+				</div>
+				<div tapmode="hover-category" class="infonumber font-wen"></div>
+				<div tapmode="hover-category" class="infonumber my-gout">
+					<i class="gout-img"></i>
+					<p>
+						发布
+					</p>
+				</div>
+				<div tapmode="hover-category" class="infonumber shaxuan">
+					<i class="shaxuan-mig"></i>
+					<p>
+						筛选
+					</p>
+				</div>
+				<div tapmode="hover-category" class="infonumber fenxian">
+					<i class="aui-iconfont aui-icon-share" style="font-size: 22px;"></i>
+				</div>
+			</div>
+			<ul class="s_tab clear">
+				<li tapmode="index-nav-li" class="trade_type" style="padding-left:0px;background-color:#ebebeb" tradetype="0">
+					全部
+				</li>
+				<li tapmode="index-nav-li" class="trade_type" style="padding-left:0px" tradetype="1">
+					供应
+				</li>
+				<li tapmode="index-nav-li" class="trade_type" style="padding-left:0px" tradetype="2">
+					求购
+				</li>
+				<li id="choice" tapmode="index-nav-li">
+					<i class="s_tab_img1 s_tab_img2"></i>筛选
+				</li>
+			</ul>
+		</header>
+		<div class="main"></div>
+		
+		<script type="text/javascript" src="../../script/api.js"></script>
+		<script type="text/javascript" src="../../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../../script/common.js"></script>
+		<script type="text/javascript" src="../../script/laytpl.js"></script>
+		<script type="text/javascript" src="../../script/aui-alert.js" ></script>
+		<script>
+			var tocompany_id;
+			//设备back键
+			var keybackflag="1";
+			function funcGoto(tocompany_id) {
+				tocompany_id = tocompany_id;
+				$("#cloud").on("click", ".font-wen", function() {
+					var pageParam = {
+						wintitle : "回复信息",
+						type : "hf-form",
+						tocompany_id : tocompany_id,
+						bbs_post_id : api.pageParam.infoid
+					};
+					if (UserInfo.has_login()) {
+						openWin("hf-form", "../huzhu/hf-form.html", pageParam);
+					} else {
+						pageParam.nextUrl = "widget://html/huzhu/hf-form.html";
+						pageParam.winName = "hf-form";
+						openWin("frm-login", "../myrc/frm-login.html", pageParam);
+					}
+				})
+			}
+			//返回标志重置
+			function keybackFun(flag){
+				keybackflag=flag;
+			}
+			//分享
+			function shareopen(){
+				var html = "";
+					html += '<div class="sharebox"><ul><li><img src="../image/share/share_to_icon_qq.png"><br />QQ好友</li><li><img src="../image/share/share_to_icon_wx.png"><br />微信好友</li><li><img src="../image/share/share_to_icon_wxq.png"><br />朋友圈</li><li><img src="../image/share/share_to_icon_weibo.png"><br />新浪微博</li></div>'
+					$aui.alert({
+						title : '',
+						content : html,
+						buttons : ['取消'],
+						radius : 10,
+						titleColor : '#333',
+						contColor : '#333',
+						btnColor : ''
+					}, function(ret) {
+						//处理回调函数
+						if (ret) {
+							if (ret == 0) {
+								
+							}
+						}
+					});
+			}
+			function openSearch() {
+				api.openWin({
+					name : 'search',
+					pageParam : api.pageParam,
+					url : 'widget://html/comm/search.html',
+					bounces : false,
+					delay : 200
+				});
+			}
+
+			apiready = function() {
+				var systemType = api.systemType;
+				if (systemType != "ios") {
+					$("header").css("padding-top", "0px")
+				}
+				var type = api.pageParam.type;
+				if (type == "trade-list") {
+					$(".my-gout").show();
+					$(".s_tab").show();
+				}
+				if (type == "infomation-heart") {
+					$(".fenxian").show();
+				}
+				
+				var url = api.pageParam.url;
+				if (url) {
+					if (url == "../price/price.html") {
+						$(".my-gout").css("display", "none");
+					}
+					
+					loadcommonurl(url, api.pageParam);
+				}
+				//判断中间字体位子(当右边文字过多时)
+				var wenWight = $(".font-wen").width()
+				if (wenWight > 50) {
+					$(".select").css("padding-left", wenWight - 50 + "px")
+				}
+				$("#choice").on("click", function() {
+					api.execScript({
+						frameName : 'trade-list_',
+						script : "choicechick()"
+					});
+				})
+				$(".fenxian").on("click", function() {
+					shareopen();
+				});
+				//供应、求购筛选
+				$(".trade_type").on("click", function() {
+					tradetype = $(this).attr("tradetype");
+					$(".trade_type").css("background-color", "#fff");
+					$(this).css("background-color", "#ebebeb");
+					api.execScript({
+						frameName : 'trade-list_',
+						script : "changsearche('" + tradetype + "')"
+					});
+				});
+				//互助社区发布信息
+				$(".my-gout").on("click", function() {
+					var pageParam = {
+						wintitle : "互助社区发布",
+						type : "issue"
+					};
+					if (UserInfo.has_login()) {
+						openWin("issue", "../huzhu/issue.html", pageParam);
+					} else {
+						pageParam.nextUrl = "widget://html/huzhu/issue.html";
+						pageParam.winName = "issue";
+						openWin("frm-login", "../myrc/frm-login.html", pageParam);
+					}
+				})
+				//发布需求
+				$("#cloud").on("click", ".font-wen", function() {
+					if (type == "help-list") {
+						var pageParam = {
+							wintitle : "发布需求",
+							type : "need-out"
+						};
+						if (UserInfo.has_login()) {
+							openWin("need-out", "../trade/need-out.html", pageParam);
+						} else {
+							pageParam.nextUrl = "widget://trade/need-out.html";
+							pageParam.winName = "need-out";
+							openWin("frm-login", "../myrc/frm-login.html", pageParam);
+						}
+					}
+					//供求筛选
+					if (type == "choice") {
+						api.execScript({
+							frameName : 'choice_',
+							script : "selectbutton()"
+						});
+					}
+				});
+				api.addEventListener({
+				    name:'keyback'
+				},function(ret,err){
+				    //operation
+				    if (type == "huifu") {
+						api.execScript({
+							frameName : 'huifu_',
+							script : "closepicture()"
+						});
+						if (keybackflag=="0"){
+							return false;
+						}else{
+							
+						}
+					}
+					api.closeWin();
+				});
+			}
+			function cityList(cityAll) {
+				if (cityAll.length == 0) {
+					$(".shaxuan").css("display", "none");
+				}
+				$(".shaxuan").on("click", function() {
+					api.openFrame({
+						name : 'city-list',
+						opaque : false,
+						bounces : false,
+						bgColor : 'rgba(0,0,0,0.6)',
+						url : '../price/city-list.html',
+						pageParam : {
+							citi_list : cityAll
+						},
+						rect : {
+							x : 0,
+							y : 0,
+							w : 'auto',
+							h : 'auto'
+						}
+					});
+				})
+			}
+
+			function hidrightbutton() {
+				$(".my-gout").css("display", "none");
+			}
+		</script>
+	</body>
+</html>

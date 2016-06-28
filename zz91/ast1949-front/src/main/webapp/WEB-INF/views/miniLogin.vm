@@ -1,0 +1,136 @@
+#set($layout="/layout/innerPageLayout.vm")
+#parse("/common/importJqueryUi.vm")
+#parse("/common/importValidator.vm")
+<div class='minilogin' id='miniLgtabs'>
+	    <ul class="loginul">
+           <li><a href="#tabs-1" >马上登录</a></li>
+           <li><a href="#tabs-2" >立即注册</a></li>
+        </ul>
+<div class='isvip' id='tabs-1'>
+	#if($!{error}!="1")
+   <div class="ui-state-highlight ui-corner-all" style=" padding: 5px;"> 
+		<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+		<strong>注意:</strong> 已有ZZ91账号？请填写您的登录信息，登录成功后继续操作！</p>
+	</div>
+	#end
+   
+   #if($!{error}=="1")
+    		<!-- 错误信息 -->
+	<div class="ui-state-error ui-corner-all" style="margin-top: 5px;padding: 5px;"> 
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+		<strong>提示:</strong> $!{errorTxt}</p>
+	</div>
+   #end
+   <form id="form1" method="post" action="#springUrl('/doMiniLogin.htm')">
+		<div class='detailsinput'><div><label for='account' class='leftarea'>用户名：</label><input type='text' id='loginAccount' name='account' value='$!{account}' class='validate[required] rightipt'></div></div>
+		<div class='detailsinput'><div><label for='miminpwd' class='leftarea'>密码：</label><input type='password' id='loginPassword' name='password' class='validate[required] rightipt'/></div></div>
+        <div class='detailsinput'>
+			<input type='submit' value='登录' class='minisubsyle'/>
+			<a href="#springUrl('/user/passwordReminder.htm')" target="_blank" class="miniforget">忘记密码？</a>
+		</div>
+		<div class='detailsinput'>
+			<a href="$!{address.front}/accessToQQLogin.htm" target="_blank">
+				<img src="$!{address.img}/zz91/china/images/qq_login_common.gif" width="124" height="24" alt="使用QQ号码登录" />
+			</a>
+		</div>
+		<input type="hidden" value="$!{destUrl}" name="destUrl"/>
+	</form>
+</div>
+<div id='tabs-2'>
+	#if($!{error}!="2" && $!{error}!="3")
+	<div class="ui-state-highlight ui-corner-all" style=" padding: 5px;"> 
+		<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+		<strong>注意:</strong> 还没有账号？请填写以下注册信息，注册成功后继续操作！已有ZZ91账号？</p>
+	</div>
+	#end
+	
+	#if($!{error}=="2")
+    		<!-- 错误信息 -->
+	<div class="ui-state-error ui-corner-all" style="padding: 5px;"> 
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+		<strong>提示:</strong> 账号没有注册成功，请确认您的信息是否填写完整！</p>
+	</div>
+   #end
+   #if($!{error}=="3")
+    		<!-- 错误信息 -->
+	<div class="ui-state-error ui-corner-all" style="padding: 5px;"> 
+		<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+		<strong>提示:</strong> 验证码填写错误！</p>
+	</div>
+   #end
+	<form id="form2" method="post" action="#springUrl('/doMiniRegister.htm')">
+		<div class='detailsinput'>
+			<div class='ftl'><label for='newaccount' class='leftarea'>用户名：</label><input type='text' value="$!{companyAccount.account}" name='account' id='account' class='validate[required,custom[vaccount],minSize[6],maxSize[32],ajax[ajaxAccount]] rightipt'/></div>
+			<div class='righttips'>用户名只能包含英文字母、数字和下划线</div>
+		</div>
+		<div class='detailsinput'>
+			<div class='ftl'><label for='password' class='leftarea'>密码：</label><input type='password' id='password' name='password' class='validate[required,minSize[6],maxSize[16]] rightipt'/></div>
+			<div class='righttips'>密码至少6位，只能包含英文字母、数字和下划线</div>
+		</div>
+		<div class='detailsinput'>
+			<div class='ftl'><label for='passwordConfirm' class='leftarea'>确认密码：</label><input type='password' id='passwordConfirm' name='passwordConfirm' class='validate[required,equals[password]] rightipt'/></div>
+			<div class='righttips'>再输一次</div>
+		</div>
+		<div class='detailsinput'><label for='companyName' class='leftarea'>公司名称：</label><input type='text' id='companyName' name='name' value="$!{company.name}" class='validate[required, maxSize[50]] rightiptcpy'/></div>
+		<div class='detailsinput'>
+			<div class='ftl'><label for='contact' class='leftarea'>联系人：</label><input type='text' id='contact' name="contact" value="$!{companyAccount.contact}" class='validate[required] rightipt'/></div>
+			<div>性别:
+				#if($!{companyAccount.sex}=="1")
+				<input type='radio' name='sex' class='radiohk' value="0"/>男<input type='radio' name='sex' class='radiohk' value="1" checked='checked' />女
+				#else
+					<input type='radio' name='sex' checked='checked' class='radiohk' value="0"/>男<input type='radio' name='sex' class='radiohk' value="1"/>女
+				#end
+			</div>
+		</div>
+
+		<div class='detailsinput'>
+			<div><label for='email' class='leftarea'>邮箱：</label><input type='text' id='email' name='email' value="$!{companyAccount.email}" class='validate[required,custom[email],maxSize[50],ajax[ajaxEmail]] rightipt'/></div>
+			</div>
+		<div class='detailsinput'>
+			<div><label for='mobile'  class='leftarea'>手机：</label><input type='text' id='mobile' name='mobile' value="$!{companyAccount.mobile}" class='validate[required,custom[mobile],ajax[ajaxMobile]] rightipt'/></div>
+		</div>
+		<div class='detailsinput'>
+			<div>
+				<label for='mobile'  class='leftarea'>验证码：</label>
+				<input name="verifyCode" id="verifyCode" class='rightipt'  style="width:50px;"  type="text" size="10" />
+				<img src='$!{address.img}/front/images/global/loading.gif' align="absmiddle" id='codeImg' style="cursor:pointer" width="100"  title="看不清楚?点击图刷新验证码！"/>
+			</div>
+		</div>
+		<div><input type='submit' value='注册' class='minisubsyle'/></div>
+			 <input type="hidden" value="$!{destUrl}" name="destUrl"/>
+			 <input type="hidden" value="$!{regfrom}" name="regfrom"/>
+##			<input name="verifyCodeKey" id="verifyCodeKey" type="hidden" />
+    </form>
+</div>
+</div>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		jQuery(".minisubsyle").button();
+		
+		jQuery("#form1").validationEngine("attach");
+		jQuery("#form2").validationEngine("attach");
+		
+		jQuery("#account").focus();
+		
+		jQuery( "#miniLgtabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+		#if($!{tab}=="register")
+		jQuery( "#miniLgtabs" ).tabs("select",1);
+		#end
+
+##		var vcode=new Asto.util.ValidationCode({
+##			url:'#springUrl("/validationcode/mathcode.htm")',
+##			width:90,
+##			height:30,
+##			targetImg:"#codeImg",
+##			targetVK:"#verifyCodeKey"
+##		});
+		
+##		vcode.refresh();
+
+		jQuery("#codeImg").attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date()); 
+		
+		jQuery("#codeImg").click(function(){
+    		jQuery(this).attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+		});
+	});
+</script>

@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <title>企业介绍</title>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/login-pop.css" />
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script> 
+    </head>
+    <body> 
+		#set($layout="/layout/blank.vm")
+        <div class="pop-top clearfix">
+            <h2 class="fl">会员登录</h2>
+            <a class="closeimg fr" href="javascript:void(0)"></a>
+        </div>
+        <div class="mian">
+            <p class="lgts-ft">可用ZZ91再生网账号登录！</p>
+            <div class="lgts-md">
+                <span class="fweight">用户名：</span>
+                <span class="red" style="display:none" id="account1">请输入账号！</span>
+				<span class="red" style="display:none" id="actpas">登录账号或密码不正确！</span>
+            </div>
+			<form action="doLogin.htm" method="post" id="loginForm">
+            <input placeholder="用户名/手机/邮箱" class="lg-ipt" name="account" value="$!{account}" id="account"/>
+
+            
+			<input type="hidden" value="1" name="mini"/>
+            <div class="lgts-md clearfix">
+                <span class="fl fweight">登录密码：</span>
+                <span class="fl red" style="display:none" id="password1">请输入密码！</span>
+                <a href="#springUrl('/user/passwordReminder.htm')" target="_blank" class="fr">忘记密码？</a>
+            </div>
+            <input placeholder="请输入您的密码" class="lg-ipt" type="password" name="password" id="password"/>
+            <a href="javaScript:void(0)" class="loginbtn" >登 录</a>
+			<input type="hidden" value="$!{url}" name="url"/>
+            </form>
+            <div class="clearfix login-other">
+                <a href="#springUrl('/accessToQQLogin.htm')" target="_blank"><span class="qqlogin fl"><i class="qqlg-icon"></i>QQ一键登录</span></a>
+                <span class="fr">没有账号？<a href="#springUrl('/register/register_stp1.htm')" target="_blank" class="orange-color">马上注册</a></span>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+    $(document).keydown(function(e){
+	if(e.keyCode == 13) {
+	var account=$("#account").val();
+	   		var password=$("#password").val();
+			if(account==""){
+				$("#account1").show();
+				return false;
+			}else{
+				$("#account1").hide();
+			}
+	   		if(password==""){
+				$("#password1").show();
+				return false;
+			}else{
+				$("#password1").hide();
+			}
+			var da=$("#loginForm").serialize();
+			jQuery.ajax({
+				url:"#springUrl('/doLogin.htm')",
+				data:da,
+       			type:"post",
+       			async:false,
+    			dataType:"json",
+    			success:function(reg){
+				var f=reg.success;
+				if(f){
+				parent.fash();
+				}else{
+				$("#actpas").show();
+				}
+			}
+			})
+	}
+	});
+	
+		 $(".closeimg").click(function(){
+		  	$(".estopDiv",parent.document).hide();
+    		$(".pop-main",parent.document).hide();
+	   })
+	   
+	   $(".lg-ipt").blur(function(){
+	   		$("#actpas").hide();
+	   		var account=$("#account").val();
+	   		var password=$("#password").val();
+	   		if(account==""){
+				$("#account1").show();
+			}else{
+				$("#account1").hide();
+			}
+	   		if(password==""){
+				$("#password1").show();
+			}else{
+				$("#password1").hide();
+			}
+	   })
+	   
+	   
+	   $(".loginbtn").click(function(){
+	   		var account=$("#account").val();
+	   		var password=$("#password").val();
+			if(account==""){
+				$("#account1").show();
+				return false;
+			}else{
+				$("#account1").hide();
+			}
+	   		if(password==""){
+				$("#password1").show();
+				return false;
+			}else{
+				$("#password1").hide();
+			}
+			var da=$("#loginForm").serialize();
+			jQuery.ajax({
+				url:"#springUrl('/doLogin.htm')",
+				data:da,
+       			type:"post",
+       			async:false,
+    			dataType:"json",
+    			success:function(reg){
+				var f=reg.success;
+				if(f){
+				parent.fash();
+				}else{
+				$("#actpas").show();
+				}
+			}
+			})
+	   })
+	   
+	   
+    </script>
+</html>

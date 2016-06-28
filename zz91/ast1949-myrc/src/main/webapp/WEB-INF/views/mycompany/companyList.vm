@@ -1,0 +1,54 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/mycompany/companyList.htm')">会员资料</a> <span class="divider">/</span>
+			</li>
+			<li class="active">企业简介及照片</li>
+		</ul>
+		<div class="alert alert-info">
+			<p>对基本资料和联系方式进行修改,请<a onmousedown="return aliclick(this,'?tracelog=company_more_one')" href="updateCompany.htm?lmcode=1201">点击这里</a></p>
+			<p>对详细资料和企业图片进行修改,请<a onmousedown="return aliclick(this,'?tracelog=company_more_two')" href="updateImg.htm?nextstep=2">点击这里</a></p>
+		</div>
+		<div class="well mt">
+			<div class="well-head">企业信息</div>
+			<div class="well-content">
+				<dl class="info-wrap">
+					<dt>企业名称:</dt>
+					<dd>$!{company.name}</dd>
+				</dl>
+				<dl class="info-wrap">
+					<dt>企业简介:</dt>
+					<dd>$!{company.introduction}</dd>
+				</dl>
+				<a href="#springUrl('/mycompany/updateIntroduction.htm')" class="btn btn-primary">点此修改公司简介</a>
+			</div>
+		</div>
+		<div class="well mt">
+			<div class="well-head">企业照片</div>
+			<div class="well-content">
+				<div class="alert">企业照片最多可上传5张</div>
+			#if($!{uploadedFileList.size()}==0)
+				<div class="alert alert-error mt">没有照片:(</div>
+			#else
+				<div class="mt">
+				#foreach($!list in $!{uploadedFileList})
+					<figure class="uploaded-pic">
+						<img src="$!{address.resource}/$!{list.filepath}/$!{list.filename}" title="$!{list.remark}" data-size="100, 100">
+					</figure>
+				#end
+				</div>
+			#end
+				<p><a href="#springUrl('/mycompany/updateImg.htm')" class="btn btn-primary">查看和上传更多图片</a></p>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+jQuery(function(){
+	##myrc.menu(11, 1);
+	myrc.menu(10, 1);
+	myrc.imgSize();
+});
+</script>

@@ -1,0 +1,115 @@
+				<div class="orderright fl">
+                    <div class="tuk-ts">
+                        <div class="odr-h">
+                            请收货并退款
+							#if($!{ntime})
+                            <span class="count-down">
+                                <i class="icon iconfont">&#xe60c;</i>倒计时:  
+                                <span class="close-time anred">
+								<span id="times_day"></span>&nbsp;天 
+								<span id="times_hour"></span>&nbsp;时  
+								<span id="times_minute"></span>&nbsp;分    
+								<span id="second"></span>&nbsp;秒   
+								</span>
+                            </span>
+							#end
+                        </div>
+                        <div class="odr-tellus">
+                            <p>买家已退货，物流公司：$!{detail.company}，运单号：$!{detail.sum}，#if($!{time})退货时间：$!{time}。#end 
+                            <a href="#springUrl('/logistics/logistics.htm')?logisticsCode=$!{detail.sum}&type=2" class="blue">查看物流信息</a></p>
+                            <p>收到货物后，如果您同意退款，款项将划入买家账户。</p>
+                            <p>如果货物有问题，您可以拒绝退款，再生网将直接介入处理。</p>
+                            <p>如果您逾期未处理，系统将自动同意退款</p>
+                        </div>
+                        <a href="javaScript:void(0);"><span class="true-btn">确认收货并打款</span></a>
+                     <form action="#springUrl('/ordersreturn/thSpSrcdTy.htm')" method="post" id="form2">
+						<input type="hidden" value="$!{order.id}" name="orderId" />
+						<input type="hidden" value="2" name="flag">
+                     </form>
+					</div>
+                    <div class="remove-form">您还可以：<a class="rm-a j_rma" href="#springUrl('/service/service.htm')?orderReturnId=$!{orderReturn.id}&targetId=$!{companyInfo.id}&type=2">拒绝，要求废料交易网介入</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="estopDiv j_close"></div>
+        <div class="pop-main">
+            <div class="pop-page-buy clearfix">
+                <div class="pop-top clearfix">
+                    <div class="pop-tltle fl">
+                        <i class="icon-jg iconfont">&#xe60d;</i>
+                        <span>您确定要取消该订单吗？取消订单后，不能恢复。</span>
+                    </div>
+                    <a class="fr close-pay j_close" href="javascript:vide(0)">x</a>
+                </div>
+                <div class="reason-rm">
+                    请选择取消订单的理由：
+                    <select class="reason-set"><option>请选择取消理由</option></select>
+                </div>
+                <span class="rm-btn">确 定</span>
+            </div>
+        </div>
+    <script type="text/javascript">
+	  $(".true-btn").click(function(){
+	     	jQuery.ajax({
+			url:"#springUrl('/ordersreturn/sendCode.htm')",
+			type:'post',
+			dataType:'json',
+			data:{orderId:$!{order.id}},
+			cache:false,
+			success:function(data){
+				if(data.success){
+						window.location.href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}&flag=2";
+				}
+			}
+		});
+	  })
+	  
+	  
+	  
+	  
+	//根据天，时，分，秒的ID找到相对应的元素
+	var time_day = document.getElementById("times_day");
+	var time_hour = document.getElementById("times_hour");
+	var time_minute = document.getElementById("times_minute");
+	var time_second = document.getElementById("second");
+	var time_end =$!{ntime}+1000*60*60*24*10;  // 设定活动结束结束时间
+	count_down();
+	function count_down(){ 
+		 var time_now = new Date();  // 获取当前时间
+   		 time_now = time_now.getTime();
+   		 var time_distance = time_end - time_now;  // 时间差：活动结束时间减去当前时间   
+   		 var int_day, int_hour, int_minute, int_second;   
+		 if(time_distance >= 0){   
+		 	 // 相减的差数换算成天数   
+    		 int_day = Math.floor(time_distance/86400000)
+     		 time_distance -= int_day * 86400000; 
+     		 // 相减的差数换算成小时
+            int_hour = Math.floor(time_distance/3600000) 
+        	time_distance -= int_hour * 3600000;  
+        	// 相减的差数换算成分钟   
+     		int_minute = Math.floor(time_distance/60000)    
+    		time_distance -= int_minute * 60000; 
+    		// 相减的差数换算成秒数  
+      		int_second = Math.floor(time_distance/1000)    
+			// 判断小时小于10时，前面加0进行占位
+        	if(int_hour < 10) {
+        		int_hour = "0" + int_hour;  
+        	}
+        	// 判断分钟小于10时，前面加0进行占位      
+  			if(int_minute < 10){    
+   				int_minute = "0" + int_minute;  
+   			}
+   			 // 判断秒数小于10时，前面加0进行占位 
+      		if(int_second < 10) {
+      			int_second = "0" + int_second;  
+      		} 
+      		// 显示倒计时效果       
+			time_day.innerHTML = int_day;
+			time_hour.innerHTML = int_hour; 
+			time_minute.innerHTML = int_minute; 
+			time_second.innerHTML = int_second;	
+			setTimeout("count_down()",1000);    
+		 }else{
+		 }
+	}
+    </script>

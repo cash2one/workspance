@@ -1,0 +1,125 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/supply/index.htm')">产品管理</a><span class="divider">/</span></li>
+			<li>供应类别管理</li>
+
+		</ul>
+		
+		<div class="table-select mt clearfix">
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					<input type="button" onclick="updateOrAdd(0)" class="btn btn-small btn-primary" value="新增分组"/>
+				</div>
+			</div>
+		</div>
+		
+		<table class="table table-bordered table-condensed">
+			<thead>
+					<tr>
+						<th >类别名称</th>
+						<th width="100" class="tac">排序</th>
+						<th width="100" class="tac">上级类别</th>
+						<th width="200" class="tac">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach($item in $!{list})
+    					<tr id="buy$!{item.id}">
+    						<td class="va">$!{item.name}</a>
+    						</td>
+    						<td class="tac va">$!{item.sort}</td>
+    						<td class="tac va">一级类别</td>
+    						<td class="tac va"> 
+								<input type="button" class="btn btn-mini" onclick="updateOrAdd($!{item.id})" value="修改"/>
+								#if(0 >= $!{item.childs.size()} )
+								<a href="#springUrl('/supply/deleteGroup.htm')?id=$!{item.id}" class="btn btn-mini" onclick="return confirm('您确定要删除吗？');">删除</a>
+								#end
+    						</td>
+    					</tr>
+    					#foreach($child in $!{item.childs})
+    						<tr id="buy$!{child.id}">
+        						<td class="va">
+        							&nbsp;&nbsp;-- $!{child.name}
+        						</td>
+        						<td class="tac va">$!{child.sort}</td>
+        						<td class="tac va">$!{item.name}</td>
+        						<td class="tac va"> 
+									<input type="button" class="btn btn-mini" onclick="updateOrAdd($!{child.id})" value="修改"/>
+        							<a href="#springUrl('/supply/deleteGroup.htm')?id=$!{child.id}" class="btn btn-mini" onclick="return confirm('您确定要删除吗？');">删除</a>
+        						</td>
+        					</tr>
+    					#end
+					#end
+				</tbody>
+			</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	myrc.select("Js_select");
+	myrc.menu(2, 3);
+});
+
+function updateOrAdd(id){
+	var title;
+	var url;
+	if(id=="0"){
+		title = "创建供求类别";
+		url = "#springUrl('/supply/createGroup.htm')";
+	}else{
+		title = "修改供求类别";
+		url = "#springUrl('/supply/createGroup.htm?id=')"+id;
+	}
+	
+	var groupWin=new Asto.util.Modal({
+		title:title,
+		url:url,
+		width:500,
+		height:270,
+		modal:true
+	});
+		
+	Asto.util.Callback.setSubmitCallback(function(success, data){
+		if(success){
+			groupWin.close();
+			window.location = "#springUrl("/supply/tradeGroup.htm")";
+		}
+	});
+}
+
+	
+//function deleteGroups(id) {
+//	deleteGroup(id);
+//	window.location = "#springUrl("/supply/tradeGroup.htm")";
+//}
+
+function deleteGroup(id) {
+    jQuery.ajax({
+        url:'#springUrl("/supply/deleteGroup.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#buy"+id).remove();
+				    Asto.util.Message.show({
+				        msg:"删除成功！",
+				        autoClose:10000
+					 });
+##					window.location = "#springUrl("/supply/tradeGroup.htm")";
+                }
+            },
+        failure:function(){
+		    Asto.util.Message.show({
+    	        msg:"删除失败！",
+    	        autoClose:10000
+    		 });
+        }
+    });
+}
+</script>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ibdcompany">
+
+	<typeAlias alias="ibdCompany" type="com.zz91.ep.domain.trade.IbdCompany"/>
+
+	<resultMap class="ibdCompany" id="simpleResultMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="details" column="details"/>
+		<result property="mainProduct" column="main_product"/>
+		<result property="address" column="address"/>
+	</resultMap>
+	
+	<resultMap class="ibdCompany" id="detailResultMap">
+		<result property="id" column="id"/>
+		<result property="photoCover" column="photo_cover"/>
+		<result property="name" column="name"/>
+		<result property="details" column="details"/>
+		<result property="mainProduct" column="main_product"/>
+		<result property="address" column="address"/>
+		<result property="industry" column="industry"/>
+		<result property="enterpriseType" column="enterprise_type"/>
+		<result property="legal" column="legal"/>
+		<result property="funds" column="funds"/>
+		<result property="employeeNum" column="employee_num"/>
+		<result property="registerArea" column="register_area"/>
+		<result property="registerTime" column="register_time"/>
+		<result property="businessModel" column="business_model"/>
+	</resultMap>
+	
+	<resultMap class="ibdCompany" id="contactResultMap">
+		<result property="contact" column="contact"/>
+		<result property="sex" column="sex"/>
+		<result property="position" column="position"/>
+		<result property="phone" column="phone"/>
+		<result property="mobile" column="mobile"/>
+		<result property="fax" column="fax"/>
+		<result property="email" column="email"/>
+		<result property="domain" column="domain"/>
+	</resultMap>
+	
+	<select id="queryCountByCategoryCode" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+        select  count(*) FROM ibd_company 
+        where category_code = #value# and del_status = 1
+    </select>
+    
+	<select id="queryCompanyByCategoryAndKewords" parameterClass="java.util.HashMap" resultMap="simpleResultMap">
+		select id,name,details,main_product,address from ibd_company
+		where del_status=1 
+		<isNotEmpty property="categoryCode">
+			and category_code = #categoryCode#
+		</isNotEmpty>
+		<isNotEmpty property="keywords">
+			and name like concat(#keywords#,'%')
+		</isNotEmpty>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryCompanyByCategoryAndKewordsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from ibd_company
+		where del_status=1 
+		<isNotEmpty property="categoryCode">
+			and category_code = #categoryCode#
+		</isNotEmpty>
+		<isNotEmpty property="keywords">
+			and name like concat(#keywords#,'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryIbdCompanyById" parameterClass="java.lang.Integer" resultMap="detailResultMap">
+		select 
+			id,name,details,industry,main_product,enterprise_type,legal,photo_cover,
+			funds,address,employee_num,register_area,register_time,business_model
+		from ibd_company
+		where id=#value# and del_status=1
+	</select>
+
+	<select id="queryContactByCid" parameterClass="java.lang.Integer" resultMap="contactResultMap">
+		select 
+			contact,sex,position,phone,mobile,fax,email,domain 
+		from ibd_company
+		where id=#value# and del_status=1
+	</select>
+</sqlMap>

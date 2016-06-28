@@ -1,0 +1,132 @@
+#set($layout="/layout/resetPasswordLayout.vm")
+<script type="text/javascript" src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+<style>
+	.f-header{
+		height : 85px;
+	}
+	.m-content{
+		 font-size : 15pt;
+		 margin : 80px 0 80px 300px;
+	}
+		
+	.identityCode{
+		color : blue;
+		border : 0;
+		background : white;
+	}
+	.vcode{
+		width:120px;
+		ine-height : 21px;
+	}
+	.button-jh1{
+		font-size : 12pt;
+		width : 150px;
+		height : 40px;
+		border : 0;
+		margin : 40px 0 0 90px;
+		##background : #009944;
+	}
+	.red{
+			font-size : 10pt;
+			margin-left : 25px;
+	}
+</style>
+<div class="forgot">
+	<div class="f-header">
+    	<img src="$!{address.img}/zz91/forgetpasswd/images/19.jpg" class="fl" />
+    </div>
+    <!--end f-header-->
+    <div class="m-content">
+		<div>
+			<span class="v-mobile">手机号码：&nbsp;&nbsp;&nbsp;$!{mobile}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" class="identityCode" value="发送短信" onclick="settime(this)"/>
+		</div>
+		<br />
+		<div>
+			<span>输入验证码：</span><input  type="text" name="vcode" value="" class="vcode"/>
+			<span class="red"></span>
+		</div>
+		<input type="hidden" name="account" value="$!{account}" class="account"/>
+		<input type="button" value="确&nbsp;&nbsp;认&nbsp;&nbsp;激&nbsp;&nbsp;活" class="button-jh1"/>
+      	<div style="clear:both"></div>
+    </div>
+    <!--end f-login-->
+    </div>
+    <!--end f-content-->
+</div>
+<!--end forgot-->
+<script>
+	/**$(document).ready(function() {
+			
+	});**/ 
+	//确认验证
+	jQuery(".button-jh1").click(function(){
+			var vcode = jQuery(".vcode").val();
+			var account = jQuery(".account").val();
+			if(!vcode){
+					jQuery(".red").html("请先输入验证码");
+					return false;
+			}
+			//验证码是否正确
+			jQuery.ajax({
+				url:'#springUrl("/user/validateByMobile.htm")',
+				type:"post",
+				dataType:"json",
+				data:{
+					 account : account,
+					 vcode : vcode
+				},
+				success:function(data,success){
+					if(data.in=='1'){
+							location.href = "#springUrl('/doLogin.htm')";
+					}else{
+							jQuery(".red").html("验证码错误,验证失败");
+					}
+				}
+			});
+	});
+	var wait=60;
+	var flag = 0;
+	function settime(val) {
+			if(wait==60){
+					validate();
+			}
+			if(flag == 1){
+					 val.style.color="#c0c0c0";
+					 val.value="每个帐号每天只可发送3次验证短信";
+					return false;
+			}
+	        if (wait == 0) {
+	            val.removeAttribute("disabled");           
+	            val.value="发送短信";
+	            val.style.color="";
+	            wait = 60;
+	        } else {
+	            val.setAttribute("disabled", true);
+	            val.style.color="#c0c0c0";
+	            val.value="重新发送(" + wait + "S)";
+	            wait--;
+	            setTimeout(function() {
+	                settime(val)
+	            },
+	            1000)
+	        }
+    }
+    	//获取验证码
+function validate(){
+			var account = jQuery(".account").val();
+			jQuery.ajax({
+				url:'#springUrl("/validationcode/sendCode.htm")',
+				type:"post",
+				dataType:"json",
+				async: false,
+				data:{
+					account : account
+				},
+				success:function(data,success){
+					if(data.flag==2){
+						flag = 1;
+					}
+				}
+			});
+}
+</script>

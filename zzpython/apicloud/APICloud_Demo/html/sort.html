@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ui模块</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="copyright" content="www.apicloud.com" />
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<style>
+    html,body,header,section,footer,nav,div,ul,ol,li,img,a,span,em,del,center,strong,var,fieldset,form,label,dt,dd,cite,input,hr,time,mark,code,figcaption,figure,textarea{
+        margin:0;
+        border:0;
+        padding:0;
+        font-family: Tahoma, Geneva, sans-serif;
+        font-style:normal;
+    }
+html,body {
+    -webkit-touch-callout:none;
+    -webkit-text-size-adjust:none;
+    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    -webkit-user-select:none;
+}
+header,footer,section,nav,img,a,button,em,del,strong,var,fieldset,label,cite,small,time,mark,code,figcaption,figure,textarea{
+    display:block;
+}
+header,section,footer,nav {
+    position:relative;
+    overflow:hidden;
+}
+ol,ul{
+    list-style:none;
+}
+input,button,textarea {
+    border:0;
+    margin:0;
+    padding:0;
+    font-size:1em;
+    line-height:1em;
+    -webkit-appearance:none;
+    background-color:rgba(0, 0, 0, 0);
+}
+span{
+    display:inline-block;
+}
+a,a:visited{
+    text-decoration:none;
+}
+#header {
+    background-color:#2DBD82;
+}
+#nav{
+    display:-webkit-box;
+    height:44px;
+}
+#left {
+    width:80px;
+    color:#fff;
+    background:url(../image/navbtn_back.png) no-repeat 14px 12px;
+    -webkit-background-size:12px 20px;
+}
+#left>span {
+    margin-top:13px;
+    margin-left:36px;
+    font-size:18px;
+    height:18px;
+    line-height:18px;
+}
+#middle {
+    -webkit-box-flex:1;
+    width:100%;
+    display:-webkit-box;
+    -webkit-box-pack:center;
+  	-webkit-box-align:center;
+}
+#title {
+    font-size:18px;
+	text-align:center;
+	color:#fff;
+}
+#right {
+    width:80px;
+}
+section {
+    -webkit-box-flex:1;
+}
+.leftBtnActive {
+    background:url(../image/navbtn_back_hov.png) no-repeat 14px 12px!important;
+    -webkit-background-size:12px 20px!important;
+    color:rgb(94,153,186)!important;
+}
+.rightBtnActive {
+}
+</style>
+</head>
+<body>
+	<div id="wrap">
+	    <header id='header'>
+	        <nav id="nav">
+	            <a id="left" tapmode="leftBtnActive" onclick="window.closeWin();">
+	                <span>返回</span>
+	            </a>
+	            <div id="middle">
+	                <strong id="title"></strong>
+	            </div>
+	            <a id="right">
+	            </a>
+	        </nav>
+	    </header>
+	    <div id="main">
+	    </div>
+    </div>
+</body>
+<script src="../script/common.js"></script>
+<script src="../script/dataSource.js"></script>
+<script src="../script/module.js"></script>
+<script>
+    var apiready = function(){
+        /* 重写 alert 方法. */
+        window.alert = function(msg){
+            api.alert({
+                title: "提示",
+                msg: msg,
+                buttons: ["确定"]
+            });
+        }
+
+        /* 一个获取导航栏高度的方法. */
+        window.getNavHeight = function () {
+            var h = 44;
+
+            if("ios" == api.systemType && parseInt(api.systemVersion) >= 7){
+                h = 64;
+            }
+
+            return h;
+        }
+
+        /* 一个关闭窗口,返回上一级页面的优雅实现. */
+        window.closeWin= function(winName) {
+
+            api.closeWin({
+                name: winName
+            });
+        }
+
+        // -----------------------------------------
+        /* 导航栏自适应iOS 7. */
+        var header = $api.byId('header');
+        $api.fixIos7Bar(header);
+
+        /* Android,点击返回键,可以返回上一级. */
+        window.addEventListener("keyback", function () {
+            window.addEventListener("keyback", function () {
+                if( ! api["pageParam"]["isFrame"]){ // 仅在是主窗口时,才捕捉 keyback事件.
+                    window.closeWin();
+                }
+            });
+        });
+
+        /* 根据当前模块分类动态改变标题. */
+        var sortId = api["pageParam"]["sortId"];
+
+        var sortBrief = "";
+
+        for(var idx in window.dataSource["sorts"]){
+            var sort = window.dataSource["sorts"][idx];
+
+            if(sortId == sort["id"]){
+                sortBrief = sort["brief"];
+                break;
+            }
+        }
+
+        if( ! sortBrief){ // 说明此分类为无效分类.默默返回即可.
+            return;
+        }
+
+        document.getElementById("title").innerText = sortBrief;
+
+        /* 根据模块列别 id 取得此类别下的所有的模块的详细信息,并升序排列 */
+        var modules = [];
+
+        var modulesDict = {};
+
+        for(var idx in window["dataSource"]["modules"]){
+            var module = window["dataSource"]["modules"][idx];
+            if(sortId == module["sortId"]){
+
+                modules.push(module);
+            }
+        }
+
+        /* 排序: 根据模块名称升序排列. */
+        modules = modules.sort(function(moduleA, moduleB){
+            if(moduleA["name"].toUpperCase() < moduleB["name"].toUpperCase()){
+                return -1;
+            }
+
+            return 1;
+        });
+
+        /* 根据模块信息生成 listView .*/
+        var listViewData = [];
+
+        for(var idx in modules){
+            var module = modules[idx];
+            var listViewItem = {
+                img:"widget://image/" + module["name"] + ".png",
+                title: module["name"],
+                subTitle: module["brief"],
+                titleColor:"#666666",
+                titleSize:"14px",
+                subTitleColor: "#999999",
+                subTitleSize: "12px"
+            }
+
+            listViewData.push(listViewItem);
+        }
+
+
+
+        var listview = api.require('listView');
+
+        var headerPos = $api.offset(header);
+        var main = $api.byId('main');
+        var mainPos = $api.offset(main);
+        listview.open({
+            x: 0,
+            y: window.getNavHeight(),
+            w: api.frameWidth,
+            h: api.frameHeight - window.getNavHeight(),
+            rightBtn:[{
+                color:'#52C09A',
+                title:'查看',
+                selecteColor:'#429b7c'
+            },{
+                color:'#E76B65',
+                title:'关闭',
+                selecteColor:'#bc534d'
+            }],
+            borderColor:'#CCCCCC',
+            cellBgColor:'#FFFFFF',
+            cellSelectColor:'#E9E9E9',
+            cellHeight:60,
+            leftBg:'#e9e9e9',
+            rightBg:'#e9e9e9',
+            data:listViewData
+        },function(ret,err){
+            
+            if(1 == ret.btnIndex){ // 说明是关闭按钮.
+                return;
+            }
+
+            var module = modules[ret["index"]];
+          
+            var url = "./header.html";
+
+            
+
+
+            /* 几个模块需要单独处理. */
+            
+            if("frameGroup" == module["name"]){
+                url = './frameGroup/frameGroup.html';
+            }
+
+            if("frameAnimation" == module["name"]){
+                url = './multiWin/animation.html';
+            }
+
+            if("frame" == module["name"]){
+                url = './multiWin/frame.html';
+            }
+
+            if("slidLayout" == module["name"]){
+                url = './slidLayout/slidLayout.html';
+            }
+
+            if("slidLayout" == module["name"]){
+                url = './slidLayout/slidLayout.html';
+            }
+
+            if("multiWin" == module["name"]){
+                url = './multiWin/phone-index.html';
+            }
+
+            if("openApp" == module["name"]){
+                url = './app.html';
+            }
+
+            if("fs" == module["name"]){
+                url = './fsDir.html';
+            }
+
+            if("medias" == module["name"]){
+                url = './audio.html';
+            } 
+
+            if("brightBeacon" == module["name"]){
+                url = './brightBeacon/index.html';
+            }
+
+           
+
+
+            api.openWin({
+                        name: module["name"] +"moduleWin",
+                        url: url,
+                        pageParam: {
+                            moduleId: module["id"],
+                            isFrame: false,
+                            module: module
+                        },
+                        bgColor: '#FFFFFF',
+                        slidBackEnabled: true,
+                        vScrollBarEnabled:false,
+                        hScrollBarEnabled:false,
+                        delay: 300
+                    }
+            );
+
+            
+        });
+    }
+</script>
+</html>

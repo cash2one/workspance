@@ -1,0 +1,176 @@
+#set($layout="/layout/default.vm")
+#parse("/common/importValidate.vm")
+<link rel="stylesheet" type="text/css" href="$!{address.img}/lib/htmleditor/ckeditor/skins/kama/editor.css">
+<script src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor_basic.js"></script>
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/producttitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_blank">发布供应信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/supply.htm">管理供应信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/tradeGroup.htm">管理供应信息类别</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/buy/publish_StpOne.htm" target="_blank">发布求购信息</a></li>
+            <li class="hbnylefts"><a href="$!{address.myesite}/buy/buy.htm">管理求购信息</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td height="500" valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">修改供应信息</td>
+      </tr>
+    </table>
+    <form id="buyForm" method="post" action="#springUrl('/buy/doUpdate.htm')" >
+    <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyconadd">
+            <tr>
+              <td colspan="2" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>基本信息</strong></td>
+          </tr>
+            <tr>
+              <td width="160" align="right"><span>*</span> 信息标题：</td>
+              <td>
+              	<input id="id" name="id" type="hidden" value="$!{buy.id}"/>
+                <input id="categoryCode" name="categoryCode" type="hidden" value="$!{buy.categoryCode}"/>
+                <input type="text" id="title" name="title" value="$!{buy.title}" class="hbnyconinput hbnycontit50 validate[required,maxSize[30]]"/>
+              </td>
+              </tr>
+            <tr>
+              <td width="160" align="right">&nbsp;</td>
+              <td>最长30个汉字（60个字节），建议您在标题中包含产品名称和相关关键词！</td>
+            </tr>
+            <tr>
+              <td width="160" align="right" valign="top">
+              <label for="totalNum"><span>*</span> 采购数量：</label></td>
+              <td>
+				 <input type="number" id="quantity" name="quantity" value="$!{buy.quantity}" class="hbnyconinput hbnycontit20 validate[required,custom[number],maxSize[10]]" />
+              	  <input type="hidden" id="quantityYear" name="quantityYear" value="$!{buy.quantityYear}"/>
+	              &nbsp;&nbsp;&nbsp;&nbsp;单位：
+	              <select  id="quantityUntis" name="quantityUntis" class="hbnyconselect hbnycontit20" value="$!{buy.quantityUntis}">
+                  	<option value="">请选择</option>
+                  	<option value="套" #if("$!{buy.quantityUntis}"=="套") selected #end>套</option>
+                  	<option value="台" #if("$!{buy.quantityUntis}"=="台") selected #end>台</option>
+                  	<option value="件" #if("$!{buy.quantityUntis}"=="件") selected #end>件</option>
+                  	<option value="吨" #if("$!{buy.quantityUntis}"=="吨") selected #end>吨</option>
+                  	<option value="个" #if("$!{buy.quantityUntis}"=="个") selected #end>个</option>
+                  	<option value="斤" #if("$!{buy.quantityUntis}"=="斤") selected #end>斤</option>
+                  	<option value="千克" #if("$!{buy.quantityUntis}"=="千克") selected #end>千克</option>
+                  	<option value="袋" #if("$!{buy.quantityUntis}"=="袋") selected #end>袋</option>
+                  	<option value="盒" #if("$!{buy.quantityUntis}"=="盒") selected #end>盒</option>
+              	  </select>
+              </td>
+            </tr>
+            <tr>
+              <td width="160" align="right" valign="top"><span>*</span> 收货地址：</td>
+              <td>
+              <select id="provinceCode" name="provinceCode" class="hbnyconselect validate[required]">
+                  <option value="">省份</option>
+              </select>
+              <select id="areaCode" name="areaCode" class="hbnyconselect validate[required]">
+                  <option value="">城市</option>
+              </select>
+              </td>
+            </tr>
+            <tr>
+              <td width="160" align="right" valign="top"><span>*</span> 期望供应商所在地区：</td>
+              <td>
+              <select id="supplyProvinceCode" name="supplyProvinceCode" class="hbnyconselect validate[required]">
+                  <option value="">省份</option>
+              </select>
+              <select id="supplyAreaCode" name="supplyAreaCode" class="hbnyconselect validate[required]">
+                  <option value="">城市</option>
+              </select>
+              </td>
+            </tr>
+            <tr>
+              <td width="160" align="right" valign="top">信息有效期：</td>
+              <td>
+              <select id="validDays" name="validDays" class="hbnyconselect" >
+		                    <option value="10" #if("$!{buy.validDays}"=="10") selected #end>10天</option>
+		                    <option value="20" #if("$!{buy.validDays}"=="20") selected #end>20天</option>
+		                    <option value="30" #if("$!{buy.validDays}"=="30") selected #end>一个月</option>
+		                    <option value="90" #if("$!{buy.validDays}"=="90") selected #end>三个月</option>
+		                    <option value="180" #if("$!{buy.validDays}"=="180") selected #end>六个月</option>
+		                    <option value="0" #if("$!{buy.validDays}"=="0") selected #end>长期有效</option>
+		      </select>
+			  </td>
+              </tr>
+            <tr>
+              <td colspan="2" valign="top" bgcolor="#FFFFFF" style="border-bottom:dashed 1px #CCC;">&nbsp;&nbsp;&nbsp;&nbsp;<strong>详细信息</strong></td>
+          </tr>
+            <tr>
+              <td colspan="2" align="center" style="padding-top:10px;">
+              <textarea name="details" class="hbnyconedit validate[required,maxSize[500]]" id="details" cols="45" rows="10">$!{buy.details}</textarea>
+              </td>
+            </tr>
+            <tr>
+              <td height="50" colspan="2" align="center" bgcolor="#FFFFFF">
+              	<input type="submit" name="baseButton" id="baseButton" value="修改" class="hbnyconan" />
+              </td>
+          </tr>
+      </table>
+      </form>
+      <table width="98%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50">&nbsp;</td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<script language="javascript">
+var ckeditor;
+jQuery(document).ready(function() {
+	ckeditor = CKEDITOR.replace("details",{
+		toolbar:
+        [
+            ['Styles','Format','FontSize'],  
+            ['Bold', 'Italic', '-', 'NumberedList', 'BulletedList'],
+    		['TextColor','BGColor'],
+    		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+    		['Maximize']
+        ],
+		height:'300px',
+		language : 'zh-cn'
+	});
+	// 地区下拉框初始化
+	var _selectAreaCode=["#provinceCode","#areaCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"$!{address.myesite}/common/getAreaCode.htm",
+		field:{code:"code",label:"name"}
+	});
+	selectAreaCode.init({
+		rootCode:"10011000",
+		#if($!{buy.areaCode} != "")
+		initCode:"$!{buy.areaCode}"
+		#else
+		initCode:"$!{buy.provinceCode}"
+		#end
+	});
+	
+	// 期望供货地区下拉框初始化
+	var _selectAreaCode=["#supplyProvinceCode","#supplyAreaCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"$!{address.myesite}/common/getAreaCode.htm",
+		field:{code:"code",label:"name"}
+	});
+	selectAreaCode.init({
+		rootCode:"10011000",
+		#if($!{buy.supplyAreaCode} != "")
+		initCode:"$!{buy.supplyAreaCode}"
+		#end
+	});
+	jQuery("#buyForm").validationEngine("attach");
+});
+</script>

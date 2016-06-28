@@ -1,0 +1,207 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{bbsUserProfilerDO.nickname}_再生互助_$!{siteInfo.site_name}</title>
+<meta name="keywords" content="再生互助,$!{bbsUserProfilerDO.nickname}" />
+<meta name="description" content="欢迎来到$!{bbsUserProfilerDO.nickname}在$!{siteInfo.site_name}-互助社区安的新家" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+<script src="http://img0.zz91.com/zz91/tradedetails/js/Png.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/jquery/ux/validationEngine.css" />
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/validationEngine.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/languages/jquery.validationEngine-zh_CN.js"></script>
+
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="huzhu">
+	
+	#parse("/common/head_search.vm")	
+    <div class="huzhu_geren">
+		#parse("/common/bbs_info_center.vm")
+        <div class="hg-div3">
+        	<div class="hg-Answer-left">
+            	<div class="myCollection">
+                	<div class="myCollection-title">
+                    	我的私信
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end myCollection-->
+                <div class="hg-div3-box">
+                	<div class="hg-div2-nav">
+                        <ul class="fl">
+                            <li #if($!{showSent}) #else class="fb" #end><a href="message.htm">收信箱</a></li>
+                            <li>|</li>
+                            <li #if($!{showSent}) class="fb" #else #end><a href="mySendMessage.htm">发信箱</a></li>
+                            <div class="cb"></div>
+                        </ul>
+                        <div class="hg-write">
+                        	<a href="sendMessage.htm">写私信</a>
+                        </div>
+                        <!--end hg-write-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end hg-div2-nav-->
+                    <div class="PrivateLetter">
+                    	<div class="pl-info">
+                        	<ul>
+								#if($!{onInquiry})
+                            	<li class="pl-info-icon1"><a href="#springUrl('/showmessage')$!{onInquiry.id}.htm">上一封</a></li>
+								#else
+								<li class="pl-info-icon1">已完</li>	
+								#end
+                                <li>|</li>
+								#if($!{downInquiry})
+                                <li class="pl-info-icon2"><a href="#springUrl('/showmessage')$!{downInquiry.id}.htm">下一封</a></li>
+								#else
+								<li class="pl-info-icon2">已最新</li>	
+								#end
+                                <li>|</li>
+                                <li class="pl-info-icon1"><a href="message.htm">返回收件箱</a></li>
+                                <div class="cb"></div>
+                            </ul>
+                        </div>
+                        <!--end pl-info-->
+                        <div class="pl-title">
+							#if($!{profiler.nickname} && $!{profiler.nickname}!="")
+								与<span>“#if($!{profiler.nickname}!=0) $!{profiler.nickname} #else 互助社区 #end”</span>之间的对话
+							#else
+								与<span>“#if($!{profiler.account}!=0) $!{profiler.account} #else 互助社区 #end”</span>之间的对话
+							#end	
+                        	
+                        </div>
+                        <!--end pl-title-->
+						#foreach($!{inquiry} in $!{inquiryList})
+                        <div class="pl-item">
+                        	<div class="pl-item-img">
+								#if($!{inquiry.profiler.picturePath} && $!{inquiry.profiler.picturePath})
+									<img src="$!{address.thumb}$!{address.resource}/$!{inquiry.profiler.picturePath}" width="40px" height="40px"/>
+								#else
+									<img src="http://img0.zz91.com/zz91/huzhu/images/no_head.jpg" />
+								#end
+                            </div>
+                            <div class="pl-item-box">
+                            	<div class="pl-item-title">
+									#if($!{inquiry.profiler.nickname} && $!{inquiry.profiler.nickname}!="")
+        								<a>$!{inquiry.profiler.nickname}</a><span class="pl-item-date">$!date.format('yyyy-MM-dd',$!{inquiry.inquiry.sendTime})</span><a href="#">举报</a>
+									#else
+										<a>#if($!{inquiry.inquiry.senderAccount}!="0")$!{inquiry.inquiry.senderAccount} #else 互助社区 #end</a><span class="pl-item-date">$!date.format('yyyy-MM-dd',$!{inquiry.inquiry.sendTime})</span><a href="#">举报</a>
+									#end	
+                                </div>
+                                <!--end pl-item-title-->
+                                <div class="pl-item-content">
+                                $!{inquiry.inquiry.content}
+                                </div>
+                                <!--end pl-item-content-->
+                            </div>
+                            <!--end pl-item-box-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end pl-item-->
+						#end
+						#if($!{showSent})
+						#else
+                        <div class="pl-block">
+                        	<div class="pl-block-img">
+								#if($!{bbsUserProfilerDO.picturePath} && $!{bbsUserProfilerDO.picturePath}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{bbsUserProfilerDO.picturePath}&width=40"height="40px"/>
+								#else
+									<img src="http://img0.zz91.com/zz91/huzhu/images/no_head.jpg" />
+								#end
+                            </div>
+								
+                            <div class="pl-block-box">
+                            	<div class="pl-block-face">
+                                	<img src="http://img0.zz91.com/zz91/huzhu/images/face_icon2.jpg" id="face" />
+                                </div>
+                                <!--end pl-block-face-->
+								<form method="post" id="form1" name="form1" action="doReSendMessage.htm">
+                                
+                                <div class="pl-block-info">
+                                	<textarea class="pl-block-text validate[required]" onkeyup="textNum(this);" name="content" onclick="TextWeibo(this)" ></textarea>
+                                </div>
+                                <!--end pl-block-info-->
+                                <div class="pl-block-sent">
+                                	
+									  <input type="submit" value="回复" class="pl-block-ok"/>
+                                    
+                                    <div class="pl-block-num">
+                                    	<span id="pl-num">0</span>/2000
+                                    </div>
+                                    <!--end pl-block-num-->
+                                    <div class="cb"></div>
+                                </div>
+                                <!--end pl-block-sent-->
+                                <div class="bc-face" id="bc-face">
+                                    <div class="bc-face-top">
+                                        <div class="bc-close3 fr">
+                                        	<img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" id="close2" />
+                                        </div>
+                                        <div class="cb"></div>
+                                    </div>
+									#parse("/common/showface.vm")
+                                </div>
+                                <!--end bc-face-->
+        							<input name="title" type="hidden" id="title" value="$!{inquiry.title}">
+									<input name="conversationGroup" type="hidden" value="$!{inquiry.conversationGroup}"/>
+									<input name="receiverAccount" type="hidden" value="$!{inquiry.senderAccount}"/>
+								</form>
+                            </div>
+                            <!--end pl=block-box-->
+                            <div class="cb"></div>
+							
+                        </div>
+                        <!--end pl-block-->
+						#end
+                    </div>
+                    <!--end PrivateLetter-->
+                </div>
+                <!--end hg-div3-box-->
+            </div>
+			#parse("/common/message_right.vm")
+	      <div class="cb"></div>
+        </div>
+        <!--end hg-div3-->
+		#parse("/common/bbs_info_left.vm")
+    </div>
+    <!--end huzhu_geren-->
+    
+</div>
+<!--end huzhu-->
+
+<div id='textHide1'></div>
+<input type="hidden" id="text_left">
+<input type="hidden" id="text_right">
+<input type="hidden" id="textInfo" value="" />
+
+
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+
+<script >
+jQuery(document).ready(function(){
+	jQuery("#form1").validationEngine("attach");
+})	
+</script>
+

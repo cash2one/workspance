@@ -1,0 +1,207 @@
+#set($layout='/layout/normLayout2.vm')
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+
+
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index').htm">首页</a></li>
+                <li><a href="#springUrl('/mblog').htm">个人主页</a></li>
+                <li><a href="#springUrl('/info.htm?id=')$!{infoDto.mBlogInfo.id}">账户设置</a></li>
+            </ul>
+        </div>
+        
+ 		<form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+       
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="AccountSettings">
+    	<div class="register">
+    	<div class="r-left">
+			#if($!{msg})
+				<div style="padding-left:150px;color:#b94a48;">修改成功</div>
+			#end	
+        	<div class="r-left-title">
+            	<img src="http://img0.huanbao.com/huanbao/mblog/images/info.jpg" />
+            </div>
+            <!--end r-left-title-->
+			<form id="updateInfo" name="updateInfo" action="#springUrl('/doUpdateInfo.htm')" method="post">
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	登录名
+                </div>
+                <div class="r-item-text fl">
+                	$!{epAuthUser.account}
+                    <span class="r-blue"><a href="$!{address.myesite}/company/updatePassword.htm">修改密码</a></span>
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	昵&nbsp;&nbsp;&nbsp;称
+                </div>
+                <div class="r-item-text fl">
+                	<input type="text" class="r-text validate[required]" value="$!{infoDto.mBlogInfo.name}" name="name"/>
+					 #if($!{error})
+					 <font style="color:red;">昵称重复，请设置你的独特昵称！</font>
+					 #end
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	真实姓名
+                </div>
+                <div class="r-item-text fl">
+                	<input type="text" class="r-text validate[required]" name="realName" value="$!{infoDto.mBlogInfo.realName}" />
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	所在地
+                </div>
+                <div class="r-item-text fl">
+					<select id="provinceCode" name="provinceCode" style="width:70px;hieght:50px;" class="select validate[required]">
+                           <option value="" #if($!{infoDto.mBlogInfo.provinceCode} == $!{provinceCode}) selected  #end>省份</option>
+                   </select>
+                   <select id="areaCode" name="areaCode" style="width:100px;hieght:50px;" class="select validate[required]">
+                           <option value="">城市</option>
+                   </select>
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	性&nbsp;&nbsp;&nbsp;别
+                </div>
+                <div class="r-item-text fl">
+                	<input type="radio" value="0" class="r-radio" name="sex" #if($!{infoDto.mBlogInfo.sex}==0) checked="checked"#end/>男
+                    <input type="radio" value="1" class="r-radio" name="sex" #if($!{infoDto.mBlogInfo.sex}==1) checked="checked"#end/>女
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	公司名
+                </div>
+                <div class="r-item-text fl">
+                	$!{compProfile.name}
+                </div>
+                <!--end as-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-item">
+            	<div class="r-item-title fl">
+                	公司简价
+                </div>
+                <div class="r-item-text fl">
+                	$!{compProfile.detailsQuery}
+                </div>
+                <!--end r-item-text-->
+                <div class="cb"></div>
+            </div>
+            <!--end r-item-->
+            <div class="r-editor">
+            	<a href="$!{address.myesite}/company/updateCompany.htm" target="_blank">修改公司名或简介»</a>
+            </div>
+            <!--end r-editor-->
+            <div class="r-ok">
+                <div class="r-ok-left fl"></div>
+                <div class="r-ok-center fl">
+                    <a href="javascript:updateInfo();">保存</a>
+                </div>
+                <div class="r-ok-right fl"></div>
+                <div class="cb"></div>
+            </div>
+            <!--end r-ok-->
+			<input type="hidden" value="$!{infoDto.mBlogInfo.id}" name="id"/>
+			<input type="hidden" value="$!{infoDto.mBlogInfo.headPic}" name="headPic"/>
+            </form>
+        </div>
+        <!--end r-left-->
+        <div class="r-right">
+        	<div class="r-right-img">
+				#if($!{infoDto.mBlogInfo.headPic} && $!{infoDto.mBlogInfo.headPic}!="")
+            	<img src="$!{address.thumb}$!{address.resource}$!{infoDto.mBlogInfo.headPic}" width="185px" height="188px"/>
+				<input type="hidden" value="$!{infoDto.mBlogInfo.headPic}" name="headPic"/>
+				#else
+				<img src="http://img0.huanbao.com/huanbao/mblog/images/no-images.jpg" />	
+				#end
+            </div>
+            <!--end as-right-img-->
+            <div class="r-right-editor">
+            	<a href="#springUrl('/editorHead.htm')" target="_blank"><img src="http://img0.huanbao.com/huanbao/mblog/images/editor2.jpg" /></a>
+            </div>
+            <!--end r-right-editor-->
+        </div>
+        <!--end r-right-->
+        <div class="cb"></div>
+    </div>
+    </div>
+    <!--end AccountSettings-->
+</div>
+<!--end main-->
+#parse("/common/importValidateOriginal.vm")
+<script >
+jQuery(document).ready(function(){
+	  jQuery("#updateInfo").validationEngine("attach");
+		// init selector
+    	var selector = new Asto.util.Selector({
+    		url:"#springUrl('/getAreaCode.htm')",
+    		selects:["#provinceCode","#areaCode"],
+    		field:{code:"code",label:"name"}
+    	});
+    	
+    	selector.init({ 
+    		rootCode:"10011000",
+           	initCode:"$!{infoDto.mBlogInfo.areaCode}"
+    	});
+  
+})
+
+function updateInfo(){
+   if(jQuery("#updateInfo").validationEngine('validate')) {
+      jQuery("#updateInfo").submit();
+   }
+}
+
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+ 
+</script>

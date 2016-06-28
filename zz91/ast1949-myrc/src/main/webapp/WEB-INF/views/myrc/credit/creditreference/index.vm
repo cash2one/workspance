@@ -1,0 +1,67 @@
+#set( $layout = "/layout/myrcLayout.vm")
+#leftMenu("1603","","00")
+<div class="myrcNormalFrame"> 
+	#set($remainReference = ${maxReference} - ${numReference})
+	<div class="commTip">
+		<span class="commTipLeft" >
+			   您总共可以添加<b>$!{maxReference}</b>个资信参考人， 已经添加了 <b>${numReference}</b>个，您还可以添加 <b>$remainReference</b> 个。
+		</span>
+		<span class="commTipRight">
+			#if($remainReference > 0)
+				<a href="#springUrl('/credit/creditreference/create.htm')" class="commArrowNews">添加资信参考人</font></a>
+			#end
+            ##<font style="color:#AAA">展示证书，彰显公司实力，为信用级别加分！</font>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+	
+	<div class="commList">
+	<div class="categoryTit">您已添加的资信参考人</div>
+		<div class="commListTit">
+			<span class="creditFileName">参考人姓名</span>
+			<span class="creditFileOffic">所在公司</span>
+			<span class="creditFileDate">联系方式</span>
+			<span class="creditFileStatus">有审核情况</span>
+			<span class="creditFileOperat">操作</span>
+			<div style="clear:both"></div>
+		</div>
+		<ul>
+			#foreach($!{creditCompanyList} in $!{referenceList})
+			<li>
+				<span class="creditFileName">$!{creditCompanyList.name}</span>
+				<span class="creditFileOffic">$!{creditCompanyList.companyName}</span>
+				<span class="creditFileDate">$!{creditCompanyList.tel}</span>
+				<span class="creditFileStatus">
+					#if($!{creditCompanyList.checkStatus}==0)
+						<font style="color:#AAA">未审核</font>
+					#elseif($!{creditCompanyList.checkStatus}==1)
+						<font style="color:#65B720">已审核</font>
+					#else
+						<font style="color:#E77817;">未通过</font>
+					#end
+				</span>
+				<span class="creditFileOperatMod">
+					<a href="#springUrl('/credit/creditreference/edit.htm?id=')$!{creditCompanyList.id}" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">修改</a>
+				</span>
+				<span class="creditFileOperatDel">
+						<a href="#springUrl('/credit/creditreference/deleteReference.htm?id=')$!{creditCompanyList.id}" onClick="return confirm('确实要删除吗？')" style="padding-left:16px;background-position:left 2px;" class="commTrashFeed">删除</a>
+				</span>
+			</li>
+			#end
+            <div style="clear:both"></div>
+        </ul>
+    </div>
+	
+    <div class="tishiNormal">
+        <h5><img src="$!{address.images}/global/icon/caution2.gif"><b>常见问题提醒：</b></h5>
+        <h6><b>添加资信参考人有何用处？</b></h6>
+		<p>他们可以证明贵公司的公司实力、产品质量、诚信经营、服务态度、金融资信，帮您把线下的信用和人气延伸到网上！</p>
+        <h6><b>谁可以成为您的资信参考人？</b></h6>
+		<p>银行相关联系人、黄金客户、优秀供应商、兄弟公司、子公司、代理公司、政府机关等等。</p>
+    </div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	});
+</script> 

@@ -1,0 +1,47 @@
+<script type="text/javascript" src="#springUrl('/app/exhibit/category.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/exhibit/exhibit.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/syscommon/areaTree.js')"></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+	var recommendMenu=new Array();
+	
+	#foreach($rt in $!{recommendType.keySet()})
+		com.zz91.ep.exhibit.FILTER_RECOMMEND.push({
+			name:"$!{recommendType.get($!{rt})}",
+			value:"$!{rt}"
+		});
+		recommendMenu.push({
+			text:"$!{recommendType.get($!{rt})}",
+			handler:function(){
+				com.zz91.ep.exhibit.recommend("$!{rt}");
+			}
+		});
+	#end
+	var tree=new com.zz91.ep.category.TreePanel({
+		id:CATEGORY.TREE,
+		region:"west",
+		width:180
+	});
+	
+	var grid=new com.zz91.ep.exhibit.grid({
+		id:EXHIBIT.COLLECTION_GRID,
+		region:"center",
+		recommendMenu:recommendMenu
+	});
+	
+	var viewport=new Ext.Viewport({
+		layout:"border",
+		items:[tree,grid]	
+	});
+	
+	tree.on('click',function(node,event){
+		var code = node.attributes['data'];
+		if(code!=""){
+			grid.getStore().baseParams["plateCategoryCode"]=code;
+		}else{
+			grid.getStore().baseParams["plateCategoryCode"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+})
+</script>

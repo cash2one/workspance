@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAccount">
+
+	<typeAlias alias="companyAccount" type="com.ast.ast1949.domain.company.CompanyAccount"/>
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+	<typeAlias alias="companyDto" type="com.ast.ast1949.dto.company.CompanyDto" />
+	
+	<sql id="fullColumn">
+		ca.`id`,
+		ca.`account`,
+		ca.`company_id`,
+		ca.`contact`,
+		ca.`is_admin`,
+		ca.`tel_country_code`,
+		ca.`tel_area_code`,
+		ca.`tel`,
+		ca.`mobile`,
+		ca.`fax_country_code`,
+		ca.`fax_area_code`,
+		ca.`fax`,
+		ca.`email`,
+		ca.`sex`,
+		ca.`position`,
+		ca.`qq`,
+		ca.`msn`,
+		ca.`weixin`,
+		ca.`back_email`,
+		ca.`is_use_back_email`,
+		ca.`password`,
+		ca.`num_login`,
+		ca.`gmt_last_login`,
+		ca.`gmt_modified`,
+		ca.`gmt_created`
+	</sql>
+	
+	<resultMap class="companyAccount" id="companyAccountResult">
+		<result property="id" column="id"/>
+		<result property="account" column="account"/>
+		<result property="companyId" column="company_id"/>
+		<result property="contact" column="contact"/>
+		<result property="isAdmin" column="is_admin"/>
+		<result property="telCountryCode" column="tel_country_code"/>
+		<result property="telAreaCode" column="tel_area_code"/>
+		<result property="tel" column="tel"/>
+		<result property="mobile" column="mobile"/>
+		<result property="faxCountryCode" column="fax_country_code"/>
+		<result property="faxAreaCode" column="fax_area_code"/>
+		<result property="fax" column="fax"/>
+		<result property="email" column="email"/>
+		<result property="sex" column="sex"/>
+		<result property="position" column="position"/>
+		<result property="qq" column="qq"/>
+		<result property="msn" column="msn"/>
+		<result property="weixin" column="weixin"/>
+		<result property="backEmail" column="back_email"/>
+		<result property="isUseBackEmail" column="is_use_back_email"/>
+		<result property="password" column="password"/>
+		<result property="numLogin" column="num_login"/>
+		<result property="gmtLastLogin" column="gmt_last_login"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<sql id="simpleColumn">
+		ca.`id`,
+		ca.`account`,
+		ca.`company_id`,
+		ca.`contact`,
+		ca.`email`,
+		ca.`back_email`,
+		ca.`is_use_back_email`
+	</sql>
+	<resultMap class="companyAccount" id="simpleResult">
+		<result property="id" column="id"/>
+		<result property="account" column="account"/>
+		<result property="companyId" column="company_id"/>
+		<result property="contact" column="contact"/>
+		<result property="email" column="email"/>
+		<result property="backEmail" column="back_email"/>
+		<result property="isUseBackEmail" column="is_use_back_email"/>
+	</resultMap>
+	<!-- 原来有and is_admin='1'条件查询 现在以删除 -->
+	<select id="queryAdminAccountByCompanyId" parameterClass="java.lang.Integer" resultMap="companyAccountResult" >
+		select 
+		<include refid="companyAccount.fullColumn" />
+		from company_account ca
+		where ca.company_id=#value#
+		limit 1
+	</select>
+	
+	<select id="queryAccountByAccount" parameterClass="java.lang.String" resultMap="companyAccountResult" >
+		select 
+		<include refid="companyAccount.fullColumn" />
+		from company_account ca
+		where ca.account = #value#
+		limit 1
+	</select>
+	
+	<select id="queryCompanyIdByEmail" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select 
+		ca.company_id
+		from company_account ca
+		where ca.email = #value#
+		limit 1
+	</select>
+	
+	<select id="queryCompanyIdByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select 
+		ca.company_id
+		from company_account ca
+		where ca.account = #value#
+		limit 1
+	</select>
+	
+	<update id="updatePassword" parameterClass="java.util.HashMap" >
+		update company_account
+		set password=#password#,
+		gmt_modified=now()
+		where account=#account#
+	</update>
+	
+	<insert id="insertAccount" parameterClass="companyAccount" >
+		insert into `company_account`
+		(
+		`account`,
+		`company_id`,
+		`contact`,
+		`is_admin`,
+		`tel_country_code`,
+		`tel_area_code`,
+		`tel`,
+		`mobile`,
+		`fax_country_code`,
+		`fax_area_code`,
+		`fax`,
+		`email`,
+		`sex`,
+		`position`,
+		`qq`,
+		`msn`,
+		`back_email`,
+		`is_use_back_email`,
+		`password`,
+		`num_login`,
+		`gmt_last_login`,
+		`gmt_modified`,
+		`gmt_created`)
+		values
+		(
+		#account#,
+		#companyId#,
+		#contact#,
+		#isAdmin#,
+		#telCountryCode#,
+		#telAreaCode#,
+		#tel#,
+		#mobile#,
+		#faxCountryCode#,
+		#faxAreaCode#,
+		#fax#,
+		#email#,
+		#sex#,
+		#position#,
+		#qq#,
+		#msn#,
+		#backEmail#,
+		#isUseBackEmail#,
+		#password#,
+		#numLogin#,
+		now(),
+		now(),
+		now()
+		)
+
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateAccountByUser" parameterClass="companyAccount" >
+		update `company_account`
+		set
+		`contact` = #contact#,
+		`tel_country_code` = #telCountryCode#,
+		`tel_area_code` = #telAreaCode#,
+		`tel` = #tel#,
+		`mobile` = #mobile#,
+		`fax_country_code` = #faxCountryCode#,
+		`fax_area_code` = #faxAreaCode#,
+		`fax` = #fax#,
+		`email` = #email#,
+		`sex` = #sex#,
+		`position` = #position#,
+		`qq` = #qq#,
+		`msn` = #msn#,
+		`weixin` = #weixin#,
+		`back_email` = #backEmail#,
+		`is_use_back_email` = #isUseBackEmail#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<update id="updateAccountByAdmin" parameterClass="companyAccount" >
+		update `company_account`
+		set
+		`contact` = #contact#,
+		`tel_country_code` = #telCountryCode#,
+		`tel_area_code` = #telAreaCode#,
+		`tel` = #tel#,
+		`mobile` = #mobile#,
+		`fax_country_code` = #faxCountryCode#,
+		`fax_area_code` = #faxAreaCode#,
+		`fax` = #fax#,
+		`email` = #email#,
+		`sex` = #sex#,
+		`position` = #position#,
+		`qq` = #qq#,
+		`msn` = #msn#,
+		`weixin` = #weixin#,
+		`back_email` = #backEmail#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<select id="countAccountOfMobile" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from company_account where mobile=#value#
+	</select>
+	
+	<select id="queryAccountOfCompany" parameterClass="java.lang.Integer" resultMap="companyAccountResult">
+		select 
+		<include refid="companyAccount.fullColumn" />
+		from company_account ca
+		where company_id=#value#
+	</select>
+	
+	<update id="updateLoginInfo" parameterClass="java.util.HashMap">
+		update company_account set
+			num_login=num_login+1,
+			gmt_last_login=now(),
+			gmt_modified=now()
+		where account=#account#
+	</update>
+	
+	<sql id="whereByAdmin">
+	<dynamic prepend="where">
+		<isNotEmpty property="account.account" prepend="and">
+			ca.account = #account.account#
+		</isNotEmpty>
+		<isNotEmpty property="account.email" prepend="and">
+			ca.email = #account.email#
+		</isNotEmpty>
+		<isNotEmpty property="account.mobile" prepend="and">
+			ca.mobile = #account.mobile#
+		</isNotEmpty>
+		<isNotNull property="searchDto.isPerson" prepend="and">
+			au.isperson = #searchDto.isPerson#
+		</isNotNull>
+		<isNotEmpty property="searchDto.numLoginFrom" prepend="and">
+			ca.num_login >= #searchDto.numLoginFrom#
+		</isNotEmpty>
+		<isNotEmpty property="searchDto.numLoginTo" prepend="and">
+			#searchDto.numLoginTo# > ca.num_login
+		</isNotEmpty>
+		<isNotEmpty property="searchDto.loginFrom" prepend="and">
+			ca.gmt_last_login >= #searchDto.loginFrom#
+		</isNotEmpty>
+		<isNotEmpty property="searchDto.loginTo" prepend="and">
+			#searchDto.loginTo# > ca.gmt_last_login
+		</isNotEmpty>
+	</dynamic>
+	</sql>
+	
+	<select id="queryAccountByAdmin" parameterClass="java.util.HashMap" resultMap="companyAccountResult">
+		select 
+			<include refid="companyAccount.fullColumn" />
+		from company_account ca
+		<isNotNull property="searchDto.isPerson">
+			left join auth_user au on ca.account = au.username
+		</isNotNull>
+		<include refid="companyAccount.whereByAdmin"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAccountByAdminCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0) from company_account ca
+		<isNotNull property="searchDto.isPerson">
+			left join auth_user au on ca.account = au.username
+		</isNotNull>
+		<include refid="companyAccount.whereByAdmin"/>
+	</select>
+	
+	<select id="queryContactByAccount" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select contact from company_account ca
+		where ca.account=#account# 
+		limit 1
+	</select>
+	
+	<select id="queryCompanyIdByMobile" parameterClass="java.lang.String" resultClass="java.lang.Integer"> 
+		select 
+		ca.company_id
+		from company_account ca
+		where ca.mobile = #value#
+		limit 1
+	</select>
+	<select id="queryAccountByProductId" parameterClass="java.lang.Integer" resultMap="simpleResult">
+		select 
+		<include refid="companyAccount.simpleColumn" />
+		from company_account ca
+		where account = (select account from products p where p.id=#value#)
+		limit 1
+	</select>
+	
+	<select id="queryAccountByCompanyId" parameterClass="java.lang.Integer" resultMap="companyAccountResult" >
+		select 
+		<include refid="companyAccount.fullColumn" />
+		from company_account ca
+		where ca.company_id=#value# 
+		limit 1
+	</select>
+	
+	<select id="queryMobileByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select
+		mobile
+		from company_account
+		where
+		company_id = #companyId#
+		limit 1
+	</select>
+	
+	<select id="countUserByEmail" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from company_account
+		where
+		email = #email#
+		or
+		back_email = #email#
+	</select>
+	
+	<update id="updateInfoByaccount" parameterClass="companyAccount">
+		update company_account set
+			email = #email#,
+			contact = #contact#,
+			gmt_modified=now()
+		where account=#account#
+	</update>
+    <!--根据帐号跟密码获取公司id-->
+    <select id="queryCompanyIdByNameAndPassw" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+     select	company_id
+     from company_account
+     where 	account=#username# and password=#password#
+    </select>
+   <!-- 根据公司ID查找用户帐号 -->
+	<select id="queryCompanyAccountByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		account
+		from company_account
+		where
+		company_id =
+		#companyId#
+		limit 1
+	</select>
+	<update id="updateAccountByAccount" parameterClass="companyAccount">
+		update company_account set
+			num_login=#numLogin#,
+			gmt_last_login=#gmtLastLogin#,
+			gmt_modified=now()
+		where account=#account#
+	</update>
+</sqlMap>

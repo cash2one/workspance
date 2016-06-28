@@ -1,0 +1,133 @@
+    #parse("/bbs/bbs_top.vm")
+	  <!--
+	  <div class="tips">
+          <h3 class="tips_tips1">#if($!{signName})$!{signName}#elseif($!{title})$!stringUtil.controlLength($!{title},15)#else $!{bbsTagsDO.name}#end </h3>
+          <div class="reply_tips">
+       		共有<span class="infor_textcolor3">$!{totalRecords}</span>位网商发表了#if($!{signName})$!{signName}#else关于
+			<span class="infor_textcolor3">#if($!{title})$!stringUtil.controlLength($!{title},60)#else $!{bbsTagsDO.name}#end</span> 的话题#end
+          </div>
+      #parse("/bbs/bbs_top_quick_nav.vm")
+      </div>
+	  -->
+	  <div class="tips_nav">
+		当前位置：<a href="#springUrl('/')">互助社区</a> >#if($!{signName})$!{signName}#elseif($!{title})#printTitle($!{title} 30 "")#else $!{bbsTagsDO.name}#end 
+	  </div>
+          <!--tips_content start-->
+          <div class="tips_content">
+              <!--tipsleft start-->
+              <div class="tipsright">
+              	  <div class="tipsright_header">
+                       <span class="tipsright_header1" >共有<font class="infor_textcolor3"> $!{totalRecords} </font>位网商发表了#if($!{signName})$!{signName}#else关于
+						<font class="infor_textcolor3">#if($!{title})#printTitle($!{title} 30 "")#else $!{bbsTagsDO.name}#end</font> 的话题#end</span>
+                       <span class="tipsright_header2">作者</span>
+                       <span class="tipsright_header3">时间</span>
+                       <span class="tipsright_header4">访问&frasl;回复</span>
+                       <span class="tipsright_header5">所属类别</span>
+                  </div>
+
+                  <div class="tipsright_content">
+                   	  <ul>
+						#foreach($b in $bbsPostDTOList)
+						#set( $startIndexCount = $!{startIndex}+$!{velocityCount})
+						<li>
+                        	 <div class="tipsright_content1">
+						<a href="#springUrl('/viewReply')$!{b.bbsPost.id}.htm" target="_blank">
+            					#printTitle($!{b.bbsPost.title} 28 "")
+                             </a></div>
+                              <div class="tipsright_content2">
+                           	    <span class="tipsright_textcolor2">#if($!{b.nickname})$!{b.nickname}#else 匿名 #end</span>
+                             </div>
+                              <div class="tipsright_content3">
+								<span class="tipsright_textcolor3" title="$!date.format('yyyy-MM-dd HH:mm:ss ',$!{b.bbsPost.postTime})">$!date.format('yyyy-MM-dd ',$!{b.bbsPost.postTime})</span>
+                             </div>
+                              <div class="tipsright_content4">
+                              	  <span class="tipsright_textcolor3">#if($!{b.bbsPost.visitedCount})$!{b.bbsPost.visitedCount}#else 0#end/#if($!{b.bbsPost.replyCount})$!{b.bbsPost.replyCount}#else 0#end</span>
+                             </div>
+                              <div class="tipsright_content5">
+                           	    <a href="#springUrl('/bbsCategory')$!{b.bbsPost.bbsPostCategoryId}.htm" target="_blank">$!{b.categoryName}</a>
+                              </div>
+
+                              <div class="tipsright_content6">
+								##$!{b.bbsPost.content}
+    							#printTitle($!{b.bbsPost.content} 238 "")
+							</div>
+                        </li>
+						#end
+                        <div style="clear:both"></div>
+                    </ul>
+                  </div>
+                  <div class="tips_content2">
+						<div class="pages">
+							#pageBar($totalPages $currentPage  "#if($!{title})&title=$!{title}#end")
+                        </div>
+                  </div>
+                  <div style="clear:both"></div>
+                  <div class="tips_content3">
+                      <div class="tips_content3_div1">
+                          <span class="text_color10">查看更多内容</span>
+						  <input type="hidden"  id="tagsId" name="tagsId" value="$!{tagsId}" />
+                         <input type="text" class="tips_input5" id="title1" name="title1" />
+						 <input type="button" value="" class="tips_text_color12" onClick="javascript:searchBbs(encodeURI(jQuery('#title1').val()))"/>
+                  	   </div>
+                  </div>
+              </div>
+
+      	  <div class="tipsleft">
+             <div class="right4">
+                    <ul>
+                    <li>
+                        <div class="right4_1">
+                          <blockquote>
+							   <script type="text/javascript" src="$!{address.server}/ads/zz91ads.htm?placeId=439" ></script>
+						  </blockquote>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="right4_1">
+                          <blockquote>
+						  <script type="text/javascript" src="$!{address.server}/ads/zz91ads.htm?placeId=440" ></script>
+                        </blockquote>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="right4_1">
+                          <blockquote>
+							<script type="text/javascript" src="$!{address.server}/ads/zz91ads.htm?placeId=441" ></script>
+                        </blockquote>
+                        </div>
+                    </li>
+                </ul>
+              </div>
+			  
+              <div class="tipsleft2">
+ 				   <div class="tips_left2_1"></div>
+                   <div class="tips_left2_2">
+                      <div class="tips_left2_21">
+                      		<ul>
+									#foreach($!{postlist} in $!{postDailylist})
+			                          #set($countVal = $velocityCount+1)
+			                            #if($velocityCount<4)
+                            		<li class="noticeli1" style="background:url($!{address.img}/bbs/images/bbs/icon$!{countVal}.jpg) no-repeat; background-position:center left;">
+								  <a href="#springUrl('/viewReply')$!{postlist.postId}.htm" target="_blank" title="$!{postlist.title}">#printTitle($!{postlist.title} 13 "")</a>
+								  </li>
+			                            #end
+		                              #end
+                            </ul>
+                      </div>
+                        <ul class="tips_left2_21_ul1">
+							#foreach($!{postlist} in $!{postDailylist})
+		                    	#set($countVal = $velocityCount+1)
+		                    	#if($velocityCount>=4)
+                            	<li>
+								<a href="#springUrl('/viewReply')$!{postlist.postId}.htm" target="_blank" title="$!{postlist.title}">
+									#printTitle($!{postlist.title} 13 "")
+							  </a>
+								</li>
+                              	#end
+		                    #end
+                       </ul>
+                   </div>
+			  </div>
+           </div>
+          </div>
+          <!--end-->

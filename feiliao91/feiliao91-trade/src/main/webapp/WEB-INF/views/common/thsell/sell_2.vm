@@ -1,0 +1,80 @@
+<!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script>
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+                <div class="orderright fl">
+                    <div class="tkads-ts">
+                    <i class="icon-ads iconfont">&#xe60e;</i>提示：如因您提供的退货地址错误，导致买家无法退货或退回商品后无法送达，由您承担因此产生的费用。
+                    </div>
+					<form action="" method="post" id="form1">
+                    <div class="true-ads">
+                        退货地址：
+						#foreach($is in $!{addressto})
+						<label><input name="list" type="radio" value="$!{is.id}" class="true-rs"/>
+                        $!{is.areaCode}&nbsp;&nbsp;&nbsp;$!{is.address}&nbsp;&nbsp;&nbsp;$!{is.name}&nbsp;&nbsp;&nbsp; 收 &nbsp;&nbsp;&nbsp;$!{is.mobile}</label><br/><br/> 
+						#end<span id="erroAddress" style="color:red"></span>
+                    </div>
+                    <a href="#springUrl('/address/addressGet.htm')" class="blue manage-ads">管理收货地址</a>
+                    <div class="sm-text clearfix">
+                        <span class="sm-th fl">
+                            退货说明：<br><span class="txt-num">(<span class="j_txtnum">0</span>/<span class="j_number">200</span>字)</span>
+                        </span>
+                        <textarea class="th-tell j_stext"></textarea>
+                    </div>
+                    <div class="cz-ads">
+                        <span class="fsads fsads1">发送退货地址</span>
+                        <a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderReturnId=$!{orderReturn.id}" class="blue">取消并返回</a>
+                    </div>
+					<input type="hidden" name="" id="address"/>
+					<input type="hidden" name="" id="addr"/>
+					<input type="hidden" name="" id="name"/>
+					<input type="hidden" name="" id="mobile"/>
+					</form>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+    var lastNum = parseInt($(".j_number").html());
+    $(".j_stext").bind("keyup",function(){  
+        var allNumber = $(this).val().length;
+        $(".j_txtnum").html(allNumber);
+        allNumber = lastNum - allNumber;
+        if(allNumber<=0){
+            allNumber = 0;
+            $(".j_txtnum").html(lastNum)
+            $(this).val($(this).val().substring(0,lastNum));
+            $(this).css("background","#f2f2f2")
+        }else{
+            $(this).css("background","#fff")
+        }
+    })
+	
+
+	
+	
+	$(".fsads1").click(function(){
+	   var list= $('input:radio[name="list"]:checked').val();
+	   if(list==null){
+	     $("#erroAddress").html("请选择退货地址");
+	    return false;
+	   }else{
+	     $("#erroAddress").html("");
+	   }
+	　　var text=$(".j_stext").val();
+	    jQuery.ajax({
+		 url:"#springUrl('/ordersreturn/updateRegitTwo.htm')",
+    	    type:'post',
+    		dateType:'json',
+    		data:{addressId:list,text:text,orderReturnId:$!{orderReturn.id}},
+    		success:function(data){
+    		ajaxob=eval("("+data+")");
+			if(ajaxob.success){
+			 window.location.href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}";
+			}
+		 }
+		 })
+	})
+    </script>

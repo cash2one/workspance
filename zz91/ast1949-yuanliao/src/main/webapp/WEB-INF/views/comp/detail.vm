@@ -1,0 +1,133 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+		<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+		<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+		<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+        <script src="http://img0.zz91.com/zz91/polymer/js/comm.js"></script>  
+		#set($layout="layout/yuanliaoLayout.vm")
+		#set($in=3)
+		#set($inflag=2)
+        <div class="pagecenter">
+            <div class="thiseat clearfix">
+                <div class="fl">
+                    <a href="#springUrl('/')">首页</a> > <a href="#springUrl('/comp/')">企业库</a> > <span class="thiseat-name"><a href="#springUrl('/comp/detail')$!{company.id}.html">$!{company.name}</a></span>
+                </div>
+            </div>
+
+            <div class="clearfix view-content">
+                <div class="fl view-left">
+                    <div class="view-type">
+                        <a href="#springUrl('/comp')/detail$!{company.id}-1.html"  #if($flag==1) class="this-view" #end>企业介绍<em class="jrgo"></em></a>
+                        <a href="#springUrl('/comp')/detail$!{company.id}-2.html"  #if($flag==2) class="view-type-a1 this-view" #else class="view-type-a1" #end>供求信息<em class="jrgo"></em></a>
+                        <a href="#springUrl('/comp')/detail$!{company.id}-3.html"  #if($flag==3) class="view-type-a2 this-view" #else class="view-type-a2" #end>联系方式<em class="jrgo"></em></a>
+                    </div>
+
+                    <div class="firmabuot">
+                        <div class="firmname">#printTitle($!{company.name} 11 '...')</div>
+                        <div class="firmmore">
+                            <div class="firm-ness">主营业务：#printTitle($!{company.business} 15 '...')</div>
+                            <div class="firm-ness">所在地区：$!{location}</div>
+                            <div class="firm-tact clearfix">
+                                <a href="#springUrl('/comp')/xunjia$!{company.id}.html" target="_blank" class="firm-tell fl">在线询价</a>
+                                <a href="javaScript:void(0)" onclick="mycollect($!{company.id})" class="firm-sc fr">收藏该企业</a>
+                            </div>
+                        </div>
+                    </div>
+					#if(!${flag}||${flag}!=3)
+                    <div class="firmabuot firmabuot2">
+                        <div class="firmname">联系方式</div>
+                        <div class="firmmore">
+                            <div class="contact">
+                                <p>联系人：$!{account.contact}</p>
+                                <p>手机：$!{account.mobile}</p>
+                                <p>电话：#if($!{account.telAreaCode}) $!{account.telAreaCode}-#end$!{account.tel}</p>
+                                <p>QQ：#if($!{account.qq})<a href="http://wpa.qq.com/msgrd?V=1&uin=$!{account.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes" class="dr_btn dr_bg03" target="_blank"><span class="qqimg"></span></a>#end</p>
+								<p>地址：$!{company.address}</p>
+                            </div>
+                        </div>
+                    </div>
+					#end
+                    <div class="firmabuot firmabuot2">
+                        <div class="firmname">产品分类</div>
+                        <div class="firmmore">
+                            <div class="classify">
+                                <p><a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=1">通用塑料($!{conut})</a></p>
+                                <p><a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=2">工程塑料($!{conut2})</a></p>
+                                <p><a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=3">特种塑料($!{conut3})</a></p>
+                                <p><a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=4">塑料合金($!{conut4})</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+				#if(!$flag)
+                <div class="fr view-right">
+                    <div class="firminfo">
+                        <div class="firminfo-title">公司介绍</div>
+                        <div class="firminfo-lost">
+                            <p>#printTitle($!{company.introduction} 100 '...')#if($company.introduction.trim().length()>100)<a href="#springUrl('/comp/detail')$!{company.id}-1.html" class="orange-color">[查看更多]</a>#end</p>
+                        </div>
+                    </div>
+
+                    <div class="firminfo firminfo2">
+                        <div class="firminfo-title">
+                            <span class="fl">最新产品展示</span>
+                            <a class="fr more-newpuc" href="#springUrl('/comp/detail')$!{company.id}-2.html">更多>></a>
+                        </div>
+
+                        <div class="newpuc-list">
+                            <ul class="newpuc clearfix">
+								#set($ss=0)
+								#foreach($in in $list)
+								#if($ss<8)
+                                <li>
+                                    <div class="newpuc-img"><a href="#springUrl('/detail')/$!{in.yuanliao.id}.html"><img #if($!{in.picAddress}) src="$!{address.resource}/$!{in.picAddress}" #else src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" #end width="215" height="215" /></a></div>
+                                    <p class="newpuc-name"><a href="#springUrl('/detail')/$!{in.yuanliao.id}.html">$!{in.yuanliao.title}</a></p>
+                                </li>
+								#end
+								#set($ss=$ss + 1)
+								#end
+                            </ul>
+                        </div>
+                    </div>
+				#else	
+					#if($flag == 1)
+						#parse("/comp/introduce.vm")
+					#end
+					#if($flag == 2)
+						#parse("/comp/supply.vm")
+					#end
+					#if($flag == 3)
+						#parse("/comp/contact.vm")
+					#end
+				#end
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+       function mycollect(a){
+		jQuery.ajax({
+           		url:"#springUrl('/comp/collectYuanliao.htm')",
+            	data:{companyId : a},
+				dataType:"json",
+           		success:function(reg){
+					if(reg.collect=="has"){
+						alert("您已经收藏过该公司！");
+					}else if(reg.collect=="success"){
+						alert("收藏成功");
+					}else if(reg.collect=="login"){
+							open();
+					 }
+				}
+			})
+	}
+	function open(){
+		var pop_login = '<iframe frameborder="0" height="365" width="390"  marginheight="0px" marginwidth="0px" name="poplogin" scrolling="no" src="#springUrl('/miniLogin.htm')"></iframe>';
+            popHtml(pop_login);
+	}
+	
+	function fash(){
+		location.reload();	   
+	}
+    </script>

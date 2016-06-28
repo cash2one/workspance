@@ -1,0 +1,174 @@
+#set($layout="/layout/wendaLayout.vm")
+
+##parse("/common/import.vm")
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/bbs/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor.js"></script>
+<link href="$!{address.img}/bbs/css/zz91.bbs.dialog.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<script src="http://img0.zz91.com/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="http://img0.zz91.com/lib/asto/asto-all-1.0.0.js"></script>
+<script type="text/javascript">
+    var ckeditor
+    jQuery(document).ready(function() {
+        ckeditor =  CKEDITOR.replace("ckeditor1",{
+            toolbar:"post",
+            language : 'zh-cn',
+			height:350
+        });
+
+		jQuery("#title").blur(function(){
+			var val=this.value;
+			var len = 0;
+            for(var i = 0; i < val.length; i++) {
+              len += val.charCodeAt(i) < 0 || val.charCodeAt(i) > 255 ?  2 : 1;
+            }
+            if(len>61){
+				alert("你的标题超过了30个汉字或60个英文的长度！");
+			}
+		});
+		
+		jQuery("#tagsName").blur(function(){
+			var val=this.value;
+			var val1=val.replace(/，/ig,',');
+			var l=val1.split(",");
+            if(l.length>5){
+				alert("你输入的标签最多只能5个");
+			}
+		});
+		
+    });
+    /**
+    * 上传图片
+    */
+	var imgNum=0;
+    function onAjaxUpLoad(data) {
+		imgNum++;
+        var obj = eval(data);
+        var img="<img src='$!{address.resource}/"+obj.path + obj.uploadedFilename+"'/>"
+        var html = ckeditor.document.getBody().getHtml();
+        ckeditor.document.getBody().setHtml(html+img);
+		if(imgNum>=10){
+			jQuery("#uploadDiv").hide();
+		}
+    }
+	
+	## 初始化上传窗口
+	var upload = new Asto.util.PopupBox({
+		url:"#springUrl('/sys/upload/bbs.htm')",
+		callbackFn:function(success, data){
+			//关闭窗口
+			//保存图片信息
+			//成功后刷新页面
+			upload.close();
+			window.location.reload();
+		},
+		title:"上传产品图片",
+		width:450,
+		height:250,
+		modal:true
+	});
+	
+	function uploadPic(){
+		Asto.util.Callback.setSubmitCallback(function(success, data){
+			var img="<img src='$!{address.resource}/"+data.picAddress+"'/>"
+			var html = ckeditor.document.getBody().getHtml();
+			ckeditor.document.getBody().setHtml(html+img);
+			upload.close();
+ 		});
+    	upload.show("#springUrl('/sys/upload/bbs.htm')");
+    }
+	
+	
+</script>
+	
+	
+<!--titlenav start-->
+<div class="titlenav">
+	<span class="titlenav_textcolor1">当前的位置：</span>
+	<span class="text_color2">
+		<a href="#springUrl('/')" target="_blank">互助社区&nbsp;</a>
+	</span>
+	#if($!{categoryId})
+		>><span class="text_color2">
+			<a href="#springUrl('/bbsCategory')$!{categoryId}.htm" target="_blank">&nbsp;$!{bbsPostCategoryDO.name}&nbsp;</a>
+		</span>
+	#end
+	>>&nbsp;发表新话题
+</div>
+<!--titlenav end-->
+<!--topic_content start-->
+	<div class="topic_content_title">
+		发表新话题
+	</div>
+	<div class="topic_content_content1">
+		<form id="postReply" name="postReply" action="#springUrl('/addPostBbs.htm')" method="post" onSubmit="return postReplyChkFrm(this)">
+			<div class="topic_content1_1">
+				<label class="topic_textcolor1">我的大名:</label>
+				<span class="myname">
+					$!{sessionUser.account}
+					<span class="topic_textcolor2"><a href="#springUrl('/')">[返回社区]</a></span>
+				</span>
+			</div>
+			<div class="topic_content1_1">
+				<label for="bbsPostCategoryId" class="topic_textcolor1">所属类别:</label>
+				<select id="bbsPostCategoryId" name="bbsPostCategoryId" class="bbsPostCategoryId">
+					<option value="1"  #if($!{categoryId}==1) selected #end>废料动态</option>
+					<option value="2"  #if($!{categoryId}==2) selected #end>行业知识</option>
+					<option value="3"  #if($!{categoryId}==3) selected #end>江湖风云</option>
+					<option value="4"  #if($!{categoryId}==4) selected #end>社区动态</option>
+					<option value="11"  #if($!{categoryId}==11) selected #end>废料问答</option>
+					<option value="13"  #if($!{categoryId}==13) selected #end>纠纷处理</option>
+					<option value="14"  #if($!{categoryId}==14) selected #end>意见反馈</option>
+					<option value="15"  #if($!{categoryId}==15) selected #end>新手报道</option>
+					<option value="16"  #if($!{categoryId}==16) selected #end>骗子曝光台</option>
+					#if("info@aqsiqcn.com"==$!{sessionUser.account})
+						<option value="17"  #if($!{categoryId}==17) selected #end>AQSIQ</option>
+					#end
+				</select>
+			</div>
+			<div class="topic_content1_1">
+				<label for="title" class="topic_textcolor1">帖子标题:</label>
+				<input type="text" id="title" name="title" class="topic_input1" />
+				<span class="topic_textcolor3">标题长度不能超过30个汉字</span>
+			</div>
+			<div class="topic_content1_3">
+				<input name="imgidupfile" type="hidden" id="imgidupfile" value="$!{bbsUserProfilerDO.id}" />
+				<textarea id="ckeditor1" name='content'></textarea>
+			</div>
+			<div class="topic_content1_4">
+				<div class="topic_content1_41">
+					上传图片
+				</div>
+				<div class="topic_content1_42">
+					<div class="topic_content1_42_1" >
+						<input type="button" onclick="uploadPic()" value="选择文件"/>
+##						<iframe src="#springUrl('/ajaxUpload.htm')?&filetype=img&model=bbsPost" id="upfile" frameborder="no" scrolling="no" allowtransparency="true" style="width:380px; height: 28px;">
+##						</iframe>
+						<span class="topic_textcolor4">图片大小最大2M</span>
+
+					</div>
+				</div>
+			</div>
+			<div style="clear:both"></div>
+			<div class="topic_content1_1">
+				<label for="tagsName" class="topic_textcolor1">话题标签:</label>
+				<input type="text" id="tagsName"  name="tagsName" class="topic_input4"/>
+					<span class="topic_textcolor3">用逗号隔开多个标签，最多可填写5个</span>
+			</div>
+			<input type="hidden" id="path" name="path"/>
+			<div class="topic_content1_6">
+				<input type="submit" onclick="" class="topic_input6" value="" onMouseOver="this.className='topic_input6over';" onMouseOut="this.className='topic_input6';"/>
+				&nbsp;&nbsp;
+			</div>
+		</form>
+	</div>
+	<div class="topic_content1_7">
+		<span>1. 互助社区仅公开再生通会员联系方式;</span>
+		<span>2. 网友应自觉遵守《互联网电子公告服务管理规定》等国家相关法律法规；</span>
+		<span>3. 互助社区所有信息/内容均为用户提供，仅代表用户意见！</span>
+		<span>4. 管理员有权保留或删除论坛中的信息内容；</span>
+		<span>5. 互助社区保留变更及最终解释权;发贴即表明已阅读并接受以上条款。</span>
+	</div>
+	<!--topic_content end-->
+</div>

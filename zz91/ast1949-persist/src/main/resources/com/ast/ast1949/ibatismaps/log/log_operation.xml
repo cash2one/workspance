@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="logOperation">
+	<typeAlias alias="logOperationDO" type="com.ast.ast1949.domain.log.LogOperation" />
+	
+	<resultMap class="logOperationDO" id="resultLogOperationDO">
+		<result property="id" column="id" />
+		<result property="targetId" column="target_id" />
+		<result property="operator" column="operator" />
+		<result property="operation" column="operation" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="allColumn">`id`,`target_id`,`operator`,`operation`, `remark`,`gmt_created`,`gmt_modified`</sql>
+	
+	<insert id="insert" parameterClass="logOperationDO">
+		INSERT INTO `log_operation` (`target_id`,`operator`,`operation`, `remark`,`gmt_created`,`gmt_modified`)
+		VALUES (#targetId#,#operator#,#operation#, #remark#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">select
+			LAST_INSERT_ID()</selectKey>
+	</insert>
+	
+	<sql id="dynamic">where target_id = #targetId# and operation = #operation#</sql>
+	
+	<select id="queryByTargetIdAndOperation" parameterClass="java.util.Map" resultMap="resultLogOperationDO">
+		select
+		<include refid="logOperation.allColumn" />
+		from log_operation
+		<include refid="logOperation.dynamic" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCountByTargetIdAndOperation" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) 
+		from log_operation
+		<include refid="logOperation.dynamic" />
+	</select>
+	<!--搜索remark的值-->
+	<select id="queryRemarkByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select remark
+		from log_operation
+		where id=#companyId#
+	</select>
+    <!--被拉黑的理由-->
+    <select id="queryRemarkByCId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+    select remark
+    from log_operation
+    where target_id=#cid# and operation="black_operation"
+    order by gmt_created desc
+    limit 1				
+    </select>	
+	
+</sqlMap>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsViewHistory">
+
+	<typeAlias alias="productsViewHistoryDO" type="com.ast.ast1949.domain.products.ProductsViewHistory" />
+
+	<!-- 完整的列，提供给查看详细供求信息时使用 -->
+	<sql id="fullColumn">
+		p.id,
+		p.cookie_key,
+		p.company_id,
+		p.product_id,
+		p.product_name,
+		p.product_pic_url,
+		p.gmt_last_view,
+		p.gmt_created,
+		p.gmt_modified
+	</sql>
+
+	<resultMap class="productsViewHistoryDO" id="productsViewHistoryResult">
+		<result column="id" property="id" ></result>
+		<result column="cookie_key" property="cookieKey" ></result>
+		<result column="company_id" property="companyId" ></result>
+		<result column="product_id" property="productId" ></result>
+		<result column="product_name" property="productName" ></result>
+		<result column="product_pic_url" property="productPicUrl" ></result>
+		<result column="gmt_last_view" property="gmtLastView" ></result>
+		<result column="gmt_created" property="gmtCreated" ></result>
+		<result column="gmt_modified" property="gmtModified" ></result>
+	</resultMap>
+
+	<insert id="insert" parameterClass="productsViewHistoryDO" >
+		insert into products_view_history 
+		(cookie_key,company_id,product_id,product_name,product_pic_url,
+		gmt_last_view,gmt_created,gmt_modified)
+		values(#cookieKey#,#companyId#,#productId#,#productName#,#productPicUrl#,now(),now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id() 
+		</selectKey>
+	</insert>
+
+	<select id="queryHistory" parameterClass="java.util.Map" resultMap="productsViewHistoryResult">
+		select 
+		<include refid="productsViewHistory.fullColumn"/>
+		from products_view_history p
+		where cookie_key = #cookieKey#
+		order by gmt_last_view desc
+		limit #size#
+	</select> 
+
+	<update id="updateCompanyIdByCookieKey" parameterClass="java.util.Map">
+		update products_view_history 
+		set company_id=#companyId#,gmt_modified=now()
+		where cookie_key = #cookieKey#
+	</update>
+
+	<select id="queryKeyByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select cookie_key 
+		from products_view_history
+		where company_id = #companyId#
+		limit 1
+	</select>
+
+	<update id="updateGmtLastView" parameterClass="java.lang.Integer">
+		update products_view_history
+		set gmt_last_view=now(),gmt_modified=now()
+		where id = #id#
+	</update>
+
+</sqlMap>

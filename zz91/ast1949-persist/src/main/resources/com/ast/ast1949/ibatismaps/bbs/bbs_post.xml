@@ -1,0 +1,1275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPost">
+	<typeAlias alias="bbsPostDO" type="com.ast.ast1949.domain.bbs.BbsPostDO" />
+	<typeAlias alias="bbsPostType" type="com.ast.ast1949.domain.bbs.BbsPostType" />
+
+	<resultMap id="simplePostResult" class="bbsPostDO">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="companyId" column="company_id" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="bbsPostAssistId" column="bbs_post_assist_id" />
+		<result property="title" column="title" />
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+		<result property="checkStatus" column="check_status" />
+		<result property="postType" column="post_type" />
+		<result property="checkTime" column="check_time" />
+		<result property="isDel" column="is_del" />
+		<result property="content" column="content" />
+	</resultMap>
+	<resultMap id="adminPostResult" class="bbsPostDO">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="companyId" column="company_id" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="bbsPostAssistId" column="bbs_post_assist_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content"/>
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="postType" column="post_type" />
+		<result property="checkTime" column="check_time" />
+		<result property="isDel" column="is_del" />
+		<result property="unpassReason" column="unpass_reason" />
+	</resultMap>
+
+	<typeAlias alias="profiler"
+		type="com.ast.ast1949.domain.bbs.BbsUserProfilerDO" />
+	<typeAlias alias="postDto" type="com.ast.ast1949.dto.bbs.PostDto" />
+
+	<resultMap id="profilerResult" class="profiler">
+		<result property="id" column="profiler_id" />
+		<result property="nickname" column="nickname" />
+		<result property="realName" column="real_name" />
+		<result property="integral" column="integral" />
+		<result property="postNumber" column="post_number" />
+		<result property="replyNumber" column="reply_number" />
+		<result property="essenceNumber" column="essence_number" />
+	</resultMap>
+
+	<resultMap id="postDtoResult" class="postDto">
+		<result property="post" resultMap="bbsPost.simplePostResult" />
+		<result property="profiler" resultMap="bbsPost.profilerResult" />
+	</resultMap>
+
+	<sql id="dynmicPostByCategory">
+		where p.is_del='0' and p.check_status='1'
+		<isNotNull prepend="and" property="categoryId">
+			p.bbs_post_category_id=#categoryId#
+		</isNotNull>
+		<isNotNull prepend="and" property="searchType">
+			<isEqual property="searchType" compareValue="2">
+				exists( select id
+				from bbs_post_reply where p.id = bbs_post_id )
+			</isEqual>
+		</isNotNull>
+	</sql>
+
+	<sql id="simplePostColumn">
+		p.id,p.account,p.company_id,p.bbs_user_profiler_id,p.bbs_post_category_id,
+		p.title,p.visited_count,p.reply_count,p.post_time,p.content,
+		p.reply_time,p.integral,p.check_status,p.post_type,p.check_time,p.is_del,
+		p.bbs_post_assist_id,p.notice_count,p.recommend_count,p.collect_count,category
+	</sql>
+
+	<sql id="adminPostColumn">
+		p.id,p.account,p.company_id,p.bbs_user_profiler_id,p.bbs_post_category_id,
+		p.title,p.content,p.visited_count,p.reply_count,p.post_time,p.bbs_post_assist_id,
+		p.reply_time,p.integral,p.check_status,p.post_type,p.check_time,p.is_del,
+		p.check_person,p.unpass_reason
+	</sql>
+
+	<sql id="simpleProfilerColumn">
+		pf.id as profiler_id,
+		pf.nickname,pf.real_name,pf.integral,pf.post_number,
+		pf.reply_number,pf.essence_number
+	</sql>
+
+	<select id="queryPostByCategory" parameterClass="java.util.HashMap"
+		resultMap="postDtoResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		<include refid="bbsPost.dynmicPostByCategory" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPostByCategoryCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		<include refid="bbsPost.dynmicPostByCategory" />
+	</select>
+
+	<resultMap id="postDtoWithContentResult" class="postDto">
+		<result property="post" resultMap="bbsPost.simplePostWithContentResult" />
+		<result property="profiler" resultMap="bbsPost.profilerResult" />
+	</resultMap>
+
+	<resultMap id="simplePostWithContentResult" class="bbsPostDO">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="content" column="content" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="title" column="title" />
+		<result property="frontCategoryId" column="front_category_id" />
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+	</resultMap>
+
+	<resultMap id="simplePostWithOutContentResult" class="bbsPostDO">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="title" column="title" />
+		<result property="frontCategoryId" column="front_category_id" />
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+		<result property="content" column="content" />
+	</resultMap>
+
+	<sql id="dynmicPostBySearch">
+		where p.is_del='0' and p.check_status='1'
+	</sql>
+
+	<sql id="simplePostColumnWithContent">
+		p.id,p.account,p.company_id,p.bbs_user_profiler_id,p.bbs_post_category_id,
+		p.title,p.front_category_id,p.visited_count,p.reply_count,p.post_time,
+		p.reply_time,p.integral,p.content
+	</sql>
+
+	<sql id="simplePostColumnWithOutContent">
+		p.id,p.account,p.company_id,p.bbs_user_profiler_id,p.bbs_post_category_id,
+		p.title,p.front_category_id,p.visited_count,p.reply_count,p.post_time,
+		p.reply_time,p.integral,p.content
+	</sql>
+
+	<select id="queryPostBySearch" parameterClass="java.util.HashMap"
+		resultMap="postDtoWithContentResult">
+		select
+		<include refid="bbsPost.simplePostColumnWithContent" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		<include refid="bbsPost.dynmicPostBySearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<!-- 最新话题查询 -->
+	<select id="querytheNewsPost" parameterClass="java.util.HashMap"
+		resultMap="simplePostWithContentResult">
+		select
+		<include refid="bbsPost.simplePostColumnWithContent" />
+		from bbs_post p
+		where
+		p.is_del='0' and p.check_status='1'
+		<dynamic>
+			<isNotEmpty property="account" prepend="and">
+				p.account=#account#
+			</isNotEmpty>
+		</dynamic>
+		order by p.post_time desc
+		limit #maxSize#
+	</select>
+	<!-- - -->
+
+	<select id="queryPostBySearchCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		<include refid="bbsPost.dynmicPostBySearch" />
+	</select>
+
+	<select id="querySimplePostByCategory" resultMap="simplePostWithOutContentResult"
+		parameterClass="java.util.HashMap">
+		select
+		<include refid="bbsPost.simplePostColumnWithOutContent" />
+		from bbs_post p
+		<include refid="bbsPost.dynmicPostByCategory" />
+		order by post_time desc
+		limit #max#
+	</select>
+
+	<sql id="dynmicPostByAdmin">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="post.checkStatus">
+				p.check_status=#post.checkStatus#
+			</isNotEmpty>
+			<isEqual prepend="and" property="post.companyId"
+				compareValue="0">
+				p.company_id=0
+			</isEqual>
+			<isEqual prepend="and" property="post.companyId"
+				compareValue="-1">
+				p.company_id!=0
+			</isEqual>
+			<isGreaterEqual prepend="and" property="post.companyId"
+				compareValue="1">
+				p.company_id=#post.companyId#
+			</isGreaterEqual>
+			<isNotEmpty prepend="and" property="post.isDel">
+				p.is_del=#post.isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="post.postType">
+				p.post_type=#post.postType#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="post.bbsPostCategoryId">
+				p.bbs_post_category_id=#post.bbsPostCategoryId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="post.bbsPostAssistId">
+				p.bbs_post_assist_id=#post.bbsPostAssistId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="post.title">
+				p.title like
+				concat(#post.title#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="post.account">
+				p.account=#post.account#
+			</isNotEmpty>
+			<isNotEmpty property="selectTime">
+				<isNotEmpty property="from" prepend="and">
+					p.$selectTime$>=#from#
+				</isNotEmpty>
+				<isNotEmpty property="to" prepend="and">
+					#to#>p.$selectTime$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryPostByAdmin" parameterClass="java.util.HashMap"
+		resultMap="adminPostResult">
+		select
+		<include refid="bbsPost.adminPostColumn" />
+		from bbs_post p
+		<include refid="bbsPost.dynmicPostByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPostByAdminCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		<include refid="bbsPost.dynmicPostByAdmin" />
+	</select>
+
+	<update id="updateCheckStatus" parameterClass="java.util.HashMap">
+		update bbs_post
+		set check_status=#checkStatus#,
+		gmt_modified=now(),
+		check_time=now(),
+		check_person=#admin#
+		where id=#id#
+	</update>
+
+	<update id="updateCheckStatusForFront" parameterClass="java.util.HashMap">
+		update
+		bbs_post
+		set check_status=#checkStatus#,
+		gmt_modified=now(),
+		post_time=now()
+		where id=#id#
+	</update>
+
+	<update id="recommendPostById" parameterClass="java.lang.Integer">
+		update bbs_post
+		set post_type='3',
+		gmt_modified=now()
+		where id=#value#
+	</update>
+
+
+	<update id="updateIsDel" parameterClass="java.util.HashMap">
+		update bbs_post
+		set
+		is_del=#isDel#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<delete id="deleteBbsPost" parameterClass="java.lang.Integer">
+		delete from bbs_post
+		where id=#value#
+	</delete>
+
+	<resultMap class="bbsPostDO" id="fullColumnResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="isDel" column="is_del" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkTime" column="check_time" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="uncheckedCheckStatus" column="unchecked_check_status" />
+		<result property="postType" column="post_type" />
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+		<result property="tags" column="tags" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="bbsPostAssistId" column="bbs_post_assist_id" />
+		<result property="noticeCount" column="notice_count" />
+		<result property="recommendCount" column="recommend_count" />
+		<result property="collectCount" column="collect_count" />
+		<result property="category" column="category" />
+		<result property="url" column="url" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		bp.`id`,
+		bp.`company_id`,
+		bp.`account`,
+		bp.`bbs_user_profiler_id`,
+		bp.`bbs_post_category_id`,
+		bp.`title`,
+		bp.`content`,
+		bp.`is_del`,
+		bp.`check_person`,
+		bp.`check_status`,
+		bp.`check_time`,
+		bp.`unpass_reason`,
+		bp.`unchecked_check_status`,
+		bp.`post_type`,
+		bp.`visited_count`,
+		bp.`reply_count`,
+		bp.`post_time`,
+		bp.`reply_time`,
+		bp.`integral`,
+		bp.`tags`,
+		bp.`gmt_created`,
+		bp.`gmt_modified`,
+		bp.`bbs_post_assist_id`,
+		bp.`notice_count`,
+		bp.`recommend_count`,
+		bp.`collect_count`,
+		bp.`category`,
+		bp.`url`
+	</sql>
+
+	<insert id="insertPost" parameterClass="bbsPostDO">
+		insert into `bbs_post`
+		(
+		`company_id`,
+		`account`,
+		`bbs_user_profiler_id`,
+		`bbs_post_category_id`,
+		`title`,
+		`content`,
+		`is_del`,
+		`check_person`,
+		`check_status`,
+		`check_time`,
+		`unpass_reason`,
+		`unchecked_check_status`,
+		`post_type`,
+		`visited_count`,
+		`reply_count`,
+		`post_time`,
+		`reply_time`,
+		`integral`,
+		`tags`,
+		`gmt_created`,
+		`gmt_modified`,
+		`bbs_post_assist_id`,
+		`category`,
+		`url`
+		)
+		values
+		(
+		#companyId#,
+		#account#,
+		#bbsUserProfilerId#,
+		#bbsPostCategoryId#,
+		#title#,
+		#content#,
+		#isDel#,
+		#checkPerson#,
+		#checkStatus#,
+		#checkTime#,
+		#unpassReason#,
+		#uncheckedCheckStatus#,
+		#postType#,
+		#visitedCount#,
+		#replyCount#,
+		#postTime#,
+		#replyTime#,
+		#integral#,
+		#tags#,
+		now(),
+		now(),
+		#bbsPostAssistId#,
+		#category#,
+		#url#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="queryPostById" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from `bbs_post` bp
+		where bp.id=#value#
+	</select>
+
+	<select id="queryOnBbsPostById" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from `bbs_post` bp
+		<dynamic prepend="where">
+		<![CDATA[ bp.id>#id# ]]>
+		</dynamic>
+		and bp.check_status = '1'
+		and bp.post_type in (select post_type from
+		bbs_post
+		where id=#id#)
+		order by id
+		asc
+		limit 0,1
+	</select>
+
+	<select id="queryDownBbsPostById" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from `bbs_post` bp
+		<dynamic prepend="where">
+		<![CDATA[ bp.id<#id# ]]>
+		</dynamic>
+		and bp.check_status = '1'
+		and bp.post_type in (select post_type from
+		bbs_post
+		where id=#id#)
+		order by id
+		desc
+		limit 0,1
+	</select>
+
+	<update id="updatePostByAdmin" parameterClass="bbsPostDO">
+		update `bbs_post`
+		set
+		`title` = #title#,
+		`bbs_post_category_id` = #bbsPostCategoryId#,
+		bbs_post_assist_id= #bbsPostAssistId#,
+		`post_type` = #postType#,
+		`integral` = #integral#,
+		`tags` = #tags#,
+		`visited_count` =
+		#visitedCount#,
+		`reply_count` = #replyCount#,
+		`post_time` = #postTime#,
+		`reply_time` = #replyTime#,
+		`category` = #category#,
+		`url` = #url#,
+		`gmt_modified` =now()
+		where id=#id#
+	</update>
+
+	<select id="queryRecentByAccount" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		where
+		p.is_del='0' and (p.check_status='1' or
+		p.check_status='2')
+		<dynamic>
+			<isNotEmpty property="account" prepend="and">
+				p.account=#account#
+			</isNotEmpty>
+		</dynamic>
+		order by p.post_time desc
+		limit #maxSize#
+	</select>
+
+	<resultMap id="postByTypeResult" class="bbsPostDO">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="companyId" column="company_id" />
+		<result property="bbsUserProfilerId" column="bbs_user_profiler_id" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="visitedCount" column="visited_count" />
+		<result property="replyCount" column="reply_count" />
+		<result property="postTime" column="post_time" />
+		<result property="replyTime" column="reply_time" />
+		<result property="integral" column="integral" />
+		<result property="checkStatus" column="check_status" />
+		<result property="postType" column="post_type" />
+		<result property="checkTime" column="check_time" />
+		<result property="isDel" column="is_del" />
+		<result property="bbsPostAssistId" column="bbs_post_assist_id" />
+		<result property="noticeCount" column="notice_count" />
+		<result property="recommendCount" column="recommend_count" />
+		<result property="collectCount" column="collect_count" />
+		<result property="category" column="category" />
+	</resultMap>
+
+	<select id="queryPostWithContentByType" parameterClass="java.util.HashMap"
+		resultMap="postByTypeResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,p.content
+		from bbs_post p
+		where p.post_type=#postType#
+		and p.is_del='0'
+		and p.check_status='1'
+		order by p.post_time
+		desc
+		limit #size#
+	</select>
+
+	<select id="queryPostByType" parameterClass="java.util.HashMap"
+		resultMap="postDtoResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.post_type=#postType#
+		and p.is_del='0' and p.check_status='1'
+		order by p.post_time desc
+		limit #size#
+	</select>
+
+	<!-- ge duo -->
+	<!-- 互助周刊等类别页面数据 -->
+
+	<sql id="queryByPostTypeDynamic">
+		<dynamic>
+			where
+			p.is_del='0' and p.check_status='1'
+			<isNotEmpty prepend="and" property="postType">
+				p.post_type=#postType#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryMorePostByType" parameterClass="java.util.HashMap"
+		resultMap="postDtoWithContentResult">
+		select
+		<include refid="bbsPost.simplePostColumnWithContent" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		<include refid="queryByPostTypeDynamic" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryMorePostByTypeCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post p
+		left join bbs_user_profiler pf on
+		p.account=pf.account
+		<include refid="queryByPostTypeDynamic" />
+	</select>
+
+	<select id="queryPostOrderBy" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		where
+		p.is_del='0' and (p.check_status='1' or
+		p.check_status='2')
+		order by $sort$ $dir$
+		limit #size#
+	</select>
+
+	<select id="queryPostByViewLog" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		inner join bbs_view_log bvl on p.id=bvl.bbs_post_id
+		where bvl.gmt_target=#gmtTarget#
+		order by num desc
+		limit #size#
+	</select>
+
+	<sql id="dynamicByUser">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.account">
+				p.account=#bbsPostSearchDto.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.checkStatus">
+				p.check_status=#bbsPostSearchDto.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.isDel">
+				p.is_del=#bbsPostSearchDto.isDel#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="bbsPostSearchDto.bbsPostCategoryId">
+				bbs_post_category_id =
+				#bbsPostSearchDto.bbsPostCategoryId#
+			</isNotNull>
+			<isNull prepend="and" property="bbsPostSearchDto.bbsPostCategoryId">
+				(bbs_post_category_id &lt; 11
+				or bbs_post_category_id &gt; 11)
+			</isNull>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.replyAccount">
+				exists(select id from
+				bbs_post_reply where account = #bbsPostSearchDto.replyAccount# and
+				p.id = bbs_post_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.title">
+				p.title like
+				concat("%",#bbsPostSearchDto.title#,"%")
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryPostByUser" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		<include refid="bbsPost.dynamicByUser" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPostByUserCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post p
+		<include refid="bbsPost.dynamicByUser" />
+	</select>
+	<sql id="dynamicByBbs">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.account">
+				p.account=#bbsPostSearchDto.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.checkStatus">
+				p.check_status=#bbsPostSearchDto.checkStatus#
+			</isNotEmpty>
+			<isNull prepend="and" property="bbsPostSearchDto.checkStatus">
+				(p.check_status =1 or
+				p.check_status =2)
+			</isNull>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.isDel">
+				p.is_del=#bbsPostSearchDto.isDel#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="bbsPostSearchDto.bbsPostCategoryId">
+				p.bbs_post_category_id =
+				#bbsPostSearchDto.bbsPostCategoryId#
+			</isNotNull>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.replyAccount">
+				exists(select id from
+				bbs_post_reply where account = #bbsPostSearchDto.replyAccount# and
+				p.id = bbs_post_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsPostSearchDto.title">
+				p.title like
+				concat("%",#bbsPostSearchDto.title#,"%")
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryMyBbsCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post p
+		<include refid="bbsPost.dynamicByBbs" />
+	</select>
+	<update id="updatePostByUser" parameterClass="bbsPostDO">
+		update
+		`bbs_post`
+		set
+		`title` = #title#,
+		`content` = #content#,
+		<isNotEmpty property="bbsPostAssistId">
+		`bbs_post_assist_id` =#bbsPostAssistId#,
+		</isNotEmpty>
+		`tags` = #tags#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+
+	<select id="queryPostWithProfileById" parameterClass="java.lang.Integer"
+		resultMap="postDtoWithContentResult">
+		select
+		<include refid="bbsPost.simplePostColumnWithContent" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.id=#value#
+		limit 1
+	</select>
+
+	<select id="queryPostOrderVisitCount" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		where
+		p.is_del='0' and (p.check_status='1' or
+		p.check_status='2')
+		<dynamic>
+			<isNotEmpty property="account" prepend="and">
+				p.account=#account#
+			</isNotEmpty>
+		</dynamic>
+		order by p.visited_count desc
+		limit #size#
+	</select>
+
+	<select id="queryContent" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select content from bbs_post where id=#value# limit 1
+	</select>
+
+	<update id="updateContent" parameterClass="java.util.HashMap">
+		update bbs_post
+		set
+		content=#content#,gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<resultMap id="postTypeResult" class="bbsPostType">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+	</resultMap>
+
+	<select id="queryPostTypeChild" parameterClass="java.lang.String"
+		resultMap="postTypeResult">
+		select id,code,name
+		from bbs_post_type
+		where code like
+		concat(#value#,'____')
+	</select>
+
+	<select id="queryPostTypeChildCount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_type
+		where code like
+		concat(#value#,'____')
+	</select>
+
+	<select id="queryPostTypeName" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select name from bbs_post_type where
+		id=#value#
+	</select>
+
+	<!-- 根据关键字查询，再生地图使用 -->
+	<resultMap class="bbsPostDO" id="simpleMap4Map">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="postTime" column="post_time" />
+	</resultMap>
+	<select id="queryPostByKey" parameterClass="java.util.HashMap"
+		resultMap="simpleMap4Map">
+		select
+		id,title,post_time
+		from bbs_post
+		where
+		is_del='0' and
+		check_status='1'
+		and title like concat('%',#title#,'%')
+		order by
+		post_time desc
+		limit #size#
+	</select>
+
+
+	<select id="query24HourHot" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		where p.is_del='0' and p.check_status='1' and
+		p.post_time>=#gmtTarget#
+		<isNotNull property="categoryId">
+			and p.bbs_post_category_id=#categoryId#
+		</isNotNull>
+		order by p.visited_count desc
+		limit #size#
+	</select>
+
+	<select id="query24HourHotByAnswer" parameterClass="java.util.HashMap"
+		resultMap="postDtoResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.is_del='0' and p.check_status='1' and p.post_time>=#gmtTarget#
+		and p.bbs_post_category_id=1
+		order by p.reply_count desc
+		limit #size#
+	</select>
+
+	<select id="queryMostViewedPost" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		from bbs_post p
+		where p.is_del='0' and (p.check_status='1' or
+		p.check_status='2') and p.post_time>=#gmtTarget#
+		order by p.reply_count
+		desc
+		limit #size#
+	</select>
+
+	<select id="queryCountPostByTime" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post p
+		where
+		p.is_del='0'
+		and p.check_status='1'
+		<isNotNull property="categoryId">
+			and p.bbs_post_category_id=#categoryId#
+		</isNotNull>
+		<isNotEmpty property="fromDate">
+			and p.post_time>=#fromDate#
+		</isNotEmpty>
+		<isNotEmpty property="toDate">
+			and #toDate# >= p.post_time
+		</isNotEmpty>
+	</select>
+	<sql id="dynamicBybbsPostCompany">
+		<dynamic prepend="where">
+			p.is_del='0'
+			and p.check_status='1'
+			and(p.bbs_post_category_id &lt; 11 or p.bbs_post_category_id &gt; 11)
+		</dynamic>
+	</sql>
+	<select id="bbsPostCompany" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select distinct company_id
+		from bbs_post p
+		<include refid="bbsPost.dynamicBybbsPostCompany" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="bbsPostCompanyCount" resultClass="java.lang.Integer">
+		select
+		count(distinct company_id)
+		from bbs_post p
+		<include refid="bbsPost.dynamicBybbsPostCompany" />
+	</select>
+	<!--热门关注 -->
+	<select id="queryBbsPostByNoticeAReplyTime" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+		order by
+		bp.notice_count desc,bp.reply_time desc
+		limit #size#
+	</select>
+	<!--根据附属类别获取bbsPost -->
+	<select id="queryBbsPostByAssistId" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status='1' and
+		bp.bbs_post_assist_id=#assistId#
+		order by bp.id desc
+		limit #size#
+	</select>
+	<!--等待回答 -->
+	<select id="queryWaitAnswerBbsPost" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1' and
+		2>bp.reply_count
+		order by bp.post_time desc
+		limit #size#
+	</select>
+	<!--热门问答 -->
+	<select id="queryHotBbsPost" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id=#categoryId#
+		order by
+		bp.visited_count desc,bp.reply_time desc
+		limit #size#
+	</select>
+
+	<!-- 最新商机 --><!-- 热门关注 --><!-- 热门回复 -->
+	<select id="pagePostNew" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id=#cateGoryId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="pagePostNewCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post bp
+		where bp.is_del='0' and
+		bp.check_status>'0' and
+		'3'>bp.check_status and
+		bp.bbs_post_category_id=#cateGoryId#
+	</select>
+
+	<!--热门问答列表页 -->
+	<select id="queryListHotBbsPost" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--热门问答列表页记录数 -->
+	<select id="countListHotBbsPost" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+	</select>
+	<!--发现问题列表 -->
+	<select id="queryListForQA" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.gmt_modified>#date# and
+		bp.bbs_post_category_id='1' and bp.is_del='0' and bp.check_status>'0'
+		and '3'>bp.check_status
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--发现问题列表记录条数 -->
+
+	<select id="countListForQA" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where
+		bp.gmt_modified>#date# and bp.check_status>'0' and '3'>bp.check_status
+		and bp.is_del='0' and bp.bbs_post_category_id='1'
+	</select>
+	<!--等待问答列表 -->
+	<select id="queryListForWait" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where reply_count>2 and bp.is_del='0' and
+		bp.check_status>'0' and '3'>bp.check_status and
+		bp.bbs_post_category_id='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--等待问答列表记录条数 -->
+	<select id="countListForWait" resultClass="java.lang.Integer">
+		select count(0)
+		from
+		bbs_post bp
+		where reply_count>2 and bp.is_del='0' and
+		bp.check_status>'0' and '3'>bp.check_status and
+		bp.bbs_post_category_id='1'
+	</select>
+	<!--最新问题列表 -->
+	<select id="queryListForNewQA" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where date(post_time)>#date# and bp.is_del='0' and
+		bp.check_status>'0' and '3'>bp.check_status and
+		bp.bbs_post_category_id='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--最新问题列表记录条数 -->
+	<select id="countListForNewQA" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where
+		date(post_time)>#date# and bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+	</select>
+	<!--热门关注列表 -->
+	<select id="queryListForHotNotice" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--热门关注列表记录总条数 -->
+	<select id="countListForHotNotice" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status>'0' and
+		'3'>bp.check_status and bp.bbs_post_category_id='1'
+	</select>
+	<!--全部、热门、精华帖子列表 -->
+	<select id="queryAllListBbsPost" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.check_status>'0' and '3'>bp.check_status and
+		bp.is_del='0' and bp.bbs_post_assist_id=#assistId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--辅助类别帖子列表记录总数 -->
+	<select id="countBbsPostByassistId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		left join bbs_user_profiler
+		pf on p.account=pf.account
+		where p.check_status>'0' and
+		'3'>p.check_status and p.is_del='0' and bbs_post_assist_id=#assistId#
+	</select>
+	<!--全部、热门、精华头条列表 -->
+	<select id="queryToutiaoByPostType" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.check_status>'0' and '3'>bp.check_status and
+		bp.is_del='0' and bp.bbs_post_category_id='2' and bp.post_type='3'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--头条列表记录条数 -->
+	<select id="countToutiaoByPostType" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.check_status>'0' and '3'>p.check_status and p.is_del='0' and
+		p.bbs_post_category_id='2' and post_type='3'
+	</select>
+	<!--等我答 -->
+	<select id="queryWaitAnswerByReplyCount" parameterClass="java.util.HashMap"
+		resultMap="postDtoResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.check_status='1' and p.is_del='0' and p.reply_count='0' and p.bbs_post_category_id !='106'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--等我答列表记录条数 -->
+	<select id="countWaitAnswerByReplyCount" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from bbs_post p
+		where p.check_status>'0' and '3'>p.check_status
+		and p.is_del='0' and p.reply_count='0' and p.bbs_post_category_id !='106'
+	</select>
+	<!--某用户的问答或帖子 -->
+	<select id="queryBbsPostByUser" parameterClass="java.util.HashMap"
+		resultMap="postDtoResult">
+		select
+		<include refid="bbsPost.simplePostColumn" />
+		,
+		<include refid="bbsPost.simpleProfilerColumn" />
+		from bbs_post p
+		left join bbs_user_profiler pf on p.account=pf.account
+		where p.bbs_post_category_id=#categoryId# and p.account=#account# and
+		p.is_del='0'
+		<isNotEmpty prepend="and" property="keywords">
+			title like
+			concat('%',#keywords#,'%')
+		</isNotEmpty>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--某用户的帖子或问答数 -->
+	<select id="countBbsPostByUser" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post p
+		left join bbs_user_profiler pf on
+		p.account=pf.account
+		where
+		p.is_del='0' and
+		p.bbs_post_category_id=#categoryId# and p.account=#account#
+		<isNotEmpty prepend="and" property="keywords">
+			title like
+			concat('%',#keywords#,'%')
+		</isNotEmpty>
+	</select>
+	<!--修改关注数 -->
+	<update id="updateNoticeCount" parameterClass="java.util.HashMap">
+		update bbs_post
+		set notice_count=#noticeCount#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--修改收藏数 -->
+	<update id="updateCollectCount" parameterClass="java.util.HashMap">
+		update bbs_post
+		set collect_count=#collectCount#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--修改推荐数 -->
+	<update id="updateRecommendCount" parameterClass="java.util.HashMap">
+		update bbs_post
+		set Recommend_count=#recommendCount#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--某用户的问答或帖子 -->
+	<select id="queryBbsPostByCompanyId" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.company_id=#companyId# and bp.is_del='0' and
+		bp.check_status>'0' and '3'>bp.check_status and
+		bp.bbs_post_category_id=#categoryId#
+		order by post_time desc
+		limit
+		#size#
+	</select>
+	<!--某用户的问答或帖子数 -->
+	<select id="countBbsPostByCompanyId" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where
+		bp.company_id=#companyId# and bp.is_del='0' and
+		bp.bbs_post_category_id=#categoryId#
+	</select>
+	<!--新某用户的问答或帖子数 -->
+	<select id="countBbsByCompanyId" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post bp
+		where
+		bp.company_id=#companyId# and bp.is_del='0' and
+		bp.bbs_post_category_id=#categoryId#
+	</select>
+	<!--某用户的问答或帖子列表 -->
+	<select id="ListBbsPostByCompanyId" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.company_id=#companyId# and bp.is_del='0' and
+		bp.check_status=1 and bp.bbs_post_category_id=#categoryId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--大家都在关注,关注数排序，浏览量排序 -->
+	<select id="queryPostByNoticeAndView" parameterClass="java.util.Map"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0'
+		<dynamic>
+			<isNotEmpty prepend="and" property="bbsPostCategoryId">
+				bp.bbs_post_category_id=#categoryId#
+			</isNotEmpty>
+		</dynamic>
+		order by bp.notice_count desc,visited_count desc
+		limit #size#
+	</select>
+	<!--最新发布的内容 -->
+	<select id="queryNewPost" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPost.fullColumn" />
+		from bbs_post bp
+		where bp.is_del='0' and bp.check_status='1'
+		order by
+		post_time desc
+		limit #size#
+	</select>
+	<update id="updateVisitedCountById" parameterClass="java.util.Map">
+		update
+		bbs_post
+		set visited_count=#visitCount#
+		where id=#id#
+	</update>
+	<!-- 将帖子转移至商圈 -->
+	<update id="changShangQuan" parameterClass="java.lang.Integer">
+		update bbs_post
+		set
+		gmt_modified=now(),bbs_post_category_id=106,bbs_post_assist_id=107
+		where id=#id#
+	</update>
+</sqlMap>

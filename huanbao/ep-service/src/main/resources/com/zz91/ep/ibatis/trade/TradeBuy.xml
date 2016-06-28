@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="tradebuy">
+
+	<typeAlias alias="tradeBuy" type="com.zz91.ep.domain.trade.TradeBuy" />
+	<typeAlias alias="tradeBuyDto" type="com.zz91.ep.dto.trade.TradeBuyDto" />
+	<typeAlias alias="common" type="com.zz91.ep.dto.CommonDto" />
+
+	<resultMap class="tradeBuy" id="simpleColumnMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="uid" column="uid" />
+		<result property="cid" column="cid" />
+		<result property="categoryCode" column="category_code" />
+		<result property="photoCover" column="photo_cover" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="buyType" column="buy_type" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityYear" column="quantity_year" />
+		<result property="quantityUntis" column="quantity_untis" />
+		<result property="supplyAreaCode" column="supply_area_code" />
+		<result property="useTo" column="use_to" />
+		<result property="gmtPublish" column="gmt_publish" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="gmtExpired" column="gmt_expired" />
+		<result property="validDays" column="valid_days" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="messageCount" column="message_count" />
+		<result property="viewCount" column="view_count" />
+		<result property="favoriteCount" column="favorite_count" />
+		<result property="plusCount" column="plus_count" />
+		<result property="htmlPath" column="html_path" />
+		<result property="pauseStatus" column="pause_status" />
+	</resultMap>
+
+	<resultMap class="tradeBuy" id="simpleColumnDetailsMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="uid" column="uid" />
+		<result property="cid" column="cid" />
+		<result property="categoryCode" column="category_code" />
+		<result property="photoCover" column="photo_cover" />
+		<result property="provinceCode" column="province_code" />
+		<result property="buyType" column="buy_type" />
+		<result property="areaCode" column="area_code" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityYear" column="quantity_year" />
+		<result property="quantityUntis" column="quantity_untis" />
+		<result property="supplyAreaCode" column="supply_area_code" />
+		<result property="useTo" column="use_to" />
+		<result property="gmtPublish" column="gmt_publish" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="gmtExpired" column="gmt_expired" />
+		<result property="validDays" column="valid_days" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="messageCount" column="message_count" />
+		<result property="details" column="details" />
+		<result property="checkStatus" column="check_status"/>
+	</resultMap>
+
+	<resultMap class="common" id="commonResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+	</resultMap>
+
+	<resultMap class="tradeBuy" id="simpleResultMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="title" column="title" />
+		<result property="validDays" column="valid_days" />
+	</resultMap>
+
+	<resultMap class="tradeBuy" id="simpleColumnResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="uid" column="uid" />
+		<result property="cid" column="cid" />
+		<result property="categoryCode" column="category_code" />
+		<result property="photoCover" column="photo_cover" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="buyType" column="buy_type" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityYear" column="quantity_year" />
+		<result property="quantityUntis" column="quantity_untis" />
+		<result property="supplyAreaCode" column="supply_area_code" />
+		<result property="useTo" column="use_to" />
+		<result property="gmtPublish" column="gmt_publish" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="gmtExpired" column="gmt_expired" />
+		<result property="validDays" column="valid_days" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="messageCount" column="message_count" />
+		<result property="checkStatus" column="check_status"/>
+		<result property="checkRefuse" column="check_refuse"/>
+	</resultMap>
+
+	<sql id="normalWhere">
+		del_status = 0 and check_status = 1
+	</sql>
+
+	<sql id="dynamicConditionsWhere">
+		<dynamic prepend="where">
+			tb.cid = #cid# and tb.del_status = 0
+			<isNotEmpty property="pauseStatus">
+				and tb.pause_status = #pauseStatus#
+			</isNotEmpty>
+			<isNotEmpty property="checkStatus">
+				and tb.check_status = #checkStatus#
+			</isNotEmpty>
+			<isEqual property="overdueStatus" compareValue="0">
+				and now() >
+				tb.gmt_expired
+			</isEqual>
+			<isEqual property="overdueStatus" compareValue="1">
+				and
+				tb.gmt_expired > now()
+			</isEqual>
+		</dynamic>
+	</sql>
+
+	<sql id="simpleColumn">
+		tb.id,
+		tb.title,
+		tb.uid,
+		tb.cid,
+		tb.category_code,
+		tb.photo_cover,
+		tb.province_code,
+		tb.area_code,
+		tb.buy_type,
+		tb.quantity,
+		tb.quantity_year,
+		tb.quantity_untis,
+		tb.supply_area_code,
+		tb.use_to,
+		tb.gmt_publish,
+		tb.gmt_refresh,
+		tb.gmt_expired,
+		tb.valid_days,
+		tb.details_query,
+		tb.pause_status,
+		tb.message_count,
+		tb.check_status,
+		tb.check_refuse
+	</sql>
+
+	<sql id="normalWhereforData">
+		tb.del_status = 0
+	</sql>
+
+	<resultMap class="tradeBuy" id="simpleDtoCommonResultMap" extends="simpleColumnResultMap">
+		<result property="details" column="details" />
+	</resultMap>
+	
+	<resultMap class="tradeBuyDto" id="dtoColumnResultMap">
+		<result property="tradeBuy" resultMap="tradebuy.simpleDtoCommonResultMap"/>
+		<result property="compName" column="compName" />
+	</resultMap>
+
+	<resultMap class="tradeBuy" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="uid" column="uid" />
+		<result property="cid" column="cid" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="categoryCode" column="category_code" />
+		<result property="photoCover" column="photo_cover" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="buyType" column="buy_type" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityYear" column="quantity_year" />
+		<result property="quantityUntis" column="quantity_untis" />
+		<result property="supplyAreaCode" column="supply_area_code" />
+		<result property="useTo" column="use_to" />
+		<result property="gmtConfirm" column="gmt_confirm" />
+		<result property="gmtReceive" column="gmt_receive" />
+		<result property="gmtPublish" column="gmt_publish" />
+		<result property="gmtRefresh" column="gmt_refresh" />
+		<result property="validDays" column="valid_days" />
+		<result property="gmtExpired" column="gmt_expired" />
+		<result property="tagsSys" column="tags_sys" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="messageCount" column="message_count" />
+		<result property="viewCount" column="view_count" />
+		<result property="favoriteCount" column="favorite_count" />
+		<result property="plusCount" column="plus_count" />
+		<result property="htmlPath" column="html_path" />
+		<result property="delStatus" column="del_status" />
+		<result property="pauseStatus" column="pause_status" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkAdmin" column="check_admin" />
+		<result property="checkRefuse" column="check_refuse" />
+		<result property="gmtCheck" column="gmt_check" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<select id="queryBuysByRecommend" resultMap="commonResultMap"
+		parameterClass="java.lang.Integer">
+		select
+		tb.id,tb.title
+		from trade_recommend tr
+		inner join
+		trade_buy tb on tb.id=tr.target_id
+		where 
+		tb.pause_status=0 and
+		tb.check_status=1 and tb.del_status=0 and
+		tr.type=1
+		order by
+		tr.gmt_created desc
+		limit #size#
+	</select>
+
+	<select id="queryNewestBuys" resultMap="commonResultMap"
+		parameterClass="java.lang.Integer">
+		select
+		id,title
+		from trade_buy tb
+		where 
+		not exists (select * from hide_info hd where tb.id=hd.target_id and hd.target_type='2')
+		and
+		pause_status=0 and
+		check_status=1 and del_status=0
+		order by gmt_publish desc
+		limit #size#
+	</select>
+
+	<update id="updateMessageCountById" parameterClass="java.lang.Integer">
+		update
+		trade_buy
+		set message_count = message_count+1,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+
+	<select id="queryBuysDetailsByRecommend" resultMap="simpleResultMap"
+		parameterClass="java.lang.Integer">
+		select
+		tb.id,
+		tb.cid,
+		tb.title,
+		(to_days(tb.gmt_expired) -
+		to_days(now())) valid_days
+		from trade_recommend tr,trade_buy tb
+		where
+		not exists (select * from hide_info hd where tb.id=hd.target_id and hd.target_type='2')
+		and 
+		tr.target_id=tb.id and tr.type=1 and ((to_days(tb.gmt_expired) -
+		to_days(now())) > 0 or tb.valid_days = 0)
+		order by tr.gmt_created desc
+		limit #size#
+	</select>
+
+	<select id="queryBuyDetailsById" parameterClass="java.lang.Integer"
+		resultMap="dtoColumnResultMap">
+		select
+		<include refid="simpleColumn" />
+		,tb.details,
+		cp.name compName
+		from trade_buy tb,comp_profile cp
+		where
+		tb.cid=cp.id and tb.del_status = 0 and tb.check_status = 1 and tb.id =
+		#id#
+	</select>
+	<!-- 统计求购信息 -->
+	<select id="getTradeBuyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from trade_buy
+		where uid = #uid#
+	</select>
+
+	<insert id="insertTradeBuy" parameterClass="tradeBuy">
+		insert into trade_buy
+		(
+		uid,
+		cid,
+		title,
+		details,
+		category_code,
+		province_code,
+		area_code,
+		buy_type,
+		quantity,
+		quantity_year,
+		quantity_untis,
+		supply_area_code,
+		use_to,
+		gmt_confirm,
+		gmt_receive,
+		gmt_publish,
+		gmt_refresh,
+		valid_days,
+		tags_sys,
+		details_query,
+		check_status,
+		pause_status,
+		html_path,
+		gmt_created,
+		gmt_modified,
+		gmt_expired,
+		photo_cover)
+		VALUES
+		(
+		#uid#,
+		#cid#,
+		#title#,
+		#details#,
+		#categoryCode#,
+		#provinceCode#,
+		#areaCode#,
+		#buyType#,
+		#quantity#,
+		#quantityYear#,
+		#quantityUntis#,
+		#supplyAreaCode#,
+		#useTo#,
+		#gmtConfirm#,
+		#gmtReceive#,
+		#gmtPublish#,
+		#gmtRefresh#,
+		#validDays#,
+		#tagsSys#,
+		#detailsQuery#,
+		#checkStatus#,
+		#pauseStatus#,
+		#htmlPath#,
+		now(),
+		now(),
+		#gmtExpired#,
+		#photoCover#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<select id="queryBuyByConditions" resultMap="simpleColumnResultMap"
+		parameterClass="java.util.HashMap">
+		select
+		<include refid="simpleColumn" />
+		from
+		trade_buy tb
+		<include refid="dynamicConditionsWhere" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryBuyByConditionsCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.Map">
+		select count(*)
+		from
+		trade_buy tb
+		<include refid="dynamicConditionsWhere" />
+	</select>
+
+	<update id="updateDelStatusById" parameterClass="java.util.Map">
+		update trade_buy set
+		del_status = 1
+		,gmt_modified = now()
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="cid" prepend="and">
+				cid=#cid#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<update id="updatePauseStatusById" parameterClass="java.util.Map">
+		update
+		trade_buy set
+		pause_status = #newStatus#
+		,gmt_modified = now()
+		where id =
+		#id# and cid=#cid#
+	</update>
+
+	<update id="updateRefreshById" parameterClass="java.util.Map">
+		update trade_buy
+		set
+		gmt_refresh = now(),
+		gmt_expired = date_add(now(),INTERVAL
+		valid_days day)
+		where id = #id# and cid=#cid# and valid_days != 0
+	</update>
+
+	<select id="queryBuySimpleDetailsById" parameterClass="java.lang.Integer"
+		resultMap="simpleColumnResultMap">
+		select
+		<include refid="simpleColumn" />
+		from trade_buy tb
+		where 
+		not exists (select * from hide_info hd where tb.id=hd.target_id and hd.target_type='2')
+		and 
+		id = #id#
+	</select>
+
+	<select id="queryUpdateBuyById" parameterClass="java.util.Map"
+		resultMap="simpleColumnDetailsMap">
+		select
+		<include refid="simpleColumn" />
+		,details
+		from trade_buy tb
+		where
+		<include refid="normalWhereforData" />
+		and tb.id = #id# and tb.cid=#cid#
+	</select>
+
+	<update id="updateBaseBuyById" parameterClass="java.util.Map">
+		update trade_buy
+		set
+		title = #buy.title#,
+		details = #buy.details#,
+		category_code =#buy.categoryCode#,
+		province_code = #buy.provinceCode#,
+		area_code =#buy.areaCode#,
+		buy_type = #buy.buyType#,
+		quantity = #buy.quantity#,
+		quantity_year = #buy.quantityYear#,
+		quantity_untis =#buy.quantityUntis#,
+		supply_area_code = #buy.supplyAreaCode#,
+		use_to =#buy.useTo#,
+		check_status = #buy.checkStatus#,
+		details_query =#buy.detailsQuery#,
+		valid_days = #buy.validDays#,
+		<isNotEmpty property="buy.gmtExpired">
+        	gmt_expired=#buy.gmtExpired#,
+        </isNotEmpty>
+        gmt_refresh = now(),
+		gmt_modified = now(),
+		photo_cover = #buy.photoCover#
+		where id = #id# and cid=#cid#
+	</update>
+
+	<select id="queryImpTradeBuy" resultMap="fullResultMap"
+		parameterClass="java.lang.Integer">
+		SELECT
+		`id`,
+		`uid`,
+		`cid`,
+		`title`,
+		`details`,
+		`category_code`,
+		`photo_cover`,
+		`province_code`,
+		`area_code`,
+		`buy_type`,
+		`quantity`,
+		`quantity_year`,
+		`quantity_untis`,
+		`supply_area_code`,
+		`use_to`,
+		`gmt_confirm`,
+		`gmt_receive`,
+		`gmt_publish`,
+		`gmt_refresh`,
+		`valid_days`,
+		`gmt_expired`,
+		`tags_sys`,
+		`details_query`,
+		`message_count`,
+		`view_count`,
+		`favorite_count`,
+		`plus_count`,
+		`html_path`,
+		`del_status`,
+		`pause_status`,
+		`check_status`,
+		`check_admin`,
+		`check_refuse`,
+		`gmt_check`,
+		`gmt_created`,
+		`gmt_modified`
+		FROM `trade_buy` where id > #value#
+	</select>
+
+	<update id="updateImpTradeBuy" parameterClass="java.lang.Integer">
+		update trade_buy
+		set gmt_modified = DATE_ADD(now(),INTERVAL ((id - #value#)*2 + 300)
+		SECOND) where id > #value#
+	</update>
+	
+	<select id="countBuysOfCompanyByStatus" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from trade_buy tb
+		<include refid="dynamicConditionsWhere"/>
+	</select>
+	
+
+	
+</sqlMap>

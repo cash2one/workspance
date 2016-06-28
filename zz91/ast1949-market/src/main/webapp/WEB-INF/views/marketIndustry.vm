@@ -1,0 +1,112 @@
+#set($pageName="marketIndustry")
+#set($layout="/layout/marketLayout.vm")
+<div class="module mt12">
+	<div class="mar_mod_left">
+    	<div class="mml_nav">
+        	<h4 class="f14">$!{market.name}同行业市场</h4>
+        </div>
+        <!--end mml_nav-->
+        <div class="mml_list">
+			#foreach($li in $!{page.records})
+				<div class="mml_item">
+            		<div class="mi2"> 
+							#if($!{li.pic.picAddress})
+							<img src="$!{address.resource}/$!{li.pic.picAddress}" width="120" height="100" alt="$!{li.name}" />
+							#else
+								<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="120" height="100" />
+							#end
+					</div>
+					<!--end mi2-->
+        			<div class="mi5">
+						<div class="mi4_top"><a href="#springUrl("/$!{li.words}/")" target="_blank">$!{li.name}</a></div>
+						<div class="mi4_down"> #printTitle($!{li.introduction} 70 "...")#set($intro=$!{li.introduction})#if($intro.length>70)<a href="#springUrl("/$!{li.words}/")" target="_blank">更多>></a>#end</div>
+					</div>
+					<!--end mi4-->
+        			<div class="mi7">
+						<div class="mi6_top"><h4>市场商家</h4></div>
+						<br />
+						<a #if($!{li.companyNum}>0)href="#springUrl("/$!{li.words}/scsh.html")" target="_blank"#end>$!{li.companyNum}</a>户
+					</div>
+					<!--end mi7-->
+                	<div class="mi7">
+						<div class="mi6_top"><h4>市场供求</h4></div>
+						<br />
+						<a #if($!{li.productNum}>0)href="#springUrl("/$!{li.words}/scgq.html")" target="_blank"#end>$!{li.productNum}</a>条
+					</div>
+					<!--end mi7-->
+                	<div class="mi8">
+						<div class="mi6_top"><h4>市场所在地</h4></div>
+						<br />
+						$!{li.area} 
+					</div>
+					<!--end mi8-->
+					<div class="cb"></div>
+				</div>
+				<!--end mml_item-->
+				<div class="cb"></div>
+			#end
+        </div>
+        <!--end mml_list-->
+		 #pageMarket1($page "#springUrl('/')" "$!{market.words}/thysc" "")
+    </div>
+    <!--end mar_mod_left-->
+    <div class="mar_mod_right">
+    	<div class="mmr_box">
+        	<div class="m_box_title">
+            	<a href="#springUrl("/$!{market.words}/scgq.html")" target="_blank">更多</a>
+            	<strong>市场热门供求</strong>
+            </div>
+            <div class="cb"></div>
+            <div class="m_box_info">
+            	<ul class="mb_ul2">
+					#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&size=6&1" "" "" "")
+						#foreach($li in $!{list})
+							<li>
+								<span class="fr">[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</span>
+								<a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a>
+							</li>
+						#end
+					#end
+                </ul>
+            </div>
+        </div>
+        <!--end mmr_box-->
+    	<div class="mmr_box">
+        	<div class="m_box_title">
+            	<a href="#springUrl("/$!{market.words}/thysc.html")">更多</a>
+                <strong>同行业市场推荐</strong>
+            </div>
+            <div class="cb"></div>
+            <div class="m_box_info">
+            	<ul class="mb_ul3">
+					#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?industry=$!{industryCode}&size=6&4" "" "" "")
+						#foreach($li in $!{list})
+							<li><span class="fr"><a href="#springUrl("/$!{li.words}/")" class="enter">查看市场</a></span><a href="#springUrl("/$!{li.words}/")" target="_blank" title="$!{li.name}">$!{li.name}</a></li>
+						#end
+					#end
+                </ul>
+            </div>
+        </div>
+        <!--end mmr_box-->
+        <div class="mmr_box">
+        	<div class="m_box_title"><strong>同行业市场供求推荐</strong></div>
+            <div class="cb"></div>
+            <div class="m_box_info">
+            	<ul class="mb_ul2">
+					#cacheFragment("$!{address.fragment}/market/queryProductByCondition.htm?id=$!{market.id}&industry=$!{industry}&size=6&1" "" "" "")
+					#foreach($li in $!{list})
+						<li>
+							<span class="fr">[#printFragmentDate("MM-dd" $!{li.products.refreshTime})]</span>
+							<a href="$!{address.trade}/productdetails${li.products.id}.htm" target="_blank" title="$!{li.products.title}">$!{li.products.title}</a>
+						</li>
+					#end
+					#end
+                </ul>
+            </div>
+        </div>
+        <!--end mmr_box-->
+    </div>
+    <!--end mar_mod_right-->
+    <div class="cb"></div>
+</div>
+<!--end module mt12-->

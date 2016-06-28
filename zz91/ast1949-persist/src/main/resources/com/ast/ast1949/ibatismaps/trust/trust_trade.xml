@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustTrade">
+	<typeAlias alias="trustTrade" type="com.ast.ast1949.domain.trust.TrustTrade" />
+	<resultMap class="trustTrade" id="trustTradeResult">
+		<result property="id" column="id" />
+		<result property="buyId" column="buy_id" />
+		<result property="unit" column="unit" />
+		<result property="quantity" column="quantity" />
+		<result property="companyId" column="company_id" />
+		<result property="contact" column="contact" />
+		<result property="price" column="price" />
+		<result property="source" column="source" />
+		<result property="detail" column="detail" />
+		<result property="gmtTrade" column="gmt_trade" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<insert id="insertTrustTrade" parameterClass="trustTrade">
+		insert into trust_trade
+		(
+			buy_id,
+			unit,
+			quantity,
+			company_id,
+			contact,
+			price,
+			source,
+			detail,
+			gmt_trade,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#buyId#,
+			#unit#,
+			#quantity#,
+			#companyId#,
+			#contact#,
+			#price#,
+			#source#,
+			#detail#,
+			#gmtTrade#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryTradeInfo" parameterClass="java.util.Map" resultMap="trustTradeResult">
+		select tt.id,tt.buy_id,tt.unit,tt.quantity,tt.company_id,tt.contact,tt.price,tt.source,tt.detail,tt.gmt_trade,tt.is_del,tt.gmt_created,tt.gmt_modified
+		from trust_trade tt
+		left join trust_buy tb on tb.id=tt.buy_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="isDel">
+				tt.is_del=#isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.dealerId">
+				exists(select trd.id from trust_relate_dealer trd where trd.buy_no=tb.buy_no and trd.dealer_id=#searchDto.dealerId#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.from">
+				tt.gmt_trade>=#searchDto.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.to">
+				#searchDto.to#>=tt.gmt_trade
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.buyNo">
+				tb.buy_no=#searchDto.buyNo#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.keyword">
+				tb.detail like concat("%",#searchDto.keyword#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				exists(select c.id from company c where c.id=tt.company_id and c.name=#searchDto.companyName#)
+			</isNotEmpty>
+			<isEqual prepend="and" property="searchDto.isLogin" compareValue="1">
+				exists(select tp.id from trust_pic tp where tp.trade_id=tt.id and tp.is_del='0')
+			</isEqual>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countTradeInfo" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_trade tt
+		left join trust_buy tb on tb.id=tt.buy_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="isDel">
+				tt.is_del=#isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.dealerId">
+				exists(select trd.id from trust_relate_dealer trd where trd.buy_no=tb.buy_no and trd.dealer_id=#searchDto.dealerId#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.from">
+				tt.gmt_trade>=#searchDto.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.to">
+				#searchDto.to#>=tt.gmt_trade
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.buyNo">
+				tb.buy_no=#searchDto.buyNo#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.keyword">
+				tb.detail like concat("%",#searchDto.keyword#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				exists(select c.id from company c where c.id=tt.company_id and c.name=#searchDto.companyName#)
+			</isNotEmpty>
+			<isEqual prepend="and" property="searchDto.isLogin" compareValue="1">
+				exists(select tp.id from trust_pic tp where tp.trade_id=tt.id and tp.is_del='0')
+			</isEqual>
+		</dynamic>
+	</select>
+	<update id="updateTrustTradeInfo" parameterClass="trustTrade">
+		update trust_trade
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="unit">
+			unit = #unit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyId">
+			company_id = #companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="contact">
+			contact = #contact#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="price">
+			price = #price#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="source">
+			source = #source#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail = #detail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="gmtTrade">
+			gmt_trade = #gmtTrade#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	<select id="queryOneTrade" parameterClass="java.lang.Integer" resultMap="trustTradeResult">
+		select id,buy_id,unit,quantity,company_id,contact,price,source,detail,gmt_trade,is_del,gmt_created,gmt_modified
+		from trust_trade
+		where buy_id = #buyId# and is_del = '0'
+	</select>
+</sqlMap>

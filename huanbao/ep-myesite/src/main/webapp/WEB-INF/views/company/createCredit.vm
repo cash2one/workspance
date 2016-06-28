@@ -1,0 +1,107 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+        <ul class="breadcrumb">
+			<li><a href="#">公司信息管理</a><span class="divider">/</span></li>
+			<li>公司证书上传</li>
+		</ul>
+		
+		#if($!{msg})
+			<div class="alert alert-info">
+				<a onclick="return false;" target="_blank">$!{msg}</a>
+			</div>
+		#end
+		
+		<div class="well mt" id="Mpic">
+			<div class="well-head">上传证书</div>
+			<div class="well-content">
+				<div class="control-group">
+                    <label for="" class="control-label">证书名称:</label>
+                    <div class="controls">
+						<input type="text" class="field" id="fileName" />
+						<input id="picture" type="hidden" value=""/>
+                        <p>              
+						<input type="button" value="上传证书" class="uploadBtn btn" id="uploadBtn">
+							<br />
+						<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" id="creditPic" width="200" height="200" class="img-polaroid"></p>    
+					</div>
+				</div>           
+                <div class="form-actions">
+                    <input type="button" id="submitBtn" value="保存证书" class="btn btn-primary" onclick="createCredit()" />    
+                </div>            
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	jQuery('document').ready(function(){
+	
+		myrc.select("Js_select");
+		myrc.menu(7, 2);
+    	
+    	jQuery("#uploadBtn").click(function(){
+    	
+    		var photoBox=new Asto.util.Modal({
+        		title:"上传公司证书",
+        		url:"#springUrl('/photo/promptUpload.htm')?targetType=credit&targetId=$!{epAuthUser.cid}&max=1",
+        		width:500,
+        		height:350,
+        		modal:true
+        	});
+    
+    		Asto.util.Callback.setSubmitCallback(function(success, data){
+    			if(success=="true"){
+					for(var key in data){
+            			jQuery("#creditPic").attr("src","$!{address.thumb}$!{address.resource}"+data[key]+"&width=280&height=200")
+                        jQuery("#picture").val(data[key]);
+					}
+                    jQuery("#fileName").focus();
+    			}
+    			else{
+    				window.location="$!{address.myesite}/company/uploadCompCredit.htm?info=0";
+    			}
+    			photoBox.close();
+    		});
+    	});
+    });
+	
+	function createCredit(){
+	
+		if (jQuery("#picture").val()==""){
+    		Asto.util.Message.show({ 
+    			msg:"请先上传图片!",
+    			msgType:Asto.util.Message.ERROR,
+    			autoClose:3000
+    		});
+    		return false;
+		}
+		if(jQuery("#fileName").val()==""){
+    		Asto.util.Message.show({ 
+    			msg:"请输入证书名称!",
+    			msgType:Asto.util.Message.ERROR,
+    			autoClose:10000
+    		});
+    		return false;
+    	}else{
+            jQuery.ajax({
+                url:'#springUrl('/company/doCreateCredit.htm')',
+                data:{"picture":jQuery("#picture").val(),"fileName":jQuery("#fileName").val()},
+                cache:false,
+                dataType:"json",
+                type:"post",
+                success:function(req){
+                        if(req.success){
+        		             window.location="#springUrl('/company/credit.htm')";
+                        }
+                    },
+                failure:function(){
+                     Asto.util.Message.show({ 
+            			msg:"发生未知错误,保存证书失败,请重试!",
+            			msgType:Asto.util.Message.ERROR,
+            			autoClose:10000
+            		});
+                }
+           });
+		}
+	}
+</script>

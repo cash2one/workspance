@@ -1,0 +1,73 @@
+#set($pageName="zsmap")
+#set($layout="/layout/innerLayout.vm")
+<div class="market_nav2 mt12">当前位置：<a href="$!{address.market}">再生产业带</a> 〉再生地图</div>
+<!--end market_nav2-->
+<div class="module mt12">
+	<div class="map_left">
+    	#parse("/common/down.vm")
+    </div>
+    <!--end map_left-->
+    <div class="map_right">
+    	<div class="map_info" id="container"></div>
+    </div>
+    <!--end map_right-->
+    <div class="cb"></div>
+</div>
+<!--end module-->
+<script type="text/javascript">
+var map=new BMap.Map("container");//创建地图实例
+var point=new BMap.Point(105.01,35.915);//创建点坐标
+map.centerAndZoom(point,5);//初始化地图，设置中心点坐标和地图级别
+map.addControl(new BMap.NavigationControl());//平移缩放控件
+map.addControl(new BMap.ScaleControl());//比例尺控件
+map.addControl(new BMap.OverviewMapControl());//缩略地图控件，默认位于地图右下方，是一个可折叠的缩略地图
+map.enableScrollWheelZoom(); //启用滚轮放大缩小 
+	var datas =$!{json};
+	var label=new Array();
+	var po=new Array();
+	var infoWindow=new Array();
+	for(var i=0;i<datas.length;i++){  
+  		var t=datas[i];
+		point=new BMap.Point(t.lng,t.lat)
+		var myLabel = new BMap.Label(t.address,{offset:new BMap.Size(-10,-10),position:point});   //label的偏移量，为了让label的中心显示在点上                              //label的位置
+   	    myLabel.setStyle({
+			//给label设置样式，任意的CSS都是可以的
+			color:"#fff",                    //字体颜色
+            border:"0",                      //边
+			fontWeight:"bold",               //加粗
+            height:"16px",                	 //高度
+            width:"48px",                    //宽
+            textAlign:"center",              //文字水平居中显示
+            lineHeight:"16px",               //行高，文字垂直居中显示
+            background:"url(http://img0.zz91.com/zz91/industrial/images/bg.png)",    //背景图片，这是房产标注的关键！
+            cursor:"pointer"
+        });
+      //myLabel.setTitle(t.address);               //为label添加鼠标提示
+	  map.addOverlay(myLabel);
+	  label[i]=myLabel;
+	  po[i]=point;
+	  var content ="<strong>"+t.address+"</strong>" + "<br/>市场数量：" + t.marketNum + "<br/>入驻商户：" +t.companyNum+ "<br/>市场供求：" +t.productNum+ "<br/>市场类型：废塑料 废金属 二手设备"+"<br/><a href=\"$!{address.market}/zsmapDetail/p"+t.province+".htm\">查看"+t.address+"市场分布</a>";
+	  infoWindow[i] = new BMap.InfoWindow("<p>" + content + "</p>");
+	}  
+	for(var i=0;i<label.length;i++){
+	 	label[i].addEventListener("click", (function(){
+		    var a=po[i];
+			var b=infoWindow[i];
+			return function(){
+				 map.openInfoWindow(b,a); 
+			}
+		})(i)
+		);
+	}
+
+</script>
+<script type="text/javascript">       
+$(document).ready(function() {
+	$(".BMapLabel").mouseover(function(){
+		$(this).css("backgroundPosition","0 -20px");	  
+	});
+	$(".BMapLabel").mouseout(function(){
+		$(this).css("backgroundPosition","");
+	});
+});
+</script>

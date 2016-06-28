@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <title>支付宝</title>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+		<link rel='stylesheet' href='../css/github.css'>
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+		</style>
+		
+    </head>
+    <body>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/demo.js'></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script>
+	// 设置是否开启调试模式.
+	// dlog.debug = true;
+	
+	var demo = Demo.createNew();
+	demo.show(function(){
+				$('pre code').each(function(i, block) {
+				    hljs.highlightBlock(block);
+				  });});
+	</script>
+	
+    <script type='text/javascript' src='../script/api.js'></script>
+    <script type='text/javascript'>
+        function configAliPay() {
+            var obj = api.require('aliPay');
+            var notifyURL = document.getElementById("notifyURL").value;
+            obj.config({
+                    partner: 'partner',
+                    seller: 'seller',
+                    rsaPriKey: 'prikey',
+                    rsaPubKey: 'pubkey',
+                    notifyURL: notifyURL
+            }, function(ret, err) {
+            if(ret.status)
+                api.alert({msg:"配置成功"});
+            });
+        };
+	function openAliPay() {
+	    var obj = api.require('aliPay');
+	    var subject = document.getElementById("title").value;
+	    var body = document.getElementById("subtitle").value;
+	    var amount = document.getElementById("price").value;
+	    var tradeNO = document.getElementById("ordernum").value;
+	    var notifyURL = document.getElementById("notifyURL").value;
+	    obj.pay({
+	        subject: subject,
+	        body: body,
+	        amount: amount,
+	        tradeNO: tradeNO
+	    }, function(ret, err) {
+	        document.getElementById("pay_message").value = ret.statusMessage;
+	        document.getElementById("pay_code").value = ret.statusCode;
+	        api.alert({
+	            title: '支付结果',
+	            msg: ret.statusMessage,
+	            buttons: ['确定']
+	        });
+	    });
+	};
+    </script>
+</html>

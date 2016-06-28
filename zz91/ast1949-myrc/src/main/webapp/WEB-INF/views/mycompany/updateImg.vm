@@ -1,0 +1,84 @@
+#set( $layout = "/layout/default.vm" )
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/mycompany/companyList.htm')">会员资料</a> <span class="divider">/</span>
+			</li>
+			<li class="active">上传 $!{company.name} 的照片</li>
+		</ul>
+		<p><a href="#springUrl('/mycompany/companyList.htm')">返回企业简介及照片</a></p>
+		<div class="well">
+			<div class="well-head">上传 $!{company.name} 的照片</div>
+			<div class="well-content">
+			#if($!{canUploadStatus}==true)
+				<p><input type="button" value="上传更多图片" id="Js_upload" class="btn btn-primary"></p>
+			#else
+				<div class="alert alert-info"> 
+					提示：
+					您已经上传了<span class="red">$!{mypicsize}</span> 张图片，目前系统允许您上传<span class="red">$!{ruleResult}</span> 张图片
+	    			#if($!{company.membershipCode}=="10051000")
+	    				<a href="http://www.zz91.com/service/zst/" target="_blank" >升级成为高级会员可以上传更多图片</a>
+					#end
+	    		</div>
+			#end
+				#if($!{list.size()}==0)
+				<figure class="current-pic">
+	    			<img src="$!{address.images}/global/noimage.gif" class="preview" data-size="100, 100">
+		            <figcaption title="$!{pic.name}">您还没有上传图片</figcaption>
+		        </figure>
+				#end
+				#foreach($!list in $!list)
+				<figure class="current-pic">
+	    			<img src="$!{address.resource}/$!{list.filepath}$!{list.filename}" class="preview" name="imag$!{pic.id}" data-size="100, 100" id="imag$!{list.id}">
+	                <figcaption>$!{list.remark}</figcaption>
+	                <p class="nomargin"><a href="#springUrl('/mycompany/delete.htm?id=')$!{list.id}" onclick="return confirm('你确定要删除这张图片吗？')">删除</a></p>    
+		        </figure>
+				#end
+			</div>
+		</div>
+	</div>
+</div>	
+<script>
+jQuery(function(){
+	myrc.menu(9, 1);
+	myrc.imgSize();
+	##var upload = new Asto.util.PopupBox({
+	##	url:"#springUrl('/sys/upload/company.htm')",
+	##	callbackFn:function(success, data){
+	##		upload.close();
+	##		window.location.reload();
+ 	##	},
+	##	title:"上传产品图片",
+	##	width:450,
+	##	height:230,
+	##	modal:true
+	##});
+	##jQuery("#Js_upload").click(function(){
+	##	upload.show("#springUrl('/sys/upload/company.htm')");
+	##});
+	
+	jQuery("#Js_upload").click(function(){
+				Asto.util.Callback.setSubmitCallback(function (success, data) {
+					 parent.closeoverlay();
+					 window.location.reload();
+				});
+				var url="$!{address.myrc}/sys/upload/myrcUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=2&uploadFlag=1&limitCount=$!{limitCount}";
+				openoverlay(url,'上传图片',700,500,0);
+		});
+	
+	var previewImg = new Asto.util.PopupBox({
+		url:"#",
+		width:850,
+		height:450,
+		modal:true,
+		title:"大图预览"
+	});
+	
+	##jQuery(".uploadImgPrview img").click(function(e){
+	##	previewImg.show(jQuery(this).attr("src"));
+	##});
+});
+</script>

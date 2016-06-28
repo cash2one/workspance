@@ -1,0 +1,83 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1302","","00")
+<div class="myrcNormalFrame">
+    <div class="tishiWarn" style="margin-top:0">
+        <font style="font-size:15px;">重要通知</font><br>
+		<font style="font-weight:normal;">
+		中国再生资源交易网最新推出以下免费增值服务：
+            <br />
+		企业商铺能免费绑定外部域名，客户可通过这些域名访问您的企业商铺！<br>
+        </font>
+            <font style="font-size:15px;">重要防骗提醒</font><br>
+		<font style="font-weight:normal;">
+		您在中国再生资源交易网绑定域名，不需要另外费用，敬请注意借以绑定域名为由进行欺骗的公司，<br />
+        如有疑问，可咨询网站客服热线：<b>$!{csPhone}</b>
+        </font>
+    </div>
+	
+	<div class="officetitle">第一步：域名解析</div>
+	<div class="productskuang">
+		<div class="publishFormItems">
+                <div class="products_title">&nbsp;</div>
+				<div class="products_fill">
+					将您的域名解释到IP：<span style="color:red;font-" >$!{customDomainIp}</span>
+                </div>
+        </div>
+        <div style="clear:both"></div>
+	</div>
+	<div class="officetitle">第二步：绑定域名</div>
+	<div class="productskuang">
+		<form id="form1" name="form1" action="#springUrl('/esite/esitedomain/bind.htm')" method="post">
+			<div class="publishFormItems">
+                <div class="products_title">您的免费二级域名：</div>
+				<div class="products_fill"><a href="http://$!{memberInfo.url}.zz91.com" target="_blank" >$!{memberInfo.url}.zz91.com</a></div>
+			</div>		
+			#if($!{memberInfo.domain})
+        		<div class="publishFormItems">
+                    <div class="products_title">您当前绑定的域名：</div>
+					<div class="products_fill">
+						<a href="http://$!{memberInfo.domain}" target="_blank" >$!{memberInfo.domain}</a> 
+						<a href="#springUrl('/esite/esitedomain/bind.htm')" class="unboundBtn" title="点击取消绑定">取消绑定</a>
+					</div>
+                </div>
+			#end
+			<div class="publishFormItems">
+                <div class="products_title">重新绑定域名：</div>
+				<div class="products_fill">
+					<input type="text" size="50" id="domain" name="domain" value="$!{memberInfo.domain}" />
+					<input type="submit" value="重新绑定" id="buttonNormal" onclick="bindDomain();">
+             	</div>
+            </div>
+			<div style="clear:both"></div>
+		</form>
+		<div class="tishiTitleTop">
+			注意：绑定前请先备案,请确定绑定的域名与解析的域名一样!
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" >
+function bindDomain(){
+	jQuery.ajax({
+		url:'#springUrl('/esite/esitedomain/bind.htm')',
+		data:{"domain":jQuery("#domain").val()},
+		cache:false,
+		dataType:"json",
+		type:"post",
+		success:function(req){
+			if(req.success){
+				//保存成功后给出提示 或 跳转到提示页面
+				window.location.href=window.location.href;
+			}else{
+				msg.show(req.data);
+				if(req.data="sessionTimeOut"){
+					window.open("#springUrl('/login.htm')");
+				}
+			}
+		},
+		failure:function(){
+			msg.show("commonError");
+		}
+	});
+}
+</script>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/-->
+
+    <title>云知声语音识别及合成体验</title>
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+<body>
+    <div id="wrap">
+        <div id="main">
+            <h3>云编译生效</h3>
+            <div>
+                <div style="font-size:0.8em;">输入合成文字</div>
+            	<input type="text" id="speechtext" value="北京云知声信息技术有限公司" /><br><br>
+                <input type="button" onclick="play()" value="开始合成" /><br><br>
+                <input type="button" onclick="stopPlay()" value="停止合成" /><br><br>
+                <div style="font-size:0.8em;">设置用户不说话超时时间 单位：毫秒</div>
+                <input type="text" id="frontTime" value="3000" /><br><br>
+                <div style="font-size:0.8em;">设置用户停止说话停止录音时间 单位：毫秒</div>
+                <input type="text" id="backTime" value="1000" /><br><br>
+                <div style="font-size:0.8em;">设置用户录音采样率</div>
+                <input type="text" id="rate" value="RATE_16K" /><br><br>
+                <div style="font-size:0.8em;">设置识别领域</div>
+                <input type="text" id="domain" value="general" /><br><br>
+                <input type="button" onclick="startRecord()" value="开始语音识别" /><br><br>
+                <input type="button" onclick="stopRecord()" value="停止识别" /><br><br>
+                <input type="button" onclick="cancelRecord()" value="取消识别" /><br><br>
+            </div>
+        </div>   
+    </div>
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+   <script type="text/javascript">
+
+		var uzmoduledemo = null;
+		apiready = function(){
+	    	uzmoduledemo = api.require('uscSpeechRecognizer');
+	    }
+		
+		function startRecord(){
+			var frontTime = document.getElementById("frontTime").value;
+			var backTime = document.getElementById("backTime").value;
+			var rate = document.getElementById("rate").value;
+			var domain = document.getElementById("domain").value;
+			var param = {frontTime:frontTime,backTime:backTime,rate:rate,domain:domain};
+			uzmoduledemo.startRecord(param,function(ret,err){
+			    if(ret.status){
+			        alert(ret.resultStr + "\n"+ ret.nluStr);
+			    }else{
+			    	alert(err.msg);
+			    }
+			});
+		}
+		
+		function stopRecord(){
+			uzmoduledemo.stopRecord();
+		}
+		
+		function cancelRecord(){
+			uzmoduledemo.cancelRecord();
+		}
+		
+		function play(){
+			var speechtext = document.getElementById("speechtext").value;
+			var param = {text:speechtext};
+			uzmoduledemo.play(param,function(ret,err){
+			    if(ret.status){
+			    	alert(ret.status);
+			    }else{
+			    	alert(err.msg);
+			    }
+			});
+		}
+		
+		function stopPlay(){
+			uzmoduledemo.stopPlay();
+		}
+	</script>
+</html>

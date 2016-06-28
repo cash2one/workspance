@@ -1,0 +1,87 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/jquery/ux/validationEngine.css" />
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/validationEngine.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/languages/jquery.validationEngine-zh_CN.js"></script>
+
+
+#set($headName="message")
+#set($message="out")
+#parse("/common/myhuzhu/head.vm")
+
+<div class="huzhu">
+	<div class="hz-left fl">
+		
+		#set($urlName="out")
+		#parse("/common/myhuzhu/message_head.vm")
+		
+        <div class="mainblock m5-block">
+            <div class="m2-tab">
+                <form action="#springUrl('/myhuzhu/do_send_message.htm')" id="messageForm" method="get" class="post">
+                    <div class="form_item grey mb10">收件人：
+						#if($!{profiler.nickname} &&  $!{profiler.nickname}!="")
+							<input type="text" tabindex="1" id="accountName" name="accountName" value="$!{profiler.nickname}" class="fi-content-text1 validate[required,ajax[ajaxAccountName]]" />
+							<input type="hidden" name="companyId" value="$!{profiler.companyId}"/>
+						#else
+							<input type="text" tabindex="1" id="accountName" name="accountName" value="$!{account.contact}" class="fi-content-text1 validate[required,ajax[ajaxAccountName]]" />
+							<input type="hidden" name="companyId" value="$!{account.companyId}"/>
+						#end
+						#if($!{error})
+							<span style="padding-left:100px;color:red">此用户不存在对方将无法送达</span>
+						#end
+                    </div>
+                    <!--end form_item-->
+                    <div class="form_item grey mb10">主&nbsp;&nbsp;题：
+                        <input type="text" class="fi-content-text1 validate[required]" name="title" value="$!{bbsPost.title}" tabindex="1" />
+                    </div>
+                    <!--end form_item-->
+                    <div class="form_item">
+                        <div class="fi-title1 grey fl">正&nbsp;&nbsp;文：</div>
+                        <!--end fi-title1-->
+                        <div class="fi-content fl">
+                            <textarea type="text" class="fi-content-text3 validate[required]" name="content" cols="20" rows="10"></textarea>
+                        </div>
+                        <!--end fi-content-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end form_item-->
+                    <div class="form_item mt20">
+                        <div class="form_suc">
+                            <a href="javascript:;" id="clickToSub" class="white f14">发送</a>
+                        </div>
+                        <!--end form_suc-->
+                    </div>
+                    <!--end form_item-->
+                </form>
+				<script type="text/javascript">
+					jQuery("#clickToSub").click(function(){
+						if(jQuery("#messageForm").validationEngine("validate")){
+							jQuery("#messageForm").submit();
+						}
+					});
+					
+					jQuery(document).ready(function(){
+                        if(jQuery.validationEngineLanguage == undefined || jQuery.validationEngineLanguage.allRules == undefined ){
+						
+                        }else {
+                    		jQuery.validationEngineLanguage.allRules["ajaxAccountName"] = {
+                    			"url":"/validate/ajaxAccountName.htm",
+                    			"alertTextOk": "* 存在此用户可以发送",
+                    			"alertText": "* 此用户不存在无法发送",
+                    			"alertTextLoad": "* 正在确认此用户是否存在，请稍等。"
+                    		};
+                    	}
+                		jQuery("#messageForm").validationEngine("attach");
+                	});
+					
+                </script>
+            </div>
+            <!--end m2-tab-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+</div>
+<!--end huzhu-->

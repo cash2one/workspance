@@ -1,0 +1,327 @@
+#set($layout="/layout/subnetdefault.vm")
+<header id="header" class="header">
+<article class="hb_masthead">
+    <div class="hb_logo">
+            <div class="hb_logo_left"><img src="$!{address.img}/huanbao/images/subnet/twopage_03.jpg" width="210" height="103" /></div>
+            <div class="hb_logo_right">$!{ptitleMap.get($!{child})}</div>
+    </div>
+	#parse('/common/subnetcommon1.vm')
+
+<div class="header sonmenu_bj">
+        <div class="sonmenu_left"></div>
+        <div class="sonmenu_cen">
+                <ul>
+                    <li class="sonmenu_centit"><a href="$!{address.www}">首页</a></li>
+
+					#foreach($subpage in $!{ptitleMap.keySet()})
+    					#if($!{child} == $subpage)	
+                        <li class="sonmenu_centits"><a href="#springUrl('')$!{subpage}">$!{ptitleMap.get($subpage)}</a></li>
+    					#else
+                        <li class="sonmenu_centit"><a href="#springUrl('')/$!{subpage}">$!{ptitleMap.get($subpage)}</a></li>
+    					#end
+					#end
+                </ul>
+        </div>
+        <div class="sonmenu_right"></div>
+        <div class="clear"></div>
+</div>
+	
+<div class="sonbody">
+<div class="sonlocation"><span>本周新增客户：
+		#cacheFragment("$!{address.fragment}/fragment/common/todayMarket.htm?sb", "", "", "43200")
+		<font color="#FF3300">$!{weekCompanyCount}</font>人</span>
+		#end
+
+    您目前所在的位置：
+	<a href="#springUrl('')">中国环保网</a> > 
+	<a href="#springUrl('')$!{child}">$!{ptitleMap.get($!{child})}行业子网</a>
+</div>
+</div>
+
+<div class="sonbody">
+        <div class="sonleft">
+                <div class="sonleft_menu">
+					 #cacheFragment("$!{address.fragment}/fragment/subnet/categoryAll.htm?id=$!{subnetCategory}","","","86400")
+                    	#foreach($l in $!{list})
+                             <div class="sonleft_width" onmouseover="this.className='sonleft_widths'" onmouseout="this.className='sonleft_width'">
+                                 <span>></span>
+                            		<a href="#springUrl('/trade')/cp-${l.code}.htm" class="sonclassoone" target="_blank">${l.name}</a>
+									<div class="sonleft_widthsinfo">
+                                         <ul>
+											#foreach($item in $!{l.child})
+                                            <li> <a href="#springUrl('/trade')/cp-${item.code}.htm" target="_blank">${item.name}</a><br/></li>
+											#end
+                                         </ul>
+                                         <div class="clear"></div>
+									</div>
+                             </div>
+					   	#end
+                      #end
+                </div>
+				
+				#cacheFragment("$!{address.fragment}/fragment/news/categoryNews.htm?categoryCode=$!{newsCategory}&size=10","","","600")
+                <div class="sonspaces"></div>
+                <div class="sonleftnewsborder">
+                        <div class="sonleftnewslisttit"><span><a href="$!{address.news}">>> 更多</a></span><b>最新资讯</b></div>
+                        <div class="sonleftnewslistifn_wh">
+                            <ul>
+                                <li class="sonleftnewslistifn_img">
+									<script type="text/javascript" src="http://gg.zz91.com/show?p=382"></script>
+								</li>
+								#set($firstNews=$!{list.get(0)})
+                                <li class="sonleftnewslistifn_info">
+									<b>
+                                    <a href="$!{address.news}/details$!{firstNews.id}.htm" target="_blank" title="$!{$firstNews.titleIndex}">
+										#printTitle(${firstNews.titleIndex} 18 "")
+									</a>
+									</b>
+									<br />&nbsp;#printTitle(${firstNews.description} 6 "...")>>
+                                    <a href="$!{address.news}/details$!{firstNews.id}.htm" target="_blank" title="$!{$firstNews.titleIndex}">详细</a>
+								</li>
+                            </ul>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="sonleftnewslistifn">
+                                <ul>
+									#foreach($l in $!{list})
+										#if($velocityCount>1)
+                                        <li>· <a href="$!{address.news}/details$!{l.id}.htm" target="_blank" title="$!{l.titleIndex}">#printTitle($!{l.titleIndex} 15 "")</a></li>
+										#end
+									#end
+                                </ul>
+                        </div>
+                </div>
+				#end
+
+				#cacheFragment("$!{address.fragment}/fragment/exhibit/categoryExhibits.htm?industryCode=$!{exhibitCategory}&size=10","","","600")
+                <div class="sonspaces"></div>
+                <div class="sonleftnewsborder">
+                        <div class="sonleftnewslisttit"><span><a href="$!{address.exhibit}">>> 更多</a></span><b>展会信息</b></div>
+                        <div class="sonleftnewslistifn_wh">
+                            <ul>
+                                <li class="sonleftnewslistifn_img">
+									<script type="text/javascript" src="http://gg.zz91.com/show?p=383"></script>
+								</li>
+								#set($firstExhibit=$!{list.get(0)})
+                                <li class="sonleftnewslistifn_info">
+									<b><a href="$!{address.exhibit}/details$!{firstExhibit.id}.htm" target="_blank" title="$!{l.name}">#printTitle($!{firstExhibit.name} 20 "")
+									</a>
+									</b><br />&nbsp;#printTitle($!{firstExhibit.name} 6 "...")>>
+                                    <a href="$!{address.exhibit}/details$!{firstExhibit.id}.htm" target="_blank">详细</a>
+								</li>
+                            </ul>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="sonleftnewslistifn">
+                            <ul>
+								#foreach($l in $!{list})
+									#if($velocityCount>1)
+                                    <li>· <a href="$!{address.exhibit}/details$!{l.id}.htm" target="_blank" title="$!{l.name}">#printTitle($!{l.name} 15 "")</a></li>
+									#end
+								#end
+                            </ul>
+                        </div>
+                </div>
+				#end
+        </div>
+        <div class="sonright">
+                <div>
+                        <div class="sonleftads">
+                                <div class="sonleftads_banner" id="sonleftads_banner">
+                                        <div class="toggleImg">
+											<script type="text/javascript" src="http://gg.zz91.com/show?p=384"></script>
+                                        </div>
+                                        <div class="toggleBtn"></div>
+                                </div>
+                        </div>
+						
+						#parse('/common/subnetcommon3.vm')
+						
+                        <div class="clear"></div>
+                </div>
+                <div class="sonspaces"></div>
+                <div class="sonadvbooth">
+                       <script type="text/javascript" src="http://gg.zz91.com/show?p=385"></script>
+                </div>
+                <div class="sonlistborder">
+                        <div class="sonlisttitle"><span><a href="$!{address.company}" target="_blank">>> 更多</a></span><b><a href="$!{address.company}/newc.htm" target="_blank">推荐商家</a></b></div>
+						#cacheFragment("$!{address.fragment}/fragment/company/subRecommendComp.htm?cate=$!{child}&size=20&rec","","","600")
+                        <div class="sonlistinfo">
+                                <div class="sonlistinfoleft">
+                                    <ul>
+										#foreach($l1 in $!{list})
+											#if($velocityCount<=10)
+                                            <li>·<a href="$!{address.esite}/index$!{l1.id}.htm" target="_blank" title="$!{l1.name}">#printTitle($!{l1.name} 20 "")</a></li>
+											#end 
+										#end
+                                    </ul>
+                                </div>
+                                <div class="sonlistinforight">
+                                    <ul>
+                                       #foreach($l2 in $!{list})
+    										#if($velocityCount>10)
+                                                <li>·<a href="$!{address.esite}/index$!{l2.id}.htm" target="_blank" title="$!{l2.name}">#printTitle($!{l2.name} 20 "")</a></li>
+    										#end
+										#end
+                                    </ul>
+                                </div>
+                                <div class="clear"></div>
+                        </div>
+						#end
+
+						#cacheFragment("$!{address.fragment}/fragment/trade/subRecommendSupply.htm?cate=$!{child}1&size=6&rec2","","","600")
+						 <div class="sonlistinfo">
+								#foreach($l in $!{list})
+                                <div class="sonlistinforight_list">
+                           		 		<div class="sonlistinforight_listimg">
+											<img src="$!{address.thumb}$!{address.resource}$!{l.photoCover}&width=95&height=55" width="95" height="55" alt="$!{l.title}"/>
+										</div>
+                                        <div class="sonlistinforight_listtit">
+											<a href="$!{address.esite}/detail$!{l.id}.htm" target="_blank" title="${l.title}">${l.title}</a>
+										</div>
+                                </div>
+								#end
+                                <div class="clear"></div>
+                        </div>
+						#end
+                </div>
+				
+				#cacheFragment("$!{address.fragment}/fragment/trade/subRecommendSupply.htm?cate=$!{child}&size=20&rec","","","600")
+                <div class="sonspaces"></div>
+                <div class="sonlistborder">
+                        <div class="sonlisttitle"><span><a href="#springUrl('/trade')" target="_blank">>> 更多</a></span><b><a href="#springUrl('/trade')/newbq.htm" target="_blank">推荐产品</a></b></div>
+                        <div class="sonlistinfo">
+                                <div class="sonlistinfoleft">
+                                    <ul>
+										#foreach($l1 in $!{list})
+											#if($velocityCount<=10)
+										<li>·<a href="$!{address.esite}/detail$!{l1.id}.htm" target="_blank" title="$!{l1.title}">#printTitle($!{l1.title} 20 "")</a></li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                                <div class="sonlistinforight">
+                                    <ul>
+										#foreach($l2 in $!{list})
+											#if($velocityCount>10)
+                                            <li>·<a href="$!{address.esite}/detail$!{l2.id}.htm" target="_blank" title="$!{l2.title}">#printTitle($!{l2.title} 20 "")</a></li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                                <div class="clear"></div>
+                        </div>
+                        <div class="sonlistinfo">
+    							#foreach($l3 in $!{list})
+    								#if($velocityCount<=6)
+                                    <div class="sonlistinforight_list">
+                               		 		<div class="sonlistinforight_listimg">
+                                        		<img src="$!{address.thumb}$!{address.resource}$!{l3.photoCover}&width=95&height=55" width="95" height="55" class="tdl_hrb_img" alt="$!{l3.title}"/>
+											</div>
+                                            <div class="sonlistinforight_listtit">
+												<a href="$!{address.esite}/detail$!{l3.id}.htm" target="_blank" title="${l3.title}">${l3.title}</a>
+											</div>
+                                    </div>
+    								#end
+    							#end
+                                <div class="clear"></div>
+                        </div>
+                </div>
+				#end
+
+                <div class="sonspaces"></div>
+                <div>
+                        <div class="solistinfootherleft">
+                                <div class="sonlistborder">
+                                <div class="sonlisttitle"><span><a href="$!{address.www}/myesite/supply/publish_StpOne.htm" target="_blank">>> 发布</a></span><b><a href="#springUrl('/trade')/newg.htm" target="_blank">最新发布</a></b></div>
+                                <div class="solistinfootherw">
+                                        <div class="sonlistinfoother">
+                                            <ul>
+                                            	#foreach($!trade in $!{tradeList})
+                                                    <li>·<a href="$!{address.esite}/detail$!{trade.supply.id}.htm" target="_blank" title="$!{trade.supply.title}">#printTitle($!{trade.supply.title} 20 "")</a></li>
+                                                #end
+                                            </ul>
+                                        </div>
+                                        <div class="clear"></div>
+                                </div>
+                                </div>
+                        </div>
+                        <div class="solistinfootherright">
+                                <div class="sonlistborder">
+                                <div class="sonlisttitle"><span><a href="$!{address.www}/myesite/buy/publish_StpOne.htm" target="_blank">>> 发布</a></span><b><a href="#springUrl('/trade')/newb.htm" target="_blank">最新求购</a></b></div>
+                                <div class="solistinfootherw">
+                                        <div class="sonlistinfoother">
+                                            <ul>
+                                            #cacheFragment("$!{address.fragment}/fragment/trade/newestBuy.htm?size=10&sb","","","600")
+                                            	#foreach($l in $!{list})
+                                                   <li>·<a href="#springUrl('/trade')/buy/detail$!{l.id}.htm" target="_blank" title="$!{l.title}">#printTitle($!{l.title} 20 "")</a></li>
+                                                #end
+                                            #end
+                                            </ul>
+                                        </div>
+                                        <div class="clear"></div>
+                                </div>
+                                </div>
+                        </div>
+                        <div class="clear"></div>
+                </div>
+				
+				#cacheFragment("$!{address.fragment}/fragment/company/newestCompany.htm?industryCode=$!{newComp}&size=20&comp","","","600")
+                <div class="sonspaces"></div>
+                <div class="sonlistborder">
+                        <div class="sonlisttitle"><span><a href="$!{address.www}/myesite/regist.htm" target="_blank">>> 加入</a></span><b><a href="$!{address.company}/newc.htm" target="_blank">最新企业</a></b></div>
+                        <div class="sonlistinfo">
+                                <div class="sonlistinfoleft">
+                                    <ul>
+										#foreach($l1 in $!{list})
+											#if($velocityCount<=10)
+                                            <li>·<a href="$!{address.esite}/index$!{l1.id}.htm" target="_blank" title="$!{l1.name}">#printTitle($!{l1.name} 20 "")</a></li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                                <div class="sonlistinforight">
+                                    <ul>
+										#foreach($l2 in $!{list})
+											#if($velocityCount>10)
+                                            <li>·<a href="$!{address.esite}/index$!{l2.id}.htm" target="_blank" title="$!{l2.title}">#printTitle($!{l2.name} 20 "")</a></li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                                <div class="clear"></div>
+                        </div>
+                </div>
+				#end
+				<div class="sonspaces"></div>
+    			#*<div class="qyleft_oneclass">
+         			<div class="qyleft_oneclass_tit">热门行业：</div>
+                    <div class="qyleft_oneclass_info">
+    					 <ul>
+        				#cacheFragment("$!{address.fragment}/fragment/trade/getCategory.htm?code=1002&sb", "", "", "300")
+        					#foreach($ct in $!{cglist})
+        					<li><a href="#springUrl('/trade')/newbq-c$!{ct.code}.htm" target="_blank">$!{ct.name}</a></li>
+        					#end
+    					#end
+                         </ul>
+    					 <div class="clear"></div>
+                </div>
+				*#
+	  </div>
+        </div>
+        <div class="clear"></div>
+</div>
+
+#parse('/common/subnetcommon2.vm')
+
+<div class="sonspace"></div>
+<div class="sonlinkbody">
+    <div class="sonlinktitle">友情链接</div>
+    <div class="sonlinkinfo">
+		#cacheFragment("$!{address.fragment}/fragment/subnet/querySubLink.htm?parentId=$!{parentId}&sb","","","1200")
+        	#foreach($l in $!{list})
+               <a href="$!{l.link}" target="_blank" title="$!{l.name}">#printTitle($!{l.name} 20 "")</a>
+            #end
+        #end
+    </div>
+</div>

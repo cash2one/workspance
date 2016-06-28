@@ -1,0 +1,95 @@
+#set($layout="/layout/blank.vm")
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/css/hb.base.css"/>
+<link rel="stylesheet" href="http://img0.huanbao.com/huanbao/css/hb.news.css?20111012" />
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.huanbao.com/huanbao/js/hb.news.js"></script>
+
+<script>
+$(document).ready(function(){
+	var num=$(".s-mian2-textarea").val().length;
+	$(".s-box-numWord").html(num);
+});
+</Script>
+
+<div class="sharemain">
+	<div class="s-close" onclick="parent.share_close()">
+    	
+    </div>
+    <div class="cb"></div>
+	<div class="s-main1">
+    	<div class="s-main1-logo fb fl">
+        	环保微交流
+        </div>
+        <div class="s-main1-text fr">
+        	<ul>
+            	<li><a href="$!{address.mblog}/index.htm" target="_blank">#if($!{epAuthUser.account})$!{epAuthUser.account}#else 你好！ #end</a></li>
+                <li>|</li>
+                <li><a href="$!{address.mblog}/login.htm" target="_blank">#if($!{epAuthUser.account})换个账号 #else 请登入 #end</a></li>
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end s-main1-text-->
+        <div class="cb"></div>
+    </div>
+    <!--end s-main1-->
+    <div class="s-main2">
+    	<div class="s-main2-box">
+        	<div class="s-box-weiwen fl">
+            	分享到微文
+            </div>
+            <div class="s-box-numWord fr">
+            	
+            </div>
+            <!--end s-box-numWord-->
+            <div class="cb"></div>
+        </div>
+        <!--end s-main2-box-->
+        <input type="hidden" value="$!{news.id}" id="newsId"/>
+		<input type="hidden" value="$!{news.title}" id="newsTitle"/>
+        <div class="s-main2-box2">
+        	<textarea class="s-mian2-textarea" onkeyup="numWords(this)">$!{news.title}</textarea>
+        </div>
+        <!--end s-main2-box2-->
+        <div class="s-mian2-box3">
+        	<div class="s-box3-change">
+            	<div class="s-change-text fl">
+					#if($!{pList.size()} > 0)
+                	已选择<span id="showCount">1</span>张，共$!{pList.size()}张
+					#end
+                </div>
+                <div class="s-change-address fl">
+                    <a href="#springUrl('/details')$!{news.id}.htm" target="_blank">http://www.huanbao.com/news/details$!{news.id}.htm</a>
+                </div>
+                <!--end s-change-address-->
+                <div class="cb"></div>
+            </div>
+            <!--end s-box3-change-->
+            <div class="s-box3-img">
+            	<ul id="picId">
+					#if($!{pList.size()} > 0)
+						<input type="hidden"value="$!{pList.get(0).path}" id="photos" name="photos"/>
+					#end	
+					#foreach($l in $!{pList})
+						<li onclick='checkPic(this,$!{velocityCount})'><img src="$!{address.thumb}$!{address.resource}$!{l.path}"/><div class="s-img-tick"></div><input type="hidden" value="$!{l.path}" id="path$!{velocityCount}"/></li>
+					#end
+                    <div class="cb"></div>
+                </ul>
+            </div>
+            <!--end s-box3-img-->
+        </div>
+        <!--end s-mian2-box3-->
+        <div class="s-main2-ok fr">
+        	<a href="javascript:doShare();"><img src="http://img0.huanbao.com/huanbao/images/news/share.jpg" /></a>
+        </div>
+        <!--end s-main2-ok-->
+        <div class="cb"></div>
+    </div>
+    <!--end s-main2-->
+</div>
+<!--end share-->
+<script>
+$(document).ready(function(e){
+	$("#picId li").eq(0).css("border","2px solid #f0ba60");
+	$("#picId li").eq(0).find(".s-img-tick").css("display","block");
+})
+</script>

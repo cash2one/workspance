@@ -1,0 +1,106 @@
+#set($layout="/layout/default.vm")
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/comnewstitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="$!{address.myesite}/article/addArticle.htm?type=1000">发布公司动态</a></li>
+            <li #if("$!status" == "1" || "$!status" == "") class="hbnylefts" #else class="hbnyleft" #end><a href="$!{address.myesite}/article/comnews.htm?status=1">已发布公司动态</a></li>
+            <li #if("$!status" == "0") class="hbnylefts" #else class="hbnyleft" #end><a href="$!{address.myesite}/article/comnews.htm?status=0">暂不发布文章</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">已发布公司动态</td>
+      </tr>
+    </table>
+      <table width="96%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyconnewlist">
+       #foreach($list in $!{page.records})
+        <tr id="records$!{list.id}" bgcolor="#FFFFFF" onmouseover="this.style.backgroundColor='#F1FBFF';" onmouseout="this.style.backgroundColor='#FFFFFF';">
+          <td style="padding-left:5px;"><a href="$!{address.esite}/newsDetails$!{list.id}.htm">$!{list.title}</a></td>
+          <td width="120" align="center">$!date.format('yyyy-MM-dd',$!{list.gmtPublish})</td>
+          <td width="80" align="center">#if("$!{list.checkStatus}"=="1") 已审核 #else 未审核 #end</td>
+          <td width="150" align="center">
+	          <a href="$!{address.myesite}/article/updateArticle.htm?id=$!{list.id}">修改</a>&nbsp;&nbsp;&nbsp;
+	          #if("$!{status}"=="1")
+	          <a href="javascript:publishArticle($!{list.id},0)">暂不发布</a>&nbsp;&nbsp;&nbsp;
+	          #else
+	          <a href="javascript:publishArticle($!{list.id},1)">发布</a>&nbsp;&nbsp;&nbsp;
+	          #end
+	          <a href="javascript:deleteArticle($!{list.id})">删除</a>
+          </td>
+        </tr>
+       #end
+      </table>
+      <table width="96%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50" align="right">
+            #myrcPageNav(${page} "#springUrl('/article/comnews.htm')" "status=$!{status}" "")
+          </td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<script language="javascript">
+function deleteArticle(id) {
+        jQuery.ajax({
+        url:'#springUrl("/article/doDelete.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#records"+id).remove();
+                    hb.util.Message.show({
+				        msg:"删除成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"删除失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+function publishArticle(id,status){
+    jQuery.ajax({
+        url:'#springUrl("/article/doPause.htm")',
+        data:{"id":id,"status":status},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#records"+id).remove();
+                    hb.util.Message.show({
+				        msg:"操作成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"操作失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+</script>

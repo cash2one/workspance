@@ -1,0 +1,33 @@
+<script type="text/javascript" src="#springUrl('/app/sale/overview.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<style type="text/css">
+	.sea-row{background-color:#FFFFCC!important;}
+</style>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var grid=new com.zz91.ep.crm.overview.Grid({
+			layout:"fit",
+			region:"center",
+			viewConfig: { 
+				forceFit:true, 
+				enableRowBody:true, 
+				showPreview:true, 
+				getRowClass : function(record, rowIndex, p, store){ 
+					var cls="sea-row";
+					#foreach($l in ${list})
+						if (record.get("gmt_created")!=null){
+							if ($l==record.get("gmt_target").time){
+								return cls;
+							}
+						}
+					#end
+				}
+			}
+		});
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid]
+		});
+	})
+</script>

@@ -1,0 +1,116 @@
+g#set($layout="/layout/defaultS.vm")
+<div class="contain">
+
+	## navigation
+	<div class="location">
+		#parse('/common/esitenavigation.vm')
+		>
+		<a href="#springUrl('/message')$!{mid}.htm" >给我留言</a>
+	</div>
+	<div class="mainblock">
+		#parse("/common/esiteleft.vm")
+		<div class="mk-body">	
+			<div class="panel">
+				<h3>
+					<table>
+						<tr>
+							<td>公司留言</td>
+						</tr>
+					</table>
+				</h3>
+				<div style="padding-left:10px;padding-top:10px;">
+					$!{profile.name}是专业的$!{industryName}行业公司
+					<br />
+					主要产品有：$!{profile.mainProductSupply}；
+					<br />
+					该公司联系人：$!{account.contact}、联系电话：$!{account.phone}
+					<br />
+					如果您暂时联系不上$!{profile.name}负责人，可以通过下面留言框给他留言
+				</div>
+				<form id="messageForm" name="messageForm" method="post" action="$!{address.myesite}/message/sendInquiry.htm" >
+				<div class="panel-body">
+					<table class="xunjia_tb">
+						<tbody>
+							<tr>
+								<td width="90px">主&nbsp; &nbsp;&nbsp;题：</td>
+								<td><input type="text" id="title" name="title" value="我对贵公司很感兴趣"/></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><p>建议您修改主题，吸引对方注意，得到优先回复！</p></td>
+							</tr>
+							<tr>
+								<td>主要内容：</td>
+								<td><textarea id="details" name="details"></textarea></td>
+							</tr>
+						</tbody>
+					</table>
+					<input type="hidden" id="targetId" name="targetId" value="$!{cid}" />
+					<input type="hidden" id="targetType" name="targetType" value="2" />
+					<input type="hidden" id="targetUid" name="targetUid" value="0" />
+					<input type="hidden" id="targetCid" name="targetCid" value="$!{cid}"/>
+					<input type="hidden" name="refurl" value="$!{address.esite}/message$!{cid}.htm" />
+					<input type="submit" value="发送" class="xunjia_btn"/>
+				</div>
+				</form>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>	
+	#parse("/common/esitefooter.vm")
+</div> 
+
+<script language="JavaScript">
+
+ if($!{show}==1){
+   Asto.util.Message.show({
+		msg:"留言成功！",
+		autoClose:5000
+	});
+ }
+
+jQuery(document).ready(function(){
+
+	jQuery("#messageForm").submit(function(){
+	if (jQuery("#title").val()=="") {
+    		Asto.util.Message.show({
+				msg:"请输入标题！",
+				autoClose:10000
+			});
+			jQuery("#title").focus();
+			return false;
+    	}
+    	if (jQuery("#details").val()==""){
+    	    Asto.util.Message.show({
+				msg:"请输入内容！",
+				autoClose:10000
+			});
+			jQuery("#details").focus();
+			return false;
+    	}
+	
+		//提交
+		if(jQuery("#loginstatus").val()!="1" ){
+			
+			var loginbox=new Asto.util.PopupBox({
+    			url:Asto.MINI_LOGIN_URL,
+    	  		destUrl:Asto.DEST_URL,
+    	  		callbackFn:function(success, data){
+    	  			loginbox.close();
+    	  			jQuery("#loginstatus").val("1");
+    				jQuery("#messageForm").submit();
+    	 		},
+				modal:true,
+				title:"请先登录后再留言",
+    	  		width:510,
+    	  		height:400
+      		});
+			
+    	  	loginbox.show();
+			return false;
+		}
+
+	});
+	
+});
+</script>

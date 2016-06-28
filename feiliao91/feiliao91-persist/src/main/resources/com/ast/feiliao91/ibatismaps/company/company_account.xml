@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAccount">
+	<typeAlias alias="companyAccountDO" type="com.ast.feiliao91.domain.company.CompanyAccount" />
+	<resultMap class="companyAccountDO" id="companyAccountResult">
+		<result property="id" column="id"/>
+		<result property="account" column="account"/>
+		<result property="companyId" column="company_id"/>
+		<result property="mobile" column="mobile"/>
+		<result property="email" column="email"/>
+		<result property="qq" column="qq"/>
+		<result property="ip" column="ip"/>
+		<result property="gmtLastLogin" column="gmt_last_login"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="password" column="password"/>
+		<result property="passwordMD5" column="password_md5"/>
+		<result property="sumMoney" column="sum_money"/>
+		<result property="contact" column="contact"/>
+		<result property="tel" column="tel"/>
+		<result property="fax" column="fax"/>
+		<result property="telAreaCode" column="tel_area_code"/>
+		<result property="faxAreaCode" column="fax_area_code"/>
+	</resultMap>
+	
+	
+	<sql id="defaultColumn">
+		id,
+		account,
+		company_id,
+		mobile,
+		email,
+		qq,
+		ip,
+		gmt_last_login,
+		gmt_created,
+		gmt_modified,
+		password,
+		password_md5,
+		sum_money,
+		contact,
+		tel,
+		fax,
+		tel_area_code,
+		fax_area_code
+	</sql>
+	
+	<select id="queryByAccount" parameterClass="java.lang.String" resultMap="companyAccountResult">
+		select
+		<include refid="defaultColumn"/>
+		from company_account
+		where account = #value#
+		limit 1
+	</select>
+	
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer" resultMap="companyAccountResult">
+		select
+		<include refid="defaultColumn"/>
+		from company_account
+		where company_id = #value#
+		limit 1
+	</select>
+
+	<select id="selectByAccountAndPassword" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_account
+		where password_md5 = #password#
+		<isNotEmpty prepend="and" property="account">
+			account = #account#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="mobile">
+			mobile = #mobile#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="email">
+			email = #email#
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryByCompanyIdAndPayPwd" parameterClass="java.util.Map" resultMap="companyAccountResult">
+		select 
+		<include refid="defaultColumn"/>
+		from company_account
+		where 
+		company_id = #companyId#
+		and
+		pay_password = #payPassword#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="companyAccountDO">
+		INSERT INTO company_account
+		(
+		account,
+		company_id,
+		mobile,
+		email,
+		qq,
+		ip,
+		gmt_last_login,
+		gmt_created,
+		gmt_modified,
+		password,
+		password_md5
+		)
+		VALUES
+		(
+		#account#,
+		#companyId#,
+		#mobile#,
+		#email#,
+		#qq#,
+		#ip#,
+		now(),
+		now(),
+		now(),
+		#password#,
+		#passwordMD5#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+	<!-- 验证手机是否注册过 -->
+	<select id="countByMobileOrEmail" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_account
+		<dynamic prepend="where">
+			<isNotEmpty property="account" prepend="and">
+				account=#account#
+			</isNotEmpty>
+			<isNotEmpty property="email" prepend="and">
+				email=#email#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updatePwd" parameterClass="java.util.Map">
+		update 
+		company_account
+		set 
+		gmt_modified = now(),
+		password = #pwd#,
+		password_md5 = #pwdMD5#
+		where account = #account#
+	</update>
+	
+	<update id="updatePayPwd" parameterClass="java.util.Map">
+		update 
+		company_account
+		set 
+		gmt_modified = now(),
+		pay_password = #pwd#
+		where account = #account#
+	</update>
+	
+	
+	<update id="updatePhone" parameterClass="java.util.Map">
+		update 
+		company_account
+		set 
+		gmt_modified = now(),
+		mobile = #mobile#
+		where account = #account#
+	</update>
+	
+	<update id="updateEmail" parameterClass="java.util.Map">
+		update 
+		company_account
+		set 
+		gmt_modified = now(),
+		email = #email#
+		where account = #account#
+	</update>
+	
+	<update id="updateSumMoney" parameterClass="java.util.Map">
+		update 
+		company_account
+		set 
+		gmt_modified = now(),
+		sum_money = #sumMoney#
+		where company_id = #companyId#
+	</update>
+	
+	<select id="selectPassWord" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select pay_password
+		from company_account
+		where company_id = #companyId#
+	</select>
+	
+	<update id="updateGmtLastLogin" parameterClass="java.lang.Integer">
+		update 
+		company_account
+		set 
+		gmt_last_login = now()
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateByCompanyAccount" parameterClass="companyAccountDO" >
+		update
+		company_account set gmt_modified = now()
+			<isNotEmpty  prepend="," property="account">
+				account=#account#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="mobile">
+				mobile=#mobile#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="email">
+				email=#email#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="contact">
+				contact=#contact#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="fax">
+				fax=#fax#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="faxAreaCode">
+				fax_area_code=#faxAreaCode#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="tel">
+				tel=#tel#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="telAreaCode">
+				tel_area_code=#telAreaCode#
+			</isNotEmpty>
+			where company_id=#companyId#
+	</update>
+</sqlMap>

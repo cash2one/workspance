@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="param">
+
+	<typeAlias alias="param" type="com.zz91.crm.domain.Param"/>
+	
+	<resultMap class="param" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="types" column="types"/>
+		<result property="name" column="name"/>
+		<result property="key" column="key"/>
+		<result property="value" column="value" />
+		<result property="sort" column="sort"/>
+		<result property="isuse" column="isuse" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullCollumn">
+		`id`,
+		`types`,
+		`name`,
+		`key`,
+		`value`,
+		`sort`,
+		`isuse`,
+		`gmt_created`,
+		`gmt_modified`
+	</sql>
+	
+	<select id="queryParamByTypes" parameterClass="java.util.HashMap" resultMap="fullResultMap">
+		select
+		<include refid="param.fullCollumn"/>
+		from `param` 
+		where types=#types#
+		<isNotEmpty property="isuse">
+		 and isuse=#isuse#
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryValueByKey" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		select value 
+		from param
+		where types=#types# and `key`=#key# 
+	</select>
+	
+	<insert id="createParam" parameterClass="param">
+		insert into `param`
+		(
+		`types`,
+		`name`,
+		`key`,
+		`value`,
+		`sort`,
+		`isuse`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#types#,
+		#name#,
+		#key#,
+		#value#,
+		#sort#,
+		#isuse#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteParamById" parameterClass="java.lang.Integer">
+		delete from param where id=#id#
+	</delete>
+	
+	<update id="updateParam" parameterClass="param">
+		update `param` 
+		set
+		`name` = #name#,
+		<isNotEmpty property="key">
+		`key` = #key#,
+		</isNotEmpty>
+		`value` = #value#,
+		`sort` = #sort#,
+		`isuse` = #isuse#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<update id="updateParamByKey" parameterClass="param">
+		update `param` 
+		set
+		`name` = #name#,
+		`value` = #value#,
+		`gmt_modified` = now()
+		where types=#types# and `key` = #key#
+	</update>
+	
+	<update id="updateParamTypes" parameterClass="java.util.HashMap">
+		update param 
+		set 
+		types=#newTypes#,
+		gmt_modified=now()
+		where types=#types#
+	</update>
+	
+	<select id="queryCountByKey" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from param 
+		where types=#types# and `key`=#key#
+	</select>
+	
+	<delete id="deleteParamByTypes" parameterClass="java.lang.String">
+		delete from param 
+		where types=#types# 
+	</delete>
+	
+	<select id="queryKeyById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select `key` from param 
+		where id=#id#
+	</select>
+	
+</sqlMap>

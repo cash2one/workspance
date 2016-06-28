@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ZZ91再生网</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" type="text/css" href="css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="css/zz91app.css">
+		<link rel="stylesheet" type="text/css" href="css/floatlay.css"/>
+		<link rel="stylesheet" type="text/css" href="css/pindao.css" />
+		<script type="text/javascript" charset="utf-8" src="js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/index.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/blank.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jQuery.md5.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/floatlay.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/submit.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zepto.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/laytpl.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/doT.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery.lightbox_me.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/mui.lazyload.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/mui.lazyload.img.js"></script>
+		<script>
+			mui.init();
+		</script>
+	</head>
+
+	<body>
+	
+		<header class="mui-bar mui-bar-nav" id="apptop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a id="rightbutton" class="mui-icon mui-icon-close mui-pull-right" onclick="closewindow()"></a>
+			<h1 class="mui-title" id="apptopname">ZZ91再生网</h1>
+		</header>
+		<div class="mui-content">
+		<div id="dcontent" style="padding-bottom: 50px;">
+			<center class="midload" style="height: 200px; margin-top: -100px;"><img src=images/loading.gif><br><br>数据正在加载中......
+					
+					<br />若长时间未能进入App
+					<br />
+					<br /><a onclick="loaddata(url);" class="mui-btn">点此重新加载</a>
+				</center>
+		</div>
+		</div>
+		
+		<div id="downloadwindow" class="tipp" align="center">
+			<p style="color: #000000;" id="downloadwindowjindu">正在下载数据: <span id="dsize"></span>/</p>
+		</div>
+		<div id="popover" class="popover" onclick="shareHide()"></div>
+		<div id="menu" class="menu">
+			<div id="weixinSession" class="button" onclick="shareAction('weixin','WXSceneSession');">发送给微信好友</div>
+			<div id="weixinTimeline" class="button" onclick="shareAction('weixin','WXSceneTimeline');">分享到微信朋友圈</div>
+			<div id="sinaweibo" class="button" onclick="shareAction('sinaweibo')">分享到新浪微博</div>
+			<div id="tencentweibo" class="button" onclick="shareAction('tencentweibo')">分享到腾讯微博</div>
+			<div class="button button-waring" onclick="shareHide()">取 消</div>
+		</div>
+		<input type="hidden" id="sharehref" value="http://www.zz91.com">
+		<input type="hidden" id="sharehrefTitle" value="ZZ91再生网">
+		<input type="hidden" id="sharehrefDes" value="ZZ91再生网">
+		<script type="text/javascript" charset="utf-8" src="js/zz91/myrc.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/camera.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/pullup.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/zz91/appindex.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/laytpl/DBapi.js"></script>
+		<script id="tplcontent" type="text/html">
+		
+		</script>
+		<script>
+		mui.plusReady(function() {
+			var request = {
+				QueryString: function(val) {
+					var uri = window.location.search;
+					var re = new RegExp("" + val + "=([^&?]*)", "ig");
+					return ((uri.match(re)) ? (uri.match(re)[0].substr(val.length + 1)) : null);
+				}
+			}
+			var rt = request.QueryString("url2");
+			winflag=2;
+			rt = rt.replace("TandT", "&").replace("wenhao", "?")
+			var wintype = request.QueryString("wintype");
+			var company_id = request.QueryString("company_id");
+			if (company_id=="0"){
+				company_id=UserInfo.companyid()
+			}if (!company_id){company_id="0"}
+			var clientid = request.QueryString("clientid");
+			var appsystem = request.QueryString("appsystem");
+			visitoncode=request.QueryString("visitoncode");
+			usertoken=request.QueryString("usertoken");
+			
+			var self = plus.webview.currentWebview();
+			var localhtmlflag = self.localhtmlflag;
+			if (!localhtmlflag){localhtmlflag=0}
+			var localtype=self.localtype;
+			var localpath=self.localpath
+			//设置为可以返回
+			nowurl=null;
+			url = rt
+			if ((url=="/info.html" || url=="/huzhupost/" || url=="/order/price.html" || url=="/order/business.html") && company_id==0){
+				url="/login/?tourl="+rt;
+			}
+			if (url.indexOf(zzweburl+"") < 0) {
+				if (url.indexOf("?") < 0) {
+					url = zzweburl+"/" + url + "?t=" + (new Date()).getTime().toString() + "&localhtmlflag="+localhtmlflag.toString()+"&company_id=" + company_id.toString()+"&clientid="+clientid+"&appsystem="+appsystem+"&visitoncode="+visitoncode+"&usertoken="+usertoken;
+				} else {
+					url = zzweburl+"/" + url + "&t=" + (new Date()).getTime().toString() + "&localhtmlflag="+localhtmlflag.toString()+"&company_id=" + company_id.toString()+"&clientid="+clientid+"&appsystem="+appsystem+"&visitoncode="+visitoncode+"&usertoken="+usertoken;
+				}
+			}
+			url=url.replace(".com//",".com/");
+			//winarr.unshift(url);
+			var nowherf = url;
+			if (localhtmlflag==1){
+				if (localtype==1){url=null}
+				loaddatalocal(url,"{}",localpath,"dcontent");
+			}else{
+				loaddata(url);
+			}
+			(function(d, t) {
+				visitoncode=plus.runtime.version;
+			    var r = d.createElement(t), s = d.getElementsByTagName(t)[0];
+			    r.async = 1;
+			    r.src = zzweburl+'/js/common2.js?' + (new Date()).getTime().toString()
+			    s.parentNode.insertBefore(r, s);
+			})(document, 'script');
+		});
+		</script>
+		<div class="arrtop" id="arrtop" onclick="scrolltop()" style="display: none;"><a><span class="mui-icon mui-icon-arrowup"></span></a></a>
+	</body>
+
+</html>

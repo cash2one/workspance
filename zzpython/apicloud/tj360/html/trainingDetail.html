@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>课程中心</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#middle div{
+		border:2px solid #00b8ff;
+		border-radius: 4px; 
+		background-color: #FFFFFF;
+	}
+	#middle div a{
+		padding: 5px 8px;
+		display: inline-block;
+	}
+	.current{
+		background-color: #00b8ff !important;
+		color: #FFFFFF !important;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#footer{
+		display: -webkit-box;
+		width: 100%;
+	}
+	#footer .wrapper{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		-webkit-box-pack: center;
+		-webkit-box-align: end;
+		width: 100%;
+	}
+	#footer .wrap{
+		display: inherit;
+		width: 100%;
+		height: 40px;
+	}
+	#footer .wrap a{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+	}
+	.favorite{
+		background:url(../image/favorite.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.favoriteActive{
+		background:url(../image/favorite_hov.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.favorited{
+		background:url(../image/favorited.png) no-repeat center !important;
+		-webkit-background-size:cover !important;
+	}
+	/*.favoritedisable{
+		background:url(../image/favorite_disable.png) no-repeat center !important;
+		-webkit-background-size:cover !important;
+	}*/
+	.download{
+		margin-left: 1px;
+		margin-right: 1px;
+		background:url(../image/download.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.downloadActive{
+		margin-left: 1px;
+		margin-right: 1px;
+		background:url(../image/download_hov.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.downloaddisable{
+		background:url(../image/download_disable.png) no-repeat center !important;
+		-webkit-background-size:cover !important;
+	}
+	.coursetest{
+		margin-right: 1px;
+		background:url(../image/coursetest.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.coursetestActive{
+		margin-right: 1px;
+		background:url(../image/coursetest_hov.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.coursetestdisable{
+		background:url(../image/coursetest_disable.png) no-repeat center !important;
+		-webkit-background-size:cover !important;
+	}
+	.share{
+		background:url(../image/share.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	.shareActive{
+		background:url(../image/share_hov.png) no-repeat center;
+		-webkit-background-size:cover;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: #00b8ff !important;
+	}
+	#title {position: absolute; /*width: 100%;*/ /*top: 0;*/ left: 0; text-align: center; line-height: 44px; font-size: 20px;right: 50px; left: 50px;text-overflow: ellipsis; overflow: hidden; white-space: nowrap;bottom: 0;}
+
+	#header {position: relative;}
+	
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="title">
+					课程详情
+					<!-- <div>
+						<a id="detail" class="current" tapmode="">详情</a>
+					</div> -->
+				</div>
+			
+			</nav>
+		</header>
+		<section id='content'></section>
+		<footer id="footer">
+			<div class="wrapper">
+				<div class="wrap" style="display: none" onMouseout="hidden();">
+					<a class="favorite" id="favorite" tapmode="favoriteActive" ></a>
+					<a class="download" id="download" tapmode="downloadActive"></a>
+					<a class="coursetest" id="coursetest" tapmode="coursetestActive"></a>	
+					<a class="share" tapmode="shareActive" ></a>		
+				</div>				
+			</div>
+		</footer>
+	</div>
+</body>
+<script>
+	var favorite = '';
+	var zipFiles = '';
+	var hasVideo = true;
+	var hasZip = true;
+	var item = '';
+	var y = 0;
+	var h = 0;
+	
+	apiready = function() {
+		addKeybackEventListener();
+		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+
+		var middle = $api.byId('title');
+
+		var headerPos = $api.offset(header);
+		var footerPos = $api.offset($api.byId('footer'));
+		y = headerPos.h;
+		h = parseInt(window.innerHeight - headerPos.h - footerPos.h) + 'px';
+		
+		item = api.pageParam.item;
+		
+
+		// alert(JSON.stringify(item));
+		
+		if (item.mname) {
+			middle.innerHTML = item.mname;
+		}
+		else if(item.title){
+			middle.innerHTML = item.title;
+		}
+		else{
+			middle.innerHTML = '新闻详情';
+		}
+// alert(middle.toString());
+
+		checkSubmitQ();
+		//checkFavorite();//检查该模块是否可收藏
+		//checkCourseTest(item.qid);//检查是否可进行测试
+		//checkDownload(hasZip);//检查是否可下载
+		openTrainingDetail();//打开详情窗口
+	};
+	
+	function addKeybackEventListener(){
+		api.addEventListener({name: 'keyback'}, function(ret, err){
+			api.execScript({
+				name: 'trainingDetail',
+				frameName: 'trainingDetail_frame',
+				script: 'addKeybackEventListener()'
+			});
+		});
+	}
+	
+	function checkSubmitQ(){
+		var logined = $api.getStorage('logined');
+		if(!logined){	
+			// var el = $api.byId('right');
+			// $api.html(el, '');
+			// $api.removeAttr(el, 'tapmode');
+			// $api.removeAttr(el, 'onclick');
+		}
+	}
+	
+	function checkFavorite(){
+		var el = $api.byId('favorite');
+		var logined = $api.getStorage('logined');
+		if(logined){
+			api.ajax({
+		    	url: serverUrl + '/user/CheckFavorite?uid=' + $api.getStorage('usr').uid + '&mid=' + item._id,
+			    method:'get',
+			    cache:false,
+			    timeout:15,
+			    dataType:'json'
+		    }, function(ret, err){
+		    	if(ret && ret.status){
+		    		favorite = ret.body.favorite;
+		    		//如果已经被收藏
+					if(favorite == '1'){
+						hasNoClsAddIt(el, 'favorited');
+						$api.removeAttr(el, 'tapmode');
+					}
+		    	}
+		    });
+	    }else{
+			$api.attr(el, 'onclick', 'api.openWin({name:"login", url:"login.html"})');
+	    }
+	}
+	
+	function checkCourseTest(qid){
+		var el = $api.byId('coursetest');
+		var logined = $api.getStorage('logined');
+		if(!logined){
+			$api.attr(el, 'onclick', 'api.openWin({name:"login", url:"login.html"})');
+		}else if(logined && !qid){
+			hasNoClsAddIt(el, 'coursetestdisable');
+			$api.removeAttr(el, 'tapmode');
+			$api.attr(el, 'onclick', 'api.toast({msg: "该课程暂无测试", location: "middle"})');
+		}
+	}
+	
+	function checkDownload(b){
+		var el = $api.byId('download');
+		var logined = $api.getStorage('logined');
+		hasZip = b;
+		
+		if(!logined){
+			$api.attr(el, 'onclick', 'api.openWin({name:"login", url:"login.html"})');
+		}else if(logined && (!hasVideo && !hasZip)){
+			hasNoClsAddIt(el, 'downloaddisable');
+			$api.removeAttr(el, 'tapmode');
+			$api.attr(el, 'onclick', 'api.toast({msg: "该课程暂无可下载内容", location: "middle"})');
+		}
+	}
+	
+	function openTrainingDetail(){//打开详情窗口
+		api.openFrame({
+			name: 'trainingDetail_frame',
+			url: 'trainingDetail_frame.html',
+			bounces: true,
+			hScrollBarEnabled: false,
+			pageParam: {item: item},
+			rect: {
+				x: 0,
+				y: y,
+				w: 'auto',
+				h: h
+			}
+		});
+	}
+	
+	// function openTrainingDetailQ(){//打开问答窗口
+	// 	api.openFrame({
+	// 		name: 'trainingDetailQ_frame',
+	// 		url: 'trainingDetailQ_frame.html',
+	// 		bounces: true,
+	// 		hScrollBarEnabled: false,
+	// 		pageParam: {item: item},
+	// 		rect: {
+	// 			x: 0,
+	// 			y: y,
+	// 			w: 'auto',
+	// 			h: h
+	// 		}
+	// 	});
+	// }
+	
+	// function changeTrainingFrame(index){
+	// 	var ques = $api.byId('ques');
+	// 	var detail = $api.byId('detail');
+	// 	if(index == '1'){//index为1时，点击了问答，显示问答子窗口，隐藏详情子窗口
+	// 		hasNoClsAddIt(ques, 'current');
+	// 		$api.removeAttr($api.byId('ques'), 'onclick');
+	// 		hasClsRemoveIt(detail, 'current');
+	// 		$api.attr(detail, 'onclick', 'changeTrainingFrame("0")');
+			
+	// 		openTrainingDetailQ();
+	// 		api.closeFrame({name: 'trainingDetail_frame'});
+	// 	}else{//index为0时，点击了详情，显示详情子窗口，隐藏问答子窗口
+	// 		hasNoClsAddIt(detail, 'current');
+	// 		$api.removeAttr($api.byId('detail'), 'onclick');
+	// 		hasClsRemoveIt(ques, 'current');
+	// 		$api.attr(ques, 'onclick', 'changeTrainingFrame("1")');
+			
+	// 		openTrainingDetail();
+	// 		api.closeFrame({name: 'trainingDetailQ_frame'});
+	// 	}
+	// }
+	
+	// function openTrainingQuestion(){
+	// 	api.openWin({name:'trainingQuestion', url:'trainingQuestion.html', pageParam: {mid: item._id}});
+	// }
+	
+	// function favoriteFn(){
+	// 	var el = $api.byId('favorite');
+	// 	var values = {
+	// 		mid: item._id,
+	// 		uid: $api.getStorage('usr').uid,
+	// 		favorite: favorite == '1' ? 0: 1
+	// 	};
+	// 	api.ajax({
+	//     	url: serverUrl + '/user/Favorites',
+	// 	    method:'post',
+	// 	    cache:false,
+	// 	    timeout:15,
+	// 	    dataType:'json',
+	// 	    data: {values: values}
+	//     }, function(ret, err){
+	//     	if(ret && ret.status){	    		
+	// 			//如果已收藏，点击的时候，取消收藏
+	// 			if(favorite == '1'){
+	// 				hasClsRemoveIt(el, 'favorited');
+	// 				$api.attr(el, 'tapmode', 'favoriteActive');
+	// 				favorite = '0';
+	// 			}else if(favorite == '0'){
+	// 				hasNoClsAddIt(el, 'favorited');
+	// 				$api.removeAttr(el, 'tapmode');
+	// 				favorite = '1';		
+	// 			}
+	//     	}else{
+	//     		if(ret){
+	//     			api.toast({msg: ret.msg, location: 'middle'});
+	//     		}else if(err){
+	//     			api.toast({msg: err.msg, location: 'middle'});
+	//     		}else{
+	//     			api.toast({msg: '数据错误', location: 'middle'});
+	//     		}
+	//     	}
+	//     });
+	// }
+	
+	// function downloadFn(){
+	// 	api.execScript({name: 'trainingDetail', frameName: 'trainingDetail_frame', script: 'downLoad()'});
+	// }
+	
+	// function coursetestFn(){
+	// 	api.openWin({name:'trainingTest', url:'trainingTest.html', pageParam: {qid: item.qid}});
+	// }
+	
+	// function shareFn(){
+	// 	api.openFrame({
+	// 		name: 'trainingShare_frame',
+	// 		url: 'trainingShare_frame.html',
+	// 		bounces: false,
+	// 		opaque: false,
+	// 		hScrollBarEnabled: false,
+	// 		rect: {
+	// 			x: 0,
+	// 			y: 0,
+	// 			w: 'auto',
+	// 			h: 'auto'
+	// 		}
+	// 	});
+	// }
+</script>
+</html>

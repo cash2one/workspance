@@ -1,0 +1,266 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/sincerity/css/attest.css"/>
+<script type="text/javascript" src="$!{address.img}/zz91/sincerity/js/authentication.js"></script>
+<script type="text/javascript" src="$!{address.img}/reborn/front/js/jQuery/fancybox/jquery.fancybox-1.3.2.pack.js"></script>
+<link rel="stylesheet" href="$!{address.img}/reborn/front/js/jQuery/fancybox/jquery.fancybox-1.3.2.css" type="text/css" media="screen" />
+<script type="text/javascript">
+jQuery(document).ready(function(){
+$("a.group").fancybox({
+'transitionIn': 'elastic',
+'transitionOut': 'elastic',
+'speedIn': 450,
+'speedOut': 320
+});
+})
+</script>
+<div id="content2" class="bodyRight filterDom">
+	#foreach($!{obj} in $!{navColumnConfig})
+		#if($!{obj.id}==$!{myposition.code})
+			#set($label=$!{obj.t})
+		#end
+	#end
+##	<div id="company_index" class="bodyCont moveChild mb">
+##		<div class="bodyContTitle"> 
+##			<span class="titleLinkColor titleName t">
+##				您所在的位置： <a href="#springUrl('index.htm')" target="_blank" style="color:#ffffff">首页</a> &gt; $label
+##			</span>
+##        </div>
+##	</div>
+#cacheFragment("$!{address.esiteFragment}/esite/companyInfo.htm?cid=$!{cid}","","1","")
+	<div class="bodyCont moveChild mb">
+		<div class="bodyContTitle"> 
+			<span class="titleLinkColor titleName t">
+				##诚信积分
+				您所在的位置： <a href="#springUrl('index.htm')" target="_blank" class="titleLinkColor">首页</a> &gt; $label
+			</span>
+		</div>
+		<div class="bodyContContent rightConteWidth">
+			<div class="bodyContContentRightCont mainTextColor">
+				<div class="ShopBlock1">
+                	<div class="ShopBlock1-img img$!{company.membershipCode}"></div>
+    						#if($!{lifeFlag}==true && $!{isGOLD}=="1")
+    							#set($memberFlg = "金牌品牌")
+    						#elseif($!{lifeFlag}==true && $!{isSILVER}=="1")
+    							#set($memberFlg = "银牌品牌")
+            				#elseif($!{lifeFlag}==true && $!{isDIAMOND}=="1")
+    							#set($memberFlg = "钻石品牌")
+            				#elseif($!{lifeFlag}==true && $!{company.membershipCode}=="10051001")
+    							#set($memberFlg = "再生")
+            				#elseif($!{isVIP}=="1")
+                    				#if($!{company.zstYear}>0)
+                        				#set($year=${company.zstYear})
+                        			#else
+                        				#set($year=1)
+									#end
+            						
+                    				#if($!{isGOLD}=="1")
+    									#set($memberFlg = "金牌品牌")
+                    				#elseif($!{isSILVER}=="1")
+            							#set($memberFlg = "银牌品牌")
+                    				#elseif($!{isDIAMOND}=="1")
+    									#set($memberFlg = "钻石品牌")
+                    				#else
+    									#set($memberFlg = "再生")
+									#end
+							#end
+					<div class="ShopBlock1-year">
+						#if($!{lifeFlag}==true)
+							#set($isLife = true)
+							终身会员
+						#else
+							第<span class="green">$!{year}</span>年
+						#end
+                    </div>
+                    <div class="ShopBlock1-text">
+                    	诚信指数：$!{attestIntegral}
+##						#if($!{isCX}=="1")<img src="$!{address.img}/zz91/images/cxlogo.png" />#end
+                    </div>
+                    <!--end ShopBlock1-text-->
+                    <div class="cb"></div>
+                </div>
+                <!--end ShopBlock1-->
+            </div>
+        </div>
+    </div>
+	<div class="bodyCont moveChild mb">
+        <div class="bodyContTitle"> 
+            <span class="titleLinkColor titleName t">企业荣誉证书</span>
+        </div>
+        <div class="bodyContContent rightConteWidth">
+            <div class="bodyContContentRightCont mainTextColor">
+				<div class="CompanyHonor">
+                	<div class="CompanyHonor-top">
+                    	<div class="CompanyHonor-top-title">
+                            <div class="CompanyHonor-title-text1">
+                                ZZ91再生网$memberFlg通会员证书
+                            </div>
+                            <!--end CompanyHonor-title-text1-->
+                            <div class="CompanyHonor-title-text2">
+                                证书编号：$!{creditId}
+                            </div>
+                            <!--end CompanyHonor-title-text1-->
+                        </div>
+                        <!--end CompanyHonor-top-title-->
+                    </div>
+                    <!--end CompanyHonor-top-->
+                    <div class="CompanyHonor-center">
+                    	<div class="CompanyHonor-center-title">
+                        	贵单位： $!{company.name}
+                        </div>
+                        <!--end CompanyHonor-center-title-->
+                        <div class="CompanyHonor-center-text">
+                        	向ZZ91再生网（www.zz91.com）提交的$!{memberFlg}通会员服务申请已经获得批准，将在服务有效期内全面享受ZZ91再生网会员服务。
+                        </div>
+                        <!--end CompanyHonor-center-text-->
+                        <div class="CompanyHonor-table-title">
+                        	特此声明
+                        </div>
+                        <!--end CompanyHonor-table-title-->
+                        <table class="CompanyHonor-table">
+                        	<tr>
+                            	<td>服务类型</td>
+                                <td>服务费用（人民币：元）</td>
+                                <td>服务期限</td>
+                            </tr>
+							#foreach($crm in $!{crmDto})
+                            <tr>
+                            	<td>
+									#if($!{crm.svrName} == "再生通")
+										$!{memberFlg}通
+										#set($showDate = ${crm.crmCompanySvr.gmtSigned})
+									#else
+										$!{crm.svrName}
+										#set($showDate = ${crm.crmCompanySvr.gmtSigned})
+									#end
+								</td>
+                                <td>
+									#if($!{memberFlg} == "再生" && $!{crm.svrName} == "再生通")
+										3500元/年
+									#elseif($!{memberFlg} == "银牌品牌" && $!{crm.svrName} == "再生通")
+										3880元/年
+									#elseif($!{memberFlg} == "金牌品牌" && $!{crm.svrName} == "再生通")
+										5880元/年
+									#elseif($!{memberFlg} == "钻石品牌" && $!{crm.svrName} == "再生通")
+										11880元/年
+									#else
+										按效果付费
+									#end
+								</td>
+                                <td>
+									#if($!{lifeFlag}!=true)
+    									#if($!{crm.svrName} == "再生通")
+    										第$!{year}年
+										#end
+									#else
+										终身会员
+									#end
+								</td>
+                            </tr>
+							#end
+                        </table>
+                        
+                        <div class="CompanyHonor-text">
+                        	注：此证书仅证明贵单位有权在服务期内使用ZZ91再生网会员服务。
+                        </div>
+                        <!--end CompanyHonor-text-->
+                    </div>
+                    <!--end CompanyHonor-center-->
+                    <div class="CompanyHonor-down">
+                    	<div class="CompanyHonor-down-right">
+                        	<div class="CompanyHonor-down-text">
+                            	发证机构：ZZ91再生网
+                            </div>
+                            <!--end CompanyHonor-down-text-->
+                            <div class="CompanyHonor-down-text">
+                            	发证日期：#printFragmentDate("yyyy.MM.dd" $!{showDate})
+                            </div>
+                            <!--end CompanyHonor-down-text-->
+                        </div>
+                        <!--end CompanyHonor-down-right-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end CompanyHonor-top-->
+                    <div class="zhang">
+                    	<img src="$!{address.img}/zz91/sincerity/images/zhang.gif">
+                    </div>
+                    <!--end zhang-->
+                </div>
+                <!--end CompanyHonor-->
+            </div>
+        </div>
+    </div>
+#end	
+	#if($!{showType} == "1")
+		#parse("/layout/cxda/attestInfo.vm")
+	#end
+	#parse("/layout/cxda/qualification.vm")
+	
+	<div class="bodyCont moveChild mb">
+		<div class="bodyContTitle"> 
+			<span class="titleLinkColor titleName t">诚信指数</span>
+		</div>
+		<div class="bodyContContent rightConteWidth">
+			<div class="bodyContContentRightCont mainTextColor">
+				<div class="IntegrityIndex">
+					<table class="IntegrityIndex-table">
+						<tr>
+							<td colspan="3" class="h40 fb" style="text-align:left;padding-left:20px">
+								诚信指数:$!{attestIntegral}
+##								#if($!{isCX}=="1")<img src="$!{address.img}/zz91/images/cxlogo.png" />#end
+							</td>
+                        </tr>
+                        <tr>
+                        	<td class="fb">积分项</td>
+                            <td class="fb">积分数</td>
+                            <td class="fb">积分详情</td>
+                        </tr>
+                        <tr>
+                        	<td class="fb">企业身份认证</td>
+                            <td>
+    								#if($!{attest.checkStatus} == "1")
+    									10
+    								#else
+    									0
+    								#end
+    								分
+							</td>
+							<td>
+								#if($!{attest})
+									#if($!{attest.checkStatus} == "1")
+										身份<span class="red"> [已认证] </span>
+									#end
+								#end
+							</td>
+						</tr>
+						<tr>
+							<td class="fb">$!{memberFlg}通年限</td>
+							<td>$!{integral_service_zst} 分</td>
+							<td>
+								#if($isLife==true)
+									终身会员
+								#else
+									$!{year}年
+								#end
+							</td>
+						</tr>
+						<tr>
+							#set($size = $!{NoExpiredList.size()}+2)
+							<td class="fb" rowspan="$!{size}">证书荣誉</td>
+							<td rowspan="$!{size}">$!{integral_credit_file} 分</td>
+						</tr>
+						#foreach($credit in $!NoExpiredList)
+							<tr>
+								<td>$!{credit.fileName} <span class="red">1</span> 张</td>
+							</tr>
+						#end
+						<tr>
+							<td>过期证书 <span class="red">$!{expiredNum}</span> 张</td>
+						</tr>	
+					</table>
+				</div>
+				<!--end IntegrityIndex-->
+			</div>
+			<div class="clr"></div>
+		</div>
+	</div>
+</div>

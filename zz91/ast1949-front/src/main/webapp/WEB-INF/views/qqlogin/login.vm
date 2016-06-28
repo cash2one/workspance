@@ -1,0 +1,109 @@
+#set($layout="/layout/qqRegisterLayout.vm")
+
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+
+<script src="${address.img}/zz91/qq/js/qqregister.js" type=text/javascript></script>
+
+<link rel="stylesheet" href="${address.img}/front/css/zz91.comm.css" />
+<link href="${address.img}/zz91/china/css/style_1.0.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="${address.img}/zz91/qq/css/reg.css"/>
+<link rel="stylesheet" href="${address.img}/front/css/zz91.nav.comm.css" />
+<link rel="stylesheet" type="text/css" href="${address.img}/zz91/qq/css/base.css"/>
+
+<!-- custom ajax validator -->
+<div id="header" class="clearfix">
+    <div id="logo">
+        <span class="logo">
+            <a href="http://www.zz91.com" target="_blank">
+                <img src="${address.img}/zz91/images/logo.png" alt="ZZ91再生网" width="115" height="45" />
+            </a>
+            <a href="#" target="_blank">
+                <img src="${address.img}/zz91/china/images/logo_ad.png" alt="用户注册" wdith="144" height="44" />
+            </a>
+        </span>
+    </div>
+    <div class="logo_right">
+        如果遇到注册问题，请拨打<br/>
+        0571-56611111 56612345
+    </div>
+</div>
+<!-- end custom ajax validator -->
+<div style="clear:both"></div>
+<!--main-->
+<div class="main">
+    <div class="register">
+		<div class="nav">
+            <ul>
+                <li class="nav_user">
+                    <a href="qqLogin.htm?accessToken=$!{accessToken}">老用户：可绑定QQ账号</a>
+                </li>
+                <li >     
+                    <a href="register.htm?accessToken=$!{accessToken}&referUrl=$!{referUrl}">新用户：请补充注册信息</a>
+                </li>
+          </ul>
+        </div>
+        <div class="title">
+            <span class="title_zi">如果您已经注册过ZZ91网，请将您的QQ账号和ZZ91再生网账号绑定：</span>
+        </div>
+		<div style="clear:both"></div>
+		<div class="content">
+		#if($!{logined}==1)
+			登录成功，正在跳转当前请求页面...
+		#else
+			#if($!{error}!="")
+				<p class="notice red" style="padding-left:3cm;">$!{error}</p>
+			#end
+			<form action="doQQBind.htm" method="post">
+				<div class="item" style="width:500px">
+					<span class="name">用户名：</span>
+					<input type="text" class="text" name="account" value="$!{account}" id="loginAccount" style="width:220px;"/>
+					<span class="post_error">&nbsp;</span>
+				</div>
+				<div class="item" style="width:500px">
+					<span class="name">密码：</span>
+					<input type="password" class="text" name="password" id="loginPassword" style="width:220px;"/>
+					<span class="post_error">&nbsp;</span>
+				</div>
+				<div style="clear:both"></div>
+				<span class="title_zi2">关联ZZ91再生网帐号后，下次您可以用QQ号登录ZZ91再生网</span>
+				<div class="ok">
+					<input class="login_ok" type="submit"  value="" />
+				</div>
+				<div style="clear:both"></div>
+				<input type="hidden" name="accessToken" value="$!{accessToken}" />
+				## 跳转地址
+				<input type="hidden" name="referUrl" value="$!{referUrl}" />
+			</form>
+		#end
+		</div><!--end content-->
+		<div style="clear:both"></div><!--end nav-->
+		<div style="clear:both"></div><!--end title-->
+	</div><!--end register-->
+</div>
+
+<!--end main-->
+<script type="text/javascript" >
+jQuery(document).ready(function(){
+        jQuery("#codeImg").attr("src", "/validationcode/vcode.htm?"+new Date()); 
+        jQuery("#codeImg").click(function(){
+        jQuery(this).attr("src", "/validationcode/vcode.htm?"+new Date());
+        });
+		
+	    // 刷新父页面
+		setTimeout(function(){
+			#if($!{logined}==1)
+				if(window.parent.location.href==window.location){
+					#if($!{referUrl})
+						window.location = "$!{referUrl}";
+					#else
+						window.location = "$!{address.myrc}/index.htm";
+					#end
+				}else{
+					window.parent.location.reload();
+				}
+			#end
+		},3000);
+});
+</script>
+

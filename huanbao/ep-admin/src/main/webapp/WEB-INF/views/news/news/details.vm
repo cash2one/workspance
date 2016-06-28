@@ -1,0 +1,56 @@
+<script type="text/javascript" src="#springUrl('/app/news/category.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/news/news.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/photo/FileUploadField.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/photo/UploadWin.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var form = new com.zz91.ep.news.Form({
+			title:"编辑文章信息",
+			autoScroll:true,
+			columnWidth:1,
+			region:"center",
+			height:500
+		});
+
+		#if($!{copy}=="1")
+			form.loadRecord($!{id},"",$!{copy});
+		#elseif($!{code} && $!{code}!="")
+			form.loadRecord("",$!{code});
+		#elseif($!{id} && $!{id} > 0)
+			form.loadRecord($!{id},"");
+		#end
+
+
+		var grid=new com.zz91.ep.news.photoListGrid({
+			id:NEWS.FILE_GRID,
+			title:"资讯上传文件列表",
+			columnWidth:1,
+			height:240
+		});
+		
+		#if($!{copy}=="1")
+			grid.loadPhotoRecord(0);
+		#elseif($!{id})
+			grid.loadPhotoRecord($!{id});
+		#else
+			grid.loadPhotoRecord(0);
+		#end
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[{
+				region:"center",
+				columnWidth:1,
+				autoScroll:true,
+				items:[form,grid]
+			}]
+		});
+		
+		
+		var sourceStore = {
+			$!{strMap}
+		}
+
+		
+	});
+</script>
+

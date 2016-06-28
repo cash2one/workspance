@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="yfbLog">
+	<typeAlias alias="yfbLogDO" type="com.ast.feiliao91.domain.trade.YfbLog" />
+	<resultMap class="yfbLogDO" id="yfbLogDOResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="money" column="money" />
+		<result property="payOrder" column="pay_order" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,
+		company_id,
+		money,
+		pay_order,
+		is_del,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+
+
+	<insert id="insert" parameterClass="yfbLogDo">
+		INSERT INTO yfb_log
+		(
+		`company_id`,
+		`money`,
+		`pay_order`,
+		`is_del`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		VALUES
+		(
+		#companyId#,
+		#money#,
+		#payOrder#,
+		#isDel#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID();
+		</selectKey>
+	</insert>
+
+
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="yfbLogDOResult">
+		select
+		<include refid="yfbLog.fullColumn" />
+		from yfb_log where company_id=#companyId# and is_del=0
+	</select>
+
+	<update id="update" parameterClass="java.lang.String">
+		update yfb_log
+		set gmt_modified=now(),is_del=1 where pay_order=#payOrder#
+	</update>
+</sqlMap>

@@ -1,0 +1,118 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.6.2.min.js"></script>
+<title>ALIPAY</title>
+<style>
+.je{
+	font-size:18px;
+	line-height:30px;
+	color:#F00;
+	width:200px;
+}
+.text{
+	font-size:14px;
+	line-height:25px;
+	width:200px;
+	color:#090;
+}
+.submit{
+	font-size:16px;
+	line-height:30px;
+	font-family:"微软雅黑";
+	font-weight:bold;
+}
+.err{
+	color:#F00;
+	font-size:12px;
+	line-height:22px;
+}
+</style>
+<script>
+$(document).ready(function(){
+	   $("#form1").submit(function(){
+			if ($("#amount").val()==""){
+				$("#amounterr").html("请输入金额！");
+				return false;
+			}else{
+				if (document.getElementById("amount")){
+					if (isNaN($("#amount").val())==true){
+						$("#amounterr").html("你输入的金额必须是数字！");
+						return false;
+					}else{
+						$("#total_fee").val($("#amount").val());
+					}
+				}
+				$("#amounterr").html("");
+			};
+			if ($("#mobile").val()==""){
+				$("#mobileerr").html("请输入手机号码！");
+				return false;
+			}else{
+				$("#mobileerr").html("");
+			};
+			if ($("#contact").val()==""){
+				$("#contacterr").html("请输入联系人！");
+				return false;
+			}else{
+				$("#contacterr").html("");
+			};
+			if(document.getElementById("address")){
+				if ($("#address").val()==""){
+					$("#addresserr").html("请输入收货地址！");
+					return false;
+				}else{
+					$("#addresserr").html("");
+				};
+			}
+			$("#paytable").css("display","none");
+			$(this).append("<center><br /><br />正在进行支付中.....,完成支付后关闭该窗口</center>");
+	   });
+		#if($!{result}==1)
+			alert("支付遇到问题，页面自动跳转！");
+			parent.window.location=parent.window.location;
+		#end
+	});
+		function clickToPay(){
+			$("#paytable").empty();
+			$("#paytable").html("<center><br /><br />正在进行支付中.....,完成支付后关闭该窗口</center>");
+		}
+</script>
+</head>
+
+<body>
+
+<table border="0" cellspacing="0" cellpadding="6" style="font-size:14px;" id="paytable" align=center>
+<tr>
+    <td align="center" colspan=2>您选择的产品是：<b style="color:#060">$!{serviceName}</b></td>
+ </tr>
+  
+  <tr>
+    <td align="center" colspan=2>金额：<font color="#FF0000" style="font-size:20px; font-weight:bold">$!{price}</font> 元</td>
+  </tr>
+  
+  <tr>
+    <td align="center"><img src="http://www.zz91.com/hkfs/images/z_logo.png"></td>
+    <td align="center">
+    <form action="https://shenghuo.alipay.com/send/payment/fill.htm" method="post" target="_blank" accept-charset="GBK">
+    <input name="optEmail" type="hidden" value="zhifu@asto-inc.com" />
+    <input name="payAmount" type="hidden" value="$!{price}" />
+    <!--这一项可以不留-->
+    <input name="title" type="hidden" value="$!{mobile}"/>
+    <input name="memo" type="hidden" value="$!{serviceName}" />
+    <input name="pay" type="image" value="给我付款" src="http://www.zz91.com/hkfs/images/pay.jpg" onclick="clickToPay()" />
+    </form>
+    </td>
+  </tr>
+##  <tr>
+##    <td align="center"><img src="http://img0.zz91.com/zz91/images/zhifu.jpg"></td>
+##    <td align="center"><a href="http://www.zz91.com/zzpay/myPay.htm?user_id=$!{companyId}&paymod=plain&money_order=$!{price}&name_goods=$!{id}" target="_blank"><img src="http://img0.zz91.com/zz91/images/pay.jpg" border="0"></a></td>
+##  </tr>
+  <tr>
+    <td align="center" colspan=2 style="line-height:30px;"><a href="http://www.zz91.com/hkfs/" target="_blank">其它银行支付方式</a><br />付款成功后请拨打电话:0571-56631234</td>
+  </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="sample_identity">
+
+	<typeAlias alias="sampleIdentityDO" type="com.ast.ast1949.domain.sample.Identity"/>
+
+	<resultMap id="identityResult" class="sampleIdentityDO">
+		<result column="id" property="id"  />
+		<result column="company_id" property="companyId"  />
+		<result column="real_name" property="realName" />
+		<result column="identity_no" property="identityNo" />
+		<result column="scan_front_img" property="scanFrontImg" />
+		<result column="scan_back_img" property="scanBackImg" />
+		<result column="gmt_created" property="createTime"  />
+		<result column="state" property="state" />
+		<result column="gmt_modified" property="updateTime"  />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		s.id, s.company_id, s.real_name, s.identity_no, s.scan_front_img,
+		s.scan_back_img, s.gmt_created,
+		s.state, s.gmt_modified
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="identityResult"
+		parameterClass="sampleIdentityDO">
+		select id, company_id, real_name, identity_no, scan_front_img,
+		scan_back_img, gmt_created,
+		state, gmt_modified
+		from sample_identity
+		where id = #id#
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterClass="sampleIdentityDO">
+		delete from sample_identity
+		where id = #id#
+	</delete>
+	
+	<insert id="insert" parameterClass="sampleIdentityDO">
+		insert into sample_identity (id, company_id, real_name, identity_no,
+		scan_front_img,
+		scan_back_img, gmt_created, state, gmt_modified)
+		values (#id#, #companyId#, #realName#,
+		#identityNo#,
+		#scanFrontImg#, #scanBackImg#, now(), #state#,
+		now())
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterClass="sampleIdentityDO">
+		update sample_identity
+		set company_id = #companyId#,
+		real_name = #realName#,
+		identity_no = #identityNo#,
+		scan_front_img = #scanFrontImg#,
+		scan_back_img = #scanBackImg#,
+		gmt_created = #createTime#,
+		state = #state#,
+		gmt_modified = #updateTime#
+		where id = #id#
+	</update>
+	
+	<update id="updateByPrimaryKeySelective"
+		parameterClass="sampleIdentityDO">
+		update sample_identity
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="companyId">
+				company_id = #companyId#
+			</isNotNull>
+			<isNotNull prepend="," property="realName">
+				real_name = #realName#
+			</isNotNull>
+			<isNotNull prepend="," property="identityNo">
+				identity_no = #identityNo#
+			</isNotNull>
+			<isNotNull prepend="," property="scanFrontImg">
+				scan_front_img = #scanFrontImg#
+			</isNotNull>
+			<isNotNull prepend="," property="scanBackImg">
+				scan_back_img = #scanBackImg#
+			</isNotNull>
+			<isNotNull prepend="," property="createTime">
+				gmt_created = #createTime#
+			</isNotNull>
+			<isNotNull prepend="," property="state">
+				state = #state#
+			</isNotNull>
+			<isNotNull prepend="," property="updateTime">
+				gmt_modified = #updateTime#
+			</isNotNull>
+		</dynamic>
+		where id = #id#
+	</update>
+	
+	<select id="queryIdentityByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="identityResult">
+		select id, company_id, real_name, identity_no, scan_front_img,scan_back_img,
+		gmt_created, state, gmt_modified
+		from sample_identity
+		where company_id=#companyId#
+	</select>
+	
+	<update id="updateFrontByCompanyId" parameterClass="java.util.Map">
+		update sample_identity
+		set scan_front_img=#str#,gmt_modified=now()
+		where company_id=#companyId#
+	</update>
+	
+	<update id="updateBackByCompanyId" parameterClass="java.util.Map">
+		update sample_identity
+		set scan_back_img=#str#,gmt_modified=now()
+		where company_id=#companyId#
+	</update>
+
+	<!-- queryListByFilter start -->
+	<sql id="dynamicSearch">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and " property="account">
+				exists (select id from company_account where account = #account# and s.company_id = company_id ) 
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="companyName">
+				exists (select id from company where id = s.company_id and name = #companyName#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="realName">
+				s.real_name = #realName#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="identityNo">
+				s.identity_no = #identityNo#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="state">
+				s.state = #state#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="from">
+				s.gmt_created >= #from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="to">
+				#to# > s.gmt_created
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryListByFilter" parameterClass="java.util.Map" resultMap="identityResult">
+		select
+		<include refid="defaultColumn" />
+		from sample_identity s
+		<include refid="dynamicSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListByFilterCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from sample_identity s
+		<include refid="dynamicSearch" />
+	</select>
+
+</sqlMap>

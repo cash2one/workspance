@@ -1,0 +1,196 @@
+<!DOCTYPE html> 
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>$!{seoTitle}</title>
+        <meta name="keywords" content="$!{seoKeywords}" />
+        <meta name="description" content="$!{seoDescription}" />
+        <link rel="shortcut icon" href="$!{address.img}/front/favicon.ico" />
+        <link rel="stylesheet" href="$!{address.img}/zz91/css/zz91.common.css" />
+        <link rel="stylesheet" href="$!{address.img}/zz91/trade/css/zz91.trade.css" />
+        <!--import common js-->
+        <script src="$!{address.img}/lib/asto/modernizr.js"></script>
+        <script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+        <script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+		<script type="text/javascript" src="$!{address.js}/zz91.common.js"></script>
+        <!--google analysis-->
+        <!--baidu analysis-->
+        <!--51yes analysis-->
+    </head>
+    <body>
+        <div id="fl_ltop" style="right:0;top:400;position:absolute;display:none;">
+        	<a href="#" onClick="showAd();return false;">
+        		<img src="$!{address.img}/front/images/root/replay.jpg" />
+        	</a>
+        </div>
+    	#cacheFragment("$!{address.fragment}/china/topbar.htm","","","")
+    		<div id="topBar">
+                <div id="topBarInfo">
+            		<div id="topBarLogin">
+						<script src="$!{address.front}/webst.htm?$date" type="text/javascript" ></script>
+##                    <iframe src="$!{address.front}/status.htm" frameborder="0" width="450" height="28" allowTransparency="true" scrolling="no"></iframe>
+                    </div>	
+            		$!{fragmentContext}
+                </div>
+            </div>
+    	#end
+    	## 登录状态下方 横幅广告
+    	<div class="main_box">
+    		<script type="text/javascript" src="http://gg.zz91.com/show?p=358"></script>
+    	</div>
+    	#cacheFragment("$!{address.fragment}/china/header.htm?ik=trade","","","")
+    		$!{fragmentContext}
+    	#end
+        <!--head end-->
+		
+		<!--正文-->
+        $screen_content
+		<!--正文-->
+		
+        <!-- 返回顶部 -->
+        <div id="J_toTop" class="toTop v-hidden">回到顶部</div>
+        <script>
+            var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+            document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+		#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+			$!{fragmentContext}
+		#end
+		#parse("/seo/analysis_body.vm")
+        <script>
+            jQuery(function() {
+                "use strict";
+                jQuery("#J_content").on("mouseenter", ".item",
+                function() {
+                    jQuery(this).addClass("on");
+                });
+                jQuery("#J_content").on("mouseleave", ".item",
+                function() {
+                    jQuery(this).removeClass("on");
+                });
+				//滚动
+                myScroll("J_scroll");
+                function myScroll(id){
+                    var doc = document,
+                        el = doc.getElementById(id),
+                        ul = el.getElementsByTagName("ul")[0],
+                        li = ul.getElementsByTagName("li"),
+                        liHeight = li[0].offsetHeight,
+                        top;
+                    el.style.cssText = "overflow:hidden;height:" + liHeight * 8 + "px;";
+                    el.appendChild(ul.cloneNode(true));
+                    var move = function(){
+                        top = el.scrollTop;
+                        if (top >= ul.offsetHeight) {
+                            el.scrollTop = 0;
+                        } else {
+                            el.scrollTop = top + 1;
+                        }
+                    }
+                    var loop = setInterval(move, 50);
+                    el.onmouseover = function(){
+                        clearInterval(loop);
+                    };
+                    el.onmouseout = function(){
+                        loop = setInterval(move, 50);
+                    }
+                }
+                //分类选择
+                (function() {
+                    var type = jQuery("#J_type"),
+                    subType = jQuery("#J_subType").find("dd"),
+                    data;
+                    type.on("click", "a",
+                    function(e) {
+                        e.preventDefault();
+                        data = jQuery(this).data("type");
+                        jQuery(this).addClass("on").siblings("a").removeClass("on");
+                        subType.each(function() {
+                            if (data !== "all") {
+                                if (jQuery(this).attr("data-subType") === data) {
+                                    jQuery(this).removeClass("hidden");
+                                } else {
+                                    jQuery(this).addClass("hidden");
+                                }
+                            } else {
+                                jQuery(this).removeClass("hidden");
+                            }
+                        });
+                    })
+                } ());
+                //底部搜索
+                (function() {
+                    var bottomSearch = jQuery("#J_b_s"),
+                    bottomSearchType = bottomSearch.find(".s-tab");
+                    bottomSearchType.on("click", "li",
+                    function(e) {
+                        e.preventDefault();
+                        jQuery(this).addClass("cur").siblings("li").removeClass("cur");
+                        //doSomething
+                    });
+                } ());
+                // 回到顶部
+                (function() {
+                    var el = jQuery("#J_toTop"),
+                    win = jQuery(window),
+                    isScroll = false,
+                    checkTimer;
+                    win.on("scroll",
+                    function() {
+                        isScroll = true;
+                    });
+                    el.on("click",
+                    function() {
+                        win.scrollTop(0);
+                        el.addClass("v-hidden");
+                    });
+                    checkTimer = setInterval(function() {
+                        if (isScroll) {
+                            isScroll = false;
+                            doScroll();
+                        }
+                    },
+                    500);
+                    function doScroll() {
+                        if (win.scrollTop() !== 0) {
+                            el.removeClass("v-hidden");
+                        } else {
+                            el.addClass("v-hidden");
+                        }
+                    }
+                } ())
+            });
+            jQuery("#bottom_form").submit(function() {
+                var skey = jQuery(".cur").attr("id");
+                var keyWord = jQuery("#b-search").attr("value");
+                if (skey == "search1") {
+                    zz91Search.products({
+                        contextpath: "${address.trade}",
+                        target: "_blank",
+                        searchOptions: {
+                            keywords: keyWord,
+                            ptype: "1"
+                        }
+                    });
+                } else if (skey == "search2") {
+                    zz91Search.products({
+                        contextpath: "$!{address.trade}",
+                        target: "_blank",
+                        searchOptions: {
+                            keywords: keyWord,
+                            ptype: "2"
+                        }
+                    });
+                } else if (skey == "search3") {
+                    zz91Search.price({
+                        contextpath: "$!{address.price}",
+                        target: "_blank",
+                        searchOptions: {
+                            keywords: keyWord
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

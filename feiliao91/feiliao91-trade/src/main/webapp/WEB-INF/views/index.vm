@@ -1,0 +1,231 @@
+#set($layout="/layout/default.vm")
+#set($in="1")
+<link rel="stylesheet" href="http://img0.zz91.com/trade/priceindex/css/deal.css" />
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script> 
+<link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm-pop.css" />
+	#parse("/common/menu.vm")
+	<div class="content clearfix">
+		#parse("/common/left.vm")
+		<div class="ads-main fr shop-main" id="tt">
+			<div class="product-title clearfix">
+				<div class="fl pdct-tt1 pdct-tt1-shop">
+					<label class="all-get">
+						<input name="frim" type="checkbox" value="" class="getall-input"/>全选 
+					</label>
+					<span class="tt1-name">商品信息</span>
+				</div>
+				<div class="fl pdct-tt2 pdct-tt2-shop">
+					<span>单价（元）</span>
+				</div>
+				<div class="fl pdct-tt3">
+					<span>数量</span>
+				</div>
+				<div class="fl pdct-tt4">
+					<span>金额（元）</span>
+				</div>
+				<div class="fl pdct-tt5">
+					<span>操作</span>
+				</div>
+			</div>
+			#foreach($li in $page.records)
+				<ul class="cplist-ul">
+					<li class="shopfirm">
+						<label class="all-get">
+							<input name="frim" type="checkbox" value="$!{li.info.id}" class="firm-input"/>$!{li.info.name} 
+						</label>
+					</li>
+					#foreach($ll in $li.list)
+							#set($p1 = $!{ll.id})
+							#set($p2 = $!{ll.attribute})
+							#set($p3 = $!{ll.number})
+						<li>
+							<div class="clearfix">
+								<div class="fl pdct-tt1 pdct-tt1-shop">
+									<input name="frimlist" type="checkbox" value="$!{ll.id}" class="onecheack"/>
+									<div class="cpdetail fl">
+										<a href="$!{address.www}/goods$!{ll.goodId}.htm" target="_blank">
+											<img src="$!{address.img}/$ll.picAddress" width="80" height="80" class="cpdetail-img" />
+										</a>
+										<a class="cpdetail-wen" href="$!{address.www}/goods$!{ll.goodId}.htm" target="_blank">$!{ll.title}</a>
+										<p class="cpdetail-baoz">
+											#if($li.bzjFlag)
+											<i class="res-iconimg1"></i>
+											#else
+											<i class="res-iconimg1 res-iconimg3"></i>
+											#end
+											#if($li.sevenDayFlag)
+											<i class="res-iconimg1 res-iconimg2"></i>
+											#else
+											<i class="res-iconimg1 res-iconimg4"></i>
+											#end
+										</p>
+									</div>
+									<div class="fl frimcolor">$!{ll.attribute}</div>
+								</div>
+								<div class="fl pdct-tt2 pdct-tt2-shop">
+									<p>$!{ll.price}</p>
+									<p class="deatil-loat color-99">#if($!{ll.hasTax}==0)(含税) #else (不含税) #end</p>
+								</div>
+								<div class="fl pdct-tt3">
+									<p>$!{ll.number}</p>
+								</div>
+								<div class="fl pdct-tt4">
+									<p class="red j_firmMoy">$!{ll.money}</p>
+								</div>
+								<div class="fl pdct-tt5">
+									<p><a href="javascript:del($!{ll.id})">删除</a></p>
+									<p><a href="#springUrl('/goods/buy_goods.htm?ids=')$!{ll.id}">结算</a></p>
+								</div>
+							</div>
+						</li>
+					#end
+				</ul>
+			#end
+			## 分页开始
+			#listPageNav($page "#springUrl('/index.htm')" "" "")
+			#if($page.records.size()>0)
+	            <div class="deal-retive">
+	                <div class="deal-info clearfix">
+	                    <div class="shop-doinfo clearfix fl">
+	                        <label class="all-get fl">
+	                            <input name="frim" type="checkbox" value="" class="getall-input"/>全选 
+	                        </label>
+	                        <a href="javascript:del()" class="more-deat fl">删除</a>
+	                        <span class="fr">已选商品 <span class="red j_cdnumber">0</span> 件</span>
+	                    </div>
+	                    <div class="fl allmoery">合计（不含运费）：<span class="moeryNum j_allmoery">￥0.00</span></div>
+	                    <a class="gopag">结算</a>
+	                </div>
+	            </div>  
+			#end
+			<form action="$!{address.trade}/goods/buy_good.htm" method="post" id="subForm" style="display:none">
+				<input type="hidden" name="number" value="$!p3" />
+				<input type="hidden" name="attribute" value="$!p2" />
+				<input type="hidden" name="id" value="$!p1"/>
+            </form>
+            <div class="deal-fixed"></div>
+        </div>
+    </div>  
+<script type="text/javascript">
+    $(".getall-input").bind("click",function(){
+        if($(this).is(':checked')){
+            $(".getall-input").prop("checked",true);
+            $(".firm-input").prop("checked",true);
+            $(".onecheack").prop("checked",true);
+        }else{
+            $(".getall-input").prop("checked",false);
+            $(".firm-input").prop("checked",false);
+            $(".onecheack").prop("checked",false);
+        }
+        checkedNumber();
+    })
+    $(".onecheack").bind("click",function(){
+        if(!$(this).is(':checked')){
+            $(this).prop("checked",false);
+            $(".getall-input").prop("checked",false);
+            $(this).parents("ul").find(".firm-input").prop("checked",false);
+        }
+        checkedNumber();
+    })
+
+    $(".firm-input").bind("click",function(){
+        if($(this).is(':checked')){
+            $(this).parents("ul").find(".onecheack").prop("checked",true);
+        }else{
+            $(".getall-input").removeAttr("checked","");
+            $(this).parents("ul").find(".onecheack").prop("checked",false);
+        }
+        checkedNumber();
+    })
+
+	var ids = "";
+    function checkedNumber(){
+		ids = "";
+        var cedNuber =0;//选中产品个数
+        var allMoery =0;//选中产品总价
+        $(".onecheack").each(function(){
+            if($(this).is(':checked')){
+                var thisMoery = $(this).parents("li").find(".j_firmMoy").html();
+                allMoery +=parseFloat(thisMoery);
+                cedNuber +=1;
+				if(ids==""){
+					ids = $(this)[0].value;
+				}else{
+					ids = ids +","+ $(this)[0].value;
+				}
+            }
+        })
+        if(cedNuber>0){
+            $(".gopag").addClass("j_gopay")
+        }else{
+            $(".gopag").removeClass("j_gopay")
+        }
+        $(".j_cdnumber").html(cedNuber);
+        $(".j_allmoery").html("￥"+allMoery.toFixed(2))
+    }
+	
+	jQuery(".gopag").click(function(){
+		if(ids==""){
+			alert("请选择要结算的商品")
+		}else{
+			window.location="#springUrl('/goods/buy_goods.htm?ids=')" + ids;
+		}
+	});
+
+    //底部信息条的位置
+    var winHight = $(window).height();//页面高度
+    var retiveHight = $(".deal-retive").offset().top;
+    if(retiveHight>winHight){
+        $(".deal-info").clone(true).appendTo(".deal-fixed");
+        $(".deal-retive .deal-info").remove();
+    }
+    $(window).scroll(function(){
+        var sollTop = $(document).scrollTop();//滚动条高度
+        if(sollTop + winHight>=retiveHight){
+            if($(".deal-fixed .deal-info").length==1){
+                $(".deal-info").clone(true).appendTo(".deal-retive");
+                $(".deal-fixed .deal-info").remove();
+            } 
+        }else{
+            if($(".deal-retive .deal-info").length==1){
+                $(".deal-info").clone(true).appendTo(".deal-fixed");
+                $(".deal-retive .deal-info").remove();
+            } 
+        }
+    })
+
+
+    //弹认证窗口
+    var cerTified = false; //是否认证
+    $(".j_release").bind("click",function(){
+        if(!cerTified){
+            ##popPd();
+        }
+    });
+    function del(a){
+    	if(!a){
+    		var array = jQuery("input[name=frimlist]:checked");
+    		if(array.length==0){
+    			alert("请选择您要删除的购物单");
+    			return false;
+    		}
+    		var idArray = [];
+    		for(var i=0;i<array.length;i++){
+    			idArray.push(array.eq(i).val());
+    		}
+    		a = idArray.join(",");
+    	}
+    	jQuery.ajax({
+    		url:"#springUrl('/delete.htm')",
+    		data:{"idString":a},
+    		type:"post",
+			async:false,
+			dataType:"json",
+			success:function(reg){
+				if(reg.flag){
+					window.location.reload();
+				}
+			}
+    	});
+    }
+</script>

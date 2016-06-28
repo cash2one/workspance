@@ -1,0 +1,74 @@
+#set( $layout = "/layout/blank.vm" )
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" /> 
+<title>修改供求系列编辑窗口</title> 
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+<link href="$!{address.css}/global/comm_hack.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/myrc/zz91_myrc.css" rel="stylesheet" type="text/css" />
+#parse("/common/context.vm")
+<script>
+function chkfrm(frm){
+    if (frm.name.value=="") {
+        alert ("请输入系列名称");
+        frm.name.focus();
+        return false;
+    }
+	
+    jQuery.ajax({
+    	url:Context.ROOT+"/myrc/myproducts/alert_group_update.htm",
+		type:"POST",
+    	cache:false,
+    	async:false,
+    	dataType:"json",
+    	data:jQuery("#sForm").serialize(),
+    	success:function(msg){
+    		if(msg!=null&&msg.success==true){
+                parent.groupclose();
+                parent.document.location.reload();
+    		} else {
+    			alert(msg.data);
+    		}
+    	},
+    	error:function(e){
+    		alert(" 添加失败！");
+    	}
+    });
+}
+</script>
+</head> 
+ 
+<body> 
+<div class="editFloatFrame">
+<form name="sForm" id="sForm"> 
+  <div class="editAddSorts">
+        <div class="editItemsTit">
+            <label for="name"><font color="red">*</font>系列名称：</label>
+        </div>
+        <div class="editItemsFill">
+			<input name="name" type="text" class="inputTxt" id="name" style="width:290px" value="$!productsSeriesDO.name"/>
+			<input name="id" type="hidden" id="id" value="$!productsSeriesDO.id"/>
+			<input name="companyId" type="hidden" id="companyId" value="$!productsSeriesDO.companyId"/>
+			<input name="account" type="hidden" id="account" value="$!productsSeriesDO.account"/>
+			<input name="seriesOrder" type="hidden" id="seriesOrder" value="$!productsSeriesDO.seriesOrder"/>
+		</div> 
+        <div style="clear:both"></div>
+  </div> 
+  <div class="editAddSorts">
+        <div class="editItemsTit">
+            <label for="seriesDetails">系列描述：</label>
+		</div>
+        <div class="editItemsFill">
+			<textarea name="seriesDetails" cols="60" class="inputTxt" rows="10" style="width:290px;height:130px" id="seriesDetails">$!productsSeriesDO.seriesDetails</textarea>
+		</div> 
+        <div style="clear:both"></div> 
+   </div> 
+   <div class="editSub">
+          <input name="Submit" type="button" class="buttonMinGray" value="提交" onclick="chkfrm(this.form)"> 
+    </div>  
+</form> 
+</div>
+</body> 
+</html> 
+ 

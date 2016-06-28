@@ -1,0 +1,228 @@
+<script type="text/javascript">
+	##编码
+	function UTF8UrlEncode(input) {
+		var output = "";
+		var currentChar = '';
+		for (var counter = 0; counter < input.length; counter++) {
+			currentChar = input.charCodeAt(counter);
+			if ((0 <= currentChar) && (currentChar <= 127)) output = output + UTF8UrlEncodeChar(currentChar);
+			else output = output + encodeURIComponent(input.charAt(counter));
+		}
+		var reslut = output.toUpperCase();
+		return reslut.replace(/%26/, "%2526");
+	}
+	##解码
+	function UTF8UrlEncodeChar(input) {
+		if (input <= 0x7F) return "%" + input.toString(16);
+		var leadByte = 0xFF80;
+		var hexString = "";
+		var leadByteSpace = 5;
+		while (input > (Math.pow(2, leadByteSpace + 1) - 1)) {
+			hexString = "%" + ((input & 0x3F) | 0x80).toString(16) + hexString;
+			leadByte = (leadByte >> 1);
+			leadByteSpace--;
+			input = input >> 6;
+		}
+		return ("%" + (input | (leadByte & 0xFF)).toString(16) + hexString).toUpperCase();
+	}
+
+	function zz91SearchSlide(searchFrame, typeValue, searchInputFill) {
+		var searchInput = $(searchFrame + " " + "input[id=" + searchInputFill + "]");
+		var typeValueInput = $(searchFrame + " " + "input[id=" + typeValue + "]");
+		var searchLabel = $(searchFrame + " " + "label[id=search_label]");
+		var searchTab = $(searchFrame + " " + "ul[id=search_tab]");
+		//alert(typeValueInput.val());
+		searchTab.find("li").click(function(e) {
+			searchTab.find("li").removeClass("searchSelected");
+			$(this).addClass("searchSelected");
+			searchInput.focus();
+			var getLiIndex = $(this).index()
+			typeValueInput.attr({
+				value: function() {
+					return getLiIndex + 1;
+				}
+			});
+		})
+		if (searchInput.val() != "") {
+			searchLabel.fadeOut(50);
+		}
+		searchInput.focus(function() {
+			searchLabel.css({
+				"color": "#DDDDDD"
+			});
+			searchInput.keydown(function() {
+				var t = setTimeout(function() {
+					if (searchInput.val() != "") {
+						searchLabel.fadeOut(1);
+					}
+					else {
+						searchLabel.fadeIn();
+					}
+				},
+				100);
+			});
+		});
+		searchInput.blur(function() {
+			//clearTimeout(t);
+			if ($(this).val() == "") {
+				searchLabel.fadeIn(500).css({
+					"color": "#999999"
+				});
+			}
+		});
+	};
+
+	var zz91Search = new
+	function() {
+		var search = this;
+		this.products = function(config) {
+			config = config || {};
+			var contextpath = config.contextpath || "";
+			var target = config.target || "_blank";
+			var searchOpt = config.searchOptions || [];
+			var debug = config.debug || false;
+
+			var ptype = searchOpt["ptype"] || "";
+			var province = searchOpt["province"] || "";
+			var posttime = searchOpt["posttime"] || "";
+			var priceflag = searchOpt["priceflag"] || "";
+			var nopiclist = searchOpt["nopiclist"] || "";
+			var havepic = searchOpt["havepic"] || "";
+			var page = searchOpt["page"] || "";
+			var keywords = searchOpt["keywords"] || ""; //关键字
+			if (keywords.length <= 0) {
+				return false;
+			}
+
+			keywords = keywords.replace(/\//gm, "astoxg");
+			keywords = keywords.replace(/\\/gm, "asto5c");
+			keywords = keywords.replace(/-/gm, "astohg");
+			keywords = keywords.replace(/\(/gm, "astokhl");
+			keywords = keywords.replace(/\)/gm, "astokhr");
+
+			//		window.open("http://www.zz91.com/offer/?ptype="+ptype+"&keywords="+encodeURI(keywords));
+			var targetUrl = "/offerlist";
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--a", ptype);
+			if (province.length > 0 || posttime.length > 0 || priceflag.length > 0 || nopiclist.length > 0 || havepic.length > 0) {
+				targetUrl = search.buildProductSearchUrl(targetUrl, "--b", province);
+				targetUrl = search.buildProductSearchUrl(targetUrl, "--c", posttime);
+				targetUrl = search.buildProductSearchUrl(targetUrl, "--d", priceflag);
+				targetUrl = search.buildProductSearchUrl(targetUrl, "--e", nopiclist);
+				targetUrl = search.buildProductSearchUrl(targetUrl, "--f", havepic);
+			}
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--p", page);
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--", encodeURIComponent(keywords));
+
+			targetUrl = targetUrl + ".htm";
+			if (debug) {
+				alert("the target url is: " + targetUrl);
+			} else {
+				if (target == "_self") {
+					location.href = contextpath + targetUrl;
+				} else {
+					window.open(contextpath + targetUrl);
+				}
+			}
+
+		};
+
+		this.price = function(config) {
+			config = config || {};
+			var contextpath = config.contextpath || "";
+			var target = config.target || "_blank";
+			var searchOpt = config.searchOptions || [];
+			var k = searchOpt["keywords"] || "";
+
+			if (k.length <= 0) {
+				return false;
+			}
+
+			var targetUrl = "/priceSearch.htm?title=" + encodeURI(k);
+
+			if (target == "_self") {
+				location.href = contextpath + targetUrl;
+			} else {
+				window.open(contextpath + targetUrl);
+			}
+		};
+
+		this.company = function(config) {};
+
+		this.companyPrice = function(config) {
+			config = config || {};
+			var contextpath = config.contextpath || "";
+			var target = config.target || "_blank";
+			var searchOpt = config.searchOptions || [];
+			var k = searchOpt["keywords"] || ""; //关键字
+			var pc = searchOpt["categoryCompanyPriceCode"] || ""; //企业报价类别
+			var area = searchOpt["area"] || ""; //地区
+			var interval = searchOpt["interval"] || ""; //产品刷新时间期限  距离现在，单位：天
+			var priceRange = searchOpt["priceRange"] || ""; //报价区间
+			var targetUrl = "/companyprice/index--" + encodeURIComponent(k);
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--pc", pc);
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--area", area);
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--int", interval);
+			targetUrl = search.buildProductSearchUrl(targetUrl, "--pr", priceRange);
+			targetUrl = targetUrl + ".htm";
+			if (target == "_self") {
+				location.href = contextpath + targetUrl;
+			} else {
+				window.open(contextpath + targetUrl);
+			}
+		};
+
+		this.buildProductSearchUrl = function(targetUrl, prefix, v) {
+			if (v.length > 0) {
+				return targetUrl + prefix + v;
+			} else {
+				return targetUrl + prefix;
+			}
+		};
+
+		//initialization  search  effects
+		this.initSearchSlide = function(slideObj, noSearchSelectClass, SearchSelectClass, getSearchType, searchFocus, searchLabel) {
+			var operateObj = zz91Util.getElem(slideObj).getElementsByTagName("li");
+			getSearchType = zz91Util.getElem(getSearchType);
+			searchLabel = zz91Util.getElem(searchLabel);
+			searchFocus = zz91Util.getElem(searchFocus);
+			//获取当前节点索引
+			var getIndex = function(self, obj) {
+				for (var i = 0; i < obj.length; i++) {
+					if (obj[i] == self) {
+						return i;
+					}
+				}
+			}
+			for (var i = 0; i < operateObj.length; i++) {
+				iNum = i
+
+				operateObj[i].onmouseover = function() {
+					//alert(i);
+					//i = parseInt(i);
+					for (var j = 0; j < operateObj.length; j++) {
+						operateObj[j].className = noSearchSelectClass;
+					}
+					this.className = SearchSelectClass;
+					//确定搜索类型，并且设置搜索焦点
+					//alert(getSearchType.value+"_" +getIndex(this,operateObj));
+					getSearchType.value = parseInt(getIndex(this, operateObj) + 1);
+					searchLabel.style.display = "none";
+					searchFocus.focus();
+				}
+				operateObj[i].onmouseout = function() {
+					if (searchFocus.value == "" || searchFocus.value == null) {
+						setInterval(function() {
+							searchFocus.blur();
+							searchLabel.style.display = "";
+						},
+						1000)
+					}
+				}
+			}
+			searchLabel.onclick = function() {
+				searchLabel.style.display = "none";
+				searchFocus.focus();
+			}
+		};
+	};
+</script>

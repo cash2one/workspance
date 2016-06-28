@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>设置密码</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	input{
+		line-height: 1.1em;  outline: none;  padding-left: 10px;font-size: 1.1em;width: 94%;
+	}
+	#title{
+		padding: 30px 0 0 20px;
+		color: #666666;
+		font-size: 1.2em;
+	}
+	#submit{
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		padding-top: 20px;
+	}
+	#submit button{
+		background-color: rgb(0, 184, 255);
+		border:1px solid rgb(0, 184, 255);
+		border-radius: 4px;
+		color: #FFFFFF;
+		font-weight: bold;
+		width: 70%;
+		padding: 10px 0;
+		outline: none;
+	}
+	.inputsec{
+		background-color: #FFFFFF;
+		height: 40px;
+		line-height: 40px;
+		margin: 10px;
+		border: 1px solid #d9d9d9;
+	}
+	.registerBtnActive{
+		background-color: rgb(1, 140, 194) !important;
+	}
+</style>
+</head>
+
+<body>
+	<div id="main">
+		<section id="title">设置邮箱地址</section>
+		<section class="inputsec"><input type="text" id="pw1" placeholder="请输入邮箱地址" onblur="checkRegular()" /></section>
+		
+		<section id="submit"><button tapmode="registerBtnActive" onclick="register()">下一步</button></section>
+	</div>
+</body>
+<script>	
+	apiready = function() {
+
+	};
+	
+	function checkRegular(){
+		var pwEl = $api.byId('pw1');
+		var pwVal = $api.val(pwEl);
+		if(pwVal.length > 0){
+			if(!regular(pwVal)){
+				api.toast({msg: '邮箱格式不正确，请重新输入！', location: 'middle'});
+				setTimeout(function(){pwEl.focus();}, 2000);
+			}		
+		}
+	}
+	
+	function regular(pw){
+		var reg = /^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$/;
+		return reg.test(pw);
+	}
+	
+	function register(){
+		var pwEl1 = $api.byId('pw1');
+		var pwVal1 = $api.val(pwEl1);
+	
+		if(pwVal1.length <= 0){
+			api.toast({msg: '请输入邮箱', location: 'middle'});
+			setTimeout(function(){pwEl1.focus();}, 2000);
+			return;
+		}	
+			if(pwVal1.length > 0){
+			if(!regular(pwVal1)){
+				api.toast({msg: '邮箱格式不正确，请重新输入！', location: 'middle'});
+				setTimeout(function(){pwEl1.focus();}, 2000);
+				return;
+			}		
+		}
+			$api.setStorage('email', pwVal1);
+			api.openWin({name: 'setPass', url: 'setPass.html'});
+	}
+</script>
+</html>

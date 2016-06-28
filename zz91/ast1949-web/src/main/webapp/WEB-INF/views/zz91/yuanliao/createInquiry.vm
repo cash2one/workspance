@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.admin.products.list</title>
+
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/categoryProducts/tree.js" ></script>
+	<!--<script type="text/javascript" src="$!{address.js}/admin/inquiry/createInquiry.js" ></script>-->
+	<script type="text/javascript" src="$!{address.js}/yuanliao/createInquiry.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/yuanliao/tree.js" ></script>
+	<script type="text/javascript">
+		/**
+		var P = new function(){
+			this.imageServer = "$!{imageServer}";
+			this.model="$!{model}";
+		}
+		*/
+		var hasMe = $!{yuanliao.companyId};
+		Ext.onReady(function() {
+			
+			var form = new ast.ast1949.admin.inquiry.inquiryForm({
+				id:CREATEINQUIRY.INQUIRY_FORM,
+				title:"询盘信息",
+				region:"north",
+				height:180
+			});
+			
+			form.initProducts({
+				id:'$!{yuanliao.id}',
+				title:'$!{yuanliao.title}',
+				senderId:'$!{yuanliao.companyId}',
+				content:"$!{yuanliao.description}",
+				account:"$!{yuanliao.account}",
+				#if($!{yuanliao.yuanliaoTypeCode}=="10331000")
+					yuanliaoTypeCode:"供应"
+				#else
+					yuanliaoTypeCode:"求购"
+				#end
+			});
+			
+        	//供求类别树
+        	var tree = new ast.ast1949.admin.yuanliao.treePanel({
+        		//title : "供求类别",
+        		collapsible: true,
+        		region : "west",
+        		autoScroll:true,
+        		layout:"fit",
+        		split : true,
+        		width : 300,
+        		rootData:"",
+        	});
+			
+			tree.on("click", function(node, event) {
+    			var B=grid.getStore().baseParams;
+    			B = B||{};
+    			B["categoryYuanliaoCode"] = node.attributes["data"];
+    			grid.getStore().baseParams = B ;
+    			grid.getStore().reload({
+    				params : {
+    					"startIndex" : 0,
+    					"pageSize" : Context.PAGE_SIZE
+    				}
+    			});
+    		});
+			
+			var grid = new ast.ast1949.admin.inquiry.productsGrid({
+				id:CREATEINQUIRY.PRODUCT_GRID,
+				title:"原料供求信息 - 查询结果",
+				region:"center"
+			});
+			
+			var viewport = new Ext.Viewport({
+				layout : "border",
+				items : [form, tree, grid]
+			});
+			
+		});
+	</script>
+</head>
+<body>
+</body>
+</html>

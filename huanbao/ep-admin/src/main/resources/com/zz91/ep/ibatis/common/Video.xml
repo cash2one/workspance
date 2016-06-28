@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="video">
+
+	<typeAlias alias="videoDO" type="com.zz91.ep.domain.common.Video" />
+
+	<resultMap class="videoDO" id="videoResult">
+		<result property="id" column="id" />
+		<result property="targetId" column="target_id"/>
+		<result property="targetType" column="target_type" />
+		<result property="content" column="content"/>
+		<result property="photoCover" column="photo_cover"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		target_id,
+		target_type,
+		content,
+		photo_cover,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="videoDO">
+		INSERT INTO ep.video
+		(
+		target_id,
+		target_type,
+		content,
+		photo_cover,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#targetId#,
+		#targetType#,
+		#content#,
+		#photoCover#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="videoDO">
+		UPDATE video
+		SET
+		content = #content#,
+		photo_cover = #photoCover#,
+		gmt_modified = now()
+		WHERE 
+		target_id = #targetId# 
+		and
+		target_type = #targetType#
+	</update>
+	
+	<select id="queryByTypeAndId" resultMap="videoResult" parameterClass="java.util.Map">
+		SELECT
+		<include refid="defaultColumn"/>
+		FROM video
+		where target_id = #targetId#
+		and target_type=#targetType#
+		limit 1
+	</select>
+	
+	<update id="delete" parameterClass="java.lang.Integer">
+		UPDATE video
+		SET
+		target_id = 0,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>来电宝管理</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/phone/phonelog.js" ></script>
+	
+<script type="text/javascript">
+	Ext.onReady(function() {
+		var grid = new ast.ast1949.phone.phoneLogGrid({
+			id:"phoneLogGrid",
+			region:"center",
+			layout:"fit"
+		});
+		
+		grid.loadPhoneLogRecord($!{companyId});
+		
+		var rategrid = new ast.ast1949.phone.phoneLogRateGrid({
+			id:"phoneLogRateGrid",
+			region:"south",
+			height:170,
+			layout:"fit"
+		});
+		
+		rategrid.loadPhoneRateRecord($!{companyId});
+		
+    	var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid,rategrid]
+    	});
+		#if($!{companyId})
+	    	grid.initDate("$!{from}", "$!{to}",$!{companyId});
+		#else
+			grid.initDate("$!{from}", "$!{to}");
+		#end
+    	rategrid.initDate("$!{from}", "$!{to}");
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

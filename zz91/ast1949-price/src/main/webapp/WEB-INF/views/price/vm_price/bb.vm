@@ -1,0 +1,59 @@
+<div class="subDiv">
+   <div class="title">
+	<div class="nav3_l"></div>
+	<h3>
+        #if($!{priceCategoryDO})
+			$!{priceCategoryDO.name}$!{category.name}
+        #else
+			$!{assistType.name}$!{category.name}价格
+        #end
+    </h3>
+	<div class="nav3_r"></div>
+   </div>
+   
+    <div class="subDiv_left">
+        <div class="subTitlePinglun">
+            #if($priceCatgoryList)
+                #foreach($priceCatgory in $priceCatgoryList)
+                    <a href="#springUrl('/priceList_t')${priceCatgory.id}_c$!{priceCategoryDO.id}_$!{code}.htm">$!{priceCategoryDO.name}${priceCatgory.name}</a>
+                    | 
+                #end
+            #end
+        </div>
+        #set($size=0)
+		<ul style="border:none;">
+			#if($page)
+				#foreach($list in ${page.records})
+					#set($size=$size+1)
+					<li>
+						<a target="_blank" href="#springUrl('/priceDetails_')${list.id}_$!{code}.htm" title="$!{list.title}">$!{list.title}</a>
+						<span>$!date.format('yyyy-MM-dd',$!{list.gmtCreated})</span>
+					</li>
+					##if($!dateUtil.getIntervalDays($!{nowTime},$!{list.gmtCreated})==0)<img src='$!{address.img}/front/images/price/icon_new.gif' width='24' height='9' alt='最新'>#end
+					#if($size%6==0)
+						<div class="edgeborder"></div>
+					#end
+				#end
+			#elseif($!{priceList})
+				#foreach($list in ${priceList})
+					#set($size=$size+1)
+					<li>
+						<a target="_blank" href="#springUrl('/priceDetails_')${list.id}_$!{code}.htm" title="$!{list.title}">$!{list.title}</a>
+						<span>$!date.format('yyyy-MM-dd',$!{list.gmtOrder})</span>
+					</li>
+					##if($!dateUtil.getIntervalDays($!{nowTime},$!{list.gmtCreated})==0)<img src='$!{address.img}/front/images/price/icon_new.gif' width='24' height='9' alt='最新'>#end
+					#if($size%6==0)
+						<div class="edgeborder"></div>
+					#end
+				#end
+			#end
+			<div style="clear:both"></div>
+		</ul>
+		<div style="clear:both"></div>
+		#if($page)
+			<div class="pages">
+				#staticPageNav($page "#springUrl('/priceList')" "_t$!{id}_p$!{parentId}_a$!{assistTypeId}_c$!{categoryId}_$!{code}" "")
+			</div>
+		#end
+	</div>
+</div>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.analysis.log</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/crm/analysis.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/cslog.js" ></script>
+	
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		#if($!{csMap})
+			ast.ast1949.crm.analysis.CSMAP=$!{csMap};
+		#end
+	
+		var grid=new ast.ast1949.crm.analysis.Grid({
+			region:"center"
+		});
+		
+		
+		## 获取小记 检索条件
+		grid.on("cellclick",function(grid,rowIndex,columnIndex,e){
+			var record = grid.getStore().getAt(rowIndex);
+			var csAccount = record.get("csAccount");
+			var fieldName = grid.getColumnModel().getDataIndex(columnIndex);
+			var situation;
+			if(fieldName.indexOf("N")>0){
+				situation = 0
+			}
+			if(fieldName.indexOf("Y")>0){
+				situation = 1
+			}
+			var star;
+			if(columnIndex==2||columnIndex==3){
+				star = 5
+			}
+			if(columnIndex==4||columnIndex==5){
+				star = 4
+			}
+			if(columnIndex==6||columnIndex==7){
+				star = 3
+			}
+			if(columnIndex==8||columnIndex==9){
+				star = 2
+			}
+			if(columnIndex==10||columnIndex==11){
+				star = 1
+			}
+			if(columnIndex==12||columnIndex==13){
+				star = 0
+			}
+			var callType;
+			if(columnIndex==14){
+				callType = 0;
+				situation = 1
+			}
+			if(columnIndex==15){
+				callType = 1;
+				situation = 1
+			}
+			var B=csLogGrid.getStore().baseParams;
+			B["csAccount"]=csAccount;
+			B["situation"]=situation;
+			B["star"]=star;
+			B["callType"]=callType;
+			var targetFrom=Ext.getCmp("targetFrom").getValue();
+			var targetTo=Ext.getCmp("targetTo").getValue();
+			if(targetFrom!="" && targetTo!=""){
+				B["from"]=targetFrom;
+				B["to"]=targetTo;
+			}else{
+				B["from"]="$!{from}";
+				B["to"]="$!{to}";
+			}
+			csLogGrid.getStore().baseParames=B;
+			csLogGrid.getStore().load();
+		});
+		
+		
+		var csLogGrid= new ast.ast1949.crm.cslog.LogGrid({
+			height:300,
+			region:"south"
+		});
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[grid,csLogGrid]
+		});
+		
+		grid.initDate("$!{from}", "$!{to}");
+		
+	});
+</script>
+</head>
+
+<body>
+</body>
+</html>

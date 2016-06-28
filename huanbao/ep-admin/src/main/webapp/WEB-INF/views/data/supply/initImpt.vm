@@ -1,0 +1,257 @@
+<style>
+	.imptContent {padding:20px;}
+	.required {font-weight:bold;color:red;}
+	.btn {font-size:18px; font-weight:bold;color:red;}
+</style>
+<script type="text/javascript" src="#springUrl('/app/trade/tradecategory/category.js')" ></script>
+<script type="text/javascript" >
+	
+	function selectCategory(){
+		var tree = new com.zz91.trade.category.TreePanel({
+    		region:"center",
+    		layout:"fit",
+			contextmenu:null,
+    		rootVisible:false
+    	});
+    	
+    	tree.on("dblclick",function(node,e){
+			Ext.get("categoryName").dom.innerText="选中类别："+node.text;
+			Ext.get("categoryCode").dom.value=node.attributes["data"];
+			node.getOwnerTree().ownerCt.close();
+		});
+    	
+    	var win = new Ext.Window({
+    		title:"选择类别",
+    		width:400,
+    		height:450,
+    		layout:"border",
+    		modal:true,
+    		items:[tree]
+    	});
+		
+		win.show();
+	}
+	
+	function btntoggle(){
+		Ext.get("imptbtn").dom.value="好了，剩下的我来搞定，亲，你可以喝咖啡去了";
+		Ext.get("imptbtn").dom.disabled=true;
+	}
+</script>
+<div class="imptContent">
+<h3 >供应信息导入</h3>
+<form action="#springUrl('/data/supply/impt.htm')" enctype="multipart/form-data" method="post" onsubmit="btntoggle();">
+	<h4>Excel Index</h4>
+	<table border="0" cellpadding="2">
+		<tr>
+			<th>字段</th>
+			<th>excel列（起始0）</th>
+			<th>慧聪(参考)</th>
+			<th>阿里(参考)</th>
+		</tr>
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+		<tr>
+			<td class="required">类别选择</td>
+			<td><input type="text" value="" name="categoryCode" id="categoryCode" onfocus="selectCategory();"/></td>
+			<td colspan="2" id="categoryName"></td>
+		</tr>
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+		<tr>
+			<td class="required">账户ID</td>
+			<td><input type="text" value="3" name="account"/></td>
+			<td>3</td>
+			<td>3</td>
+		</tr>
+		<tr>
+			<td>标题</td>
+			<td><input type="text" value="4" name="title"/></td>
+			<td>4</td>
+			<td>4</td>
+		</tr>
+		<tr>
+			<td>详细信息</td>
+			<td><input type="text" value="13" name="details"/></td>
+			<td>13</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>专业属性</td>
+			<td><input type="text" value="14" name="property"/></td>
+			<td>14</td>
+			<td>6</td>
+		</tr>
+		<tr>
+			<td>图片</td>
+			<td><input type="text" value="5" name="photoUrl"/></td>
+			<td>5</td>
+			<td>5</td>
+		</tr>
+		<tr>
+			<td>价格</td>
+			<td><input type="text" value="6" name="price"/></td>
+			<td>6</td>
+			<td>16</td>
+		</tr>
+		<tr>
+			<td>供货总量</td>
+			<td><input type="text" value="10" name="totalNum"/></td>
+			<td>10</td>
+			<td>18</td>
+		</tr>
+		<!--
+		<tr>
+			<td>地区</td>
+			<td><input type="text" value="" name="areaName"/></td>
+			<td></td>
+			<td>17</td>
+		</tr>
+		<tr>
+			<td>品牌</td>
+			<td><input type="text" value="" name="mainBrand"/></td>
+			<td></td>
+			<td>17</td>
+		</tr>
+		-->
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+		<tr>
+			<td>联系人姓名(含职位)</td>
+			<td><input type="text" value="" name="accountName"/></td>
+			<td></td>
+			<td>8</td>
+		</tr>
+		<tr>
+			<td>公司名称</td>
+			<td><input type="text" value="" name="compName"/></td>
+			<td></td>
+			<td>7</td>
+		</tr>
+		<tr>
+			<td>手机</td>
+			<td><input type="text" value="" name="mobile"/></td>
+			<td></td>
+			<td>10</td>
+		</tr>
+		<tr>
+			<td>电话</td>
+			<td><input type="text" value="" name="phone"/></td>
+			<td></td>
+			<td>9</td>
+		</tr>
+		<tr>
+			<td>传真</td>
+			<td><input type="text" value="" name="fax"/></td>
+			<td></td>
+			<td>11</td>
+		</tr>
+		<tr>
+			<td>其他联系人</td>
+			<td><input type="text" value="" name="contact"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>公司地址</td>
+			<td><input type="text" value="" name="address"/></td>
+			<td></td>
+			<td>12</td>
+		</tr>
+		<tr>
+			<td>公司地址邮编</td>
+			<td><input type="text" value="" name="addressZip"/></td>
+			<td></td>
+			<td>13</td>
+		</tr>
+		<tr>
+			<td>公司详细信息</td>
+			<td><input type="text" value="" name="compDetails"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td class="required">供求商</td>
+			<td colspan="3">
+				<select name="mainUse">
+        			<option value="1" selected>供应商</option>
+        			<option value="2">求购商</option>
+        		</select>
+			</td>
+		</tr>
+		<tr>
+			<td>主营产品（求购）</td>
+			<td><input type="text" value="" name="mainProductBuy"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>主营产品（销售）</td>
+			<td><input type="text" value="" name="mainProductSupply"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>地区名称</td>
+			<td><input type="text" value="" name="areaName"/></td>
+			<td></td>
+			<td>17</td>
+		</tr>
+		<tr>
+			<td>法人</td>
+			<td><input type="text" value="" name="legal"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>注册资金</td>
+			<td><input type="text" value="" name="founds"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>品牌</td>
+			<td><input type="text" value="" name="mainBrand"/></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+		<tr>
+			<td>发布日期</td>
+			<td><input type="text" value="-30" name="randomPublishDay"/></td>
+			<td colspan="2">
+				0 表示今天，<br />
+				-x表示今天以前x天随机时间，+x表示今天以后x天内随机时间<br />
+				默认：-700
+			</td>
+		</tr>
+		<tr>
+			<td class="required">信息有效判断列</td>
+			<td><input type="text" value="1" name="isRight"/></td>
+			<td>1</td>
+			<td>1</td>
+		</tr>
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+		<tr>
+			<td class="required">信息来源</td>
+			<td colspan="3">
+				#parse('/data/sourceFlag.vm')
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4"><hr /></td>
+		</tr>
+	</table>
+	
+	<h4 >Excel文件</h4>
+	<div><input type="file" name="excel" /></div>
+	<br/>
+	<div><input type="submit" id="imptbtn" name="importexcel" value="填写正确，一定要要填写正确（否则会有怪兽哦），然后猛击这里！！！" class="btn" /></div>
+</form>
+</div>

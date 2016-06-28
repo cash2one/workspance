@@ -1,0 +1,210 @@
+#set($layout="/layout/personalLayout.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+<script type="text/javascript">
+function deal(c){
+    #if(!$!{sessionUser})
+        Asto.util.Callback.setSubmitCallback(function(success, data){
+			 offer(c);
+        });
+        openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+    #else
+		 offer(c);
+    #end
+}
+function offer(c){
+      jQuery.ajax({
+    			url:'#springUrl("/newhuzhu/inserNoticeOrRecom.htm?")'+"type="+1+"&category="+2+"&contentId="+c,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.i>0){
+						alert("关注成功"); 
+				 	}else if(reg.i==-2){
+						alert("不能对自己进行关注！");
+					}else{
+						alert("您已关注！");
+					}
+				}
+			});
+}
+</script>
+  <div class="huzhu">
+  	<div class="huzhu-lt fl">
+        <div class="hz-bk-img">
+			#if(!$!{profiler}||!$!{profiler.picturePath}||$!{profiler.picturePath}=="")
+				<img src="http://img0.zz91.com/zz91/newhuzhu/images/hz_bk_head.jpg" />
+			#else
+				<img src="$!{address.thumb}$!{address.resource}/$!{profiler.picturePath}" width="224px" height="186px"/>
+			#end
+		</div>
+        <!--end hz-bk-img-->
+        <div class="hz-box">
+        	<div class="hz-box-tle">关注（全部$!{allNum}人）</div>
+            <!--end hz-box-tle-->
+        	<ul class="gz-item">
+				#foreach($!{li} in $!{list})
+                <li>
+                	<div class="gz-item-img"><a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/gz_head.jpg" /></a></div>
+                    <!--end gz-item-img-->
+                    <div class="gz-item-text"><a href="#springUrl('/personIndex')$!{li.contentId}.htm" target="_blank" title="$!{li.contentTitle}.htm">$!{li.contentTitle}</a></div>
+                    <!--end gz-item-text-->
+                </li>
+				#end
+            </ul>
+        </div>
+        <!--end hz-box-->
+    </div>
+    <!--huzhu-lt fl-->
+    <div class="huzhu-gt fr">
+    	<div class="mainbox">
+        	<div class="mainbox-block">
+            	<div class="mblock-item mb10">
+                	<div class="mi-text fl"><h3 class="bold">$!{nickname}</h3></div>
+                    <!--end mi-text fl-->
+                    <div class="mi-text mi-bar fl">
+                    	<div class="mi-bg-bar">LV$!{level}</div>
+                        <!--end mi-bg-bar-->
+                    </div>
+                    <!--end mi-text fl-->
+                    <div class="cb"></div>
+                </div>
+                <!--end mblock-item-->
+                <div class="mblock-item">
+                	<p class="f14">签名：$!{sign}</p>
+                    <p class="f14">$!{addr}&nbsp;&nbsp;&nbsp;个人主页：$!{address.huzhu}/personIndex$!{companyId}.htm</p>
+                </div>
+                <!--end mblock-item-->
+                <div class="mblock-item m15">
+                	<div class="mi-btn-gz f14 fl"><a href="javascript:;" onclick="deal($!{companyId})" class="white">关注</a></div>
+                    <!--end mi-btn-gz fl-->
+                    <div class="mi-btn-mail f14 fl"><a href="#springUrl('myhuzhu/send_message')$!{companyId}.htm">发私信</a></div>
+					
+                    <!--end mi-btn-mail fl-->
+                    <div class="cb"></div>
+                </div>
+                <!--end mblock-item-->
+                <div class="mblock-item f14">
+                	<span class="blue">回答：</span>$!{answer}条&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="blue">提问：</span>$!{que}条&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="blue">帖子：</span>$!{bbs}个
+                </div>
+                <!--end mblock-item-->
+            </div>
+            <!--end mainbox-block-->
+        </div>
+        <!--end mainbox-->
+    	<div class="mainblock mt20">
+        	<div class="mb-dh lt2">
+            	<div class="d_tit fl bold">我的提问</div>
+                <!--end d_tit fl bold-->
+                <div class="d_link fr"><a href="#springUrl('/personList')$!{companyId}-1.htm" target="_blank" class="blue f13">[全部]</a></div>
+                <!--end d_link fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-content">
+            	<ul class="mc-item">
+					#cacheFragment("$!{address.fragment}/huzhu/personBbsPost.htm?companyId=$!{companyId}&categoryId=1&size=8" "" "" "")
+					#foreach($!{li} in $!{list})
+                	<li>
+                    	<div class="mi-info fl"><a href="#springUrl('/detail/')$!{li.id}.html" target="_blank" title="$!{li.title}">&middot;$!{li.title}</a></div>
+                        <!--end mi-info fl-->
+                        <div class="mi-num fr">$!{li.replyCount}个回答</div>
+                        <!--end mi-num fr-->
+                        <div class="cb"></div>
+                    </li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end mb-content-->
+        </div>
+        <!--end mainblock-->
+		<div class="mainblock">
+        	<div class="mb-dh lt2">
+            	<div class="d_tit fl bold">我的回答</div>
+                <!--end d_tit fl bold-->
+                <div class="d_link fr"><a href="#springUrl('/personList')$!{companyId}-4.htm" target="_blank" class="blue f13">[全部]</a></div>
+                <!--end d_link fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-content">
+            	<ul class="mc-item">
+					#foreach($!{li} in $!{listReply})
+                	<li>
+                    	<div class="mi-info fl"><a href="#springUrl('/detail/')$!{li.bbsPostId}.html" target="_blank" title="$!{li.title}">&middot;#printTitle($!{li.title} 35 "...")</a></div>
+                        <!--end mi-info fl-->
+                        <div class="mi-num fr">$!date.format('yyyy-MM-dd', $!{li.gmtCreated})</div>
+                        <!--end mi-num fr-->
+                        <div class="cb"></div>
+                    </li>
+					#end
+                </ul>
+            </div>
+            <!--end mb-content-->
+        </div>
+        <!--end mainblock-->
+        <div class="mainblock">
+        	<div class="mb-dh lt3">
+            	<div class="d_tit fl bold">帖子</div>
+                <!--end d_tit fl bold-->
+                <div class="d_link fr"><a href="#springUrl('/personList')$!{companyId}-2.htm" target="_blank" class="blue f13">[全部]</a></div>
+                <!--end d_link fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-content">
+            	<ul class="mc-item">
+                	#cacheFragment("$!{address.fragment}/huzhu/personBbsPost.htm?companyId=$!{companyId}&categoryId=2&size=8" "" "" "")
+					#foreach($!{li} in $!{list})
+                	<li>
+                    	<div class="mi-info fl"><a href="#springUrl('/detail/')$!{li.id}.html" target="_blank" title="$!{li.title}">&middot;$!{li.title}</a></div>
+                        <!--end mi-info fl-->
+                        <div class="mi-num fr">$!{li.replyCount}回答</div>
+                        <!--end mi-num fr-->
+                        <div class="cb"></div>
+                    </li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end mb-content-->
+        </div>
+        <!--end mainblock-->
+        <div class="mainblock">
+        	<div class="mb-dh lt4">
+            	<div class="d_tit fl bold">动态</div>
+                <!--end d_tit fl bold-->
+                <div class="d_link fr"><a href="#springUrl('/personList')$!{companyId}-3.htm" target="_blank" class="blue f13">[全部]</a></div>
+                <!--end d_link fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-content">
+            	<ul class="mc-item">
+					#cacheFragment("$!{address.fragment}/huzhu/trends.htm?companyId=$!{companyId}&size=8" "" "" "")
+					#foreach($!{li} in $!{list})
+                	<li>
+                        <div class="mi-info fl">&middot;<span style="color:blue;">[$!{li.checkPerson}]</span><a href="#springUrl('/detail/')$!{li.id}.html" target="_blank" title="$!{li.title}">$!{li.title}</a></div>
+                        <!--end mi-info fl-->
+                        <div class="mi-num fr">$!{li.replyCount}回答</div>
+                        <!--end mi-num fr-->
+                        <div class="cb"></div>
+                    </li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end mb-content-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end huzhu-gt fr-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

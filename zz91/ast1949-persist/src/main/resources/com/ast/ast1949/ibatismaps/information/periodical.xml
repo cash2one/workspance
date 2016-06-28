@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="periodical">
+	<typeAlias alias="periodical"
+		type="com.ast.ast1949.domain.information.Periodical" />
+	<typeAlias alias="periodicalDTO"
+		type="com.ast.ast1949.dto.information.PeriodicalDTO" />
+
+	<resultMap id="periodicalResult" class="periodical">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="cycle" column="cycle" />
+		<result property="numView" column="num_view" />
+		<result property="numUp" column="num_up" />
+		<result property="pdfDownload" column="pdf_download" />
+		<result property="size" column="size" />
+		<result property="gmtRelease" column="gmt_release" />
+		<result property="numRelease" column="num_release" />
+		<result property="releaseNo" column="release_no" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="gmtCreated" column="gmt_created" />
+	</resultMap>
+    <resultMap class="periodicalDTO" id="periodicalDTOResult">
+        <result property="previewUrl" column="previewUrl"/>
+		<result property="imageName" column="imageName"/>
+        <result property="periodical" resultMap="periodical.periodicalResult"/>
+    </resultMap>
+
+	<sql id="selectSimplePeriodicalColumns">
+		p.id,p.name,p.cycle,p.num_view,p.num_up,p.pdf_download,p.size,p.gmt_release,
+		p.num_release,p.release_no,p.gmt_modified,p.gmt_created
+  	</sql>
+
+	<insert id="createPeriodical" parameterClass="periodical">
+		insert into
+		periodical(name,cycle,num_view,num_up,pdf_download,size,gmt_release,num_release,gmt_created)
+		values(#name#,#cycle#,#numView#,#numUp#,#pdfDownload#,#size#,#gmtRelease#,#numRelease#,now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<delete id="deletePeriodicalById" parameterClass="java.lang.Integer">
+		delete from
+		periodical where id=#value#
+  	</delete>
+
+	<select id="listOnePeriodicalById" parameterClass="java.lang.Integer"
+		resultMap="periodicalResult">
+		select
+		<include refid="periodical.selectSimplePeriodicalColumns" />
+		from periodical p
+		where p.id=#value#
+	</select>
+
+	<select id="countPagePeriodicalWithoutSearch" resultClass="java.lang.Integer">
+		select count(*) from periodical
+  	</select>
+
+	<select id="pagePeriodicalWithoutSearch" parameterClass="java.util.HashMap"
+		resultMap="periodicalResult">
+		select
+		<include refid="periodical.selectSimplePeriodicalColumns" />
+		from
+		periodical p
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<update id="updatePeriodical" parameterClass="periodical">
+		update periodical
+		set name=#name#,
+		cycle=#cycle#,
+		pdf_download=#pdfDownload#,
+		size=#size#,
+		gmt_release=#gmtRelease#,
+		num_release=#numRelease#,
+		release_no=#releaseNo#,
+		gmt_modified=now()
+		where id = #id#
+  	</update>
+
+	<update id="updatePeriodicalZipPath" parameterClass="java.util.HashMap">
+		update
+		periodical
+		set zip_path=#zipPath#,
+		gmt_modified=now()
+		where id = #id#
+	</update>
+
+	<!--前台-->
+	<select id="listFrontCoverPeriodicalBySize" parameterClass="java.lang.Integer"
+		resultMap="periodicalDTOResult">
+		SELECT
+		<include refid="selectSimplePeriodicalColumns" />,
+		pd.preview_url as previewUrl,
+		pd.image_name as imageName
+		from periodical p
+		inner join periodical_details pd
+		on p.id=pd.periodical_id
+		where pd.page_type=0
+		GROUP BY p.id
+		order by p.gmt_release desc
+		limit 0,#size#
+	</select>
+
+	<update id="updateNumViewById" parameterClass="java.util.HashMap">
+		update
+		periodical
+			set num_view = num_view + #num#,
+			gmt_modified = now()
+		where id = #id#
+	</update>
+
+	<update id="updateNumUpById" parameterClass="java.util.HashMap">
+		update periodical
+			set num_up = num_up+#num#,
+			gmt_modified = now()
+		where id = #id#
+	</update>
+</sqlMap>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="exhibit">
+	<typeAlias alias="exhibit" type="com.zz91.ep.domain.exhibit.Exhibit" />
+	<typeAlias alias="exhibitDto" type="com.zz91.ep.dto.exhibit.ExhibitDto" />
+	
+	<resultMap id="fullColumnResult" class="exhibit">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="provinceCode" column="province_code"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="plateCategoryCode" column="plate_category_code"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="showName" column="show_name"/>
+		<result property="details" column="details"/>
+		<result property="organizers" column="organizers"/>
+		<result property="details" column="details"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtSort" column="gmt_sort"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="adminAccount" column="admin_account"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap id="simpleColumnResult" class="exhibit">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="showName" column="show_name"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="provinceCode" column="province_code"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="organizers" column="organizers"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="plateCategoryCode" column="plate_category_code"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+	</resultMap>
+	
+	<resultMap class="exhibitDto" id="exhibitDtoResult">
+		<result property="exhibit" resultMap="exhibit.simpleColumnResult"/>
+		<result property="rid" column="rid"/>
+	</resultMap>
+	
+	<resultMap class="exhibit" id="simpResult">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		e.id,
+		e.name,
+		e.province_code,
+		e.area_code,
+		e.gmt_start,
+		e.gmt_end,
+		e.plate_category_code,
+		e.industry_code,
+		e.show_name,
+		e.details,
+		e.organizers,
+		e.gmt_publish,
+		e.gmt_sort,
+		e.pause_status,
+		e.admin_account,
+		e.admin_name,
+		e.gmt_created,
+		e.gmt_modified
+	</sql>
+	
+	<sql id="simpleColumn">
+		e.id,
+		e.name,
+		e.show_name,
+		e.pause_status,
+		e.admin_name,
+		e.province_code,
+		e.area_code,
+		e.gmt_start,
+		e.organizers,
+		e.gmt_end,
+		e.industry_code,
+		e.plate_category_code,
+		e.gmt_publish
+	</sql>
+	
+	<select id="queryExhibitDetailsById" parameterClass="java.lang.Integer" resultMap="fullColumnResult">
+		select 
+			 <include refid="exhibit.fullColumn" />
+		from exhibit e
+		where e.id=#id#
+	</select>
+	
+	<!-- 
+		<sql id="dynamicQueryExhibit">
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="exhibit.name">
+					e.name like concat(#exhibit.name#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.organizers">
+					e.organizers=#exhibit.organizers#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.industryCode">
+					e.industry_code =#exhibit.industryCode#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.provinceCode">
+					e.province_code like concat(#exhibit.provinceCode#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.areaCode">
+					e.area_code like concat(#exhibit.areaCode#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.gmtStart">
+					e.gmt_start >=#exhibit.gmtStart#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="exhibit.gmtEnd">
+					#exhibit.gmtEnd#>=e.gmt_end
+				</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryExhibitBySearch" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select
+			<include refid="exhibit.simpleColumn" />
+		from exhibit e
+			<include refid="exhibit.dynamicQueryExhibit"/>	
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />	
+	</select>
+	
+	<select id="queryExhibitBySearchCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from exhibit e
+		<include refid="exhibit.dynamicQueryExhibit"/>	
+	</select>
+	
+	<select id="queryExhibitByPlateCategory" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select 
+			<include refid="exhibit.simpleColumn" />
+		from exhibit e 
+		where e.plate_category_code=#plateCategoryCode#
+			<include refid="common.pageOrderBy" />
+			<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryExhibitByPlateCategoryCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from exhibit e
+		where e.plate_category_code=#plateCategoryCode#
+	</select>
+	
+	<select id="queryExhibitByCategory" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select 
+			<include refid="exhibit.simpleColumn"/>
+		from exhibit e
+		where e.plate_category_code=#plateCategoryCode#
+		order by e.gmt_publish desc 
+		limit #max#
+	</select>
+	
+	<select id="queryExhibitByIndustryCode" parameterClass="java.util.HashMap" resultMap="simpResult">
+		select id,name from exhibit 
+		where industry_code =#industryCode# and name is not null and name !=''
+		order by gmt_publish desc 
+		limit #size#
+	</select>
+	 -->
+	
+	<!-- admin后台 -->
+	<insert id="insertExhibit" parameterClass="exhibit">
+		insert into exhibit(
+			name,
+			province_code,
+			area_code,
+			gmt_start,
+			gmt_end,
+			plate_category_code,
+			industry_code,
+			show_name,
+			details,
+			organizers,
+			gmt_publish,
+			gmt_sort,
+			pause_status,
+			admin_account,
+			admin_name,
+			gmt_created,
+			gmt_modified
+		)
+		values(
+			#name#,
+			#provinceCode#,
+			#areaCode#,
+			#gmtStart#,
+			#gmtEnd#,
+			#plateCategoryCode#,
+			#industryCode#,
+			#showName#,
+			#details#,
+			#organizers#,
+			#gmtPublish#,
+			#gmtSort#,
+			#pauseStatus#,
+			#adminAccount#,
+			#adminName#,
+			now(),
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateExhibit" parameterClass="exhibit">
+		update exhibit e set 
+			e.name=#name#,
+			e.plate_category_code=#plateCategoryCode#,
+			e.pause_status=#pauseStatus#,
+			e.province_code=#provinceCode#,
+			e.area_code=#areaCode#,
+			e.industry_code=#industryCode#,
+			e.show_name=#showName#,
+			e.organizers=#organizers#,
+			e.gmt_start=#gmtStart#,
+			e.gmt_end=#gmtEnd#,
+			e.gmt_publish=#gmtPublish#,
+			e.gmt_sort=#gmtSort#,
+			e.details=#details#,
+			e.gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	<update id="updateStatus" parameterClass="java.util.HashMap">
+		update exhibit 
+		set 
+		pause_status=#status#,
+		gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	<delete id="deleteExhibit" parameterClass="java.lang.Integer">
+		delete from exhibit
+		where id=#id#
+	</delete>
+	
+	<sql id="dynamicByAdmin">
+		<dynamic prepend="where" >
+			<isNotEmpty property="plateCategoryCode" prepend="and">
+				e.plate_category_code like concat(#plateCategoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				e.name like concat(#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				e.pause_status=#status#
+			</isNotEmpty>
+		</dynamic>
+		
+	</sql>
+	<select id="queryExhibitByAdmin" parameterClass="java.util.HashMap" resultMap="exhibitDtoResult">
+		select
+		<include refid="exhibit.simpleColumn" />
+		<isNotEmpty property="recommendType">
+			,nrr.id as rid
+		</isNotEmpty>
+		<isEmpty property="recommendType">
+			,0 as rid
+		</isEmpty>
+		from exhibit e
+		<isNotEmpty property="recommendType">
+			inner join (select nr.id,nr.news_id from news_recommend nr where nr.type=#recommendType#) nrr on nrr.news_id=e.id
+		</isNotEmpty>
+		<include refid="exhibit.dynamicByAdmin"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryExhibitCountByAdmin" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from exhibit e
+		<isNotEmpty property="recommendType">
+			inner join (select nr.id,nr.news_id from news_recommend nr where nr.type=#recommendType#) nrr on nrr.news_id=e.id
+		</isNotEmpty>
+		<include refid="exhibit.dynamicByAdmin"/>
+	</select>
+	
+	<select id="queryExhibitByRecommend" parameterClass="java.util.HashMap" resultMap="simpResult">
+		select e.id,e.name from exhibit e
+		inner join news_recommend nr on nr.news_id=e.id
+		where type=#type# and e.name is not null and e.name !='' 
+		and pause_status=1 and date_format(nr.gmt_created,'%Y%m%d') 
+		between  date_format(date_add(now(), Interval -6 day),'%Y%m%d') and date_format(now(),'%Y%m%d')
+		order by nr.gmt_created desc 
+		limit #size#
+	</select>
+</sqlMap>

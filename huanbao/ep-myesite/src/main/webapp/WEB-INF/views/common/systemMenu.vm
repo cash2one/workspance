@@ -1,0 +1,203 @@
+##控制高会菜单 或 根据权限获取菜单
+<nav class="container mt menu_bar" id="Js_menu_fix">
+    <ul class="menu" id="Js_menu">
+        <li>
+            <a href="#springUrl('/index.htm')">我的管家</a>
+            <ul>
+				##识别买家还是卖家
+                <li><a href="#springUrl('/supply/publish_StpOne.htm')">发布供应信息</a></li>
+                <li><a href="#springUrl('/buy/publish_StpOne.htm')">发布求购信息</a></li>
+                <li><a href="#springUrl('/message/index.htm')">查看留言</a></li>
+                <li><a href="$!{address.www}/fudus/leaveMsg.htm" target="_blank">问题反馈</a></li>
+                <li><a href="#springUrl('/company/updateCompany.htm')">公司信息</a></li>
+                <li><a href="#springUrl('/company/updatePassword.htm')">修改密码</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#springUrl('/supply/index.htm')">产品管理</a>
+            <ul>
+                <li><a href="#springUrl('/supply/publish_StpOne.htm')">发布供应信息</a></li>
+                <li><a href="#springUrl('/supply/index.htm')">管理供应信息</a></li>
+				<li><a href="#springUrl('/supply/tradeGroup.htm')">供应类别管理</a></li>
+                <li><a href="#springUrl('/buy/publish_StpOne.htm')">发布求购信息</a></li>
+                <li><a href="#springUrl('/buy/index.htm')">管理求购信息</a></li>
+            </ul>
+        </li>
+        <li>
+			<a href="#springUrl('/message/index.htm')">留言管理</a>
+			<ul>
+                <li><a href="#springUrl('/message/index.htm')" >我收到的留言</a></li>
+                <li><a href="#springUrl('/message/send.htm')" >我发出的留言</a></li>
+                ##<li><a href="#springUrl('/message/epMessage.htm')" >客服留言</a></li>
+			</ul>
+		</li>
+        <li>
+			#if($!{count}>0)
+			   <a href="#springUrl('/article/index.htm')?checkStatus=2">
+				    网站动态管理<span class="red" title="您有$!{count}条信息审核不通过">($!{count})</span>
+			  </a>
+			#else 
+			   <a href="#springUrl('/article/index.htm')">
+				  网站动态管理
+			   </a>
+			#end
+			<ul>
+                <li>
+					#if($!{type0}=='1000')
+				    <a href="#springUrl('/article/index.htm?type=1000&checkStatus=2')">公司动态</a>
+				    #else
+				    <a href="#springUrl('/article/index.htm?type=1000')" >公司动态</a>
+					#end
+				</li>
+			    <li>
+					#if($!{type1}=='1001')
+				  	<a href="#springUrl('/article/index.htm?type=1001&checkStatus=2')" >技术文章</a>
+				    #else
+					<a href="#springUrl('/article/index.htm?type=1001')" >技术文章</a>
+					#end	
+				</li>
+                <li>#if($!{type2}=='1002')
+					<a href="#springUrl('/article/index.htm?type=1002&checkStatus=2')" >成功案例</a>
+				    #else
+					<a href="#springUrl('/article/index.htm?type=1002')" >成功案例</a>
+				    #end	
+				</li>
+				
+			</ul>
+		</li>
+        <li><a href="#springUrl('/photoalbum/index.htm')">相册管理</a></li>
+        <li><a href="#springUrl('/company/updateCompany.htm')">公司信息</a></li>
+		#if("$!{epAuthUser.memberCode}"=="10011001")
+        <li>
+			<a href="#springUrl('/company/credit.htm')">荣誉证书</a>
+			<ul>
+                <li><a href="#springUrl('/company/credit.htm')" >管理证书</a></li>
+                <li><a href="#springUrl('/company/createCredit.htm')" >上传证书</a></li>
+			</ul>
+		</li>
+        <li>
+			<a href="#springUrl('/company/updateStyle.htm')">门市部装修</a>
+			<ul>
+                <li><a href="#springUrl('/company/updateMainProduct.htm')" >修改主营业务</a></li>
+                <li><a href="#springUrl('/company/updateLogo.htm')" >上传公司Logo</a></li>
+                <li><a href="#springUrl('/company/updateStyle.htm')" >修改门市部模板</a></li>
+			</ul>
+		</li>
+		#end
+		<li>
+			#if($!{commentCount}>0)
+			  <a href="#springUrl('/mblog/index.htm')">微交流动态<span class="red"> ●</span></a>
+			#elseif($!{newFansCount}>0)
+			  <a href="#springUrl('/mblog/index.htm')">微交流动态<span class="red"> ●</span></a>
+			#elseif($!{anteCount}>0)
+			  <a href="#springUrl('/mblog/index.htm')">微交流动态<span class="red"> ●</span></a>
+			#elseif($!{messageCount}>0)
+			  <a href="#springUrl('/mblog/index.htm')">微交流动态<span class="red"> ●</span></a>
+			#else
+			  <a href="#springUrl('/mblog/index.htm')">微交流动态</a>	
+			#end	
+		</li>
+    </ul>
+</nav>
+<script type="text/javascript" >
+var myrc = myrc || {};
+myrc.select = function(id) {
+    var select = jQuery("#" + id),
+        dt = select.find("dt"),
+        dd = select.find("dd"),
+        em = dt.find("em"),
+        flag = false;
+    select.hover(function() {
+        flag = true;
+        setTimeout(function() {
+            if (flag) {
+                dd.show();
+            }
+        }, 200);
+    }, function() {
+        flag = false;
+        setTimeout(function() {
+            dd.hide();
+        }, 200);
+    });
+    dd.find("p").each(function() {
+        jQuery(this).click(function() {
+            em.text(jQuery(this).text());
+            em.attr("data-option", jQuery(this).attr("data-option"));
+            dd.hide();
+        })
+    })
+};
+// 菜单
+myrc.menu = function(main, sub) {
+    var menu = jQuery("#Js_menu"),
+        li = menu.children("li");
+    li.eq(main - 1).addClass("cur").find("li").eq(sub - 1).addClass("active");
+    li.each(function() {
+        jQuery(this).on("mouseover", function(e) {
+            var _this = this,
+                target = e.fromElement || e.relatedTarget;
+            try {
+                if (!this.contains(target)) {
+                    this.timer = setTimeout(show, 250);
+                }
+            } catch(e) {}
+            function show() {
+                jQuery(_this).find("ul").slideDown("fast");
+            }
+
+        });
+        jQuery(this).on("mouseout", function(e) {
+            target = e.toElement || e.relatedTarget;
+            if (!this.contains(target)) {
+                clearTimeout(this.timer);
+                jQuery(this).find("ul").slideUp("fast");
+            }
+        })
+    })
+}
+// 菜单栏固定
+myrc.menuFix = function() {
+    if (jQuery.browser.msie && parseInt(jQuery.browser.version) < 8) {
+        return
+    }
+    var nav = jQuery("#Js_menu_fix"),
+        header = jQuery("header"),
+        win = jQuery(window);
+    win.scroll(function() {
+        if (jQuery(this).scrollTop() >= 66) {
+            nav.addClass("fixed");
+            header.addClass("mb38");
+        } else {
+            nav.removeClass("fixed");
+            header.removeClass("mb38");
+        }
+    })
+}
+myrc.menuFix();
+// 评级组件
+myrc.rate = function(id) {
+    var label = jQuery("#" + id),
+        star = label.find("s"),
+        input = label.find("input");
+    star.mouseover(function() {
+        set(jQuery(this));
+    });
+    label.mouseout(function() {
+        rate = label.attr("data-rate");
+        pos = jQuery(star.get(rate) - 1);
+        set(pos);
+    });
+    star.each(function() {
+        jQuery(this).click(function() {
+            label.attr("data-rate", star.index(jQuery(this)) + 1);
+            input.attr("value", star.index(jQuery(this)) + 1);
+        })
+    })
+
+    function set(target) {
+        target.addClass("on").prevAll().addClass("on");
+        target.nextAll().removeClass("on");
+    }
+}
+</script>

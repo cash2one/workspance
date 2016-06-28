@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+    <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+    <link rel='stylesheet' href='../css/github.css'>
+    <style type='text/css'>
+        .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+    </style>
+</head>
+<body>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">auth 授权</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 授权.
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.auth({
+    uid: "12345" // 合作伙伴客户标识，默认"12345"
+}, function(ret, err){
+    if(ret.status){
+        alert("统一用户标识: " + ret.uid);
+    }else{
+        alert("错误码: " + err.code + "\n错误信息: " + err.msg);
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">isAuth 判断是否授权验证通过</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 提示授权是否成功.
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.isAuth(function(ret, err){
+    if(ret.status){
+        alert("验证成功");
+    }else{
+        alert("验证失败");
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">clearAuth 清除验证信息</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 清除授权信息.
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.clearAuth(function(ret, err){
+    if(ret.status){
+        alert("清除验证信息成功");
+    }else{
+        alert("清除验证信息失败");
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">open 拍照并上传脉可寻云识别服务器</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 拍照并上传脉可寻云识别服务器
+
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.open(function(ret, err){
+    window.imgUuid = ret.uuid;
+
+    if("uploading" == ret.state){
+        console.log("正在上传");
+    }
+
+    if("uploaded" == ret.state){
+        alert("上传完成" + "\n图片唯一标识: " + ret.uuid);
+    }
+
+    if("err" == ret.state){
+        alert("上传失败");
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">getDataWithUuid 根据uuid获取数据</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 根据图片唯一标识获取用户名片数据.
+
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.getDataWithUuid({
+    uuids:[window.imgUuid] // 图片唯一标识组成的数组.
+}, function(ret, err){
+    if(ret.status){
+        alert("获取成功: " + JSON.stringify(ret.datas));
+    }else{
+        alert("错误码: " + err.code + "\n错误信息: " + err.msg);
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">getDataWithTime 根据时间获取数据</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 根据时间获取数据
+
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.getDataWithTime({
+    time: 0 // 时间戳，当前时间距1970年秒数，可为空，若0表示全部数据
+}, function(ret, err){
+    if(ret.status){
+        alert("获取成功: " + JSON.stringify(ret.datas));
+    }else{
+        alert("错误码: " + err.code + "\n错误信息: " + err.msg);
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">uploadImg 重新上传出错的图片</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 重新上传出错的图片
+
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.uploadImg(function(ret, err){
+    window.imgUuid = ret.uuid;
+    if("uploading" == ret.state){
+        console.log("正在上传");
+    }
+
+    if("uploaded" == ret.state){
+        alert("上传完成" + "\n图片唯一标识: " + ret.uuid);
+    }
+
+    if("err" == ret.state){
+        alert("上传失败");
+    }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">getCardImg 获取系统相册所有媒体资源</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+// 获取名片原图
+
+var maketionCardReader = api.require('maketionCardReader');
+
+maketionCardReader.getCardImg({
+        uuid: window.imgUuid, // uuid.
+        save: {
+            album: true, // 是否保存到相册,默认false.
+            imgPath: "fs://maketionCardReader/", // 文件保存路径.
+            imgName: "card" + Math.floor(Math.random() * 1000000)
+                + Math.floor(Math.random() * 1000000) + Math.floor(Math.random() * 1000000) + ".png" // 文件名
+        }
+    },
+    function(ret, err){
+        if(ret.status){
+            alert("获取名片原图成功");
+        }else{
+            alert("失败: " + err.msg);
+        }
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="../script/jquery-1.11.1.min.js"></script>
+<script src='../script/highlight.pack.js'></script>
+<script src='../script/demo2.js'>
+</script>
+</html>

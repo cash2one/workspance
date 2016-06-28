@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tagsArticleRelation">
+	<typeAlias alias="tagsArticleRelationDto" type="com.ast.ast1949.dto.tags.TagsArticleRelationDto" />
+	<typeAlias alias="tagsArticleRelation" type="com.ast.ast1949.domain.tags.TagsArticleRelation" />
+	<typeAlias alias="tagsInfo" type="com.ast.ast1949.domain.tags.TagsInfoDO" />
+	
+	<resultMap class="tagsArticleRelation" id="tagsArticleRelationResult">
+		<result property="id" column="id" />
+		<result property="tagId" column="tag_id" />
+		<result property="tagName" column="tag_name" />
+		<result property="articleId" column="article_id" />
+		<result property="articleTitle" column="article_title" />
+		<result property="articleModuleCode" column="art_module_code" />
+		<result property="articleCategoryCode" column="art_cat_code" />
+		<result property="creator" column="creator" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!-- 
+	<select id="queryTagsArticleRelationById"  parameterClass="int" resultMap="tagsArticleRelationResult">
+		select 
+		 id,
+		 tag_id,
+		 tag_name,
+		 article_id,
+		 article_title,
+		 art_module_code,
+		 art_cat_code,
+		 creator,
+		 gmt_created,
+		 gmt_modified
+		from tags_article_relation
+		where id=#id#
+	</select>
+	 -->
+	<!--删除与指定文章相关的所有关联信息-->
+	<delete id="deleteTagsArticleRelationByArticleId" parameterClass="map">
+		delete from
+		tags_article_relation
+		where article_id=#articleId#
+		and art_module_code=#articleModuleCode#
+	</delete>
+	<!--删除指定ID的标签文章关联信息
+	<delete id="deleteTagsArticleRelationById" parameterClass="int">
+		delete from
+		tags_article_relation
+		where id=#id#
+	</delete>
+	-->
+ 	<!-- 删除与指定标签相关的所有关联信息-->
+	<delete id="deleteTagsArticleRelationByTagId" parameterClass="int">
+		delete from
+		tags_article_relation
+		where tag_id=#id#
+	</delete>
+	<!-- 删除指定文章中的某个特定标签
+	<delete id="deleteTagsArticleRelationByTagIdAndArticleId" parameterClass="map">
+		delete from
+		tags_article_relation
+		where tag_id=#tagId# and article_id=#articleId#
+	</delete>
+	-->
+	<!-- 新增标签文章信息关联关系-->
+	<insert id="insertTagsArticleRelation" parameterClass="tagsArticleRelation">
+		insert into tags_article_relation
+		(tag_id,tag_name,article_id,article_title,art_module_code,art_cat_code,creator,gmt_created)
+		values
+		(#tagId#,#tagName#,#articleId#,#articleTitle#,#articleModuleCode#,#articleCategoryCode#,#creator#,now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!--更新标签文章关联信息
+	<update id="updateTagsArticleRelation" parameterClass="tagsArticleRelation">
+		update tags_article_relation
+		set
+			<isNotEmpty property="articleTitle">
+				article_title=#articleTitle#,
+			</isNotEmpty>
+			<isNotEmpty property="articleModuleCode">
+				art_module_code=#articleModuleCode#,
+			</isNotEmpty>
+			<isNotEmpty property="articleCategoryCode">
+				art_cat_code=#articleCategoryCode#,
+			</isNotEmpty>
+ 			gmt_modified=now()
+		where
+		id=#id:Integer#
+	</update>
+	-->
+	<!--根据标签和文章模块，查询该标签关联此模块的文章信息量-->
+    <select id="queryArticleCountByTagAndMoudel" parameterClass="tagsArticleRelationDto"
+		resultClass="Integer">
+		select count(*) 
+		from  tags_article_relation tar
+			<isNotEmpty property="productsTypeCode">
+				inner join products p on p.id=tar.article_id
+			</isNotEmpty>
+		where  tar.tag_id=#tagId#
+		and tar.art_module_code=#articleModuleCode#
+		<dynamic prepend="">
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<resultMap class="tagsArticleRelationDto" id="articleInfoResult">
+		<result property="articleId" column="article_id" />
+		<result property="articleTitle" column="article_title" />
+		<result property="articleModuleCode" column="art_module_code" />
+		<result property="articleModuleLabel" column="art_module_label" />
+		<result property="articleContentSummary" column="art_content_summary" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="companyId" column="company_id" />
+		<result property="companyName" column="company_name" />
+		<result property="companyMembershipCode" column="membership_code" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="buyOrSale" column="buy_sale" />
+	</resultMap>
+	<!--根据标签和文章模块，查询该标签关联此模块的文章［文章ID，文章标题,文章内容摘要，公司信息...］-->
+	<!--产品信息（供求信息）-->
+	<select id="queryProductsArticleListByTagAndMoudel" parameterClass="tagsArticleRelationDto"
+		resultMap="articleInfoResult">
+		select 
+		  tar.article_id,
+		  tar.article_title,
+		  tar.art_module_code,
+		  cat.label as art_module_label,
+		  substring(p.details,1,40) as art_content_summary,
+		  p.products_type_code,
+		  CASE p.products_type_code WHEN '10331001' THEN '求购' WHEN '10331000' THEN '供应' ELSE '' END as buy_sale,
+		  p.refresh_time,
+		  p.company_id,
+		  c.name as company_name,
+		  c.membership_code	
+		from  tags_article_relation tar
+		inner join category cat on tar.art_module_code=cat.code
+		inner join products p on tar.article_id=p.id
+		inner join company c on p.company_id=c.id
+		where tar.tag_id=#tagId#
+		and tar.art_module_code=#articleModuleCode#
+		<dynamic prepend="">
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+		<!--order by tar.id-->
+		limit #topNum#
+	</select>
+	<!--企业报价信息
+	<select id="queryCompanyPriceArticleListByTagAndMoudel" parameterClass="map"
+		resultMap="articleInfoResult">
+		select 
+		  tar.article_id,
+		  tar.article_title,
+		  tar.art_module_code,
+		  cat.label as art_module_label,
+		  substring(p.details,1,40) as art_content_summary,
+		  p.gmt_created as refresh_time,
+		  p.company_id,
+		  c.name as company_name,
+		  c.membership_code	
+		from  tags_article_relation tar
+		inner join category cat on tar.art_module_code=cat.code
+		inner join company_price p on tar.article_id=p.id
+		inner join company c on p.company_id=c.id
+		where tar.tag_id=#tagId#
+		and tar.art_module_code=#articleModuleCode#
+		limit #startIndex#,#topNum#	
+	</select>
+	-->
+	<!--报价信息-->
+	<select id="queryPriceArticleListByTagAndMoudel" parameterClass="tagsArticleRelationDto"
+		resultMap="articleInfoResult">
+		select 
+		  tar.article_id,
+		  tar.article_title,
+		  tar.art_module_code,
+		  cat.label as art_module_label,
+		  substring(p.content,1,40) as art_content_summary,
+		  p.gmt_created as refresh_time,
+		  '' as buy_sale,
+		  '' as products_type_code,
+		  '' as company_id,
+		  '' as company_name,
+		  '' as membership_code	
+		from  tags_article_relation tar
+		inner join category cat on tar.art_module_code=cat.code
+		inner join price p on tar.article_id=p.id
+		where tar.tag_id=#tagId#
+		and tar.art_module_code=#articleModuleCode#
+		limit #startIndex#,#topNum#	
+	</select>
+	<!--资讯信息-->
+	<!--根据文章模块分类和关联信息的产品分类，查询标签信息列表-->
+	<select id="queryTagListByModuleCatAndArtCat" parameterClass="map"
+		resultClass="tagsInfo">
+		select
+		  distinct
+		  tar.tag_id as id,
+		  tar.tag_name as name
+		from  tags_article_relation tar
+		where tar.art_module_code=#moduleCatCode#
+		<dynamic prepend="">
+			<isNotEmpty property="artCatCode" prepend="and">
+				tar.art_cat_code like concat(#artCatCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<!--order by tar.id-->
+		limit #topNum#
+	</select>
+	<!--根据标签分类和关联信息的产品分类，查询标签信息列表-->
+ 	<select id="queryTagListByTagCatAndArtCat" parameterClass="map"
+		resultClass="tagsInfo">
+		select
+		  distinct
+		  tar.tag_id as id,
+		  tar.tag_name as name
+		from  tags_article_relation tar,tags_info tag
+		where tar.tag_id=tag.id
+		and tar.art_cat_code like concat(#artCatCode#,'%')
+		<dynamic prepend="">
+			<isNotEmpty property="tagCatCode" prepend="and">
+				tag.type_id=#tagCatCode#
+			</isNotEmpty>
+		</dynamic>
+		<!--order by tar.id-->
+		limit #topNum#
+	</select>
+	<!--查询与指定文章相关联的所有标签信息列表-->
+	<select id="queryTagListFromTagsArticleRelationByArticleId" parameterClass="map"
+		resultClass="tagsInfo">
+		select
+		  distinct
+		  tar.tag_id as id,
+		  tar.tag_name as name
+		from  tags_article_relation tar 
+		where tar.article_id=#id#
+		and tar.art_module_code=#moduleCatCode#
+	</select>	
+	<!-- clear table-->
+	<delete id="clearAllData">
+		truncate table tags_article_relation
+	</delete>
+	
+</sqlMap>

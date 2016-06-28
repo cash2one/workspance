@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="photoAbum">
+	
+	<typeAlias alias="photoAbumDo" type="com.ast.ast1949.domain.photo.PhotoAbum" />
+	<resultMap class="photoAbumDo" id="photoAbumResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="albumId" column="album_id" />
+		<result property="picAddress" column="pic_address" />
+		<result property="name" column="name" />
+		<result property="isDel" column="is_del" />
+		<result property="isMark" column="is_mark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		album_id,
+		is_del,
+		is_mark,
+		pic_address,
+		name,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="photoAbumDo">
+		INSERT INTO photo_abum
+		(
+		company_id,
+		album_id,
+		pic_address,
+		name,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#albumId#,
+		#picAddress#,
+		#name#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<sql id="whereSearch">
+		where is_del=0
+		<dynamic >
+			<isNotEmpty prepend="and" property="companyId">
+				company_id=#companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="albumId">
+				album_id=#albumId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryPhotoAbumList" parameterClass="java.util.Map" resultMap="photoAbumResult">
+		select 
+		<include refid="photoAbum.defaultColumn" />
+		from photo_abum
+		<include refid="photoAbum.whereSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPhotoAbumListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from photo_abum
+		<include refid="photoAbum.whereSearch"/>
+	</select>
+	
+	<update id="delPhotoAbum" parameterClass="java.lang.Integer">
+		update photo_abum  set is_del=1 where id=#id#
+	</update>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="photoAbumResult">
+		select
+		<include refid="photoAbum.defaultColumn"/>
+		from photo_abum
+	   	<include refid="photoAbum.whereSearch" />
+	</select>
+	
+	<sql id="whereCase">
+		where is_del=0
+		<dynamic>
+			<isNotEmpty prepend="and" property="companyId">
+				company_id=#companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="albumId">
+				album_id !=#albumId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryPagePhotoAbum" parameterClass="java.util.Map" resultMap="photoAbumResult">
+		select 
+		<include refid="photoAbum.defaultColumn" />
+		from photo_abum
+		<include refid="photoAbum.whereCase" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPagePhotoAbumCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from photo_abum
+		<include refid="photoAbum.whereCase"/>
+	</select>
+	
+	<select id="queryPhotoAbum" parameterClass="java.util.Map" resultMap="photoAbumResult">
+		select 
+		<include refid="photoAbum.defaultColumn"/>
+		from photo_abum
+		<include refid="photoAbum.whereSearch" />
+		order by id asc limit 1
+	</select>
+
+	<select id="queryPhotoAbumById" parameterClass="java.lang.Integer" resultMap="photoAbumResult">
+		select 
+		<include refid="photoAbum.defaultColumn"/>
+		from photo_abum
+		where id=#id#
+	</select>
+	
+	<update id="updateIsMarkById" parameterClass="java.lang.Integer">
+		update photo_abum set is_mark=1 where id=#id#
+	</update>
+	
+	<update id="updateComponyIdById" parameterClass="java.util.Map">
+		update photo_abum 
+		set 
+		company_id=#companyId#,
+		gmt_modified = now()
+		where id=#id#
+	</update>
+
+</sqlMap>

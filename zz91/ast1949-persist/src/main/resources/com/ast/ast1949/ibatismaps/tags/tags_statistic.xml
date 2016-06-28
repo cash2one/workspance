@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tagsStatistic">
+	
+	<typeAlias alias="tagsInfoDO" type="com.ast.ast1949.domain.tags.TagsInfoDO" />
+	<typeAlias alias="tagsStatistic" type="com.ast.ast1949.domain.tags.TagsStatistic" />
+	<typeAlias alias="tagsStatisticDaily" type="com.ast.ast1949.domain.tags.TagsStatisticDaily" />
+	<typeAlias alias="tagsStatisticMonth" type="com.ast.ast1949.domain.tags.TagsStatisticMonth" />
+	<typeAlias alias="tagsStatisticYear" type="com.ast.ast1949.domain.tags.TagsStatisticYear" />
+	
+	<resultMap class="tagsInfoDO" id="tagsInfoResult">
+		<result property="id" column="tag_id" />
+		<result property="name" column="tag_name" />
+	</resultMap>
+	<!--新增标签每日统计记录-->
+	<insert id="insertTagsStatisticDaily" parameterClass="tagsStatisticDaily">
+		INSERT INTO tags_statistic_daily
+		  	(stat_cat_code,
+			stat_date,
+			tag_id,
+			tag_name,
+			score,
+			creator,
+			gmt_created,
+			description)
+		VALUES
+			(#statisticCategoryCode#,
+			#statisticDate#,
+			#tagId#,
+			#tagName#,
+			#score#,
+			#creator#,
+			now(),
+			#description#
+			)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!--新增标签一周统计记录-->
+	<insert id="insertTagsStatisticWeekly" parameterClass="tagsStatistic">
+		INSERT INTO tags_statistic_weekly
+		  	(stat_cat_code,
+			tag_id,
+			tag_name,
+			score)
+		VALUES
+			(#statisticCategoryCode#,
+			#tagId#,
+			#tagName#,
+			#score#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!--新增标签月度统计记录-->
+	<insert id="insertTagsStatisticMonth" parameterClass="tagsStatisticMonth">
+		INSERT INTO tags_statistic_month
+		  	(stat_cat_code,
+			stat_month,
+			tag_id,
+			tag_name,
+			score,
+			creator,
+			gmt_created,
+			description)
+		VALUES
+			(#statisticCategoryCode#,
+			#statisticMonth#,
+			#tagId#,
+			#tagName#,
+			#score#,
+			#creator#,
+			now(),
+			#description#
+			)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!--新增标签年度统计记录-->
+	<insert id="insertTagsStatisticYear" parameterClass="tagsStatisticYear">
+		INSERT INTO tags_statistic_year 
+		  	(stat_cat_code,
+			stat_year,
+			tag_id,
+			tag_name,
+			score,
+			creator,
+			gmt_created,
+			description)
+		VALUES
+			(#statisticCategoryCode#,
+			#statisticYear#,
+			#tagId#,
+			#tagName#,
+			#score#,
+			#creator#,
+			now(),
+			#description#
+			)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select	last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<!--
+ 	<select id="queryTagsByArticleCategory" parameterClass="int" resultMap="tagsStatisticResult">
+ 		select 
+ 		stat.stat_cat_code,
+ 		tag_id,
+ 		cat.label as stat_type_name,
+ 		tag.name as tag_name,
+ 		score
+ 		from tags_stat_weekly stat,tags_info tag,category cat
+ 		where stat.tag_id=tag.id
+ 		and stat.stat_cat_code=cat.code
+ 		order by score desc
+    </select> -->
+    
+    <!--根据统计类别查询每日统计标签信息 按时间降序排列-->
+    <select id="queryTagListByStatCatAndArtCat" parameterClass="map" resultMap="tagsInfoResult">
+			select 
+			   distinct
+	 		   tsd.tag_id,
+	 		   tsd.tag_name
+	 		from tags_statistic_daily tsd, tags_article_relation tar
+	 		where tsd.stat_cat_code like concat(#statCategoryCode#,'%')
+	 		and tsd.tag_id=tar.tag_id
+	 		<dynamic prepend="">
+				<isNotEmpty property="artCatCode" prepend="and">
+					 tar.art_cat_code=#artCatCode#
+				</isNotEmpty>
+			</dynamic>
+	 		order by tsd.gmt_created desc
+	 		limit #topNum#
+    </select> 
+    
+    <!--根据统计类别查询周统计标签信息-->
+    <select id="queryWeeklyStatTagsByStatCat" parameterClass="map" resultMap="tagsInfoResult">
+ 		select
+ 		  distinct
+ 		  tag_id,
+ 		  tag_name
+ 		from tags_statistic_weekly
+ 		where stat_cat_code=#statCategoryCode#
+ 		order by score desc
+ 		limit #topNum#
+    </select>
+    <!--清除所有记录，并重置ID序列-->
+	<delete id="clearTagsStatisticDaily">
+		truncate table tags_statistic_daily;
+	</delete>
+	<delete id="clearTagsStatisticWeekly">
+		truncate table tags_statistic_weekly;
+	</delete>
+	<delete id="clearTagsStatisticMonth">
+		truncate table tags_statistic_month;
+	</delete>
+	<delete id="clearTagsStatisticYear">
+		truncate table tags_statistic_year;
+	</delete>
+</sqlMap>

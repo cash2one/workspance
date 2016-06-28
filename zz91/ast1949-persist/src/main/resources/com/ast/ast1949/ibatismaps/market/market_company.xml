@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="marketCompany">
+
+	<typeAlias alias="marketCompany"
+		type="com.ast.ast1949.domain.market.MarketCompany" />
+	<resultMap id="marketCompanyResult" class="marketCompany">
+		<result property="id" column="id" />
+		<result property="marketId" column="market_id" />
+		<result property="companyId" column="company_id" />
+		<result property="productNum" column="product_num" />
+		<result property="isQuit" column="is_quit" />
+		<result property="isInit" column="is_init" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="allColumn">
+		id,market_id,company_id,product_num,is_quit,is_init,gmt_created,gmt_modified
+	</sql>
+	<sql id="defaultColumn">
+		mc.id,
+		mc.market_id,
+		mc.company_id,
+		mc.product_num,
+		mc.is_quit,
+		mc.is_init,
+		mc.gmt_created,
+		mc.gmt_modified
+	</sql>
+	<!--最新加入市场商户 -->
+	<select id="queryNewCompany" parameterClass="java.util.Map"
+		resultMap="marketCompanyResult">
+		select
+		<include refid="marketCompany.allColumn" />
+		from market_company
+		where
+		is_quit=0
+		<isNotNull prepend="and" property="marketId">
+			market_id = #marketId#
+		</isNotNull>
+		order by id desc
+		limit 0,#size#
+	</select>
+
+
+	<insert id="insertMarketCompany" parameterClass="java.util.HashMap">
+		insert into `market_company`
+		(
+		`market_id`,
+		`company_id`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#marketId#,
+		#companyId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<!--某用户已入驻的市场 -->
+	<select id="queryMarketByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select market_id
+		from market_company
+		where is_quit=0 and
+		company_id=#companyId#
+		order by id desc
+	</select>
+
+	<!--某用户已入驻的市场 -->
+	<select id="queryFirstMarketByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select market_id
+		from market_company
+		where is_quit=0 and
+		company_id=#companyId#
+		order by id asc
+		limit 1
+	</select>
+
+	<select id="queryMarketCompanyById" parameterClass="java.lang.Integer"
+		resultMap="marketCompanyResult">
+		select
+		<include refid="marketCompany.allColumn" />
+		from market_company
+		where id=#id# and is_quit=0
+	</select>
+
+	<select id="queryMarketCompanyByBothId" parameterClass="java.util.HashMap"
+		resultMap="marketCompanyResult">
+		select
+		<include refid="marketCompany.allColumn" />
+		from market_company
+		where market_id=#marketId# and
+		company_id=#companyId#
+	</select>
+	<update id="updateIsQuitByBothId" parameterClass="java.util.HashMap">
+		update
+		market_company
+		set
+		is_quit=#isQuit#,
+		gmt_modified=now()
+		where
+		market_id=#marketId# and company_id=#companyId#
+	</update>
+	<select id="countMarketCompany" resultClass="java.lang.Integer">
+		select
+		count(distinct company_id)
+		from market_company
+		where is_quit=0
+	</select>
+	<sql id="whereClause">
+		<dynamic>
+			where mc.is_quit=0
+			<isNotNull prepend="and" property="marketId">
+				mc.market_id =#marketId#
+			</isNotNull>
+			<isNotNull property="isPerson" prepend="and">
+				exists(select 0 from
+				auth_user au where au.isperson=#isPerson# and
+				au.username=ca.account)
+			</isNotNull>
+			<isNotNull property="membershipCode" prepend="and">
+				exists(select
+				0 from company c where
+				c.membership_code=#membershipCode# and
+				c.id=mc.company_id)
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<select id="pageCompanyByAdminMarketId" parameterClass="java.util.HashMap"
+		resultMap="marketCompanyResult">
+		select
+		<include refid="marketCompany.defaultColumn" />
+		from market_company mc
+		<isNotNull property="isPerson">
+			left join company_account ca on
+			ca.company_id = mc.company_id
+		</isNotNull>
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="pageCompanyByAdminMarketIdCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0) from market_company mc
+		<isNotNull property="isPerson">
+			left join company_account ca on
+			ca.company_id = mc.company_id
+		</isNotNull>
+		<include refid="whereClause" />
+	</select>
+
+	<sql id="whereSearchClause">
+		<dynamic>
+			where mc.is_quit=0
+			<isNotEmpty property="companyAccount.mobile" prepend="and">
+				exists(select 0 from company_account ca where
+				ca.mobile=#companyAccount.mobile# and mc.company_id=ca.company_id)
+			</isNotEmpty>
+			<isNotEmpty property="companyAccount.email" prepend="and">
+				exists(select 0 from company_account ca where
+				ca.email=#companyAccount.email# and mc.company_id=ca.company_id)
+			</isNotEmpty>
+			<isNotEmpty property="companyAccount.account" prepend="and">
+				exists(select 0 from company_account ca where
+				ca.account=#companyAccount.account# and mc.company_id=ca.company_id)
+			</isNotEmpty>
+			<isNotEmpty property="companyAccount.companyId" prepend="and">
+				mc.company_id = #companyAccount.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+				exists(select 0
+				from company c where c.name=#companyName# and c.id=mc.company_id)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryListMarketByadmin" parameterClass="java.util.HashMap"
+		resultMap="marketCompanyResult">
+		select
+		<include refid="marketCompany.defaultColumn" />
+		from market_company mc
+		<include refid="whereSearchClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryListMarketByadminCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0) from market_company mc
+		<include refid="whereSearchClause" />
+	</select>
+</sqlMap>

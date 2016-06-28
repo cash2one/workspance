@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="marketSubscribe">
+
+	<typeAlias alias="marketSubscribeDomain"
+		type="com.ast.ast1949.domain.market.MarketSubscribe" />
+	<resultMap class="marketSubscribeDomain" id="marketSubscribeResult">
+		<result property="id" column="id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="companyId" column="company_id" />
+		<result property="keys" column="keys" />
+		<result property="type" column="type" />
+		<result property="isDel" column="is_del" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		gmt_created,
+		gmt_modified,
+		company_id,
+		`keys`,
+		type,
+		is_del
+	</sql>
+
+	<cacheModel id="marketSubscribeCache" type="MEMORY"
+		readOnly="false" serialize="true">
+		<flushInterval hours="24" />
+		<flushOnExecute statement="marketSubscribe.insert" />
+		<flushOnExecute statement="marketSubscribe.updateToDel" />
+		<property name="reference-type" value="WEAK" />
+	</cacheModel>
+
+	<insert id="insert" parameterClass="marketSubscribeDomain">
+		INSERT INTO market_subscribe
+		(
+		gmt_created,
+		gmt_modified,
+		company_id,
+		`keys`,
+		type,
+		is_del
+		)
+		VALUES
+		(
+		now(),
+		now(),
+		#companyId#,
+		#keys#,
+		#type#,
+		#isDel#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateToDel" parameterClass="java.util.Map">
+		update
+		market_subscribe
+		set
+		gmt_modified = now(),
+		is_del = 1
+		where id = #id# and company_id = #companyId#
+	</update>
+
+	<select id="queryByCompanyId" parameterClass="java.util.Map" resultMap="marketSubscribeResult" cacheModel="marketSubscribeCache">
+		select
+		<include refid="defaultColumn"/>
+		from market_subscribe
+		where company_id = #companyId# and is_del =0
+		order by id desc
+		limit 0,#size#
+	</select>
+	
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="search.account">
+				exists (select a.id from company_account a where a.company_id = company_id and a.account = #search.account#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.mobile">
+				exists (select b.id from company_account b where b.company_id = company_id and b.mobile = #search.mobile#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.email">
+				exists (select c.id from company_account c where c.company_id = company_id and c.email = #search.email#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.name">
+				exists (select d.id from company d where d.id = company_id and d.name = #search.name#)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryByAdmin" parameterClass="java.util.Map" resultMap="marketSubscribeResult" cacheModel="marketSubscribeCache">
+		select
+		<include refid="defaultColumn"/>
+		from market_subscribe
+		<include refid="whereCaluse"/>
+		GROUP BY company_id
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCountByAdmin" parameterClass="java.util.Map" resultClass="java.lang.Integer" cacheModel="marketSubscribeCache">
+		select count(0)  from
+		(SELECT count(0) FROM market_subscribe 
+		<include refid="whereCaluse"/> 
+		GROUP BY company_id  )  a  ;
+	</select>
+
+</sqlMap>

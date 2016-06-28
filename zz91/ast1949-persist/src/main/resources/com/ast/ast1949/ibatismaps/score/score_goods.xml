@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+ "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="scoreGoods">
+	<typeAlias alias="scoreGoodsDo" type="com.ast.ast1949.domain.score.ScoreGoodsDo" />
+
+	<resultMap id="fullGoodsResult" class="scoreGoodsDo">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="category" column="category" />
+		<result property="gmtStart" column="gmt_start" />
+		<result property="gmtEnd" column="gmt_end" />
+		<result property="priceBuy" column="price_buy" />
+		<result property="priceDay" column="price_day" />
+		<result property="scoreBuy" column="score_buy" />
+		<result property="scoreDay" column="score_day" />
+		<result property="freight" column="freight" />
+		<result property="remark" column="remark" />
+		<result property="keywords" column="keywords" />
+		<result property="detailUrl" column="detail_url" />
+		<result property="isHot" column="is_hot" />
+		<result property="isHome" column="is_home" />
+		<result property="details" column="details" />
+		<result property="showPicture" column="show_picture" />
+		<result property="numConversion" column="num_conversion" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,name,category,gmt_start,gmt_end,price_buy,price_day,score_buy,score_day,freight,remark,keywords,
+		detail_url,is_hot,is_home,details,show_picture,num_conversion,gmt_created,gmt_modified
+	</sql>
+	
+	<select id="queryGoodsById" parameterClass="java.lang.Integer"
+		resultMap="fullGoodsResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_goods
+		WHERE id=#value#
+	</select>
+
+	<select id="queryIndexScoreGoods" parameterClass="map"
+		resultMap="fullGoodsResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_goods
+		WHERE TO_DAYS(NOW()) >= TO_DAYS(gmt_start)
+		<isNotEmpty property="isHome" prepend="and">
+			is_home = #isHome#
+		</isNotEmpty>
+		LIMIT 0,#max#
+	</select>
+
+	<select id="queryHotScoreGoods" parameterClass="map" resultMap="fullGoodsResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_goods
+		WHERE TO_DAYS(NOW()) >= TO_DAYS(gmt_start)
+		<isNotEmpty property="isHot" prepend="and">
+			is_hot = #isHot#
+		</isNotEmpty>
+		LIMIT 0,#max#
+	</select>
+
+	<select id="queryMostConversionGoods" parameterClass="java.lang.Integer"
+		resultMap="fullGoodsResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_goods
+		WHERE TO_DAYS(NOW()) >= TO_DAYS(gmt_start)
+		ORDER BY
+		num_conversion DESC
+		LIMIT 0,#max#
+	</select>
+
+	<select id="queryScoreGoodsByCategory" parameterClass="java.util.HashMap"
+		resultMap="fullGoodsResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_goods
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="category">
+				category IN ($category$)
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryScoreGoodsByCategoryCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM score_goods
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="category">
+				category IN ($category$)
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<insert id="insertGoods" parameterClass="scoreGoodsDo">
+		INSERT INTO score_goods
+		(
+		name,
+		category,
+		gmt_start,
+		gmt_end,
+		price_buy,
+		price_day,
+		score_buy,
+		score_day,
+		freight,
+		remark,
+		keywords,
+		detail_url,
+		is_hot,
+		is_home,
+		details,
+		show_picture,
+		num_conversion,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#name#,
+		#category#,
+		#gmtStart#,
+		#gmtEnd#,
+		#priceBuy#,
+		#priceDay#,
+		#scoreBuy#,
+		#scoreDay#,
+		#freight#,
+		#remark#,
+		#keywords#,
+		#detailUrl#,
+		#isHot#,
+		#isHome#,
+		#details#,
+		#showPicture#,
+		#numConversion#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateGoodsById" parameterClass="scoreGoodsDo">
+		UPDATE score_goods
+		SET
+		name = #name#,
+		category = #category#,
+		gmt_start = #gmtStart#,
+		gmt_end = #gmtEnd#,
+		price_buy = #priceBuy#,
+		price_day = #priceDay#,
+		score_buy = #scoreBuy#,
+		score_day = #scoreDay#,
+		freight = #freight#,
+		remark = #remark#,
+		keywords = #keywords#,
+		detail_url = #detailUrl#,
+		is_hot = #isHot#,
+		is_home = #isHome#,
+		details = #details#,
+		show_picture = #showPicture#,
+		num_conversion = #numConversion#,
+		gmt_modified = NOW()
+		WHERE id = #id#
+	</update>
+
+	<update id="updateNumConversion" parameterClass="java.lang.Integer">
+		UPDATE
+		score_goods
+		SET
+		num_conversion=num_conversion+1
+		WHERE id = #value#
+	</update>
+	
+	<delete id="deleteGoodsById" parameterClass="java.lang.Integer">
+		DELETE FROM score_goods 
+		WHERE id=#value#
+	</delete>
+
+</sqlMap>
+

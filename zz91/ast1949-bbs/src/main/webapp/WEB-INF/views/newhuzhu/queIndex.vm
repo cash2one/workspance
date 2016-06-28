@@ -1,0 +1,252 @@
+#set($headname="wenda")
+#set($layout="/layout/wendaLayout.vm")
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+<script type="text/javascript">
+	function que(){
+	   var loginL=jQuery("#loginTag").val();
+	   if(loginL==1){
+			var title = jQuery("#title").val();
+			title = encodeURI(title);
+			if(title&&title!=""){
+				jQuery.ajax({
+    				url:'#springUrl("/bbs/addPostBbs.htm?")'+"bbsPostCategoryId="+1+"&title="+title+"&content="+title+"&id="+0+"&fla="+3,
+					type:"post",
+					dataType:"json",
+					success:function(reg){
+						if(reg.mark==1){
+							alert("该问题已发布成功！");
+							window.location = "#springUrl('/myhuzhu/mywenda/posted.html')";
+						}
+					}
+				});
+			}else{
+				alert("请输入您的问题");
+			}
+		}else{
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				jQuery("#loginTag").val(1);
+				closeoverlay();
+			});
+       		 openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.huzhu}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+			 return false;
+		}	
+	}
+	function findAnswer(){
+		var key = jQuery("#title").val();
+		key = encodeURI(key);
+		var numb=1;
+		if(key&&key!=""){
+			window.location = "#springUrl('/search-')"+key+"-"+numb+".htm";
+		}else{
+			alert("请填写你要搜寻的答案关键字");
+		}
+	}
+</script>
+  <!--end hz-header-->
+  <div class="huzhu">
+  	<div class="huzhu-info">
+    	<form>
+        	<div class="fl">
+        		<input type="text" class="hz-search" name="hz-search" id="title"/>
+            </div>
+            <!--end fl-->
+            <div class="hz-search-box fr">
+				<input type="hidden" #if($!{sessionUser}) value="1" #else value="0" #end id="loginTag"/>
+            	<div class="hz-search-btn fl" onclick="que()">提问题</div>
+            	<div class="hz-search-btn fr" onclick="findAnswer()">找答案</div>
+            <div class="cb"></div>
+            </div>
+            <!--end fr-->
+        </form>
+    </div>
+    <!--end huzhu-info-->
+    <div class="huzhu2">
+  	  <div class="hz-left fl">
+    	<div class="mainblock">
+            <div class="mb-dh lt2">
+                <div class="d_tit fl">等待回答</div>
+                <div class="fr"><a href="#springUrl('/wenda/question/')" class="f12 blue" target="_blank">[全部]</a></div>
+            </div>
+            <!--end mb-dh-->
+            <div class="mb-list">
+            	<ul class="item8">
+					#cacheFragment("$!{address.fragment}/huzhu/waitAnswer.htm" "" "" "")
+					#foreach($!{wa} in $!{WaitAnswer})
+						<li>
+							<div class="i8-box fl"><a href="#springUrl('/detail/')$!{wa.id}.html" target="_blank" title="$!{wa.title}">&middot;$!{wa.title}</a></div>
+							<!--end i8-box fl-->
+							<div class="fr">$!{wa.replyCount}个回答</div>
+							<!--end fr-->
+							<div class="cb"></div>
+						</li>
+					#end
+					#end
+                </ul>
+            </div>
+            <!--end mb-list-->
+          </div>
+          <!--end mainblock-->
+         <div class="mainblock">
+            <div class="mb_box">
+            	<div class="mb_box_item fl">
+                	<div class="mb-dh lt3">
+                    	<div class="d_tit fl f16">热门回答</div>
+                        <!--end d_tit-->
+                        <div class="d-link fr"><a href="#springUrl('/wenda/remenanswers/')" class="f12 blue" target="_blank">[全部]</a></div>
+                        <!--end -->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mb-dh-->
+                    <div class="cb"></div>
+                    <div class="mb-list">
+                		<ul class="sq-item">
+							#cacheFragment("$!{address.fragment}/huzhu/hotQuestion.htm?categoryId=1" "" "" "")
+							#foreach($!{hq} in $!{HotQuestion})
+								<li><a href="#springUrl('/detail/')$!{hq.id}.html">&middot;$!{hq.title}</a></li>
+							#end
+							#end
+                    	</ul>
+                    </div>
+                    <!--end mb-list-->
+                </div>
+                <!--end mb_box_item fl-->
+                <div class="mb_box_item fr">
+                	<div class="mb-dh lt3 f15">
+                    	<div class="d_tit fl f16">最新问题</div>
+                        <!--end d_tit-->
+                        <div class="d-link fr"><a href="#springUrl('/wenda/zuixinwenti/')" class="f12 blue" target="_blank">[全部]</a></div>
+                        <!--end -->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mb-dh-->
+                    <div class="cb"></div>
+                    <div class="mb-list">
+                		<ul class="sq-item">
+							#cacheFragment("$!{address.fragment}/huzhu/newQuestion.htm" "" "" "")
+							#foreach($!{nq} in $!{NewQuestion})
+								<li><a href="#springUrl('/detail/')$!{nq.id}.html">&middot;$!{nq.title}</a></li>
+							#end
+							#end
+                    	</ul>
+                    </div>
+                    <!--end mb-list-->
+                </div>
+                <!--end mb_box_item fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb_box-->	
+            <div class="mb_box">
+            	<div class="mb_box_item fl">
+                	<div class="mb-dh lt4">
+                    	<div class="d_tit fl f16">热门关注</div>
+                        <!--end d_tit-->
+                        <div class="d-link fr"><a href="#springUrl('/wenda/remenguanzhu/')" class="f12 blue" target="_blank">[全部]</a></div>
+                        <!--end -->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mb-dh-->
+                    <div class="cb"></div>
+                    <div class="mb-list">
+                		<ul class="sq-item">
+							#cacheFragment("$!{address.fragment}/huzhu/hotNotices.htm" "" "" "")
+							#foreach($!{hn} in $!{hotNotice})
+								<li><a href="#springUrl('/detail/')$!{hn.id}.html">&middot;$!{hn.title}</a></li>
+							#end
+							#end
+                    	</ul>
+                    </div>
+                    <!--end mb-list-->
+                </div>
+                <!--end mb_box_item fl-->
+                <div class="mb_box_item fr">
+                	<div class="mb-dh lt4 f15">
+                    	<div class="d_tit fl f16">热门标签</div>
+                        <!--end d_tit-->
+##                        <div class="d-link fr"><a href="#" class="f12 blue" target="_blank">[全部]</a></div>
+                        <!--end -->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mb-dh-->
+                    <div class="cb"></div>
+                    <div class="mb-list">
+                		<ul class="wd-item">
+							#cacheFragment("$!{address.fragment}/huzhu/tags.htm?category=1&size=16" "" "" "")
+							#foreach($!{ht} in $!{tags})
+								<li><a href="#springUrl('/viewTags')-$!{ht.id}.htm" target="_blank" title="$!{ht.tagName}">#printTitle($!{ht.tagName} 4 "")</a></li>
+							#end
+							#end
+                    	</ul>
+                    </div>
+                    <!--end mb-list-->
+                </div>
+                <!--end mb_box_item fr-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb_box-->	
+        </div>
+       <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+    <div class="hz-right fr">
+		#if($!{sessionUser})
+        <div class="sublock">
+        	<div class="sub-dh gclear">
+            	<div class="sub-dh-tit f16 fl">#if($flag==0)我的关注 #else 大家都在关注 #end</div>
+                <!--end -->
+                <div class="sub-dh-more fr"><a href="#springUrl('/myhuzhu/guanzhu/lingyu.html')" target="_blank" class="blue">设置我的关注</a></div>
+                <!--end sub-dh-more-->
+                <div class="cb"></div>
+            </div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear">
+                <div class="sub-post-info">
+					<table class="post-tab" cellpadding="0" cellspacing="">
+					#foreach($li in $!{list})
+						<tr>
+							<td><a href="#springUrl('/detail/')$!{li.id}.html" title="&middot;#printTitle($!{li.title})" class="f14">&middot;#printTitle($!{li.title} 14 "...")</a></td>
+							<td class="tr f12 grey">$!date.format('yyyy-MM-dd',$!{li.gmtModified})</td>
+						</tr>
+					#end
+					</table>
+				</div>
+                <!--end sub-post-info-->
+            </div>
+           <!--end sub-post-->
+        </div>
+		#end
+        <!--end sublock-->
+        <div class="sublock">
+        	<div class="sub-dh gclear f16">最佳回答者</div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="post-item">
+					#cacheFragment("$!{address.fragment}/huzhu/bestAnswer.htm" "" "" "")
+					#foreach($!{ba} in $!{bestAnswer})
+						<li>
+							<div class="pi-info-img fl"><a href="#springUrl('/personIndex')$!{ba.companyId}.htm" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img0_head.jpg" /></a></div>
+							<!--end pi-info fl-->
+							<div class="pi-info-name fl"><a href="#springUrl('/personIndex')$!{ba.companyId}.htm" class="blue" target="_blank" title="$!{ba.account}">$!{ba.account}</a></div>
+							<!--end pi-info-name fl-->
+							<div class="pi-info-zan fl">&nbsp;<span>$!{ba.replyCount}个回答</span></div>
+							<div class="cb"></div>
+						</li>
+					#end
+					#end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+      </div>
+      <!--end hz-right-->
+      <div class="cb"></div>
+    </div>
+    <!--end huzhu2-->
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->
+</body>
+</html>

@@ -1,0 +1,60 @@
+<div class="te_tit_border">
+	<div class="te_tit_name">废料精确搜索</div>
+	<form method="post" action="?1" name="searchItemForm" id="searchItemForm" onsubmit="return false;">
+		<div style="color:#505050;">
+			<ul>
+				<li class="tetiemcity">
+					<select name="siposttime" id="siposttime" class="teiput90">
+						<option value="">发布时间</option>
+						<option value="1" >1天内</option>
+						<option value="3" >3天内</option>
+						<option value="7" >一周内</option>
+						<option value="30" >一个月内</option>
+						<option value="60" >两个月内</option>
+					</select>
+					&nbsp;&nbsp;&nbsp;
+					<select name="siprovince" id="siprovince" class="teiput90">
+						<option value="">省份</option>
+					</select>
+				</li>
+				<li class="tesosucp">产品：<input type="text" name="sikeywords" id="sikeywords" class="teiput165" />
+				</li>
+				<li style="text-align:center; height:50px;">
+					<input type="submit" value="搜一下" class="tesosuan" />
+				</li>
+			</ul>
+		</div>
+	</form>
+</div>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		
+		var areaSelector = new Asto.util.Selector({
+			url:"#springUrl('/category/areaChild.htm')",
+			selects:["#siprovince"]
+		});
+		
+		areaSelector.init({
+			rootCode:"10011000",
+			initCode:""
+		});
+		
+		jQuery("#searchItemForm").submit(function(){
+			if(jQuery("#sikeywords").val()==""){
+				alert("请填写搜索关键字!");
+				return false;
+			}
+			
+			zz91Search.products({
+                contextpath:"#springUrl('')",
+                target:"_blank",
+                searchOptions:{
+                    keywords:jQuery("#sikeywords").val(),
+					province:jQuery("#siprovince").val(),
+					posttime:jQuery("#siposttime").val()
+                }
+            });
+			return false;
+		});
+	});
+</script>

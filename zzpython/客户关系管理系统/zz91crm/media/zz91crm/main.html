@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+
+	<head>
+		<title>ZZ91再生网客户关系管理系统</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="assets/css/dpl-min.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/bui-min.css" rel="stylesheet" type="text/css" />
+		<link href="assets/css/main-min.css" rel="stylesheet" type="text/css" />
+	</head>
+
+	<body>
+
+		<div class="header">
+
+			<div class="dl-title">
+				<span class="dl-title-text">ZZ91再生网客户关系管理系统</span><br>
+			</div>
+
+			<div class="dl-log">欢迎您，<span class="dl-log-user">{{username}}({{position}})</span><a href="logout.html" title="退出系统" class="dl-log-quit">[退出]</a><a href="http://www.zz91.com" title="zz91再生网" target="_black" class="dl-log-quit">zz91再生网</a>
+			</div>
+		</div>
+		<div class="content">
+			<div class="dl-main-nav">
+				<div class="dl-inform">
+					<div class="dl-inform-title">贴心小秘书<s class="dl-inform-icon dl-up"></s></div>
+				</div>
+				<ul id="J_Nav" class="nav-list ks-clear">
+					<!--<li class="nav-item dl-selected"><div class="nav-item-inner nav-home">首页</div></li>
+        <li class="nav-item"><div class="nav-item-inner nav-order">表单页</div></li>
+        <li class="nav-item"><div class="nav-item-inner nav-inventory">搜索页</div></li>
+        <li class="nav-item"><div class="nav-item-inner nav-supplier">详情页</div></li>
+        <li class="nav-item"><div class="nav-item-inner nav-marketing">图表</div></li>-->
+					{%for topmenu in toplistall%}
+					<li class="nav-item">
+							<div class="nav-item-inner nav-supplier">{{topmenu.tlabel}}</div>
+					</li>
+					{%endfor%}
+				</ul>
+			</div>
+			<ul id="J_NavContent" class="dl-tab-conten">
+
+			</ul>
+		</div>
+		<script type="text/javascript" src="assets/js/jquery-1.8.1.min.js"></script>
+		<script type="text/javascript" src="./assets/js/bui.js"></script>
+		<script type="text/javascript" src="./assets/js/config.js"></script>
+
+		<script>
+			/*
+			BUI.use('common/main', function() {
+				var config = [{
+					id: 'staff',
+					menu: [{
+						text: '系统管理',
+						items: [{
+							id: 'user',
+							text: '员工列表',
+							href: 'userlist.html'
+						}, {
+							id: 'user_category',
+							text: '团队管理',
+							href: 'user_category.html'
+						}, {
+							id: 'auth',
+							text: '角色权限管理',
+							href: 'auth.html'
+						}, {
+							id: 'menu',
+							text: '菜单管理',
+							href: 'menu.html'
+						}, ]
+					}]
+				}];
+				new PageUtil.MainPage({
+					modulesConfig: config
+				});
+			});*/
+			
+			BUI.use('common/main', function() {
+				var config = [
+				{%for topmenu in toplistall %}
+				{
+					id: '{{topmenu.tid}}',
+					menu: [
+					       {%for firmenu in topmenu.firlistall%}
+							    {
+									text: '{{firmenu.flabel}}',
+									items: [
+									{%for secmenu in firmenu.seclistall%}
+									{
+										id: '{{secmenu.sec_id}}',text: '{{secmenu.slabel}}',href: '{{secmenu.link}}'
+									}, 
+									{%endfor%}
+									]
+								},
+							{%endfor%}
+					     ]
+				},
+				{%endfor%}
+				];
+				new PageUtil.MainPage({
+					modulesConfig: config
+				});
+			});
+			
+			
+		</script>
+		{{firmenulist}}
+	</body>
+
+</html>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="previouExhibitors">
+	<typeAlias alias="previouExhibitorsDo"
+		type="com.ast.ast1949.domain.exhibit.PreviouExhibitors" />
+	<resultMap class="previouExhibitorsDo" id="previouExhibitorsResult">
+		<result property="id" column="id" />
+		<result property="companyName" column="company_name" />
+		<result property="exhibitNum" column="exhibit_num" />
+		<result property="exhibitTime" column="exhibit_time" />
+		<result property="sort" column="sort" />
+		<result property="website" column="website" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_name,
+		exhibit_num,
+		exhibit_time,
+		website,
+		sort,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="previouExhibitorsDo">
+		INSERT INTO previou_exhibitors
+		(
+		company_name,
+		exhibit_num,
+		exhibit_time,
+		website,
+		sort,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyName#,
+		#exhibitNum#,
+		#exhibitTime#,
+		#website#,
+		#sort#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<sql id="dynamicBySearch">
+		<dynamic prepend="where">
+			<isNotEmpty property="previouExhibit.exhibitTime" prepend="and">
+				exhibit_time =#previouExhibit.exhibitTime#
+			</isNotEmpty>
+		</dynamic>
+		order by sort asc
+	</sql>
+	<select id="queryList" parameterClass="java.util.Map" resultMap="previouExhibitorsResult">
+		select
+		<include refid="defaultColumn" />
+		from previou_exhibitors
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryAllList" parameterClass="java.util.Map"
+		resultMap="previouExhibitorsResult">
+		select
+		<include refid="defaultColumn" />
+		from previou_exhibitors
+		<include refid="dynamicBySearch" />
+	</select>
+
+	<select id="queryListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from previou_exhibitors
+	</select>
+
+	<select id="queryPreviouExhibitorsById" parameterClass="java.lang.Integer"
+		resultMap="previouExhibitorsResult">
+		select
+		<include refid="defaultColumn" />
+		from previou_exhibitors
+		where id=#id#
+	</select>
+
+	<delete id="delPreviouExhibitors" parameterClass="java.lang.Integer">
+		delete from
+		previou_exhibitors where id=#id#
+	</delete>
+
+	<update id="updatePreviouExhibitors" parameterClass="previouExhibitorsDo">
+		update previou_exhibitors
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="exhibitTime">
+			exhibit_time =
+			#exhibitTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="exhibitNum">
+			exhibit_num = #exhibitNum#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="sort">
+			sort = #sort#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyName">
+			company_name =
+			#companyName#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="website">
+			website = #website#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+</sqlMap>

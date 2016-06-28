@@ -1,0 +1,135 @@
+ #set($layout="/layout/yuanliaoLayout.vm")
+    <div class="wrap">
+    	<div class="box_head g-br2">
+        	<div class="myrc_step fr">
+            	<ul>
+                	<li class="site-item g-ib on"><em class="num-top">1</em>&nbsp;选择产品类别&gt;</li>
+                    <li class="site-item g-ib"><em class="num-normal">2</em>&nbsp;填写详细信息&gt;</li>
+                    <li class="site-item g-ib"><em class="num-normal">3</em>&nbsp;信息发布成功</li>
+                </ul>
+            </div>
+        	<h4 class="box-title">发布原料供求信息</h4>
+        </div>
+        <!--end box_head-->
+        <div class="box_con clearfix">
+        	<div class="box_2_con clearfix">
+            	<div class="tag_mod">
+                	<div class="tm_blk_t clearfix">
+                    	<div class="order-menu clearfix">
+                        	<span tab-type="tag-nav" class="no-bl selected"><a target="_blank">搜索类别</a></span>
+                            <span tab-type="tag-nav"><a target="_blank">我的常用类别</a></span>
+                        </div>
+                        <!--end order-menu-->
+                    </div>
+                    <!--end tm_blk_t-->
+                    <div class="tm_blk_c">
+                    	<div class="tmk_block">
+                        	<div id="Js_item">
+                            	<form action="" method="get" onsubmit="return false;">
+                            		<div class="item_search">
+                                		<input type="text" id="kwd" name="kwd" class="field" />
+                                    	<input type="button" id="searchCode" value="搜索" class="btn" name="p"/>
+                                	</div>
+                                </form>    
+                                <!--end item_search-->
+								<form action="#springUrl('/myyuanliao/office_post2.htm')" method="post" id="form1">
+								<div class="panes">
+                                	<div class="pane" style="display: block;">
+                                		<div class="item_info2" id="selectbox">
+                                        	<select id="c1" name="c1" size="10" style="height:170px;">
+                        						<option disabled="disabled">---请选择主类别---</option>
+                                                <option value="20091000" selected="selected">塑料原料</option>
+                    						</select>
+                                			<select id="c2" name="c2" size="10" style="height:170px;">
+												<option>---二级分类---</option>
+                    						</select>
+                                            <select id="c3" name="c3" size="10" style="height:170px;">
+												<option disabled='disabled'>---三级分类---</option>
+                    						</select>
+                                		</div>
+                                		<!--end item_info2-->
+                            		</div>
+                                	<!--end pane-->
+                                	<div class="pane" style="display: none;">
+                                		<h3>以下为您经常使用的类别：</h3>
+                                		<div class="item_info" id="chooseboxx">
+                                			<ul>
+                                    			#foreach($cc in $!{mapc.keySet()})
+													<li>
+														<input type="radio" name="options" value="$cc"/><span>&nbsp;$!{mapc.get($cc)}</span>
+													</li>
+												#end
+                                    		</ul>
+                                		</div>
+                                		<!--end item_info-->
+                            		</div>
+                                	<!--end pane-->
+									<div class="pane" style="display: none;">
+                                		<h3>以下为您匹配到的类别：</h3>
+                                		<div class="item_info" id="choosebox">
+                                			<ul></ul>
+                                		</div>
+                                		<!--end item_info-->
+                                		<div class="item_text">未找到类别？<a class="green">返回重新手动选择</a></div>
+                                		<!--end item_text-->
+                            		</div>
+                            	</div>
+								<input type="hidden" name="yuanliaoTypeCode" id="typecode">
+								<input type="hidden" name="categoryYuanliaoCode" id="categorycode">
+								</form>
+                            </div>
+                            <!--end Js_item-->
+                        </div>
+                        <!--end tmk_block-->
+                    </div>
+                </div>
+                <!--end tag_mod-->
+            </div>
+            <!--end box_2_con-->            
+            <div class="alert alert-info" id="choosetext">
+              	<strong>您已选择：</strong>
+                <span></span>
+            </div>
+            <!--end alert-->
+            <div class="box_con_btn" id="conBtn">
+            	<a href="$!{hrefUrl}" class="btn02 btn01-primary" id="conBtn1" onclick="sub(id)">我要供应，请填写下一步</a>
+                <a href="$!{hrefUrl}" class="btn02 btn01-primary" id="conBtn2" onclick="sub(id)">我要求购，请填写下一步</a>
+            </div>
+            <!--end box_con_btn-->
+        </div>
+        <!--end box_con-->
+    </div>
+    <!--end wrap-->
+    <script>
+jQuery("#chooseboxx").click(function(){
+		var code = jQuery(this).find("input[name=options]:checked").val();
+		jQuery("#categorycode").val(code);
+		var label = jQuery(this).find("input[name=options]:checked + span").text();
+		jQuery("#choosetext").find("span").html(label);
+		$("#conBtn").find("a").removeClass("btn01-primary").addClass("btn02-primary");
+	});
+function sub(a){
+		var type = '';
+		if(a=="conBtn1"){
+			type = "10331000";
+		}else if(a=="conBtn2"){
+			type = "10331001";
+		}
+		jQuery("#typecode").val(type);
+		var ca = jQuery("#categorycode").val();
+		if(!ca){
+			jQuery(".item_info").find(".red").empty();
+			jQuery(".item_info2").find(".red").empty();
+			jQuery(".item_info").append("<span class=\"red\">必须选择第三级类别才能发布</span>");
+			jQuery(".item_info2").append("<span class=\"red\">必须选择第三级类别才能发布</span>");
+		}
+		var cls = jQuery("#conBtn").find("a").attr("class");
+		if(cls.indexOf("btn01-primary")!=-1){
+			return false;
+		}
+		jQuery("#form1").submit();
+}
+jQuery(function(){
+	myrc.select("Js_select");
+});
+</script>

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phone">
+	<typeAlias alias="phoneDO" type="com.ast.ast1949.domain.phone.Phone" />
+	<typeAlias alias="phoneDto" type="com.ast.ast1949.dto.phone.PhoneDto" />
+	<resultMap class="phoneDO" id="phoneResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="tel" column="tel" />
+		<result property="keywords" column="keywords" />
+		<result property="customerId" column="customer_id" />
+		<result property="accessToken" column="access_token" />
+		<result property="amount" column="amount" />
+		<result property="balance" column="balance" />
+		<result property="gmtOpen" column="gmt_open" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="frontTel" column="front_tel" />
+		<result property="phoneSort" column="phoneSort" />
+		<result property="mobile" column="mobile" />
+		<result property="expireFlag" column="expire_flag"/>
+		<result property="svrEnd" column="svr_end"/>
+		<result property="photoCover" column="photo_cover"/>
+	</resultMap>
+	
+	<resultMap class="phoneDto" id="phoneDtoResult">
+		<result property="phone" resultMap="phone.phoneResult"/>
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		account,
+		tel,
+		keywords,
+		customer_id,
+		access_token,
+		amount,
+		balance,
+		gmt_open,
+		gmt_created,
+		gmt_modified,
+		front_tel,
+		sort as phoneSort,
+		mobile,
+		expire_flag,
+		svr_end,
+		photo_cover
+	</sql>
+
+
+	<sql id="defaultAllColumn">
+		p.id,
+		p.company_id,
+		p.account,
+		p.tel,
+		p.keywords,
+		p.customer_id,
+		p.access_token,
+		p.amount,
+		p.balance,
+		p.gmt_open,
+		p.gmt_created,
+		p.gmt_modified,
+		p.front_tel,
+		p.sort as phoneSort,
+		p.mobile,
+		p.expire_flag,
+		p.svr_end,
+		photo_cover
+	</sql>
+	
+	
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="phoneResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone
+		where id = #id#
+	</select>
+
+	<insert id="insert" parameterClass="phoneDO">
+		INSERT INTO phone
+		(
+		company_id,
+		account,
+		tel,
+		front_tel,
+		keywords,
+		customer_id,
+		access_token,
+		amount,
+		balance,
+		gmt_open,
+		gmt_created,
+		gmt_modified,
+		sort,
+		mobile,
+		svr_end,
+		photo_cover)
+		VALUES
+		(
+		#companyId#,
+		#account#,
+		#tel#,
+		#frontTel#,
+		#keywords#,
+		#customerId#,
+		#accessToken#,
+		#amount#,
+		#balance#,
+		now(),
+		now(),
+		now(),
+		#phoneSort#,
+		#mobile#,
+		#svrEnd#,
+		#photoCover#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="phoneDO">
+		UPDATE phone
+		SET
+		gmt_modified = now()
+		<isNotNull prepend="," property="companyId">
+			company_id = #companyId#
+		</isNotNull>
+		<isNotEmpty prepend="," property="account">
+			account = #account#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tel">
+			tel = #tel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="frontTel">
+			front_tel = #frontTel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="keywords">
+			keywords = #keywords#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="balance">
+			balance = #balance#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="phoneSort">
+			sort = #phoneSort#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="mobile">
+			mobile = #mobile#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="expireFlag">
+			expire_flag = #expireFlag#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="svrEnd">
+			svr_end = #svrEnd#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="photoCover">
+			photo_cover = #photoCover#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateAmountAndBalance" parameterClass="java.util.Map">
+		UPDATE phone
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="amount">
+			amount = #amount#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="balance">
+			balance = #balance#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phone.tel">
+				tel = #phone.tel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneCostSvr.lave">
+				#phoneCostSvr.lave# > (select sum(pcs.lave) from phone_cost_service pcs where p.company_id = pcs.company_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="company.industryCode">
+				exists(select id from company c where company_id = c.id and c.industry_code = #company.industryCode#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyAccount.contact">
+				exists(select ca.id from company_account ca where p.company_id = ca.company_id and ca.contact =#companyAccount.contact#)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+
+	<sql id="whereSearchClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="csAccount">
+				exists (select 0 from crm_cs cs where cs.company_id=p.company_id and cs.cs_account=#csAccount#)
+			</isNotEmpty>
+			<isGreaterThan  prepend="and" compareValue="0.0" property="laveFrom">
+				<![CDATA[
+				#laveFrom# <= (select sum(pcs.lave) from phone_cost_service pcs where p.company_id = pcs.company_id)
+				]]>
+			</isGreaterThan>
+			<isGreaterThan  prepend="and" compareValue="0.0" property="laveTo">
+				<![CDATA[
+				(select sum(pcs.lave) from phone_cost_service pcs where p.company_id = pcs.company_id)<=#laveTo# 
+				]]> 
+			</isGreaterThan>
+			<isNotEmpty prepend="and" property="phone.tel">
+				p.tel = #phone.tel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="svrFroms">
+				p.svr_end>=#svrFroms#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="svrTos">
+				#svrTos#>=p.svr_end
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phone.account">
+				p.account = #phone.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyAccount.email">
+				exists (select ac.id from company_account ac where p.company_id = ac.company_id and ac.email = #companyAccount.email#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyAccount.mobile">
+				exists (select ac.id from company_account ac where p.company_id = ac.company_id and ac.mobile = #companyAccount.mobile#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="companyAccount.contact">
+				exists (select ac.id from company_account ac where p.company_id = ac.company_id and ac.contact = #companyAccount.contact#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneCostSvr.lave">
+				#phoneCostSvr.lave# > (select sum(pcs.lave) from phone_cost_service pcs where p.company_id = pcs.company_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="company.industryCode">
+				exists(select id from company where p.company_id = id and industry_code = #company.industryCode#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phone.monthFeeFrom">
+				(
+				IFNULL((
+					select sum(call_fee) 
+					from phone_log 
+					where 
+					start_time >=#phone.monthFrom# and #phone.monthTo# > start_time and p.company_id = company_id
+					and state = '1'
+					group by company_id
+				),0)
+				+
+				IFNULL((
+					SELECT sum(click_fee) 
+					FROM  `phone_call_click_fee` p1
+					where 
+					gmt_created >=#phone.monthFrom# and #phone.monthTo# > gmt_created and p.company_id = p1.company_id
+				),0)
+				+
+				IFNULL((
+					SELECT sum(click_fee) 
+					FROM  `phone_click_log` p2
+					where
+					gmt_created >=#phone.monthFrom# and #phone.monthTo# > gmt_created and p.company_id = p2.company_id
+				),0)
+				)
+				>= #phone.monthFeeFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phone.monthFeeTo">
+				#phone.monthFeeTo# >=
+				(
+				IFNULL((
+					select sum(call_fee) 
+					from phone_log 
+					where start_time >=#phone.monthFrom# and #phone.monthTo# > start_time and p.company_id = company_id 
+					and state = '1'
+					group by company_id
+				),0)
+				+
+				IFNULL((
+					SELECT sum(click_fee) 
+					FROM  `phone_call_click_fee` p1
+					where 
+					gmt_created >=#phone.monthFrom# and #phone.monthTo# > gmt_created and p.company_id = p1.company_id
+				),0)
+				+
+				IFNULL((
+					SELECT sum(click_fee) 
+					FROM  `phone_click_log` p2
+					where
+					gmt_created >=#phone.monthFrom# and #phone.monthTo# > gmt_created and p.company_id = p2.company_id
+				),0)
+				)
+			</isNotEmpty>
+			<isNotEmpty property="from">
+				<isEmpty prepend="and" property="to">
+					exists(select 0 from phone_cost_service  pcs where pcs.company_id=p.company_id and gmt_zero >=#from# )
+				</isEmpty>
+				<isNotEmpty prepend="and" property="to">
+					exists (select 0 from phone_cost_service  pcs where pcs.company_id=p.company_id and #to# >gmt_zero and gmt_zero >=#from# )
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEmpty property="from">
+				<isNotEmpty prepend="and" property="to">	
+					exists (select 0 from phone_cost_service  pcs where pcs.company_id=p.company_id and #to# >gmt_zero )
+				</isNotEmpty>
+			</isEmpty>
+			
+		</dynamic>
+	</sql>
+
+	<select id="queryList" parameterClass="java.util.Map" resultMap="phoneResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM phone
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAllList" parameterClass="java.util.Map" resultMap="phoneDtoResult">
+		SELECT
+		<include refid="defaultAllColumn" />
+		FROM phone p
+		<include refid="whereSearchClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryAllListl" parameterClass="java.util.Map" resultMap="phoneDtoResult">
+		SELECT
+		<include refid="defaultAllColumn" />
+		FROM phone p
+		<include refid="whereSearchClause" />
+		<include refid="common.pageOrderBy" />
+	</select>
+	<select id="queryAllBsList" parameterClass="java.util.Map" resultMap="phoneDtoResult">
+		SELECT
+		<include refid="defaultAllColumn" />
+		FROM phone p
+		<include refid="whereSearchClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryAllBsListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT
+		count(0)
+		FROM phone p
+		<include refid="whereSearchClause" />
+	</select>
+	<select id="queryListCountByAdmin" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone p 
+		<include refid="whereClause" />
+	</select>
+
+	<select id="queryListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone
+		<include refid="whereClause" />
+	</select>
+	
+	<select id="queryAllListCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM phone p 
+		<include refid="whereSearchClause" />
+	</select>
+	<select id="countByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(0)
+		from phone
+		where account = #account#
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from phone
+		where company_id = #companyId#
+	</select>
+	
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer" resultMap="phoneResult">
+		select 
+		<include refid="defaultColumn" />
+		FROM phone
+		where company_id = #companyId#
+		limit 1
+	</select>
+	
+	<select id="queryByTel" parameterClass="java.lang.String" resultMap="phoneResult">
+		select 
+		<include refid="defaultColumn" />
+		FROM phone
+		where tel = #tel#
+		limit 1
+	</select>
+	
+	<select id="queryAllPhoneAmount" resultClass="java.lang.String">
+		select
+		sum(amount)
+		from phone 
+	</select>
+	
+	<update id="updateSmsFee" parameterClass="java.util.Map" >
+		update phone set
+		gmt_modified = now(),
+		sms_fee = #smsFee#
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateClose" parameterClass="java.util.Map" >
+		update phone 
+		set gmt_modified = now(),
+		front_tel = #frontTel#,
+		expire_flag = 1
+		where company_id = #companyId#
+	</update>
+	
+	<update id="updateAmountByCompanyId" parameterClass="java.util.Map">
+		update phone set
+		gmt_modified =now(),
+		amount=#amount#
+		where company_id=#companyId#
+	</update>
+	<select id="queryCompanyIdByTel" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select company_id
+		from phone
+		where tel=#tel#
+	</select>
+	<select id="querytelByCompanyId"  parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select tel
+		from phone
+		where company_id=#companyId#
+	</select>
+	<select id="pagePhoneCallFee" parameterClass="java.util.Map" resultMap="phoneDtoResult">
+		select
+		<include refid="defaultAllColumn" />
+		from  (select sum(call_fee) as sumEveCallFee,company_id from phone_log where start_time>=#from# and #to#>end_time and state='1'
+		group by company_id ) As c 
+		right join phone p
+		on p.company_id=c.company_id
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+</sqlMap>

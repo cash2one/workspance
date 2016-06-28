@@ -1,0 +1,1 @@
+/usr/local/coreseek/bin/indexer --config /mnt/coreseek/etc/mysql1_index2.conf company_price --rotate

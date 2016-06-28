@@ -1,0 +1,32 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.2.10:3306/ep"
+                user="root" password="zj88friend" batchSize="-1"/>
+    <document  name="exhibit">
+    <!--query是获取全部数据的SQL
+        deltaImportQuery是获取增量数据时使用的SQL（动态增加时必须配置deltaQuery，两个配置->效果）
+        deltaQuery是获取pk的SQL
+        parentDeltaQuery是获取父Entity的pk的SQL
+        -->
+        <entity name="exhibit" pk="id" query="SELECT id,name,province_code,area_code,gmt_start,gmt_end,plate_category_code,industry_code,
+						   show_name,details,organizers,gmt_publish,gmt_sort,pause_status FROM exhibit" 
+            deltaQuery="select id from exhibit where gmt_modified > '${dataimporter.last_index_time}'"
+            deltaImportQuery="SELECT id,name,province_code,area_code,gmt_start,gmt_end,plate_category_code,industry_code,
+		show_name,details,organizers,gmt_publish,gmt_sort,pause_status FROM exhibit 
+                where gmt_modified > '${dataimporter.last_index_time}'">
+	    <field column="id" name="id" />
+	    <field column="name" name="name" />
+	    <field column="province_code" name="provinceCode" />
+	    <field column="area_code" name="areaCode" />
+	    <field column="gmt_start" name="gmtStart" />
+            <field column="gmt_end" name="gmtEnd" />
+            <field column="plate_category_code" name="plateCategoryCode" />
+	    <field column="industry_code" name="industryCode" />
+	    <field column="show_name" name="showName" />
+	    <field column="details" name="details" />
+	    <field column="organizers" name="organizers" />
+	    <field column="gmt_publish" name="gmtPublish"/>
+	    <field column="gmt_sort" name="gmtSort"/>
+            <field column="pause_status" name="pauseStatus" />
+        </entity>
+    </document>
+</dataConfig>

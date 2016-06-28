@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    
+    <sqlMap namespace="companyIndustryChain">
+    	<typeAlias alias="companyIndustryChain" type="comp.zz91.ep.domian.comp.CompanyIndustryChain"/>
+    	
+    	<insert id="insertIndustryChain" parameterClass="java.util.HashMap" >
+    		insert into company_industry_chain 
+    		(
+    			cid,
+    			chain_id,
+    			gmt_created,
+    			gmt_modified
+    		)values(
+    			#cid#,
+    			#industryChainId#,
+    			now(),
+    			now()
+    		)
+    		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+				select LAST_INSERT_ID()
+		</selectKey>
+    	</insert>
+    	
+    	<select id="queryIndustryChainIdByCid" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    		select chain_id from company_industry_chain where cid = #value# and del_status = 0
+    	</select>
+    	
+    	<select id="queryIdByCid" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    		select id  from company_industry_chain where cid = #value# 
+    	</select>
+    	
+    	<update id="updateCompanyIndustryChain" parameterClass="java.util.HashMap">
+    		update company_industry_chain set 
+    		<isNotEmpty property="chainId">
+    		chain_id = #chainId# ,
+    		</isNotEmpty>
+    		<isNotEmpty property="delStatus">
+    			del_status = #delStatus#
+    		</isNotEmpty>
+    		 where id = #id#
+    	</update>
+    </sqlMap>

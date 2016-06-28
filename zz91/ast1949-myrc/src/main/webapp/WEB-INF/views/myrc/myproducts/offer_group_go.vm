@@ -1,0 +1,230 @@
+#set( $layout = "/layout/blank.vm" )
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<title>信息编辑窗口</title> 
+<link href="$!{address.css}/global/comm_hack.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/myrc/zz91_myrc.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+#parse("/common/context.vm")
+<script language="javascript"> 
+function onsubstr(frm) {
+ 	if (frm.name.value=="") {
+        alert ("请输入系列名称");
+        frm.name.focus();
+        return false;
+    }
+    //提交
+	jQuery.ajax({
+    	url:Context.ROOT+"/myrc/myproducts/addProductsSeries.htm",
+    	type:"POST",
+    	cache:false,
+    	async:false,
+    	dataType:"json",
+    	data:jQuery("#"+frm.id).serialize(),
+    	success:function(msg){
+    		if(msg!=null&&msg.success==true){
+				window.location.reload();
+    		} else {
+    			alert(msg.data);
+    		}
+    	},
+    	error:function(e){
+    		alert(" 添加失败！");
+    	}
+    });
+
+	/**
+    if (frm.name.value=="")
+    {
+        alert ("请输入系列名！");
+        frm.name.focus();
+        return false;
+    }
+	alert('111');
+    frm.submit();
+	window.location.reload();
+	*/
+}
+
+function modgroup(id)
+{
+    var obj=document.getElementById("mod"+id);
+    obj.style.display="";
+}
+
+function modgroupno(id)
+{
+	var obj=document.getElementById("mod"+id);
+	obj.style.display="none";
+}
+
+function editseries(id){
+	var name = jQuery('#modgoupname'+id).val();
+	if(name.length<0||name==""){
+	  	alert ("请输入系列名！");
+        jQuery('#modgoupname'+id).focus();
+        return false;
+	}
+	jQuery.ajax({
+		url:Context.ROOT+"/myrc/myproducts/editProductsSeriesName.htm",
+		//data:jQuery("#form1").serialize(),
+		type:"POST",
+		data:{"id":id,"name":name},
+		dataType:"json",
+		cache:false,
+		success:function(response){
+			if(response.success){
+        		jQuery('#mod'+id).css('display','none');
+    			jQuery('#seriesname'+id).find("span").html(name);
+			}
+		}
+	});
+}
+
+function delseries(id){
+	name=jQuery('#seriesname'+id).find("span").text();
+	if(confirm('确实要删除('+name+')吗？')){
+		jQuery.ajax({
+			url:"#springUrl('/myproducts/deleteProductsSeriesJson.htm')",
+			data:{id:id},
+			dataType:"json",
+			cache:false,
+			success:function(response){
+				if(response.success){
+    				jQuery('#'+id).remove();
+    				jQuery('#mod'+id).remove();
+				}
+			}
+		});
+	}
+}
+
+function onselectchek(pdtid)
+{
+    var objtr=document.getElementById(pdtid);
+	objtr.style.background = "#D1FAB4";
+    var objname=document.getElementsByName("checkcom");
+    for(var i=0;i<objname.length;i++)
+	{
+		if(objname[i].checked==false)
+		{
+			var objtrp=objname[i].id.substr(5);
+			document.getElementById(objtrp).style.background = "#ffffff";
+		}
+	}
+	document.getElementById("groupid").value=pdtid;
+}
+
+function onselectpdt(pdtid)
+{
+    var obj=document.getElementById("check"+pdtid);
+    var objtr=document.getElementById(pdtid);
+    if (obj.checked==true)
+    {
+        obj.checked=false;
+        objtr.style.background = "#ffffff";
+    }else{
+    obj.checked=true;
+    objtr.style.background = "#D1FAB4";
+}
+    var objname=document.getElementsByName("checkcom");
+    for(var i=0;i<objname.length;i++)
+	{
+		if(objname[i].checked==false)
+		{
+			var objtrp=objname[i].id.substr(5);
+			document.getElementById(objtrp).style.background = "#ffffff";
+		}
+	}
+	document.getElementById("groupid").value=pdtid
+}
+function groupcom(frm)
+{
+	var psid = document.getElementById("groupid").value;
+	var pid = document.getElementById("ids").value;
+	jQuery.ajax({
+			url:"#springUrl('/myproducts/editProductsSeriesContactsStatus.htm')",
+			data:{ids:pid,productsSeriesId:psid},
+			dataType:"json",
+			cache:false,
+			success:function(response){
+				if(response.success){
+					alert("信息归入成功！");
+					parent.groupclose();
+				}else{
+					alert("信息归入失败！");
+				}
+			}
+		});
+}
+jQuery(document).ready(function(){
+	$(".editSortsList").find(".editSortsListA").mouseover(function(){
+		$(this).css({"background-color":"#EFF6EF"})
+	});
+	$(".editSortsList").find(".editSortsListA").mouseout(function(){
+		$(this).css({"background-color":"#FFF"})
+	});
+});
+</script> 
+</head> 
+ 
+<body> 
+<form id="form1" name="form1">
+<div class="editAddSorts">
+    <div class="editItemsTit">
+		<label for="name">系列名:</label>
+	</div>
+	<div class="editItemsFill">
+        <input name="name" type="text" class="editSortsName" id="name"/>
+		<input name="seriesOrder" type="hidden" id="seriesOrder" value="1"/>
+		<input name="ids" type="hidden" id="ids" value="$!{ids}"/>
+        <input name="Submit" type="button" class="buttonMinGray" value="添加" onclick="onsubstr(this.form)" /> 
+	</div>
+    <div style="clear:both"></div>
+</div>
+</form>
+<div style="clear:both"></div>
+<div class="editSortsList">
+	<ul>
+	#foreach($seriesList in $seriesList)
+		#set( $sl = "check$!{seriesList.id}")
+		#set( $sn = "seriesname$!{seriesList.id}")
+		<li class="editSortsListA">
+			<span class="editSortsListSelect">
+				<input type="radio" id="$sl" name="checkcom" value="$!{seriesList.id}" onclick="onselectchek($!{seriesList.id})"/>
+			</span> 
+			<span id="$sn" class="editSortsListTit">
+    			$!{seriesList.name}
+			</span>
+			<span class="editSortsListMod">
+				<a href="#kang" onclick="modgroup($!{seriesList.id})" >修改</a>
+			</span> 
+			<span class="editSortsListDel">
+				<a href="javascript:void(0)" onclick="return delseries($!{seriesList.id})" style="cursor:pointer">删除</a>
+          ##<a href="?action=del&amp;id=$!{seriesList.id}&amp;cbb=482426" onclick="return confirm('确实要删除吗？')">删除</a>
+			</span>
+		</li>
+		<li style="display:none" id="mod$!{seriesList.id}" class="editSortsListB"> 
+            <label for="modgoupname$!{seriesList.id}">新系列名</label>
+			<input name="modgoupname$!{seriesList.id}" type="text" class="editSortsName" id="modgoupname$!{seriesList.id}" value="$!{seriesList.name}" /> 
+			<input name="seriesId$!{seriesList.id}" type="hidden" id="seriesId$!{seriesList.id}" value="$!{seriesList.id}" /> 
+			<input name="Submit3" type="button" class="buttonMinGray" value="确定" onclick="editseries($!{seriesList.id})"/> 
+            <input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno($!{seriesList.id})" />
+		</li> 
+	#end
+    <div style="clear:both"></div>
+	</ul> 
+</div>
+
+<div class="editSub">
+	<input name="groupid" type="hidden" id="groupid" value="0" /> 
+	<input name="Submit5" type="button" class="buttonMinGray" value="确定归入" onclick="groupcom(this.form)"/>
+	<input name="cbb" type="hidden" id="cbb" value="482426" /> 
+</div>
+
+#parse("/common/import.vm")
+</body>
+</html>
+<script>

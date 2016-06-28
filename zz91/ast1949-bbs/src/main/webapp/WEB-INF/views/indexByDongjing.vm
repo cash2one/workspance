@@ -1,0 +1,1327 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{pageTitle}</title>
+<meta name="keywords" content="$!{pageKeywords}" />
+<meta name="description" content="$!{pageDescription}" />
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="$!{address.img}/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="$!{address.img}/zz91/huzhu/js/huzhu.js"></script>
+<script src="$!{address.img}/zz91/tradedetails/js/Png.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="huzhu">
+	#parse("/common/head_search.vm")
+    <div class="mainblock1">
+    	<div class="m1-left">
+        	<div class="m1-banner">
+            	<div class="m1-banner-img">
+                	<ul id="banner_img">
+                    	<li><script type="text/javascript" src="http://gg.zz91.com/show?p=72&amp;keywords=1"></script></li>
+                        <li><script type="text/javascript" src="http://gg.zz91.com/show?p=72&amp;keywords=2"></script></li>
+                        <li><script type="text/javascript" src="http://gg.zz91.com/show?p=72&amp;keywords=3"></script></li>
+                        <li><script type="text/javascript" src="http://gg.zz91.com/show?p=72&amp;keywords=4"></script></li>
+                        <li><script type="text/javascript" src="http://gg.zz91.com/show?p=72&amp;keywords=5"></script></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m1-banner-img-->
+                <div class="m1-banner-button" id="banner_button">
+                    <ul>
+                        <li style="background:#fe6700;color:#fff">1</li>
+                        <li>2</li>
+                        <li>3</li>
+                        <li>4</li>
+                        <li>5</li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m1-banner-button-->
+            </div>
+            <!--end m1-banner-->
+            <div class="m1-hot">
+            	<div class="m1-hot-title">
+                	<div class="m1-hot-div" id="hot1">
+                    	24小时热帖
+                    </div>
+                    <div class="m1-hot-div" id="hot2">
+                    	24小时热点问题
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-hot-title-->
+                <div class="m1-hot-content">
+                	<ul id="hot_content1">
+						#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=10&1s" "" "" "")
+							#foreach($postlist in $!{postDailylist})
+							#if(4>$velocityCount)
+								<li class="m1-hot-icon${velocityCount}"><a href="#springUrl('/viewReply')$!{postlist.id}.htm" target="_blank" title="$!{postlist.title}">$!{postlist.title}</a></li>
+							#else
+								 <li class="m1-hot-icon0"><a href="#springUrl('/viewReply')$!{postlist.id}.htm" target="_blank" title="$!{postlist.title}">$!{postlist.title}</a></li>
+							#end
+							#end	
+						#end
+                    </ul>
+                    <ul id="hot_content2">
+						##修改了size的大小，由原来的6变成了10
+						#cacheFragment("$!{address.fragment}/huzhu/hotAnswer.htm?size=10&categoryId=11&sddst" "" "" "")
+							#foreach($bbspost in $!{postDailylist})
+								#if(4>$!{velocityCount})
+									<li class="m1-hot-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.post.id}.htm" target="_blank" title="$!{bbspost.post.title}">$!{bbspost.post.title}</a></li>
+								#else
+									<li class="m1-hot-icon0"><a href="#springUrl('/viewReply')$!{bbspost.post.id}.htm" target="_blank" title="$!{bbspost.post.title}">$!{bbspost.post.title}</a></li>	
+								#end
+							#end	
+						#end
+                    </ul>
+                </div>
+                <!--end m1-hot-content-->
+            </div>
+            <!--end m1-hot-->
+            
+        </div>
+        <div class="m1-center">
+        	<div class="m1-center-title">
+            	<div class="m1-center-news">
+                    <span id="hotTipTit">今日头条</span>
+                </div>
+                <div class="m1-center-yesterdayNews">
+                	<span id="hotTipToday" onclick="showHot(1)">昨日头条»</span>
+					<span id="hotTipYesterday" onclick="showHot(2)" style="display:none">今日头条»</span>
+                </div>
+                <!--end m1-center-yesterday-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-center-title-->
+			
+            <div class="m1-center-content">
+				<!-- today hot news-->
+            	<div class="m1-news" id="hotContentToday">
+				 #foreach($plist3 in $!{postByType3})
+					#if(2>=$velocityCount)
+                	<div class="m1-news-div">
+                    	<div class="m1-news-title">
+                        	<a href="#springUrl('/viewReply')$!{plist3.id}.htm" target="_blank">$!{plist3.title}</a>
+                        </div>
+                        <!--end m1-news-title-->
+                        <div class="m1-news-text">
+                        	#printTitle($!{plist3.content} 95 "")<a href="#springUrl('/viewReply')$!{plist3.id}.htm" target="_blank">>>点击进入</a>
+                        </div>
+                        <!--end m1-news-text-->
+                    </div>
+                    <!--m1-news-div-->
+					#end
+				#end	
+                </div>
+                <!--end m1-news-->
+				<!-- end today hot news-->
+				
+				<!-- yesterday hot news-->
+            	<div class="m1-news" id="hotContentYesterday" style="display:none">
+				#foreach($plist2 in $!{postByType3})
+				   #if($velocityCount>2)	
+                	<div class="m1-news-div">
+                    	<div class="m1-news-title">
+                        	<a href="#springUrl('/viewReply')$!{plist2.id}.htm" target="_blank">$!{plist2.title}</a>
+                        </div>
+                        <!--end m1-news-title-->
+                        <div class="m1-news-text">
+							#printTitle($!{plist2.content} 95 "")<a href="#springUrl('/viewReply')$!{plist2.id}.htm" target="_blank">>>点击进入</a>
+                        </div>
+                        <!--end m1-news-text-->
+                    </div>
+                    <!--m1-news-div-->
+					#end
+				#end
+                </div>
+                <!--end m1-news-->
+				<!-- end yesterday hot news-->
+                <div class="m1-info">
+					<div class="m1-info-content">
+						#cacheFragment("$!{address.fragment}/huzhu/newestPost.htm?size=4&categoryId=11&ssd1" "" "" "")
+							#foreach($!{bbspost} in $!{newsList})
+								#if(2>$velocityCount)
+									<div class="m1-info-title">
+										<a href="#springUrl('viewReply')$!{bbspost.id}.htm" target="_blank">#printTitle($!{bbspost.title} 20 "")</a>
+									</div>
+								#end
+								<!--end m1-info-title-->	
+								#if($velocityCount>=2)
+									<div class="m1-info-box">
+										<div class="fl">
+											<a href="#springUrl('/bbsCategory')$!{bbspost.bbsPostCategoryId}.htm" class="orange">[$!CategoryMap.get($!{bbspost.bbsPostCategoryId})]</a>
+										</div>
+										<div class="m1-info-text fl">
+										    ##删除了title边上的图
+											<div class="m1-info-left"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+											<div class="cb"></div>
+										</div>
+										<div class="m1-info-name fr">
+											#if($!{bbspost.companyId} && $!{bbspost.companyId}==0)
+												互助管理员
+											#else
+												$!{bbspost.accountName}
+											#end
+										</div>
+										<!--end m1-info-name-->
+										<div class="cb"></div>
+									</div>
+								#end
+							#end
+						#end
+						<!--end m1-info-box-->
+					</div>
+					<!--end m1-info-content-->
+				</div>
+				<!--end m1-info-->
+				<div class="m1-info">
+                    <div class="m1-info-content">
+						#cacheFragment("$!{address.fragment}/huzhu/newestPost.htm?size=4&dd11" "" "" "")
+							#foreach($!{bbspost} in $!{newsList})
+							#if(2>$velocityCount)	
+        					<div class="m1-info-title">
+                            	<a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">#printTitle($!{bbspost.title} 20 "")</a>
+                            </div>
+    						#end
+							<!--end m1-info-title-->
+							#if($velocityCount>=2)
+                        	<div class="m1-info-box">
+                            	<div class="orange fl">
+                                	<a href="#springUrl('/bbsCategory')$!{bbspost.bbsPostCategoryId}.htm" class="orange">[$!CategoryMap.get($!{bbspost.bbsPostCategoryId})]</a>
+                                </div>
+                                <div class="m1-info-text fl">
+                                        ##删除了title边上的图
+                                    	<div class="m1-info-left"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+                                        <div class="cb"></div>
+                                </div>
+                                <div class="m1-info-name fr">
+									#if($!{bbspost.companyId} && $!{bbspost.companyId}==0)
+											互助管理员
+									#else
+									    $!{bbspost.accountName}
+									#end	
+                                </div>
+                                <!--end m1-info-name-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end m1-info-box-->
+							#end
+							#end
+						#end
+                        <!--end m1-info-box-->
+                        
+                    </div>
+                    <!--end m1-info-content-->
+                </div>
+                <!--end m1-info-->
+            </div>
+            <!--end m1-center-content-->
+        </div>
+        <div class="m1-right">
+			#if($!{sessionUser})
+        	<div class="m1-loginIn">
+            	<div class="m1-loginIn-head">
+                	<div class="m1-head-img">
+					#if($!{bbsUserProfilerDO.picturePath})
+                        <img src="$!{address.thumb}$!{address.resource}/$!{bbsUserProfilerDO.picturePath}&width=60"/>
+                    #else
+                        <img src="$!{address.img}/zz91/huzhu/images/no_head2.jpg" />
+                    #end						
+                    	
+						
+                    </div>
+                    <div class="m1-head-box">
+                    	<div class="m1-head-text">
+							#if($!{bbsUserProfilerDO.nickname}) 
+								$!{bbsUserProfilerDO.nickname}
+							#else
+								$!{bbsUserProfilerDO.account}
+							#end
+							&nbsp;<a href="#springUrl('/logout.htm?')">[退出]</a>
+                        </div>
+                        <!--end m1-head-text-->
+						#if($!{bbsSingn.signName} && $!{bbsSingn.signName}!="")
+							<div class="m1-head-signature">
+								$!{bbsSingn.signName}
+							</div>
+                        <!--end m1-head-signature-->
+						#end	
+                    </div>
+                    <!--end m1-head-box-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-loginIn-head-->
+                <div class="m1-loginIn-itemBox">
+                	<div class="m1-itemBox-block">
+                    	<div class="m1-itemBox-num">
+                        	$!{countPostedQA}
+                        </div>
+                        <!--end m1-itemBox-num-->
+						<div class="m1-itemBox-text">
+                        	<a href="#springUrl('/myhuzhu/list_qa.htm')">我的提问</a>
+                        </div>
+                        <!--end m1-itemBox-text-->
+                    </div>
+                    <div class="m1-itemBox-line"></div>
+                    <div class="m1-itemBox-block">
+                    	<div class="m1-itemBox-num">
+                        	$!{countReplyQA}
+                        </div>
+                        <!--end m1-itemBox-num-->
+						<div class="m1-itemBox-text">
+                        	<a href="#springUrl('/myhuzhu/list_qa.htm?type=2')">我的回答</a>
+                        </div>
+                        <!--end m1-itemBox-text-->
+                    </div>
+                </div>
+                <!--end m1-loginIn-itemBox-->
+                <div class="m1-loginIn-itemBox">
+                	<div class="m1-itemBox-block">
+                    	<div class="m1-itemBox-num">
+                        	$!{countPosted}
+                        </div>
+                        <!--end m1-itemBox-num-->
+						<div class="m1-itemBox-text">
+                        	<a href="#springUrl('/myposted.htm')">我的发贴</a>
+                        </div>
+                        <!--end m1-itemBox-text-->
+                    </div>
+                    <div class="m1-itemBox-line"></div>
+                    <div class="m1-itemBox-block">
+                    	<div class="m1-itemBox-num">
+                        	$!{countReply}
+                        </div>
+                        <!--end m1-itemBox-num-->
+						<div class="m1-itemBox-text">
+                        	<a href="#springUrl('/myreply.htm')">我的回帖</a>
+                        </div>
+                        <!--end m1-itemBox-text-->
+                    </div>
+                </div>
+                <!--end m1-loginIn-itemBox-->
+                <div class="m1-loginIn-info">
+                	美好的一天，从ZZ91互助社区开始
+                </div>
+                <!--end m1-loginIn-info-->
+            </div>
+            <!--end m1-loginIn-->
+			#else
+				<div class="m1-question">
+				
+					<div class="m1-question-box">
+						<div class="m1-question-text">
+							解决 
+						</div>
+						#foreach($l in [1..8])
+							<div class="m1-question-item">
+								<ul id="a${l}">
+									<li>0</li>
+									<li>1</li>
+									<li>2</li>
+									<li>3</li>
+									<li>4</li>
+									<li>5</li>
+									<li>6</li>
+									<li>7</li>
+									<li>8</li>
+									<li>9</li>
+								</ul>
+							</div>
+						#end
+						<div class="m1-question-text">
+							问题
+						</div>
+						<div class="cb"></div>
+						<div class="mt8">
+							<div class="m1-question-text">
+								发布
+							</div>
+							#foreach($l in [1..8])
+								<div class="m1-question-item">
+									<ul id="b$!{l}">
+										<li>0</li>
+										<li>1</li>
+										<li>2</li>
+										<li>3</li>
+										<li>4</li>
+										<li>5</li>
+										<li>6</li>
+										<li>7</li>
+										<li>8</li>
+										<li>9</li>
+									</ul>
+								</div>
+							#end	
+                    <div class="m1-question-text">
+                    	帖子
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                </div>
+                <!--m1-question-box-->
+            	<div class="m1-question-button">
+                	<div class="m1-question-ok fl">
+                    	<a href="#springUrl('/postReply_c11.htm')" target="_blank">我要提问</a>
+                    </div>
+                    <div class="m1-question-ok fr">
+                    	<a href="#springUrl('/postReply_c1.htm')" target="_blank">我要发贴</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m1-question-button-->
+            </div>
+            <!--end m1-question-->
+			#end
+            <div class="m1-announcement">
+            	<div class="m1-announcement-title">
+                	论坛公告
+                </div>
+                <!--end m1-announcement-title-->
+				
+                <div class="m1-announcement-content">
+				#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10041006&size=4&f", "", "", "")
+    				#foreach($index in $!{list})
+    					#if($!{velocityCount}==1)
+    						#if($!{index.pic} && $!{index.pic}!="")
+        					<div class="m1-announcement-img">
+                            	<a href="$!{index.link}" target="_blank">
+    								<img src="$!{address.thumb}/$!{address.resource}/$!{index.pic}&width=185"  width="185px" height="112px"/>
+    							</a>
+                            </div>
+    						#end
+                            <!--end m1-announcement-img-->
+                            <div class="m1-announcement-text">
+								<a href="$!{index.link}" title="$!{index.title}" style="$!{index.style}" target="_blank">$!{index.title}</a>
+                            </div>
+        					<!--end m1-announcement-text-->	
+    					#else
+    						<div class="m1-announcement-box">
+                        	<a href="$!{index.link}" target="_blank">$!{index.title}</a>
+                        </div>
+    					#end
+					#end
+				#end
+                </div>
+                <!--end m1-announcement-content-->
+            </div>
+            <!--end m1-announcement-->
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end mainblock1-->
+    
+    <div class="mainblock2">
+    	<div class="m2-left">
+			
+			#cacheFragment("$!{address.fragment}/huzhu/categoryIndexList.htm" "" "" "")
+			
+            	<div class="m2-item">
+                	<div class="m2-item-title">
+                    	<div class="m2-item-floor" id="1F">
+                        	1F 废料问答
+                        </div>
+                        <div class="m2-item-more">
+                        	<a href="#springUrl('/postReply_c11.htm')" target="_blank">我要提问</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="#springUrl('/bbsCategory11.htm')" class="blue">最新问答</a></div>
+                                <div class="fr f12"><a href="#springUrl('/bbsCategory11.htm')" class="blue">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($!{bbspost} in $!{WDLList})
+                                        <li>
+                                            <div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+                                            <div class="m2-box-num">$!{bbspost.visitedCount}/$!{bbspost.replyCount}</div>
+                                            <div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.postTime})</div>
+                                            <div class="cb"></div>
+                                        </li>
+    								#end
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="#springUrl('/bbsCategory11--c3.htm')" class="orange">最热问答</a></div>
+                                <div class="fr f12"><a href="#springUrl('/bbsCategory11--c3.htm')" class="orange">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($bbspost in $!{WDRList})
+                                    <li>
+                                        <div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.post.id}.htm" target="_blank">$!{bbspost.post.title}</a></div>
+                                        <div class="m2-box-num" title="$!{bbspost.visitedCount}/$!{bbspost.post.replyCount}">$!{bbspost.post.visitedCount}/$!{bbspost.post.replyCount}</div>
+                                        <div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.post.postTime})</div>
+                                        <div class="cb"></div>
+                                    </li>
+    								#end
+    							</ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+                
+				<div class="m2-item">
+                	<div class="m2-item-title">
+                    	<div class="m2-item-floor" id="5F">
+                        	2F 废料电商
+                        </div>
+                        <div class="m2-item-more">
+                        	<a href="#springUrl('/postReply_c1.htm')" target="_blank">我要发帖</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="" target="_blank">最新帖子</a></div>
+                                <div class="fr f12"><a href="" class="blue" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="" class="orange" target="_blank">最热帖子</a></div>
+                                <div class="fr f12"><a href="" class="orange" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+				
+				
+				<div class="m2-item">
+                	<div class="m2-item-title">
+                    	<div class="m2-item-floor" id="5F">
+                        	3F 废料动态
+                        </div>
+                        <div class="m2-item-more">
+                        	<a href="#springUrl('/postReply_c1.htm')" target="_blank">我要发帖</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="#springUrl('/bbsCategory1.htm')" class="blue" target="_blank">最新帖子</a></div>
+                                <div class="fr f12"><a href="#springUrl('/bbsCategory1.htm')" class="blue" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($!{bbspost} in $!{DTLList})
+    									<li>
+    										<div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+    										<div class="m2-box-num" title="$!{bbspost.visitedCount}/$!{bbspost.replyCount}">$!{bbspost.visitedCount}/$!{bbspost.replyCount}</div>
+    										<div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.postTime})</div>
+    										<div class="cb"></div>
+    									</li>
+    								#end 
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="#springUrl('/bbsCategory--a1--bvisited_count--s0--l30.htm')" class="orange" target="_blank">最热帖子</a></div>
+                                <div class="fr f12"><a href="#springUrl('/bbsCategory--a1--bvisited_count--s0--l30.htm')" class="orange" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($bbspost in $!{DTRList})
+                                    <li>
+                                        <div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+                                        <div class="m2-box-num" title="$!{bbspost.visitedCount}/$!{bbspost.replyCount}">$!{bbspost.visitedCount}/$!{bbspost.replyCount}</div>
+                                        <div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.postTime})</div>
+                                        <div class="cb"></div>
+                                    </li>
+    								#end
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+                
+				
+				<div class="m2-item">
+                	<div class="m2-item-title" id="3F">
+                    	<div class="m2-item-floor">
+                        	4F AQSIQ
+                        </div>
+                        <div class="m2-item-more">
+                        	##<a href="" target="_blank">最新研究</a>
+							<a href="" target="_blank">我要发帖</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14">
+								<a href="#" class="blue" target="_blank">最新研究</a></div>
+                                <div class="fr f12">
+								<a href="#" class="blue" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                               <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+								<div class="fl f14">
+								<a href="#" class="orange" target="_blank">最热研究</a></div>
+								<div class="fr f12">
+								<a href="#" class="orange" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                               <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+    			
+    			
+				<div class="m2-item">
+                	<div class="m2-item-title">
+                    	<div class="m2-item-floor" id="5F">
+                        	5F 骗子曝光台
+                        </div>
+                        <div class="m2-item-more">
+                        	<a href="#" target="_blank">我要发帖</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="" target="_blank">最新帖子</a></div>
+                                <div class="fr f12"><a href="" class="blue" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="" class="orange" target="_blank">最热帖子</a></div>
+                                <div class="fr f12"><a href="" class="orange" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    									<li>
+    										<div class="m2-box-info m2-icon1">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon2">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon3">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon4">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon5">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+										<li>
+    										<div class="m2-box-info m2-icon6">
+											<a href="" target="_blank">五一行程秀</a></div>
+    										<div class="m2-box-num" title="">222/1</div>
+    										<div class="m2-box-date">2014-05-14</div>
+    										<div class="cb"></div>
+    									</li>
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+				
+                <div class="m2-item">
+                	<div class="m2-item-title">
+                    	<div class="m2-item-floor" id="2F">
+                        	6F 江湖风云
+                        </div>
+                        <div class="m2-item-more">
+                        	<a href="#springUrl('/postReply_c3.htm')" target="_blank">我要发帖</a>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-title-->
+                    <div class="m2-item-content">
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14">
+								<a href="#springUrl('/bbsCategory3.htm')" class="blue" target="_blank">最新帖子</a></div>
+                                <div class="fr f12">
+								<a href="#springUrl('/bbsCategory3.htm')" class="blue" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($!{bbspost} in $!{FYLList})
+    									<li>
+    										<div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+    										<div class="m2-box-num" title="$!{bbspost.visitedCount}/$!{bbspost.replyCount}">$!{bbspost.visitedCount}/$!{bbspost.replyCount}</div>
+    										<div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.postTime})</div>
+    										<div class="cb"></div>
+    									</li>
+    								#end
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="m2-box">
+                            <div class="m2-box-title">
+                                <div class="fl f14"><a href="#springUrl('/bbsCategory--a3--bvisited_count--s0--l30.htm')" class="orange" target="_blank">最热帖子</a></div>
+                                <div class="fr f12"><a href="#springUrl('/bbsCategory--a3--bvisited_count--s0--l30.htm')" class="orange" target="_blank">更多>></a></div>
+                            </div>
+                            <!--end m2-box-title-->
+                            <div class="m2-box-content">
+                                <ul>
+    								#foreach($bbspost in $!{FYRList})
+                                    <li>
+                                        <div class="m2-box-info m2-icon$!{velocityCount}"><a href="#springUrl('/viewReply')$!{bbspost.id}.htm" target="_blank">$!{bbspost.title}</a></div>
+                                        <div class="m2-box-num" title="$!{bbspost.visitedCount}/$!{bbspost.replyCount}">$!{bbspost.visitedCount}/$!{bbspost.replyCount}</div>
+                                        <div class="m2-box-date">#printFragmentDate("yyyy-MM-dd",$!{bbspost.postTime})</div>
+                                        <div class="cb"></div>
+                                    </li>
+    								#end
+                                </ul>
+                            </div>
+                            <!--end m2-box-content-->
+                        </div>
+                        <!--end m2-box-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m2-item-content-->
+                </div>
+                <!--end m2-item-->
+            #end
+            <div class="m2-item">
+            	<div class="m2-item-title">
+                	<div class="m2-item-floor" id="6F">
+                    	7F 社区管理
+                    </div>
+                    <div class="m2-item-more">
+                    	<a href="#springUrl('/postReply_c4.htm')" target="_blank">我要发帖</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+				#cacheFragment("$!{address.fragment}/huzhu/queryCountPostByTimeAndType.htm" "" "" "")
+				<div class="m2-item-content">
+					<div class="m2-block">
+						<div class="m2-block-img">
+							<img src="$!{address.img}/zz91/huzhu/images/img2.jpg" />
+						</div>
+						<div class="m2-block-box">
+							<div class="m2-block-title">
+								<a href="#springUrl('/bbsCategory4.htm')" target="_blank">社区公告</a>
+							</div>
+							<!--end m2-block-title-->
+							<div class="m2-block-info">
+								今日：$!{todaySQ}<br/>
+								贴数：$!{totalSQ}
+                            </div>
+                            <!--end m2-block-info-->
+                        </div>
+                        <!--end m2-block-box-->
+                        <div class="cb"></div>
+                        <div class="m2-block-text">
+                        </div>
+                        <!--end m2-block-text-->
+                    </div>
+                    
+                    <div class="m2-block">
+                    	<div class="m2-block-img">
+                        	<img src="$!{address.img}/zz91/huzhu/images/img2.jpg" />
+                        </div>
+                        <div class="m2-block-box">
+                        	<div class="m2-block-title">
+                            	<a href="#springUrl('/bbsCategory')13.htm" target="_blank">纠纷处理</a>
+                            </div>
+                            <!--end m2-block-title-->
+                            <div class="m2-block-info">
+                            	今日：$!{todayJF}<br/>
+								贴数：$!{totalJF}
+                            </div>
+                            <!--end m2-block-info-->
+                        </div>
+                        <!--end m2-block-box-->
+                        <div class="cb"></div>
+                        <div class="m2-block-text">
+                        </div>
+                        <!--end m2-block-text-->
+                    </div>
+                    
+                    <div class="m2-block">
+                    	<div class="m2-block-img">
+                        	<img src="$!{address.img}/zz91/huzhu/images/img2.jpg" />
+                        </div>
+                        <div class="m2-block-box">
+                        	<div class="m2-block-title">
+                            	<a href="#springUrl('/bbsCategory')14.htm" target="_blank">意见反馈</a>
+                            </div>
+                            <!--end m2-block-title-->
+                            <div class="m2-block-info">
+                            	今日：$!{todayYJ}<br/>
+								贴数：$!{totalYJ}
+                            </div>
+                            <!--end m2-block-info-->
+                        </div>
+                        <!--end m2-block-box-->
+                        <div class="cb"></div>
+                        <div class="m2-block-text">
+                        </div>
+                        <!--end m2-block-text-->
+                    </div>
+                    
+                    <div class="m2-block">
+                    	<div class="m2-block-img">
+                        	<img src="$!{address.img}/zz91/huzhu/images/img2.jpg" />
+                        </div>
+                        <div class="m2-block-box">
+                        	<div class="m2-block-title">
+                            	<a href="#springUrl('/bbsCategory15.htm')" target="_blank">新手报道</a>
+                            </div>
+                            <!--end m2-block-title-->
+                            <div class="m2-block-info">
+                            	今日：$!{todayXS}<br/>
+								贴数：$!{totalXS}
+                            </div>
+                            <!--end m2-block-info-->
+                        </div>
+                        <!--end m2-block-box-->
+                        <div class="cb"></div>
+                        <div class="m2-block-text">
+                        </div>
+                        <!--end m2-block-text-->
+                    </div>
+                    <!--end m2-block-->
+                    <div class="cb"></div>
+                </div>
+				#end
+                <!--end m2-item-content-->
+            </div>
+            <!--end m2-item-->
+		</div>
+		<div class="m2-right">
+			<div class="m2-ranking">
+				<div class="m2-ranking-title">
+					<span>社区牛榜</span>
+				</div>
+				<!--end m2-ranking-title-->
+				<div class="m2-ranking-item">
+					<div class="m2-ranking-left">
+						本周牛贴
+					</div>
+					<!--end m2-ranking-left-->
+					<div class="m2-ranking-right">
+						<ul>
+							#cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=post&size=5&d" "" "" "")
+							#foreach($plist in $!{postOneWeeklist})
+								#if(4 > $!{velocityCount})
+									<li><span class="red">$!{velocityCount}.</span><a href="#springUrl('/viewReply')$!{plist.targetId}.htm" title="$!{plist.title}" target="_blank">#printTitle($!{plist.title} 10 "")</a></li>
+								#else
+									<li>$!{velocityCount}.<a href="#springUrl('/viewReply')$!{plist.targetId}.htm" title="$!{plist.title}" target="_blank">#printTitle($!{plist.title} 10 "")</a></li>	
+								#end	
+							#end
+							#end
+                        </ul>
+                    </div>
+                    <!--end m2-ranking-right-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-ranking-item-->
+                <div class="m2-ranking-item">
+                	<div class="m2-ranking-left">
+                    	本周牛问
+                    </div>
+                    <!--end m2-ranking-left-->
+                    <div class="m2-ranking-right">
+						<ul>
+							#cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=question&size=5" "" "" "")
+								#foreach($post in $!{postOneWeeklist})
+									#if(4 > $!{velocityCount})
+										<li><a href="#springUrl('/viewReply')$!{post.targetId}.htm" target="_blank"><span class="red">$!{velocityCount}.</span>#printTitle($!{post.title} 10 "")</a></li>
+									#else
+										<li><a href="#springUrl('/viewReply')$!{post.targetId}.htm" target="_blank">$!{velocityCount}.#printTitle($!{post.title} 10 "")</a></li>
+									#end	
+								#end
+							#end			
+						</ul>
+					</div>
+					<!--end m2-ranking-right-->
+					<div class="cb"></div>
+				</div>
+                <!--end m2-ranking-item-->
+                <div class="m2-ranking-item">
+                	<div class="m2-ranking-left">
+                    	发贴牛人
+                    </div>
+                    <!--end m2-ranking-left-->
+                    <div class="m2-ranking-right">
+                    	<ul>
+							#cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=profile&size=5&" "" "" "")
+    							#foreach($post in $!{postOneWeeklist})
+									
+									#if(4 > $!{velocityCount})
+										<li><a href="#springUrl('/othersposted')$!{post.targetId}.htm" target="_blank"><span class="red">$!{velocityCount}.</span>#printTitle($!{post.title} 10 "")</a></li>
+    								#else
+										<li><a href="#springUrl('/othersposted')$!{post.targetId}.htm" target="_blank">$!{velocityCount}.#printTitle($!{post.title} 10 "")</a></li>	
+    								#end	
+    							#end
+							#end
+                        </ul>
+                    </div>
+                    <!--end m2-ranking-right-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-ranking-item-->
+                <div class="m2-ranking-item">
+                	<div class="m2-ranking-left">
+                    	问答牛人
+                    </div>
+                    <!--end m2-ranking-left-->
+                    <div class="m2-ranking-right">
+                    	<ul>
+                        #cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=profileQuestion&size=5&" "" "" "")
+							#foreach($post in $!{postOneWeeklist})
+    							#if(4 > $!{velocityCount})	
+    								<li><a href="#springUrl('/othersposted')$!{post.targetId}.htm" target="_blank"><span class="red">$!{velocityCount}.</span>#printTitle($!{post.title} 10 "")</a></li>
+    							#else
+    								<li><a href="#springUrl('/othersposted')$!{post.targetId}.htm" target="_blank">$!{velocityCount}.#printTitle($!{post.title} 8 "")</a></li>
+								#end
+							#end		
+						#end
+                        </ul>
+                    </div>
+                    <!--end m2-ranking-right-->
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-ranking-item-->
+            </div>
+            <!--end m2-ranking-->
+            
+            <div class="m2-newJoin">
+            	<div class="m2-newJoin-title">
+                	<span>最新加入</span>
+                </div>
+                <!--end m2-newJoin-title-->
+                <div class="m2-newJoin-content">
+                	<ul>
+					#cacheFragment("$!{address.fragment}/huzhu/queryNewUser.htm?size=6&" "" "" "")
+						#foreach($!{bbsUser} in $!{list})
+                    	<li>
+                        	<div class="m2-newJoin-img">
+								<a href="#springUrl('/othersposted')$!{bbsUser.id}.htm" target="blank">
+								#if($!{bbsUser.picturePath} && $!{bbsUser.picturePath}!="")
+                            	<img src="$!{address.thumb}$!{address.resource}/$!{bbsUser.picturePath}" width="50px" height="47px"/>
+								#else
+									<img src="$!{address.img}/zz91/huzhu/images/img3.jpg" />
+								#end
+								</a>
+                            </div>
+                            <!--end m2-newJoin-img-->
+                            <div class="m2-newJoin-text">
+								<a href="#springUrl('/othersposted')$!{bbsUser.id}.htm" target="_blank">
+									#printTitle($!{bbsUser.nickname} 4 "")  	
+								</a>
+                            </div>
+                            <!--end m2-newJoin-text-->
+                        </li>
+						#end
+					#end
+						
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m2-newJoin-content-->
+            </div>
+            <!--end m2-newJoin-->
+        </div>
+        <!--end m2-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end mainblock2-->
+    
+    
+    <div class="mainblock4">
+    	<div class="m4-title">
+        	<span>友情链接</span>
+        </div>
+        <!--end m4-title-->
+        <div class="m4-content">
+        	<ul>
+				#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10041001&size=&id", "", "", "")
+					#foreach($!index in $!list)
+						<li><a href="$!{index.link}" target="_blank" title="$!{index.title}">
+							$!{index.title}
+						</a></li>
+						<li>|</li>
+					#end
+				#end
+                <div class="cb"></div>
+            </ul>
+        </div>
+        <!--end m4-content-->
+        <div class="cb"></div>
+    </div>
+    <!--end mainblock4-->
+    ##<div class="line"></div>
+    <!--end line-->
+	<div class="mainblock4"><script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=6&amp;padding=8&amp;w=960&amp;num=6"></script></div>
+</div>
+<!--end huzhu-->
+<script language="javascript" src="$!{address.img}/zz91/huzhu/js/jquery.Sonline.js"></script>
+
+<input type="hidden" id="banner_hide" value="1" />
+
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+
+#cacheFragment("$!{address.fragment}/huzhu/countBbsAndQA.htm","","","")
+#end
+
+
+<script type="text/javascript">
+$(document).ready(function(e) {
+	/*问题滚动prompt("请输入人数","0")*/
+	var str='$!{countQA}';
+	var len=str.length;
+	for(var i=0;i<len;i++){
+		var strNum=str.substring(i,i+1);
+		$("#a"+(i+9-len)).animate({top:strNum*-25+'px'},2000);
+	}
+	
+	var strPost='$!{countBbs}';
+	var len=strPost.length;
+	for(var i=0;i<len;i++){
+		var strNum=strPost.substring(i,i+1);
+		$("#b"+(i+9-len)).animate({top:strNum*-25+'px'},2000);
+	}
+})
+
+jQuery(function(){
+    $(".huzhu").Sonline({
+    	Position:"right",//left或right
+    	Top:80,//顶部距离，默认200px
+    	Effect:true, //滚动或者固定两种方式，布尔值：true或false
+    	DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+    	Qqlist:""
+    });
+})	
+
+</script>
+	

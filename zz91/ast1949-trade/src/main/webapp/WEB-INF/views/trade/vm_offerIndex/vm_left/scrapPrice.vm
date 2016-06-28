@@ -1,0 +1,82 @@
+<!--行情价格-->
+<div style="clear:both"></div>
+<div id="mid_box_title">
+	<div class="mid_box_title2_6">
+		<h3 class="mid_box_title_txt">$!{code}行情价格</h3>
+	</div>
+	<div class="mid_box_title_2"></div>
+	<div class="mid_box_title_3">
+			#if($!{code}=="废金属")
+				<a target="_blank" href="$!{address.price}/channel/wasteMetal.htm" title="更多废金属行情价格">&gt;&gt; 更多</a>
+			#elseif($!{code}=="废塑料")
+				<a target="_blank" href="$!{address.price}/channel/wastePlastic.htm" title="更多废塑料行情价格">&gt;&gt; 更多</a>
+			#else
+				<a target="_blank" href="$!{address.price}/channel/otherWaste.htm" title="更多$!{code}行情价格">&gt;&gt; 更多</a>
+			#end
+	</div>
+ </div>
+ 
+ 
+<div class="offer_contentBox">
+#if($!{code}=="废金属")
+	<ul>
+		#foreach($metal in $MetalList)
+			<li>
+				<font color="#339900">
+					[<a #if($!{metal.id}==40||41||42||43||44||45) href="$!{address.price}/moreList_p3_t$!{metal.id}_metal.htm" #else 
+								href="$!{address.price}/priceList_t$!{metal.id}_metal.htm" #end
+				target="_blank">$!{metal.name}
+				</a>]</font>
+				<a #if($!{metal.id}==40||41||42||43||44||45) href="$!{address.price}/moreList_p3_t$!{metal.id}_metal.htm" #else 
+				href="$!{address.price}/priceList_t$!{metal.id}_metal.htm"  #end
+                 target="_blank" title="$!date.format('M月dd日',$!{metalGmtOrder})全国各地废$!{metal.name}价格">$!date.format('M月dd日',$!{metalGmtOrder})全国各地废$!{metal.name}价格
+				</a>
+			</li>
+        #end
+		#foreach($priceCategoryDTO in $bigList)
+	         #foreach($price in $priceCategoryDTO.priceChildDO)
+		          #foreach($metal in $metalNewCategory)
+		              $!{priceCategoryDTO.typeName}
+			           #if($!{price.typeId}==$!{metal.id})
+				              <li>
+									<font color="#339900">[<a href="$!{address.price}/moreList_p$!{price.typeId}_metal.htm" target="_blank">$!{metal.name}</a>]</font>
+									<a href="$!{address.price}/priceDetails_$!{price.id}_metal.htm" target="_blank" title="$!{price.title}">$!{price.title}</a>
+					        </li>
+		               #end
+		          #end
+		    #end
+		#end
+	</ul>	
+#elseif($!{code}=="废塑料")
+	<ul>
+			#foreach($plasticMarket in $plasticMarketList)
+				<li>
+					<font color="#339900">[<a href="$!{address.price}/priceList_t$!{plasticMarket.typeId}_plastic.htm" target="_blank">$!{plasticMarket.typeName}</a>]</font>
+					<a href="http://suliao.zz91.com/Article/Quotation106622.html" target="_blank" title="$!{plasticMarket.title}">$!{plasticMarket.title}</a>
+				</li>
+			#end
+		#foreach($newPlastic in $newPlasticList)
+			<li>
+				<font color="#339900">[<a href="$!{address.price}/priceList_t$!{newPlastic.typeId}_plastic.htm" target="_blank">$!{newPlastic.typeName}</a>]</font>
+				<a href="http://suliao.zz91.com/Article/Quotation106622.html" target="_blank" title="$!{newPlastic.title}">$!{newPlastic.title}</a>
+			</li>
+		#end
+	</ul>	
+#elseif($!{code}=="废纸")
+	<ul>
+		#foreach($paper in $paperList)	
+			<li>
+				<a href='$!{address.price}/priceDetails_$!{paper.id}_paper.htm' title="$!{paper.title}">$!{paper.title}</a>
+			</li>
+		#end
+	</ul>
+#elseif($!{code}=="废橡胶")
+		<ul> 
+			#foreach($rubber in $rubberList)
+				<li>
+						<a href="$!{address.price}/priceDetails_$!{rubber.id}_rubber.htm"" target="_blank" title="$!{rubber.title}">$!{rubber.title}</a>
+				</li>
+			#end
+		</ul> 
+#end
+</div>

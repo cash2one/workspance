@@ -1,0 +1,79 @@
+ <div class="confirm_order clearfix">
+                <div class="orderleft fl">
+                    <div class="odr-title clearfix">
+                        <h3 class="fl">退款申请</h3>
+						#if($!{orderReturn.status}==99)
+                        <span class="fr">处理完成</span>
+						#elseif($!{orderReturn.status}==0)
+						<span class="fr">待处理</span>
+						#else
+						<span class="fr">处理中</span>
+					    #end
+                    </div>
+                    <ul class="th-infolist">
+                        #if($!{orderReturn.logisticsNo})
+                        <li>退款类型：退货退款</li>
+						#else
+						 <li>退款类型：退款</li>
+						#end
+                        <li>退款金额：$!{orderReturn.reurnPrice}元</li>
+                        <li>退款原因：$!{orderReturn.returnReason}</li>
+                        <li>退款编号：$!{orderReturn.id}</li>
+                        <li>申请时间：#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{orderReturn.gmtCreated})</li>
+                    </ul>
+                    <div class="goods-info clearfix th-goods-info">
+						#if($!{goodsDto.picAddress})
+                        <a href="$!{address.www}/goods$!{goodsDto.goods.id}.htm" target="_blank"><img src="$!{address.img}$!{goodsDto.picAddress}" width="80" height="80" /></a>
+						#else
+						<img src="" width="80" height="80" />
+						#end
+                        <p>$!{goodsDto.goods.title}</p>
+                        <p class="goods-color">颜色分类：$!{goodsDto.goods.color}</p>
+                    </div>
+                    <div class="seller">
+                        <ul class="seller-ul">
+                            <li>
+                                <span class="seller-tt">买&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;家：</span>
+                                <span class="blue"><a href="$!{address.www}/compinfo${companyInfo.id}.htm" target="_blank">$!{companyInfo.name}</a></span>
+                            </li>
+                            <li><span class="seller-tt">订单编号：</span>$!{orderReturn.orderNo}</li>
+                            <li>
+                                <span class="seller-tt">成交时间：#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{order.gmtCreated})</span>
+                            </li>
+                            <li>
+                                <span class="seller-tt">运&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费：</span>
+                                <span class="anred">$!{order.buyPriceLogistics}</span>元
+                            </li>
+                            <li class="see-nowwp j_seller">
+                                <span class="seller-tt">发货物流信息 <i class="sh-img"></i></span>
+                                <div class="hide-div">
+                                    <i class="hide-zb"></i>
+                                    <div class="hide-th">
+                                        <div class="hide-title">联邦物流：$!{order.logisticsNo}</div>
+                                        <ul class="newdata j_ndata" id="ull">
+											#if($!{logistics})
+												#foreach($li in ${logistics.list.keySet()})
+											    #foreach($ob in ${logistics.list.get($li)})
+                                            <li>
+                                                <i></i>$!{ob.context}<br>
+                                                $!{li}  $!{ob.hour}
+                                            </li>
+											 #end
+											 #end
+											 #end
+                                        </ul>
+										<ul>
+											<i></i>&nbsp;&nbsp;&nbsp; 以上为最新跟踪消息
+                                        </ul>
+                                        <div class="see-all"><a class="j-sbtn" href="#springUrl('/logistics/logistics.htm')?logisticsCode=$!{order.logisticsNo}&type=1">查看全部</a></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+				</div>
+					<script >
+    						 $(".j_ndata li:last").addClass("this-data")
+							 var li_index = $(".j_ndata li").length - 2;
+ 			 				 $(".j_ndata li:lt("+ li_index +")").hide();
+                    </script>

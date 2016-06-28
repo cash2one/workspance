@@ -1,0 +1,233 @@
+#set($layout="/layout/registerLayout.vm")
+<script src="http://img0.zz91.com/zz91/newprice/comm/input-plt.js"></script>
+        <div class="content">
+            <div class="rst-main clearfix">
+                <div class="step-list">
+                    <span class="thisstep"><i class="stepnum">1</i>设置用户名<i class="dx-bg"></i></span>
+                    <span><i class="stepnum">2</i>填写账号信息<i class="dx-bg"></i></span>
+                    <span><i class="stepnum">3</i>注册成功<i class="dx-bg"></i></span>
+                </div>
+                <div class="get-yz-phone">
+                    <div class="clearfix get-yz-li">
+                        <span class="fl get-yz-title">手机号：</span>
+                        <input class="fl into-phone j_phone" placeholder="请输入你的手机号码"/><span style="color:red;display:none;" id="ermobile">请输入正确的手机号码
+                        </span>
+                    </div>
+                    <div class="clearfix get-yz-li">
+                        <span class="fl get-yz-title">验证码：</span>
+                        <input class="fl into-yanz j_yanz"/>
+                        <div class="fl yanz-img"><img src="$!{address.css}/front/images/global/loading.gif" id="vcoding" width="100" height="35"></div>
+                        <div class="fl yanz-getnow"><i class="icon iconfont">&#xe609;</i><br>看不清</div>
+                        <span class="fl red" style="display:none;">验证码错误</span>
+                    </div>
+                    <div class="clearfix get-yz-li">
+                        <span class="fl get-yz-title"></span>
+                        <span class="next">下 一 步</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="open-tanc">
+            <div class="tanc-tatle clearfix">
+                <span class="fl">设置用户名</span>
+                <span class="close j_close">x</span>
+            </div>
+            <div class="tanc-main">
+                <p class="chagne-tshi">
+                    <i class="icon iconfont blue">&#xe608;</i>验证码已发送到你的手机，15分钟内输入有效，请勿泄露
+                </p>
+                <form action="/register/step2.htm" method="post" id="subForm">
+		                <div class="clearfix into-form">
+		                    <div class="change-title-do fl">手机号：</div>
+		                    <div class="fl"><div class="succ-phone"></div></div>
+		                    <input type="hidden" name="account" value="" id="account"/>
+		                </div>
+                 </form>
+                <div class="clearfix into-form">
+                    <div class="change-title-do fl">验证码：</div>
+                    <div class="fl"><input class="into-input into-input2"/></div>
+                    <div class="fl"><span class="get-yz get-yz2 j_getyz" onclick="settime()">验证码</span></div>
+                </div>
+                <div class="clearfix into-form">
+                    <div class="change-title-do fl"></div>
+                    <div class="fl"><span class="into-btn">确认</span></div>
+                    <span class="fl red" style="display:none;">验证码错误</span>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+        $(".j_phone,.j_yanz").live("keyup",function(){
+            if(!$(".j_phone").val()==""&&!$(".j_yanz").val()==""){
+                $(".next").addClass("j_next")
+            }
+        })
+        $(".j_close").live("click",function(){
+            $(".open-tanc").fadeOut()
+        })
+        
+        jQuery(".j_phone").blur(function(){
+			var mobile=$(".j_phone").val();
+			var ph3 =/^\d{11}$/;
+		    if(!ph3.test(mobile)){
+		   		$("#ermobile").show();
+		   	     return false;
+				}else{
+				 $("#ermobile").hide();
+			}
+            if(jQuery(".j_phone").parent().find(".red")){
+            	jQuery(".j_phone").parent().find(".red").remove();
+            }
+        	var m = jQuery(".j_phone").val().replace(/\s+/g,"");
+        	if(!m){
+        		return false;
+        	}
+			var mobileLength = validMobileNum(m);//验证手机号码位数
+			if(mobileLength==0){
+				jQuery(".j_phone").parent().append("<span class=\"red\">手机号码不正确</span>");
+				return false;
+			}
+        	valid(m,null);
+        });
+
+        if(jQuery.browser.msie && (jQuery.browser.version == "6.0") && !jQuery.support.style){
+            var windowHt = $(window).height();
+            $(".open-tanc").css("margin-top",(windowHt-297)/2+"px")
+        }
+        $(document).ready(function(){
+        		##验证码初始化
+				if(jQuery("#vcoding").attr("src")=="$!{address.css}/front/images/global/loading.gif"){
+					jQuery("#vcoding").attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+				}
+		});
+		jQuery(".yanz-getnow").click(function(){
+			 jQuery(".get-yz-li").find(".red").hide(); // 隐藏错误信息
+			 jQuery(".j_yanz").val("").focus();//清空验证码输入框并聚焦
+			 jQuery("#vcoding").attr("src", "#springUrl('/validationcode/vcode.htm?')"+new Date());
+		});
+		##验证验证码
+		function validate(){
+			var code = jQuery(".j_yanz").val();
+			var acc = jQuery(".j_phone").val();
+			jQuery.ajax({
+    			url:'#springUrl("/validationcode/validateCode.htm")',
+    			data:{"verifyCode":code},
+    			type:"post",
+    			async:false,
+    			dataType:"json",
+    			success:function(reg){
+					if(!reg.isTrue){
+						jQuery(".get-yz-li").find(".red").css("display","inline");
+					}else{
+						//发送手机验证码
+						jQuery("#account").val(acc);
+						jQuery(".succ-phone").html(acc);
+						$(".open-tanc").fadeIn()
+						sendCode();//发送验证码
+						settime();//倒计时
+						jQuery(".get-yz-li").find(".red").hide(); // 隐藏错误信息
+					}
+				}
+			});
+		}
+		##下一步
+		jQuery(".next").click(function(){
+		   var mobile=$(".j_phone").val();
+		   var ph3 =/^\d{11}$/;
+		   if(!ph3.test(mobile)){
+		   		$("#ermobile").show();
+		   	     return false;
+				}else{
+				 $("#ermobile").hide();
+			}
+		   if(jQuery(".j_phone").parent().find(".red").length){
+		   		return false;
+		   }
+			//验证验证码
+			validate();
+		});
+		##手机验证码
+		function sendCode(){
+			var mobile = jQuery("#account").val().replace(/(^\s+)|(\s+$)/g,"");
+			if(!mobile){
+					alert("号码不能为空");
+					return false;
+			}
+			jQuery.ajax({
+				url:'#springUrl("/validationcode/sendMobile.htm")',
+				data:{"mobile":mobile},
+				type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+				}
+			});
+		}
+		##确认
+		jQuery(".into-btn").click(function(){
+		 	clearInterval(vtime);
+		 	$(".j_getyz").attr("onclick", "settime(this)");    
+			$(".j_getyz").html("验证码");
+			wait = 60;
+			//手机验证
+			var mobile = jQuery("#account").val();
+			var mcode = jQuery(".into-input2").val();
+			jQuery.ajax({
+				url:'#springUrl("/register/validateByMobile.htm")',
+				data:{"mobile":mobile,"vcode":mcode},
+				type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+					if(reg.isTrue){
+						jQuery("#subForm").submit();
+					}else{
+						jQuery(".into-form").find(".red").css("display","inline");
+					}
+				}
+			});
+		});
+		##验证码倒计时j_getyz
+		var wait=59;
+		var vtime;
+		function settime() {
+			jQuery(".into-form").find(".red").css("display","none");
+			if(wait == 60){
+				sendCode();//发送验证码
+			}
+		    if (wait == 0) {
+			       $(".j_getyz").attr("onclick", "settime(this)");    
+			       $(".j_getyz").html("验证码");
+			        wait = 60;
+			        return false;
+			} else {
+			        $(".j_getyz").attr("onclick", "null"); 
+			        $(".j_getyz").html(wait + "s") ;
+			        wait--;
+			       vtime = setTimeout(function() {
+			                settime()
+			        },1000)
+			}
+		}
+		
+		function valid(a,b){
+			jQuery.ajax({
+				url:'#springUrl("/register/validateInfo.htm")',
+				data:{"mobile":a,"email":b},
+				type:"post",
+				async:false,
+				dataType:"json",
+				success:function(reg){
+						if(reg.info>0){
+							jQuery(".j_phone").parent().append("<span class=\"red\">帐号已存在</span>");
+						}
+				}
+			});
+		}
+		function validMobileNum(m){
+			if(m.length==11){
+				return 1;
+			}else{
+				return 0;
+			}
+		}
+    </script>

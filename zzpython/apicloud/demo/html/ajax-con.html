@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <title>ajax跨域请求</title>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+		<link rel='stylesheet' href='../css/github.css'>
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+		</style>
+		
+    </head>
+    <body>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/demo.js'></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script>
+	// 设置是否开启调试模式.
+	// dlog.debug = true;
+	
+	var demo = Demo.createNew();
+	demo.show(function(){
+				$('pre code').each(function(i, block) {
+				    hljs.highlightBlock(block);
+				 $('<div class="row"><div id="data" class="col-xs-12" ></div> </div>').appendTo($('#upLoadFiles').parent().parent().parent().parent());
+				  });
+			  });
+	</script>
+	
+    <script type='text/javascript' src='../script/api.js'></script>
+    <script type='text/javascript'>
+    function getData(){
+        api.ajax({
+            url: 'http://m.weather.com.cn/data/101010100.html',
+            method: 'get',
+            cache: false,
+            timeout: 30,
+            dataType: 'text'
+        }, function(ret, err){
+            if (ret) {
+                $api.byId('data').innerHTML = ret;
+            }else {
+                api.alert(
+                    {
+                        msg:('错误码：'+err.code+'；错误信息：'+err.msg+'网络状态码：'+err.statusCode)
+                    }
+                );
+            };
+        });
+    }
+    function upLoadByPost(){//上传文件
+        var upLoadFiles = $api.byId('upLoadFiles');
+        var filesValue = upLoadFiles.value;
+        var arr = filesValue.split(',');
+        var filesUrl = {};
+        for (var i = 0,j = arr.length; i < j; i++) {
+            var imgs = 'img'+i;
+            filesUrl[imgs] = arr[i];
+        };
+        // alert(JSON.stringify(filesUrl));
+		api.showProgress({title:'提交中..', text:'请稍后...', modal:false});
+        api.ajax({
+            url: 'http://117.78.7.24:3000/upload',
+            method: 'post',
+            cache: false,
+            timeout: 30,
+            dataType: 'json',
+            data: {
+                values: {hehe: 'haha'},
+                files: filesUrl
+            }
+
+        },function(ret,err){
+			api.hideProgress();
+            if (ret) {
+                var urlJson = ret.files;
+                // urlJson = JSON.stringify(urlJson);
+                var oParent = $api.byId('main');
+                var aImg = oParent.getElementsByTagName('img');
+                if(aImg){
+                    for (var i = 0,j = aImg.length; i < j; i++) {
+                        oParent.removeChild(aImg[i]);
+                    };
+                };
+                
+                showImg(urlJson);
+                // alert(ret.body);
+                $api.byId('data').innerHTML = JSON.stringify(ret);
+                // $api.byId('data').innerHTML = urlJson;
+                //将服务器返回的json打印出来
+            }else {
+                api.alert(
+                    {
+                        msg:('错误码：'+err.code+'；错误信息：'+err.msg+'网络状态码：'+err.statusCode)
+                    }
+                );
+            };
+        });
+    };
+    function showImg(json){
+        
+        var oParent = $api.byId('main');
+        for (var i in json) {
+
+            (function(i){
+                var oImg = document.createElement('img');
+                var oTemp = new Image();
+                oTemp.src = json[i];
+                oTemp.onload = function(){
+                    var w = this.width+'px';
+                    var h = this.height+'px';
+                    oImg.src = json[i];
+                    oImg.style.width = '400px';
+                    oImg.style.height = 400*h/w+'px';
+                    oParent.appendChild(oImg);
+                };
+            })(i);
+
+        };
+    };
+
+    function getFilesUrl(){//获取本地图片
+        var upLoadFiles = $api.byId('upLoadFiles');
+        var filesUrl = '';
+        api.getPicture({
+            sourceType: 'library',
+            encodingType: 'png',
+            mediaValue: 'pic',
+            destinationType: 'url',
+            allowEdit: true,
+            quality: 100,
+            saveToPhotoAlbum: false
+            }, function(ret, err){                                             
+
+                if (ret.data) {
+                    filesUrl = ret.data;
+                    if (upLoadFiles.value == '') {
+                        upLoadFiles.value = filesUrl;
+                    }else{
+                        upLoadFiles.value = upLoadFiles.value +","+filesUrl;
+                    };
+                }else {
+                    api.alert({msg:"您好像没有选取文件!"});
+                }
+                
+        });
+        
+    };
+    function getDataByPost(){
+        api.ajax({
+            url: 'http://117.78.7.24:3000/upload',
+            method: 'post',
+            cache: false,
+            timeout: 30,
+            dataType: 'text',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            data: {
+                body: '123'
+            }
+
+        },function(ret,err){
+            if (ret) {
+                $api.byId('data').innerHTML = JSON.stringify(ret);
+            }else {
+                api.alert(
+                    {
+                        msg:('错误码：'+err.code+'；错误信息：'+err.msg+'网络状态码：'+err.statusCode)
+                    }
+                );
+            };
+        });
+    };
+    
+    function getJSONByPost(){
+        api.ajax({
+            url: 'http://117.78.7.24:3000/upload',
+            method: 'post',
+            cache: false,
+            timeout: 30,
+            dataType: 'json',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            data: {
+                values: {hehe: 'haha'}
+            }
+
+        },function(ret,err){
+            if (ret) {
+                $api.byId('data').innerHTML = JSON.stringify(ret);
+            }else {
+                api.alert(
+                    {
+                        msg:('错误码：'+err.code+'；错误信息：'+err.msg+'网络状态码：'+err.statusCode)
+                    }
+                );
+            };
+        });
+    }
+    </script>
+</html>

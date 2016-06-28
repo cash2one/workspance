@@ -1,0 +1,91 @@
+<!-- for include js code -->
+<script type="text/javascript" >
+	Ext.BLANK_IMAGE_URL = "http://img0.zz91.com/lib/extjs/themes/images/s.gif";
+	
+	var Context = new function(){
+		this.ROOT = "#springUrl('')";
+		this.ROOT_IMAGE="http://img1.zz91.com/ads";
+		this.IMG0="http://img0.zz91.com";
+		this.PAGE_SIZE = 20;
+		this.LOGIN_USER="$!{loginuser}";
+		this.ADVERTISER_CATEGORY=["阿思拓","再生通用户","中环通用户"];
+		this.REVIEWSTATUS_CATEGORY={"U":"未审核","Y":"审核通过","N":"退回"};
+		this.ONLINE_STATUS={"Y":"已上线","N":"未上线"};
+		this.DESIGN_STATUS={"Y":"已完成","U":"未完成"};
+		this.CHECK_CATEGORY=["广告主","审核人","开始时间","结束时间"];
+	}
+	
+	var MESSAGE = new function(){
+		this.title =  "信息提示";
+		this.picTitleInfo = "<img src='${contextPath}/themes/boomy/infoabout24.png' />"; 
+		this.unValidate = "表单填写有错误，请仔细检查一下表单 :)";
+		this.saveFailure = "表单没有被保存<br /><br />请多尝试几次，如果还有问题请 <a href='mailto:mays@caiban.net' >联系我们</a>";
+		this.loadError = "数据没有被载入<br /><br />请多尝试几次，如果还有问题请 <a href='mailto:mays@caiban.net' >联系我们</a>";
+		this.confirmDelete = "确定要删除吗?";
+		this.submitFailure = "请求没有被正确处理,请检查网络是否连接正常!";
+		this.saveSuccess = "保存成功";
+		this.noRecord = "没有记录";
+		this.needOneRecord="请选择一条记录";
+		this.noAuth = "你没有权限这么做,如需帮助,请<a href='mailto:mays@caiban.net' >联系我们</a>";
+		this.ajaxError = "噢！发生了一点错误，请再试一次<br/>如果还是这样，请 <a href='mailto:mays@caiban.net' >联系我们</a>";
+##		this.paging = {
+##			displayMsg:'显示第 {0} - {1} 第记录,共 {2} 条',
+##			emptyMsg:'没有可显示的记录',
+##			beforePageText:'第',
+##			afterPageText:'页,共{0}页',
+##			paramNames:{start:'start', limit:'limit', sort:'sort', dir:'dir'}
+##		};
+		this.saving = "正在保存...";
+		this.deleting = "正在删除...";
+		this.loading = "正在载入...";
+		this.uploading = "正在上传...";
+		this.uploadFailure = "文件没有被上传：{0}";
+		this.deleteSuccess = "选定记录已被删除";
+		this.LOADMASK={"msg":"数据加载中，请稍候..."};
+	}
+	
+	//AJAX事件
+	Ext.Ajax.on('requestcomplete',function(conn,response,options){
+		if(options.isUpload){
+			return true;
+		}
+
+		if(typeof(response.getResponseHeader("sessionstatus"))!= 'undefined'){
+			//TODO 用户没有登录
+			com.zz91.ads.board.login.UserLoginWin(function(form,action){
+				Ext.getCmp(LOGIN.LOGINWINDOW).close();
+			});
+		}
+	}, this);
+
+	Ext.Ajax.on('requestexception',function(conn,response,options){
+		if(!Ext.getCmp("errorWin")){
+			var win = Ext.create("Ext.Window",{
+				id:"errorWin",
+				iconCls:"infoabout16",
+	            title:Context.MSG_TITLE,
+	            width:700,
+	            autoHeight:true,
+	            modal:true,
+	            maximizable:true,
+	            items:[{
+	            	xtype:"panel",
+	            	height:500,
+	            	region:"center",
+	            	autoScroll:true,
+	            	html:"请求的URL：<span style='font-weight:bold;color:red;'>"+options.url+"</span><br/>"+response.responseText
+	            	//width:"100%"
+	            }]
+			});
+			win.show();
+		}
+	},this);
+	
+	Ext.override(Ext.data.Store, {
+		setExtraParam: function (name, value){
+			this.proxy.extraParams = this.proxy.extraParams || {};
+			this.proxy.extraParams[name] = value;
+			this.proxy.applyEncoding(this.proxy.extraParams);
+		}
+	});
+</script>

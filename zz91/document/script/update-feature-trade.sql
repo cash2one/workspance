@@ -1,0 +1,26 @@
+CREATE  TABLE IF NOT EXISTS  `products_index` (
+  `id` INT(20) NOT NULL AUTO_INCREMENT ,
+  `data_index_code` VARCHAR(45) NULL ,
+  `products_id` INT(20) NOT NULL DEFAULT 0 ,
+  `account` VARCHAR(50) NOT NULL DEFAULT '' ,
+  `company_id` INT(20) NOT NULL DEFAULT 0 ,
+  `products_type` VARCHAR(200) NULL ,
+  `title` VARCHAR(200) NULL ,
+  `min_price` FLOAT NULL ,
+  `max_price` FLOAT NULL ,
+  `price_unit` VARCHAR(45) NULL ,
+  `quantity` INT NULL ,
+  `quantity_unit` VARCHAR(45) NULL ,
+  `tags` VARCHAR(45) NULL ,
+  `tags_admin` VARCHAR(45) NULL ,
+  `refresh_time` DATETIME NOT NULL DEFAULT 0 ,
+  `real_time` DATETIME NOT NULL DEFAULT 0 ,
+  `pic` VARCHAR(250) NULL ,
+  `orderby` FLOAT NOT NULL DEFAULT 0 ,
+  `gmt_created` DATETIME NOT NULL ,
+  `gmt_modified` DATETIME NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `idx_data_index_code` (`data_index_code` ASC) ,
+  INDEX `idx_orderby` (`orderby` ASC) )
+ENGINE = MyISAM
+COMMENT = '供求推荐，将供求信息推荐到首页等页面地位'

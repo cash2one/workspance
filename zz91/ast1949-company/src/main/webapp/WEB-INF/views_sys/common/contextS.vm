@@ -1,0 +1,326 @@
+<script>
+	jQuery(document).ready(function(){
+		Asto.MINI_LOGIN_URL="$!{address.front}/miniLogin.htm')";
+		Asto.DEST_URL="$!{address.trade}/submitCallback.htm";
+		Asto.util.EventMonitor();
+	});
+	
+	function timestamp(){
+	    var timestamp = Date.parse(new Date());
+	    return timestamp;
+	}
+	
+	//old code
+	var Context=new function(){
+		this.ROOT="#springUrl('')";
+	}
+	
+	$(document).ready(function(){
+      var ta = $('li.tradAssi');
+      ta.mousemove(function(){
+      	$(this).find('ul').slideDown("fast");
+      	$(this).find('a').first().addClass('ishover');
+    	$(this).find('a').first().removeClass('nohover');
+      });
+      ta.mouseleave(function(){
+      	$(this).find('ul').slideUp("fast");
+    	$(this).find('a').first().removeClass('ishover');
+    	$(this).find('a').first().addClass('nohover');
+      });
+    });
+
+// js for company
+    function selectOption(menuname, value) {
+        var menu = document.getElementById(menuname);
+        if(menu!=null){
+            for (var i = 0; i < menu.options.length; i++) {
+                if (menu.options[i].value == value) {
+                    menu.options[i].selected = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    function changeservice(obj, n) {
+        var objOther, objC1, doc;
+        for (i = 1; i <= 4; i++) {
+            objOther = document.getElementById("serviceBar" + i);
+            objC1 = document.getElementById("serviceContent" + i);
+            if (i == n) {
+                objC1.style.display = "block";
+                objOther.className = "on"+i;
+            }
+            else {
+                objC1.style.display = "none";
+                objOther.className = "off";
+            }
+        }
+    }
+    function startSearch(flag) {
+        var doc = document,
+            searchName = document.getElementById("searchname").value,
+            searchAddr = document.getElementById("searchAddr").value,
+            isVIP = document.getElementById("hidVip").value,
+            id1 = document.getElementById("id1").value,
+            prv = document.getElementById("province"),
+            city = document.getElementById("city"),
+            gd = document.getElementById("garden"),
+            p = prv.options[prv.selectedIndex].value,
+            c = city.options[city.selectedIndex].value,
+            g = "", s = "";
+        if (gd != null) {
+            g = gd.options[gd.selectedIndex].value;
+        }
+        if (id1.length != 0) {
+            s += "" + id1;
+        }
+        if (flag == "furtherSearch") {
+            if (p.length != 0) {
+                s += "_pr" + p;
+            }
+            if (c.length != 0) {
+                s += "_c" + c;
+            }
+            if (g.length != 0) {
+                s += "_g" + g;
+            }
+        }
+    
+        if (searchName == "请输入公司名称" || searchName.length == 0) {
+            searchName = "null";
+        }
+        if (searchAddr == "请输入公司地址" || searchAddr.length == 0) {
+            searchAddr = "null";
+        }
+        if (searchName.length != 0) {
+            s += "_" + searchrepalceTO(escape(relacedou(searchName)));
+        }
+        if (searchAddr.length != 0) {
+            s += "_addr_" + searchrepalceTO(escape(relacedou(searchAddr)));
+        }
+        if (isVIP.length != 0) {
+            s += "_vip1";
+        }
+        else {
+            s += "_vip0";
+        }
+        location.href = 'company_List' + s + '.html';
+    }
+    
+    function relacedou(stringdou) {
+        var strdou;
+        strdou = stringdou.toLowerCase();
+        strdou = strdou.replace(/'/g, "''");
+        strdou = strdou.replace(/\"/g, "”");
+        return strdou;
+    }
+    
+    function searchrepalceTO(searname) {
+        var s;
+        s = searname.replace(/%/g, "asto");
+        s = s.replace(/\\/g, "xie");
+        s = s.replace(/\//g, "fang")
+        s = s.replace(/\+/g, "xiao")
+        s = s.replace(/\-/g, "ming")
+        return s;
+    }
+	
+	
+	function zz91SearchSlide(searchFrame,typeValue,searchInputFill){
+    	var searchInput    =$(searchFrame+" "+"input[id="+searchInputFill+"]");
+    	var typeValueInput =$(searchFrame+" "+"input[id="+typeValue+"]");
+    	var searchLabel    =$(searchFrame+" "+"label[id=search_label]");
+    	var searchTab      = $(searchFrame+" "+"ul[id=search_tab]");
+    	//alert(typeValueInput.val());
+        searchTab.find("li").click(function(e) {
+    		searchTab.find("li").removeClass("searchSelected");
+    		$(this).addClass("searchSelected");
+    		searchInput.focus();
+    		var getLiIndex=$(this).index()
+    		typeValueInput.attr({value:function(){
+    			return getLiIndex+1;
+    		}
+    		});
+        })
+    	if (searchInput.val() != ""){
+    		searchLabel.fadeOut(50);
+    	}
+    	searchInput.focus(function(){
+    		searchLabel.css({
+    			"color": "#DDDDDD"
+    		});
+    		searchInput.keydown(function(){
+    				var t = setTimeout(function(){
+    					if (searchInput.val() != "") {
+    						searchLabel.fadeOut(1);
+    					}
+    					else {
+    						searchLabel.fadeIn();
+    					}
+    				}, 100);
+    		});
+    	});
+    	searchInput.blur(function(){
+    			//clearTimeout(t);
+    			if ($(this).val() == "") {
+    				searchLabel.fadeIn(500).css({"color":"#999999"});
+    			}
+    	});
+    };
+
+	var zz91Search=new function(){
+    	var search=this;
+    	this.products=function(config){
+    		config=config||{};	
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";	
+    		var searchOpt=config.searchOptions||[];
+    		var debug=config.debug||false;
+    		
+    		var ptype=searchOpt["ptype"]||"";  
+    		var province=searchOpt["province"]||""; 
+    		var posttime=searchOpt["posttime"]||"";
+    		var priceflag=searchOpt["priceflag"]||""; 
+    		var nopiclist=searchOpt["nopiclist"]||""; 
+    		var havepic=searchOpt["havepic"]||"";
+    		var page=searchOpt["page"]||"";
+    		var keywords=searchOpt["keywords"]||"";  //关键字
+    		
+    		if(keywords.length<=0){
+    			return false;
+    		}
+    		
+    		keywords=keywords.replace(/\//gm,"astoxg");
+    		keywords=keywords.replace(/\\/gm,"asto5c");
+    		keywords=keywords.replace(/-/gm,"astohg");
+    		keywords=keywords.replace(/\(/gm,"astokhl");
+    		keywords=keywords.replace(/\)/gm,"astokhr");
+    		
+    //		window.open("http://www.zz91.com/offer/?ptype="+ptype+"&keywords="+encodeURI(keywords));
+    		
+    		var targetUrl="/offerlist";
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--a",ptype);
+			if(province.length>0||posttime.length>0||priceflag.length>0||nopiclist.length>0||havepic.length>0){
+        		targetUrl=search.buildProductSearchUrl(targetUrl,"--b",province);
+        		targetUrl=search.buildProductSearchUrl(targetUrl,"--c",posttime);
+        		targetUrl=search.buildProductSearchUrl(targetUrl,"--d",priceflag);
+        		targetUrl=search.buildProductSearchUrl(targetUrl,"--e",nopiclist);
+        		targetUrl=search.buildProductSearchUrl(targetUrl,"--f",havepic);
+			}
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--p",page);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--",encodeURIComponent(keywords));
+    		
+    		targetUrl=targetUrl+".htm";
+    		if(debug){
+    			alert("the target url is: "+targetUrl);
+    		}else{
+    			if(target=="_self"){
+    				location.href=contextpath+targetUrl;
+    			}else{
+    				window.open(contextpath+targetUrl);
+    			}
+    		}
+    		
+    	};
+    	
+    	this.price=function(config){
+    		config=config||{};
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";
+    		var searchOpt=config.searchOptions||[];
+    		var k=searchOpt["keywords"]||"";
+    		
+    		if(k.length<=0){
+    			return false;
+    		}
+    		
+    		var targetUrl="/priceSearch.htm?title="+encodeURI(k);
+    		
+    		if(target=="_self"){
+    			location.href=contextpath+targetUrl;
+    		}else{
+    			window.open(contextpath+targetUrl);
+    		}
+    	};
+    	
+    	this.company=function(config){
+    	};
+    	
+    	this.companyPrice=function(config){
+    		config=config||{};
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";
+    		var searchOpt=config.searchOptions||[];
+    		var k=searchOpt["keywords"]||"";  //关键字
+    		var pc=searchOpt["categoryCompanyPriceCode"]||"";  //企业报价类别
+    		var area=searchOpt["area"]||"";  //地区
+    		var interval=searchOpt["interval"]||"";  //产品刷新时间期限  距离现在，单位：天
+    		var priceRange=searchOpt["priceRange"]||"";  //报价区间
+    		var targetUrl="/companyprice/index--"+encodeURIComponent(k);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--pc",pc);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--area",area);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--int",interval);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--pr",priceRange);
+    		targetUrl=targetUrl+".htm";
+    		if(target=="_self"){
+    			location.href=contextpath+targetUrl;
+    		}else{
+    			window.open(contextpath+targetUrl);
+    		}
+    	};
+    
+    	this.buildProductSearchUrl=function(targetUrl,prefix,v){
+    		if(v.length>0){
+    			return targetUrl+prefix+v;
+    		}else{
+    			return targetUrl+prefix;
+    		}
+    	};
+    	
+    	//initialization  search  effects
+    	this.initSearchSlide=function(slideObj,noSearchSelectClass,SearchSelectClass,getSearchType,searchFocus,searchLabel){
+    		var operateObj = zz91Util.getElem(slideObj).getElementsByTagName("li");
+    		getSearchType = zz91Util.getElem(getSearchType);
+    		searchLabel=zz91Util.getElem(searchLabel);
+    		searchFocus = zz91Util.getElem(searchFocus);
+    		//获取当前节点索引
+    		var getIndex = function(self, obj){
+    			for(var i=0;i<obj.length;i++){
+    				if(obj[i]== self){
+    					return i;
+    				}
+    			}
+    		}
+    		for (var i = 0; i < operateObj.length; i++) {
+    			iNum = i
+    			
+    			operateObj[i].onmouseover = function(){
+    				//alert(i);
+    				//i = parseInt(i);
+    				for (var j = 0; j < operateObj.length; j++) {
+    					operateObj[j].className = noSearchSelectClass;
+    				}
+    				this.className = SearchSelectClass;
+    				//确定搜索类型，并且设置搜索焦点
+    				//alert(getSearchType.value+"_" +getIndex(this,operateObj));
+    				getSearchType.value = parseInt(getIndex(this,operateObj)+1);
+    				searchLabel.style.display="none";
+    				searchFocus.focus();	
+    			}
+    			operateObj[i].onmouseout=function(){
+    				if (searchFocus.value == "" || searchFocus.value == null) {
+    					setInterval(function(){
+    						searchFocus.blur();
+    						searchLabel.style.display = "";
+    					}, 1000)
+    				}
+    			}
+    		}
+    		searchLabel.onclick=function(){
+    			searchLabel.style.display="none";
+    			searchFocus.focus();
+    		}
+    	};
+    };
+</script>

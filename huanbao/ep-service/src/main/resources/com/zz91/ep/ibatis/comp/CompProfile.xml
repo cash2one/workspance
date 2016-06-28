@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="compprofile">
+
+	<typeAlias alias="compProfile" type="com.zz91.ep.domain.comp.CompProfile" />
+	<typeAlias alias="websiteProfile" type="com.zz91.ep.domain.comp.WebsiteProfile"/>
+	<typeAlias alias="compProfileDto" type="com.zz91.ep.dto.comp.CompProfileDto" />
+	
+	<typeAlias alias="compProfileNormDto" type="com.zz91.ep.dto.comp.CompProfileNormDto" />
+	<typeAlias alias="compAccount" type="com.zz91.ep.domain.comp.CompAccount" />
+
+	<resultMap class="compProfile" id="simpleResultMap">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="memberCode" column="member_code"/>
+		<result property="domainTwo" column="domain_two" />
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="businessCode" column="business_code" />
+	</resultMap>
+	
+	<sql id="simpleColumn">
+	    cp.id,cp.name,cp.domain_two,cp.member_code,cp.gmt_created,cp.industry_code,cp.business_code
+	</sql>
+	
+	<resultMap class="compProfile" id="apisimpleResultMap">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="industryCode" column="industry_code" />
+		<result property="mainBuy" column="main_buy" />
+		<result property="mainProductBuy" column="main_product_buy" />
+		<result property="mainSupply" column="main_supply" />
+		<result property="mainProductSupply" column="main_product_supply" />
+		<result property="memberCode" column="member_code" />
+		<result property="memberCodeBlock" column="member_code_block" />
+		<result property="registerCode" column="register_code" />
+		<result property="businessCode" column="business_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="provinceCode" column="province_code" />
+		<result property="legal" column="legal" />
+		<result property="funds" column="funds" />
+		<result property="mainBrand" column="main_brand" />
+		<result property="address" column="address" />
+		<result property="detailsQuery" column="details_query"/>
+		<result property="addressZip" column="address_zip" />
+		<result property="domain" column="domain" />
+		<result property="domainTwo" column="domain_two" />
+		<result property="messageCount" column="message_count" />
+		<result property="viewCount" column="view_count" />
+	</resultMap>
+	
+	<resultMap class="compProfile" id="simpCommonMap">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="memberCode" column="member_code"/>
+		<result property="mainBuy" column="main_buy"/>
+		<result property="mainSupply" column="main_supply"/>
+		<result property="mainProductSupply" column="main_product_supply"/>
+		<result property="mainProductBuy" column="main_product_buy"/>
+		<result property="address" column="address"/>
+		<result property="detailsQuery" column="details_query"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="legal" column="legal"/>
+		<result property="funds" column="funds"/>
+		<result property="mainBrand" column="main_brand"/>
+	</resultMap>
+	
+	<resultMap class="compProfileDto" id="simpleDtoResultMap">
+		<result property="compProfile" resultMap="compprofile.simpCommonMap"/>
+		<result property="cssStyle" column="css_style"/>
+		<result property="memberYear" column="member_year"/>
+	</resultMap>
+	
+	<resultMap class="compProfile" id="simpleCompMap">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="mainBuy" column="main_buy"/>
+		<result property="mainSupply" column="main_supply"/>
+		<result property="mainProductSupply" column="main_product_supply"/>
+		<result property="mainProductBuy" column="main_product_buy"/>
+		<result property="address" column="address"/>
+		<result property="addressZip" column="address_zip"/>
+		<result property="domain" column="domain"/>
+	</resultMap>
+	
+	<resultMap class="compProfileDto" id="contactDtoResultMap">
+		<result property="compProfile" resultMap="compprofile.simpleCompMap"/>
+		<result property="contacts" column="contacts"/>
+		<result property="mobile" column="mobile"/>
+		<result property="phoneCountry" column="phone_country"/>
+		<result property="phoneArea" column="phone_area"/>
+		<result property="phone" column="phone"/>
+		<result property="faxCountry" column="fax_country"/>
+		<result property="faxArea" column="fax_area"/>
+		<result property="fax" column="fax"/>
+		<result property="qq" column="qq"/>
+	</resultMap>
+
+	<resultMap class="compProfile" id="registResultColumn">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="mainSupply" column="main_supply" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="address" column="address" />
+		<result property="mainProductSupply" column="main_product_supply" />
+		<result property="details" column="details" />
+		<result property="industryCode" column="industry_code" />
+		<result property="enterpriseType" column="enterprise_type" />
+		<result property="funds" column="funds" />
+		<result property="domain" column="domain" />
+		<result property="legal" column="legal" />
+		<result property="mainProductBuy" column="main_product_buy" />
+		<result property="businessCode" column="business_code" />
+	</resultMap>
+
+	<sql id="apisimpleColumn">
+		c.id,
+		c.name,
+		c.industry_code,
+		c.main_buy,
+		c.main_product_buy,
+		c.main_supply,
+		c.main_product_supply,
+		c.member_code,
+		c.member_code_block,
+		c.register_code,
+		c.business_code,
+		c.area_code,
+		c.province_code,
+		c.legal,
+		c.funds,
+		c.main_brand,
+		c.address,
+		c.details_query,
+		c.address_zip,
+		c.domain,
+		c.domain_two,
+		c.message_count,
+		c.view_count
+	</sql>
+
+	<sql id="registColumn">
+
+		comPro.id,
+		comPro.name,
+		comPro.main_supply,
+		comPro.province_code,
+		comPro.area_code,
+		comPro.address,
+		comPro.main_product_supply,
+		comPro.details,
+		comPro.industry_code,
+		comPro.enterprise_type,
+		comPro.funds,
+		comPro.domain,
+		comPro.legal,
+		comPro.main_product_buy,
+		comPro.business_code
+	</sql>
+
+	<resultMap class="compProfile" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="details" column="details" />
+		<result property="industryCode" column="industry_code" />
+		<result property="mainBuy" column="main_buy" />
+		<result property="mainProductBuy" column="main_product_buy" />
+		<result property="mainSupply" column="main_supply" />
+		<result property="mainProductSupply" column="main_product_supply" />
+		<result property="memberCode" column="member_code" />
+		<result property="memberCodeBlock" column="member_code_block" />
+		<result property="registerCode" column="register_code" />
+		<result property="businessCode" column="business_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="provinceCode" column="province_code" />
+		<result property="legal" column="legal" />
+		<result property="funds" column="funds" />
+		<result property="mainBrand" column="main_brand" />
+		<result property="address" column="address" />
+		<result property="addressZip" column="address_zip" />
+		<result property="domain" column="domain" />
+		<result property="domainTwo" column="domain_two" />
+		<result property="messageCount" column="message_count" />
+		<result property="viewCount" column="view_count" />
+		<result property="tags" column="tags" />
+		<result property="detailsQuery" column="details_query" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="delStatus" column="del_status" />
+		<result property="processMethod" column="process_method" />
+		<result property="process" column="process" />
+		<result property="employeeNum" column="employee_num" />
+		<result property="developerNum" column="developer_num" />
+		<result property="plantArea" column="plant_area" />
+		<result property="mainMarket" column="main_market" />
+		<result property="mainCustomer" column="main_customer" />
+		<result property="monthOutput" column="month_output" />
+		<result property="yearTurnover" column="year_turnover" />
+		<result property="yearExports" column="year_exports" />
+		<result property="qualityControl" column="quality_control" />
+		<result property="registerArea" column="register_area" />
+		<result property="enterpriseType" column="enterprise_type" />
+	</resultMap>
+	   	<select id="queryNewestCompany" resultMap="simpleResultMap"
+		parameterClass="java.util.Map">
+		select
+		<include refid="compprofile.simpleColumn"/> 
+		from comp_profile cp
+		where name is not null and name !=''
+		and member_code_block = '' and register_code = 1
+		<isNotEmpty property="industryCode">
+			and industry_code=#industryCode#
+		</isNotEmpty>
+		order by gmt_created desc limit #size#
+	</select>
+
+
+	<select id="queryRecommendCompany" resultMap="simpleResultMap"
+		parameterClass="java.util.Map">
+		select
+		<include refid="compprofile.simpleColumn"/> 
+		from comp_recommend cr
+		inner join comp_profile cp on
+		cr.cid=cp.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="code">
+				cr.category_code
+				=#code#
+			</isNotEmpty>
+		</dynamic>
+		limit #size#
+	</select>
+
+	<update id="updateMessageCountById" parameterClass="java.lang.Integer">
+		update
+		comp_profile
+		set message_count = message_count+1,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+
+	<select id="queryContactByCid" resultMap="contactDtoResultMap"
+		parameterClass="java.lang.Integer">
+		select
+		cp.id,cp.name,cp.main_buy,cp.main_supply,cp.main_product_buy,cp.main_product_supply,
+		ca.name as
+		contacts,ca.mobile,ca.phone_country,ca.phone_area,ca.phone,cp.address,cp.address_zip,
+		ca.fax_country,ca.fax_area,ca.fax,cp.domain,ca.qq
+		from
+		comp_profile
+		cp,comp_account ca
+		where
+		cp.id=ca.cid and cid=#value#
+	</select>
+
+	<select id="queryMemberInfoByCid" resultMap="simpleDtoResultMap"
+		parameterClass="java.lang.Integer">
+		select
+		cp.id,cp.name,cp.member_code,cp.main_buy,cp.main_supply,cp.main_product_buy,cp.main_product_supply,cp.address,
+		(year(now()) - year(cp.gmt_created) + 1)
+		member_year,wp.css_style,cp.details_query,cp.industry_code,cp.legal,cp.funds,cp.main_brand
+		from
+		comp_profile cp
+		left join website_profile wp on wp.cid=cp.id
+		where
+		cp.id=#value# and cp.member_code_block= ''
+	</select>
+	<!-- 插入公司信息 -->
+	<insert id="insertCompProfile" parameterClass="compProfile">
+		insert into comp_profile
+		(
+		`name`,
+		`main_buy`,
+		`main_supply`,
+		`member_code`,
+		`member_code_block`,
+		`gmt_created`,
+		`gmt_modified`,
+		`register_code`
+		) values
+		(
+		#name#,
+		#mainBuy#,
+		#mainSupply#,
+		#memberCode#,
+		#memberCodeBlock#,
+		now(),
+		now(),
+		#registerCode#
+		)
+
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	
+
+	<update id="updateCompProfile" parameterClass="compProfile">
+		update comp_profile
+		<dynamic prepend="set">
+			<isNotEmpty property="name" prepend=",">
+				`name`=#name#
+			</isNotEmpty>
+			<isNotEmpty property="industryCode" prepend=",">
+				`industry_code`=#industryCode#
+			</isNotEmpty>
+			<isNotEmpty property="mainProductBuy" prepend=",">
+				`main_product_buy`=#mainProductBuy#
+			</isNotEmpty>
+			<isNotEmpty property="mainProductSupply" prepend=",">
+				`main_product_supply`=#mainProductSupply#
+			</isNotEmpty>
+			<isNotEmpty property="businessCode" prepend=",">
+				`business_code`=#businessCode#
+			</isNotEmpty>
+			<isNotEmpty property="areaCode" prepend=",">
+				`area_code`=#areaCode#
+			</isNotEmpty>
+			<isNotEmpty property="provinceCode" prepend=",">
+				`province_code`=#provinceCode#
+			</isNotEmpty>
+			<isNotEmpty property="legal" prepend=",">
+				`legal`=#legal#
+			</isNotEmpty>
+			<isNotEmpty property="funds" prepend=",">
+				`funds`=#funds#
+			</isNotEmpty>
+			<isNotEmpty property="address" prepend=",">
+				`address`=#address#
+			</isNotEmpty>
+			<isNotEmpty property="domain" prepend=",">
+				`domain`=#domain#
+			</isNotEmpty>
+			<isNotEmpty property="details" prepend=",">
+				`details`=#details#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend=",">
+				`details_query`=#detailsQuery#,
+			</isNotEmpty>
+		</dynamic>
+		`gmt_modified`=now()
+		where id=#id#
+	</update>
+
+	<select id="getCompProfileById" parameterClass="java.lang.Integer"
+		resultMap="registResultColumn">
+		select
+		<include refid="registColumn" />
+		from comp_profile as comPro
+		where id = #value#
+	</select>
+
+	<select id="queryImpCompProfile" resultMap="fullResultMap"
+		parameterClass="java.lang.Integer">
+		SELECT
+		`id`,
+		`name`,
+		`details`,
+		`industry_code`,
+		`main_buy`,
+		`main_product_buy`,
+		`main_supply`,
+		`main_product_supply`,
+		`member_code`,
+		`member_code_block`,
+		`register_code`,
+		`business_code`,
+		`area_code`,
+		`province_code`,
+		`legal`,
+		`funds`,
+		`main_brand`,
+		`address`,
+		`address_zip`,
+		`domain`,
+		`domain_two`,
+		`message_count`,
+		`view_count`,
+		`tags`,
+		`details_query`,
+		`gmt_created`,
+		`gmt_modified`,
+		`del_status`,
+		`process_method`,
+		`process`,
+		`employee_num`,
+		`developer_num`,
+		`plant_area`,
+		`main_market`,
+		`main_customer`,
+		`month_output`,
+		`year_turnover`,
+		`year_exports`,
+		`quality_control`,
+		`register_area`,
+		`enterprise_type`
+		FROM `comp_profile` where id > #value#
+	</select>
+
+	<update id="updateMainProduct" parameterClass="java.util.Map">
+		update
+		comp_profile set main_product_buy = #mainProductBuy#,
+		main_product_supply=#mainProductSupply#,
+		gmt_modified=now()
+		where
+		id=#cid#
+	</update>
+
+	<!-- 查询公司显示样式 -->
+	<select id="queryCssStyleByCid" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select css_style from website_profile where cid=#value#
+		limit 1
+	</select>
+
+	<select id="queryWebsiteConfigCount" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(*) from website_profile where cid=#value#
+	</select>
+	<!-- 根据二级域名查找公司id -->
+	<select id="queryIdByDomainOrDomainTwo" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select id from comp_profile
+		where member_code_block!="10001002"
+		<isNotEmpty property="domain" prepend="and">
+			domain=#domain#
+		</isNotEmpty>
+		<isNotEmpty property="domainTwo" prepend="and">
+			domain_two=#domainTwo#
+		</isNotEmpty>
+		limit 1
+	</select>
+
+	<update id="updateCompanyStyle" parameterClass="websiteProfile">
+		update website_profile 
+		set 
+		css_style = #cssStyle#,
+		gmt_modified=now()
+		where cid=#cid#
+	</update>
+
+	<insert id="insertCompanyStyle" parameterClass="websiteProfile">
+		insert into website_profile
+		(
+		`cid`,
+		`css_style`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#cid#,
+		#cssStyle#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<select id="isDelStatus" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from comp_profile 
+		where id = #value# and member_code_block = ''
+	</select>
+
+	<select id="queryCompProfileById" parameterClass="java.lang.Integer"
+		resultMap="apisimpleResultMap">
+		select
+		<include refid="apisimpleColumn" />
+		from comp_profile c
+		where c.id = #id#
+	</select>
+
+	<select id="getMemberCodeById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		member_code  from comp_profile
+		where
+		id = #value#
+	</select>
+	
+	<update id="updateGmtModifiedById" parameterClass="java.lang.Integer">
+		update comp_profile 
+		set 
+		gmt_modified=now()
+		where id=#cid#
+	</update>
+	
+	<select id="queryShortCompProfileById" parameterClass="java.lang.Integer" resultMap="simpleResultMap">
+	      select 
+	      <include refid="compprofile.simpleColumn"/>
+	      from comp_profile cp
+	      where id=#id#
+	</select>
+	
+	<resultMap class="compProfileNormDto" id="defaultWithAccountResult">
+	    <result property="comp" resultMap="compprofile.defaultProfileResult"/>
+	    <result property="account" resultMap="compprofile.defaultAccountResult"/>
+	</resultMap>
+	
+	<resultMap class="compProfile" id="defaultProfileResult">
+	    <result property="id" column="id"/>
+	    <result property="name" column="name"/>
+	    <result property="industryCode" column="industry_code"/>
+	    <result property="mainBuy" column="main_buy"/>
+	    <result property="mainProductBuy" column="main_product_buy"/>
+	    <result property="mainSupply" column="main_supply"/>
+	    <result property="mainProductSupply" column="main_product_supply"/>
+	    <result property="memberCode" column="member_code"/>
+	    <result property="memberCodeBlock" column="member_code_block"/>
+	    <result property="registerCode" column="register_code"/>
+	    <result property="businessCode" column="business_code"/>
+	    <result property="areaCode" column="area_code"/>
+	    <result property="domain" column="domain"/>
+	    <result property="domainTwo" column="domain_two"/>
+	</resultMap>
+	
+	<resultMap class="compAccount" id="defaultAccountResult">
+	    <result property="account" column="account"/>
+	    <result property="email" column="email"/>
+	    <result property="name" column="fullname"/>
+	    <result property="sex" column="sex"/>
+	    <result property="qq" column="qq"/>
+	    <result property="gmtCreated" column="gmt_created"/>
+	</resultMap>
+	
+	<sql id="defaultProfileColumn">
+	    cp.id,
+	    cp.name,
+	    cp.industry_code,
+	    cp.main_buy,
+	    cp.main_product_buy,
+	    cp.main_supply,
+	    cp.main_product_supply,
+	    cp.member_code,
+	    cp.member_code_block,
+	    cp.register_code,
+	    cp.business_code,
+	    cp.area_code,
+	    cp.domain,
+	    cp.domain_two
+	</sql>
+	
+	<sql id="defaultAccountColumn" >
+		ca.account,
+	    ca.email,
+	    ca.name as fullname,
+	    ca.sex,
+	    ca.qq,
+	    ca.gmt_created
+	</sql>
+	
+	<select id="queryProfileWithAccount" parameterClass="java.lang.Integer" resultMap="defaultWithAccountResult" >
+	    select
+	    	<include refid="defaultProfileColumn"/>
+	    	,
+	    	<include refid="defaultAccountColumn" />
+	    from comp_profile cp
+	    inner join comp_account ca on cp.id=ca.cid
+	    where cp.id=#value#
+	    limit 1 
+	</select>
+	
+	<select id="queryNameById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select name from comp_profile where id = #value#
+	</select>
+	
+	<select id="queryCompCountById" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from comp_profile where id=#value#
+	</select>
+	
+	<select id="queryMemberCodeById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select member_code from comp_profile 
+		where id = #value# and member_code_block = ''
+	</select>
+	
+	<select id="querySiteProfile"  parameterClass="java.lang.Integer" resultClass="websiteProfile" >
+	    select 
+	    	wp.css_style as cssStyle, wp.log_photo as logPhoto
+	    from website_profile wp
+	    where cid = #value#
+	    limit 1
+	</select>
+	
+	
+	<!-- <sql id="defaultColumn" >
+	    cp.id,
+	    cp.name,
+	    cp.member_code,
+	    cp.main_buy,
+	    cp.main_supply,
+	    cp.main_product_buy,
+	    cp.main_product_supply,
+	    cp.address,
+		cp.industry_code,
+		cp.legal,
+		cp.funds,
+		cp.main_brand
+	</sql>
+	
+	<resultMap class="compProfile" id="defaultResult">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="memberCode" column="member_code"/>
+		<result property="mainBuy" column="main_buy"/>
+		<result property="mainSupply" column="main_supply"/>
+		<result property="mainProductSupply" column="main_product_supply"/>
+		<result property="mainProductBuy" column="main_product_buy"/>
+		<result property="address" column="address"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="legal" column="legal"/>
+		<result property="funds" column="funds"/>
+		<result property="mainBrand" column="main_brand"/>
+	</resultMap>
+	
+	
+	<select id="queryProfileById" parameterClass="java.lang.Integer" resultMap="defaultResult">
+		select 
+			<include refid="compprofile.defaultColumn" />
+		from comp_profile cp
+		where id=#value#
+	</select> -->
+	<!-- 插入公司信息 1-->
+	<insert id="insertCompProfiles" parameterClass="compProfile">
+		insert into comp_profile
+		(
+		`name`,
+		`details`,
+		`industry_code`,
+		`main_buy`,
+		`main_product_supply`,
+		`business_code`,
+		`province_code`,
+		`area_code`,
+		`address`,
+		`main_supply`,
+		`member_code`,
+		`member_code_block`,
+		`gmt_created`,
+		`gmt_modified`,
+		`register_code`
+		) values
+		(
+		#name#,
+		#details#,
+		#industryCode#,
+		#mainBuy#,
+		#mainProductSupply#,
+		#businessCode#,
+		#provinceCode#,
+		#areaCode#,
+		#address#,
+		#mainSupply#,
+		#memberCode#,
+		#memberCodeBlock#,
+		now(),
+		now(),
+		#registerCode#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+</sqlMap>

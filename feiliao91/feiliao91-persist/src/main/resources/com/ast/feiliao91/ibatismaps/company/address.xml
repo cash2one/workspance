@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="address">
+	<typeAlias alias="addressDo" type="com.ast.feiliao91.domain.company.Address" />
+	<resultMap class="addressDo" id="addressResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="name" column="name" />
+		<result property="tel" column="tel" />
+		<result property="mobile" column="mobile" />
+		<result property="areaCode" column="area_code" />
+		<result property="address" column="address" />
+		<result property="zipCode" column="zip_code" />
+		<result property="isDefault" column="is_default" />
+		<result property="isDel" column="is_del" />
+		<result property="addressType" column="address_type" />
+		<result property="companyName" column="company_name" />
+		<result property="detail" column="detail" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,
+		company_id,
+		name,
+		tel,
+		mobile,
+		area_code,
+		address,
+		zip_code,
+		is_default,
+		is_del,
+		address_type,
+		company_name,
+		detail,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<insert id="insert" parameterClass="addressDo">
+		insert into address
+		(
+		<include refid="address.fullColumn" />
+		)
+		values
+		(
+		#id#,
+		#companyId#,
+		#name#,
+		#tel#,
+		#mobile#,
+		#areaCode#,
+		#address#,
+		#zipCode#,
+		#isDefault#,
+		#isDel#,
+		#addressType#,
+		#companyName#,
+		#detail#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="selectById" parameterClass="java.lang.Integer"
+		resultMap="addressResult">
+		select
+		<include refid="address.fullColumn" />
+		from address where company_id=#companyId# and address_type=0 and
+		is_del=0
+	</select>
+
+	<select id="selectDefaultDelAddress" parameterClass="java.lang.Integer"
+		resultMap="addressResult">
+		select
+		<include refid="address.fullColumn" />
+		from address where company_id=#companyId# and address_type=1 and
+		is_del=0 and is_default=1
+	</select>
+
+	<select id="selectByDelId" parameterClass="java.lang.Integer"
+		resultMap="addressResult">
+		select
+		<include refid="address.fullColumn" />
+		from address where company_id=#companyId# and address_type=1 and
+		is_del=0
+	</select>
+
+	<select id="selectDefaultAddress" parameterClass="java.lang.Integer"
+		resultMap="addressResult">
+		select
+		<include refid="address.fullColumn" />
+		from address where company_id=#companyId# and is_default=1 and
+		is_del=0 and address_type=0
+	</select>
+    
+    <select id="selectShopCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+        select count(*) from address where company_id=#companyId# and
+		is_del=0 and address_type=0
+    </select>
+    
+    <select id="selectHairCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+        select count(*) from address where company_id=#companyId# and
+		is_del=0 and address_type=1
+    </select>
+    
+    <select id="selectAddress" parameterClass="java.lang.Integer" resultMap="addressResult">
+        select 
+        <include refid="address.fullColumn" />
+        from address where id=#id# and
+		is_del=0 
+    </select>
+    
+	<update id="updateAll" parameterClass="addressDo">
+		update address set gmt_modified = now()
+		<isNotEmpty prepend="," property="name">
+			name=#name#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="areaCode">
+			area_code=#areaCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="address">
+			address=#address#
+		</isNotEmpty>
+		<isNotNull prepend="," property="zipCode">
+			zip_code=#zipCode#
+		</isNotNull>
+		<isNotEmpty prepend="," property="isDefault">
+			is_default=#isDefault#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDel">
+			is_del=#isDel#
+		</isNotEmpty>
+		<isNotNull prepend="," property="tel">
+			tel=#tel#
+		</isNotNull>
+		<isNotEmpty prepend="," property="mobile">
+			mobile=#mobile#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="addressType">
+			address_type=#addressType#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyName">
+			company_name=#companyName#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail=#detail#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+	
+	<update id="setIsDefault" parameterClass="java.lang.Integer" >
+	    update address set gmt_modified = now(),
+	    is_default=0 where id=#id#
+	</update>
+	<!-- 某个用户的地址 -->
+	<select id="queryAddressByCondition" parameterClass="java.util.Map" resultMap="addressResult">
+		select
+			<include refid="address.fullColumn"/>
+		from address
+		where is_del='0' 
+		<isNotEmpty prepend="and" property="companyId">
+			company_id = #companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="addressType">
+			address_type = #addressType#
+		</isNotEmpty>
+		order by is_default desc, id desc
+	</select>
+	
+	<select id="getByPage" parameterClass="java.util.Map" resultMap="addressResult">
+		select
+			<include refid="address.fullColumn"/>
+		from address
+		where is_del='0' 
+		and company_id = #companyId#
+		and address_type = #addressType#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+</sqlMap>

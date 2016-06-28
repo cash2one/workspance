@@ -1,0 +1,58 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/esite/esitenews/index.htm')">商铺管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">公司动态管理</li>
+        </ul>
+        <button id="Js_addNew" class="btn btn-mini">新增</button>
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+				<tr>
+					<th width="5%" class="tac"><input type="checkbox" id="Js_checkAll" /></th>
+					<th width="60%">文章标题</th>
+					<th width="20%" class="tac">发布日期</th>
+					<th width="15%" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($!{esiteNewsList} in $!{esiteNewsList})
+				<tr>
+					<td class="tac">
+						<input type="checkbox" value="$!{products.id}" name="postcheck" class="radioPositionFix" />
+					</td>
+					<td>
+						<a href="#springUrl('/esite/esitenews/initNews.htm?id=')$!{esiteNewsList.id}">$!{esiteNewsList.title}</a>
+					</td>
+					<td class="tac"><span class="grey">$!date.format('yyyy-MM-dd',$!{esiteNewsList.postTime})</span></td>
+					<td class="tac">
+						<a href="#springUrl('/esite/esitenews/initNews.htm?id=')$!{esiteNewsList.id}">编辑</a>
+						<a href="#springUrl('/esite/esitenews/deleteNews.htm?id=')$!{esiteNewsList.id}">删除</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+		#if(${esiteNewsList.size()} ==0)
+		<div class="alert alert-error mt"> 您还没有发布任何公司动态信息！</div>
+		#end
+		#myrcPageNav($!{page} "#springUrl('/esite/esitenews/index.htm')" "checkStatus=$!{checkStatus}&isExpired=$!{isExpired}&isPause=$!{isPause}&groupId=$!{groupId}" "")
+	</div>
+</div>
+<script>
+	jQuery(function(){
+		myrc.menu(6, 2);
+		//全选
+		jQuery("#Js_checkAll").click(function(){
+			var chk = jQuery(this).attr("checked");
+			jQuery("input[name=postcheck]").each(function(index, obj){
+				obj.checked = chk;
+			});
+		});
+	});
+	jQuery("#Js_addNew").click(function(){
+		location.href="#springUrl('/esite/esitenews/createNews.htm')"
+	});
+</script>

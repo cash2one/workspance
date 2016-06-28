@@ -1,0 +1,34 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="$!{address.js}/bbs/bbscategorys.js" ></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		var contextMenu=Ext.create("ast.ast1949.bbs.bbsCategory.CategoryAction",{
+		});
+		
+		var tree=Ext.create("ast.ast1949.util.Tree",{
+			id: BBSCATEGORY.TREE,
+			title:"互助类别管理",
+			queryUrl:Context.ROOT+"/zz91/bbs/bbscategory/categoryTreeNode.htm",
+			region:"center",
+			listeners:{
+				"itemcontextmenu":function(view,model,item,idx,e,eopts){
+					view.select(model);
+					e.stopEvent();
+					contextMenu.showAt(e.getXY());
+					contextMenu.setTreeNode(model);
+					return false;
+				}
+			}
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[tree]
+		});
+		
+		tree.getRootNode().expand();
+		
+	});
+</script>

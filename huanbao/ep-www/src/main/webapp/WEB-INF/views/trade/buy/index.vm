@@ -1,0 +1,278 @@
+#set($layout='/layout/trade/buyer.vm')
+#parse("/common/importValidate.vm")
+<div class="buyer_mk">
+	<div class="location">你目前所在位置：<a href="$!{address.www}">中国环保网</a>><a href="#springUrl('/trade')/buy/index.htm">买家中心</a></div>
+	<div>
+		<div class="mkt_l left">
+			<img class="left" src="$!{address.img}/huanbao/images/buyer/mjzx_14.jpg" />
+			#cacheFragment("$!{address.fragment}/fragment/common/buyMarket.htm", "", "", "43200")
+			<div class="left mkt_lr">
+				<p>已有$!{existingBuy}位采购商入驻</p>
+				<p>已有$!{existingSupply}位供应商入驻</p>
+				<p>已有$!{existingBuyRequire}个采购需求</p>
+				<p>共匹配：$!{matchingGoods}件商品</p>
+				<a href="$!{address.myesite}/buy/publish_StpOne.htm" target="_blank">我要快速发布</a>
+			</div>
+			#end
+			<div class="clear"></div>
+		</div>
+		<div class="right">
+		<script type="text/javascript" src="http://gg.zz91.com/show?p=226"></script>
+		##<img class="right mkt_r" src="$!{address.img}/huanbao/images/buyer/mjzx_11.jpg" />
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="btmsear mt8px">
+		<div style="width:405px; height:40px; float:left;">
+			<script type="text/javascript" src="http://gg.zz91.com/show?p=364"></script>
+		</div>
+		<div style="width:510px; height:40px; float:right;" class="mt8px">
+        	<form action="#springUrl('/trade/buy/list.htm')" method="post">
+        		<input type="text" name="keywords" class="search_input"/>
+        		<input type="submit" value="搜索求购信息"  class="search_btn" name="searchbtn"/>
+        	</form>
+			#cacheFragment("$!{address.fragment}/fragment/tags/categoryTags.htm?categoryCode=100010001003&size=10", "", "", "43200")
+    		<div class="hb_search_hotkey">
+                <h3 class="hb_search_hotkey_t titnormal fontnormal"><a href="#springUrl('/trade')/newbq.htm" target="_blank">热门搜索词：</a></h3>
+				#foreach($key in $!{tags.keySet()})
+					<span><a href="#springUrl('/trade')/buy/list--${key}.htm">$key</a></span>
+				#end
+			</div>
+			#end
+		</div>
+	</div>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<!-- huanbao -->
+		<ins class="adsbygoogle"
+		     style="display:block"
+		     data-ad-client="ca-pub-5512236620584335"
+		     data-ad-slot="7436342405"
+		     data-ad-format="auto"></ins>
+		<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	<div class="mt8px">
+		<div class="left mksd_l" style="width:473px; height:348px;">
+			<img src="$!{address.img}/huanbao/images/buyer/mjzx_23.png" />
+			#if($!{epAuthUser})
+				<input type="hidden" id="loginstatus" value="1" />
+			#else
+				<input type="hidden" id="loginstatus" value="0" />
+            #end
+			<form id="buyForm" method="post" action="$!{address.myesite}/buy/doStpOne.htm">
+			<table>
+				<tr>
+					<td width="85px">
+						求购产品名称：
+					</td>
+					<td width="245px">
+						<input type="text" id="title" name="title" class="t_ipt validate[required,maxSize[30]]"/>
+					</td>
+				</tr>
+				<input type="hidden" id="categoryCode" name="categoryCode" value="1001" />
+				<tr><td>采购数量：</td><td><input type="number" id="quantity" name="quantity" class="t_ipt validate[required,custom[number],maxSize[10]]"/></td></tr>
+				<tr>
+					<td>采购单位：</td>
+					<td>
+						<select  id="quantityUntis" name="quantityUntis" class="t_ipt validate[required]" value="$!{buy.quantityUntis}">
+                          	<option value="">请选择</option>
+                          	<option value="套" >套</option>
+                          	<option value="台" >台</option>
+                          	<option value="件" >件</option>
+                          	<option value="吨" >吨</option>
+                          	<option value="个" >个</option>
+                          	<option value="斤" >斤</option>
+                          	<option value="千克" >千克</option>
+                          	<option value="袋" >袋</option>
+                          	<option value="盒" >盒</option>
+						</select>
+					</td>
+				</tr>
+				<tr><td>收货地址：</td>
+					<td>
+						<select id="provinceCode" name="provinceCode" class="t_ipt_h">
+                           <option value="">省份</option>
+                       </select>
+                       <select id="areaCode" name="areaCode" class="t_ipt_h validate[required]">
+                           <option value="">城市</option>
+                       </select>
+					</td>
+				</tr>
+				<tr><td>采购有效期：</td><td class="td_radio"><input type="radio" name="validDays" value="3" checked/>3天<input type="radio" name="validDays" value="5" />5天<input type="radio" name="validDays" value="7" />7天<input type="radio" name="validDays" value="10" />10天</td></tr>
+				<tr><td>其他详细要求：</td><td><textarea name="details" id="details" class="validate[required,maxSize[500]]"></textarea></td></tr>
+			</table>
+			<a href="javascript:qukPublishBuy();">确定发布</a>
+			</form>
+		</div>
+		<div class="right panel" style="width:471px; height:346px;">
+            <h3><a href="#springUrl('/trade')/newb.htm" target="_blank">采购信息推荐</a><span>>> <a href="#springUrl('/trade/buy/list.htm')" target="_blank">查看更多</a></span></h3>
+			<div class="panel-body">
+				<table class="mks_table">
+					<tr><td class="td1 td1bg">求购产品</td><td class="td2 td2bg">剩余天数</td><td class="td3 td3bg">报价</td></tr>
+				</table>
+				<ul class="table_ul">
+					#cacheFragment("$!{address.fragment}/fragment/trade/recommendDetailsBuy.htm?size=10&bu","","","600")
+					#foreach($buy in $!{list})
+					<li>
+						<table>
+							<tr>
+								<td class="td1 right"><a href="#springUrl('/trade/buy/detail')$!{buy.id}.htm" target="_blank">#printTitle($!{buy.title} 20 '')</a></td>
+								<td class="td2">#if("$!{buy.validDays}" == "" || "$!{buy.validDays}" == "0" || $!{buy.validDays}>10)长期有效#else$!{buy.validDays}天#end</td>
+								<td class="td3">
+									<input type="button" onclick="window.open('#springUrl('/trade/buy/detail')$!{buy.id}.htm');" value="给他报价" />
+								</td>
+							</tr>
+						</table>
+					</li>
+					#end
+					#end
+				</ul>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="mt8px">
+		<div class="left" style="width:280px;">
+			<div class="panel" style="height:290px;">
+                <h3><a href="#springUrl('/trade')/zw.htm" target="_blank">热门搜索产品</a></h3>
+				<div class="panel-body">
+					<ul class="left topul">
+						<li class="top1">TOP 1</li>
+						<li class="top2">TOP 2</li>
+						<li class="top3">TOP 3</li>
+						<li>TOP 4:</li>
+						<li>TOP 5:</li>
+						<li>TOP 6:</li>
+						<li>TOP 7:</li>
+						<li>TOP 8:</li>
+						<li>TOP 9:</li>
+						<li>TOP10:</li>
+					</ul>
+					<ul class="left top_ul">
+						#cacheFragment("$!{address.fragment}/fragment/trade/topKeyWordsBuys.htm", "", "", "6400")
+    						<li><a href="#springUrl('/trade')/buy/list--$!{top1}.htm">$!{top1}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top2}.htm">$!{top2}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top3}.htm">$!{top3}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top4}.htm">$!{top4}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top5}.htm">$!{top5}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top6}.htm">$!{top6}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top7}.htm">$!{top7}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top8}.htm">$!{top8}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top9}.htm">$!{top9}</a></li>
+							<li><a href="#springUrl('/trade')/buy/list--$!{top10}.htm">$!{top10}</a></li>
+						#end
+					</ul>
+					<div class="clear"></div>
+				</div>
+			</div>
+			<div class="panel mt8px" style="height:163px;">
+				<h3>环保热点专题</h3>
+				<div class="panel-body">
+					<ul>
+						  #cacheFragment("$!{address.fragment}/fragment/news/recommendZhuanti.htm?size=5&werew","","","600")
+							#foreach($zt in $!{list})
+								<li><span>·</span> <a href="$!{zt.targetUrl}" target="_blank">#printTitle($!{zt.title} 12 "")</a></li>
+							#end
+        				#end
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="left" style="width:421px; margin-left:8px;">
+			<div class="panel" style="height:290px;">
+				<h3>成功网商</h3>
+				<div class="panel-body">
+					<div class="div_image" style="width:187px; height:232px;">
+					<script type="text/javascript" src="http://gg.zz91.com/show?p=227"></script>
+					</div>
+					<div class="div_image" style="width:187px; height:232px; margin-left:10px;">
+					<script type="text/javascript" src="http://gg.zz91.com/show?p=228"></script>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			<div class="panel mt8px" style="height:163px;">
+				<h3>展会推荐<span>>> <a href="$!{address.exhibit}">查看更多展会</a></span></h3>
+				#cacheFragment("$!{address.fragment}/fragment/exhibit/recommendExhibits.htm?categoryCode=recommendexhibit&size=6", "", "", "600")
+				<div class="panel-body">
+					<ul class="ul_ht">
+						#foreach($exhibit in $!{list})
+						<li>· <span><a href="$!{address.exhibit}/details${exhibit.id}.htm" target="_blank">#printTitle(${exhibit.name} 20 "")</a></span>
+							<span class="time">#printFragmentDate("yyyy-MM-dd" ${exhibit.gmtStart})</span>
+						</li>
+						#end
+					</ul>
+				</div>
+				#end
+			</div>
+		</div>
+		<div class="right" style="width:241px;">
+			<div class="panel" style="height:210px;">
+                <h3><a href="#springUrl('/trade/zdbuy')">设备终端买家企业名录</a></h3>
+				<div class="panel-body">
+					<ul>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">宜兴环保城企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">造纸行业企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">纺织行业企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">印染行业企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">电镀行业企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">制药及医药行业企业名录</a></li>
+						<li>· <a href="http://subject.huanbao.com/yixing/index/">水厂行业名录</a></li>
+					</ul>
+				</div>
+			</div>
+			#cacheFragment("$!{address.fragment}/fragment/company/recommendCompany.htm?categoryCode=10001000&size=10","","","600")
+			<div class="panel mt8px" style="height:243px;">
+                <h3><a href="$!{address.company}/newc.htm" target="_blank">优质商家推荐</a></h3>
+				<div class="panel-body">
+					<ul>
+					#foreach($l in $!{list})
+						<li><a href="$!{address.esite}/index${l.id}.htm" target="_blank" title="${l.name}">#printTitle($!{l.name} 18 "")</a></li>
+					#end
+					</ul>
+				</div>
+			</div>
+			#end
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+#parse("/trade/common/footSubnet.vm")
+
+<script type="text/javascript">
+jQuery(document).ready(function() {
+	// 地区下拉框初始化
+	var _selectAreaCode=["#provinceCode","#areaCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"#springUrl('/trade')/getAreaCode.htm",
+		field:{code:"code",label:"name"}
+	});
+	selectAreaCode.init({
+		rootCode:"10011000"
+	});
+	jQuery("#buyForm").validationEngine("attach");
+});
+function qukPublishBuy(){
+	if(jQuery("#buyForm").validationEngine('validate')) {
+    	if(jQuery("#loginstatus").val()!="1" ){
+    			var loginbox=new Asto.util.PopupBox({
+    	  		url:"$!{address.myesite}/common/loginMini.htm",
+    	  		destUrl:"$!{address.www}/submitCallback.htm",
+    	  		callbackFn:function(success, data){
+    	  			loginbox.close();
+    	  			jQuery("#loginstatus").val("1");
+					jQuery("#buyForm").submit();
+    	 		},
+				modal:true,
+    	  		width:510,
+    	  		height:400
+    		});
+      		loginbox.show();
+    	} else {
+    		jQuery("#buyForm").submit();
+    	}
+	}
+}
+</script>

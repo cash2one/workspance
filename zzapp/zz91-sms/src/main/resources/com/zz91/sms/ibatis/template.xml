@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="template">
+
+	<typeAlias alias="template" type="com.zz91.sms.domain.Template"/>
+	
+	<insert id="insert" parameterClass="template">
+		INSERT INTO
+			template(code,titles,content,signed,gmt_created,gmt_modified)
+		VALUES
+			(#code#,#titles#,#content#,#signed#,now(),now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		DELETE FROM template where id = #value#
+	</delete>
+	
+	<update id="update" parameterClass="template">
+		UPDATE template
+		SET
+			code = #code#,
+			titles = #titles#,
+			content = #content#,
+			signed = #signed#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<resultMap class="template" id="templateResult">
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+		<result property="titles" column="titles"/>
+		<result property="content" column="content"/>
+		<result property="signed" column="signed"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<select id="query" resultMap="templateResult">
+		SELECT
+			t.id,
+			t.code,
+			t.titles,
+			t.content,
+			t.signed,
+			t.gmt_created,
+			t.gmt_modified
+		FROM template t
+	</select>
+	
+	<select id="queryOne" parameterClass="java.util.Map" resultMap="templateResult">
+		SELECT
+			t.id,
+			t.code,
+			t.titles,
+			t.content,
+			t.signed,
+			t.gmt_created,
+			t.gmt_modified
+		FROM template t
+		WHERE t.id = #id#
+	</select>
+	
+<!-- *********************************************************** -->
+	<select id="queryTemplateByCode" parameterClass="java.util.Map" resultMap="templateResult">
+		SELECT
+			t.id,
+			t.code,
+			t.titles,
+			t.content,
+			t.signed,
+			t.gmt_created,
+			t.gmt_modified
+		FROM template t
+		WHERE t.code = #code#
+	</select>
+</sqlMap>

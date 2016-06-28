@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="company">
+
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+	<typeAlias alias="companyAccount" type="com.ast.ast1949.domain.company.CompanyAccount" />
+	<typeAlias alias="companyDto" type="com.ast.ast1949.dto.company.CompanyDto" />
+
+	<insert id="insertCompany" parameterClass="company">
+	
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="fullColumn">
+	
+	</sql>
+
+	<resultMap class="company" id="companyResult">
+	
+	</resultMap>
+
+h	<select id="queryCompanyById" parameterClass="java.lang.Integer"
+		resultMap="companyResult">
+		select
+		<include refid="company.fullColumn" />
+		from company c
+		where c.id=#value#
+	</select>
+
+	<select id="querySimpleCompanyById" parameterClass="java.lang.Integer"
+		resultMap="companyWithOutIntroResult">
+		select
+		<include refid="company.columnWithOutIntro" />
+		from company c
+		where c.id=#value#
+	</select>
+
+	<select id="queryMembershipOfCompany" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		c.membership_code
+		from company c
+		where c.id=#value#
+	</select>
+
+	<select id="queryAreaCodeOfCompany" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		c.area_code
+		from company c
+		where c.id=#value#
+	</select>
+
+	<update id="updateIntroduction" parameterClass="java.util.HashMap">
+		update company
+		set
+		introduction=#introduction#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<select id="queryCompanyByClassifiedCode" parameterClass="java.util.HashMap"
+		resultMap="companyWithOutIntroResult">
+		select
+		<include refid="company.columnWithOutIntro" />
+		from company c
+		where c.classified_code=#classifiedCode#
+		order by c.id
+		desc
+		limit #maxSize#
+	</select>
+
+	<select id="queryCompanyByArea" parameterClass="java.util.Map"
+		resultMap="companyResult">
+		select
+		<include refid="company.fullColumn" />
+		from company c
+		<dynamic prepend="where">
+			<isNotEmpty property="company.areaCode" prepend="and">
+				c.area_code like
+				concat(#areaCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by id desc
+		limit #maxSize#
+	</select>
+
+	<update id="updateCompanyByUser" parameterClass="company">
+		update company
+		set
+		name=#name#,
+		industry_code=#industryCode#,
+		business=#business#,
+		service_code=#serviceCode#,
+		area_code=#areaCode#,
+		foreign_city=#foreignCity#,
+		category_garden_id=#categoryGardenId#,
+		address=#address#,
+		address_zip=#addressZip#,
+		business_type=#businessType#,
+		sale_details=#saleDetails#,
+		buy_details=#buyDetails#,
+		website=#website#,
+		introduction=#introduction#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<update id="updateCompanyByAdmin" parameterClass="company">
+		update company
+		set
+		name=#name#,
+		industry_code=#industryCode#,
+		business=#business#,
+		service_code=#serviceCode#,
+		area_code=#areaCode#,
+		foreign_city=#foreignCity#,
+		category_garden_id=#categoryGardenId#,
+		address=#address#,
+		address_zip=#addressZip#,
+		business_type=#businessType#,
+		sale_details=#saleDetails#,
+		buy_details=#buyDetails#,
+		website=#website#,
+		domain=#domain#,
+		domain_zz91=#domainZz91#,
+		introduction=#introduction#,
+		classified_code=#classifiedCode#,
+		tags=#tags#,
+		regfrom_code=#regfromCode#,
+
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<sql id="dynamicBySearch">
+		<dynamic prepend="where">
+			<isNotEmpty property="company.name" prepend="and">
+				c.name like
+				concat('%',#company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.business" prepend="and">
+				c.business like concat('%',#company.business#,'%')
+			</isNotEmpty>
+
+			<isNotEmpty property="company.industryCode" prepend="and">
+				c.industry_code=#company.industryCode#
+			</isNotEmpty>
+			<isNotEmpty property="company.areaCode" prepend="and">
+				c.area_code like concat(#company.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.categoryGardenId" prepend="and">
+				c.category_garden_id=#company.categoryGardenId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryCompanyBySearch" parameterClass="java.util.HashMap"
+		resultMap="companyResult">
+		select
+		<include refid="company.fullColumn" />
+		from company c
+		<include refid="company.dynamicBySearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanyBySearchCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from company c
+		<include refid="company.dynamicBySearch" />
+	</select>
+
+	<sql id="dynamicByAdmin">
+		<dynamic prepend="where">
+			exists (select ca.company_id from company_account ca where c.id=ca.company_id 
+				<isNotEmpty property="account.account">
+					and ca.account = #account.account#
+				</isNotEmpty>
+				<isNotEmpty property="account.email">
+					and ca.email = #account.email#
+				</isNotEmpty>
+				<isNotEmpty property="account.mobile">
+					and ca.mobile = #account.mobile#
+				</isNotEmpty>
+			)
+			
+			<isNotEmpty property="company.name">
+				and c.name like concat(#company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.address">
+				and c.address like concat(#company.address#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.industryCode">
+				and c.industry_code=#company.industryCode#
+			</isNotEmpty>
+			<isNotEmpty property="company.areaCode">
+				and c.area_code like concat(#company.areaCode# , '%')
+			</isNotEmpty>
+			<isNotEmpty property="company.membershipCode">
+				and c.membership_code like concat(#company.membershipCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<sql id="accountColumn">
+		ca.contact,ca.mobile,ca.tel_country_code,ca.tel_area_code,ca.tel,ca.email,ca.account,ca.back_email,ca.is_use_back_email
+	</sql>
+	<select id="queryCompanyByAdmin" parameterClass="java.util.HashMap"
+		resultMap="companyWithOutIntroResult">
+		select
+		<include refid="company.columnWithOutIntro" />
+		from
+		company c
+		<include refid="company.dynamicByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanyByAdminCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from company c
+		<include refid="company.dynamicByAdmin" />
+	</select>
+	
+	<select id="queryCompanyByEmail" parameterClass="java.util.HashMap"
+		resultMap="companyDtoWithOutIntoResult">
+		select
+		<include refid="company.columnWithOutIntro" />
+		,
+		<include refid="company.accountColumn"/>
+		from company c 
+		inner join company_account ca on ca.company_id=c.id
+		where ca.email=#email#
+		limit #max#
+	</select>
+	<!--  
+	<select id="queryCompanyByEmail" parameterClass="java.util.HashMap"
+		resultMap="companyDtoWithOutIntoResult">
+		select
+		<include refid="company.columnWithOutIntro" />
+		,
+		<include refid="company.accountColumn"/>
+		from company c,company_account ca
+		where
+		exists (select ca.company_id from company_account ca where c.id=ca.company_id and ca.email = #email#)
+		limit #max#
+	</select>
+	-->
+	<resultMap class="company" id="domainResult">
+		<result property="id" column="id" />
+		<result property="domain" column="domain" />
+		<result property="domainZz91" column="domain_zz91" />
+	</resultMap>
+	
+	<select id="queryDomainOfCompany" parameterClass="java.lang.Integer" resultMap="domainResult">
+		select id,domain,domain_zz91 from company
+		where id=#value#
+	</select>
+	
+	<update id="updateCustomDomain" parameterClass="java.util.HashMap" >
+		update company set 
+			domain = #domain#,
+			gmt_modified=now()
+		where id=#companyId#
+	</update>
+	
+	<update id="updateStar" parameterClass="java.util.HashMap" >
+		update company set
+			star=#star#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<update id="updateLastVisit" parameterClass="java.lang.Integer" >
+		update company set
+			gmt_visit=now(),
+			num_visit_month=num_visit_month+1,
+			gmt_modified=now()
+		where id=#value#
+	</update>
+	
+	<update id="updateMembershipCode" parameterClass="java.util.HashMap" >
+		update company set 
+			membership_code=#membershipCode#,
+			gmt_modified=now()
+		where id=#companyId#
+	</update>
+	
+	<select id="queryIdByDomain" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from company where domain=#value# or domain_zz91=#value# limit 1
+	</select>
+	
+	<select id="queryCompanyByAccountEmail" parameterClass="java.lang.String" resultMap="companyDtoWithOutIntoResult" >
+		select
+		<include refid="company.columnWithOutIntro" />
+		,
+		<include refid="company.accountColumn"/>
+		from company c 
+		inner join company_account ca on ca.company_id=c.id
+		where ca.email=#value#
+		limit 1
+	</select>
+	
+	<resultMap class="company" id="companyByLoginResult">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="domainZz91" column="domain_zz91"/>
+	</resultMap>
+	
+	<select id="queryCompanyByLoginNum" parameterClass="java.lang.Integer" resultMap="companyByLoginResult" >
+		select c.id, c.name,c.domain_zz91 
+		from company_account ca
+		inner join company c on ca.company_id=c.id
+		where c.membership_code!='10051000'
+		order by ca.num_login desc 
+		limit #value#;
+	</select>
+
+	<select id="queryCompanyWithAccountById" parameterClass="java.lang.Integer" resultMap="companyDtoWithOutIntoResult" >
+		select
+		<include refid="company.columnWithOutIntro" />
+		,
+		<include refid="company.accountColumn"/>
+		from company c 
+		inner join company_account ca on ca.company_id=c.id
+		where c.id=#value#
+		limit 1
+	</select>
+	
+	<select id="queryDetails"  parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select introduction from company where id=#value# limit 1
+	</select>
+	
+	<select id="queryRecentZst" parameterClass="java.util.HashMap" resultMap="companyByLoginResult">
+		select c.id,c.name,c.domain_zz91 from company c
+		inner join crm_company_service ccs on c.id = ccs.company_id
+		where ccs.crm_service_code='1000' 
+			and ccs.apply_status='1' 
+			and ccs.gmt_start>#start# 
+			and now()> ccs.gmt_start 
+			and ccs.gmt_end>now()
+		order by gmt_signed desc
+		limit #limit#
+	</select>
+	
+	<select id="queryNameByAccount" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select name from company 
+		where id=(select company_id from company_account where account=#value# limit 1)
+	</select>
+	
+	<select id="queryCompanyIdByDomainZz91" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from company 
+		where domain_zz91=#value#
+		limit 1
+	</select>
+	
+	<update id="updateZstOpenInfo" parameterClass="java.util.HashMap">
+		update company set
+			zst_year=#zstYear#,
+			domain_zz91=#domainZz91#,
+			membership_code=#membershipCode#,
+			zst_flag='1',
+			gmt_modified=now()
+		where id=#companyId#
+	</update>
+	
+	<sql id="dynamicCompanyByAdmin">
+		<dynamic prepend="where">
+			<isNotEmpty property="company.name" prepend="and">
+				c.name like concat(#company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cid" prepend="and">
+				c.id = #cid#
+			</isNotEmpty>
+			<isNotEmpty property="company.membershipCode" prepend="and">
+				c.membership_code like concat(#company.membershipCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="gmtRegisterStart" prepend="and">
+                c.regtime > #gmtRegisterStart#
+                <isNotEmpty property="gmtRegisterEnd" prepend="and">
+                    #gmtRegisterEnd# > c.regtime
+                </isNotEmpty>
+            </isNotEmpty>
+            <isEmpty property="gmtRegisterStart">
+                <isNotEmpty property="gmtRegisterEnd" prepend="and">
+                     #gmtRegisterEnd# > c.regtime
+                </isNotEmpty>
+            </isEmpty>
+			<isNotEmpty property="company.regfromCode" prepend="and">
+				c.regfrom_code like concat(#company.regfromCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.isBlock" prepend="and">
+				c.is_block=#company.isBlock#
+			</isNotEmpty>
+			<isNotEmpty property="company.address" prepend="and">
+				c.address like concat(#company.address#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.industryCode" prepend="and">
+				c.industry_code like concat(#company.industryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.areaCode" prepend="and">
+				c.area_code like concat(#company.areaCode#,'%') 
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryCompany" parameterClass="java.util.HashMap" resultMap="companyWithOutIntroResult">
+		select 
+			<include refid="company.columnWithOutIntro"/>
+		from company c
+		<include refid="company.dynamicCompanyByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />		  
+	</select>
+	
+	<select id="queryCompanyCountByAdmin" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from company c
+		<include refid="company.dynamicCompanyByAdmin" />
+	</select>
+	
+	<select id="queryCompanyNameById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select name from company where id = #id#
+	</select>
+	
+	<update id="updateIsBlock" parameterClass="java.util.HashMap">
+		update company set 
+			is_block=#isBlock#,
+			gmt_modified=now()
+		where id=#companyId#	
+	</update>
+	
+	<select id="queryCompanyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0) from company
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="membershipCode" >
+				membership_code &lt;&gt; #membershipCode#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<select id="isBlocked" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) from company where is_block='0' 
+		and id=(select company_id from company_account where account=#value#)
+	</select>
+	
+</sqlMap>

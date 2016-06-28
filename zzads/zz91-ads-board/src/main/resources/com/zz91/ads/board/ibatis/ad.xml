@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ad">
+	<typeAlias alias="ad" type="com.zz91.ads.board.domain.ad.Ad"/>
+	<typeAlias alias="adDto" type="com.zz91.ads.board.dto.ad.AdDto"/>
+	<typeAlias alias="exactTypeDto" type="com.zz91.ads.board.dto.ad.ExactTypeDto"/>
+	<typeAlias alias="exactType" type="com.zz91.ads.board.domain.ad.ExactType"/>
+	<typeAlias alias="adExactType" type="com.zz91.ads.board.domain.ad.AdExactType"/>
+	
+	<resultMap id="adResult" class="ad">
+		<result property="id" column="id" />
+		<result property="positionId" column="position_id" />
+		<result property="adTitle" column="ad_title" />
+		<result property="adDescription" column="ad_description" />
+		<result property="adContent" column="ad_content" />
+		<result property="adTargetUrl" column="ad_target_url" />
+		<result property="onlineStatus" column="online_status" />
+		<result property="gmtStart" column="gmt_start" />
+		<result property="gmtPlanEnd" column="gmt_plan_end" />
+		<result property="remark" column="remark" />
+		<result property="applicant" column="applicant" />
+		<result property="reviewer" column="reviewer" />
+		<result property="reviewStatus" column="review_status" />
+		<result property="reviewComment" column="review_comment" />
+		<result property="designer" column="designer" />
+		<result property="designStatus" column="design_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="searchExact" column="search_exact" />
+		<result property="sequence" column="sequence" />
+		<result property="expiredRent" column="expired_rent" />
+		<result property="advertiserId" column="advertiser_id"/>
+	</resultMap>
+	
+	<resultMap id="adDtoResult" class="adDto">
+		<result property="ad" resultMap="ad.adResult" />
+		<result property="positionName" column="positionName" />
+		<result property="advertiserName" column="advertiserName" />
+		<result property="hasExactAd" column="has_exact_ad" />
+		<result property="width" column="width" />
+		<result property="height" column="height" />
+		<result property="requestUrl" column="request_url" />
+	</resultMap>
+	
+	<sql id="fields">
+		a.id,a.position_id,a.advertiser_id,a.ad_title,a.ad_description,
+		a.ad_content,a.ad_target_url,a.online_status,
+		a.gmt_start,a.gmt_plan_end,a.remark,a.applicant,a.reviewer,
+		a.review_status,a.review_comment,a.designer,
+		a.design_status,a.gmt_created,a.gmt_modified,
+		a.search_exact,a.sequence,a.expired_rent
+	</sql>
+	
+	<insert id="insertAd" parameterClass="ad">
+		INSERT INTO ad (
+			position_id,
+			advertiser_id,
+			ad_title,
+			ad_description,
+			ad_content,
+			ad_target_url,
+			online_status,
+			gmt_start,
+			gmt_plan_end,
+			remark,
+			applicant,
+			reviewer,
+			review_status,
+			review_comment,
+			designer,
+			design_status,
+			gmt_created,
+			gmt_modified,
+			search_exact,
+			expired_rent
+		)
+		VALUES (
+			#positionId#,
+			#advertiserId#,
+			#adTitle#,
+			#adDescription#,
+			#adContent#,
+			#adTargetUrl#,
+			#onlineStatus#,
+			#gmtStart#,
+			<isNull property="gmtPlanEnd">
+			0,
+			</isNull>
+			<isNotNull property="gmtPlanEnd">
+			#gmtPlanEnd#,
+			</isNotNull>
+			#remark#,
+			#applicant#,
+			#reviewer#,
+			#reviewStatus#,
+			#reviewComment#,
+			#designer#,
+			#designStatus#,
+			NOW(),
+			NOW(),
+			'',
+			#expiredRent#
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteAdById" parameterClass="java.lang.Integer">
+		DELETE FROM ad
+		WHERE id=#value#
+	</delete>
+	
+	<sql id="queryAdByConditions">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ad.positionId">
+				a.position_id = #ad.positionId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ad.adTitle">
+				a.ad_title LIKE CONCAT(#ad.adTitle#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ad.reviewStatus">
+				a.review_status = #ad.reviewStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ad.onlineStatus">
+				a.online_status = #ad.onlineStatus#
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="ad.applicant">
+				a.applicant = #ad.applicant#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ad.designer">
+				a.designer = #ad.designer#
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and" property="search.startFrom">
+				a.gmt_start >= #search.startFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.startTo">
+				#search.startTo# >= a.gmt_start
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="search.planEndFrom">
+				a.gmt_plan_end >= #search.planEndFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.planEndTo">
+				#search.planEndTo# >= a.gmt_plan_end
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="search.email">
+				av.email = #search.email#
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="search.anchorPoint">
+				exists (select ad_id from ad_exact_type aet where a.id=aet.ad_id
+					and aet.anchor_point=#search.anchorPoint#
+					<isNotEmpty prepend="and" property="ad.positionId">
+						aet.ad_position_id = #ad.positionId#
+					</isNotEmpty>
+					<isNotEmpty prepend="and" property="search.exactTypeId">
+						aet.exact_type_id=#search.exactTypeId#
+					</isNotEmpty>
+				)
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+	
+	<select id="queryAdByConditions" parameterClass="java.util.HashMap" resultMap="adDtoResult">
+		SELECT 
+			<include refid="fields" />
+			, ap.name as positionName, av.name as advertiserName
+			, ap.has_exact_ad, ap.width, ap.height, ap.request_url
+		FROM ad a
+		inner join ad_position ap on a.position_id=ap.id
+		inner join advertiser av on a.advertiser_id = av.id
+		<include refid="queryAdByConditions" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAdByConditionsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM ad a
+		inner join ad_position ap on a.position_id=ap.id
+		inner join advertiser av on a.advertiser_id = av.id
+		<include refid="queryAdByConditions" />
+	</select>
+	
+	<update id="updateAd" parameterClass="ad">
+		update ad
+		set
+			ad_target_url = #adTargetUrl#,
+			ad_title = #adTitle#,
+			gmt_start = #gmtStart#,
+			<isNull property="gmtPlanEnd">
+				gmt_plan_end = 0,
+			</isNull>
+			<isNotNull property="gmtPlanEnd">
+				gmt_plan_end = #gmtPlanEnd#,
+			</isNotNull>
+			ad_description = #adDescription#,
+			ad_content=#adContent#,
+			<!-- sequence=#sequence#, -->
+			<isNotEmpty property="adContent">
+				gmt_content_modified=now(),
+			</isNotEmpty>
+			<isNotEmpty property="advertiserId">
+				advertiser_id=#advertiserId#,
+			</isNotEmpty>
+			<isNotEmpty property="reviewStatus">
+				review_status=#reviewStatus#,
+				reviewer=#reviewer#,
+			</isNotEmpty>
+			<isNotEmpty property="designStatus">
+				design_status=#designStatus#,
+				designer=#designer#,
+			</isNotEmpty>
+			remark=#remark#,
+			expired_rent=#expiredRent#,
+			gmt_modified=now()
+		where id = #id#
+	</update>
+	
+	<update id="updateAdByDesigner" parameterClass="ad">
+		UPDATE ad
+		SET
+			ad_target_url = #adTargetUrl#,
+			ad_title = #adTitle#,
+			designer =#designer#,
+			ad_description = #adDescription#,
+			<isNotEmpty property="designStatus">
+				design_status=#designStatus#,
+			</isNotEmpty>
+			gmt_modified=NOW()
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateReviewStatus" parameterClass="java.util.HashMap">
+		UPDATE ad
+		SET
+			review_status=#status#,
+			reviewer=#reviewer#,
+			gmt_modified=NOW()
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateOnlineStatus" parameterClass="java.util.HashMap">
+		UPDATE ad
+		SET
+			online_status=#status#,
+			gmt_modified=NOW()
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateDesignStatus" parameterClass="java.util.HashMap">
+		UPDATE ad
+		SET
+			design_status=#status#,
+			gmt_modified=NOW()
+		WHERE id = #id#
+	</update>
+	
+	<select id="qureyAdById" parameterClass="java.lang.Integer" resultMap="adResult">
+		SELECT 
+			<include refid="fields" />
+		FROM ad a
+		WHERE a.id=#value#
+	</select>
+	
+	<update id="updateDesigner" parameterClass="java.util.HashMap">
+		UPDATE ad
+		SET
+			designer=#designer#,
+			gmt_modified=NOW()
+		WHERE id = #id#
+	</update>
+	
+	<resultMap id="exactTypeDtoResult" class="exactTypeDto">
+		<result property="exact" resultMap="ad.simpleExactResult"/>
+		<result property="adExact" resultMap="ad.simpleAdExactResult"/>
+	</resultMap>
+	
+	<resultMap id="simpleExactResult" class="exactType">
+		<result property="id" column="exact_id" />
+		<result property="exactName" column="exact_name" />
+		<result property="remark" column="remark" />
+	</resultMap>
+	
+	<resultMap id="simpleAdExactResult" class="adExactType">
+		<result property="anchorPoint" column="anchor_point" />
+		<result property="id" column="id" />
+	</resultMap>
+	
+	<select id="queryAdExact" parameterClass="java.lang.Integer" resultMap="exactTypeDtoResult">
+		select aet.anchor_point,et.exact_name,et.remark, aet.id, et.id as exact_id
+		from ad_exact_type aet
+		inner join exact_type et on aet.exact_type_id=et.id
+		where aet.ad_id=#value#
+		order by et.id asc
+	</select>
+	
+	<select id="queryPositionOfAd" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select position_id from ad 
+		where id=#value#
+		limit 1
+	</select>
+	
+	<delete id="deleteAdExactTypeById" parameterClass="java.lang.Integer" >
+		delete from ad_exact_type where id=#value#
+	</delete>
+	
+	<update id="updateSearchExact" parameterClass="java.util.HashMap">
+		update ad set
+			search_exact=#searchExact#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<update id="updateSequence" parameterClass="java.util.HashMap">
+		update ad set
+			sequence=#sequence#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<update id="updatePosition" parameterClass="java.util.HashMap">
+		update ad set
+			position_id=#positionId#,
+			gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<select id="countExistsAd" parameterClass="java.util.HashMap" resultClass="java.lang.Integer" >
+		select count(*) from ad a
+		where
+			review_status='Y'
+		<isNotEmpty prepend="and" property="positionId">
+			a.position_id = #positionId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="gmtPlanEnd">
+			a.gmt_plan_end >= #gmtPlanEnd#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="keywords">
+			exists (select ad_id from ad_exact_type aet where a.id=aet.ad_id
+				and aet.anchor_point=#keywords#
+				<isNotEmpty prepend="and" property="positionId">
+					aet.ad_position_id = #positionId#
+				</isNotEmpty>
+			)
+		</isNotEmpty>
+	</select>
+	
+	<update id="updateRent" parameterClass="java.util.HashMap" >
+	    update ad
+	    set expired_rent=#expiredRent#,
+	    gmt_modified=now()
+	    where id=#id#
+	</update>
+	
+</sqlMap>

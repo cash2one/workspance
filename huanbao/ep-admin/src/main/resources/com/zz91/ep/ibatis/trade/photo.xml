@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="photo">
+
+    <typeAlias alias="photo" type="com.zz91.ep.domain.trade.Photo"/>
+
+    <resultMap  class="photo" id="simpleColumnMap">
+        <result property="id" column="id" />
+        <result property="cid" column="cid" />
+        <result property="photoAlbumId" column="photo_album_id" />
+        <result property="title" column="title" />
+        <result property="path" column="path" />
+        <result property="pathThumb" column="path_thumb" />
+        <result property="targetId" column="target_id" />
+        <result property="targetType" column="target_type" />
+        <result property="isDel" column="is_del" />
+        <result property="gmtCreated" column="gmt_created" />
+        <result property="checkStatus" column="check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+    </resultMap>
+
+    <sql id="simpleColumn">
+        id,
+        cid,
+        photo_album_id,
+        title,
+        path,
+        path_thumb,
+        target_id,
+        target_type,
+    	is_del,
+        gmt_created,
+    	check_status,
+		unpass_reason
+    </sql>
+
+	<delete id="deletePhotoById" parameterClass="java.lang.Integer" >
+        delete from photo
+        where id=#id#
+    </delete>
+    <update id="deletePhotoStatusById" parameterClass="java.lang.Integer" >
+        update photo
+    	set is_del = "1"
+        where id=#id#
+    </update>
+    
+	<update id="cancelDeletePhotoStatusById" parameterClass="java.lang.Integer" >
+        update photo
+    	set is_del = "0"
+        where id=#id#
+    </update>
+    
+    <insert id="insertPhoto" parameterClass="photo" >
+        insert into photo
+        (
+         uid,
+         cid,
+         photo_album_id,
+         title,
+         path,
+         path_thumb,
+         target_id,
+         target_type,
+         gmt_created,
+         gmt_modified
+        )
+        values
+        (
+         #uid#,
+         #cid#,
+         #photoAlbumId#,
+         #title#,
+         #path#,
+         #pathThumb#,
+         #targetId#,
+         #targetType#,
+         now(),
+         now()
+        )
+        <selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    
+    <!-- 
+    <select id="queryPhotoByAlbumId" parameterClass="java.util.Map" resultMap="simpleColumnMap">
+        select 
+        <include refid="simpleColumn"/>
+        from photo
+        where cid=#cid#
+        <isNotEmpty property="aid">
+            and photo_album_id=#aid#
+        </isNotEmpty>
+        <isNotEmpty property="uid">
+            and uid = #uid#
+        </isNotEmpty>
+    </select>
+    
+   	<update id="updatePhotoTargetIdById" parameterClass="java.util.Map">
+        update photo 
+        set target_id = #targetId# 
+        where id= #id#
+    </update>
+    
+   	<select id="queryPhotosByCid" parameterClass="java.util.HashMap" resultMap="simpleColumnMap">
+    	select 
+        <include refid="simpleColumn"/>
+        from photo
+        where cid=#cid# and target_type=#type#
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+    </select>
+    
+   	<select id="queryPhotosByCidCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(*)
+    	from photo
+        where cid=#cid# and target_type=#type#
+	</select>
+	
+   	<update id="deletePhotoTargetIdById" parameterClass="java.util.Map">
+        update photo 
+        set target_id = 0
+        where target_id= #id# and target_type=#type#
+    </update>
+     -->
+    
+    <select id="queryPhotoByTargetType" parameterClass="java.util.HashMap" resultMap="simpleColumnMap">
+        select
+        <include refid="simpleColumn"/>
+        from photo
+        where target_id=#id# and target_type=#type#
+        limit 100
+    </select>
+    
+    <update id="updateNewsPhotoByTargetId" parameterClass="java.lang.Integer">
+        update photo 
+        set target_id = #targetId#
+        where target_id= 0 and target_type='news'
+    </update>
+
+	<update id="updatePicStatus" parameterClass="java.util.Map" > 
+		update
+		photo
+		set
+		gmt_modified = now(),
+		check_status = #checkStatus#,
+		unpass_reason = #unpassReason#
+		where id=#id#
+	</update>
+</sqlMap>

@@ -1,0 +1,122 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/bizList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">最新在线商机</li>
+        </ul>
+    	<div class="alert alert-info">
+    		<strong>$!{companyAccount.contact}</strong> #if($!{companyAccount.sex} == 1) 女士 #else 先生 #end，您好！
+    		<p>以下是您在中国再生资源交易网订阅的最新商机，快去看看有没有合适的客户吧！</p>
+    	</div>
+    	#if(0>=$bizList.size())
+    		<div class="alert mt"> 
+        		您还没有订阅在线商机信息，<a href="#springUrl('/subscribe/subscribe.htm?subscribeType=0')" target="_blank">点此订阅</a>
+        	</div>
+    	#end
+		<ul class="orderlist mt">
+            <li>您定制的商机：</li>
+			#foreach($biz in $bizList)
+				#set($biztype="(供应+求购)")
+				#if($!{biz.productsTypeCode}=="10331000")
+					#set($biztype="(供应)")
+				#elseif($!{biz.productsTypeCode}=="10331001") 
+					#set($biztype="(求购)")
+				#end
+    			<li><a href="#springUrl('/mysubscribe/bizList.htm?id=')$!{biz.id}" title="$!{biz.keywords} $!{biztype}" #if($!{id}==$!{biz.id}) class="label label-success" #else class="label" #end>$!{biz.keywords}</a></li>
+			#end
+		</ul>
+		#if($!{page.totalRecords} == 0)
+		<div class="alert alert-error mt"> 暂时没有该关键词信息，请点击其他关键词查看相关信息！</div>
+		#end
+    	<div class="list mt">
+    		#foreach($product in $!{page.records})
+        		#set($compurl="$!{address.company}/compinfo$!{product.company.id}.htm")
+        		#set($urlMsg="$!{address.company}/compinfo$!{product.company.id}.htm#messages")
+        		#set($urlContact="$!{address.company}/compinfo$!{product.company.id}.htm")
+        		#if($!{product.company.membershipCode}!="10051000" && $!{product.company.domainZz91}!="")
+        			#set($compurl="http://$!{product.company.domainZz91}.zz91.com")
+        			#set($urlMsg="http://$!{product.company.domainZz91}.zz91.com/zxly.htm")
+        			#set($urlContact="http://$!{product.company.domainZz91}.zz91.com/lxfs.htm")
+        		#end
+        		<div class="list-item">
+					<div class="item-pic">
+    					<a href="$!{address.trade}/picshow.htm?pid=$!{product.products.id}&psort=1" target="_blank">
+						#if($!{product.coverPicUrl} && $!{product.coverPicUrl}!="")
+							<img src='$!{address.thumb}$!{address.resource}/$!{product.coverPicUrl}&width=100&height=80' width='100' height='80' />
+						#else
+							<img src='$!{address.images}/global/noimage.gif' width='100' height='80' style="border:1px solid #ccc" />
+						#end
+    					</a>
+        			</div>
+                    <div class="item-detail">
+                        <p class="large"><strong>$!{product.productsTypeLabel}
+							#printProductType($!{product.products.productsTypeCode} "" "")
+    						<a target="_blank" href="$!{address.trade}/productdetails$!{product.products.id}.htm">$!{product.products.title}</a>
+						</strong></p>
+                        <!-- <p>
+							信息发布时间:
+							<span class="grey">$!date.format('yyyy-MM-dd HH:mm:ss',$!{product.products.refreshTime})</span>
+						</p> -->
+                        <p>
+							#if($!{product.products.details})
+								#printTitle($!{product.products.details} 100 "")
+							#else
+								&nbsp;
+							#end
+                        </p>
+					</div>
+                    <div class="item-rank">
+    					<a href='$!{compurl}' target='_blank'>
+						#if($!{product.company.membershipCode}=="10051001")
+							<img src='$!{address.images}/common/recycle.gif'/>
+						#elseif($!{product.company.membershipCode}=="100510021000")
+							<img src='$!{address.images}/common/pptSilver.gif'/>
+						#elseif($!{product.company.membershipCode}=="100510021001")
+							<img src='$!{address.images}/common/pptGold.gif'/>
+						#elseif($!{product.company.membershipCode}=="100510021002")
+							<img src='$!{address.images}/common/pptDiamond.gif'/>
+						#elseif($!{product.company.membershipCode}=="10051003")
+    						<img src='$!{address.images}/common/ppt_ldb.png'/>
+						#end
+                            <p>
+							#if($!{product.company.membershipCode}=="10051000")
+								普通会员
+							#elseif($!{product.company.membershipCode}=="10051001")
+								再生通会员
+							#elseif($!{product.company.membershipCode}=="100510021000")
+								银牌品牌通
+							#elseif($!{product.company.membershipCode}=="100510021001")
+								金牌品牌通
+							#elseif($!{product.company.membershipCode}=="100510021002")
+								钻石品牌通
+							#elseif($!{product.company.membershipCode}=="10051003")
+    						    来电宝会员
+							#else
+								普通会员
+							#end
+                            </p>
+    					</a>
+    				</div>
+                    <div class="item-contact">
+                        <p>
+    						<a href="$!{compurl}" target="_blank">$!{product.company.name}</a>
+    					<p>
+    					<p>
+    						<a href="$!{address.trade}/productdetails$!{product.products.id}.htm#message" target="_blank">给我留言</a>
+    						<a href="$!{address.trade}/productdetails$!{product.products.id}.htm" target="_blank">联系方式</a>
+    					</p>
+                  	</div>
+        		</div>
+    		#end
+    	</div>
+		#myrcPageNav($!{page} "#springUrl('/mysubscribe/bizList.htm')" "id=$!{id}" "")
+    </div>
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(5, 1);
+})
+</script>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="oauthAccess">
+	<typeAlias alias="oauthaccess" type="com.zz91.ep.domain.comp.OauthAccess" />
+
+	<resultMap class="oauthaccess" id="defaultResult">
+		<result column="open_id" property="openId" />
+		<result column="open_type" property="openType" />
+		<result column="target_account" property="targetAccount" />
+		<result column="gmt_created" property="gmtCreated" />
+		<result column="gmt_modified" property="gmtModified" />
+	</resultMap>
+	<sql id="defaultColumn">
+		open_id,
+		open_type,
+		target_account,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryAccessByOpenIdAndType" parameterClass="java.util.Map"
+		resultMap="defaultResult">
+		select
+		<include refid="defaultColumn" />
+		from oauth_access 
+		where
+		open_id = #openId# and open_type = #openType#
+		limit 1
+	</select>
+	
+	<select id="queryAccessByAccountAndType" parameterClass="java.util.Map"
+		resultMap="defaultResult">
+		select
+		<include refid="defaultColumn" />
+		from oauth_access 
+		where
+		target_account = #account# and open_type = #openType#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="oauthaccess">
+		INSERT INTO oauth_access
+		(
+		open_id,
+		open_type,
+		target_account,
+		gmt_created,gmt_modified
+		)
+		VALUES
+		(
+		#openId#,
+		#openType#,
+		#targetAccount#,
+		now(),now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateByOpenId" parameterClass="java.util.Map">
+		UPDATE oauth_access
+		SET
+		gmt_modified = now()
+		<isNotEmpty property="targetAccount" prepend=",">
+			target_account = #targetAccount#
+		</isNotEmpty>
+		WHERE open_id = #openId#
+	</update>
+</sqlMap>

@@ -1,0 +1,94 @@
+ #set($layout="/layout/yuanliaoLayout.vm")
+    <div class="wrap">
+    	<div class="box_head g-br2">
+        	<div class="myrc_step fr">
+            	<ul>
+                	<li class="site-item g-ib"><em class="num-normal">1</em>&nbsp;选择产品类别&gt;</li>
+                    <li class="site-item g-ib"><em class="num-normal">2</em>&nbsp;填写详细信息&gt;</li>
+                    <li class="site-item g-ib on"><em class="num-top">3</em>&nbsp;信息发布成功</li>
+                </ul>
+            </div>
+        	<h4 class="box-title">发布原料供求信息</h4>
+        </div>
+        <!--end box_head-->
+        <div class="box_con clearfix">
+        	<div class="box_1_con">
+            	<h2>您的产品信息发布成功</h2>
+            	<dl>
+                	<dt>ZZ91再生网提醒：</dt>
+                    <dd> ● 您的产品信息已提交审核，您可以点击<a href="/myyuanliao/office_post_list.htm" class="blue">“查看已发布信息”</a>查看审核状态。审核通过后，信息将在ZZ91展示。</dd>
+                    #if(!$!{pic})
+						<dd> ● 您尚未上传图片，上传图片有利于提高产品竞争力，点击<a href="/myyuanliao/office_img.htm?yuanliaoId=$!{id}" class="blue">“上传产品图片”</a>。</dd>
+					#end
+					#if(!$!{len})
+						<dd>
+							● 您的产品描述少于30个中文字，为提高产品竞争力和排名，点击<a href="/myyuanliao/office_post_edit.htm?id=$!{id}" class="blue">“马上完善供求”</a>。
+							<p><a href="http://help.zz91.com/detail-128/" target="_blank" class="orange">教你如何发布优质供求信息，吸引更多客户</a></p>
+						</dd>
+					#end
+					#if(!${market})
+						<dd> ● 您尚未入驻产业带，入驻产业带有利于随时随地了解市场货源信息，点击<a href="/mycompany/updateCompany.htm?lmcode=1201" class="blue">“入驻产业带”</a>。</dd>
+					#end
+				</dl>
+                <div class="box_con_btn">
+                	<a href="$!{address.myrc}/myyuanliao/office_post1.htm" class="button button-raised button-royal2">继续发布同类产品</a>
+                    <a href="$!{address.myrc}/myproducts/office_post1.htm" class="button button-raised button-royal">发布其他类别产品</a>
+                </div>
+                <!--end box_con_btn-->
+            </div>
+            <!--end box_1_con-->
+        </div>
+        <!--end box_con-->
+    </div>
+    <!--end wrap-->
+    <script>
+jQuery(function(){
+	var a = document.referrer;
+	if(a.indexOf("office_post_edit")!=-1){
+		jQuery(".myrc_step").css("display","none");
+	}
+	myrc.select("Js_select");
+	
+
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"http://trade.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"http://price.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("http://huzhu.zz91.com/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("http://company.zz91.com/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+});
+</script>

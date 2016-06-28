@@ -1,0 +1,115 @@
+  <style >
+	a {
+		cursor:pointer;
+	}
+ </style>  
+			  <div class="fr view-right">
+                    <div class="firminfo">
+                        <div class="firminfo-title">供求信息</div>
+
+                        <div class="cptype">
+                            <h2 class="cptype-title">产品分类</h2>
+                            <div class="cptype-all clearfix">
+                                <a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html" #if(!${column}||${column}==0||${column}!=1&&${column}!=2&&${column}!=3&&${column}!=4) class="this-cptype" #end>全部</a>
+                                <a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=1" #if(${column}==1) class="this-cptype" #end>通用塑料($!{conut})</a>
+                                <a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=2" #if(${column}==2) class="this-cptype" #end>工程塑料($!{conut2})</a>
+                                <a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=3" #if(${column}==3) class="this-cptype" #end>特种塑料($!{conut3})</a>
+                                <a href="#springUrl('/comp')/detail$!{company.id}-2-pn1.html?type=4" #if(${column}==4) class="this-cptype" #end>塑料合金($!{conut4})</a>
+                            </div>
+                        </div>
+                        <ul class="cptype-list">
+							#foreach($in in $page.Records)
+                            <li class="clearfix">
+                                <div class="cptype-img fl">
+									<a href="#springUrl('/detail')/$!{in.yuanliao.id}.html" target="_blank">
+										#if($!{in.picAddress})
+											<img src="$!{address.resource}/$!{in.picAddress}" width="140" height="120"/>
+										#else
+											<img src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" style="width:140px;height:120px" />
+										#end
+									</a>
+								</div>
+
+                                <div class="cptype-info fl">
+                                    <p class="clearfix cptype-info-top">
+                                        <a href="#springUrl('/detail')/$!{in.yuanliao.id}.html" target="_blank" class="cptype-info-tt fl">#printTitle($!{in.yuanliao.title} 15 '...')</a>
+                                        <span class="fr cr-66">#printFragmentDate('yyyy-MM-dd' $in.yuanliao.refreshTime)</span>
+                                    </p>
+                                    <div class="infoproty">
+                                        <p class="infoproty-num">供应量:<span class="red">#if($!{in.yuanliao.quantity}&&$!{in.yuanliao.quantity}!="0") $!{in.yuanliao.quantity} $!{in.yuanliao.unit} #else 不限 #end</span></p>
+                                        <p class="infoproty-list">
+                                            <span>厂家（产地）:<em> $!{in.location}</em class="cr-black"></span>
+                                            <span>牌号:<em class="cr-black"> ${in.yuanliao.tradeMark}</em></span>
+                                            <span class="lastmg">类型:<em class="cr-black"> $!{in.yuanliao.type}</em></span>
+                                        </p>
+                                    </div>
+                                    <p class="introduce cr-66">#printTitle($!{in.yuanliao.description} 80 '...')</p>
+                                </div>
+
+                                <div class="cptype-moery fl">
+										#if($!{in.yuanliao.minPrice})
+                                             <span class="moerynum">$!{in.yuanliao.minPrice}-$!{in.yuanliao.maxPrice}</span>
+										#else
+											#if($!{in.yuanliao.price}&&$!{in.yuanliao.price}!='0')
+                                                 <span class="moerynum">$!{in.yuanliao.price}</span>
+											#else
+                                                 <span class="moerynum">面议</span>
+											#end
+										#end
+										#if(($!{in.yuanliao.price}&&$!{in.yuanliao.price}!='0')||$!{in.yuanliao.minPrice}) $!{in.yuanliao.priceUnit}/$!{in.yuanliao.unit}#end</p>
+                                </div>
+
+                                <a href="#springUrl('/firm/xunjia')$!{in.company.id}.htm" target="_blank" class="cptype-lianxi fr">在线询价</a>
+
+                            </li>
+							#end
+                        </ul>
+						
+                        <div class="pagenum">
+                            #if($!{page.totalRecords}>0)
+								#pageYuanliao3($page)
+							#end
+                        </div>
+                    </div>
+                </div>
+        </div>
+    <script type="text/javascript">
+       jQuery(".tip").click(function(){
+    	var currentPage = '';
+    	if(jQuery(this).attr("class")=="tip other"){
+    		currentPage = jQuery(this).attr("name");
+    	}
+    	if(jQuery(this).attr("class")=="gobtn tip"){
+    		var num = Number(jQuery(".jump_page").val());
+			if(num==""||num==null){
+    			alert("请输入页码");
+    			return false;
+    		}
+			if(isNaN(num)){
+			alert("请输入数字")
+			return false;
+			}
+    		if(num<0){
+    			alert("页码不能小于零");
+    			return false;
+    		}
+    		if(num>$totalPage){
+    			num = $totalPage;
+    		}
+    		if(num > 0){
+    			currentPage = num ;
+    		}
+			if(num==""){
+			 currentPage=$currentPage;
+			}
+    	}
+    	//跳转链接
+    	var url = "";
+		#if($!{column})
+	   	url="#springUrl('/comp/')detail$!{company.id}-2-pn"+currentPage+".html?type="+$!{column};
+		#else
+		url="#springUrl('/comp/')detail$!{company.id}-2-pn"+currentPage+".html";
+		#end
+		location.href=url;
+    });
+    </script>

@@ -1,0 +1,226 @@
+#set($layout = "/layout/compnews/defaultS.vm")
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/tech/css/JiShuZhongXin.css"/>
+<link rel="stylesheet" style="text/css" href="http://img0.huanbao.com/lib/jquery-ui/1.8.16/south-street/jquery-ui-1.8.16.custom.css" />
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/asto/asto.hack-1.0.0.css" />
+<script type="text/javascript" src="$!{address.img}/lib/jquery-ui/1.8.16/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/tech/js/validation.js"></script>
+
+      
+
+
+
+ #if($!{epAuthUser})
+    <input type="hidden" id="loginstatus"  value="1"/>	 
+ #else
+ 	<input type="hidden" id="loginstatus" value="0" />
+ #end	
+<div class="TechnicalDetails">
+	#parse("/common/compnews/menu.vm")
+	<div class="td-left">
+    	<div class="td-left-title">
+        	<span class="td-Zuo">
+            	正文
+            </span>
+            <span class="td-You">
+            	<a href="#springUrl('/compnews/technicalarticles/publish.htm')">发布技术文章</a>
+            </span>
+        </div>
+        <!--end left title-->
+        <div class="td-content">
+					<div class="td-content-title">
+                    	 $!{compNews.title}
+                    </div>
+                    <div class="td-content-date">
+                    	#printFragmentDate("yyy-MM-dd" $!{compNews.gmtPublish}) <span class="zi13"></span>浏览量:$!{compNews.viewCount}
+                    </div>
+                    <div class="td-content-content">
+                    	    <p class="td-p">$!{compNews.details}</p>
+                    </div>
+                    <div class="td-content-page">
+                    	<div class="td-page-up"><a href="#springUrl('/compnews/technicalarticles/details')$!{upNews.id}.htm">#if("$!{upNews.id}"!="")上一篇：#printTitle($!{upNews.title} 20 "")#end</a></div>
+                        <div class="td-page-down"><a href="#springUrl('/compnews/technicalarticles/details')$!{downNews.id}.htm">#if("$!{downNews.id}"!="")下一篇：#printTitle($!{downNews.title} 20 "")#end</a></div>
+                    </div>
+		</div>
+        <div style="clear:both"></div>
+		
+       
+        <div class="td-message">
+            <form id="messageForm" method="post" action="$!{address.myesite}/message/sendInquiry.htm">
+        	<div class="td-message-LiuYan">
+            	留言
+            </div>
+            <div class="td-message-LiuYan_title">
+            	<span class="LiuYan-title">
+                	标<span class="LiuYan-space"></span>题:
+                </span>
+                <span class="LiuYan-text">
+                	<input type="text" class="text" name="title" id="title" value="我对 $!{compNews.title} 感兴趣"/>
+                </span>
+            </div>
+            <div style="clear:both"></div>
+            <div class="td-message-LiuYan_title">
+            	<span class="LiuYan-title">
+                	主要内容:
+                </span>
+                <span class="LiuYan-text">
+                	<textarea name="details" cols="" class="text1" rows="" id="details"></textarea>
+                </span>
+            </div>
+            <div style="clear:both"></div>
+			<input id="sendMsgBtn" type="button"   value="提交留言" style="margin-left:7cm;margin-top:10px;">
+            <input type="hidden" name="targetId" value=" $!{compNews.id}"/>
+			<input type="hidden" name="targetType" value="5"/>
+			<input type="hidden" name="targetCid" value="$!{compNews.cid}"/>
+			<input type="hidden" name="targetUid" value="$!{uid}"/>
+			<input type="hidden" name="refurl" value="$!{address.www}/compnews/technicalarticles/details$!{id}.htm" />
+           </form>
+			<div class="td-BanQuan">
+            	<span class="td-BanQuan-copyright">
+                	版权与免责声明：
+                </span>
+                <p>
+                	该栏目文章仅代表作者或其公司的观点,本网站对文章的归属，及内容的准确性，可靠性，完整性等情况不承担任
+何法律责任，也不承担此类作品侵权行为的直接责任及连带责任。如涉及文章内容、版权等问题请与本网联系，我们
+将尽快予以处理。
+                </p>
+            </div>
+        </div>
+        <!--end message-->
+    </div>
+    <!--end 技术文章详情页 left-->
+    <div class="m2-right2">
+    	<div class="m2-right-title">
+        	联系方式
+        </div>
+        <div class="m2-right-content">
+        	<div class="m2-right-company">
+            	$!{compName}
+            </div>
+            <div class="m2-right-img">
+            	<a href="$!{address.esite}/index${compNews.cid}.htm"><img src="http://img0.huanbao.com/huanbao/tech/images/QiYeMenShiBu.jpg" /></a>
+            </div>
+            <ul class="u4">
+            	<li>联系人：$!{compProfileDto.contacts}</li>
+                <li>手机：#if($!{epAuthUser}) 
+							$!{compProfileDto.mobile} 
+						 #else
+						  <a href="javascript:qukTechnicalArticles($!{id});" class="loginView">登陆</a>
+						  免费查看手机号码! 
+					    #end
+				</li>
+                <li>电话：$!{compProfileDto.phoneArea} $!{compProfileDto.phone}</li>
+                <li>传真：$!{compProfileDto.faxArea} $!{compProfileDto.fax}</li>
+                <li>地址：#if(${compProfileDto.compProfile.address})
+						   #printTitle($!{compProfileDto.compProfile.address} 10 "")
+					    #end
+				</li>
+                <li>网址：$!{compProfileDto.compProfile.domain}</li>
+            </ul>
+        </div>
+        <!--end content-->
+        <div class="td-other">
+        	<div class="td-other-title">
+            	其他相关公司技术文章
+            </div>
+			#cacheFragment("$!{address.fragment}/fragment/company/newestCompNews.htm?categoryCode=1001&size=14&ess","","","600")
+            <div class="td-other-content">
+            	<ul>
+					#foreach($l in $list)
+                	<li><a href="#springUrl('/compnews/technicalarticles/details')$!{l.id}.htm">#printTitle($!{l.title} 20 " ")</a></li>
+					#end
+                </ul>
+            </div>
+			#end
+        </div>
+    </div>
+    <!--end 技术文章详情页 right-->
+</div>
+<!--end 技术文章详情页-->
+
+<div style="clear:both"></div>
+<!--end main-->
+<!--底部 start-->
+
+
+<script src="http://img0.huanbao.com/huanbao/www/js/search.js"></script>
+
+<script type="text/javascript" >
+  	if($!{show}==1){
+		Asto.util.Message.show({
+			msg:"你对技术文章留言成功！",
+			autoClose:5000
+		});
+	}  
+  jQuery(document).ready(function(){
+     jQuery("#sendMsgBtn").click(function(){
+	 jQuery.ajax({
+		    type:"post",
+			url:"/compnews/technicalarticles/ajaxUser.htm",
+			dataType:"json",
+			cache:false,
+			success:function(data){
+				if(data.success==true){
+				    jQuery("#loginstatus").val("1")
+				}else{
+				    jQuery("#loginstatus").val("0")
+				}
+             if(jQuery("#title").val()=="" || jQuery("#title").val()=="请输入内容"){
+    		   jQuery("#title").blur();
+    		   return false;
+    		 }else if( jQuery("#details").val()=="" || jQuery("#details").val()=="请输入内容"){
+    		   jQuery("#details").blur();
+    		   return false;
+    		 }else if(jQuery("#loginstatus").val()!="1"){
+    		    var loginbox=new Asto.util.PopupBox({
+        		  		url:"#springUrl('/compnews/technicalarticles/loginMini.htm')",
+        		  		destUrl:"$!{address.www}/submitCallback.htm",
+        		  		callbackFn:function(success, data){
+        		  			loginbox.close();
+        		  			jQuery("#loginstatus").val("1");
+        					jQuery("#messageForm").submit();
+        		 		},
+    					modal:true,
+    					title:"请先登录后再在留言",
+        		  		width:800,
+        		  		height:500
+        	  		});
+        		  	loginbox.show();
+    		 }else{
+    		   
+    		    jQuery("#messageForm").submit();
+    		 }
+			} 
+	   	})
+    });
+ });
+	 
+		function qukTechnicalArticles(id){
+		   
+		    jQuery(".loginView").click(function(){
+				if(jQuery("#loginstatus").val()!="1" ){
+        			var loginbox=new Asto.util.PopupBox({
+            			url:"$!{address.myesite}/common/loginMini.htm",
+            	  		destUrl:"$!{address.www}/submitCallback.htm",
+            	  		callbackFn:function(success, data){
+            	  			loginbox.close();
+							Asto.util.Message.show({
+                				msg:"登录成功,正在重新载入页面,请稍候...",
+                				autoClose:10000
+                			});
+							window.location.reload();
+            	 		},
+						modal:true,
+        				title:"请先登录后再查看联系方式",
+            	  		width:510,
+            	  		height:400
+              		});
+            	  	loginbox.show();
+        		}
+			});
+		}
+			
+	
+	</script>

@@ -1,0 +1,114 @@
+#*
+<script type="text/javascript"src="${contextJs}/extux/Portal.js"></script>
+<script type="text/javascript"src="${contextJs}/extux/PortalColumn.js"></script>
+<script type="text/javascript"src="${contextJs}/extux/Portlet.js"></script>
+*#
+#*
+<script type="text/javascript"src="#springUrl('/app/welcome.js')"></script>
+<script type="text/javascript">
+Ext.onReady(function(){
+	Ext.chart.Chart.CHART_URL = Context.ROOT+'/js/ext32/resources/charts.swf';
+	
+	var store=new Ext.data.JsonStore({
+//			root : "records",
+			fields : [{name:"numTask", type:"int"},
+				{name:"totalTime", type:"string"},
+				{name:"numQueue", type:"int"},
+				{name:"cacheQueue", type:"int"},
+				{name:"activeThread", type:"int"},
+				{name:"time", type:"string"}],
+			url : Context.ROOT+ "/monitor.htm",
+			autoLoad : true,
+			listeners : {
+				"datachanged" : function() {
+					//TODO 改变标题，用以显示
+					if(store.getCount()>0){
+    					var record = store.getAt(store.getCount()-1);
+    					if (record != null) {
+    						Ext.getCmp("monitorpanel").setTitle("Email Send Monitor [总处理时间："+record.get("totalTime")+";总处理量:"+record.get("numTask")+"]");
+    					}
+					}
+				}
+			}
+		});
+	
+	var monitor = new com.zz91.zzmail.ThreadMonitor({
+		store:store
+	});
+	
+	var task={
+		run:function(){
+			store.reload();
+		},
+		interval : 1000
+	};
+	
+	Ext.TaskMgr.start(task);
+	
+	var viewport = new Ext.Viewport({
+		layout:"border",
+		items:[{
+			id:"monitorpanel",
+			title:"Email Send Monitor:",
+			xtype:"panel",
+			region:"center",
+			tbar:[{
+				iconCls:"play16",
+				text:"开始监控",
+				handler:function(){
+					Ext.TaskMgr.start(task);
+				}
+			},{
+				iconCls:"stop16",
+				text:"停止监控",
+				handler:function(){
+					Ext.TaskMgr.stop(task);
+				}
+			},"-",{
+				iconCls:"redo16",
+				text:"故障恢复（务必在没有发送任务的时候执行）",
+				handler:function(){
+					Ext.Ajax.request({
+            	        url:Context.ROOT+"/shutdownRecovery.htm",
+            	        success:function(response,opt){
+            	            var obj = Ext.decode(response.responseText);
+            	            if(obj.success){
+            	            	com.zz91.utils.Msg("","故障数据恢复");
+            	                Ext.getCmp(TEMPLATE.TEMPLATE_GRID).getStore().reload();
+            	            }else{
+            	                Ext.MessageBox.show({
+            	                    title:MESSAGE.title,
+            	                    msg : MESSAGE.saveFailure,
+            	                    buttons:Ext.MessageBox.OK,
+            	                    icon:Ext.MessageBox.ERROR
+            	                });
+            	            }
+            	        },
+            	        failure:function(response,opt){
+            	            Ext.MessageBox.show({
+            	                title:MESSAGE.title,
+            	                msg : MESSAGE.submitFailure,
+            	                buttons:Ext.MessageBox.OK,
+            	                icon:Ext.MessageBox.ERROR
+            	            });
+            	        }
+            	    });
+				}
+			}],
+			items:[monitor]
+		}]
+	});
+	
+	
+	
+	//refreshChart(store);
+});
+/*
+function refreshChart(store){
+	window.setTimeout("refreshChart(store)",1000);
+	store.reload();
+}
+*/
+
+</script>
+*#

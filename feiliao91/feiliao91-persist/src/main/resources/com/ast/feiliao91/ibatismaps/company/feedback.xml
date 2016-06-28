@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="feedback">
+	<typeAlias alias="feedbackDo" type="com.ast.feiliao91.domain.company.FeedBack" />
+	<resultMap class="feedbackDo" id="feedbackResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="targetcompanyid" column="target_company_id" />
+		<result property="detail" column="detail" />
+		<result property="isdel" column="is_del" />
+		<result property="gmtcreated" column="gmt_created" />
+		<result property="gmtmodified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,
+		company_id,
+		target_company_id,
+		detail,
+		is_del,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<insert id="insert" parameterClass="feedbackDo">
+		insert into feedback
+		(
+		<include refid="feedback.fullColumn" />
+		)
+		values
+		(
+		#id#,
+		#companyId#,
+		#targetcompanyid#,
+		#detail#,
+		#isdel#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="selectById" parameterClass="java.lang.Integer" resultMap="feedbackResult">
+		select
+		<include refid="feedback.fullColumn" />
+		from feedback where id=#id#
+	</select>
+</sqlMap>

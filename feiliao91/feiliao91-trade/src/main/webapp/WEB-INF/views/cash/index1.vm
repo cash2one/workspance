@@ -1,0 +1,109 @@
+#set($layout='/layout/default.vm')
+<link rel="stylesheet" href="http://img0.zz91.com/trade/priceindex/css/deal.css" />
+<script src="$!{address.css}/trade/comm/comm.js"></script>
+#set($in=4)
+#parse("/common/menu.vm")
+<div class="content">
+	
+	<div class="clearfix capital-do">
+		<div class="fl capital-mo capital-mo1">
+			<p>账户余额 <span class="surplus-mey">$!{account.sumMoney}</span> 元</p>
+			<div class="capital-goto">
+				<a href="#">充值</a>
+				<a href="javascript:void(0)" class="rest-btn get-money" >提现</a>
+			</div>
+		</div>
+##        <div class="fl capital-mo capital-mo2">
+##            <p>银行卡  2  张</p>
+##            <div class="capital-goto">
+##                <a href="#">添加</a>
+##                <a href="#" class="rest-btn">管理</a>
+##            </div>
+##        </div>
+        <div class="fl capital-mo capital-mo3">
+            <p>支付密码</p>
+            <div class="capital-goto">
+				#if($i==1)
+                <a href="#springUrl('/security/resetPayPwdStp_1.htm')" target="_blank">重置</a>
+				#else
+				<a href="#springUrl('/security/setPayPassword.htm')" target="_blank">设置</a>
+				#end
+            </div>
+        </div>
+    </div>
+	
+    <div class="bills-list">
+        <div class="bills-type clearfix">
+            <div class="fl bills-type-a">
+                <a href="#" class="first-bill this-billtype">全部账单</a>
+##                <a href="#">进行中 2 笔</a>
+##                <a href="#">对账单</a>
+            </div>
+            <div class="fr">
+                时间：<input class="gettime"/> - <input class="gettime"/>
+            </div>
+        </div>
+        <ul class="bills-ul">
+			#foreach($dto in $page.records)
+            <li class="clearfix">
+                <div class="fl bills-li1">
+					#set($dd = "#printFragmentDate('yyyy-MM-dd' $!{dto.orders.gmtCreated})" )
+					#set($dt = "#printFragmentDate('yyyy-MM-dd' $date.getSystemDate())")
+					#if($dd == $dt)
+						<p>今天</p>
+					#else
+						<p>#printFragmentDate("yyyy-MM-dd" $!{dto.orders.gmtCreated})</p>
+					#end
+					<p class="color-99 bill-li-top">#printFragmentDate("mm:ss" $!{dto.orders.gmtCreated})</p>
+				</div>
+				<div class="fl bills-li2">
+                    <p><a href="$!{address.www}/goods$!{dto.goods.id}.htm" target="_blank">$!{dto.goods.title}</a></p>
+                    <p class="color-66 bill-li-top">$!{dto.sellCompany.name} | 流水号 $!{dto.orders.orderNo}</p>
+                </div>
+                <div class="fl bills-li3">
+					#if(${sessionUser.companyId}==$!{dto.orders.buyCompanyId})
+						<p>- $!{dto.detailJson.get("orderTotalPay")}</p>
+					#end
+					#if(${sessionUser.companyId}==$!{dto.orders.sellCompanyId})
+						<p>+ $!{dto.detailJson.get("orderTotalPay")}</p>
+					#end
+                </div>
+                <div class="fl bills-li4">
+                    <p>
+						#if($!{dto.orders.status}==66)
+							交易成功
+						#else
+							交易中
+						#end
+					</p>
+                </div>
+                <div class="fr bills-li5">
+                    <a href="#springUrl('/step')$!{dto.orders.orderNo}.htm" class="blue" target="_blank">详情</a>
+                </div>
+            </li>
+			#end
+        </ul>
+
+		#postListPageNav($!{page} "#springUrl('/cash/index.htm')" "" "")
+##        <div class="page-num page-num2">
+##            <span class="page-do"><</span>
+##            <span class="page-do this-page">1</span>
+##            <span class="page-do">2</span>
+##            <span class="page-do">3</span>
+##            <span class="page-do">4</span>
+##            <span class="page-do">5</span>
+##            <span class="page-do">6</span>
+##            <span class="page-do">7</span>
+##            <span class="morepage"><i class="dianmore">...</i></span>
+##            <span class="page-do">></span>
+##        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(".get-money").click(function(){
+			var loginpop = '<div class="login-pop" style="width:390px"><iframe frameborder="0" height="460" marginheight="0px" marginwidth="0px"  width="390" src="#springUrl('/cash/getmoneypop.htm')"></iframe></div>';
+			popHtml(loginpop);
+		});
+	});
+</script>

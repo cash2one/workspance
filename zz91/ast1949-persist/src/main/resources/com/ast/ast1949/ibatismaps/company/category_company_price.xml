@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="categoryCompanyPrice">
+	<typeAlias alias="categoryCompanyPriceDO"
+		type="com.ast.ast1949.domain.company.CategoryCompanyPriceDO" />
+	<resultMap class="categoryCompanyPriceDO" id="categoryCompanyPriceResult">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="label" column="label" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<select id="queryCategoryCompanyPrice" resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		code,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM
+		category_company_price
+		WHERE CODE LIKE('____')
+	</select>
+	<select id="queryCategoryCompanyPriceByCode" parameterClass="String"
+		resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		code,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM category_company_price
+		WHERE CODE LIKE CONCAT(#code#,'____')
+		and	is_del=0
+	</select>
+	<select id="queryByCode" parameterClass="String"
+		resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		code,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM
+		category_company_price
+		WHERE code=#code#
+	</select>
+	<!--后台-->
+
+	<!-- 根据父类code获取属于父类的所有子类列表 -->
+
+	<select id="selectCategoriesByPreCode" parameterClass="String"
+		resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		CODE,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM
+		category_company_price
+		where code like concat(#code#,'____')
+		order by id asc
+	</select>
+	
+	<select id="queryCategoryCompanyPriceByLabel" parameterClass="java.lang.String"
+		resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		CODE,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM category_company_price
+		where `label`=#value#
+		limit 1
+	</select>
+	
+	<select id="selectCategoryCompanyPriceById" parameterClass="java.lang.Integer"
+		resultMap="categoryCompanyPriceResult">
+		SELECT id,
+		label,
+		CODE,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM
+		category_company_price
+		where id=#id#
+	</select>
+	<!-- 根据父类code获取其最大子类别code,用于添加类别 -->
+	<select id="selectMaxCodeByPreCode" parameterClass="String"
+		resultClass="String">
+		select max(c.code) from category_company_price c
+		where
+		c.code like
+		concat(#preCode#,'____')
+	</select>
+
+	<insert id="insertCategoryCompanyPrice" parameterClass="categoryCompanyPriceDO">
+		INSERT INTO category_company_price
+		(
+		label,
+		CODE,
+		is_del,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#label#,
+		#code#,
+		#isDel#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID() as value
+		</selectKey>
+	</insert>
+	<update id="updateCategoryCompanyPrice" parameterClass="categoryCompanyPriceDO">
+		UPDATE
+		category_company_price
+		SET
+		id = #id# ,
+		label =#label# ,
+		gmt_modified = now()
+		WHERE
+		id =#id#
+	</update>
+	<delete id="deleteCategoryCompanyPriceByCode" parameterClass="String">
+		delete from
+		category_company_price where code=#code#
+	</delete>
+	
+	<select id="queryAllCompanyPrice" resultMap="categoryCompanyPriceResult">
+	 	SELECT id,
+		label,
+		CODE,
+		is_del,
+		gmt_created,
+		gmt_modified
+		FROM
+		category_company_price
+		order by id asc
+	</select>
+</sqlMap>

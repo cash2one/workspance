@@ -1,0 +1,2135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="products">
+
+	<typeAlias alias="productsDO" type="com.ast.ast1949.domain.products.ProductsDO" />
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+	<typeAlias alias="productsSpot" type="com.ast.ast1949.domain.products.ProductsSpot" />
+	<typeAlias alias="companyContacts" type="com.ast.ast1949.domain.company.CompanyAccount" />
+	<typeAlias alias="productsDto" type="com.ast.ast1949.dto.products.ProductsDto" />
+
+
+	<!-- 完整的列，提供给查看详细供求信息时使用 -->
+	<sql id="fullColumn">
+		p.id,
+		p.company_id,
+		p.account,
+		p.products_type_code,
+		p.source_type_code,
+		p.title,
+		p.details,
+		p.location,
+		p.provide_status,
+		p.total_quantity,
+		p.is_show_in_price,
+		p.price_unit,
+		p.price,
+		p.quantity_unit,
+		p.quantity,
+		p.source,
+		p.specification,
+		p.origin,
+		p.impurity,
+		p.color,
+		p.useful,
+		p.appearance,
+		p.manufacture,
+		p.remark,
+		p.post_type,
+		p.is_pause,
+		p.is_post_when_view_limit,
+		p.is_post_from_inquiry,
+		p.is_del,
+		p.category_products_main_code,
+		p.category_products_assist_code,
+		p.check_person,
+		p.check_status,
+		p.unchecked_check_status,
+		p.unpass_reason,
+		p.check_time,
+		p.real_time,
+		p.refresh_time,
+		p.expire_time,
+		p.gmt_created,
+		p.gmt_modified,
+		p.min_price,
+		p.max_price,
+		p.goods_type_code,
+		p.tags,
+		p.tags_admin,
+		p.ship_day
+	</sql>
+
+	<resultMap class="productsDo" id="productsResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="sourceTypeCode" column="source_type_code" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="location" column="location" />
+		<result property="provideStatus" column="provide_status" />
+		<result property="totalQuantity" column="total_quantity" />
+		<result property="isShowInPrice" column="is_show_in_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="price" column="price" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="quantity" column="quantity" />
+		<result property="source" column="source" />
+		<result property="specification" column="specification" />
+		<result property="origin" column="origin" />
+		<result property="impurity" column="impurity" />
+		<result property="color" column="color" />
+		<result property="useful" column="useful" />
+		<result property="appearance" column="appearance" />
+		<result property="manufacture" column="manufacture" />
+		<result property="remark" column="remark" />
+		<result property="postType" column="post_type" />
+		<result property="isPause" column="is_pause" jdbcType="char" />
+		<result property="isPostWhenViewLimit" column="is_post_when_view_limit"
+			jdbcType="char" />
+		<result property="isPostFromInquiry" column="is_post_from_inquiry"
+			jdbcType="char" />
+		<result property="isDel" column="is_del" jdbcType="char" />
+		<result property="categoryProductsMainCode" column="category_products_main_code" />
+		<result property="categoryProductsAssistCode" column="category_products_assist_code" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />
+		<result property="uncheckedCheckStatus" column="unchecked_check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="checkTime" column="check_time" />
+		<result property="realTime" column="real_time" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="expireTime" column="expire_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="goodsTypeCode" column="goods_type_code" />
+		<result property="tags" column="tags" />
+		<result property="tagsAdmin" column="tags_admin" />
+		<result property="shipDay" column="ship_day" />
+	</resultMap>
+	
+	
+	
+	
+	<!-- 不带详细信息及备注的列信息 -->
+	<sql id="columnWithOutDetails">
+		p.company_id,
+		p.id,
+		p.account,
+		p.details,
+		p.products_type_code,
+		p.source_type_code,
+		p.title,
+		p.location,
+		p.provide_status,
+		p.total_quantity,
+		p.is_show_in_price,
+		p.price_unit,
+		p.price,
+		p.quantity_unit,
+		p.quantity,
+		p.source,
+		p.specification,
+		p.origin,
+		p.impurity,
+		p.color,
+		p.useful,
+		p.appearance,
+		p.manufacture,
+		p.post_type,
+		p.is_pause,
+		p.is_post_when_view_limit,
+		p.is_post_from_inquiry,
+		p.is_del,
+		p.category_products_main_code,
+		p.category_products_assist_code,
+		p.check_person,
+		p.check_status,
+		p.unchecked_check_status,
+		p.unpass_reason,
+		p.check_time,
+		p.real_time,
+		p.refresh_time,
+		p.expire_time,
+		p.gmt_created,
+		p.gmt_modified,
+		p.min_price,
+		p.max_price,
+		p.goods_type_code,
+		p.tags,
+		p.tags_admin,
+		p.ship_day
+	</sql>
+
+	<resultMap class="productsDo" id="productsWithOutDetailsResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="details" column="details" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="sourceTypeCode" column="source_type_code" />
+		<result property="title" column="title" />
+		<result property="location" column="location" />
+		<result property="provideStatus" column="provide_status" />
+		<result property="totalQuantity" column="total_quantity" />
+		<result property="isShowInPrice" column="is_show_in_price" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="price" column="price" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="quantity" column="quantity" />
+		<result property="source" column="source" />
+		<result property="specification" column="specification" />
+		<result property="origin" column="origin" />
+		<result property="impurity" column="impurity" />
+		<result property="color" column="color" />
+		<result property="useful" column="useful" />
+		<result property="appearance" column="appearance" />
+		<result property="manufacture" column="manufacture" />
+		<result property="postType" column="post_type" />
+		<result property="isPause" column="is_pause" jdbcType="char" />
+		<result property="isPostWhenViewLimit" column="is_post_when_view_limit"
+			jdbcType="char" />
+		<result property="isPostFromInquiry" column="is_post_from_inquiry"
+			jdbcType="char" />
+		<result property="isDel" column="is_del" jdbcType="char" />
+		<result property="categoryProductsMainCode" column="category_products_main_code" />
+		<result property="categoryProductsAssistCode" column="category_products_assist_code" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />
+		<result property="uncheckedCheckStatus" column="unchecked_check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="checkTime" column="check_time" />
+		<result property="realTime" column="real_time" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="expireTime" column="expire_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="goodsTypeCode" column="goods_type_code" />
+		<result property="tags" column="tags" />
+		<result property="tagsAdmin" column="tags_admin" />
+		<result property="shipDay" column="ship_day" />
+	</resultMap>
+
+	<resultMap class="productsDo" id="someProductsResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+	</resultMap>
+	
+	<sql id="someColumn">
+		id,
+		title,
+		min_price,
+		max_price
+	</sql>
+
+	<sql id="normalProductsCondition">
+		p.check_status='1' and p.is_pause='0' and p.expire_time > now()
+		and p.is_del='0' and not exists (select id from company where
+		p.company_id = id and is_block='1')
+	</sql>
+
+	<select id="queryNewProducts" parameterClass="java.lang.Integer" resultMap="productsResult">
+	select 
+	<include refid="products.fullColumn"/>
+	from products p
+	where p.company_id=#cid# and p.is_del = '0' and p.is_pause='0' and
+	p.check_status='1'
+	</select>
+	
+	<sql id="normalProductsDtoCondition">
+		p.check_status='1' and p.is_pause='0' and p.expire_time > now()
+		and p.is_del='0' and not exists (select id from company where
+		p.company_id = id and is_block='1' and membership_code = '10051000')
+	</sql>
+
+	<!--esite 的供求查询，带有产品详细-->
+	<resultMap class="productsDto" id="productsDtoWithCoverPicWithDetails">
+		<result property="products" resultMap="products.productsResult" />
+		<result property="coverPicUrl" column="cover_pic_url" />
+	</resultMap>
+	
+
+	<select id="queryProductsById" parameterClass="java.lang.Integer"
+		resultMap="productsResult">
+		select
+		<include refid="products.fullColumn" />
+		from products p
+		where p.id=#id#
+		limit 1
+	</select>
+
+	<select id="queryProductsByIdWithConditon" parameterClass="java.lang.Integer"
+		resultMap="productsResult">
+		select
+		<include refid="products.fullColumn" />
+		from products p
+		where 
+		p.check_status= '1' and p.is_pause = '0' and p.is_del= '0' and not exists (select id from company where
+		p.company_id = id and is_block='1') and p.company_id=#companyId# order by p.refresh_time desc
+		limit 100
+	</select>
+	
+	<select id="queryProductsWithOutDetailsById" parameterClass="java.lang.Integer"
+		resultMap="productsWithOutDetailsResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		where p.id=#id#
+		limit 1
+	</select>
+		
+	<select id="queryProductsOfCompany" parameterClass="java.util.HashMap"
+		resultMap="productsWithOutDetailsResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code=#categoryProductsMainCode#
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsOfCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code=#categoryProductsMainCode#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<resultMap class="productsDto" id="productsDtoWithCoverPic">
+		<result property="products" resultMap="products.productsWithOutDetailsResult" />
+		<result property="coverPicUrl" column="cover_pic_url" />
+	</resultMap>
+	
+	<select id="queryProductsByCode" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+        p.check_status='1' and p.is_pause='0'
+		and p.is_del='0' and not exists (select id from company where
+		p.company_id = id and is_block='1')		
+		and p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code=#categoryProductsMainCode#
+			</isNotEmpty>
+			<isNotEmpty property="hide" prepend="and">
+				not exists (select 0 from products_hide ph where
+						p.id = ph.product_id)
+			</isNotEmpty>
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsByCodeCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="hide" prepend="and">
+				not exists (select 0 from products_hide ph where
+						p.id = ph.product_id)
+			</isNotEmpty>
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code=#categoryProductsMainCode#
+			</isNotEmpty>
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryProductsWithPicByCompany" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		order by p.refresh_time desc
+		limit 0,
+		#maxSize#
+	</select>
+	
+	<sql id="dynamicProductsWithPicEsite">
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="kw" prepend="and">
+				p.title like
+				concat('%',#kw#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="seriesId" prepend="and">
+				psc.products_series_id = #seriesId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+		
+	<sql id="dynamicProductsWithPicEsites">
+		where
+		 p.company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="kw" prepend="and">
+				p.title like
+				concat('%',#kw#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="seriesId" prepend="and">
+				psc.products_series_id = #seriesId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryProductsWithPicByCompanyForSp" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		<isNotEmpty property="seriesId">
+			left join
+			products_series_contacts psc
+			on p.id=psc.products_id
+		</isNotEmpty>
+		<include refid="dynamicProductsWithPicEsites" />
+ 		and p.is_del = '0' and p.is_pause = '0'
+		order by p.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryProductsWithPicByCompanyForSpCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		<isNotEmpty property="seriesId">
+			left join
+			products_series_contacts psc
+			on p.id=psc.products_id
+		</isNotEmpty>
+		<include refid="dynamicProductsWithPicEsites" />
+		and p.is_del = '0' and p.is_pause = '0'
+	</select>
+	
+
+	<!--查询该公司的高会供求信息	-->
+	<select id="queryProductsWithPicByCidAndTypeCode"
+		parameterClass="java.util.HashMap" resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		and
+		p.products_type_code=#productsTypeCode#
+		order by p.refresh_time desc
+		limit 0, #maxSize#
+	</select>
+
+	<select id="queryProductsWithPicAndTypeCode"
+		parameterClass="java.util.HashMap" resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsDtoCondition" />
+		and
+		p.products_type_code=#productsTypeCode#
+		order by p.refresh_time desc
+		limit 0, #maxSize#
+	</select>
+	
+	
+	<!-- #3786-->
+	<select id="queryProductsWithPicAndTypeCodeAndVip"
+		parameterClass="java.util.HashMap" resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsDtoCondition" />
+		and
+		p.products_type_code=#productsTypeCode#
+		and	
+		exists (select id from company c where c.id=p.company_id and
+		c.membership_code !='10051000')		
+			
+		order by p.refresh_time desc
+		limit 0, #maxSize#
+	</select>
+
+
+	<select id="queryProductsWithPicByCompanyEsiteCount"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from products p
+		<isNotEmpty property="seriesId">
+			left join
+			products_series_contacts psc
+			on p.id=psc.products_id
+		</isNotEmpty>
+		<include refid="dynamicProductsWithPicEsite" />
+	</select>
+
+	<select id="queryProductsWithPicByCompanyEsite" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id and check_status='1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		<isNotEmpty property="seriesId">
+			left join
+			products_series_contacts psc
+			on p.id=psc.products_id
+		</isNotEmpty>
+		<include refid="dynamicProductsWithPicEsite" />
+		order by p.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<resultMap class="productsDto" id="productsDtoWithCompanyForMapResult">
+		<result property="products" resultMap="products.productsWithOutDetailsResult" />
+		<result property="company" resultMap="products.companyResult" />
+		<result property="coverPicUrl" column="coverPicUrl" />
+	</resultMap>
+
+	<sql id="companyColumn"> c.name as
+		company_name,c.area_code,c.membership_code,c.domain_zz91,c.zst_year,c.is_block
+	</sql>
+	<sql id="companyAccountColumn"> 
+		ca.mobile,ca.contact
+	</sql>
+	<sql id="productsSpotColumn"> 
+		ps.id as spotId,ps.is_te,ps.is_hot,ps.is_you,ps.is_bail
+	</sql>
+
+	<resultMap class="company" id="companyResult">
+		<result property="name" column="company_name" />
+		<result property="areaCode" column="area_code" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="domainZz91" column="domain_zz91" />
+		<result property="zstYear" column="zst_year" />
+		<result property="isBlock" column="is_block" />
+	</resultMap>
+	
+	<resultMap class="productsSpot" id="productsSpotResult">
+		<result property="id" column="spotId" />
+		<result property="isTe" column="is_te" />
+		<result property="isHot" column="is_hot" />
+		<result property="isYou" column="is_you" />
+		<result property="isBail" column="is_bail" />
+	</resultMap>
+	
+	<resultMap class="companyContacts" id="companyAccountResult">
+		<result property="mobile" column="mobile" />
+		<result property="contact" column="contact" />
+	</resultMap>
+	<resultMap class="productsDto" id="productsDtoWithCompanyResult">
+		<result property="products" resultMap="products.productsWithOutDetailsResult" />
+		<result property="company" resultMap="products.companyResult" />
+	</resultMap>
+	
+	<resultMap class="productsDto" id="productsDtoWithSpotResult">
+		<result property="products" resultMap="products.productsWithOutDetailsResult" />
+		<result property="productsSpot" resultMap="products.productsSpotResult" />
+	</resultMap>
+
+	<select id="queryProductsWithPicByCompanyEsiteWithDetails"
+		parameterClass="java.util.HashMap" resultMap="productsDtoWithCoverPicWithDetails">
+		select
+		<include refid="products.fullColumn" />
+		,(select pic_address from products_pic where product_id=p.id and check_status = '1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		<isNotEmpty property="seriesId">
+			left join
+			products_series_contacts psc
+			on p.id=psc.products_id
+		</isNotEmpty>
+		<include refid="dynamicProductsWithPicEsite" />
+		<isNotEmpty property="page.sort">
+			order by $page.sort$ $page.dir$
+		</isNotEmpty>
+		<isEmpty property="page.sort">
+			order by p.refresh_time desc
+		</isEmpty>
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsByMainCode" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on p.company_id=c.id
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic prepend="">
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code like
+				concat(#categoryProductsMainCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+		order by p.refresh_time desc
+		limit #maxSize#
+	</select>
+	<!-- 按照省份查询供求信息  用在再生地图 -->
+	<select id="queryProductsByAreaCode4Map" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on p.company_id=c.id
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic prepend="">
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code like
+				concat(#categoryProductsMainCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="title" prepend="and">
+				p.title like
+				concat(#title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="title" prepend="and">
+				p.products_type_code
+				like concat(#productsTypeCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="areaCode" prepend="and">
+				c.area_code like
+				concat(#areaCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<!-- and p.location like concat(#areaCode#,'%') -->
+		order by p.refresh_time desc
+		limit
+		#maxSize#
+	</select>
+
+	<sql id="dynamicProductsWithCompanyForInquiry">
+		<dynamic>
+			where p.is_del='0' and p.is_pause = 0 and p.check_status = '1'
+			<isNotEmpty property="company.areaCode" prepend="and">
+				c.area_code like concat(#company.areaCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.name" prepend="and">
+				c.name like concat('%',#company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="company.isBlock" prepend="and">
+				c.is_block = #company.isBlock#
+			</isNotEmpty>
+			<isNotEmpty property="products.productsTypeCode" prepend="and">
+				p.products_type_code =#products.productsTypeCode#
+			</isNotEmpty>
+			<isNotEmpty property="products.categoryProductsMainCode" prepend="and">
+				p.category_products_main_code like concat(#products.categoryProductsMainCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="products.title" prepend="and">
+				p.title like concat('%',#products.title#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryProductsWithCompanyForInquiry" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on p.company_id=c.id
+		<include refid="products.dynamicProductsWithCompanyForInquiry" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsWithCompanyForInquiryCount"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from products p
+		inner join company c on
+		p.company_id=c.id
+		<include refid="products.dynamicProductsWithCompanyForInquiry" />
+	</select>
+
+	<select id="queryNewProductsIntervalDay" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on p.company_id=c.id
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.real_time>#start# and #end# >=p.real_time
+		order by p.real_time
+		desc
+		limit #maxSize#
+	</select>
+
+	<sql id="dynamicByAdmin">
+		<dynamic prepend="where">
+			<!-- 以为下快速搜索按钮的搜索条件 -->
+			<isNotEmpty property="products.isPostFromInquiry" prepend="and">
+				<!-- 从询盘导出的供求信息 -->
+				p.is_post_from_inquiry = #products.isPostFromInquiry#
+			</isNotEmpty>
+			<isNotEmpty property="products.isPostWhenViewLimit" prepend="and">
+				<!-- 查看信息受限时发布的供求信息 -->
+				p.is_post_when_view_limit = #products.isPostWhenViewLimit#
+			</isNotEmpty>
+
+			<!--
+				稀缺产品 <isNotEmpty property="isRare" prepend="and"> exists (select
+				null from products_rare where product_id=p.id) </isNotEmpty>
+			-->
+			<isNotEmpty property="products.postType" prepend="and">
+				<!-- 判断是从后台发布还是从前台发布的 -->
+				p.post_type = #products.postType#
+			</isNotEmpty>
+
+			<!-- 以下为搜索导航的搜索条件 -->
+			<isNotEmpty property="products.categoryProductsMainCode"
+				prepend="and">
+				<!-- 左侧供求信息类别树点击后查找相应类别下的供求信息 -->
+				p.category_products_main_code like
+				concat(#products.categoryProductsMainCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="products.title" prepend="and">
+				<!-- 快速搜索框搜索的内容 -->
+				p.title like concat('%',#products.title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="products.productsTypeCode" prepend="and">
+				<!-- 按照不同供求类型查找 -->
+				p.products_type_code =#products.productsTypeCode#
+			</isNotEmpty>
+			<isNotEmpty property="products.sourceTypeCode" prepend="and">
+				<!-- 供求发布来源 -->
+				p.source_type_code = #products.sourceTypeCode#
+			</isNotEmpty>
+			<isEqual property="company.membershipCode" compareValue="10051000">
+				<!-- 查找普通用户的不同审核状态的信息 -->
+				<isNotEmpty property="statusArray" prepend="and">
+					<iterate property="statusArray" open="(" close=")"
+						conjunction="OR">
+						p.check_status =#statusArray[]#
+					</iterate>
+				</isNotEmpty>
+			</isEqual>
+
+			<isNotEqual property="company.membershipCode"
+				compareValue="10051000" prepend="and">
+				<!-- 查找高级用户的不同审核状态的信息 -->
+				c.membership_code != '10051000'
+				<isNotEmpty property="statusArray" prepend="and">
+					<iterate property="statusArray" open="(" close=")"
+						conjunction="OR">
+						p.unchecked_check_status = #statusArray[]#
+					</iterate>
+				</isNotEmpty>
+			</isNotEqual>
+
+			<!-- 以下为自定义的搜索条件 -->
+			<isNotEmpty property="products.companyId" prepend="and">
+				<!-- 查找某公司的供求信息 -->
+				p.company_id = #products.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="selectTime">
+				<isNotEmpty property="from" prepend="and">
+					p.$selectTime$>=#from#
+				</isNotEmpty>
+				<isNotEmpty property="to" prepend="and">
+					#to#>p.$selectTime$
+				</isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty property="isStatus" prepend="and">
+					ps.$isStatus$=1
+			</isNotEmpty>
+			<!--
+				<isNotEmpty property="from" prepend="and"> p.check_time>=#from#
+				</isNotEmpty> <isNotEmpty property="to" prepend="and">
+				#to#>=p.check_time </isNotEmpty>
+			-->
+			<!-- 检索特定运营人员审核 -->
+			<isNotEmpty property="products.checkPerson" prepend="and">
+				p.check_person = #products.checkPerson#
+				<isEmpty property="selectTime">
+					<isNotEmpty property="from" prepend="and">
+						p.check_time>=#from#
+					</isNotEmpty>
+					<isNotEmpty property="to" prepend="and">
+						#to#>=p.check_time
+					</isNotEmpty>
+				</isEmpty>
+			</isNotEmpty>
+
+			<!-- 供求是否删除 -->
+			<isNotNull prepend="and" property="products.isDel">
+				p.is_del = #products.isDel#
+			</isNotNull>
+
+			<!-- 供求是否 暂不发布 -->
+			<isNotEmpty prepend="and" property="products.isPause">
+				p.is_pause = #products.isPause#
+			</isNotEmpty>
+			<!--供求是否隐藏-->
+			<isNotEmpty prepend="and" property="products.hide">
+					exists 
+					(
+						select 0 from products_hide ph
+						where p.id = ph.product_id
+					)
+			</isNotEmpty>
+			<isNotNull prepend="and" property="products.id">
+				p.id = #products.id#
+			</isNotNull>
+			<!-- expireFlag 1:表示已过期 0：未过期-->
+			<isEqual property="products.expireFlag" prepend="and" compareValue="0">
+				p.expire_time>now()
+			</isEqual>
+			<isEqual property="products.expireFlag" compareValue="1" prepend="and">
+				now()>p.expire_time
+			</isEqual>
+			<isNotNull prepend="and" property="min">
+				p.quantity >= #min#
+			</isNotNull>
+			<isNotNull prepend="and" property="max">
+				#max# >= p.quantity
+			</isNotNull>
+			<isNotNull prepend="and" property="productsSpot.isHot">
+				ps.is_hot=#productsSpot.isHot#
+			</isNotNull>
+			<isNotNull prepend="and" property="productsSpot.isTe">
+				ps.is_te=#productsSpot.isTe#
+			</isNotNull>
+			<isNotNull prepend="and" property="productsSpot.isYou">
+				ps.is_you=#productsSpot.isYou#
+			</isNotNull>
+			<isNotNull prepend="and" property="productsSpot.isBail">
+				ps.is_bail=#productsSpot.isBail#
+			</isNotNull>
+			<isNotNull prepend="and" property="products.isExportInquiry">
+					exists 
+					(
+						select id from products_export_inquiry 
+						where p.id = product_id
+					)
+			</isNotNull>
+			<isNotNull prepend="and" property="products.isNotExportInquiry">
+					not exists 
+					(
+						select id from products_export_inquiry 
+						where p.id = product_id
+					)
+			</isNotNull>
+			
+			<!-- 公司是否禁用 -->
+			<isNotEmpty prepend="and" property="company.isBlock">
+				c.is_block = #company.isBlock#
+			</isNotEmpty>
+			
+			<!-- 公司地址 -->
+			<isNotEmpty prepend="and" property="company.areaCode">
+				c.area_code like concat(#company.areaCode#,'%') 
+			</isNotEmpty>
+			
+			<!-- 是否样品 -->
+			<isNotNull prepend="and" property="products.isYP">
+				s.is_del = 0
+			</isNotNull>
+			<!-- 产品星级 信息完整度 -->
+			<isNotNull prepend="and" property="products.score">
+				score >=#products.score# and #products.score#+20 > score
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryProductsByAdmin" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on c.id=p.company_id
+		<isNotNull property="products.isYP">
+			inner join sample_relate_product srp on srp.product_id = p.id
+			inner join sample s on srp.sample_id = s.id
+		</isNotNull>
+		<isNotNull property="products.score">
+			left join products_star ps on ps.products_id  = p.id
+		</isNotNull>
+		<include refid="products.dynamicByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryProductsByAdminId" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on c.id=p.company_id
+		where p.id=#products.id#
+	</select>
+
+	<select id="queryProductsByAdminCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(p.id) from products p
+		inner join company c on c.id=p.company_id
+		<isNotNull property="products.isYP">
+			inner join sample_relate_product srp on srp.product_id = p.id
+			inner join sample s on srp.sample_id = s.id
+		</isNotNull>
+		<isNotNull property="products.score">
+			left join products_star ps on ps.products_id  = p.id
+		</isNotNull>
+		<include refid="products.dynamicByAdmin" />
+		<!-- 
+		 -->
+	</select>
+
+	<sql id="dynamicByAdminZstExpried">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="isRecheck">
+				pz.is_recheck =
+				#isRecheck#
+			</isNotNull>
+			<isNotEmpty property="products.categoryProductsMainCode"
+				prepend="and">
+				p.category_products_main_code like
+				concat(#products.categoryProductsMainCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryProductsByAdminZstExpried" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on c.id=p.company_id
+		inner join
+		products_zst_expired pz on p.id = pz.product_id
+		<include refid="dynamicByAdminZstExpried" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsByAdminZstExpriedCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		inner join company c on
+		c.id=p.company_id
+		inner join products_zst_expired pz on p.id =
+		pz.product_id
+		<include refid="dynamicByAdminZstExpried" />
+	</select>
+
+	<sql id="dynamicOfCompanyByStatus">
+		where p.company_id=#companyId# and p.is_del='0'
+		<dynamic>
+			<isNotEmpty property="checkStatus" prepend="and">
+ 				p.check_status=#checkStatus#
+			</isNotEmpty>
+			
+			<isNotEmpty property="isPause" prepend="and">
+				p.is_pause=#isPause#
+			</isNotEmpty>
+			<isEqual property="isExpired" prepend="and" compareValue="1">
+				now()>p.expire_time
+			</isEqual>
+			<isEqual property="isExpired" prepend="and" compareValue="0">
+				p.expire_time>now()
+			</isEqual>
+			<isNotEmpty property="groupId" prepend="and">
+				exists (select
+				products_id
+				from products_series_contacts psc
+				where
+				p.id=psc.products_id and psc.products_series_id=#groupId#)
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="title">
+				p.title like concat('%',#title#,'%')
+			</isNotEmpty>
+
+			<!--
+				<isNotEmpty property="isPostFromInquiry" prepend="and">
+				p.is_post_from_inquiry=#isPostFromInquiry# </isNotEmpty>
+			-->
+		</dynamic>
+	</sql>
+
+	<select id="queryProductsOfCompanyByStatus" parameterClass="java.util.HashMap"
+		resultMap="productsWithOutDetailsResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		<include refid="products.dynamicOfCompanyByStatus" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryProductsOfCompanyByStatusCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		<include refid="products.dynamicOfCompanyByStatus" />
+	</select>
+	
+	<sql id="dynamicOfProductsByStatus">
+		where p.company_id=#companyId# and p.is_del='0'
+		<dynamic>
+			<isNotEmpty property="isPause" prepend="and">
+				p.is_pause=#isPause#
+			</isNotEmpty>
+			<isNotEmpty property="checkStatus" prepend="and">
+ 				p.check_status=#checkStatus#
+			</isNotEmpty>
+			<isEqual property="isExpired" prepend="and" compareValue="1">
+				now()>p.expire_time
+			</isEqual>
+			<isEqual property="isExpired" prepend="and" compareValue="0">
+				p.expire_time>now()
+			</isEqual>
+			<isNotEmpty property="groupId" prepend="and">
+				exists (select
+				products_id
+				from products_series_contacts psc
+				where
+				p.id=psc.products_id and psc.products_series_id=#groupId#)
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="title">
+				p.title like concat('%',#title#,'%')
+			</isNotEmpty>
+			
+			<!--
+				<isNotEmpty property="isPostFromInquiry" prepend="and">
+				p.is_post_from_inquiry=#isPostFromInquiry# </isNotEmpty>
+			-->
+		</dynamic>
+	</sql>
+	<select id="productsOfCompanyByStatus" parameterClass="java.util.HashMap"
+		resultMap="productsWithOutDetailsResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		<include refid="products.dynamicOfProductsByStatus" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="productsOfCompanyByStatusCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		<include refid="products.dynamicOfProductsByStatus" />
+	</select>
+	
+
+	<select id="queryNewestProducts" parameterClass="java.util.HashMap"
+		resultMap="productsWithOutDetailsResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic prepend="">
+			<isNotEmpty property="categoryProductsMainCode" prepend="and">
+				p.category_products_main_code like
+				concat(#categoryProductsMainCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="productsTypeCode" prepend="and">
+				p.products_type_code=#productsTypeCode#
+			</isNotEmpty>
+		</dynamic>
+		order by p.refresh_time desc
+		limit #maxSize#
+	</select>
+
+	<select id="countProductsByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from products 
+		where company_id =#companyId#
+		and check_status='1' and is_pause='0' and is_del='0'
+	</select>
+
+	<select id="countUserAddProductsToday" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from products
+		where company_id =#companyId#
+		and is_del='0' and date(real_time) = CURDATE()
+	</select>
+
+	<insert id="insertProduct" parameterClass="productsDO">
+		insert into products(
+		company_id,
+		account,
+		products_type_code,
+		source_type_code,
+		title,
+		details,
+		location,
+		provide_status,
+		total_quantity,
+		is_show_in_price,
+		price_unit,
+		price,
+		quantity_unit,
+		quantity,
+		source,
+		specification,
+		origin,
+		impurity,
+		color,
+		useful,
+		appearance,
+		manufacture,
+		remark,
+		post_type,
+		is_pause,
+		is_post_when_view_limit,
+		is_post_from_inquiry,
+		is_del,
+		category_products_main_code,
+		category_products_assist_code,
+		check_person,
+		check_status,
+		unchecked_check_status,
+		unpass_reason,
+		check_time,
+		real_time,
+		refresh_time,
+		expire_time,
+		gmt_created,
+		gmt_modified,
+		min_price,
+		max_price,
+		goods_type_code,
+		tags,
+		tags_admin,
+		ship_day
+		)
+		values(
+		#companyId#,
+		#account#,
+		#productsTypeCode#,
+		#sourceTypeCode#,
+		#title#,
+		#details#,
+		#location#,
+		#provideStatus#,
+		#totalQuantity#,
+		#isShowInPrice#,
+		#priceUnit#,
+		#price#,
+		#quantityUnit#,
+		#quantity#,
+		#source#,
+		#specification#,
+		#origin#,
+		#impurity#,
+		#color#,
+		#useful#,
+		#appearance#,
+		#manufacture#,
+		#remark#,
+		#postType#,
+		#isPause#,
+		#isPostWhenViewLimit#,
+		#isPostFromInquiry#,
+		#isDel#,
+		#categoryProductsMainCode#,
+		#categoryProductsAssistCode#,
+		#checkPerson#,
+		#checkStatus#,
+		#uncheckedCheckStatus#,
+		#unpassReason#,
+		null,
+		now(),
+		#refreshTime#,
+		#expireTime#,
+		now(),
+		now(),
+		#minPrice#,
+		#maxPrice#,
+		#goodsTypeCode#,
+		#tags#,
+		#tagsAdmin#,
+		#shipDay#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<update id="deleteProductById" parameterClass="java.util.Map">
+		update products
+		set gmt_modified = now(),is_del=1 where id=#id# and company_id = #companyId#
+	</update>
+
+	<select id="countProuductsByTitleAndAccount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products
+		where account=#account# 
+		and is_del='0'
+		and <![CDATA[check_status<>'2']]>
+		<isNotEmpty prepend="and" property="title">
+			title=#title#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="productsTypeCode">
+			products_type_code=#productsTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="from">
+			gmt_created >= #from#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="to">
+			#to# > gmt_created
+		</isNotEmpty>
+		<!-- and is_post_from_inquiry='0' -->
+	</select>
+
+	<update id="updateProductsCheckStatusByAdmin" parameterClass="java.util.HashMap">
+		update products set
+		gmt_modified =now(),
+		check_time=now()
+		<isNotEmpty property="checkStatus" prepend=",">
+		check_status = #checkStatus#
+		</isNotEmpty>
+		<isNotEmpty property="unpassReason" prepend=",">
+		unpass_reason =#unpassReason#
+		</isNotEmpty>
+		<isNotEmpty property="checkStatus" prepend=",">
+		check_person = #checkPerson#
+		</isNotEmpty>
+		where
+		id = #productId#
+	</update>
+
+	<update id="updateProductsUncheckedCheckStatusByAdmin"
+		parameterClass="java.util.HashMap">
+		update products set
+		check_status=#uncheckedCheckStatus#,
+		unchecked_check_status =
+		#uncheckedCheckStatus#,
+		unpass_reason = #unpassReason#,
+		check_person =
+		#checkPerson#,
+		gmt_modified = now(),check_time=now()
+		where
+		id =
+		#productId#
+	</update>
+
+	<update id="updateProductsUncheckedCheckStatusForDelByAdmin"
+		parameterClass="java.util.HashMap">
+		update products set
+		check_status=#uncheckedCheckStatus#,
+		is_del=#isDel#,
+		unchecked_check_status =#uncheckedCheckStatus#,
+		unpass_reason =
+		#unpassReason#,
+		check_person =#checkPerson#,
+		gmt_modified =
+		now(),check_time=now()
+		where
+		id =#productId#
+	</update>
+
+	<update id="updateGaoCheckStatusByAdmin" parameterClass="java.util.HashMap">
+		update
+		products set
+		unchecked_check_status =#uncheckedCheckStatus#,
+		unpass_reason = #unpassReason#,
+		check_person =#checkPerson#,
+		gmt_modified = now(),check_time=now()
+		where
+		id =#productId#
+	</update>
+
+	<update id="updateProductsIsShowInPrice" parameterClass="java.util.HashMap">
+		update
+		products set
+		is_show_in_price= #isShowInPrice#,
+		gmt_modified=now()
+		where
+		id=#id#
+	</update>
+
+	<update id="updateProductsIsPause" parameterClass="java.util.HashMap">
+		update products
+		set is_pause = #isPause#
+		where
+		<iterate property="ids" open="(" close=")" conjunction="OR">
+			id =
+			#ids[]#
+		</iterate>
+	</update>
+	
+	<update id="updateProductsIsPauseByAdmin" parameterClass="java.util.HashMap">
+		update products
+		set is_pause = #isPause#,
+		gmt_modified=now()
+		where
+			id =#id#
+	</update>
+
+	<update id="updateProductsRefreshTime" parameterClass="java.util.HashMap">
+		update
+		products
+		set refresh_time=#refreshTime#,
+		gmt_modified=now()
+		where
+		id=#productsId# and company_id=#companyId#
+	</update>
+	<!--将长期有效 刷新后过期时间 为刷新时间+一年-->
+	<update id="updateProductsRefreshTimeExpireTime" parameterClass="java.util.HashMap">
+		update
+		products
+		set refresh_time=now(),
+		gmt_modified=now(),
+		expire_time = adddate(now(),interval 1 year)
+		<isNotEmpty property="isPause" prepend=",">
+			is_pause =#isPause#
+		</isNotEmpty>
+		where
+		id=#productsId# and company_id=#companyId#
+	</update>
+	<update id="updateRefreshTimeOrIsPause" parameterClass="java.util.HashMap">
+		update products
+		set
+		expire_time = adddate(now(),interval
+		abs(to_days(expire_time)-to_days(refresh_time))
+		day),
+		refresh_time = now(),
+		gmt_modified=now()
+		<isNotEmpty property="isPause" prepend=",">
+		is_pause =#isPause#
+		</isNotEmpty>
+		where
+		company_id=#companyId# and id=#productsId#
+	</update>
+	<update id="updateProductsRefreshTimeAndExpireTime"
+		parameterClass="java.util.HashMap">
+		update products
+		set
+		expire_time = adddate(now(),interval
+		abs(to_days(expire_time)-to_days(refresh_time))
+		day),
+		refresh_time = now(),
+		gmt_modified=now()
+		<isNotEmpty property="checkStatus" prepend=",">
+		check_status =#checkStatus#
+		</isNotEmpty>
+		where
+		company_id=#companyId# and id=#productsId#
+	</update>
+
+	<update id="updateProductsByAdmin" parameterClass="productsDO">
+		update
+		products
+		set
+		title = #title# ,
+		category_products_main_code=#categoryProductsMainCode#,
+		products_type_code = #productsTypeCode# ,
+		tags = #tags#,
+		tags_admin =#tagsAdmin#,
+		provide_status = #provideStatus# ,
+		total_quantity =#totalQuantity# ,
+		quantity = #quantity# ,
+		quantity_unit = #quantityUnit#,
+		appearance = #appearance# ,
+		specification = #specification# ,
+		source =#source# ,
+		color = #color# ,
+		impurity = #impurity# ,
+		origin = #origin# ,
+		manufacture = #manufacture# ,
+		useful = #useful# ,
+		ship_day = #shipDay#,
+		location = #location#,
+		goods_type_code= #goodsTypeCode#,
+		details = #details# ,
+		gmt_modified=now()
+		<isNotEmpty property="price" prepend=",">
+			price = #price#
+		</isNotEmpty>
+		<isNotEmpty property="priceUnit" prepend=",">
+			price_unit = #priceUnit#
+		</isNotEmpty>
+		<isNotNull property="minPrice" prepend=",">
+			min_price = #minPrice#
+		</isNotNull>
+		<isNotNull property="maxPrice" prepend=",">
+			max_price = #maxPrice#
+		</isNotNull>
+		<isNotNull property="expireTime" prepend=",">
+			expire_time = #expireTime#
+		</isNotNull>
+		where
+		id = #id#
+	</update>
+<update id="updateProductsByAdminCheck" parameterClass="productsDO">
+		update
+		products
+		set
+		details = #details#,
+		gmt_modified=now()
+		where
+		id = #id#
+	</update>
+	<update id="updateProductsByCompany" parameterClass="productsDO">
+		update
+		products
+		set
+		title =#title# ,
+		location = #location# ,
+		total_quantity =
+		#totalQuantity# ,
+		min_price = #minPrice# ,
+		max_price = #maxPrice# ,
+		price_unit = #priceUnit# ,
+		quantity = #quantity# ,
+		quantity_unit =
+		#quantityUnit# ,
+		source =#source# ,
+		origin=#origin#,
+		color=#color#,
+		specification = #specification# ,
+		impurity = #impurity# ,
+		useful =
+		#useful# ,
+		appearance= #appearance# ,
+		manufacture =
+		#manufacture# ,
+		category_products_main_code=#categoryProductsMainCode#,
+		category_products_assist_code=#categoryProductsAssistCode#,
+		goods_type_code = #goodsTypeCode#,
+		refresh_time = #refreshTime# ,
+		expire_time = #expireTime# ,
+		unchecked_check_status=#uncheckedCheckStatus#,
+		check_status =
+		#checkStatus# ,
+		tags=#tags#,
+		gmt_modified = now(),
+		provide_status=#provideStatus#
+		<isNotEmpty property="details" prepend="," >
+			details = #details#
+		</isNotEmpty>
+		<isNotEmpty property="unpassReason" prepend="," >
+			unpass_reason = #unpassReason#
+		</isNotEmpty>
+		<isNotEmpty property="isPause" prepend="," >
+			is_pause = #isPause#
+		</isNotEmpty>
+		<isNotEmpty property="productsTypeCode" prepend=",">
+			products_type_code =#productsTypeCode#
+		</isNotEmpty>
+		<isNotNull prepend="," property="shipDay">
+			ship_day = #shipDay#
+		</isNotNull>
+		where id=#id# and company_id=#companyId#
+	</update>
+
+	<select id="queryMaxRefreshTimeByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.util.Date">
+		select max(p.refresh_time) from products p
+		where
+		p.company_id=#value# and p.is_del='0'
+	</select>
+
+	<select id="queryProductsIdsOfCompany" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select p.id from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_Id=#companyId#
+		<dynamic prepend="">
+			<isNotEmpty property="categoryCode" prepend="and">
+				p.category_products_main_code = #categoryCode#
+			</isNotEmpty>
+		</dynamic>
+		order by refresh_time desc
+		limit 1000
+	</select>
+
+	<select id="queryProductsWithPicById" parameterClass="java.lang.Integer"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where id=#value#
+		limit 1
+	</select>
+
+	<resultMap class="productsDto" id="dtoWithPicCompanyResult">
+		<result property="products" resultMap="products.simpleColumnWithDetails" />
+		<result property="company" resultMap="products.simpleCompanyColumn" />
+		<result property="coverPicUrl" column="cover_pic_url" />
+	</resultMap>
+
+	<resultMap class="productsDO" id="simpleColumnWithDetails">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="location" column="location" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="companyId" column="company_id" />
+		
+		<result property="minPrice" column="min_price" /><!--#3786-->
+		<result property="maxPrice" column="max_price" />	
+			
+	</resultMap>
+
+	<resultMap class="company" id="simpleCompanyColumn">
+		<result property="id" column="company_id" />
+		<result property="name" column="name" />
+		<result property="areaCode" column="area_code" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="domain" column="domain" />
+		<result property="domainZz91" column="domain_zz91" />
+	</resultMap>
+
+	
+	<select id="queryProductsWithPicAndCompany" parameterClass="java.lang.Integer"
+		resultMap="dtoWithPicCompanyResult">
+		select
+		p.id,p.company_id,p.title,p.quantity,p.location,p.quantity_unit,p.price_unit,p.details,p.products_type_code,p.refresh_time
+		,min_price,max_price,(select pic_address from products_pic where product_id=p.id and check_status = '1' order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		,
+		c.name,c.area_code,c.membership_code,c.domain,c.domain_zz91
+		from
+		products p
+		inner join company c on p.company_id=c.id
+		where
+		p.id=#value#
+	</select>
+
+	<select id="queryTitleById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select title from products where id=#value#
+	</select>
+
+	<select id="queryProductsCount" resultClass="java.lang.Integer">
+		select count(*) from
+		products
+	</select>
+
+	<select id="queryNewestVipProducts" parameterClass="java.util.Map"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		<isNotEmpty prepend="and" property="productTypeCode">
+			products_type_code =
+			#productTypeCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="productCategory">
+			category_products_main_code like concat(#productCategory#,"%")
+		</isNotEmpty>
+		<isNotNull prepend="and" property="date">
+			refresh_time > #date#
+		</isNotNull>
+		and exists (select id from company c where c.id=p.company_id and
+		c.membership_code !='10051000')
+		order by refresh_time desc
+		limit #size#
+	</select>
+
+	<select id="queryNewestVipProductsForMyrc" parameterClass="java.util.Map"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		<isNotEmpty prepend="and" property="title">
+			p.title like
+			concat(#title#,"%")
+		</isNotEmpty>
+		and exists (select id from company c where c.id=p.company_id and
+		c.membership_code !='10051000')
+		order by p.refresh_time desc
+		limit
+		#size#
+	</select>
+
+	<resultMap class="productsDO" id="simpMap">
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="title" column="title" />
+	</resultMap>
+
+	<select id="queryProductsByCid" parameterClass="java.lang.Integer"
+		resultMap="simpMap">
+		select products_type_code,title from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#cid#
+		order by p.gmt_created asc
+		limit 1
+	</select>
+
+	<!--查询数据库 的 当前时间-->
+	<select id="queryNowTime" resultClass="java.util.Date">
+		select now()
+	</select>
+	<!-- 查出该公司最后一条报价的时间 -->
+	<select id="queryLastGmtCreateTimeByCId" parameterClass="java.lang.Integer"
+		resultClass="java.util.Date">
+		select p.gmt_created from products p
+		where
+		p.company_id=#cid#
+		order by p.gmt_created desc
+		limit 1
+	</select>
+
+	<!-- 地图用到的搜索 -->
+	<select id="queryProductsWithCompany" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCompanyResult">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,
+		<include refid="products.companyColumn" />
+		from products p
+		inner join company c on c.id=p.company_id
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic>
+			<isNotEmpty property="industryCode" prepend="and">
+				p.category_products_main_code like concat(#industryCode#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="areaCode">
+				c.area_code like
+				concat(#areaCode#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="keywords">
+				p.title like
+				concat(#keywords#,"%")
+			</isNotEmpty>
+		</dynamic>
+		order by p.refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="countQueryProductsWithCompany" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		inner join company c on
+		c.id=p.company_id
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic>
+			<isNotEmpty property="industryCode" prepend="and">
+				p.category_products_main_code like concat(#industryCode#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="areaCode">
+				c.area_code like
+				concat(#areaCode#,"%")
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="keywords">
+				p.title like
+				concat(#keywords#,"%")
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<sql id="tagsColumn">
+		p.id,p.title,p.products_type_code
+	</sql>
+
+	<resultMap class="productsDo" id="tagsProResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="productsTypeCode" column="products_type_code" />
+	</resultMap>
+	<select id="queryProductsByCidForLatest" parameterClass="java.util.Map"
+		resultMap="tagsProResult">
+		select p.id,p.title,p.products_type_code
+		from products p
+		where 
+		p.company_id=#cid# and
+		p.check_status='1' 
+		and p.is_pause='0' 
+		and p.is_del='0' 
+		and not exists (select id from company where p.company_id = id and is_block='1')
+		<isNotEmpty prepend="and" property="products.productsTypeCode">
+			p.products_type_code =
+			#products.productsTypeCode#
+		</isNotEmpty>
+		order by p.refresh_time desc
+		limit 1
+	</select>
+
+	<sql id="noRepeatColumn">
+		company_id,id,title,products_type_code,quantity,quantity_unit,refresh_time
+	</sql>
+
+	<resultMap class="productsDo" id="mapProResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="companyId" column="company_id" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="refreshTime" column="refresh_time" />
+	</resultMap>
+
+	<select id="queryNoRepeatProducts" parameterClass="java.util.Map"
+		resultMap="mapProResult">
+		SELECT
+		<include refid="noRepeatColumn" />
+		FROM products
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="industryCode">
+				<isEqual compareValue="zh" property="industryCode">
+					substring(category_products_main_code,1,4) &lt;> '1000'
+					and
+					substring(category_products_main_code,1,4) &lt;> '1001'
+				</isEqual>
+				<isNotEqual compareValue="zh" property="industryCode">
+					substring(category_products_main_code,1,4) = #industryCode#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="areaCode">
+				company_id in (select
+				id from company where substring(area_code,1,12) = #areaCode# )
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="keywords">
+				title like
+				concat('%',#keywords#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="typeCode">
+				products_type_code =
+				#typeCode#
+			</isNotEmpty>
+		</dynamic>
+		order by refresh_time desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="countQueryNoRepeatProducts" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="industryCode">
+				<isEqual compareValue="zh" property="industryCode">
+					substring(category_products_main_code,1,4) &lt;> '1000'
+					and
+					substring(category_products_main_code,1,4) &lt;> '1001'
+				</isEqual>
+				<isNotEqual compareValue="zh" property="industryCode">
+					substring(category_products_main_code,1,4) = #industryCode#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="areaCode">
+				company_id in (select
+				id from company where substring(area_code,1,12) = #areaCode# )
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="keywords">
+				title like
+				concat('%',#keywords#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="typeCode">
+				products_type_code =
+				#typeCode#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<update id="updateUncheckByIdForMyrc" parameterClass="java.lang.Integer">
+		update
+		products set check_status =0,check_person='',gmt_modified=now()
+		where
+		id = #id#
+	</update>
+
+	<select id="queryTodayCopperProductsCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		<dynamic>
+			<isNotEmpty property="code" prepend="and">
+				p.category_products_main_code like concat(#code#,"%")
+			</isNotEmpty>
+			<isNotEmpty property="from" prepend="and">
+				p.refresh_time >= #from#
+			</isNotEmpty>
+			<isNotEmpty property="to" prepend="and">
+				#to# >= p.refresh_time
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<!--查询该公司的高会 的对应的 主营类别 的  供求信息 	-->
+	<select id="queryProductsByCidAndTypeCode" parameterClass="java.util.HashMap"
+		resultMap="productsDtoWithCoverPic">
+		select
+		<include refid="products.columnWithOutDetails" />
+		,(select pic_address from products_pic where product_id=p.id order by is_default desc ,id desc limit 1)
+		as cover_pic_url
+		from products p
+		where
+		<include refid="products.normalProductsCondition" />
+		and p.company_id=#companyId#
+		<isNotEmpty prepend="and" property="mainCode">
+			p.category_products_main_code =#mainCode#
+		</isNotEmpty>
+		and p.products_type_code=#productsTypeCode#
+		order by p.refresh_time
+		desc
+		limit 0, #maxSize#
+	</select>
+
+	<!-- tarde 门市部化查询公司供应/求购 -->
+	<resultMap class="productsDo" id="queryProductsByCompanyMap">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="title" column="title" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="details" column="details" />
+		<result property="refreshTime" column="refresh_time" />
+	</resultMap>
+
+	<select id="queryProductsByCompany" parameterClass="java.util.HashMap"
+		resultMap="queryProductsByCompanyMap">
+		select p.id, p.company_id, p.products_type_code,p.title,
+		p.refresh_time,p.details
+		from products p where p.company_id =
+		#companyId# and p.is_del='0' and p.check_status='1' and p.is_pause='0' and
+		p.products_type_code =#productTypeCode#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsByCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from products p
+		where p.company_id =
+		#companyId# and p.is_del='0' and p.check_status='1' and
+		p.products_type_code =#productTypeCode#
+	</select>
+
+	<update id="updateProductsIsDelByAdmin" parameterClass="java.util.Map">
+		update
+		products set is_del =#status#,gmt_modified=now()
+		where id = #productId#
+	</update>
+
+	<sql id="dynamicCommon">
+		<include refid="products.normalProductsCondition" />
+		<!-- 供求类型 -->
+		<isNotEmpty property="products.productsTypeCode" prepend="and">
+			p.products_type_code = #products.productsTypeCode#
+		</isNotEmpty>
+		<!-- 标题 -->
+		<isNotEmpty property="products.title" prepend="and">
+			p.title like
+			concat('%',#products.title#,'%')
+		</isNotEmpty>
+		<!-- 所在地 -->
+		<isNotEmpty property="products.location" prepend="and">
+			p.location = #products.location#
+		</isNotEmpty>
+		<!-- 产品类别 -->
+		<isNotEmpty property="products.categoryProductsMainCode"
+			prepend="and">
+			<!-- 左侧供求信息类别树点击后查找相应类别下的供求信息 -->
+			p.category_products_main_code like
+			concat(#products.categoryProductsMainCode#,'%')
+		</isNotEmpty>
+	</sql>
+
+	<!-- 现货页面-->
+	<sql id="spotWhere">
+		where
+		<include refid="dynamicCommon"/>
+		<!-- 特标志 -->
+		<isNotEmpty property="dto.isTe" prepend="and">
+			ps.is_te = #dto.isTe#
+		</isNotEmpty>
+		<!-- 热标志 -->
+		<isNotEmpty property="dto.isHot" prepend="and">
+			ps.is_hot = #dto.isHot#
+		</isNotEmpty>
+		<!-- 优标志 -->
+		<isNotEmpty property="dto.isYou" prepend="and">
+			ps.is_you = #dto.isYou#
+		</isNotEmpty>
+	</sql>
+	<select id="queryProductForSpot" parameterClass="java.util.Map"
+		resultMap="productsWithOutDetailsResult">
+		SELECT
+		<include refid="columnWithOutDetails" />
+		FROM products p
+		inner join products_spot ps on p.id=ps.product_id
+		<include refid="spotWhere" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountProductForSpot" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products p
+		inner join products_spot ps on p.id=ps.product_id
+		<include refid="spotWhere" />
+	</select>
+	
+	<select id="queryProductsForSpotByCondition" parameterClass="java.util.Map"
+		resultMap="productsWithOutDetailsResult">
+		SELECT
+		<include refid="columnWithOutDetails" />
+		FROM products p
+		inner join products_spot ps on p.id=ps.product_id
+		<include refid="spotWhere" />
+		order by p.refresh_time desc
+		limit #size#
+	</select>
+	
+	<select id="queryProductForSpotByAdmin" parameterClass="java.util.Map"
+		resultMap="productsDtoWithSpotResult">
+		SELECT
+		<include refid="columnWithOutDetails" />
+		,
+		<include refid="productsSpotColumn" />
+		FROM products p
+		inner join
+		products_spot ps on
+		p.id=ps.product_id
+		<include refid="products.dynamicByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryProductForexportByAdmin" parameterClass="java.util.Map"
+		resultMap="productsDtoWithSpotResult">
+		SELECT
+		<include refid="columnWithOutDetails" />
+		,
+		<include refid="productsSpotColumn" />
+		FROM products p
+		inner join
+		products_spot ps on
+		p.id=ps.product_id
+		<include refid="products.dynamicByAdmin" />
+	</select>
+
+	<select id="queryCountProductForSpotByAdmin" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products p
+		inner join products_spot ps on
+		p.id=ps.product_id
+		<include refid="products.dynamicByAdmin" />
+	</select>
+	
+	<sql id="productPicWhere">
+		where
+		<include refid="dynamicCommon"/>
+		and exists (select pic_address from products_pic where p.id = product_id)
+	</sql>
+	
+	<select id="queryProductsForPic" parameterClass="java.util.Map" resultMap="productsWithOutDetailsResult">
+		SELECT 
+		<include refid="products.columnWithOutDetails" />
+		FROM products p
+		<include refid="productPicWhere"/>
+		order by p.refresh_time desc
+		limit 0,#size#
+	</select>
+	
+	<select id="queryPassProductsByDate" parameterClass="java.util.Map" resultMap="productsWithOutDetailsResult" >
+		select 
+		<include refid="products.columnWithOutDetails" />
+		from products p
+		where p.gmt_created >= #from# and #to# > p.gmt_created
+		and p.check_status = '1'
+	</select>
+	
+	
+	<select id="queryNewProductsBysize" parameterClass="java.lang.Integer"
+		resultMap="someProductsResult">
+		select
+		<include refid="products.someColumn" />,
+		from products p
+		where 
+		exists (select pic_address from products_pic where p.id = product_id) 
+		and p.check_status='1' and p.is_pause='0' and p.is_del='0' and not exists (select id from company where
+		p.company_id = id and is_block='1')  
+		order by p.refresh_time desc
+		limit #size#
+	</select>
+	<select id="productsCompany"  parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select distinct company_id
+		from products
+		where p.is_del='0' and p.check_status='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countExpireProductByCompanyId" parameterClass="productsDO" resultClass="java.lang.Integer">
+		select count(0)
+		from products
+		where 
+		company_id=#companyId# and now()>expire_time and is_del='0' and is_pause in('0','2')
+		<isNotEmpty property="checkStatus" prepend="and">
+			 check_status=#checkStatus#
+		</isNotEmpty>
+	</select>
+
+	<select id="countValidProductByCompanyId" parameterClass="productsDO" resultClass="java.lang.Integer">
+		select count(0)
+		from products
+		where 
+		company_id=#companyId# and  is_del='0' and is_pause in('0','2')
+		and '2014-01-01'>refresh_time
+		<isNotEmpty property="checkStatus" prepend="and">
+			 check_status=#checkStatus#
+		</isNotEmpty>
+		<isNotEmpty property="expireTime" prepend="and">
+			 expire_time=#expireTime#
+		</isNotEmpty>
+	</select>
+	<sql id="dynamicByProduct">
+		<dynamic prepend="where">
+			  check_status='1' and is_del='0' and is_pause='0' and now()>expire_time
+			  <isNotEmpty property="refreshFrom">
+			   and refresh_time >=#refreshFrom#
+			  </isNotEmpty>
+			   <isNotEmpty property="refreshTo">
+			   and #refreshTo# >=refresh_time
+			  </isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="productByRefreshTime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select distinct company_id
+		from products
+		<include refid="products.dynamicByProduct" />
+	</select>
+
+	<select id="productsCompanyCount" resultClass="java.lang.Integer" >
+		select 
+		count(distinct company_id)
+		from products p
+		where p.is_del='0' and p.check_status='1'
+	</select>
+	<sql id="simpleColumn">
+		id,title
+	</sql>
+	<resultMap class="productsDO" id="simpleColumnDetails">
+		<result property="id" column="id" />
+		<result property="title" column="title" />	
+	</resultMap>
+	
+	<!--最新商机-->
+	<select id="queryProductsByType"  parameterClass="java.util.Map" resultMap="simpleColumnDetails">
+		select
+		<include refid="products.simpleColumn" />
+		from products
+		where is_del='0' and check_status='1' and products_type_code = #productsTypeCode# 
+		order by id desc
+		limit #size#
+	</select>
+	
+	<!--最新商机-->
+	<select id="queryProductsByTypeFresh"  parameterClass="java.util.Map" resultMap="simpleColumnDetails">
+		select
+		<include refid="products.simpleColumn" />
+		from products
+		where is_del='0' and check_status='1' and products_type_code = #productsTypeCode# 
+		order by refresh_time desc
+		limit #size#
+	</select>
+
+	<update id="updateNewRefreshTimeById" parameterClass="productsDo">
+		update products 
+		 set refresh_time=#refreshTime#,gmt_modified=now(),expire_time=#expireTime#
+		 <isNotEmpty property="isPause" prepend=",">
+		 is_pause = #isPause#
+		</isNotEmpty>
+		 where id=#id# and company_id=#companyId#
+	</update>
+	<!--判断该题目是否存在-->
+	<select id="hasTitle" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(0)
+		from products
+		where title=#title#
+	</select>	
+	<select id="countProductBySoucre" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from products
+		where gmt_created>=#from# and #to#>gmt_created
+		<isNotEmpty property="sourceTypeCode">
+			and source_type_code=#sourceTypeCode#
+		</isNotEmpty>
+	</select>
+</sqlMap>

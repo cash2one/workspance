@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>ZZ91再生网-app</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" type="text/css" href="../media/index/css/index.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/zz91app.css">
+		<link rel="stylesheet" type="text/css" href="../css/pindao.css" />
+		<link rel="stylesheet" type="text/css" href="../css/floatlay.css" />
+
+		<script type="text/javascript" charset="utf-8" src="../js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/index.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/floatlay.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/submit.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zepto.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/laytpl.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/jquery.lightbox_me.js"></script>
+	</head>
+
+	<body>
+		<div id="mainbody" class="mui-content" style="padding-bottom: 50px;display: none;">
+			<div id="qiandao" style="display: none;">
+				<div class="qleft"><img src="../media/index/images/qiandao.png" style="height: 40px;" border="0"></div>
+				<div class="qmid"><!--已连续签到<u>0</u>天<br />-->今天签到 + <font color="red">0.5</font>元钱包</div>
+				<div class="qright">
+					<button class="qiandaobtn" onclick="qiandao()">去签到</button>
+				</div>
+			</div>
+			<div id="slider" class="mui-slider" >
+				<div class="mui-slider-group mui-slider-loop" id="adlistall">
+				</div>
+				<div class="mui-slider-indicator">
+					<div class="mui-indicator mui-active"></div>
+					<div class="mui-indicator"></div>
+				</div>
+			</div>
+			<script id="adlistall_Tpl" type="text/html">
+				<div class="mui-slider-item">
+					<a href="javascript:openwebad('{{d.target_url}}');">
+						<img src="{{d.picaddress}}">
+					</a>
+				</div>
+			</script>
+			<!--<div id="adlist" style="display: none;"><span class="mui-spinner"></span></div>
+			<script id="adlist_Tpl" type="text/html">
+				<a href="{{d.target_url}}"><img src="{{d.picaddress}}" style="width: 100%;" /></a>
+			</script>-->
+			<div id="dcontent">
+				<div style="background-color: #fff;">
+					<form method="post">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<td style="padding-top: 14px;" align="center">
+									<input type="search" id="searchtext" placeholder="请输入产品关键字" style="width: 97%;" {%if keywords%}value="{{keywords}}" {%endif%}/>
+								</td>
+								<td align="center" style="padding-left: 5px;padding-right: 5px;">
+									<button class="mui-btn mui-btn-primary mui-icon mui-icon-search" onclick="zz91search(this.form,'/offerlist/?keywords=','')" type="button">搜供求</button>
+								</td>
+								<td align="center" style="padding-right: 5px;">
+									<button class="mui-btn mui-btn-green mui-icon mui-icon-paperplane" onclick="openblank('post.html?sep=1');" type="button">发布供求</button>
+								</td>
+							</tr>
+						</table>
+					</form>
+					<div class="b-box">
+						<center>
+							<table class="navTable" align="center" style="width: 100%;" frame="void" border="1" bordercolor="#f2f2f2">
+								<tbody>
+									<tr>
+										<td>
+											<a href="javascript:gotourl('/category/','blank')">
+												<center>
+													<div class="navTable-img"> <img src="../images/1.png" border="0"> </div>
+													<div class="navTable-text"> 交易中心 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="/priceindex/">
+												<center>
+													<div class="navTable-img"> <img src="../images/2.png" border="0"> </div>
+													<div class="navTable-text"> 行情报价 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="javascript:gotourl('/news/','blank')">
+												<center>
+													<div class="navTable-img"> <img src="../images/3.png" border="0"> </div>
+													<div class="navTable-text"> 资讯中心 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="javascript:gotourl('/company/','blank')">
+												<center>
+													<div class="navTable-img"> <img src="../images/4.png" border="0"> </div>
+													<div class="navTable-text"> 公司黄页 </div>
+												</center>
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="javascript:gotourl('/huzhu/','blank');">
+												<center>
+													<div class="navTable-img"> <img src="../images/5.png" border="0"> </div>
+													<div class="navTable-text"> 互助社区 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="javascript:gotourl('/myrc_index/','blank');">
+												<center>
+													<div class="navTable-img"> <img src="../images/6.png" border="0"> </div>
+													<div class="navTable-text"> 生意管家 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="javascript:gotourl('/qianbao/','blank');">
+												<center>
+													<!--<span class="mui-badge mui-badge-danger message-num" style="left:70%" id="qianbaonum">1</span>-->
+													<div class="navTable-img"> <img src="../images/7.png" border="0"> </div>
+													<div class="navTable-text"> 再生钱包 </div>
+												</center>
+											</a>
+										</td>
+										<td>
+											<a href="trust/index.html" target="local">
+												<center>
+													<div class="navTable-img"> <img src="../media/index/images/trust_logo.png" border="0"> </div>
+													<div class="navTable-text"> 厂家直购 </div>
+												</center>
+											</a>
+
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</center>
+					</div>
+				</div>
+				<!--end seckill-floor-->
+				<div class="floor seckill-floor">
+					<div class="title-wrap">
+						<a href="javascript:gotourl('/category/','blank')" class="more">更多</a>
+						<h2 class="title">热门产品</h2>
+					</div>
+					<div id="ad3"><span class="mui-spinner"></span></div>
+					<script id="ad3Tpl" type="text/html">
+						<ul class="seckill-list">
+							<li class="seckill-item2">
+								<a href="/qianbao/qg_tourl.html?gid={{d.ad3_1.id}}">
+									<strong class="seckill-name">{{d.ad3_1.goodsName}}</strong>
+									<img width="100%" src="{{d.ad3_1.pic}}" border="0" />
+								</a>
+							</li>
+							<li class="seckill-item2">
+								<a href="/qianbao/qg_tourl.html?gid={{d.ad3_2.id}}">
+									<strong class="seckill-name">{{d.ad3_2.goodsName}}</strong>
+									<img width="100%" src="{{d.ad3_2.pic}}" border="0" />
+								</a>
+							</li>
+						</ul>
+						<ul class="seckill-list">
+							<li class="seckill-item">
+								<a href="/qianbao/qg_tourl.html?gid={{d.ad3_3.id}}">
+									<strong class="seckill-name">{{d.ad3_3.goodsName}}</strong>
+									<img width="100%" src="{{d.ad3_3.pic}}" border="0" />
+								</a>
+							</li>
+							<li class="seckill-item">
+								<a href="/qianbao/qg_tourl.html?gid={{d.ad3_4.id}}">
+									<strong class="seckill-name">{{d.ad3_4.goodsName}}</strong>
+									<img width="100%" src="{{d.ad3_4.pic}}" border="0" />
+								</a>
+							</li>
+							<li class="seckill-item">
+								<a href="/qianbao/qg_tourl.html?gid={{d.ad3_5.id}}">
+									<strong class="seckill-name">{{d.ad3_5.goodsName}}</strong>
+									<img width="100%" src="{{d.ad3_5.pic}}" border="0" />
+								</a>
+							</li>
+						</ul>
+					</script>
+				</div>
+				<div class="floor seckill-floor" id="meiriqiangou" style="display: none;">
+					<div class="title-wrap">
+						<div class="seckill-timer"><span id="LeftTime"></span></div>
+						<h2 class="title">每日抢购</h2>
+					</div>
+					<div id="ad2_1"><span class="mui-spinner"></span></div>
+					<script id="ad2_1Tpl" type="text/html">
+						<a href="/qianbao/qg.html?gid={{d.id}}">
+							<ul class="seckill-list">
+								<li class="seckill-item2" style="border:0">
+									<strong style="padding-top:20px;">{{d.goodsName}}</strong>
+									<br />
+									<p class="f12">{{d.goodsname_fu}}</p>
+								</li>
+								<li class="seckill-item2" style="border:0">
+									<img width="100%" src="{{d.pic}}" border="0" />
+								</li>
+							</ul>
+						</a>
+						<input type="hidden" id="payend_Time" value="{{d.end_Time}}">
+						<input type="hidden" id="havenum" value="{{d.havenum}}">
+					</script>
+				</div>
+				<div class="mhome">
+					<div class="viewport">
+						<div class="floor seckill-floor">
+							<div class="title-wrap">
+								<a href="javascript:gotourl('/category/','blank')" class="more">更多</a>
+								<h2 class="title">优质推荐</h2>
+							</div>
+							
+							<ul class="wbox">
+								<li class="wbox-flex" id="ad1_1"><span class="mui-spinner"></span>
+								</li>
+								<script id="ad1_1Tpl" type="text/html">
+									<a name="" href="/qianbao/qg_tourl.html?gid={{d.id}}">
+										<strong class="seckill-name">{{d.goodsName}}</strong>
+										<span>{{d.goodsname_fu}}</span>
+										<img data-src="done" alt="" src="{{d.pic}}" /></a>
+								</script>
+								<li class="wbox-flex">
+									<dl>
+										<dd id="ad1_2"><span class="mui-spinner"></span>
+										</dd>
+										<script id="ad1_2Tpl" type="text/html">
+											<a name="" href="/qianbao/qg_tourl.html?gid={{d.id}}">
+												<strong class="seckill-name">{{d.goodsName}}</strong>
+												<span>{{d.goodsname_fu}}</span>
+												<img data-src="done" alt="" src="{{d.pic}}" />
+											</a>
+										</script>
+										<dd id="ad1_3"><span class="mui-spinner"></span>
+										</dd>
+										<script id="ad1_3Tpl" type="text/html">
+											<a name="" href="/qianbao/qg_tourl.html?gid={{d.id}}">
+												<strong class="seckill-name">{{d.goodsName}}</strong>
+												<span>{{d.goodsname_fu}}</span>
+												<img data-src="done" alt="" src="{{d.pic}}" />
+											</a>
+										</script>
+									</dl>
+								</li>
+							</ul>
+							<ul class="seckill-list">
+								<li class="seckill-item gdheight" id="ad1_4"><span class="mui-spinner"></span>
+								</li>
+								<script id="ad1_4Tpl" type="text/html">
+									<a href="/qianbao/qg_tourl.html?gid={{d.id}}">
+										<strong class="seckill-name">{{d.goodsName}}</strong>
+										<span>{{d.goodsname_fu}}</span>
+										<div class="ddheight"><img width="100%" src="{{d.pic}}" border="0" /></div>
+									</a>
+								</script>
+								<li class="seckill-item gdheight" id="ad1_5"><span class="mui-spinner"></span>
+								</li>
+								<script id="ad1_5Tpl" type="text/html">
+									<a href="/qianbao/qg_tourl.html?gid={{d.id}}">
+										<strong class="seckill-name">{{d.goodsName}}</strong>
+										<span>{{d.goodsname_fu}}</span>
+										<div class="ddheight"><img width="100%" src="{{d.pic}}" border="0" /></div>
+									</a>
+								</script>
+								<li class="seckill-item gdheight" id="ad1_6"><span class="mui-spinner"></span>
+								</li>
+								<script id="ad1_6Tpl" type="text/html">
+									<a href="/qianbao/qg_tourl.html?gid={{d.id}}">
+										<strong class="seckill-name">{{d.goodsName}}</strong>
+										<span>{{d.goodsname_fu}}</span>
+										<div class="ddheight"><img width="100%" src="{{d.pic}}" border="0" /></div>
+									</a>
+								</script>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<div class="newstitle">
+					行情报价<a href="javascript:openblank('/order/price.html');"><span style="float: right;font-size: 14px;line-height: 30px;padding-right: 10px;" class="mui-icon mui-icon-flag">订阅</span></a>
+				</div>
+				<script id="pricelistTpl" type="text/html">
+					<li class="mui-table-view-cell">
+						<a href="/priceviews/?id={{d.id}}&category_id={{d.typeid}}&assist_id={{d.assistid}}&keywords={{keywords}}">{{d.title}}</a>
+					</li>
+				</script>
+				<div>
+					<ul class="mui-table-view " id="pricelist">
+						<span class="mui-spinner"></span>
+						<li class="mui-table-view-cell">
+							<a class="mui-navigate-right" href="javascript:gotourl('/order/price.html','blank')">
+								<span style="color: #DD524D;">你还没有订阅行情报价，点此</span><span class="mui-btn-link">立即订阅！</span>
+							</a>
+						</li>
+					</ul>
+					<ul class="mui-table-view ">
+						<li class="mui-table-view-cell">
+							<a class="mui-navigate-right" href="javascript:gotourl('/priceindex/','blank')">
+						            查看更多
+						    </a>
+						</li>
+					</ul>
+				</div>
+				<script id="newslistTpl" type="text/html">
+					<li class="mui-table-view-cell">
+						<a href="/priceviews/?id={{d.id}}&category_id={{d.typeid}}&assist_id={{d.assistid}}&keywords={{d.keywords}}">{{d.title}}</a>
+					</li>
+				</script>
+				<!--<div class="newstitle">
+				废料商机<a href="javascript:openblank('/order/business.html');"><span style="float: right;font-size: 14px;line-height: 30px;padding-right: 10px;" class="mui-icon mui-icon-flag">订阅</span></a>
+			</div>
+			<script id="productlistTpl" type="text/html">
+				<li class="mui-table-view-cell">
+					<a href="/detail/?id={{d.pdt_id}}">
+						<img src="{{d.pdt_images}}" style="width: 80px;height: 80px;float: left;margin: 10px;margin-left: -5px;margin-top:-2px ;">
+						<div class="mui-media-body">
+							<span class="mui-ellipsis-2">{{d.pdt_kind.kindtxt}}{{d.pdt_name}}</span>
+							<h5 style="float: left;">{{d.com_province}} {{d.pdt_price}}</h5>
+							<div class="mui-text-right">
+								<span class="mui-h5">{{d.pdt_time_en}}</span>
+							</div>
+							<div class="mui-clearfix"></div>
+							<p class="mui-h6 mui-ellipsis">{{d.pdt_detail}}</p>
+						</div>
+					</a>
+				</li>
+			</script>
+			<ul class="mui-table-view" id="productlist">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="javascript:gotourl('/order/business.html','blank')">
+						<span style="color: #DD524D;">你还没有订阅供求商机，点此</span><span class="mui-btn-link">立即订阅！</span>
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="javascript:gotourl('/category/','blank')">
+				            查看更多
+				        </a>
+				</li>
+			</ul>-->
+			</div>
+		</div>
+		<div class="mui-content" id="pcontent1" style="text-align: center;display: none;">
+			<div class="midload">
+				<h5>网络不给力,请检查网络是否正常！</h5>
+				<br />
+				<button class="mui-btn mui-btn-warning" onclick="reloadapp(this);">
+					刷新重试
+				</button>
+				<button class="mui-btn mui-btn-warning mui-btn-outlined" onclick="closewindow();">
+					退出
+				</button>
+			</div>
+		</div>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" onclick="loadindex()">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">首页</span>
+			</a>
+			<a class="mui-tab-item" href="javascript:gotourl('/messagelist/','blank');">
+				<span class="mui-badge mui-badge-danger message-num" id='messagescount' style='display:none'>1</span><span class="mui-icon mui-icon-email"></span><span class="mui-tab-label">消息</span>
+			</a>
+			<a class="mui-tab-item" href="javascript:fj()">
+				<span class="mui-icon mui-icon-location"></span><span class="mui-tab-label">附近</span>
+			</a>
+			<a class="mui-tab-item" href="javascript:gotourl('/myrc_index/','blank');">
+				<span class="mui-icon mui-icon-contact"></span><span class="mui-tab-label">管家</span>
+			</a>
+		</nav>
+		<input style="display: none;" id="errbutton"></input>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/pullup.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/load.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/window.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/camera.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/zz91/appindex.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../js/laytpl/DBapi.js"></script>
+		<input type="hidden" id="pages" value="2">
+		<div class="arrtop" id="arrtop" onclick="scrolltop()" style="display: none;"><a><span class="mui-icon mui-icon-arrowup"></span></a></a>
+
+		</div>
+		<div id="downloadwindow" class="tipp" align="center">
+			<p style="color: #000000;" id="downloadwindowjindu">正在下载数据: <span id="dsize"></span>/</p>
+		</div>
+		</div>
+		<div id="mainload" class="mui-content" style="padding-bottom: 50px;">
+			<center class="midload" style="height: 200px; margin-top: -100px;"><img src="../images/loading.gif">
+				<br /><br />正在为您努力加载中......
+				<div id="waiter"></div>
+				<div id="reloadbtn" style="display: none;">
+					<br />若长时间未能进入APP
+					<br />
+					<br /><a onclick="plusReady()">点此重新加载</a>
+				</div>
+			</center>
+		</div>
+		<script>
+			 //showheader("newindex");
+			var ws = null,
+				wo = null;
+			 // 扩展API加载完毕，现在可以正常调用扩展API 
+			function plusReady() {
+				// 获取自身窗口
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+			}
+			if (window.plus) {
+				plusReady();
+			} else {
+				document.addEventListener("plusready", plusReady, false);
+			}
+
+			function onRefresh() {
+				setTimeout(function() {
+					getindexData(zzweburl + "/index.html", {
+						"datatype": "json",
+						'company_id': UserInfo.companyid()
+					});
+					getmessagesnum(UserInfo.companyid());
+					ws.endPullToRefresh();
+					wo.evalJS("pullReset()");
+				}, 1000);
+			}
+
+			function loadindex() {
+				getindexData(zzweburl + "/index.html", {
+					"datatype": "json",
+					'company_id': UserInfo.companyid()
+				});
+				getmessagesnum(UserInfo.companyid());
+				plus.nativeUI.toast("已为你更新最新数据");
+			}
+			mui.plusReady(function() {
+				
+				var nWaitingindex;
+				if (window.plus) {
+					nWaitingindex = plus.nativeUI.showWaiting("数据加载中，请稍候......");
+				}
+				getindexData(zzweburl + "/index.html", {
+					"datatype": "json",
+					'company_id': UserInfo.companyid()
+				});
+				getmessagesnum(UserInfo.companyid());
+				if (nWaitingindex) {
+					nWaitingindex.close();
+				}
+				document.getElementById("mainload").style.display = "none";
+				document.getElementById("mainbody").style.display = "block";
+				visitoncode = plus.runtime.version;
+				(function(d, t) {
+					var r = d.createElement(t),
+						s = d.getElementsByTagName(t)[0];
+					r.async = 1;
+					r.src = zzweburl + '/js/common2.js?' + (new Date()).getTime().toString();
+					s.parentNode.insertBefore(r, s);
+				})(document, "script");
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,173 @@
+<div class="ey-left1 fl">
+	<div class="ey-left1-item">
+		<div class="left-nav">
+			<div class="nav-item f14 fb fl w226 bg">
+				<a href="$!{address.company}/compinfo.htm?id=$!{companyinfo.id}&flag=0">公司简介</a>
+			</div>
+			<div class="nav-item f14 fb fl bl w225">
+				<a href="$!{address.company}/compinfo.htm?id=$!{companyinfo.id}&flag=1" class="gray">供应信息</a>
+			</div>
+			<div class="nav-item f14 fb fl bl w225">
+				<a href="$!{address.company}/compinfo.htm?id=$!{companyinfo.id}&flag=2" class="gray">求购信息</a>
+			</div>
+			<!--end nav-item-->
+			<div class="cb"></div>
+		</div>
+		<!--end left-nav-->
+		<div class="ey-company-content1">
+			<div class="company-content1-text f14">
+				#if($!{haveProduct}||$!{haveYuanliao})
+    				#if($!{companyinfo.membershipCode}=="10051000")
+    					$validateUtils.checkMobileAndHide($!{companyinfo.introduction},null,null)
+    				#else
+    					$!{companyinfo.introduction}
+    				#end
+				#end
+			</div>
+			<!--end company-content1-text-->
+			<div class="mt10">
+				#if($!{haveProduct}||$!{haveYuanliao})
+				公司名称：$!{companyinfo.name}#if($!{isAttest})<span style="color:red">[已认证]</span>#end
+				#end
+			</div>
+			<div class="mt10">
+				#if($!{haveProduct}||$!{haveYuanliao})
+				主营业务：
+				#if($!{companyinfo.membershipCode}=="10051000")
+					$validateUtils.checkMobileAndHide($!{companyinfo.business},null,null)
+				#else
+					$!{companyinfo.business}
+				#end
+				#end
+            </div>
+            <div class="mt10">
+				#if($!{haveProduct}||$!{haveYuanliao})
+                所在地区：
+				#if($!{companyinfo.membershipCode}=="10051000")
+					$validateUtils.checkMobileAndHide($!{companyinfo.address},null,null)
+				#else
+					$!{companyinfo.address}
+				#end
+				#end
+            </div>
+			#if($market)
+			<div class="mt10">
+				所在市场：
+				<a href="$!{address.market}/${market.words}/" target="_blank">$!{market.name}</a>
+			</div>
+			#end
+        </div>
+        <!--end ey-company-content1-->
+   </div>
+   <!--end ey-left1-item-->
+    <div class="ey-left1-item mt10">
+    	<div class="ey-item-title fb f14">
+        	供求信息
+        </div>
+        <!--end ey-item-title-->
+        <div class="ey-item-content">
+			#foreach($obj in $!{dto})
+				<div class="ey-box fl mr25">
+            	<div class="ey-box-img">
+					<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+						<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=140&height=115" />
+                    </a>
+                </div>
+                <!--end ey-box-img-->
+                <div class="ey-box-text">
+                	<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">$!{obj.productsTypeLabel}$!{obj.products.title}</a><br />
+					#if($!{obj.products.minPrice}&&$!{obj.products.minPrice}!="0.0")
+						$!{obj.products.minPrice}
+						#if($!{obj.products.maxPrice}&&$!{obj.products.maxPrice}!="0.0")
+							-$!{productDetails.products.maxPrice}
+						#end
+						$!{productDetails.products.priceUnit}
+						#if($!{productDetails.products.quantityUnit}&&$!{productDetails.products.quantityUnit}!="")
+							/$!{productDetails.products.quantityUnit}
+						#end
+					#else
+						面议或电议
+					#end
+                </div>
+                <!--end ey-box-text-->
+            </div>
+			#end
+            <div class="cb"></div>
+        </div>
+        <!--end ey-item-content-->
+    </div>
+    <!--end ey-left1-item-->
+    <div class="ey-banner">
+    	<script type="text/javascript">
+    		/*公司简介 普会 中部 640*60，创建于2013-3-30*/
+    		var cpro_id = "u1248132";
+		</script>
+		<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+    </div>
+    <!--end ey-banner-->
+    <div class="ey-left1-item">
+    	<div class="left-nav">
+            <div class="nav-item f14 fb fl w339 bg">
+                最新报价信息
+            </div>
+            <div class="nav-item f14 fb fl bl w338 bg">
+                最新资讯信息
+            </div>
+            <!--end nav-item-->
+            <div class="cb"></div>
+        </div>
+        <!--end left-nav-->
+		<!--最新报价信息-->
+        <div class="ey-company-content1" id="ey-ul1">
+            <div class="ey-ul fl">
+                <ul>
+					#cacheFragment("$!{address.fragment}/price/newestCompPrice.htm?size=5&td4sdf", "", "", "")
+						#foreach($obj in $list)
+                        <li>
+							<div class="fl w230 oh">
+								<a href="$!{address.price}/companyprice/priceDetails.htm?id=$!{obj.id}" title="$!{obj.title}" target="_blank">#printTitle($!{obj.title} 10 "")</a>
+							</div>
+							<div class="fr">
+								#set($price=$!{obj.minPrice})
+        						#if($!{obj.maxPrice} && $!{obj.maxPrice}>0)
+        							#set($price=$!{price}+"-"+$!{obj.maxPrice})
+        						#end
+        						#set($price=$price + $!{obj.priceUnit})
+        						#if($!{obj.quantityUnit} && $!{boj.quantityUnit.length()} >0)
+        							#set($!{price}=$!{price} + "/"+$!{obj.quantityUnit})
+        						#end
+        						#set($!{price} = $!{price.toString()})
+                                <span title="$!{price}">#printTitle($!{price} 10 "..")</span>
+							</div>
+							<div class="cb"></div>
+						</li>
+						#end
+                    #end
+				</ul>
+            </div>
+            <!--end ey-ul-->
+            <div class="line2 fl"></div>
+            <div class="ey-ul fr">
+                <ul>
+					#cacheFragment("$!{address.fragment}/price/newHotPrice.htm?code=price_comment&size=5&rfe" "" "" "")
+						#foreach($tn in $!{list})
+                        <li>
+							<div class="fl w230 oh">
+								<a href="$!{address.price}/priceDetails_$!{tn.id}.htm" target="_blank" title="$!{tn.title}">#printTitle($!{tn.title} 14 "")</a>
+							</div>			
+							<div class="fr">#printFragmentDate('MM-dd' $!{tn.gmtOrder})</div>
+							<div class="cb"></div>
+						</li>
+						#end
+					#end
+                </ul>
+            </div>
+            <!--end ey-ul-->
+            
+            <div class="cb"></div>
+        </div>
+        <!--end ey-company-content1-->
+    </div>
+    <!--end ey-left1-item-->
+</div>
+<!--end ey-left1-->

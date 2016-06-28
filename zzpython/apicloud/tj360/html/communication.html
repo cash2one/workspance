@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>在线交流</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#middle div{
+		border:2px solid #00b8ff;
+		border-radius: 4px; 
+		background-color: #FFFFFF;
+	}
+	#middle div a{
+		padding: 5px 8px;
+		display: inline-block;
+		color: #00b8ff;
+	}
+	.current{
+		background-color: #00b8ff !important;
+		color: #FFFFFF !important;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: #00b8ff !important;
+	}
+	.hide{
+		display: none !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title"></strong>
+					<div>
+						<a id="communication" class="current" tapmode="">在线交流</a><a id="myques" tapmode="" onclick="changeNav('1')">我的提问</a>
+					</div>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="communicationQuestion()">
+					提问
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	var y = 0;
+	apiready = function() {
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		y = headerPos.h;
+		
+		openCommunication();
+	};
+	
+	function openCommunication(){
+		api.openFrame({
+			name: 'communication_frame',
+			url: 'communication_frame.html',
+			bounces: true,
+			rect: {
+				x: 0,
+				y: y,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	}
+	
+	function openCommunicationItemMine(){
+		api.openFrame({
+			name: 'communicationItemMine_frame',
+			url: 'communicationItemMine_frame.html',
+			bounces: true,
+			rect: {
+				x: 0,
+				y: y,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	}
+	
+	function changeNav(index){
+		var myques = $api.byId('myques');
+		var communication = $api.byId('communication');
+		if(index == '1'){//index为1时，点击了我的提问，显示我的提问子窗口，隐藏在线交流子窗口
+			hasNoClsAddIt(myques, 'current');
+			$api.removeAttr(myques, 'onclick');
+			hasClsRemoveIt(communication, 'current');
+			$api.attr(communication, 'onclick', 'changeNav("0")');
+			
+			openCommunicationItemMine();
+			api.closeFrame({name: 'communication_frame'});
+		}else{//index为0时，点击了，显示在线交流子窗口，隐藏我的提问子窗口
+			hasNoClsAddIt(communication, 'current');
+			$api.removeAttr(communication, 'onclick');
+			hasClsRemoveIt(myques, 'current');
+			$api.attr(myques, 'onclick', 'changeNav("1")');
+
+			openCommunication();
+			api.closeFrame({name: 'communicationItemMine_frame'});
+		}
+	}
+	
+	function communicationQuestion(){
+		api.openWin({name:'communicationQuestion', url:'communicationQuestion.html', pageParam: {list:''}});
+	}
+	
+	function hideCommunicationQuestion(){
+		hasNoClsAddIt($api.byId('right'), 'hide');
+	}
+	
+	function showCommunicationQuestion(){
+		hasClsRemoveIt($api.byId('right'), 'hide');
+	}
+</script>
+</html>

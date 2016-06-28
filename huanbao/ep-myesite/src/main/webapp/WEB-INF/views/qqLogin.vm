@@ -1,0 +1,247 @@
+##set($layout="/layout/registLayout.vm")
+#set($layout="/layout/qqLayout.vm")
+<div class="process_bar wrapper">
+	填写账户信息 (以下*为必填)	
+</div>
+<div class="wrapper clearfix">
+	<fieldset class="form_field double_colum">
+		## 注册新账号 
+		<form method="post" id="regform" action="#springUrl('/doQQRegist.htm')" novalidate="novalidate">
+			<legend>新用户：请补充注册信息</legend>
+			<p class="alert">如果您尚未注册过中国环保网账号，请完善以下信息：</p>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>注册类型：</label>
+            	<div class="controls">
+            		<label><input type="radio" name="mainProduct" value="mainSupply" checked="checked" />卖家</label>
+	                <label><input type="radio" name="mainProduct" value="mainBuy" />买家</label>
+				</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>用户名：</label>
+            	<div class="controls">
+					<input type="text" name="account" id="account" class="field validate[required,custom[vaccount],minSize[4],maxSize[20]],ajax[ajaxAccount]" value="$!{compAccount.account}" />
+            	</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>密码：</label></label>
+            	<div class="controls">
+            		<input type="password" value="" name="passwordClear" class="field validate[required,minSize[6],maxSize[16]]" id="passwordClear" />
+            	</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>确认密码：</label>
+            	<div class="controls">
+            		<input type="password" value="" name="confirmpassword" class="field validate[required,equals[passwordClear]]" id="confirmpassword" />
+            	</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>邮箱：</label>
+            	<div class="controls">
+					<input type="text" name="email" class="field validate[required,custom[email],ajax[ajaxEmail]]" id="email" value="$!{compAccount.email}" />
+            	</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>手机号码：</label>
+            	<div class="controls">
+					<input type="text" name="mobile" class="field validate[required,custom[mobile]]" id="mobile" value="$!{compAccount.mobile}"/>
+            	</div>
+            </div>
+			<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>公司名称：</label>
+            	<div class="controls">
+					<input type="text" name="name" class="field validate[required,maxSize[100]]" id="name" value="$!{profile.name}"/>
+            	</div>
+            </div>
+        	<div class="control-group">
+            	<label for="" class="control_label">qq:</label>
+            	<div class="controls">
+					<input type="text" name="qq" class="field validate[custom[onlyNumberSp],minSize[5],maxSize[12]]" id="qq" value="$!{compAccount.qq}"/>
+            	</div>
+            </div>
+			<div class="control-group">
+                <div class="controls">
+	                <label for="agreeterms">
+						<input type="checkbox" name="agreeterms" checked> 
+						我已经阅读&lt;&lt;<a href="javascript:void(0);" class="readertermsbtn" title="点击查看中国环保环注册服务条款">中国环保网服务条款</a>&gt;&gt;
+					</label>
+				</div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+            		<input type="submit" class="reg_btn" value="立即注册" />
+					<input type="hidden" name="mainSupply" id="mainSupply" value="1" />
+					<input type="hidden" name="mainBuy" id="mainBuy" value="0" />
+					<input type="hidden" name="accessToken" value="$!{accessToken}" />
+				</div>
+			</div>
+        </form>	
+	</fieldset>
+	<fieldset class="form_field double_colum">
+		<form method="post" id="hblogin" action="#springUrl('/doQQBind.htm')">
+			<legend>老用户：可绑定QQ账号</legend>
+			<p class="alert">如果您已经注册过中国环保网，请将您的QQ账号和中国环保网账号绑定：</p>
+        	<div class="control-group">
+            	<label for="" class="control_label"><em>*</em>用户名：</label>
+            	<div class="controls">
+            		<input type="text" value="" name="account" class="field validate[required]">
+            	</div>
+            </div>
+            <div class="control-group">
+            	<label for="" class="control_label"><em>*</em>密码：</label>
+            	<div class="controls">
+            		<input type="password" value="" name="password" class="field validate[required]">
+            	</div>
+            </div>
+            <div class="control-group">
+            	<div class="controls">关联中国环保网帐号后，下次您可以用QQ号登录中国环保网</div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+            		<input type="submit" class="reg_btn" value="确定绑定" />
+					<input type="hidden" name="accessToken" value="$!{accessToken}" />
+            	</div>
+            </div>
+		</form>
+    </fieldset>
+</div>
+#parse("/common/regist/protocol.vm")
+#parse("/common/importValidateOriginal.vm")
+
+
+##<form method="post" id="regform" name="regform" action="#springUrl('/doQQRegist.htm')">
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            注册类型：
+##        </div>
+##        <div class="regi_input">
+##            <span class="item-input" style="font-size:14px;">
+##                <label>
+##                    <input type="radio" name="mainProduct" value="mainSupply" checked="checked" />
+##                    卖家
+##                </label>
+##                &nbsp;&nbsp;
+##                <label>
+##                    <input type="radio" name="mainProduct" value="mainBuy" />
+##                    买家
+##                </label>
+##            </span>
+##        </div>
+##    </div>
+##    <div class="reg_items reg_items_hover">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            用户名：
+##        </div>
+##        <div class="regi_input">
+##            <input type="text" name="account" id="account" class="regipt validate[required,custom[vaccount],minSize[4],maxSize[20]],ajax[ajaxAccount]" value="$!{compAccount.account}" />
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label psdstrength">
+##            <em class="fontorange">*</em>
+##            密码：
+##        </div>
+##        <div class="regi_input">
+##            <input type="password" value="" name="passwordClear" class="regipt validate[required,minSize[6],maxSize[16]]" id="passwordClear" />
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            确认密码：
+##        </div>
+##        <div class="regi_input">
+##            <input type="password" value="" name="confirmpassword" class="regipt validate[required,equals[passwordClear]]" id="confirmpassword" />
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            邮箱：
+##        </div>
+##        <div class="regi_input">
+##            <input type="text" name="email" class="regipt validate[required,custom[email],ajax[ajaxEmail]]" id="email" value="$!{compAccount.email}" />
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            手机号码：
+##        </div>
+##        <div class="regi_input">
+##            <input type="text" name="mobile" class="regipt validate[required,custom[mobile]]" id="mobile" value="$!{compAccount.mobile}"/>
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            <em class="fontorange">*</em>
+##            公司名称：
+##        </div>
+##        <div class="regi_input">
+##            <input type="text" name="name" class="regipt validate[required,maxSize[100]]" id="name" value="$!{profile.name}"/>
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_label">
+##            QQ：
+##        </div>
+##        <div class="regi_input">
+##            <input type="text" name="qq" class="regipt validate[custom[onlyNumberSp],minSize[5],maxSize[12]]" id="qq" value="$!{compAccount.qq}"/>
+##        </div>
+##    </div>
+##    <div class="reg_items">
+##        <div class="regi_input">
+##            <input type="checkbox" name="agreeterms" class="agreeterms" id="agreeterms" checked />
+##            <label for="agreeterms">
+##                我已经阅读&lt;&lt;<a href="javascript:void(0);" class="readertermsbtn" title="点击查看中国环保环注册服务条款">中国环保网服务条款</a>
+##                &gt;&gt;
+##            </label>
+##        </div>
+##    </div>
+##    <div class="reg_items_sub">
+##        <input type="submit" class="regsub" name="registBtn" value="立即注册" />
+##        <input type="hidden" name="mainSupply" id="mainSupply" value="1" />
+##        <input type="hidden" name="mainBuy" id="mainBuy" value="0" />
+##        <input type="hidden" name="accessToken" value="$!{accessToken}" />
+##    </div>
+##</form>
+
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+    	//表单验证
+    	jQuery("#regform").validationEngine("attach",{
+    		scroll:true
+    	});
+		//表单验证
+    	jQuery("#hblogin").validationEngine("attach",{
+    		scroll:true
+    	});
+		
+		hb.util.topBar.naver("#J_topnav");
+    	(function(){
+    		var hook = jQuery("#J_hook"),
+    			mask = jQuery("#J_mask"),
+    			box = jQuery("#J_box"),
+    			close = box.find(".closeterms"),
+    			win = jQuery(document);
+    		hook.on("click", function(event){
+    			event.preventDefault();
+    			mask.css({
+    				height: win.height()+'px',
+    				width: win.width()+'px'
+    			}).fadeIn(300);
+    			box.css("left", (win.width()/2)-(box.width()/2)+'px').slideDown(500);
+    			close.css("left", ((win.width()/2)-100)+'px');
+    		});
+    		close.click(function(){
+    			mask.fadeOut(300);
+    			box.slideUp(500);
+    		});
+    		mask.click(function(){
+    			mask.fadeOut(300);
+    			box.slideUp(500);
+    		});
+    	})()
+    });
+</script>

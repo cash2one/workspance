@@ -1,0 +1,861 @@
+#set( $layout = "/layout/default.vm" )
+#if($reducePrice)
+	#parse("/common/float.vm")
+#end
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/business/css/index.css"/>
+<script type="text/javascript" src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="$!{address.img}/zz91/business/js/index.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay1.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/ppc/css/exp.css"/>
+<script src="$!{address.img}/zz91/myrc/js/exp.js"></script>
+<div class="business">
+	<div class="business-title">
+		您好,我是您的商务助理$!{cs_name},如您在操作中有任何的问题请随时拨打您的专属热线: <b>
+			#if($!{cs_phone} && $!{cs_phone}!='')
+				$!{cs_phone}
+			     #else 
+			              #if("$!{gmtend}"!="")
+			              0571-56633091	            
+				         #else
+					      0571-56611111
+			#end
+			#end</b> ,我将真诚为您服务!
+    	##您好，我是您的商务助理黄琴，如您在操作中有任何的问题请随时拨打您的专属热线：0571-56633091，我将真诚为您服务
+	</div>
+	<script>
+	<!--微信验证-->
+	function openweixinyz()
+	{
+		openoverlay('http://pyapp.zz91.com/weixin/zz91weixin_yz.html?account=$!{sessionUser.account}&destUrl=$!{address.myrc}/submitCallback.htm','微信验证',550,300,0);
+		//jIframe('http://pyapp.zz91.com/weixin/zz91weixin_yz.html?account=$!{sessionUser.account}', '微信验证','550','300');
+		document.getElementById("weixinkuan").innerHTML="在这进行验证中...";
+		
+	}
+	</script>
+	<style>
+	.tishi{
+		font-size: 16px;
+		line-height: 30px;
+		color: #F00;
+		background-color: #FF0;
+		border: 1px solid #F60;
+		padding-left:10px;
+	}
+	</style>
+	#if($couponList)
+	<table class="table table-bordered table-condensed mt" id="myTable">
+		<thead>
+			<tr>
+				<th class="tac" style="background: #e8f7e8">优惠券名称</th>
+				<th class="tac" style="background: #e8f7e8">优惠券码</th>
+				<th class="tac" style="background: #e8f7e8">开始使用时间</th>
+				<th class="tac" style="background: #e8f7e8">截止使用时间</th>
+				<th class="tac" style="background: #e8f7e8">优惠价格</th>
+				<th class="tac" style="background: #e8f7e8"></th>
+				
+			</tr>
+		</thead>
+		<tbody>
+		#foreach($obj in $couponList)
+			<tr>
+				<td class="tac">$obj.serviceName</td>
+				<td class="tac">$obj.code</td>
+				<td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtStart})</td>
+				<td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtEnd})</td>
+				<td class="tac">$obj.reducePrice 元</td>
+				<td class="tac">
+					#if($obj.status==3)
+						<b style="color:red">付款成功</b>
+					#else
+						<a href="http://www.zz91.com/cn/shuangshiyi/" target="_blank" style="color:#3366cc">使用优惠券</a>
+					#end
+				</td>
+			</tr>
+		#end
+		</tbody>
+	</table>
+	#end
+	<div id="weixinkuan" style='text-align:center;margin-top:6px;'><script type="text/javascript" src="http://pyapp.zz91.com/weixin/zz91weixin_yzfront.html?account=$!{sessionUser.account}&flag=0"></script></div>
+    <!--end business-title-->
+	<div class="mainblock1">
+		#if($!{sessionUser.membershipCode}=="10051000")
+		<div class="m1-left">
+			<div class="m1-left-text">
+            	<script type="text/javascript">document.write(greetings());</script>，<span title="$!{sessionUser.account}">#printTitle($!{sessionUser.account} 14 "...")</span>!  <a href="#springUrl('/dologout.htm')">退出</a>
+            </div>
+            <!--end m1-left-text-->
+			<div class="m1-left-text">
+				会员级别：<a>$!{membershipLable}</a>
+			</div>
+			<!--end m1-left-text-->
+			
+				<div class="m1-left-text orange fb">
+					<a href="$!{address.www}/ppc/" target="_blank" style="color:red">升级为来电宝（无效果不付费）</a>
+				</div>
+				<div class="m1-left-text orange fb">
+					<a href="$!{address.www}/zst/" target="_blank">升级为再生通</a>
+				</div>
+				<!--end m1-left-text-->
+				<div class="m1-left-text orange fb">
+					享受优质会员服务
+				</div>
+				<!--end m1-left-text-->
+				<div class="m1-left-text orange fb">
+					服务电话：
+					#if($phone)
+						<button style="width:110px;height:32px;line-height:32px;text-align:center;border:1px solid #7dc15b;background:#85cf60;color:#e8f7e8" onclick="window.location.href='#springUrl('/myphone/index.htm')'">来电宝明细</button>
+					#end
+				</div>
+				<!--end m1-left-text-->
+				<div class="m1-left-text orange fb">
+					0571-56612345
+				</div>
+				<!--end m1-left-text-->
+		</div>
+		#elseif($!{sessionUser.membershipCode}=="10051003")
+		<div class="m2-left">	
+			<ul class="m1-left-info">
+				<li>
+					<script type="text/javascript">document.write(greetings());</script>，<span title="$!{sessionUser.account}">#printTitle($!{sessionUser.account} 14 "...")</span>!  <a href="#springUrl('/dologout.htm')" class="blue">退出</a>
+				</li>
+				<li style="line-height:35px;padding:0 10px">
+					<span class="rate" title="接听率决定信息排名顺序，接听率越高您的信息排序越高!">接听率：<font>$!{ldbLevel.phoneRate}%</font></span>
+					<div class="insider"><font>$!{membershipLable}会员</font></div>
+				</li>
+				<li>
+					<div class="fl">我的等级：&nbsp;</div>
+					<a class="lv_icon lv$!{ldbLevel.level}" target="_blank"></a>
+					<a title="$!{ldbLevel.score}/$!{ldbLevel.maxExp}">
+						<div class="exp">
+							<div class="exp_bar"><label></label></div>
+						</div>
+					</a>
+					<div class="cb"></div>
+				</li>
+				<li>
+					我的门市部：<a href="$!{address.www}/ppc/index$!{sessionUser.companyId}.htm" target="_blank" class="blue">点击查看</a>
+				</li>
+				<li>我的余额：<font>$!{phone.balance}0元</font></li>
+				<li>
+					<div class="m2-left-btn">
+						<a href="#springUrl('/myphone/index.htm')">消费明细</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+		#else
+		<div class="m1-left">
+			<div class="m1-left-text">
+            	<script type="text/javascript">document.write(greetings());</script>，<span title="$!{sessionUser.account}">#printTitle($!{sessionUser.account} 14 "...")</span>!  <a href="#springUrl('/dologout.htm')">退出</a>
+            </div>
+            <!--end m1-left-text-->
+			<div class="m1-left-text">
+				会员级别：<a>#if($!{isZSVip}=="true")终身制会员#else$!{membershipLable}#end</a>
+			</div>
+			<!--end m1-left-text-->
+			
+				<div class="m1-left-text orange fb">
+					开通时间：$!{membershipFromDate}
+				</div>
+				<!--end m1-left-text-->
+				#if($!{isZSVip}=="false")
+				<div class="m1-left-text orange fb">
+					结束时间：$!{membershipEndDate}
+				</div>
+				#end
+				<!--end m1-left-text-->
+				<div class="m1-left-text orange fb">
+					门市部：
+				</div>
+				<!--end m1-left-text-->
+				<div class="m1-left-text orange fb">
+					<a href="http://$!{domainInfo.domainZz91}.zz91.com" target="_blank">http://$!{domainInfo.domainZz91}.zz91.com</a>
+				</div>
+				<!--end m1-left-text-->
+		</div>
+		#end
+        
+        <div class="m1-right">
+        	<div class="m1-right-title">
+            	消息中心
+            </div>
+            <!--end m1-right-title-->
+            <div class="m1-item">
+            	<div class="m1-item-left">
+                	<div class="m1-item-text mr10 gray">
+                    	资料完善度
+                    </div>
+                    <div class="m1-item-text red mr10 fb">
+                    	$!{countInfo}%
+                    </div>
+                    <div class="m1-item-text mr10 m1-bar">
+                    	<img src="$!{address.img}/zz91/business/images/bar.jpg" style="width:$!{countInfo}%" />
+                    </div>
+					#set($bfb = 100-${countInfo})
+					#if($bfb>0)
+						<div class="m1-item-text">
+							<a href="#springUrl('/mycompany/updateCompany.htm')">完善资料</a>
+						</div>
+					#end
+                    <div class="cb"></div>
+                </div>
+                <div class="m1-item-right">
+					#if($countProducts==0)
+						<div class="m1-item-text2">
+							提示：<span class="red">您还没有发布或者更新任何供求信息</span>
+						</div>
+					#end
+                    <!--end m1-item-text2-->
+                </div>
+                <!--end m1-item-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-item-->
+            <div class="m1-item">
+            	<div class="m1-item-left">
+                	<a href="#springUrl('/changepassword.htm')">修改密码</a>
+                </div>
+				#if($countProducts==0)
+					<div class="m1-item-right">
+##								<a href="#springUrl('/myproducts/office_post1.htm')" class="blue">点此立即发布</a>
+	                     <a class="blue popWin" href="javascript:;">点此立即发布</a>
+					</div>
+				#end
+                <!--end m1-item-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-item-->
+            <div class="m1-item-line"></div>
+            <div class="m1-item">
+            	<div class="m1-item-left">
+                	<ul class="m1-item-ul">
+                    	<li>供求审核：</li>
+                        <li>通过<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')"><span class="red fb">$productsInfo.get("checkStatus1")</span></a>条</li>
+                        <li>未通过<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=2&isExpired=0&isPause=0')"><span class="red fb">$productsInfo.get("checkStatus2")</span></a>条</li>
+##                        <li><a href="#springUrl('/myproducts/office_post1.htm')">发布供求</a></li>
+						<li><a class="popWin" href="javascript:;">发布供求</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <div class="m1-item-right">
+                	<ul class="m1-item-ul">
+                    	<li>问答管理：</li>
+                        <li>通过<a href="$!{address.huzhu}/myhuzhu/mywenda/posted.html" target="_blank"><span class="red fb">$!{passQA}</span></a>条</li>
+						#set($noPassQA=$countPostedQA - $passQA)
+                        <li>未通过<a href="$!{address.huzhu}/myhuzhu/mywenda/posted.html" target="_blank"><span class="red fb">$noPassQA</span></a>条</li>
+                        <li>回答<a href="$!{address.huzhu}/myhuzhu/mywenda/reply.html" target="_blank"><span class="red fb">$countReplyQA</span></a>条</li>
+                        <li><a href="$!{address.huzhu}/wenda/tiwen.html" target="_blank">发布回答</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m1-item-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-item-->
+            <div class="m1-item">
+            	<div class="m1-item-left">
+                	<ul class="m1-item-ul">
+                    	<li>询价管理：</li>
+                        <li><a href="#springUrl('/mymessage/inbox.htm')"><span class="red fb">$!{inquiryInfo}</span></a>条</li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <div class="m1-item-right">
+                	<ul class="m1-item-ul">
+                    	<li>帖子管理：</li>
+                        <li>通过<a href="$!{address.huzhu}/myhuzhu/mytiezi/posted.html" target="_blank"><span class="red fb">$!{passPost}</span></a>条</li>
+						#set($noPass=$countPosted - $passPost)
+                        <li>未通过<a href="$!{address.huzhu}/myhuzhu/mytiezi/posted.html" target="_blank"><span class="red fb">$noPass</span></a>条</li>
+                        <li>回复<a href="$!{address.huzhu}/myhuzhu/mytiezi/reply.html" target="_blank"><span class="red fb">$countReply</span></a>条</li>
+                        <li><a href="$!{address.huzhu}/shequ/fatie.html" target="_blank">发布新贴</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end m1-item-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-item-->
+			<div class="m1-item">
+				<ul class="m1-item-ul">
+					<li>样品交易：</li>
+					<li>全部采购订单<a href="$!{address.yang}/mngr/orderAll.htm" target="_blank"><span class="red fb">#if($!{bc_})$!{bc_}#else 0 #end</span></a></li>
+					#set($dclCount = $!{bc_00} + $!{bc_11})
+					<li>待处理采购订单<a href="$!{address.yang}/mngr/orderAll.htm?state=00"><span class="red fb">#if($dclCount) $dclCount #else 0 #end</span></a></li>
+					<li><a href="$!{address.yang}/buy/order.htm" target="_blank">采购样品</a></li>
+					<li>全部供应订单<a href="${address.yang}/mngr/saleAll.htm"><span class="red fb">$!{sc_}</span></a></li>
+					#set($dclCount1 = $!{sc_03} + $!{sc_06})
+					<li>待处理供应订单<a href="$!{address.yang}/mngr/saleAll.htm?state=03"><span class="red fb">#if($dclCount1) $dclCount1 #else 0 #end</span></a></li>
+					<li><a href="#springUrl('/myproducts/office_post1.htm?isYP=1')">发布样品</a></li>
+					<div class="cb"></div>
+				</ul>
+			</div>
+			<!--end m1-item-->
+            <div class="m1-box">
+            	<div class="m1-box-title">
+                	账号安全：
+                </div>
+                <div class="m1-box-div m1-box-icon2">
+                	保密邮箱#if($!{email}&&${email}=='1')（<span class="orange">未绑定</span>）<a href="#springUrl('/mycompany/updateCompany.htm')">绑定</a>#else （<span class="gray">已绑定</span>） #end
+                </div>
+                <!--end m1-box-div-->
+                <div class="m1-box-div m1-box-icon3">
+                	绑定手机 #if($au.mobile&&$au.mobile!="")（<span class="gray">已设置</span>）<a href="#" id="clickToMobile">解绑</a> #else （<span class="orange">未设置</span>）<a href="#" id="clickToMobile">绑定</a> #end
+                </div>
+                <!--end m1-box-div-->
+                <div class="m1-box-div m1-box-icon4">
+                	绑定微信#if($oa)（<span class="gray">已绑定</span>）#else（<span class="orange">未绑定</span>）<a href="javascript:openoverlay('http://pyapp.zz91.com/weixin/zz91weixin_yz.html?account=$!{sessionUser.account}&destUrl=$!{address.myrc}/submitCallback.htm','微信验证',550,300,0);">绑定</a>#end
+                </div>
+                <!--end m1-box-div-->
+                <div class="cb"></div>
+            </div>
+            <!--end m1-item-box-->
+        </div>
+        <!--end m1-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end mainblock1-->
+##    <div class="banner">
+##		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=960&amp;num=5"></script>
+##    </div>
+    <!--end banner-->
+    
+	<script type="text/javascript" src="http://gg.zz91.com/show?p=655"></script>
+	
+    <div class="mainblock2">
+    	<div class="m2-block">
+            <div class="m2-item">
+                <div class="m2-item-title">
+                    <div class="m2-label">
+                        最新供求
+                    </div>
+                    <div class="m2-more">
+                        <a href="$!{address.trade}" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						#foreach($pro in $!{list2})
+							<li>
+								<a target="_blank" title="$!{products.title}" href="$!{address.trade}/productdetails$!{pro.products.id}.htm" target="_blank">
+									[#printProductType(${pro.products.productsTypeCode} "" "")]
+									#printTitle($!{pro.products.title} 15 "")
+								</a>
+							</li>
+						#end
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+            
+            <div class="m2-item">
+				<div class="m2-item-title">
+                    <div class="m2-label">
+                        最新报价
+                    </div>
+                    <div class="m2-more">
+                        <a href="$!{address.price}" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/price/queryLatestPrice.htm?size=6", "", "", "3600")
+							#foreach($a in $list)
+								<li>
+									<a href="$!{address.price}/priceDetails_$!{a.id}.htm" target="_blank" title="$!{a.title}"> #printTitle($!{a.title} 15 "")</a>
+								</li>
+							#end
+						#end
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+            
+			#if($newsHtml)
+            <div class="m2-item">
+                <div class="m2-item-title">
+                    <div class="m2-label">
+						最新资讯
+					</div>
+                    <div class="m2-more">
+                        <a href="http://news.zz91.com/" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						$!{newsHtml}
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+			<div class="m2-item">
+                <div class="m2-item-title">
+                    <div class="m2-label">
+						互助社区-问答
+					</div>
+                    <div class="m2-more">
+                        <a href="$!{address.huzhu}" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=6","","","3600")
+							#foreach($obj in $frontBbsPostList)
+								<li>
+									<a href="$!{address.huzhu}/viewReply$!{obj.id}.htm" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 15 "")</a>
+								</li>
+							#end
+						#end
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+			#else
+			
+			## 最新帖子
+			<div class="m2-item">
+				<div class="m2-item-title">
+					<div class="m2-label">
+						最新帖子
+					</div>
+                    <div class="m2-more">
+                        <a href="$!{address.huzhu}" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/huzhu/newestPost.htm?size=6","","","3600")
+							#foreach($obj in $newsList)
+							<li>
+								<a href="$!{address.huzhu}/viewReply$!{obj.id}.htm" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 15 "")</a>
+							</li>
+							#end
+						#end
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+            
+            <div class="m2-item">
+                <div class="m2-item-title">
+                    <div class="m2-label">
+                        互助社区-问答
+                    </div>
+                    <div class="m2-more">
+                        <a href="$!{address.huzhu}" target="_blank">更多</a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+                <!--end m2-item-title-->
+                <div class="m2-item-content">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/huzhu/newestPost.htm?size=6&categoryId=11","","","3600")
+							#foreach($obj in $newsList)
+							<li>
+								<a href="http://huzhu.zz91.com/viewReply$!{obj.id}.htm" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 15 "")</a>
+							</li>
+							#end
+						#end
+                    </ul>
+                </div>
+                <!--end m2-item-content-->
+            </div>
+			#end
+            <div class="cb"></div>
+        </div>
+        <!--end m2-block-->
+    </div>
+    <!--end mainblock2-->
+    
+    <div class="groom">
+    	<div class="groom-title">
+        	为您推荐
+        </div>
+        <!--end groom-title-->
+        <div class="groom-content">
+        	<div class="groom-block">
+                <div class="groom-item">
+                    <div class="groom-item-img">
+                        <a href="$!{address.www}/zst/" target="_blank"><img src="$!{address.img}/zz91/business/images/groom1.jpg" /></a>
+                    </div>
+                    <div class="groom-item-box">
+                        <div class="groom-box-title">
+                            <a href="$!{address.www}/zst/" target="_blank">再生通</a>
+                        </div>
+                        <!--end groom-box-title-->
+                        <div class="groom-box-text">
+                            <a href="$!{address.www}/zst/" target="_blank">ZZ91最优质的会员服务</a>
+                        </div>
+                        <!--end groom-box-text-->
+                    </div>
+                    <!--end groom-box-->
+                </div>
+                
+                <div class="groom-item">
+                    <div class="groom-item-img">
+                        <a href="$!{address.www}/service/baidu/yh.html" target="_blank"><img src="$!{address.img}/zz91/business/images/groom2.jpg" /></a>
+                    </div>
+                    <div class="groom-item-box">
+                        <div class="groom-box-title">
+                            <a href="$!{address.www}/service/baidu/yh.html" target="_blank">百度优化</a>
+                        </div>
+                        <!--end groom-box-title-->
+                        <div class="groom-box-text">
+                            <a href="$!{address.www}/service/baidu/yh.html" target="_blank">低投入，超值回报！</a>
+                        </div>
+                        <!--end groom-box-text-->
+                    </div>
+                    <!--end groom-box-->
+                </div>
+                
+                <div class="groom-item">
+                    <div class="groom-item-img">
+                        <a href="$!{address.www}/zt/400Treasure/index.html" target="_blank"><img src="$!{address.img}/zz91/business/images/groom3.jpg" /></a>
+                    </div>
+                    <div class="groom-item-box">
+                        <div class="groom-box-title">
+                            <a href="$!{address.www}/zt/400Treasure/index.html" target="_blank">来电宝</a>
+                        </div>
+                        <!--end groom-box-title-->
+                        <div class="groom-box-text">
+                            <a href="$!{address.www}/zt/400Treasure/index.html" target="_blank">100%提升您的电话量</a>
+                        </div>
+                        <!--end groom-box-text-->
+                    </div>
+                    <!--end groom-box-->
+                </div>
+                
+                <div class="groom-item">
+                    <div class="groom-item-img">
+                        <a href="http://yang.zz91.com/" target="_blank"><img src="$!{address.img}/zz91/business/images/groom5.jpg" /></a>
+                    </div>
+                    <div class="groom-item-box">
+                        <div class="groom-box-title">
+                            <a href="http://yang.zz91.com/" target="_blank">样品交易</a>
+                        </div>
+                        <!--end groom-box-title-->
+                        <div class="groom-box-text">
+                            <a href="http://yang.zz91.com/" target="_blank">废料样品，在线交易</a>
+                        </div>
+                        <!--end groom-box-text-->
+                    </div>
+                    <!--end groom-box-->
+                </div>
+                
+                
+                <div class="cb"></div>
+            </div>
+            <!--end groom-block-->
+        </div>
+        <!--end groom-content-->
+    </div>
+    <!--end groom-->
+    <div class="container">
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=952&amp;num=5"></script>
+	</div>
+    <div class="question">
+        <div class="question-title">
+            <div class="question-label">
+                常见问题解答：
+            </div>
+        </div>
+        <!--end question-title-->
+        <div class="question-content">
+            <div class="question-ul">
+            	<ul>
+					#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10171000&size=16","","","3600")
+						#foreach($obj in $list)
+							#if($velocityCount>14)
+								<li><a href="$!{obj.link}" target="_blank">• $!{obj.title}</a></li>
+							#else
+								<li class="bba1"><a href="$!{obj.link}" target="_blank">• $!{obj.title}</a></li>
+							#end
+						#end
+					#end
+                    <div class="cb"></div>
+                </ul>
+            </div>
+            
+            <div class="question-right">
+            	<div class="question-right-text">
+                	问题还没有解决，请查看<a href="http://help.zz91.com/" target="_blank">帮助中心</a>！
+                </div>
+                <!--end question-right-text-->
+				<div class="question-right-banner">
+					<script type="text/javascript" src="http://gg.zz91.com/show?p=597"></script>
+				</div>
+##                <!--end question-right-banenr-->
+##                <div class="question-right-banner">
+##                	
+##                </div>
+##                <!--end question-right-banenr-->
+            </div>
+            <!--end question-right-->
+            <div class="cb"></div>
+        </div>
+        <!--end question-content-->
+    </div>
+    <!--end question-->
+##	#if($!{sessionUser.membershipCode}!="10051000")
+##		<div class="colum-box1">
+##			<a href="#"><img src="$!{address.img}/zz91/business/images/img1.jpg" /></a>
+##		</div>
+##	#end
+##    <!--end colum-box-->
+	
+</div>
+<div class="cb"></div>
+
+<!--start 20150415-->
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".e-save").click(function(){
+  	var len = $("input:checkbox:checked").length; 
+  	insertMarket();
+	if(len>0){
+    	closeoverlay();
+	}
+  });
+  $(".e-cancel").click(function(){
+    marketMark();
+    closeoverlay();
+  });
+});
+function marketMark(){
+		jQuery.ajax({
+    			url:'#springUrl("/myrc/reduceMark.htm")',
+				type:"post",
+				dataType:"json"
+		});
+	}
+function insertMarket(){
+    var val=jQuery("input[name=ckb]");
+	for(var i=0;i<val.length;i++){
+		if(val[i].checked==true){
+		    var av=val[i].value;
+			jQuery.ajax({
+    			url:'#springUrl("/mycompany/doEnterMarket.htm?marketId=")'+av,
+				type:"post",
+				dataType:"json"
+			});
+		}
+	}
+}
+</script>
+
+
+#if($!{expireNum}||$!{validNum}||$!{hideNum})
+<div id="TB_overlayBG" style="display:block;height:1915px;">&nbsp;</div>
+<div class="overlaybox" style="display:block;left:320px;top:120px;width:700px;">
+
+	<div class="nbox">
+    	<h2 id="uuy">消息提醒<a class="overlayclose" href="javascript:closeoverlay();">关闭</a></h2>
+        <div class="mainlist">
+        	<div class="tips">
+		#if($!{expireNum})
+            	<div class="tip-item">
+                	<div class="tip-text fl f15">
+                    	<span class="nred bold">过期提醒：</span>
+                        您有<span class="nred bold">$!{expireNum}</span>条供求信息已过期，建议立即刷新
+                    </div>
+                    <!--end tip-text fl-->
+                    <div class="tip-update fr">
+                    	<input type="submit" class="XunJia_ok" value="立即刷新" onclick="window.location.href='$!{address.myrc}/myproducts/office_post_list.htm?isExpired=1&isPause=0'" />
+                    </div>
+                    <!--end tip-update fr-->
+                    <div class="cb"></div>
+                </div>
+		#end
+		#if($!{hideNum})
+            	<div class="tip-item">
+                	<div class="tip-text fl f15">
+                    	<span class="nred bold">隐藏提醒：</span>
+                        您有<span class="nred bold">$!{hideNum}</span>条供求信息已经被系统自动隐藏，建议立即刷新
+                    </div>
+                    <!--end tip-text fl-->
+                    <div class="tip-update fr">
+                    	<input type="submit" class="XunJia_ok" value="立即刷新" onclick="window.location.href='$!{address.myrc}/myproducts/office_post_list.htm?isExpired=1&isPause=0'" />
+                    </div>
+                    <!--end tip-update fr-->
+                    <div class="cb"></div>
+                </div>
+		#end
+                <!--end tip-item-->
+		#if($!{validNum})
+                <div class="tip-item">
+                	<div class="tip-text fl f15">
+                    	<span class="nred bold">更新提醒：</span>
+                        您有<span class="nred bold">$!{validNum}</span>条供求信息长时间未更新，建议立即更新
+                    </div>
+                    <!--end tip-text fl-->
+                    <div class="tip-update fr">
+                    	<input type="submit" class="XunJia_ok" value="立即更新" onclick="window.location.href='$!{address.myrc}/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0'" />
+                    </div>
+                    <!--end tip-update fr-->
+                    <div class="cb"></div>
+                </div>
+		#end
+                <!--end tip-item-->
+                <div class="tip-item f15">
+                	如果您已不在做此相关生意，您可以使用“暂不发布供求信息”功能，如有需要，选择“重新发布信息”即可。
+                    <a href="http://help.zz91.com/detail-68/" class="orange f15" target="_blank" title="如何使用暂时不发布信息功能？">如何使用暂时不发布信息功能？</a>
+                </div>
+                <!--end tip-item-->
+                <div class="tip-info f15">
+                	<dl>
+                    	<dt class="green bold">为什么要刷新、更新信息?</dt>
+                        <dd>1、系统将自动隐藏已过期信息，客户在ZZ91上也无法搜索到该条信息，为避免供求信息被隐藏，建议您在<span class="nred bold">30天</span>内刷新已过期信息</dd>
+                        <dd>2、刷新已过期信息，有利于保障您的供求信息能继续获得客户的关注</dd>
+                        <dd>3、经常更新信息，有利于增加信息的活跃度，提高信息的排名</dd>
+                    </dl>
+                </div>
+                <!--end tip-info-->
+            </div>
+            <!--end tips-->
+        </div>
+        <!--end mainlist-->
+    </div>
+    <!--end nbox-->
+</div>
+#elseif($!{countInfo}<60)
+	<div id="TB_overlayBG" style="display:block;height:1915px;">&nbsp;</div>
+	<div class="overlaybox" style="display:block;left:320px;top:120px;width:700px;">
+	
+	<div class="nbox">
+    	<h2 id="uuy">消息提醒<a class="overlayclose" href="javascript:closeoverlay();">关闭</a></h2>
+        <div class="mainlist">
+        	<div class="tips">
+                <div class="tip-item f15">
+                	<span class="nred bold">资料提醒：</span>
+                    <span>您的公司资料完整度只有<span class="nred bold">$!{countInfo}%</span>，建议立即完善</span>
+                    &nbsp;&nbsp;<input type="submit" class="XunJia_ok" value="立即完善" style="display:inline;font-size:12px" onclick="window.location.href='$!{address.myrc}/mycompany/updateCompany.htm'" />
+                </div>
+                <!--end tip-item-->
+                <div class="tip-info f15">
+                	<dl>
+                    	<dt class="green bold">为什么要完善公司资料？</dt>
+                        <dd>1、简单的公司资料，可信度不高，易错失目标客户</dd>
+                        <dd>2、完整度低于60%，且长时间未登录，公司信息将不在网上显示</dd>
+                        <dd>3、完整度高于60%，可以拥有发布商机的权利</dd>
+						<dd>4、公司资料越完整，越有利于提升信息排名</dd>
+                    </dl>
+                </div>
+                <!--end tip-info-->
+            </div>
+            <!--end tips-->
+        </div>
+        <!--end mainlist-->
+    </div>
+    <!--end nbox-->
+</div>
+#elseif($!{marketMark}==1)
+	<div id="TB_overlayBG" style="display:block;height:1915px;">&nbsp;</div>
+	<div class="overlaybox" style="display:block;left:320px;top:120px;width:700px;">
+		<div class="nbox">
+    		<h2 id="uuy">入驻产业带<a class="overlayclose" href="javascript:closeoverlay();">关闭</a></h2>
+			<div class="mainlist">
+				<div class="e-main">
+					<h3>根据您的公司地址为您匹配到以下实体市场，您可以选择多个市场同时入驻，获取更多的商机</h3><br />
+    				<div class="e-item"><strong class="mr8">主营行业：</strong>$!{industry}</div>
+    				<div class="e-item"><strong class="mr8">公司地址：</strong>$!{addr}</div>
+    				<div class="e-item2">
+    					<strong class="fl">市场：</strong>
+    					<table class="e-tab" cellpadding="0" cellspacing="0">
+        					<tr>
+								#foreach($li in $!{listM})
+									#if($velocityCount<4)
+										<td><input type="checkbox" name="ckb" value="$!{li.id}" />&nbsp;<label>$!{li.name}</label></td>
+									#end
+								#end
+                			</tr>
+            				<tr>
+                				#foreach($li in $!{listM})
+									#if($velocityCount>3&&$velocityCount<7)
+										<td><input type="checkbox" name="ckb" value="$!{li.id}" />&nbsp;<label>$!{li.name}</label></td>
+									#end
+								#end
+            				</tr>
+            				<tr>
+            					#foreach($li in $!{listM})
+									#if($velocityCount>6&&$velocityCount<10)
+										<td><input type="checkbox" name="ckb" value="$!{li.id}" />&nbsp;<label>$!{li.name}</label></td>
+									#end
+								#end
+            				</tr>
+							<tr>
+            					#foreach($li in $!{listM})
+									#if($velocityCount>9&&$velocityCount<13)
+										<td><input type="checkbox" name="ckb" value="$!{li.id}" />&nbsp;<label>$!{li.name}</label></td>
+									#end
+								#end
+            				</tr>
+							<tr>
+            					#foreach($li in $!{listM})
+									#if($velocityCount>12)
+										<td><input type="checkbox" name="ckb" value="$!{li.id}" />&nbsp;<label>$!{li.name}</label></td>
+									#end
+								#end
+            				</tr>
+        				</table>
+    				</div>
+    				<div class="e-item3">
+    					<p><font style="color:#F30;font-weight:bold;">提醒：</font>如果您不是以上实体市场的商户，或者已不再经营相关生意，您可以选择“<font style="color:#3B9D3B;">我不是以上市场商户，取消入驻</font>"。如有需要，可以前往生意管家-公司资料页面入驻即可。</p>
+    				</div>
+    				<div class="e-btn">
+    					<span><a href="javascript:;" class="XunJia_ok e-save" id="save">保存</a></span>
+        				<span><a href="javascript:;" class="e-cancel">我不是以上市场商户，取消入驻</a></span>
+    				</div>
+				</div>
+				<!--end e-main-->
+			</div>
+			<!--end mainlist-->
+		</div>
+		<!--end nbox-->
+	</div>
+	<!--end overlaybox-->
+<!--end 20150414-->
+#end
+##<div class="container">
+##	<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=0&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=960&amp;num=5"></script>
+##</div>
+<!--end business-->
+
+<script language="javascript" src="$!{address.img}/zz91/business/js/jquery.Sonline.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	myrc.menu(1, 1);
+	
+	jQuery("#clickToMobile").click(function(){
+		Asto.util.Callback.setSubmitCallback(function(success, data){
+			closeoverlay();
+			window.parent.location.reload();
+		});
+		#if($au.mobile&&$au.mobile!="")
+			openoverlay('$!{address.front}/bind/unMobile.htm?destUrl=$!{address.myrc}/submitCallback.htm&$date','解绑手机',500,300,0);
+		#else
+			openoverlay('$!{address.front}/bind/mobile.htm?destUrl=$!{address.myrc}/submitCallback.htm&$date','手机绑定',500,300,0);
+		#end
+	});
+	
+	countScore($!{ldbLevel.score});
+});
+jQuery(function(){
+	jQuery(".business").Sonline({
+		Position:"right",//left或right
+		Top:-100,//顶部距离，默认200px
+		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+		Qqlist:""
+	});
+})	
+</script>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPostNoticeRecommend">
+
+	<typeAlias alias="bbsPostNoticeRecommend" type="com.ast.ast1949.domain.bbs.BbsPostNoticeRecommend" />
+	<resultMap id="bbsPostNoticeRecommendResult" class="bbsPostNoticeRecommend">
+		<result property="id" column="id" />
+		<result property="type" column="type" />
+		<result property="category" column="category" />
+		<result property="state" column="state" />
+		<result property="contentId" column="content_id" />
+        <result property="companyId" column="company_id" />
+        <result property="account" column="account" />
+        <result property="contentTitle" column="content_title" />		
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="allColumn">
+		id,type,category,state,content_id,company_id,content_title,account,gmt_created,gmt_modified
+	</sql>
+	<select id="queryZuiXinRecommendByCondition" parameterClass="java.util.HashMap" resultMap="bbsPostNoticeRecommendResult">
+		select 
+		<include refid="bbsPostNoticeRecommend.allColumn"/>
+		from bbs_post_notice_recommend bbs
+		where type=#type# and state=#state#
+		order by gmt_created desc
+		limit #size#
+	</select>
+	<!--某用户的推荐数、关注数等-->
+	<select id="countNumbyCompanyId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_notice_recommend
+		where company_id=#companyId# and type=#type# and state=#state#
+		<dynamic>
+			<isNotEmpty property="category" prepend="and">
+				category=#category#
+			</isNotEmpty>
+			<isNull prepend="and" property="category">
+				(category &lt; 2 and category &gt; -1)
+			</isNull>
+		</dynamic>
+	</select>
+	<!--被关注或被推荐数-->
+	<select id="countNumByContentId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_notice_recommend
+		where content_id=#contentId# and type=#type# and state=#state# and category=#category#
+	</select>
+	<!--某用户的关注-->
+	<select id="queryNoticeByUser" parameterClass="java.util.HashMap" resultMap="bbsPostNoticeRecommendResult">
+		select 
+		<include refid="bbsPostNoticeRecommend.allColumn"/>
+		from bbs_post_notice_recommend
+		where  state='0' and account=#account# and category=#category# and type='1'
+		order by gmt_created desc
+		limit #size#
+	</select>
+	
+	<!--插入新的推荐或关注-->	
+	<insert id="insertNoticeOrRecomend" parameterClass="bbsPostNoticeRecommend">
+		insert into `bbs_post_notice_recommend`
+		(
+		`type`,
+		`category`,
+		`state`,
+		`content_id`,
+		`company_id`,
+		`account`,
+		`content_title`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#type#,
+		#category#,
+		#state#,
+		#contentId#,
+		#companyId#,
+		#account#,
+		#contentTitle#,
+		now(),
+		now()
+		)	
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<!--判断是否已经关注或推荐-->
+	<select id="querySimpleNoOrRem" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_notice_recommend
+		where state='0' and type=#type# and account=#account# and content_id=#contentId# and category = #category#
+	</select>
+	
+	<select id="queryListNotice" parameterClass="java.util.HashMap" resultMap="bbsPostNoticeRecommendResult">
+		select 
+		<include refid="bbsPostNoticeRecommend.allColumn"/>
+		from bbs_post_notice_recommend
+		where state='0' and account=#account# and category=#category# and type='1'
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryListNoticeCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_notice_recommend
+		where state='0' and account=#account# and category=#category# and type='1'
+	</select>
+	
+	<update id="updateStateToDel" parameterClass="java.util.Map">
+		update bbs_post_notice_recommend
+		set gmt_modified = now(),state = 1
+		where account = #account# and content_id = #contentId# and category = #category#
+	</update>
+
+</sqlMap>

@@ -1,0 +1,71 @@
+#if(!$!{hotType})
+	#set($hotType="废金属")
+#end
+<div class="te_tit_border" style="width:708px;"><!--热门供应求购 标题-->
+    <div class="te_tit_name">
+        <div class="cl_rmtitl">$!{hotType}热门供应 <!-- ${qgProductList_2.size()} ${gyProductList_2.size()}--></div>
+        <div class="cl_rmtitr">$!{hotType}热门求购</div>
+    </div>
+	<!--#3786 2-->
+    <!--te_tit_name结束标题--><!--内容-->
+	<div><!--左边内容-->
+		#foreach($plist in [$qgProductList_2,$gyProductList_2])
+			<div class="cl_rmgyqgr"> ##cl_rmgyqg
+			#foreach($obj in $plist)
+				#if($velocityCount==1)
+				<div class="cl_rmgyqgimg">
+					<ul>
+						<li>
+							<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+								#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=120&height=100" width="120" height="100" />
+								#else
+									<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="120" height="100" />
+								#end
+							</a>
+						</li>
+						<li>
+							<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($obj.products.title 8 "")</a>
+						</li>
+						<li>
+##							<span>$!{obj.products.minPrice}#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0 )-$!{obj.products.maxPrice}#end$!{obj.products.priceUnit}#if($!{productDetails.products.quantityUnit})/$!{productDetails.products.quantityUnit}#end</span>
+##							#set($price=$!{obj.products.minPrice})
+##							#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0)
+##								#set($price=$!{price}+"-"+$!{obj.products.maxPrice})
+##							#end
+##							#set($price=$price + $!{obj.products.priceUnit})
+##							#if($!{productDetails.products.quantityUnit} && $!{productDetails.products.quantityUnit.length()} >0)
+##								#set($!{price}=$!{price} + "/"+$!{productDetails.products.quantityUnit})
+##							#end
+##							<span title="$!{price}">
+##								#printTitle($!{price} 10 "..")
+##							</span>
+						</li>
+##    							<li>
+##    								<a href="#" class="te_alla">给我留言</a>
+##    							</li>
+					</ul>
+				</div>
+				#else
+				<div class="cl_rmgyqgcon">
+					<ul>
+						<li class="hover1">
+							<font color="#005d11" style="float:left">·</font>
+							<span style="float:left">
+								<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($obj.products.title 9 "")</a>
+							</span>
+							<span style="float:right;">$!date.format("MM-dd",$!{obj.products.refreshTime})</span>
+						</li>
+					</ul>
+					<div style="clear:both;"></div>
+				</div>
+				#end
+				
+			#end
+			</div>
+		#end
+		
+    </div>
+    <!--结束内容-->
+    <div style="clear:both;"></div>
+</div>

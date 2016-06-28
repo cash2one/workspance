@@ -1,0 +1,342 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1101","20","10")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+	<!--begin-->
+	<form action="#" method="post" id="sForm" name="sForm">
+		<div class="feedbackList">
+			<div class="feedbackSortsType">
+				<a onclick="logiing()" href="#springUrl('/mymessage/inbox.htm')" #if(!$!{groupId}) class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end>
+					全部
+				</a>
+				<a onclick="logiing()" href="#springUrl('/mymessage/inbox.htm?groupId=0')" #if($!{groupId}==0) class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end >
+					未分组
+				</a>
+				#set($sysFlag="0")
+				#foreach($sg in $systemGroupList)
+					<a onclick="logiing()" href="#springUrl('/mymessage/inbox.htm?groupId=')$!{sg.id}" #if($!{groupId}==$!{sg.id}) class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end>
+						$!{sg.name}
+					</a>
+					#if($!{groupId}==$!{sg.id})
+						#set($sysFlag="1")
+					#end
+				#end
+				<a href="javascript:void(0)"  #if( $!{groupId} && $!{groupId}!=0 && ${sysFlag}=="0" ) class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end>
+					其他自定义组
+				</a>
+				<a href="javascript:void(0)" class="feedbackSortsSet buttonMinGray" onclick="groups()">留言分组设置</a>
+                <div style="clear:both"></div>
+			</div>
+			<div class="feedbackSortsTypeOther">
+				#foreach($cg in $myGroupList)
+					<a href="#springUrl('/mymessage/inbox.htm?groupId=')$!{cg.id}" #if($!{groupId}==${cg.id}) class="feedbackSortsTypeOtherOn" #else class="feedbackSortsTypeOtherOff" #end >$!{cg.name}</a>
+				#end
+			</div>
+			
+            <div style="clear:both"></div>
+			<div class="commTip">
+				<span class="commTipRight">
+					<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=226" class="commHowDo">如何管理已收到的留言</a>
+					<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=227" class="commHowDo">如何回复已收到的留言</a>
+				</span>
+				<div style="clear:both"></div>
+			</div>
+			<div class="listApplicationBtn" style="margin-top:8px;background:none">
+					<span class="listApplicationBtnLeft">
+					<input type="checkbox" id="checkAllToggle1" name="checkAllToggle1" />
+					<input type="hidden" value="1" id="waste" name="waste"/>
+					<input type="button" value="全选" onclick="buttonCheckedAll()" class="buttonMinGray" />
+					<input type="button" onclick="deleteInquiryInfos()" value="永久删除" class="buttonMinGray" />
+					<input type="button" onclick="setInquiryToRubbish()" value="转为垃圾留言" class="buttonMinGray" />
+					<input type="button" class="buttonMinGray" value="分组" onclick="groupInquiry()"/>
+                    </span>
+					<span class="listApplicationBtnRight">
+						<a href="#springUrl('/mymessage/inbox.htm?groupId=')$!{groupId}&isViewed=0" class="commNoRead">未读</a>
+						<a href="#springUrl('/mymessage/inbox.htm?groupId=')$!{groupId}&isViewed=1" class="commRead">已读</a>
+					</span>
+                    <div style="clear:both"></div>
+			</div>
+			<div class="commList" style="margin-top:0">
+			<div class="commListTit">
+				<span class="feedbackSelect">&nbsp;</span>
+				<span class="feedbackBody">发件人</span>
+				<span class="feedbackCont">内容</span>
+				<span class="feedbackTime">时间</span>
+				<span class="feedbackInfo">询盘目标信息</span>
+                <div style="clear:both"></div>
+			</div>
+			
+			<ul>
+				#foreach($inquiry in ${page.records})
+					<li>
+						<span class="feedbackSelect">
+							<input type="checkbox" name="cbb" value="$!{inquiry.inquiry.id}" class="radioPositionFix"/>
+						</span>
+						<span class="feedbackBody">
+							#if($!{inquiry.inquiry.isViewed}=="0")
+								<img  align="absmiddle" src="$!{address.images}/global/icon/mail2.gif"/>
+							#else
+								<img  align="absmiddle" src="$!{address.images}/global/icon/mailopen2.gif"/>
+							#end
+							<a target="_blank" href="$!{address.server}/company/compinfo.htm?account=$!{inquiry.inquiry.senderAccount}">
+								#if($!{inquiry.senderContact}!="")
+									$!{inquiry.senderContact}
+								#else
+									$!{inquiry.inquiry.senderAccount}
+								#end
+							</a>
+						</span>
+						<span class="feedbackCont">
+							<a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}"><b >$!{inquiry.inquiry.title}</b></a>
+							
+							<span class="gray">$!{inquiry.inquiry.content}</span>
+						</span>
+						<span class="feedbackTime">
+							$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})
+						</span>
+						<span class="feedbackInfo">	
+							#if($!{inquiry.inquiry.beInquiredType}=="0")
+								<a href="$!{address.server}/trade/productdetails$!{inquiry.inquiry.beInquiredId}.htm" target="_blank">查看被询盘的供求</a>
+							#elseif($!{inquiry.inquiry.beInquiredType}=="1")
+								通过公司详细页面询盘
+							#end
+                        </span>
+                    </li>
+				#end	
+                <div style="clear:both"></div>
+            </ul>
+            </div>
+			<div class="listApplicationBtn">
+				<input type="checkbox" id="checkAllToggle2" name="checkAllToggle2" />
+				<input type="button" value="全选" onclick="buttonCheckedAll()" class="buttonMinGray" /> 
+				<input type="button" onclick="deleteInquiryInfos()" value="永久删除" class="buttonMinGray"/>
+				<input type="button" onclick="setInquiryToRubbish()" value="转为垃圾留言" class="buttonMinGray" />
+				<input type="button" onclick="groupInquiry()" value="分组" class="buttonMinGray"/>
+			</div>
+			
+			<div class="pageNav">
+				#myrcPageNav($!{page} "#springUrl('/mymessage/inbox.htm')" "groupId=$!{groupId}&isViewed=$!{isViewed}" "")
+            </div>
+            <div style="clear:both"></div>
+			<div class="tishiTitleTop sbtishi">
+                    <b>提醒：</b>您可基于留言直接回复，请打开有明确交易意向的留言，点击&quot;回复&quot;<br/>
+					留言的有效期为<b>1</b>年，系统将自动删除超出有效期的留言。请注意保存重要留言！
+			</div>
+        </div>
+    </form>
+</div>
+<script src="$!{address.js}/zz91.myrc.dialog.js" type="text/javascript"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#checkAllToggle1").attr("checked",false);
+	    jQuery("#checkAllToggle2").attr("checked",false);
+		//toggle checked all
+    	jQuery("#checkAllToggle1").click(function(){
+    		var chk=jQuery(this).attr("checked");
+			jQuery("#checkAllToggle2").attr("checked",chk);
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+		jQuery("#checkAllToggle2").click(function(){
+    		var chk=jQuery(this).attr("checked");
+			jQuery("#checkAllToggle1").attr("checked",chk);
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+	});
+	
+	function groups(){
+		dialog("留言分组设置", "iframe:#springUrl('/mymessage/groups.htm')", "450", "350", "iframe");
+	}
+	
+	function groupInquiry(){
+		//选择所有选中项
+		var ids=getAllInquiryIds();
+		if(ids.length<=0){
+			alert("请选选择要分组的留言信息");
+			return false;
+		}
+		dialog("添加留言到分组", "iframe:#springUrl('/mymessage/groups.htm?ids="+ids.join(",")'), "450px", "350px", "iframe");
+	}
+	
+	//点击全选按钮
+	function buttonCheckedAll(){
+		//alert ("点击全选按钮");
+		jQuery("#checkAllToggle1").attr("checked",true);
+	    jQuery("#checkAllToggle2").attr("checked",true);
+		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=true;
+    	});
+	}
+	
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name=cbb]"),function(index,obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+	
+	
+	//删除信息
+	function deleteInquiryInfos(){
+		var inquiryIds=getAllInquiryIds();
+		if(inquiryIds.length==0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中"+inquiryIds.length+"条留言,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/removeReceiveInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+ 
+	//取消询盘分组 Nozhufrm(form)
+	function cancelInquiryGroup(){
+		var inquiryIds=getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length==0){
+			alert ("选择你要取消分组设置的信息！");
+			return false;
+		}
+		if (confirm("你选中"+ii+"条留言,确实要取消该分组设置?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/cancelInquiryGroup.htm')",
+				type:"POST",
+				cache:false,
+				async:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+				if(msg!=null&&msg.success==true){
+					//alert(' 成功！');
+					//window.location.reload();
+				} else {
+					//alert(' 失败！');
+				}
+    			},
+    			error:function(e){
+    				//alert(' 失败！');
+    			}
+			});
+		}
+	}
+ 	
+	//询盘分组 setgroups(form)
+	function groupInquiryGroup(){
+		var inquiryIds=getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length==0){
+			alert ("选择你要分组的信息！");
+			return false;
+		}
+		if (confirm("你选中"+ii+"条留言,确实要分组?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/cancelInquiryGroup.htm')",
+				type:"POST",
+				cache:false,
+				async:false,
+				data:{inquiryIds:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+				if(msg!=null&&msg.success==true){
+					//alert(' 成功！');
+					//window.location.reload();
+				} else {
+					//alert(' 失败！');
+				}
+    			},
+    			error:function(e){
+    				//alert(' 失败！');
+    			}
+			});
+		}
+	}
+	//分组设置
+    function setgroups(form){
+		selectcb="0"
+    	ii=0
+        for (var i=0;i<form.elements.length;i++){
+        	var e = form.elements[i];
+    		if (e.name=='cbb'){
+      			if (e.checked==true){
+                    ii=ii+1
+                    var selectcb=selectcb+","+e.value
+      			}
+       		}
+        }
+    	if (selectcb=="0"){
+    		alert ("选择你要分组的信息！")
+    		return false
+    	}else{
+     		var inputselectcb=document.getElementById("selectcb");
+    		inputselectcb.value=selectcb;
+    	}
+    }
+
+	
+	//设置为垃圾询盘并以后该客户留言自己转为垃圾留言
+	function setInquiryToRubbish(){
+		var inquiryIds=getAllInquiryIds();
+		if(inquiryIds.length==0){
+			alert ("请选择需要转为垃圾的留言！")
+			return false;
+		}
+		if (confirm("确定要将所选留言转为垃圾留言?")){
+			jQuery.ajax({
+    			url:Context.ROOT+"/myrc/mymessage/spamInquiry.htm",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{ids:inquiryIds.join(","), isRubbish:"1"},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				alert('设置失败！');
+    			}
+    		});
+		}
+	}
+	
+
+	function onselectpdt(pdtid){
+        var obj=document.getElementById("id"+pdtid)
+        var objtr=document.getElementById(pdtid)
+        if (obj.checked==true){
+            obj.checked=false
+            objtr.style.background = "#ffffff";
+		}else{
+            obj.checked=true
+            objtr.style.background = "#D1FAB4";
+    	}
+    }
+	
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".feedbackList","#EFF6EF","#FFF")
+	});
+</script> 

@@ -1,0 +1,117 @@
+<script type="text/javascript" src="#springUrl('/app/sale/myCompDetails.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<input type="hidden" id="showCid" value="$!{id}" />
+<input type="hidden" id="visbile" value="$!{visbile}" />
+<input type="hidden" id="ds" value="$!{ds}" />
+<style type="text/css">
+	.sea-row{background-color:#FFA500!important;}
+</style>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var form = new com.zz91.ep.crm.Form({
+			title:"公司基本信息",
+			columnWidth:1,
+			collapsible:true,
+			titleCollapse:true,
+			region:"center"
+		});
+		
+		#if($!{id} && $!{id}>0)
+			form.loadCompany($!{id});
+		#end
+
+       var noteForm=new com.zz91.ep.crm.phoneNoteForm({
+			title:"销售小计",
+			columnWidth:1,
+			region:"center",
+			collapsible:true,
+			titleCollapse:true,
+			height:230
+		});
+		
+		#if($!{id} && $!{id}>0)
+			noteForm.initCidAndStar($!{id});
+		#end
+		
+		var saleNoteGrid=new com.zz91.ep.crm.phoneNoteGrid({
+			id:MYCOMP.NOTE_GRID,
+			title:"电话销售记录",
+			columnWidth:1,
+			collapsible:true,
+			titleCollapse:true,
+			height:200
+		});
+		
+		#if($!{id} && $!{id}>0)
+			saleNoteGrid.loadNote($!{id},0);
+		#end
+
+		var serviceNoteGrid=new com.zz91.ep.crm.phoneNoteGrid({
+			title:"高会客服记录",
+			columnWidth:1,
+			collapsible:true,
+			titleCollapse:true,
+			height:200
+		});
+		
+		#if($!{id} && $!{id}>0)
+			serviceNoteGrid.loadNote($!{id},1);
+		#end
+
+		var grid=new com.zz91.ep.crm.Grid({
+			id:MYCOMP.CONTACT_GRID,
+			title:"联系人信息",
+			columnWidth:1,
+			collapsible:true,
+			titleCollapse:true,
+			height:200
+		});
+
+		#if($!{id} && $!{id}>0)
+			grid.loadContactGrid($!{id});
+		#end
+		
+		#if($!visbile && $!{visbile}==5)
+			Ext.getCmp("set-sea").setVisible(false);
+			Ext.getCmp("set-weight").setVisible(false);
+			Ext.getCmp("on-save").setVisible(false);
+			Ext.getCmp("add-contact").setVisible(false);
+		#end
+
+		#if($!operate && $!{operate}==0)
+			Ext.getCmp("set-sea").setVisible(false);
+			Ext.getCmp("set-weight").setVisible(false);
+			Ext.getCmp("on-save").setVisible(false);
+			Ext.getCmp("add-contact").setVisible(false);
+		#end
+		
+		var likeGrid=new com.zz91.ep.crm.likeCompanyGrid({
+			title:"相同公司信息",
+			columnWidth:1,
+			collapsible:true,
+			titleCollapse:true,
+			height:200
+		});
+		
+		#if($!{id} && $!{id}>0)
+			likeGrid.loadGrid($!{id});
+		#end
+
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[{
+				region:"center",
+				columnWidth:1,
+				autoScroll:true,
+				items:[form,likeGrid,noteForm,{
+    				xtype:"tabpanel",
+    				region:'center',
+    				activeTab: 0,
+    				items:[saleNoteGrid,serviceNoteGrid]
+    				},grid
+				]
+			}]
+		});
+		
+	})
+</script>

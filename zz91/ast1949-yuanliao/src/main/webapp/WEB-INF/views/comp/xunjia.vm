@@ -1,0 +1,200 @@
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script> 
+        <script src="http://img0.zz91.com/zz91/polymer/js/comm.js"></script>  
+        <link rel="shortcut icon" href="http://img0.zz91.com/zz91/polymer/images/yousuyuan.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+		#set($layout="/layout/topfoolLayout.vm")
+        <div class="login-nav clearfix">
+            <div class="fl"><img src="http://img0.zz91.com/zz91/polymer/images/logo_suliao1.jpg"></div>
+            <div class="fl login-name">在线询价</div>
+        </div>
+        <div class="pagecenter clearfix">
+            <div class="zixun">
+				#if(!$!{sessionUser})
+                <div class="clearfix zixun-login">
+                    <div class="fl cried-icon"></div>
+                    <div class="fl zixun-notin">
+                        <p class="tell-notinfo">您尚未登录</p>
+                        <p class="tell-cango">注册成为优塑源网会员，<span class="orange-color">免费为您寻找优质货源，</span>同时享受<span class="orange-color">更全面的产品、企业推广等服务！</span></p>
+                        <div class="btn-doall">
+                            <a href="javascript:void(0)" class="btn-login j_login">已有账号，马上<span class="orange-color">登录</span></a>
+                            <a href="#springUrl('/user/register.html')" target="_blank" class="btn-rest">立即注册</a>
+                        </div>
+                    </div>
+                </div>
+				#end
+                <div class="clearfix zixun-main">
+                    <h2 class="zixun-form-h2">填写询价内容</h2>
+                    <div class="fl zixun-form">
+                        <form action="" id="form1" method="post">
+                        <ul class="zixun-form-ul">
+                            <li>
+                                <span class="zixun-form-name"><em class="red">*</em> 询价标题：</span>
+                                <input #if($!{yuanliao}) placeholder="您好，我对$!{yuanliao.title}感兴趣" #else placeholder="您好，我对您公司的产品感兴趣" #end #if($!{yuanliao}) value="您好，我对$!{yuanliao.title}感兴趣" #else value="您好，我对您公司的产品感兴趣" #end class="zixun-ipt" name="title"/>
+                            </li>
+                            <li>
+                                <span class="zixun-form-name"><em class="red">*</em> 我想了解：</span>
+                                <span class="getcheak">
+									
+                                    <label>
+                                        <span><input type="checkbox"  onclick="label(1)">厂家、牌号</span>
+                                    </label>
+                                    <label>
+                                        <span><input type="checkbox" onclick="label(2)">价格</span>
+                                    </label>
+                                    <label>
+                                        <span><input type="checkbox" onclick="label(3)">数量</span>
+                                    </label>
+                                    <label>
+                                       <span><input type="checkbox" onclick="label(4)">产品测试报告</span>
+                                    </label>
+                                    <label>
+                                        <span><input type="checkbox" onclick="label(5)">图片</span>
+                                    </label>
+                                </span>
+								<input type="hidden" name="info" id="info"/>
+                            </li>
+                            <li>
+                                <span class="zixun-form-name"><em class="red">*</em> 询价详情：</span>
+                                <select class="zixun-sect"　id="abc" onchange="b()">
+                                    <option>请选择常用问题</option>
+                                    <option>我对贵公司的产品非常感兴趣，能否发一份详细资料给我参考！</option>
+                                    <option>请您发一份比较详细的产品规格说明，谢谢！</option>
+                                    <option>请问贵公司的产品是否可以代理？代理的条件是什么？</option>
+                                    <option>我公司有意购买此产品，可否提供此产品的报价单和最小起订量？</option>
+                                </select>
+                                <span>可选择常用问题“快速提问”</span>
+                            </li>
+                            <li>
+                                <span class="zixun-form-name"></span>
+                                <textarea class="zixun-text" id="textarea" name="content"></textarea>
+								<input type="hidden" value="$!{company.id}" name="companyId"/>
+                            </li>
+                        </ul>
+                        <div class="zixun-into">
+                            <a href="javaScript:void(0)" class="zixun-into-btn">立即发送询价</a>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="fl zixun-firm">
+                        <dl class="zixun-firm-dl">
+                            <dt>公司信息</dt>
+                            <dd>
+                                <span class="info-name-fm">公司名称：</span>
+                                $!{company.name}
+                            </dd>
+                            <dd>
+                                <span class="info-name-fm">联&nbsp;&nbsp;系&nbsp;&nbsp;人：</span>
+                                $!{account.contact} 
+                            </dd>
+                            <dd>
+                                <span class="info-name-fm">手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：</span>
+                                $!{account.mobile}
+                            </dd>
+                            <dd>
+                                <span class="info-name-fm">电&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;话：</span>
+                                $!{account.tel}
+                            </dd>
+                            <dd>
+                                <span class="info-name-fm">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：</span>
+                                $!{company.address}
+                            </dd>
+                            <dd>
+                                <span class="info-name-fm">主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;营：</span>
+                                $!{company.business}
+                            </dd>
+							<div class="estopDiv"></div>
+							<div class="pop-main" style="display:none;">
+								<iframe frameborder="0" height="365" width="390"  marginheight="0px" marginwidth="0px" name="poplogin" scrolling="no" src="#springUrl('/miniLogin.htm')"></iframe>
+							</div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+	var arr1 = new Array();
+	
+	
+       $(".j_login").bind("click",function(){
+            locaTion();
+       })
+	   
+	   $(".zixun-into-btn").click(function(){
+	   	  	#if(!$!{sessionUser})
+			alert("您还未登陆,请先登陆")
+			return false;
+			#end
+			
+			var title=$("input[name='title']").val();
+			if(title==""){
+			alert("请填写询价标题");
+			return false;
+			}
+			if(arr1.length>0){
+			var a=arr1.toString();
+			$("#info").val(a);
+			}else{
+			alert("最少选择一个了解信息")
+			return false;
+			}
+			
+			var text=$(".zixun-sect").val();
+			if(text==""||text=="请选择常用问题"){
+			 alert("请选择一个询价详情");
+			 return false;
+			}
+			
+			jQuery.ajax({
+				url:"#springUrl('/comp/inquirySend.htm')",
+				data:jQuery("#form1").serialize(),
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+				if(reg.success){
+				window.location.href="#springUrl('/comp/xjsuccess.htm')"
+				}else{
+					alert("发送询价失败,请刷新重试");
+				}
+				}
+			})
+	   
+	   })
+	   
+	   
+	   function fash(){
+		location.reload();	   
+	   }
+	   
+	   
+	 function b(){
+	 var a=jQuery(".zixun-sect").val();
+	 var b =jQuery("#textarea").val();
+	 if(a!="请选择常用问题"){
+	 if(contions(b,a)==-1){
+	 	document.getElementById("textarea").value=b+a+"\n";
+	 }
+	 }
+}
+		function label(obj){
+			if(jQuery.inArray(obj, arr1)==-1){
+				arr1.push(obj);
+			}else{
+				for (var i = 0; i < arr1.length; i++) {
+				if (arr1[i] == obj) 
+				arr1.splice(i,1);
+				}
+			}
+ 		}
+
+
+
+
+		function contions(str, substr) {
+		if(str!=""){
+    	return str.indexOf(substr);
+		}else{
+		return -1;
+		}
+		}
+    </script>

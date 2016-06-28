@@ -1,0 +1,174 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+		<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+		
+#set($layout="layout/yuanliaoLayout.vm")
+#set($in=4)
+#set($inflag=3)
+        <div class="pagecenter clearfix">
+            <div class="fl firm-price-left">
+
+                <div class="firm-this-see">
+                    <div class="this-see-way">
+                        当前位置：<a href="#springUrl('/price/')">行情报价首页</a>  >  
+                        <a href="#springUrl('/price/clist.html')">企业报价</a>  >  
+                        #if($!{code}&&$!{code}!=""&&$!{code}!="qbtysl"&&$!{code}!="qbgcsy"&&$!{code}!="qbtzsl"&&$!{code}!="qbslhj")<a href="#springUrl('/hq/hqlist.htm?mainCode=')$!{code}">$!{code}</a>  > #end
+                        <span class="fweight">$!{companyPriceDO.title}</span>
+                    </div>
+                    <div class="see-select">
+                        <select class="st-type" id='reg-area-0'>
+							<option value="">请选择产品类别</option>
+						</select>
+                        <select class="st-type" id='reg-area-1'>
+							<option value="">请选择产品二级类别</option>
+						</select>
+                        <select class="st-type" id='reg-area-2'>
+							<option value="">请选择热门地区</option>
+							<option value="gddw">东莞</option>
+							<option value="gdsz">深圳</option>
+							<option value="gdmm">茂名</option>
+							<option value="gdfs">佛山</option>
+							<option value="jswx">无锡</option>
+							<option value="sdqd">青岛</option>
+							<option value="zjhz">杭州</option>
+							<option value="zjnb">宁波</option>
+							<option value="sccd">成都</option>
+							<option value="zssz">苏州</option>
+							<option value="sh">上海</option>
+							<option value="lnsy">沈阳</option>
+							<option value="zsnj">南京</option>
+						</select>
+                        <span class="st-btn st-btnsub">搜索</span>
+                       <a href="javaScript:void(0)" onclick="fabu('$!{address.myrc}/mycompanyprice/createPrice.htm')" target="_blank"><span class="st-btn">立即发布报价</span></a>
+                    </div>
+                    <div class="viewpirce-main">
+                        <h2 class="viewpirce-tt">$!{companyPriceDO.title}</h2>
+                        <p class="gettime">发布时间：#printFragmentDate('yyyy-MM-dd HH:mm:ss' $!{companyPriceDO.postTime})</p>
+                        <div class="main-list">
+                            <p><span class="fweight">产品名称：</span>$!{companyPriceDO.title}</p>
+                            <p><span class="fweight">产品价格：</span>#if($!{companyPriceDO.minPrice}&&$!{companyPriceDO.minPrice}!="") $!{companyPriceDO.minPrice}-$!{companyPriceDO.maxPrice}$!{companyPriceDO.priceUnit} #else #substr($!{companyPriceDO.price} $!{companyPriceDO.priceUnit})  #end </p>
+                            <p><span class="fweight">所在地区：</span>$!{companyPriceDO.areaCode}</p>
+                            <p><span class="fweight">发布时间：</span>#printFragmentDate('yyyy-MM-dd' $!{companyPriceDO.postTime})</p>
+                            <p><span class="fweight">产品描述：</span>$!{companyPriceDO.details}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="firm-other-see">
+                    <div class="other-see-tt">该公司其他报价</div>
+                    <ul class="other-see-list">
+						#set($ss=0)
+						#set($paSize=$list.size())
+						#foreach($in in $list)
+							#if($ss % 2 ==0&&$ss<=$paSize)
+                        <li class="clearfix">
+                            <span  class="see-info1"><a href="#springUrl('/price/detail')$!{in.id}.html" target="_balnk">$!{in.title}</a></span>
+                            <span class="see-info2">#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else #substr($!{in.price} $!{in.priceUnit})  #end</span>
+							#set($ss=$ss + 1)
+							#elseif($ss % 2 ==1&&$ss<=$paSize)
+                            <span class="see-info3"><a href="#springUrl('/price/detail')$!{in.id}.html" target="_balnk">$!{in.title}</a></span>
+                            <span>#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else #substr($!{in.price} $!{in.priceUnit})  #end</span>
+							#set($ss=$ss + 1)
+                        </li>
+						 #end
+						#end
+                    </ul>
+                </div>
+            </div>
+            <div class="fr firm-price-right">
+                <div class="mostnews">
+                    <div class="mostnews-title">最新塑料市场价格</div>
+                    <ul class="mostnews-ul">
+						#foreach($in in $!{list2})
+                        <li><a href="#springUrl('/price/cdetail')$!{in.id}.html" target="_blank">#printTitle(${in.title} 20 '...')</a></li>
+						#end
+                    </ul>
+                </div>
+                
+                <div class="mostnews">
+                    <div class="mostnews-title">相关类别最新报价</div>
+                    <ul class="newsbjiao">
+						#foreach($in in $!{list3})
+                        <li class="clearfix">
+                            <span class="fl"><a href="#springUrl('/price/detail')$!{in.id}.html">#printTitle($!{in.title} 8 '...')</a></span> 
+                            <span class="fr">#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else #substr($!{in.price} $!{in.priceUnit})  #end</span>
+                        </li>
+						#end
+                    </ul>
+                </div>
+
+                <div class="mostnews">
+                    <div class="mostnews-title">最新原料供求</div>
+                    <ul class="mostnews-ul">
+						#foreach($in in $list5)
+                        <li><a href="#springUrl('/detail/')$!{in.id}.html" target="_blank">#printTitle($!{in.title} 25 '...')</a></li>
+						#end
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+	var regarea = new Asto.util.Selector({
+		selects: ["#reg-area-0","#reg-area-1"],
+		url: "#springUrl('/price/productChild.htm')",
+		changeCallback: function (c, idx) {
+		setAreaCode();
+		}
+	});
+	regarea.init({
+		initCode:"",
+		rootCode: "1004"
+	});
+	
+	 function fabu(obj){
+       #if(!$!{yousuyuanUser})
+       window.location.href="#springUrl('/user/login.html?url=')"+obj;
+       #else
+       window.location.href=obj;
+       #end
+     }
+	
+##	## 组装地址code
+## 	function setAreaCode(){
+##		var areacode="";
+##		if(jQuery("#reg-area-0").val()!=""){
+##			areacode=jQuery("#reg-area-0").val();
+##		}
+##		if(jQuery("#reg-area-1").val()!=""){
+##			areacode=jQuery("#reg-area-1").val();
+##		}
+##		if(jQuery("#reg-area-2").val()!=""){
+##			areacode=jQuery("#reg-area-2").val();
+##		}
+##		jQuery("#areaCode").val(areacode);
+##		
+##	}
+	
+	$(".st-btnsub").click(function(){
+		var url="#springUrl('/price/clist.html?')";
+		var label=jQuery("#reg-area-0").val();
+		var label2=jQuery("#reg-area-1").val();
+	 	var label3=jQuery("#reg-area-2").val();
+		if(label==""||label=="请选择产品类别"){
+			alert("请选择产品类别");
+			return false;
+		}
+		var searchCode="";
+		if(label!=""){
+		searchCode=label;
+		}
+		if(label2!=""&&label2!="请选择产品二级类别"){
+		searchCode=label2;
+		}
+		if(searchCode!=null){
+			url=url+"searchCode="+searchCode;
+		}
+		if(label3!=""&&label3!="请选择热门地区"){
+		    url=url+"&pro="+label3;
+		}
+		window.open(url);
+##		window.location.href=url;
+	})
+	
+    </script>

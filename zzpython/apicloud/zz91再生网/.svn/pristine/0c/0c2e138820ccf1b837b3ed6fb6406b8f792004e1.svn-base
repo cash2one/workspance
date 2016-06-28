@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>资讯中心</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/hudong-list.css"/>
+	</head>
+	<body>
+		<ul class="cantop-mation">
+			<li>
+				<img src="../image/infoimage.png" width="56" height="48" class="mation-pic">
+				<div class="mation-title">
+					亚洲PPPPPPPPPPPPPPPPPPPPPP
+				</div>
+				<div class="summary">
+					徐亚菲 | 一小时前 <span class="go-top">置顶</span>
+				</div>
+			</li>
+			<li>
+				<div class="mation-title">
+					亚洲PPPPPPPPPPPPPPPPPPPPPP
+				</div>
+				<div class="summary">
+					徐亚菲 | 一小时前 <span class="go-top">置顶</span>
+				</div>
+			</li>
+		</ul>
+		<ul class="cantop-mation j_huzhu">
+		</ul>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/jquery.js"></script>
+	<script type="text/javascript" src="../script/zepto.min.js"></script>
+	<script type="text/javascript" src="../script/common.js"></script>
+	<script type="text/javascript" src="../script/laytpl.js"></script>
+	<script type="text/javascript" src="../script/iscroll.js"></script>
+	<script id="info-list" type="text/html">
+		<li class="change-bgcolor" infoid = "{{ d.id }}">
+			<img src="{{ d.litpic }}" width="56" height="48" class="mation-pic" style="display:{{ d.displayDiv }}">
+			<div class="mation-title">
+				{{ d.title }}
+			</div>
+			<div class="summary">
+				{{ d.nickname }} | {{ d.reply_time }} <span class="click-number"><i class="see-img"></i>{{ d.replycount }}</span>
+			</div>
+		</li>
+	</script>
+	<script>
+	var currPage = 1;
+	apiready = function() {
+		$(".cantop-mation li").on("click",function(){
+			var pageParam = {
+	          wintitle:"互动社区",
+	          type:"cunity-detail"
+	        };
+	        openWin("cunity-detail","cunity-detail.html",pageParam);
+		})
+		ajaxInfo();
+		//加载更多
+		api.addEventListener({
+			name : 'scrolltobottom'
+		}, function(ret, err) {
+			currPage += 1;
+			if($(".mui-spinner").length==0){
+				$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+			}
+			
+			setTimeout(function(){
+				ajaxInfo();
+			},1000)
+		});
+		//页面刷新
+		api.setRefreshHeaderInfo({
+			visible : true,
+			// bgColor: '#F2F2F2',
+			bgColor : '#E6E6E6',
+			textColor : '#000000',
+			textDown : '下拉刷新',
+			textUp : '释放刷新',
+		}, function(ret, err) {
+			currPage = 1;
+			ajaxInfo();
+			api.refreshHeaderLoadDone();
+			api.hideProgress();
+			api.toast({
+				msg : '数据已是最新！',
+				duration : 3000,
+				location : 'bottom'
+			});
+		});
+	}
+	function ajaxInfo(){
+		var typeId = api.pageParam.typeid;
+		if(currPage == 1){
+			api.showProgress({title:'加载中',model:false});
+		}
+		var infoUrl = hosturl + '/huzhu/?datatype=json&category_id='+ typeId +'&page='+currPage;
+		if(typeId == 4){
+			infoUrl = infoUrl = hosturl + '/huzhu/?datatype=json&htype=hot&page='+currPage;
+		}
+	    api.ajax({
+	      url : infoUrl,
+	      method : 'get',
+	      timeout : 30,
+	      dataType : 'json',
+	      returnAll : false
+	    }, function(ret, err) {
+	      if (ret) {
+	      	var pageHtml = "";
+	        $.each(ret.list, function(index, item) {
+	        	if(item.litpic == null){
+	        		item.displayDiv="none"
+	        	}else{
+	        		item.displayDiv=""
+	        	}
+	        	//重新设置时间样式
+	        	item.reply_time = show_time(item.reply_time);
+		        var getTpl = $api.html($api.byId("info-list"));
+		        laytpl(getTpl).render(item, function(html) {
+		            pageHtml = pageHtml + html;
+		        });
+	        })
+	        if(currPage == 1){
+	        	$(".j_huzhu").html(pageHtml);
+	        }else{
+	        	$(".j_huzhu").append(pageHtml);
+	        	$(".mui-spinner").remove();
+	        }
+	        api.hideProgress();
+	        $(".j_huzhu li").on("click",function(){
+	        	var infoid = $(this).attr("infoid")
+				var pageParam = {
+		          wintitle:"互助详情",
+		          type:"cunity-detail",
+		          bounces:false,
+		          infoid:infoid
+		        };
+		        openWin("cunity-detail","cunity-detail.html",pageParam);
+	        })
+	      } else {
+	      };
+	    });
+	}
+	function show_time(endtime){ 
+	  var endtime = endtime.replace(/-/gm,'/');
+	  var time_end= new Date().getTime(); //设定当前时间
+	  var time_start=  new Date(endtime).getTime(); //设定目标时间
+	  // 计算时间差 
+	  var time_distance = time_end - time_start; 
+	  // 天
+	  var int_day = Math.floor(time_distance/86400000) 
+	  time_distance -= int_day * 86400000; 
+	  // 时
+	  var int_hour = Math.floor(time_distance/3600000) 
+	  if(int_day>0){
+	  	str=endtime.split(' ');
+	  	return str[0]
+	  }else{
+	  	return int_hour+"小时前"
+	  }
+	}
+	</script>
+</html>

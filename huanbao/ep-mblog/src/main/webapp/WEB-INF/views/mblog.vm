@@ -1,0 +1,565 @@
+#set($layout='/layout/normLayout1.vm')
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery-position.js"></script>
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/jquery.alert.css"/>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.alert.js"></script>
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index.htm')">首页</a></li>
+                <li><a href="#springUrl('/mblog.htm')">个人主页</a></li>
+                <li><a href="#springUrl('/info.htm')">账户设置</a></li>
+            </ul>
+        </div>
+        
+ 		<form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+        
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="personal">
+    	<div class="p-block1">
+        	<div class="p-block1-touxiang fl">
+            	<div class="p-touxiang-img">
+					#if($!{info.headPic})
+                	<img src="$!{address.thumb}$!{address.resource}$!{info.headPic}" width="145px;" height="145px;"/>
+					#else
+					<img src="http://img0.huanbao.com/huanbao/mblog/images/Head_img.jpg" />	
+					#end
+                </div>
+                <!--end p-touxiang-img-->
+                <div class="p-touxiang-ul">
+                    <ul>
+                        <li style="background:none;padding-left:0px"><a href="#springUrl('/follow.htm')"><span class="hp-box-greed">$!{followCout}</span><br />关注</a></li>
+                        <li><a href="#springUrl('/myfans.htm')"><span class="hp-box-greed">$!{fansCount}</span><br />粉丝</a></li>
+                        <li style="padding-right:0px"><a href="#springUrl('/mblog.htm')"><span class="hp-box-greed">$!{mblogCount}</span><br />微文</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end p-touxiang-ul-->
+            </div>
+            <!--end p-block1-touxiangs-->
+            <div class="p-block1-info fl">
+            	<div class="p-info-title">
+                	<b>$!{info.name}</b><a href="#springUrl('/mblog.htm')">$!{address.mblog}/mblog$!{info.id}.htm</a>
+                </div>
+                <!--end p-info-title-->
+                <div class="p-info-messages">
+					
+					#if($!{compProfile.detailsQuery})
+                	 #printTitle($!{compProfile.detailsQuery} 45 "")... 
+					#else
+					</br>	
+					#end
+                </div>
+                <!--end p-info-messages-->
+                <div class="p-info-messages2">
+                	<div class="p-messages2-img fl">
+						#if(${info.sex}==0)
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/img10.jpg" />
+						#else
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/icon_ms.jpg" />	
+						#end
+					</div>
+                	<div class="p-messages2-address">$!{dto.provinceName} $!{dto.areaName}</div>
+                    <div class="p-messages2-editor"><a href="#springUrl('/info.htm')""></a></div>
+                    <div class="cb"></div>
+                </div>
+                <!--end p-info-messages2-->
+            </div>
+            <!--end p-block1-info-->
+            <div class="cb"></div>
+        </div>
+        <!--end p-block1-->
+        <div class="p-block2">
+        	<div class="p-block2-left fl">
+            	<div class="p-left-title">
+                	<div class="p-title-weiwen">
+                    	微文
+                    </div>
+                    <!--end p-title-weiwen-->
+                    <div class="p-title-nav">
+                    	<ul>
+                        	<li #if($!{type}) #else style="background:url(http://img0.huanbao.com/huanbao/mblog/images/all.jpg) no-repeat" #end><a href="#springUrl('/mblog').htm" #if($!{type}) class="greed" #else #end>全部</a></li>
+                            <li  #if($!{type}) style="background:url(http://img0.huanbao.com/huanbao/mblog/images/all.jpg) no-repeat" #end><a href="#springUrl('/mblog').htm?type=showp"  #if($!{type}) #else class="greed" #end>图片</a></li>
+                            <div class="cb"></div>
+                        </ul>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end p-title-nav-->
+                </div>
+                <!--end p-left-title-->
+				#foreach($l  in $!{page.records})
+				#if($!{l.tragetBlog})
+					
+##				  <div class="p-item">
+##					 <div style="font-size:14px;">$!{l.mBlog.content}</div>
+##                    <div class="p-item-box">
+##                        <div class="p-item-title">
+##                            <a class="p-item-name">$!{l.info.name}:</a>
+##							 $!{l.tragetBlog.content}
+##                        </div>
+##                        <!--end p-item-title-->
+##                        <div class="p-item-content">
+##							#if($!{l.tragetBlog.photoPath} && $!{l.tragetBlog.photoPath}!="")
+##							   #foreach(${l} in $!{l.mbList})
+##                               <img src="$!{address.thumb}$!{address.resource}$!{l.photoPath}.jpg" style="width:120px;height:91px;" />
+##						       #end 
+##							#end
+##							
+##                        </div>
+##                        <!--end p-item-content-->
+##                        <div class="p-item-box2">
+##                            <div class="p-item-date">
+##                              #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetBlog.gmtCreated})
+##                            </div>
+##                            <div class="p-item-right">
+##								<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+##								#if($!{l.tragetBlog.discussCount} == 0)
+##                                <span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论</a></span>
+##                                #else
+##								<span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论（$!{l.tragetBlog.discussCount}）</a></span>	
+##								#end
+##                            </div>
+##                        </div>
+##                    </div>
+##					
+##                    <!--end p-item-box-->
+##                </div>
+##				
+##				<div class="p-item" style="height:0px;margin-top:0px;">
+##				<div class="p-item-date">
+##					#printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+##                </div>	
+##				<div class="p-item-right">
+##				    <input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+##					#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+##                    <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})"> 1转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论$!{l.mBlog.id}（$!{l.mBlog.discussCount}）</span>
+##					#end
+##					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+##                    <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">1转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>		
+##					#end
+##					#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+##					<span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">1转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+##					#end
+##					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+##                    <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">1转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+##					#end
+##                </div>
+##                </div>	
+				
+				 <div class="bc-Forwarda pr">
+					<div class="item-close" onclick="removeMblog(this,$!{l.mBlog.id});"></div>
+                    <div class="bc-Forwarda-box">
+                        <div class="bc-Forwarda-title2">
+                         ##   <a class="bc-Forwarda-name">$!{l.mBlogInfo.name}:</a>
+							$!{l.mBlog.content}
+                        </div>
+                        <!--end bc-Forwarda-title2-->
+                        <div class="bc-Forwarda-top">
+                            <img src="http://img0.huanbao.com/huanbao/mblog/images/Forwarda_top1.jpg" />
+                        </div>
+                        <!--end bc-Forwarda-top-->
+                        <div class="bc-Forwarda-block">
+                            <div class="bc-Forwarda-title">
+                                #if($!{l.info.name})<a class="bc-Forwarda-name" href="#springUrl('/ublog')$!{l.info.id}.htm">$!{l.info.name}:</a>#end
+								$!{l.tragetBlog.content}
+                            </div>
+                            <!--end bc-Forwarda-title-->
+                            <div class="bc-Forwarda-content">
+								
+								#if($!{l.tragetBlog.photoPath} && $!{l.tragetBlog.photoPath}!="")
+    							 <div class="sm-item-images">
+            						<ul>
+            							#foreach(${l} in $!{l.mbList})
+                                           <li onclick="img_change(this);">
+    									   <img src="$!{address.resource}$!{l.photoPath}"/>
+            						   </li>
+            						   #end
+            							</ul>
+            							<div class="cb"></div>
+            						</div>
+            						
+            						<div class="sm-item-images2" onclick="img_changeb(this);">
+            							<img src="">
+            					</div>
+    							#end
+                            </div>
+                            <!--end bc-Forward-content-->
+                            <div class="bc-Forwarda-date">
+                               #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forwarda-right">
+								<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+							    #if($!{l.tragetBlog.discussCount} && $!{l.tragetBlog.discussCount} == 0)
+                                 <span><a href="#springUrl('/originalMblog')$!{l.tragetBlog.id}.htm"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog')$!{l.tragetBlog.id}.htm"style="color:#006633;">评论</a></span>
+                               #elseif($!{l.tragetBlog.discussCount})
+								 <span><a href="#springUrl('/originalMblog')$!{l.tragetBlog.id}.htm"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog')$!{l.tragetBlog.id}.htm"style="color:#006633;">评论（$!{l.tragetBlog.discussCount}）</a></span>	
+								#end
+								
+                            </div>
+                            <div class="cb"></div>
+                       </div>
+                       <!--end bc-Forwarda-block--> 
+                           <div class="cb"></div>
+                    </div>
+                    <!--end bc-Forwarda-box-->
+                    <div class="cb"></div>
+                    <div class="bc-Forwarda2">
+                        <div class="bc-Forwarda-box2">
+                            <div class="bc-Forwarda-date fl">
+                               #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                            </div>
+                            <div class="bc-Forwarda-right fr">
+							   <input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+            					#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})"> 转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论$!{l.mBlog.id}（$!{l.mBlog.discussCount}）</span>
+            					#end
+            					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>		
+            					#end
+            					#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+            					<span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+            					#end
+            					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+    								#if($!{l.tragetBlog.id})
+                                    <span onclick="sentMblogComments(this,$!{l.mBlog.id},$!{l.tragetBlog.id})">转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>
+									#else
+									<span onclick="unSentMblogComments(this);">转发</span>|<span onclick='unSentMblogComments(this);'>评论</span>	
+    								#end
+            					#end
+                            </div>
+                            <div class="cb"></div>
+                     </div>
+                <!--end Forwarda-->	
+				
+##				
+##				<div class="p-item-comments">
+##                         <div class="p-comments-top"></div>
+##                           <div class="p-comments-content">
+##                                <textarea class="p-comments-textarea"></textarea>
+##                                 <div class="p-comments-box1">
+##                                    <ul class="fl">
+##                                        <li class="p-icon1" onclick="face(this);"></li>
+##                                        <li><input type="checkbox" class="p-icon3" />1111同时转发到我的微文</li>
+##                                        <div class="cb"></div>
+##                                    </ul>
+##                                    <div class="p-comments-140 fl">最多输入140个字</div>
+##                                    <div class="p-comments-send fr" onclick="replyc(this,$!{l.mBlog.id},1)"></div>
+##                                    <div class="cb"></div>
+##                                </div>
+##                               <div id="item$!{l.mBlog.id}">
+##							   </div>
+##                            </div>
+##                        </div>
+##					#if($!{l.mBlog.discussCount} >5)
+##						#set($value = $!{l.mBlog.discussCount})
+##						#set($val = ($value - 5))
+##                    <div class="sm-more" >
+##                      <span class="smMore$!{l.mBlog.id}" style="display:none">后面还有$val 条评论，<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}">点击查看>></a>
+##                      </span> 
+##                    </div>
+##					<div class="cb"></div>
+##                    <!--end sm-more-->
+##				  #end	
+				#else
+				<div class="p-item pr">
+					<div class="item-close" onclick="removeMblog(this,$!{l.mBlog.id});"></div>
+                    <div class="p-item-box">
+                        <div class="p-item-title">
+                            <a class="p-item-name">$!{l.info.name}:</a>
+							$!{l.mBlog.content}
+                        </div>
+                        <!--end p-item-title-->
+                        <div class="p-item-content">
+							#if($!{l.mBlog.photoPath})
+							 <div class="sm-item-images">
+        						<ul>
+        							#foreach(${l} in $!{l.mbList})
+                                       <li onclick="img_change(this);">
+									   <img src="$!{address.resource}$!{l.photoPath}"/>
+        						   </li>
+        						   #end
+        
+        							</ul>
+        							<div class="cb"></div>
+        						</div>
+        						
+        						<div class="sm-item-images2" onclick="img_changeb(this);">
+        							<img src="">
+        						</div>
+							#end	
+                        </div>
+                        <!--end p-item-content-->
+                        <div class="p-item-box2">
+                            <div class="p-item-date">
+                              #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                            </div>
+                            <div class="p-item-right">
+								<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+								#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})"> 转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>
+								#end
+								#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>		
+								#end
+								#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+								<span onclick="sentComments(this,$!{l.mBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+								#end
+								#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='PersonalComments(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+								#end	
+                            </div>
+                        </div>
+						
+				#end		
+                        <div class="p-item-comments">
+                            <div class="p-comments-top"></div>
+                            <div class="p-comments-content">
+                                 <textarea class="p-comments-textarea" onClick="TextWeibo(this);"></textarea>
+                                 <div class="p-comments-box1">
+                                    <ul class="fl">
+                                        <li class="p-icon1" onclick="face(this);"></li>
+                                        <li><input type="checkbox" class="p-icon3"  name="sentType" id="sentType$!{l.mBlog.id}" value="$!{l.mBlog.id}"/>同时转发到我的微文</li>
+                                        <div class="cb"></div>
+                                    </ul>
+                                    <div class="p-comments-140 fl">最多输入140个字</div>
+                                    <div class="p-comments-send fr" onclick="replyc(this,$!{l.mBlog.id},1)"></div>
+                                    <div class="bc-face">
+                                        <div class="bc-face-top">
+                                            <div class="bc-close3 fr" onclick="closeface(this);"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                            <div class="cb"></div>
+                                        </div>
+										#parse("/common/showface.vm")	
+                                    </div>
+                                    <!--end bc-face-->									
+                                    <div class="cb"></div>
+                                </div>
+                               <div id="item$!{l.mBlog.id}">
+							   </div>
+                            </div>
+                        </div>
+                    </div>
+					#if($!{l.mBlog.discussCount} >5)
+						#set($value = $!{l.mBlog.discussCount})
+						#set($val = ($value - 5))
+                    <div class="sm-more" >
+                      <span class="smMore$!{l.mBlog.id}" style="display:none">后面还有$val 条评论，<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}">点击查看>></a>
+                      </span> 
+                    </div>
+                    <!--end sm-more-->
+                    <div class="cb"></div>
+					#end
+                    <!--end p-item-box-->
+                </div>
+				
+##				#end	
+             
+                <!--end bc-item-->
+           #end
+           #if($!{type})
+			#mBlogPageNav(${page} "#springUrl('/mblog')--" "$!{type}" "")
+		   #else
+			#mBlogPageNav(${page} "#springUrl('/mblog')" "" "")
+		   #end	
+            <!--end ff-page-->
+            </div>
+            <!--end p-block2-left-->
+            <div class="p-block2-right fr">
+            	<div class="p-box2">
+                    <div class="p-box-title2">
+                            关注/粉丝<br />
+                        <span class="sm-hot-grey">我的关注和粉丝</span>
+                    </div>
+                    <!--end br-box-title-->
+                    <div class="p-box-content2">
+                       <div class="p-item2">
+                            <div class="p-item2-title">
+                            	<div class="p-item2-left fl">
+                                	我的关注($!{followCout})
+                                </div>
+                                <div class="p-item2-right fr">
+                                	<a href="#springUrl('/follow.htm')">更多>></a>
+                                </div>
+                                <!--end p-item2-right-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end p-item2-title-->
+                            <ul>
+								#foreach($l in $!{infoFollowList})
+								#if($!{velocityCount} <= 3)
+                                <li>
+                                    <div class="t-block-img"><a href="#springUrl('/ublog')$!{l.id}.htm">
+											#if($!{l.headPic} && $!{l.headPic}!="")
+											<img src="$!{address.thumb}$!{address.resource}$!{l.headPic}" style="width:50px;height:50px;"/>
+											#else
+											<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg"/>
+											#end
+									</a></div>
+                                    <div class="t-block-text"><a href="#springUrl('/ublog')$!{l.id}.htm">$!{l.name}</a></div>
+                                </li>
+								#end
+								#if($!{velocityCount} == 4)
+                                <li style="margin-right:0px">
+                                    <div class="t-block-img"><a href="#springUrl('/ublog')$!{l.id}.htm">
+											#if($!{l.headPic} && $!{l.headPic}!="")
+											<img src="$!{address.thumb}$!{address.resource}$!{l.headPic}" style="width:50px;height:50px;"/>
+											#else
+											<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg"/>
+											#end
+
+									</a></div>
+                                    <div class="t-block-text"><a href="#springUrl('/ublog')$!{l.id}.htm">$!{l.name}</a></div>
+                                </li>
+								 #end
+								#end
+                                <div class="cb"></div>
+                            </ul>
+                       </div>
+                       <!--end p-item2-->
+                       <div class="p-item2">
+                            <div class="p-item2-title">
+                            	<div class="p-item2-left fl">
+                                	我的粉丝($!{fansCount})
+                                </div>
+                                <div class="p-item2-right fr">
+                                	<a href="#springUrl('/myfans.htm')">更多>></a>
+                                </div>
+                                <!--end p-item2-right-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end p-item2-title-->
+                            <ul>
+								#foreach($l in $!{infoFansList})
+								#if($!{velocityCount} <= 3)
+                                <li>
+                                    <div class="t-block-img"><a href="#springUrl('/ublog')$!{l.id}.htm">
+											#if($!{l.headPic} && $!{l.headPic}!="")
+											<img src="$!{address.thumb}$!{address.resource}$!{l.headPic}" style="width:50px;height:50px;"/>
+											#else
+											<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg"/>
+											#end
+									</a></div>
+                                    <div class="t-block-text"><a href="#springUrl('/ublog')$!{l.id}.htm">$!{l.name}</a></div>
+                                </li>
+								#end
+								#if($!{velocityCount} == 4)
+                                <li style="margin-right:0px">
+                                    <div class="t-block-img"><a href="#springUrl('/ublog')$!{l.id}.htm">
+											#if($!{l.headPic} && $!{l.headPic}!="")
+											<img src="$!{address.thumb}$!{address.resource}$!{l.headPic}" style="width:50px;height:50px;"/>
+											#else
+											<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg"/>
+											#end
+									</a></div>
+                                    <div class="t-block-text"><a href="#springUrl('/ublog')$!{l.id}.htm">$!{l.name}</a></div>
+                                </li>
+								#end
+								#end	
+                                <div class="cb"></div>
+                            </ul>
+                       </div>
+                       <!--end p-item2-->
+                    </div>
+                    <!--end p-box-content-->
+                </div>
+		
+                <!--end p-box-->
+            	<div class="p-box">
+                    <div class="p-box-title">
+                        <div class="p-title-left">
+                            热门话题
+                        </div>
+                    </div>
+                    <!--end br-box-title-->
+                    <div class="p-box-content">
+                        <ul class="p-hot">   
+							#foreach($l in ${talkBlogList})
+    						#if(${l.count}!=0)	
+                              <li><div class="p-ul-left"><a href="#springUrl('/topic')$!{l.id}.htm">${l.title}</a></div><div class="p-ul-right">${l.count}</div><div class="cb"></div></li>
+    						#end
+							#end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end p-box-content-->
+                </div>
+                <!--end p-box-->
+            </div>
+            <!--end p-block2-right-->
+            <div class="cb"></div>
+        </div>
+        <!--end p-block2-->
+    </div>
+    <!--end personal-->
+</div>
+<!--end main-->
+
+<div id='textHide1'></div>
+<div id='tagBox1'>
+<div class="bc-tagBox-title">请选择最近@的人或者直接输入</div>
+#foreach($!{l} in $!{anteList})
+    <li>$!{l.name}</li>
+#end
+</div>
+<input type="hidden" id="text_left">
+<input type="hidden" id="text_right">
+<input type="hidden"  id="textInfo" value="" />
+
+
+#if(($!{newFansCount} && $!{newFansCount}>0) || ($!{commentCount} && $!{commentCount}>0) || $!{anteCount} && $!{anteCount}>0)
+	
+<div class="FloatBox">
+	<div class="fb-close">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/close3.jpg" />
+    </div>
+    <!--end fb-close-->
+    <div class="cb"></div>
+	#if($!{newFansCount} && $!{newFansCount}>0)
+	<div class="fb-box">
+    	$!{newFansCount}位新粉丝，<a href="/mblog/newfans.htm">查看粉丝</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{commentCount} && $!{commentCount}>0)
+    <div class="fb-box">
+    	$!{commentCount}条新评论，<a href="/mblog/comments.htm">查看回复</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{anteCount} && $!{anteCount}>0)
+    <div class="fb-box">
+    	$!{anteCount}个新@我，<a href="/mblog/ante.htm">查看@我</a>
+    </div>
+	#end
+    <!--end fb-box-->
+</div>
+<!--end FloatBox-->
+#end
+<script >
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+</script>

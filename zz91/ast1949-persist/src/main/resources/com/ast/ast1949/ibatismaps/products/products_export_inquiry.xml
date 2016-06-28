@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsExportInquiry">
+	<typeAlias alias="productsExportInquiryDO"
+		type="com.ast.ast1949.domain.products.ProductsExportInquiry" />
+	<resultMap class="productsExportInquiryDO" id="productsExportInquiryResult">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="targetId" column="target_id" />
+		<result property="fromCompanyId" column="from_company_id" />
+		<result property="toCompanyId" column="to_company_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		product_id,
+		target_id,
+		from_company_id,
+		to_company_id,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryByProductId" parameterClass="java.lang.Integer"
+		resultMap="productsExportInquiryResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM products_export_inquiry
+		where product_id = #value#
+		order by id desc
+		limit 1
+	</select>
+
+	<select id="countByProductId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products_export_inquiry
+		where
+		product_id = #value#
+	</select>
+	
+	<select id="countByProductIdAndToCompId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products_export_inquiry
+		where
+		product_id = #productId#
+		and to_company_id = #toCompanyId#
+		and gmt_created >= #from#
+		and #to# > gmt_created
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products_export_inquiry
+		where
+		to_company_id = #toCompanyId#
+		and gmt_created >= #from#
+		and #to# > gmt_created
+	</select>
+	
+
+	<insert id="insert" parameterClass="productsExportInquiryDO">
+		INSERT INTO products_export_inquiry
+		(
+		`product_id`,
+		`target_id`,
+		`from_company_id`,
+		`to_company_id`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#productId#,
+		#targetId#,
+		#fromCompanyId#,
+		#toCompanyId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="productId">
+				product_id = #productId#
+			</isNotNull>
+			<isNotNull prepend="and" property="companyId">
+				from_company_id = #companyId#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="productsExportInquiryResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		FROM products_export_inquiry
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products_export_inquiry
+		<include refid="whereClause"/>
+	</select>
+
+</sqlMap>

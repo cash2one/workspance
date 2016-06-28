@@ -1,0 +1,134 @@
+#set( $layout = "/layout/default.vm" )
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/base.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/myrc_album.css" />
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script>
+<style type="text/css">
+#TB_overlayBG {display: none;height: 730px;}
+#overlaybox {display: none;}
+#overlaybox2 {display: none;}
+.overlaybox {left: 420px;top: 120px;width: 430px;}
+#overlaybox3 {display:none;}
+header {display: block}
+footer {display: block}
+#uploadImg{width:80px; font-size:12px; overflow:hidden;}
+#file{ position:absolute; z-index:100; margin-left:-180px; font-size:60px;opacity:0;filter:alpha(opacity=0); margin-top:-5px;}
+</style>
+<!--[if lt IE 9]>
+<script>
+      (function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,canvas,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while(i--){document.createElement(e[i])}})()
+</script>
+<link rel="stylesheet" href="css/ie.css" type="text/css" media="screen">
+<![endif]-->
+<input type="hidden" name="albumId" value="$!{albumId}"/>
+<div class="modules md1">
+  <div class="album-mod-nav albox"><strong class="bold f14">相册管理</strong></div>
+  <!--end album-mod-nav albox-->
+  <div class="album-mod-main well mt15">
+    <div class="well-body">
+      <div class="web-tle"><span class="bold">我的相册：</span>&nbsp;$!{name}</div>
+      <!--end web-tle-->
+      <div class="web-box">
+        <div class="albtn mb10">
+          <input type="submit" class="XunJia_ok" value="返回相册" onclick="window.location.href='index.htm'" />
+          &nbsp;&nbsp;
+          <input type="submit" class="XunJia_ok" value="上传图片" id="upload" />
+        </div>
+        <!--end albtn-->
+        <ul class="ablist clearfix">
+		 #foreach($photoAbum in $!{page.records})
+          <li class="short" id="uu$!{photoAbum.id}">
+            <div class="item-wrap">
+              <div class="item clearfix">
+                <div class="ln ln0"> <a href="$!{address.resource}/$!{photoAbum.picAddress}" title="点击看大图" target="_blank"><img src="$!{address.img3}/190x182/$!{photoAbum.picAddress}"/ ></a> </div>
+                <!--end ln ln0-->
+                <div class="ln ln2 f-d"><a href="#" class="btn btn-small" id="del88" onclick="delPhotoAbum($!{photoAbum.id})">删除</a></div>
+                <!--end ln ln2 f-d--> 
+              </div>
+              <!--end item clearfix--> 
+            </div>
+            <!--end item-wrap--> 
+          </li>
+		#end
+        </ul>
+         #myrcPageNav($!{page} "#springUrl('/photoabum/list.htm')" "albumId=$!{albumId}" "")
+        <!--end pagination pagination-centered mt--> 
+      </div>
+      <!--end web-box--> 
+    </div>
+    <!--end well-body--> 
+  </div>
+  <!--album-mod-main well--> 
+</div>
+<!--end content--> 
+<!--上传图片弹框-->
+<!--end overlaybox-->
+<div class="overlaybox" id="overlaybox2">
+  <div class="nbox">
+    <h2 id="uuy">上传图片<a class="overlayclose" href="javascript:closeoverlay();" >关闭</a></h2>
+    <div class="overlaylist">
+      <div class="suc_btn tc"> <span class="clearfix">您的图片已经成功上传!</span> <a href="javascript:closeoverlay();" class="btn btn-small" style="padding:7px 23px">立即关闭</a> </div>
+      <!--end suc_btn--> 
+    </div>
+    <!--end overlaylist--> 
+  </div>
+  <!--end mbox--> 
+</div>
+<!--end overlaybox-->
+
+<script type="text/javascript">
+
+	jQuery(document).ready(function(){
+
+		jQuery("#continueUploadBtn").click(function(){
+			jQuery("#uploadWell").show();
+		});
+	
+		jQuery("#yesBtn").click(function(){
+		
+			//parent.uploadCallback("$!{success}",uploadedFile);
+			window.parent.Asto.util.Callback.submit("true", uploadedFile);
+		});
+		jQuery("#AlbumUpload").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				parent.closeoverlay();
+			});
+			openoverlay('$!{address.myrc}/photoabum/product1Abum.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=$!{albumId}','上传图片',700,500,0);
+		});
+		jQuery("#upload").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				parent.closeoverlay();
+			});
+			openoverlay('$!{address.myrc}/photoabum/localUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=$!{albumId}','上传图片',700,500,0);
+		});
+	
+}); 
+
+
+ function delPhotoAbum(id){
+ 	if(confirm("确定要删除吗？")){
+ 		jQuery.ajax({
+			url:'#springUrl('/photoabum/delPhotoAbum.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					window.location.reload();
+				}
+			}
+		})
+	}
+ }
+
+jQuery(function(){
+	myrc.menu();	
+})
+</script>
+

@@ -1,0 +1,83 @@
+<link rel="stylesheet" href="$!{address.css}/trade/other/css/service.css" />
+<script src="http://img0.zz91.com/trade/comm/comm.js"></script>
+#parse("/common/buy_menu.vm")
+        <div class="content clearfix">
+            <div class="express-mail">
+                <div class="express-title">意见反馈</div>
+                <div class="service-main">
+                    <div class="service-title">
+                        请详细描述您的意见，十分感谢您的反馈。
+						<form action="" method="post" id="form1">
+                    </div>
+                    <textarea class="service-text" name="detail" id="detail"></textarea><span id="errdetail" style="color:red">
+                    </span>
+                    <div class="give-info">
+                        <span class="give-sp fl">
+                            <input class="give-info-ipt" placeholder="反馈人：" name="name" id="name"/><span id="errname" style="color:red">
+                    </span>
+                            <i class="icon-delete iconfont">&#xe60a;</i>
+                        </span>
+                        <span class="give-sp fl">
+                            <input class="give-info-ipt" placeholder="联系方式：" name="phone" id="phone"/><span id="errphone" style="color:red">
+                    </span>
+                            <i class="icon-delete iconfont">&#xe60a;</i>
+                        </span>
+                        </form>
+                        <span class="fr give-btn j_tjiao">提交</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+        $(".give-info-ipt").bind("keyup",function(){
+            if(!$(this).val()==""){
+                $(this).parent().find(".icon-delete").show();
+            }else{
+                $(this).parent().find(".icon-delete").hide();
+            }
+        });
+        $(".icon-delete").bind("click",function(){
+            $(this).hide().parent().find(".give-info-ipt").val("")
+        })
+		
+		 var succHtml =  '<div class="tijiao-succ">'
+                            +'<h3 class="succh3">提交成功！</h3>'
+                            +'<span class="close_pop j_close">关闭</span>'
+                        +'</div> '
+		
+		$(".j_tjiao").click(function(){
+		    if($("#detail").val()==""){
+			   $("#errdetail").html("请填写反馈信息");
+			   return false;
+			}else{
+			   $("#errdetail").html("");
+			}
+		     if($("#name").val()==""){
+			   $("#errname").html("请填写姓名");
+			   return false;
+			}else{
+			   $("#errname").html("");
+			}
+		     if($("#phone").val()==""){
+			   $("#errphone").html("请填写联系方式");
+			   return false;
+			}else{
+			   $("#errphone").html("");
+			}
+			var da=$("#form1").serialize();
+			
+			jQuery.ajax({
+			url:"#springUrl('/service/addfeedback.htm')",
+			type:'post',
+			dateType:'json',
+			data:da,
+			success:function(data){
+			ajaxob=eval("("+data+")");
+			if(ajaxob.success){
+               popHtml(succHtml)
+			   }
+			}
+			})
+		})
+		
+    </script>

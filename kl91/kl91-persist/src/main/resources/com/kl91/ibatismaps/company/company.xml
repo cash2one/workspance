@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="company">
+	<typeAlias alias="company" type="com.kl91.domain.company.Company" />
+	<typeAlias alias="products" type="com.kl91.domain.products.Products" />
+	<typeAlias alias="companyDto" type="com.kl91.domain.dto.Company.CompanyDto" />
+
+	<resultMap class="company" id="resultCompany">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="companyName" column="company_name" />
+		<result property="industryCode" column="industry_code" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="sex" column="sex" />
+		<result property="contact" column="contact" />
+		<result property="password" column="password" />
+		<result property="mobile" column="mobile" />
+		<result property="isActive" column="is_active" />
+		<result property="qq" column="qq" />
+		<result property="email" column="email" />
+		<result property="tel" column="tel" />
+		<result property="fax" column="fax" />
+		<result property="areaCode" column="area_code" />
+		<result property="zip" column="zip" />
+		<result property="address" column="address" />
+		<result property="position" column="position" />
+		<result property="department" column="department" />
+		<result property="introduction" column="introduction" />
+		<result property="business" column="business" />
+		<result property="domain" column="domain" />
+		<result property="website" column="website" />
+		<result property="numLogin" column="num_login" />
+		<result property="registFlag" column="regist_flag" />
+		<result property="showTime" column="show_time" />
+		<result property="gmtLastLogin" column="gmt_last_login" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="numPass" column="num_pass" />
+	</resultMap>
+
+	<resultMap class="company" id="resultSimpleCompany">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="domain" column="domain" />
+	</resultMap>
+
+	<insert id="insertCompany" parameterClass="company">
+		insert into company(
+		id,account,company_name,industry_code,membership_code,sex,contact,password,
+		mobile,is_active,qq,email,tel,fax,area_code,zip,address,position,department,introduction,
+		business,domain,website,num_login,regist_flag,show_time,gmt_last_login,gmt_created,gmt_modified,num_pass)
+		values(
+		#id#,#account#,#companyName#,#industryCode#,#membershipCode#,#sex#,
+		#contact#,#password#,#mobile#,#isActive#,#qq#,#email#,#tel#,#fax#,#areaCode#,
+		#zip#,#address#,#position#,#department#,#introduction#,#business#,#domain#,
+		#website#,#numLogin#,#registFlag#,now(),now(),now(),now(),#numPass#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<update id="updateCompany" parameterClass="company">
+		update company
+		set
+		gmt_modified=now()
+		<isNotNull prepend="," property="account">
+			account = #account#
+		</isNotNull>
+		<isNotNull prepend="," property="companyName">
+			company_name=#companyName#
+		</isNotNull>
+		<isNotNull prepend="," property="industryCode">
+			industry_code=#industryCode#
+		</isNotNull>
+		<isNotNull prepend="," property="membershipCode">
+			membership_code=#membershipCode#
+		</isNotNull>
+		<isNotNull prepend="," property="sex">
+			sex=#sex#
+		</isNotNull>
+		<isNotNull prepend="," property="contact">
+			contact=#contact#
+		</isNotNull>
+		<isNotNull prepend="," property="password">
+			password=#password#
+		</isNotNull>
+		<isNotNull prepend="," property="mobile">
+			mobile=#mobile#
+		</isNotNull>
+		<isNotNull prepend="," property="qq">
+			qq=#qq#
+		</isNotNull>
+		<isNotNull prepend="," property="email">
+			email=#email#
+		</isNotNull>
+		<isNotNull prepend="," property="tel">
+			tel=#tel#
+		</isNotNull>
+		<isNotNull prepend="," property="fax">
+			fax=#fax#
+		</isNotNull>
+		<isNotNull prepend="," property="areaCode">
+			area_code=#areaCode#
+		</isNotNull>
+		<isNotNull prepend="," property="zip">
+			zip=#zip#
+		</isNotNull>
+		<isNotNull prepend="," property="address">
+			address=#address#
+		</isNotNull>
+		<isNotNull prepend="," property="position">
+			position=#position#
+		</isNotNull>
+		<isNotNull prepend="," property="department">
+			department=#department#
+		</isNotNull>
+		<isNotNull prepend="," property="introduction">
+			introduction=#introduction#
+		</isNotNull>
+		<isNotNull prepend="," property="business">
+			business=#business#
+		</isNotNull>
+		<isNotNull prepend="," property="domain">
+			domain=#domain#
+		</isNotNull>
+		<isNotNull prepend="," property="website">
+			website=#website#
+		</isNotNull>
+		<isNotNull prepend="," property="numLogin">
+			num_login=#numLogin#
+		</isNotNull>
+		<isNotNull prepend="," property="registFlag">
+			regist_flag=#registFlag#
+		</isNotNull>
+		<isNotNull prepend="," property="numPass">
+			num_pass=#numPass#
+		</isNotNull>
+		where id=#id#
+	</update>
+
+	<update id="updatePwdById" parameterClass="java.util.Map">
+		update company
+		set
+		password=#pwd#,gmt_modified=now()
+		where id = #id#
+	</update>
+
+	<sql id="all_column">
+		id,account,company_name,industry_code,membership_code,sex,contact,password,
+		mobile,is_active,qq,email,tel,fax,area_code,zip,address,position,department,introduction,
+		business,domain,website,num_login,regist_flag,show_time,gmt_last_login,gmt_created,gmt_modified,num_pass
+	</sql>
+
+	<sql id="simple_column">
+		id,account,email,domain
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="resultCompany">
+		select
+		<include refid="all_column" />
+		from company
+		where id=#value#
+	</select>
+
+	<select id="queryDomainById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select domain from company where id=#value#
+	</select>
+
+	<select id="queryIntroductionById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select introduction from company where id=#value#
+	</select>
+
+	<delete id="deleteCompany" parameterClass="java.lang.Integer">
+		delete from company
+		where id=#value#
+	</delete>
+
+	<select id="queryMostPublish" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select company_name ,count(*) from company where where
+		num_pass =1 order by company_name desc limit #size#
+	</select>
+
+	<select id="queryCompany" parameterClass="java.util.HashMap"
+		resultMap="resultCompany">
+		select
+		<include refid="all_column" />
+		from company
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<update id="updatePassNumById" parameterClass="java.util.HashMap">
+		update company
+		set
+		num_pass=#numPass#
+		where
+		id=#id#
+	</update>
+
+	<update id="updateIsActiveById" parameterClass="java.lang.Integer">
+		update company
+		set gmt_modified = now(),is_active = 1
+		where id = #id#
+	</update>
+
+	<update id="updateCompanyByMyrc" parameterClass="java.util.Map">
+		update company
+		set gmt_modified = now(),
+		contact = #contact#,
+		mobile = #mobile#,
+		sex =
+		#sex#,
+		email = #email#
+		where id = #id#
+	</update>
+
+	<select id="validateAccount" parameterClass="java.util.Map"
+		resultMap="resultSimpleCompany">
+		select
+		<include refid="simple_column" />
+		from company
+		where account = #account# and password = #pwd#
+	</select>
+	
+	<select id="validateEmail" parameterClass="java.util.Map"
+		resultMap="resultSimpleCompany">
+		select
+		<include refid="simple_column" />
+		from company
+		where email = #email# and password = #pwd#
+	</select>
+
+	<select id="queryByEmail" parameterClass="java.lang.String"
+		resultMap="resultSimpleCompany">
+		select
+		<include refid="simple_column" />
+		from company
+		where email = #value#
+	</select>
+
+	<select id="countUserByAccount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from company
+		where account=#value#
+	</select>
+
+	<select id="queryByMobile" parameterClass="java.lang.String"
+		resultMap="resultSimpleCompany">
+		select
+		<include refid="simple_column" />
+		from company
+		where mobile = #value#
+	</select>
+	
+	<select id="queryByAccount" parameterClass="java.lang.String"
+		resultMap="resultCompany">
+		select
+		<include refid="all_column" />
+		from company
+		where account = #value#
+	</select>
+
+</sqlMap>

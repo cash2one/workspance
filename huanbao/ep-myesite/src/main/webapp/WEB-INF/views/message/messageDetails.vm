@@ -1,0 +1,123 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/message/index.htm')">留言管理</a>
+				<span class="divider">/</span>
+			</li>
+
+			<li >留言信息</li>
+		</ul
+	</div>
+		
+		<div class="well mt">
+			<div class="well-head">留言:$!{messageDto.message.title}</div>
+			<div class="well-content">
+					<dl class="info-wrap">
+						<dt>留言内容：</dt>
+						<dd>
+							$!{messageDto.message.details}
+						</dd>
+					</dl>
+					<dl class="info-wrap">
+						<dt>留言者公司：</dt>
+						<dd>
+							<a href="$!{address.esite}/index$!{messageDto.message.cid}.htm" target="_blank">#if($!{sendStatus}=="1")$!{messageDto.cname}#else$!{name}#end</a>
+						</dd>
+					</dl>
+			</div>
+		</div>
+			#if($!{sendStatus}=="1"&&$!{messageDto.message.replyStatus} == "0")
+			<div class="well mt">
+				<div class="well-head">回复留言</div>
+					<div class="well-content">
+						<form id="messageForm" name="messageForm" method="post" action="doReply.htm">
+							<input type="hidden" name="id" value="$!{messageDto.message.id}">
+							<input type="hidden" name="sendStatus" value="$!{sendStatus}">
+							<div class="control-group">
+								<label for="details" class="control-label"><span class="red">*</span>回复内容：</label>
+								<div class="controls">
+										<textarea name="replyDetails" cols="80" rows="5" id="replyDetails" class="validate[required]">#if($!{replyDetails}=="")请在此处填写您的回复内容#end $!{replyDetails}</textarea>
+								</div>
+								<div class="form-actions">
+									<input type="submit" id="submitBtn" class="btn btn-primary" value="回复留言" />
+									<a href="#springUrl('/message/index.htm')" >取消</a>
+								</div>
+							</div>
+						</form>
+					</div>
+			</div>
+			#else
+			<div class="well mt">
+				<button onclick = "showDiv()" class="btn btn-small">追加留言</button>
+			</div>
+			
+			<div class="well mt" id="12" style="display:none">
+				<div class="well-head">追加留言</div>
+					<div class="well-content">
+						<form id="messageForm" name="messageForm" method="post" action="#springUrl('/message/sendInquiry.htm')">
+							<input type="hidden" id="targetId" name="targetId" value="$!{messageDto.message.targetId}" />
+							<input type="hidden" id="targetType" name="targetType" value="$!{messageDto.message.targetType}" />
+							<input type="hidden" id="targetUid" name="targetUid" value="$!{messageDto.message.uid}" />
+							<input type="hidden" id="targetCid" name="targetCid" value="$!{messageDto.message.cid}"/>
+							<input type="hidden" name="refurl" value="/message/send.htm" />
+							<div class="control-group">
+								<label for="title" class="control-label"><span class="red">*</span>留言主题：</label>
+								<div class="controls">
+									<input type="text" id="title" name="title" class="field input-xlarge validate[required,maxSize[30]]" value="我对贵公司的产品很感兴趣"/>
+								</div>
+							</div>
+							
+							<div class="control-group">
+								<label for="details" class="control-label"><span class="red">*</span>留言内容：</label>
+								<div class="controls">
+										<textarea name="details" cols="80" rows="5" id="details" class="validate[required]">请在此处填写您的留言内容</textarea>
+								</div>
+								<div class="form-actions">
+									<input type="submit" id="submitBtn" class="btn btn-primary" value="追加留言" />
+									<a href="#springUrl('/message/index.htm')" >取消</a>
+								</div>
+							</div>
+						</form>
+					</div>
+			</div>
+			
+			<div class="well mt">
+				<div class="well-head">会话详细</div>
+					<div class="well-content">
+						<dl class="info-wrap">
+							<dt>留言标题：</dt>
+								<dd>
+									$!{messageDto.message.title}
+								</dd>
+						</dl>
+						<dl class="info-wrap">
+							<dt>留言内容：</dt>
+								<dd>
+									$!{messageDto.message.details}
+								</dd>
+						</dl>
+						#if($!{messageDto.message.replyDetails}!="")
+						<dl class="info-wrap">
+							<dt>#if($!{sendStatus}=="1")我：#else $!{messageDto.cname} #end</dt>
+								<dd>
+									$!{messageDto.message.replyDetails}
+								</dd>
+						</dl>
+						#end
+				</div>
+			</div>
+		#end
+</div>
+
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(3, 1);
+	});
+function showDiv(){
+	jQuery("#12").slideToggle("slow");
+}
+</script>
+	

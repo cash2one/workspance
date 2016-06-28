@@ -1,0 +1,41 @@
+<script></script>
+<script type="text/javascript" src="#springUrl('/app/mblog/mblog/topic.js')" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		var form=new com.zz91.ep.mblog.ReplyForm({
+			region:"east",
+			editType:"my",
+			split:true,
+			width:450
+		})
+	
+		
+		var grid=new com.zz91.ep.mblog.Grid({
+			id:MBLOG.GRID,
+    		layout:"fit",
+    		region:"center",
+			listeners:{
+				"rowclick":function(g,rowIndex,e){
+					form.loadreply(g);
+					cgrid.load(g);		
+				}
+			}
+		});
+	
+		var cgrid=new com.zz91.ep.mblog.CommentListGrid({
+	  	    region:"south",
+			title:"评论回复",
+			columnWidth:1,
+			height:180
+		});
+
+		new Ext.Viewport({
+    		layout:"border",
+    		items:[grid,form,cgrid]	
+		});
+		
+		com.zz91.ep.mblog.queryTopic(MBLOG.GRID,{});
+})
+</script>

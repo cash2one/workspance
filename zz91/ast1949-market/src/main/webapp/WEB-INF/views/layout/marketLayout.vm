@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="zh-CN"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="zh-CN"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="zh-CN"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--<![endif]-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{seoTitle}</title>
+<meta name="keywords" content="$!{seoKeywords}" />
+<meta name="description" content="$!{seoDescription}" />
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/industrial/css/IndustrialBelt.css" />
+ #parse("/common/import.vm")
+<script>
+function ruzhu(a){
+	jQuery.ajax({
+    			url:'#springUrl("/doEnterMarket.htm?")'+"marketId="+a,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.flag>0){
+						openoverlay('#springUrl("/common/remind3.htm")','',408,50,0);
+					}else if(reg.flag==-1){
+						openoverlay('#springUrl("/perfect.htm")','入驻产业带',412,170,0);
+					}else if(reg.flag==0){
+						 Asto.util.Callback.setSubmitCallback(function(success, data){
+							ruzhu(a);
+       				 	 });
+       					 openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.market}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+					}else if(reg.flag==-2){
+						openoverlay('#springUrl("/common/remind1.htm")','',412,40,0);
+					}else if(reg.flag==-3){
+						openoverlay('#springUrl("/common/remind2.htm")','',520,60,0);
+					}
+				}
+			});
+}
+function openremind(a){
+	ruzhu(a);
+}
+$(document).ready(function() {
+	$(".mar_mod_left .mml_box").mouseover(function(){
+		$(this).css("background","#f2f2f2");						  
+	});
+	$(".mar_mod_left .mml_box").mouseout(function(){
+		$(this).css("background","#fff");
+	});
+});
+</script>
+</head>
+<body>
+#cacheFragment("$!{address.fragment}/china/topbar.htm?1","","","")
+			<div id="topBar">
+				<div id="topBarInfo">
+					<div id="topBarLogin">
+						<script src="$!{address.front}/webst.htm?$date" type="text/javascript" ></script>
+					</div>
+					$!{fragmentContext}
+				</div>
+			</div>
+ #end
+<div class="logosearch" id="logosearch">
+  <div class="logo"> <a href="http://www.zz91.com" target="_blank"> <img src="http://img0.zz91.com/zz91/images/logo.png" alt="ZZ91再生网" width="115" height="45" /> </a> <a href="http://y.zz91.com" target="_blank"> <img src="http://img0.zz91.com/zz91/industrial/images/logo.png" width="150" alt="产业带" /> </a> </div>
+  <!--end logo-->
+  <div class="market_search">
+    <form id="searchMarket" action="" method="post">
+      <div class="search_bar">
+        <div class="box left">
+          <input name="keywords" id="keywords" type="text" class="searchtext" placeholder="请输入市场关键字" value="$!{keyword}"/>
+        </div>
+        <div class="right"> <a href="javascript:void(0)" data="1" class="searchlink" id="searchlink"></a> </div>
+      </div>
+    </form>
+  </div>
+  <!--end market_search-->
+  <div class="cb"></div>
+</div>
+<!--end logosearch-->
+<script type="text/javascript">   
+  if( !('placeholder' in document.createElement('input')) ){   
+
+    $('input[placeholder],textarea[placeholder]').each(function(){    
+      var that = $(this),    
+      text= that.attr('placeholder');    
+      if(that.val()===""){    
+        that.val(text).addClass('placeholder');    
+      }    
+      that.focus(function(){    
+        if(that.val()===text){    
+          that.val("").removeClass('placeholder');    
+        }    
+      })    
+      .blur(function(){    
+        if(that.val()===""){    
+          that.val(text).addClass('placeholder');    
+        }    
+      })    
+      .closest('form').submit(function(){    
+        if(that.val() === text){    
+          that.val('');    
+        }    
+      });    
+    });    
+  }   
+</script>
+<div class="cb"></div>
+<div class="market_nav3 mt12">当前位置：<a href="#springUrl("/index.htm")">再生产业带</a> 〉<a #if($!{market.industry}=="废金属")href="#springUrl('/market/')vi1000c.htm"#elseif($!{market.industry}=="废塑料")href="#springUrl('/market/')vi1001c.htm"#else href="#springUrl('/market/')vi1002c.htm"#end>$!{market.industry}产业带</a> 〉<a #if($!{market.industry}=="废金属")href="#springUrl('/market/')v$!{provinceCode}i1000c.htm"#elseif($!{market.industry}=="废塑料")href="#springUrl('/market/')v$!{provinceCode}i1001c.htm"#else href="#springUrl('/market/')v$!{provinceCode}i1002c.htm"#end>$!{province}产业带</a> 〉$!{market.name}</div>
+<!--end market_nav3-->
+#if($!{market.industry}=="废塑料")
+	<div class="market_plastic">$!{market.name}</div>
+#elseif($!{market.industry}=="废金属")
+<div class="market_device">$!{market.name}</div>
+#elseif($!{market.industry}=="二手设备")
+<div class="market_metal">$!{market.name}</div>
+#end
+<script type="text/javascript">	
+					jQuery("#searchlink").click(function(){
+						jQuery("#searchMarket").submit();
+					});
+					jQuery("#searchMarket").submit(function(){
+						var key = jQuery("#keywords").val();
+						key = encodeURI(key);
+						var url = "#springUrl('/search')-"+key+"-s-i.htm";
+						if(key&&key!=""){
+							jQuery("#searchMarket").attr("action",url);
+						}else{
+							alert("请输入您要检索的关键字");
+						}
+					});
+				</script>
+<!--end maket_ad-->
+<div class="market_nav mt12">
+  <ul class="market_ul">
+    <li><a href="#springUrl("/$!{market.words}/")" #if($pageName=="marketIndex")class="on"#end>市场首页</a></li>
+    <li><a href="#springUrl("/$!{market.words}/info.html")" #if($pageName=="marketInfo")class="on"#end>市场简介</a></li>
+    <li><a href="#springUrl("/$!{market.words}/scsh.html")" #if($pageName=="marketTrader")class="on"#end>市场商户</a></li>
+    <li><a href="#springUrl("/$!{market.words}/scgq.html")" #if($pageName=="marketTrade")class="on"#end>市场供求</a></li>
+    <li><a href="#springUrl("/$!{market.words}/thysc.html")" #if($pageName=="marketIndustry")class="on"#end>同行业市场</a></li>
+  </ul>
+</div>
+<!--end market_nav-->
+<div class="cb"></div>
+<div class="cb"></div>
+	$screen_content
+	#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+			$!{fragmentContext}
+	#end
+	#parse("/seo/analysis_body.vm")
+</body>
+</html>
+	#parse("/seo/analysis_foot.vm")

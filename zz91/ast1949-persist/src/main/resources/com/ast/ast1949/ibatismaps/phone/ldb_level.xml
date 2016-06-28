@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ldbLevel">
+
+	<typeAlias alias="ldbLevel" type="com.ast.ast1949.domain.phone.LdbLevel" />
+	<resultMap id="ldbLevelResult" class="ldbLevel">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="level" column="level" />
+		<result property="phoneRate" column="phone_rate" />
+		<result property="isDate" column="is_date" />
+        <result property="phoneCost" column="phone_cost" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="defaultColumn">
+		id,company_id,level,phone_rate,is_date,phone_cost,gmt_created,gmt_modified
+	</sql>
+	<insert id="insertLdbLevel" parameterClass="ldbLevel">
+		insert into ldb_level
+		(
+		company_id,
+		level,
+		phone_cost,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#companyId#,
+		#level#,
+		#phoneCost#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="queryLdbLevelByCompanyId" parameterClass="java.lang.Integer" resultMap="ldbLevelResult">
+		select
+		<include refid="defaultColumn" />
+		from ldb_level
+		where company_id=#companyId# and is_date='0'
+	</select>
+	<update id="updateLevelByCompanyId" parameterClass="java.util.HashMap">
+		update ldb_level
+		set level=#level#,phone_cost=#phoneCost#,gmt_modified=now()
+		where company_id=#companyId#
+	</update>
+</sqlMap>

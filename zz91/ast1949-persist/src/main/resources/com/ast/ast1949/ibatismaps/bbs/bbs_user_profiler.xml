@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsUserProfiler">
+
+	<typeAlias alias="profiler" type="com.ast.ast1949.domain.bbs.BbsUserProfilerDO" />
+	
+	<resultMap class="profiler" id="fullColumnResult">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="account" column="account"/>
+		<result property="nickname" column="nickname"/>
+		<result property="email" column="email"/>
+		<result property="sex" column="sex"/>
+		<result property="lifeStage" column="life_stage"/>
+		<result property="marriageCase" column="marriage_case"/>
+		<result property="zip" column="zip"/>
+		<result property="tel" column="tel"/>
+		<result property="mobile" column="mobile"/>
+		<result property="qq" column="qq"/>
+		<result property="msn" column="msn"/>
+		<result property="interests" column="interests"/>
+		<result property="loveSports" column="love_sports"/>
+		<result property="realName" column="real_name"/>
+		<result property="brithday" column="brithday"/>
+		<result property="address" column="address"/>
+		<result property="workScope" column="work_scope"/>
+		<result property="integral" column="integral"/>
+		<result property="pictureName" column="picture_name"/>
+		<result property="picturePath" column="picture_path"/>
+		<result property="postNumber" column="post_number"/>
+		<result property="essenceNumber" column="essence_number"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="replyNumber" column="reply_number"/>
+		<result property="gmtCreated" column="gmt_created"/>
+	</resultMap>
+	
+	<resultMap class="profiler" id="someColumnResult">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="account" column="account"/>
+		<result property="nickname" column="nickname"/>
+		<result property="picturePath" column="picture_path"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		p.`id`,p.`company_id`,p.`account`,p.`nickname`,p.`email`,p.`sex`,
+		p.`life_stage`,p.`marriage_case`,p.`zip`,p.`tel`,p.`mobile`,p.`qq`,
+		p.`msn`,p.`interests`,p.`love_sports`,p.`real_name`,p.`brithday`,
+		p.`address`,p.`work_scope`,p.`integral`,p.`picture_name`,
+		p.`picture_path`,p.`post_number`,p.`essence_number`,p.`gmt_created`,
+		p.`gmt_modified`,p.`reply_number`
+	</sql>
+	
+	<sql id="adminColumn">
+		id,company_id,account,nickname,email,sex,
+		life_stage,marriage_case,zip,tel,mobile,qq,
+		msn,interests,love_sports,real_name,brithday,
+		address,work_scope,integral,picture_name,
+		picture_path,post_number,essence_number,gmt_created,
+		gmt_modified,reply_number
+	</sql>
+	
+	
+	<select id="queryIntegralByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select integral from bbs_user_profiler 
+		where account=#value#
+		limit 1
+	</select>
+	
+	<select id="countProfilerByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from bbs_user_profiler
+		where account = #value#
+		limit 1
+	</select>
+	
+	<insert id="insertProfiler" parameterClass="profiler">
+		insert into bbs_user_profiler
+		(company_id,account,nickname,email,sex,life_stage,
+		marriage_case,zip,tel,mobile,qq,msn,interests,
+		love_sports,real_name,brithday,address,work_scope,
+		remark,integral,picture_name,picture_path,
+		post_number,reply_number,essence_number,gmt_created,gmt_modified)
+		values
+		(#companyId#,#account#,#nickname#,#email#,#sex#,
+		#lifeStage#,#marriageCase#,#zip#,#tel#,#mobile#,#qq#,#msn#,
+		#interests#,#loveSports#,#realName#,#brithday#,#address#,
+		#workScope#,#remark#,#integral#,#pictureName#,
+		#picturePath#,#postNumber#,#replyNumber#,#essenceNumber#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryTopByPostNum" parameterClass="java.lang.Integer" resultClass="profiler">
+		select bup.id,bup.account,bup.nickname 
+		from bbs_user_profiler bup
+		order by bup.post_number desc 
+		limit #size#
+	</select>
+	
+	<update id="updatePostNumber" parameterClass="java.util.HashMap">
+		update bbs_user_profiler 
+		set post_number=#postNumber#,
+		gmt_modified=now()
+		where account=#account#
+	</update>
+	
+	<update id="updateReplyCount" parameterClass="java.util.HashMap" >
+		update bbs_user_profiler
+			set reply_number=#replyCount#,
+			gmt_modified=now()
+		where account=#account#
+	</update>
+	
+	<select id="queryProfilerOfAccount" parameterClass="java.lang.String" resultMap="fullColumnResult">
+		select 
+			<include refid="bbsUserProfiler.fullColumn"/>
+		from bbs_user_profiler p
+		where p.account=#value#
+		limit 1
+	</select>
+		
+	<select id="countUserProfilerByAccount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select count(*) from bbs_user_profiler
+		where nickname=#value# or
+		account=#value#
+  	</select>
+
+	<select id="queryUserByAccount" parameterClass="java.lang.String"
+		resultMap="someColumnResult">
+		select id,company_id,nickname,account,picture_path
+		from bbs_user_profiler
+		where nickname=#value# or
+		account=#value#
+		limit 1
+  	</select>
+  	<select id="queryUserByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="someColumnResult">
+		select id,company_id,nickname,account,picture_path 
+		from bbs_user_profiler
+		where 
+		company_id=#companyId#
+		limit 1
+	</select>
+	
+	<select id="queryNewUser" parameterClass="java.lang.Integer"
+		resultMap="someColumnResult">
+		select id,company_id,nickname,account,picture_path
+		from bbs_user_profiler
+		order by gmt_created desc
+		limit #size#
+	</select>
+	
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="searchDto.account">
+				exists (select id from company_account where account = #searchDto.account# and p.company_id=company_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.contact">
+				exists (select id from company_account where contact = #searchDto.contact# and p.company_id=company_id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.name">
+				exists (select id from company where name = #searchDto.name# and p.company_id=id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.bbsUserProfiler.nickname">
+				p.nickname = #searchDto.bbsUserProfiler.nickname#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryCountByAdmin" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_user_profiler p
+		<include refid="whereCaluse" />
+	</select>
+	
+	<select id="queryByAdmin" parameterClass="java.util.Map" resultMap="fullColumnResult">
+		select
+		<include refid="fullColumn"/>
+		from bbs_user_profiler p
+		<include refid="whereCaluse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryRank" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_user_profiler
+		where integral > #value#
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCompanyProfile">
+	
+	<typeAlias alias="profile" type="com.ast.ast1949.domain.company.CrmCompanyProfile"/>
+	
+	<sql id="fullColumn">
+			ccp.`id`,
+			ccp.`company_id`,
+			ccp.`sale_details`,
+			ccp.`buy_details`,
+			ccp.`introduction`,
+			ccp.`operator_name`,
+			ccp.`operator_phone`,
+			ccp.`operator_tel`,
+			ccp.`address`,
+			ccp.`credit_card`,
+			ccp.`credit_license`,
+			ccp.`credit_tax`,
+			ccp.`tag1`,
+			ccp.`tag2`,
+			ccp.`tag3`,
+			ccp.`tag4`,
+			ccp.`tag5`,
+			ccp.`tag6`,
+			ccp.`tag7`,
+			ccp.`tag8`,
+			ccp.`tag9`,
+			ccp.`tag10`,
+			ccp.`gmt_created`,
+			ccp.`gmt_modified`
+	</sql>
+	
+	<resultMap class="profile" id="crmCompanyProfileResult">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="saleDetails" column="sale_details"/>
+		<result property="buyDetails" column="buy_details"/>
+		<result property="introduction" column="introduction"/>
+		<result property="operatorName" column="operator_name"/>
+		<result property="operatorPhone" column="operator_phone"/>
+		<result property="operatorTel" column="operator_tel"/>
+		<result property="address" column="address"/>
+		<result property="creditCard" column="credit_card"/>
+		<result property="creditLicense" column="credit_license"/>
+		<result property="creditTax" column="credit_tax"/>
+		<result property="tag1" column="tag1"/>
+		<result property="tag2" column="tag2"/>
+		<result property="tag3" column="tag3"/>
+		<result property="tag4" column="tag4"/>
+		<result property="tag5" column="tag5"/>
+		<result property="tag6" column="tag6"/>
+		<result property="tag7" column="tag7"/>
+		<result property="tag8" column="tag8"/>
+		<result property="tag9" column="tag9"/>
+		<result property="tag10" column="tag10"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	
+	
+	<select id="queryProfile" parameterClass="java.lang.Integer" resultMap="crmCompanyProfileResult">
+			select
+			<include refid="crmCompanyProfile.fullColumn"/>
+			from `crm_company_profile` ccp
+			where ccp.company_id=#companyId#
+			limit 1
+	</select>
+	
+	<insert id="createProfile" parameterClass="profile">
+			insert into `crm_company_profile`
+			(
+			`company_id`,
+			`sale_details`,
+			`buy_details`,
+			`introduction`,
+			`operator_name`,
+			`operator_phone`,
+			`operator_tel`,
+			`address`,
+			`credit_card`,
+			`credit_license`,
+			`credit_tax`,
+			`tag1`,
+			`tag2`,
+			`tag3`,
+			`tag4`,
+			`tag5`,
+			`tag6`,
+			`tag7`,
+			`tag8`,
+			`tag9`,
+			`tag10`,
+			`gmt_created`,
+			`gmt_modified`)
+			values
+			(
+			#companyId#,
+			#saleDetails#,
+			#buyDetails#,
+			#introduction#,
+			#operatorName#,
+			#operatorPhone#,
+			#operatorTel#,
+			#address#,
+			#creditCard#,
+			#creditLicense#,
+			#creditTax#,
+			#tag1#,
+			#tag2#,
+			#tag3#,
+			#tag4#,
+			#tag5#,
+			#tag6#,
+			#tag7#,
+			#tag8#,
+			#tag9#,
+			#tag10#,
+			now(),
+			now()
+			)
+			<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+			</selectKey>
+	</insert>
+	
+	<update id="updateProfile" parameterClass="profile">
+			update `crm_company_profile`
+			set
+			`sale_details` =#saleDetails#,
+			`buy_details` =#buyDetails#,
+			`introduction` =#introduction#,
+			`operator_name` =#operatorName#,
+			`operator_phone` =#operatorPhone#,
+			`operator_tel` =#operatorTel#,
+			`address` =#address#,
+			`credit_card` =#creditCard#,
+			`credit_license` =#creditLicense#,
+			`credit_tax` =#creditTax#,
+			`tag1` =#tag1#,
+			`tag2` =#tag2#,
+			`tag3` =#tag3#,
+			`tag4` =#tag4#,
+			`tag5` =#tag5#,
+			`tag6` =#tag6#,
+			`tag7` =#tag7#,
+			`tag8` =#tag8#,
+			`tag9` =#tag9#,
+			`tag10` =#tag10#,
+			`gmt_modified` =now()
+			where id=#id#
+	</update>
+	
+	<update id="updateOutbusiness" parameterClass="java.util.Map">
+		update crm_company_profile
+		set
+		gmt_modified =now(),outbusiness = #type#
+		where company_id = #companyId#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,62 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/bizList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">行情定制管理</li>
+        </ul>
+        <div class="alert alert-info" >
+      		<strong>邮件地址提醒:</strong> 
+			当前用于接收的电子邮箱为：<em>$!{currentEmail} </em> 
+			<a href="#springUrl('/mycompany/updateCompany.htm')" title="点击修改接收电子邮箱">修改</a>
+		</div>
+		<p><button id="createBtn" class="btn btn-mini">新增</button></p>
+		<table class="table table-bordered table-condensed">
+            <thead>
+				<tr>
+					<th class="tac">
+						<strong>订阅内容</strong>
+					</th>
+					<th class="tac">
+						<strong>提醒方式</strong>
+					</th>
+					<th class="tac">
+						<strong>操作</strong>
+					</th>
+				</tr>
+			</thead>
+            <tbody>
+			#foreach($price in $priceList)
+				<tr>
+	    			<td class="tac">
+	    				<a href="#springUrl('/mysubscribe/priceList.htm?id=')$!{price.subscribe.id}&priceTypeId=$!{price.subscribe.priceTypeId}&priceAssistTypeId=$!{price.subscribe.priceAssistTypeId}" target="_blank">
+							$price.subscribeCategory
+						</a>
+	    			</td>
+	    			<td class="tac">
+	    				#if($price.subscribe.isSendByEmail)
+							邮件提醒
+						#else
+							<span class="grey">无邮件提醒</span>
+						#end
+	    			</td>
+	    			<td class="tac">
+	    				<a href="#springUrl('/subscribe/subscribe.htm?id=')${price.subscribe.id}" target="_blank">修改</a>
+						<a href="#springUrl('/mysubscribe/deleteSubscribe.htm?id=')${price.subscribe.id}" onclick="return confirm('确定要删除吗？')">删除</a>
+	    			</td>
+	    		</tr>
+			#end
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(5, 4);
+	jQuery("#createBtn").click(function(){
+		window.open("#springUrl('/subscribe/subscribe.htm?subscribeType=1')");
+	});
+});
+</script>

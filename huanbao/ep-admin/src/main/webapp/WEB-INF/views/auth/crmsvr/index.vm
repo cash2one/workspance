@@ -1,0 +1,106 @@
+<script type="text/javascript" src="#springUrl('/app/auth/right/rightTree.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/auth/svr/svrTree.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/auth/svr/svr.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var right=new com.zz91.ep.auth.right.Tree({
+			layout:"fit",
+			nodeUrl:Context.ROOT+"/auth/crmsvr/rightChild.htm",
+			region:"center"
+		});
+		
+		var svr=new com.zz91.ep.svr.Tree({
+			id:SVR.TREE,
+			region:"west",
+			layout:"fit",
+			width:300,
+			contextmenu:new Ext.menu.Menu({
+        		items:[{
+        			text:"添加服务类型",
+        			cls:"add16",
+        			handler:function(menu){
+						com.zz91.ep.svr.AddFormWin();
+        			}
+        		},{
+					text:"修改服务类型",
+					cls:"edit16",
+					handler:function(menu){
+						var d=svr.getSelectionModel().getSelectedNode();
+						com.zz91.ep.svr.EditFormWin(d.attributes["id"]);
+					}
+				},{
+					text:"删除服务类型",
+					cls:"delete16",
+					handler:function(menu){
+						var node = svr.getSelectionModel().getSelectedNode();
+						if(svr.getRootNode() == node){
+							return ;
+						}
+						
+						Ext.MessageBox.confirm(MESSAGE.title,MESSAGE.confirmDelete, function(btn){
+							if(btn != "yes"){
+								return false;
+							}
+							Ext.Ajax.request({
+                                url:Context.ROOT+"/auth/crmsvr/deleteCrmSvr.htm",
+                                params:{"code":node.attributes.data},
+                                success:function(response,opt){
+                                    var obj = Ext.decode(response.responseText);
+                                    if(obj.success){
+                                        node.remove();
+                                    }else{
+                                        Ext.MessageBox.show({
+                                            title:MESSAGE.title,
+                                            msg : MESSAGE.saveFailure,
+                                            buttons:Ext.MessageBox.OK,
+                                            icon:Ext.MessageBox.ERROR
+                                        });
+                                    }
+                                },
+                                failure:function(response,opt){
+                                    Ext.MessageBox.show({
+                                        title:MESSAGE.title,
+                                        msg : MESSAGE.submitFailure,
+                                        buttons:Ext.MessageBox.OK,
+                                        icon:Ext.MessageBox.ERROR
+                                    });
+                                }
+                        	});
+						});
+					}
+				}]
+    		})
+		});
+		
+		right.getRootNode().expand();
+		svr.getRootNode().expand();
+		
+		right.getLoader().on("beforeload",function(treeLoader,node){
+			this.baseParams["parentCode"]=node.attributes["data"];
+			var d=svr.getSelectionModel().getSelectedNode();
+			if(typeof(d)!="undefined"){
+				this.baseParams["crmSvrId"]=d.attributes["id"];
+			}
+		});
+		
+		right.on("checkchange",function(node, checked){
+			var d=svr.getSelectionModel().getSelectedNode();
+			if(typeof(d)!="undefined"){
+    			com.zz91.ep.svr.UpdateSvrRight(d.attributes["id"], node.attributes["id"], checked);
+			}
+		});
+		
+		svr.on("click",function(node,e){
+			node.select();
+			right.getLoader().load(right.getRootNode());
+			if(!right.getRootNode().isExpanded()){
+    			right.getRootNode().expand();
+			}
+		});
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[svr,right]
+		})
+	})
+</script>

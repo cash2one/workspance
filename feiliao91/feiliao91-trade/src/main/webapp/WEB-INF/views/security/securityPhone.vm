@@ -1,0 +1,128 @@
+<!--[if IE 6]> 
+        <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+        <script type="text/javascript">  
+        DD_belatedPNG.fix('img');
+        DD_belatedPNG.fix('.now-nav i');
+        </script>  
+    <![endif]-->
+#set($layout="/layout/securityDefault.vm")
+#set($in = "3")
+    <div class="content">
+        <div class="small-nav">
+            <a href="#">安全设置</a> > 绑定手机
+        </div>
+        <div class="bing-phone">
+			<form action="#" method="post">
+            <p class="bing-tshi">你正在为账户 $!{ssoUser.account} 绑定手机</p>
+            <div class="clearfix into-form">
+                <div class="title-do fl title-do2">想要绑定的手机号码：</div>
+                <div class="fl"><input class="into-input" id="mobile"/><span id="ermobile" style="display:none;color:red;">请输入正确的手机号</span></div>
+            </div>
+            <div class="clearfix into-form">
+                <div class="title-do fl title-do2"></div>
+                <div class="fl"><span class="get-yz j_getyz">点此向手机发送验证码</span></div>
+            </div>
+            <div class="clearfix into-form">
+                <div class="title-do fl title-do2">验证码：</div>
+                <div class="fl"><input class="into-input" id="yzm"/><span id="list" style="display:none;color:red;">验证码错误
+                </span></div>
+            </div>
+            <div class="clearfix into-form">
+                <div class="title-do fl title-do2"></div>
+                <div class="fl"><span class="into-btn submit-for" >提交</span></div>
+            </div>
+			</form>
+        </div>
+    </div>  
+<script type="text/javascript">
+   var time = 0;
+    $(".j_getyz").click(function(){
+	    var mobile=$("#mobile").val();
+	    var ph3 =/^\d{11}$/;
+		if(!ph3.test(mobile)){
+		$("#ermobile").show();
+		   return false;
+		}else{
+		   $("#ermobile").hide();
+		}
+        getYz($(this));
+		sendCode();
+    })
+    function getYz(obj){
+        obj.unbind("click");
+        var timeGet = 60;
+        obj.html(timeGet + "秒后重新点击获取");
+        time = setInterval(function(){
+            if(timeGet == 0){
+                obj.html("点此向手机发送验证码");
+                obj.click(function(){
+        			getYz(obj);
+					sendCode();
+    			});
+                clearInterval(time);
+                return;
+            }
+            timeGet -=1;
+            obj.html(timeGet + "秒后重新点击获取");
+        },1000)
+    }
+	function sendCode(){
+	      var mobile=$("#mobile").val();
+	       jQuery.ajax({
+		   url:"#springUrl('/security/sendMobileCode.htm')",
+		   type:'post',
+		   datatype:'json',
+		   data:{mobile:mobile,code:2},
+		   cache:false,
+		   success:function(data){
+		   }
+		  })
+	}
+	
+	
+	 $(".submit-for").click(function(){
+	 var mobile=$("#mobile").val();
+	 var vcode=$("#yzm").val();
+	 var ph3 =/^\d{11}$/;
+		if(!ph3.test(mobile)){
+		$("#ermobile").show();
+		   return false;
+		}else{
+		   $("#ermobile").hide();
+		}
+		   jQuery.ajax({
+		   url:"#springUrl('/security/doValidPhone.htm')",
+		   type:'post',
+		   datatype:'json',
+		   data:{mobile:mobile,vcode:vcode},
+		   cache:false,
+		   success:function(data){
+		   ajaxob=eval("("+data+")");
+		   var b=ajaxob.success;
+		   if(b){
+		   bind();
+		   $("#list").hide();
+		   window.location.href="#springUrl('/security/security.htm')";
+		   }else{
+		    $("#list").show();
+		   }
+		   }
+		  })
+	})	
+	
+	function bind(){
+	 var mobile=$("#mobile").val();
+		   jQuery.ajax({
+		   url:"#springUrl('/security/bindPhone.htm')",
+		   type:'post',
+		   datatype:'json',
+		   data:{mobile:mobile},
+		   cache:false,
+		   success:function(data){
+		   ajaxob=eval("("+data+")");
+		   var b=ajaxob.success;
+		   }
+		  })
+	
+	}
+</script>

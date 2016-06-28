@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <title>全景图片演示</title>
+        <link rel='stylesheet' type='text/css' href='../bootstrap/css/bootstrap.min.css' />
+		<link rel='stylesheet' href='../css/github.css'>
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+		</style>
+		
+    </head>
+    <body>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/demo.js'></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script>
+	var demo = Demo.createNew();
+	demo.show(function(){
+				$('pre code').each(function(i, block) {
+				    hljs.highlightBlock(block);
+				  });});
+	</script>
+	
+    <script type='text/javascript' src='../script/api.js'></script>
+    <script type='text/javascript'>
+	function globoid()
+	{
+	    var obj = api.require('panorama');
+	    obj.open({
+	         type:0,
+	         x:document.getElementById("viewX").value,
+	         y:document.getElementById("viewY").value,
+	         width:document.getElementById("viewW").value,
+	         height:document.getElementById("viewH").value,
+	         imgPath:document.getElementById("selectedDate").value
+	    },function(ret,err){
+	        if(ret.status){
+	           document.getElementById("closeid").value=ret.id;
+	        }
+	        else{
+	           api.alert({msg:ret.msg});
+	        }
+	    });
+	};
+	function cubic()
+	{
+	    var name1=document.getElementById("selectedDate1").value;
+	    var name2=document.getElementById("selectedDate2").value;
+	    var name3=document.getElementById("selectedDate3").value;
+	    var name4=document.getElementById("selectedDate4").value;
+	    var name5=document.getElementById("selectedDate5").value;
+	    var name6=document.getElementById("selectedDate6").value;
+	    var namepaths = [];
+	    if(name1) {namepaths.push(name1)}
+	    if(name2) {namepaths.push(name2)}
+	    if(name3) {namepaths.push(name3)}
+	    if(name4) {namepaths.push(name4)}
+	    if(name5) {namepaths.push(name5)}
+	    if(name6) {namepaths.push(name6)}
+	    var obj = api.require('panorama');
+	    obj.open({
+	        type:1,
+	        x:document.getElementById("viewX").value,
+	        y:document.getElementById("viewY").value,
+	        width:document.getElementById("viewW").value,
+	        height:document.getElementById("viewH").value,
+	        imgPaths:namepaths
+	    },function(ret,err){
+	       if(ret.status){
+	            document.getElementById("closeid").value=ret.id;
+	       }else{
+	            api.alert({msg:ret.msg});
+	       }
+	    });
+	};
+	function logOutapp()
+	{
+	    var obj = api.require('panorama');
+	    obj.close({id:document.getElementById("closeid").value});
+	};
+    </script>
+</html>

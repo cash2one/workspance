@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCsLog">
+	
+	<typeAlias alias="crmCsLog" type="com.ast.ast1949.domain.company.CrmCsLog"/>
+	
+	<sql id="fullColumm">
+		ccl.`id`,
+		ccl.`cs_account`,
+		ccl.`company_id`,
+		ccl.`gmt_next_visit_phone`,
+		ccl.`gmt_next_visit_email`,
+		ccl.`is_visit_phone`,
+		ccl.`is_visit_email`,
+		ccl.`is_visit_sms`,
+		ccl.`call_type`,
+		ccl.`situation`,
+		ccl.`operation`,
+		ccl.`operation_details`,
+		ccl.`transaction`,
+		ccl.`transaction_details`,
+		ccl.`feedback`,
+		ccl.`suggestion`,
+		ccl.`issue_status`,
+		ccl.`issue_details`,
+		ccl.`visit_target`,
+		ccl.`star`,
+		ccl.`remark`,
+		ccl.`gmt_created`,
+		ccl.`gmt_modified`,
+		ccl.`pv`,
+		ccl.`loginCount`,
+		ccl.`gmt_last_login_time`
+	</sql>
+	
+	<resultMap class="crmCsLog" id="crmCsLogResult">
+		<result property="id" column="id"/>
+		<result property="csAccount" column="cs_account"/>
+		<result property="companyId" column="company_id"/>
+		<result property="gmtNextVisitPhone" column="gmt_next_visit_phone"/>
+		<result property="gmtNextVisitEmail" column="gmt_next_visit_email"/>
+		<result property="isVisitPhone" column="is_visit_phone"/>
+		<result property="isVisitEmail" column="is_visit_email"/>
+		<result property="isVisitSms" column="is_visit_sms"/>
+		<result property="callType" column="call_type"/>
+		<result property="situation" column="situation"/>
+		<result property="operation" column="operation"/>
+		<result property="operationDetails" column="operation_details"/>
+		<result property="transaction" column="transaction"/>
+		<result property="transactionDetails" column="transaction_details"/>
+		<result property="feedback" column="feedback"/>
+		<result property="suggestion" column="suggestion"/>
+		<result property="issueStatus" column="issue_status"/>
+		<result property="issueDetails" column="issue_details"/>
+		<result property="visitTarget" column="visit_target"/>
+		<result property="star" column="star"/>
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="pv" column="pv"/>
+		<result property="loginCount" column="loginCount"/>
+		<result property="gmtLastLoginTime" column="gmt_last_login_time"/>
+	</resultMap>
+	
+	<sql id="csLogWhereClause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="companyId" >
+				ccl.company_id=#companyId#
+			</isNotNull>
+			<isNotNull prepend="and" property="callType" >
+				ccl.call_type=#callType#
+			</isNotNull>
+			<isNotNull prepend="and" property="star" >
+				ccl.star=#star#
+			</isNotNull>
+			<isNotEmpty prepend="and" property="csAccount" >
+				ccl.cs_account=#csAccount#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="situation">
+				ccl.situation = #situation#
+			</isNotNull>
+			<isNotEmpty prepend="and" property="from">
+				gmt_created >= #from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="to">
+				#to# > gmt_created
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryLogByCompany" parameterClass="java.util.HashMap" resultMap="crmCsLogResult">
+		select
+		<include refid="crmCsLog.fullColumm"/>
+		from `crm_cs_log` ccl
+		<include refid="csLogWhereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryLogByCompanyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from `crm_cs_log` ccl
+		<include refid="csLogWhereClause"/>
+	</select>
+	
+	<insert id="insertLog" parameterClass="crmCsLog" >
+		insert into `crm_cs_log`
+		(
+		`cs_account`,
+		`company_id`,
+		`gmt_next_visit_phone`,
+		`gmt_next_visit_email`,
+		`is_visit_phone`,
+		`is_visit_email`,
+		`is_visit_sms`,
+		`call_type`,
+		`situation`,
+		`operation`,
+		`operation_details`,
+		`transaction`,
+		`transaction_details`,
+		`feedback`,
+		`suggestion`,
+		`issue_status`,
+		`issue_details`,
+		`visit_target`,
+		`star`,
+		`remark`,
+		`gmt_created`,
+		`gmt_modified`,
+		`pv`,
+		`loginCount`,
+		`gmt_last_login_time`)
+		values
+		(
+		#csAccount#,
+		#companyId#,
+		#gmtNextVisitPhone#,
+		#gmtNextVisitEmail#,
+		#isVisitPhone#,
+		#isVisitEmail#,
+		#isVisitSms#,
+		#callType#,
+		#situation#,
+		#operation#,
+		#operationDetails#,
+		#transaction#,
+		#transactionDetails#,
+		#feedback#,
+		#suggestion#,
+		#issueStatus#,
+		#issueDetails#,
+		#visitTarget#,
+		#star#,
+		#remark#,
+		now(),
+		now(),
+		#pv#,
+		#loginCount#,
+		#gmtLastLoginTime#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+		select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryRecentLogId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer" >
+		select id from crm_cs_log
+		where company_id=#value#
+		order by gmt_created desc
+		limit 1
+	</select>
+	
+	<typeAlias alias="analysisCsLog" type="com.ast.ast1949.dto.company.AnalysisCsLog"/>
+	
+	<resultMap class="analysisCsLog" id="analysisLogResult">
+		<result property="csAccount" columnIndex="1"/>
+		<result property="star0Y" columnIndex="2"/>
+		<result property="star0N" columnIndex="3"/>
+		<result property="star1Y" columnIndex="4"/>
+		<result property="star1N" columnIndex="5"/>
+		<result property="star2Y" columnIndex="6"/>
+		<result property="star2N" columnIndex="7"/>
+		<result property="star3Y" columnIndex="8"/>
+		<result property="star3N" columnIndex="9"/>
+		<result property="star4Y" columnIndex="10"/>
+		<result property="star4N" columnIndex="11"/>
+		<result property="star5Y" columnIndex="12"/>
+		<result property="star5N" columnIndex="13"/>
+		<result property="saleCall" columnIndex="14"/>
+		<result property="serviceCall" columnIndex="15"/>
+		<result property="analysisDate" columnIndex="16"/>
+	</resultMap>
+	
+	<sql id="analysisLogSumColumn" >
+		cs_account,
+		sum(star0_y),
+		sum(star0_n),
+		sum(star1_y),
+		sum(star1_n),
+		sum(star2_y),
+		sum(star2_n),
+		sum(star3_y),
+		sum(star3_n),
+		sum(star4_y),
+		sum(star4_n),
+		sum(star5_y),
+		sum(star5_n),
+		sum(sale_call),
+		sum(service_call),
+		analysis_date
+	</sql>
+
+	<select id="queryCsLogAnalysis" parameterClass="java.util.HashMap" resultMap="analysisLogResult">
+		select 
+		<include refid="crmCsLog.analysisLogSumColumn"/>
+		from
+		analysis_cs_log
+		where 
+		#targetTo# >= analysis_date and  analysis_date >= #targetFrom#
+		<dynamic >
+			<isNotEmpty prepend="and" property="csAccount">
+				cs_account=#csAccount#
+			</isNotEmpty>
+		</dynamic>
+		group by cs_account
+		limit 1000
+	</select>
+</sqlMap>

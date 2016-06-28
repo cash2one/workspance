@@ -1,0 +1,53 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="$!{address.img}/lib/htmleditor/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		CKEDITOR.replace('content',{
+			height:500,
+			toolbar:'Full',
+			language:"zh-cn",
+			enterMode:CKEDITOR.ENTER_BR,
+			shiftEnterMode:CKEDITOR.ENTER_P
+			
+		});
+		
+		#if($!{success}=="1")
+			Ext.Msg.alert(Context.MSG_TITLE,"详细信息已保存！");
+		#elseif($!{success}=="0")
+			Ext.Msg.alert(Context.MSG_TITLE,"详细信息没有保存！");
+		#end
+		
+		Ext.create('Ext.button.Button', {
+            renderTo: Ext.getBody(), 
+            text    : '保存内容',
+			scale:"large",
+			iconCls:"saveas32",
+            handler : function() {
+				Ext.getDom("form1").submit();
+            }
+        });
+	});
+	
+</script>
+<form nbame="form1" id="form1" action="#springUrl('/comp/comp/updateNewsDetails.htm')" method="post" >
+	<h1 style="font-size:20px;color:green">
+		文章标题:<input name="title" id="title" value="$!{compNews.title}" style="height:30px;width:1300px"/>
+	</h1>
+	<h1 style="font-size:20px;color:green">
+		文章类别：##<input name="categoryCode" id="categoryCode" value="$!{compNews.categoryCode}" style="height:30px;width:1300px"/>
+		<select name="categoryCode">
+		#foreach( $!{c} in $!{category.keySet()}) $!{c}
+		   <option value="$!{c}"  #if($!{compNews.categoryCode}==$!{c} ) selected #end>
+                    $!{category.get($c)}          
+		   </option>
+		   #end
+         </select> 
+	</h1>
+	<h1 style="font-size:20px;color:green">
+		标签:<input name="tags" id="tags" value="$!{compNews.tags}" style="height:30px;width:1300px"/>
+	</h1>
+	<textarea name="content" id="content">$!{compNews.details}</textarea><br/>
+	<input type="hidden" name="id" id="id" value="$!{id}" />
+	 
+</form>
+    

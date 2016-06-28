@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="newsCategory">
+
+	<typeAlias alias="category" type="com.zz91.ep.domain.news.NewsCategory"/>
+	
+	<resultMap class="category" id="newsCategoryResult">
+		<result property="id" column="id"/>
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="sort" column="sort"/>
+		<result property="showIndex" column="show_index"/>
+		<result property="tags" column="tags"/>
+	</resultMap>
+	
+	<select id="queryNewsCategoryAll" resultMap="newsCategoryResult">
+		select
+		`id`,
+		`code`,
+		`name`,
+		`sort`,
+		`show_index`,
+		`tags`
+		from `news_category`
+	</select>
+	
+	<insert id="insertCategory" parameterClass="category">
+		insert into `news_category`
+		(
+		`code`,
+		`name`,
+		`sort`,
+		`show_index`,
+		`tags`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#code#,
+		#name#,
+		#sort#,
+		#showIndex#,
+		#tags#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryMaxCodeByPreCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code) from news_category
+		where code like concat(#code#,'____') 
+	</select>
+	
+	<select id="queryCategoryByParentCode" parameterClass="java.lang.String" resultMap="newsCategoryResult">
+		select `id`,`code`,`name`,`sort`,`show_index`,`tags` 
+		from `news_category`
+		where code like concat(#code#,'____')
+	</select>
+	
+	<update id="updateCategory" parameterClass="category">
+		update news_category
+		set name=#name#,
+		sort=#sort#,
+		tags=#tags#,
+		show_index=#showIndex#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<delete id="deleteCategoryByCode" parameterClass="java.lang.String">
+		delete from news_category
+		where code like concat(#code#,'%')
+	</delete>
+	
+	<select id="countNewsCategoryChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from news_category where code like concat(#value#,'_%')
+	</select>
+	<select id="queryOneNewsCategory" parameterClass="java.lang.String" resultMap="newsCategoryResult">
+		select
+		`id`,
+		`code`,
+		`name`,
+		`sort`,
+		`show_index`,
+		`tags`
+		from news_category nc where nc.code =#value#
+		limit 1
+	</select>
+</sqlMap>

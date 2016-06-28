@@ -1,0 +1,99 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/analysis/analysis.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		
+		var opertionMap={
+			"qq_login_bind":"绑定账号",
+			"qq_login_register":"注册新账号",
+			"qq_login_click":"点击登录按钮次数",
+			"huanbao_qq_login_bind":"环保网绑定账号",
+			"huanbao_qq_login_register":"环保网注册新账号",
+			"huanbao_qq_login_click":"环保网点击登录按钮次数",
+			"qq_login_bind_db":"绑定账号(数据库)",
+    		"qq_login_register_db":"注册新账号(数据库)",
+    	
+		};
+		
+		var typeMap=[
+			{name:'ZZ91再生网',value:'qq_login'},
+			{name:'环保网',value:'huanbao_qq_login'}
+		]
+		
+		var chart=Ext.create("ast.ast1949.analysis.analysis.ChartView",{
+			region:"south",
+			height:400,
+			split:true,
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryQQ.htm",
+			storeModel:"QQModel"
+		});
+		
+		var mainGrid=Ext.create("ast.ast1949.analysis.analysis.MainGrid",{
+			region:"center",
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryQQ.htm",
+			storeModel:"QQModel",
+			cm:[
+				{
+					text:"编号",dataIndex:"id",width:30,hidden:true
+				},{
+					header:"统计类型",dataIndex:"operation",width:250,
+					renderer:function(v,m,record,ridx,cidx,store,view){
+    					return opertionMap[v];
+    				}
+				},{
+					text:"数量",dataIndex:"num",summaryType:"num",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return value;
+					}
+				},{
+					text:"统计日期",dataIndex:"gmtTarget",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						return Ext.Date.format(new Date(v.time),"Y-m-d");
+					}
+				}
+			],
+			tbar:["->",{
+					xtype:"combo",
+					displayField:'name',
+					valueField:'value',
+					value:"qq_login",
+					store:Ext.create('Ext.data.Store', {
+						fields: ['name', 'value'],
+						data : typeMap
+					}),
+					listeners:{
+						"change":function(field){
+							mainGrid.getStore().setExtraParam("operator",field.getValue());
+							mainGrid.getStore().load();
+						}
+					}
+			},{
+				xtype:"datefield",
+				format:"Y-m-d",
+				submitFormat:"Y-m-d H:i:s",
+				emptyText:"统计日期",
+				name : 'gmtTarget',
+				id : 'gmtTarget',
+				listeners:{
+					"change":function(field, nv, ov, e){
+						mainGrid.getStore().setExtraParam("from",field.getSubmitValue());
+						mainGrid.getStore().setExtraParam("to",field.getSubmitValue());
+						mainGrid.getStore().load();
+					}
+				}
+			}],
+			listeners:{
+				"itemclick":function(_this,record,item,idx){
+					chart.getChartStore().setExtraParam("operation",record.get("operation"));
+					chart.getChartStore().load();
+				}
+			}
+		});
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[mainGrid,chart]
+		});
+		
+	});
+</script>

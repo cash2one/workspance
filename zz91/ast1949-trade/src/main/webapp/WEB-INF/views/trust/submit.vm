@@ -1,0 +1,90 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css" />
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.6.2.min.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+##		jQuery(".subtn02").click(function(){
+##			parent.closeoverlay();
+##		});
+	});
+</script>
+<style type="text/css">
+.sub02 {width:280px;height:auto;padding:0 20px;font-size:12px;}
+.sub02 h2 {color:#3399ee;font-size:16px;font-weight:bold;}
+.sub02 label {color:#999;}
+.sub02 input[type=text] {
+	width:200px;
+	height:37px;
+	line-height:37px;
+	color:#303030;
+	border-bottom:1px dashed #999999;
+	border-top:0px; 
+	border-left:0px; 
+	border-right:0px; 
+	background-color:transparent;
+}
+.sub02 input[type=submit] {display:block;width:87px;height:30px;line-height:30px;text-align:center;background:#027cff;color:#fff;margin:25px auto 0;cursor:pointer;border:0;outline:none;filter:chroma(color=#000000);}
+</style>
+</head>
+<body style="background:#fff;">
+	<div class="sub02">
+    	<h2>请填写联系人信息</h2>
+        <form action="success.htm" method="post" id="enTrust">
+        	<label for="person">联系人：&nbsp;&nbsp;&nbsp;</label>
+            <input type="text" name="companyContact" id="companyContact" value="" /><br />
+            <label for="tel">联系方式：</label>
+            <input type="text" name="mobile" id="mobile" value="" /><br />
+            <label for="name">公司名称：</label>
+            <input type="text" name="companyName" id="companyName" value="" /><br />
+            <input type="submit" value="提交" class="subtn02" />
+			<input type="hidden" id="details" name="detail" value="$!{details}" />
+        </form>
+    </div>
+	<!--end sub02-->
+	<script type="text/javascript">
+		
+		jQuery("#enTrust").submit(function(){
+			
+			var companyContact = jQuery("#companyContact").val();
+			var companyName = jQuery("#companyName").val();
+			var mobile = jQuery("#mobile").val();
+			var details = jQuery("#details").val();
+			if(companyContact==""){
+				alert("联系人不能为空")
+				return false;
+			}
+			if(companyName==""){
+				alert("公司名不能为空")
+				return false;
+			}
+			if(mobile==""){
+				alert("电话号码不能为空")
+				return false;
+			}
+			
+		
+    		jQuery.ajax({
+    			url:'$!{address.caigou}/doEntrust.htm',
+    			type:"get",
+				data:{"companyContact":companyContact,"companyName":companyName,"mobile":mobile,"detail":details},
+				async:false,
+    			dataType:"json",
+    			success:function(reg){
+    				if(reg.sw>0){
+						openoverlay('success.htm','',470,182,0);
+    				}else{
+    				}
+    			}
+    		});
+##			parent.closeoverlay();
+			parent.openoverlay('success.htm','',470,182,0);
+		});
+	</script>
+</body>
+</html>

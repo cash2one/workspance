@@ -1,0 +1,81 @@
+<div class="orderright fl">
+	<div class="state-main">
+		<div class="state-now">
+			<i class="icon-big-ts iconfont">&#xe60d;</i>订单状态：买家已下单，等待卖家审核<br/>
+		</div>
+            <span style="color:#666666;">卖家审核通过后，您才可以付款</span>
+		<div class="state-cando">
+			您可以
+			<a href="$!{address.www}" class="blue">继续逛逛</a>
+			<a href="javascript:void(0)" class="blue j_rma">取消订单</a>
+		</div>
+	</div>
+</div>
+<div class="pop-main">
+	<div class="pop-page-buy clearfix">
+		<div class="pop-top clearfix">
+			<div class="pop-tltle fl">
+				<i class="icon-jg iconfont">&#xe60d;</i>
+				<span>您确定要取消该订单吗？取消订单后，不能恢复。</span>
+			</div>
+			<a class="fr close-pay j_close" href="javascript:void(0)">x</a>
+		</div>
+		<div class="reason-rm">
+			请选择取消订单的理由：
+			<select class="reason-set" id="cancel_reason">
+				<option>请选择取消理由</option>
+				<option>我不想买了</option>
+				<option>信息填写错误，重新拍</option>
+				<option>卖家缺货</option>
+				<option>线下交易</option>
+				<option>付款遇到问题（如余额不足、不知道如何付款等）</option>
+				<option>拍错了</option>
+				<option>其他原因</option>
+			</select>
+		</div>
+		<span class="rm-btn">确 定</span>
+	</div>
+</div>
+<form action="#springUrl('/orders/cancelOrder.htm')" method="post" id="subCancel">
+	<input type="hidden" name="orderNo" value="$!{orderNo}" />
+	<input type="hidden" name="reason"   value="" />
+</form>
+<script>
+	window.onload=function(){ 
+		var rString ="<option value=\"0\">请选择取消理由</option>";
+		jQuery.ajax({
+			url:'#springUrl("/goods/catChild.htm")',
+    		data:{"parentCode":"10081000"},
+    		type:"post",
+			async:false,
+			dataType:"json",
+			success:function(reg){	
+				for(var i = 0; i < reg.length; i++){ 
+					rString = rString + "<option value=\""+reg[i].code+"\">"+reg[i].label+"</option>";
+				}
+			}
+		});
+		jQuery("#cancel_reason").html(rString);
+		selectJr(chengeVal);
+	}
+
+function chengeVal($this){
+     var selectedVal = $this.parent().siblings(".selected").attr("id");
+     if(selectedVal=="cancel_reason"){ 
+     	if($this.attr("value")!=0){
+     		jQuery("input[name=reason]").val("buy" + $this.html());
+     		flag = 1;
+     	}else{
+     		flag = 0;
+     	}
+     }
+}
+var flag = 0;
+jQuery("body").delegate(".rm-btn","click",function(){
+		if(flag==0){
+			alert("请选择退货理由");
+		}else{
+			jQuery("#subCancel").submit();
+		}
+});
+</script>

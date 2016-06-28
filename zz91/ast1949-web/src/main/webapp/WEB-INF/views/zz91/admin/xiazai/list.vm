@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	<!-- for include js code -->
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/dataIndex/index.js" ></script>
+	
+	<script type="text/javascript" src="$!{address.js}/admin/xiazai/view.js"></script>
+	<script type="text/javascript" src="$!{address.js}/admin/xiazai/category.js"></script>
+
+
+	<script type="text/javascript" >
+		
+        Ext.onReady(function(){
+        
+        	var tree =new ast.ast1949.admin.xiazai.category.TreePanel({
+        		id:Const.CATEGORY_TREE1,
+        		title:"主类别",
+				region:"center",
+        		root:{
+        			nodeType:'async',
+        			text:"下载中心类别",
+        			data:"20051000"
+        		}
+        	});
+			
+##        	var tree2 =new ast.ast1949.admin.xiazai.category.TreePanel({
+##        		id:Const.CATEGORY_TREE2,
+##        		title:"辅助类别",
+##				region:"south",
+##				split:true,
+##				height:200,
+##        		root:{
+##        			nodeType:'async',
+##        			text:"辅助类别",
+##        			data:2
+##        		}
+##        	});
+        	
+        	var treepanel = {
+        		region : "west",        
+        		layout : "border",
+        		width: 200,
+        		split:true,
+##      		items:[tree,tree2]
+				items:tree
+        	}
+        
+        	var grid=new ast.ast1949.admin.xiazai.GridPanel({
+        		id:Const.XAIZAI_GRID,
+        		title:"下载文档管理",
+        		layout:"fit",
+        		region:"center"
+        	});
+        	
+        	//双击事件
+            grid.addListener('rowdblclick', function(grid, rowIndex, e){ 
+        		var row = grid.getSelections();
+        		var selectedRecord = grid.getSelectionModel().getSelected();
+        		if(row.length>1){
+        			ast.ast1949.utils.Msg("","最多只能选择一条记录！");
+        		} else {
+        			var row = grid.getSelections();
+        			var _cid=row[0].get("id");
+        			var url=Context.ROOT+Context.PATH+"/admin/price/edit.htm?priceId="+_cid+"&ts="+Math.random();
+        			window.open(url);
+        		}
+            });
+        
+        	var viewport = new Ext.Viewport({
+        		layout:"border",
+        		items:[treepanel,grid]
+        	});
+        
+        	//点击主类别显示显示相应信息
+        	tree.getRootNode().expand();
+        	tree.on("click",function(node,e){
+        		var grid = Ext.getCmp(Const.XAIZAI_GRID);
+        		var B = grid.store.baseParams;
+        		B = B||{};
+        		
+        		if(node.attributes.data!="" && node!=tree.getRootNode()){
+        			B["code"] = node.attributes.data;
+        		}else{
+        			B["code"] = null;
+        		}
+        		grid.store.baseParams = B;
+        		grid.store.reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+        	});
+        
+        	//点击辅助类别显示显示相应信息
+##        	tree2.getRootNode().expand();
+##        	tree2.on("click",function(node,e){
+##        		var grid = Ext.getCmp(Const.XAIZAI_GRID);
+##        		var B = grid.store.baseParams;
+##        		B = B||{};
+##        		
+##        		if(node.attributes.data!="" && node!=tree2.getRootNode()){
+##        			B["assistTypeId"] = node.attributes.data;
+##        		} else {
+##        			B["assistTypeId"] = null;
+##        		}
+##        		grid.store.baseParams = B;
+##        		grid.store.reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+##        	});
+        
+        });
+	</script>
+	
+</head>
+
+<body>
+</body>
+</html>

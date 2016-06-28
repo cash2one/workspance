@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="goods">
+	<typeAlias alias="goodsDO" type="com.ast.feiliao91.domain.goods.Goods" />
+	<resultMap class="goodsDO" id="goodsResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="title" column="title" />
+		<result property="mainCategory" column="main_category" />
+		<result property="isImport" column="is_import" />
+		<result property="level" column="level" />
+		<result property="color" column="color" />
+		<result property="form" column="form" />
+		<result property="useLevel" column="use_level" />
+		<result property="useIntro" column="use_intro" />
+		<result property="processLevel" column="process_level" />
+		<result property="processIntro" column="process_intro" />
+		<result property="charLevel" column="char_level" />
+		<result property="charIntro" column="char_intro" />
+		<result property="goodAttribute" column="good_attribute" />
+		<result property="unit" column="unit" />
+		<result property="price" column="price" />
+		<result property="hasTax" column="has_tax" />
+		<result property="quantity" column="quantity" />
+		<result property="number" column="number" />
+		<result property="provideCode" column="provide_code" />
+		<result property="location" column="location" />
+		<result property="detail" column="detail" />
+		<result property="expireTime" column="expire_time" />
+		<result property="fare" column="fare" />
+		<result property="isDel" column="is_del" />
+		<result property="isSell" column="is_sell" />
+		<result property="checkStatus" column="check_status" />
+		<result property="addressId" column="address_id" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkTime" column="check_time" />
+		<result property="isGarbage" column="is_garbage" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<!-- 创建产品信息 -->
+	<insert id="insertGoods" parameterClass="goodsDO">
+		insert into goods
+		(
+		company_id,
+		title,
+		main_category,
+		is_import,
+		level,
+		color,
+		form,
+		use_level,
+		use_intro,
+		process_level,
+		process_intro,
+		char_level,
+		char_intro,
+		good_attribute,
+		unit,
+		price,
+		has_tax,
+		quantity,
+		number,
+		provide_code,
+		location,
+		detail,
+		expire_time,
+		fare,
+		address_id,
+		is_garbage,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#companyId#,
+		#title#,
+		#mainCategory#,
+		#isImport#,
+		#level#,
+		#color#,
+		#form#,
+		#useLevel#,
+		#useIntro#,
+		#processLevel#,
+		#processIntro#,
+		#charLevel#,
+		#charIntro#,
+		#goodAttribute#,
+		#unit#,
+		#price#,
+		#hasTax#,
+		#quantity#,
+		#number#,
+		#provideCode#,
+		#location#,
+		#detail#,
+		#expireTime#,
+		#fare#,
+		#addressId#,
+		#isGarbage#,
+		now(),
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<sql id="allColumn">
+		id,
+		company_id,
+		title,
+		main_category,
+		is_import,
+		level,
+		color,
+		form,
+		use_level,
+		use_intro,
+		process_level,
+		process_intro,
+		char_level,
+		char_intro,
+		good_attribute,
+		unit,
+		price,
+		has_tax,
+		quantity,
+		number,
+		provide_code,
+		location,
+		detail,
+		expire_time,
+		fare,
+		is_del,
+		is_sell,
+		check_status,
+		address_id,
+		check_person,
+		check_time,
+		is_garbage,
+		refresh_time,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="goodsResult">
+		select
+		<include refid="allColumn" />
+		from goods
+		where id = #value#
+	</select>
+
+	<!-- 获取某公司最新发布产品的类别 -->
+	<select id="queryCategoryByCompanyId" parameterClass="java.util.Map"
+		resultClass="java.lang.String">
+		select distinct(main_category)
+		from goods
+		where
+		company_id=#companyId# and is_garbage='0'
+		order by id desc
+		limit #size#
+	</select>
+
+	<select id="queryGoodById" parameterClass="java.lang.Integer"
+		resultMap="goodsResult">
+		select
+		<include refid="goods.allColumn" />
+		from goods
+		where id = #id#
+	</select>
+
+	<!-- 修改产品 -->
+	<update id="updateGoods" parameterClass="goodsDO">
+		update goods set gmt_modified=now()
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="mainCategory">
+			main_category =
+			#mainCategory#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isImport">
+			is_import = #isImport#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="level">
+			level = #level#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="color">
+			color = #color#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="form">
+			form = #form#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="useLevel">
+			use_level = #useLevel#
+		</isNotEmpty>
+		<isNotNull prepend="," property="useIntro">
+			use_intro = #useIntro#
+		</isNotNull>
+		<isNotEmpty prepend="," property="processLevel">
+			process_level =
+			#processLevel#
+		</isNotEmpty>
+		<isNotNull prepend="," property="processIntro">
+			process_intro =
+			#processIntro#
+		</isNotNull>
+		<isNotEmpty prepend="," property="charLevel">
+			char_level = #charLevel#
+		</isNotEmpty>
+		<isNotNull prepend="," property="charIntro">
+			char_intro = #charIntro#
+		</isNotNull>
+		<isNotNull prepend="," property="goodAttribute">
+			good_attribute =
+			#goodAttribute#
+		</isNotNull>
+		<isNotEmpty prepend="," property="unit">
+			unit = #unit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="price">
+			price = #price#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="hasTax">
+			has_tax = #hasTax#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="number">
+			number = #number#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="provideCode">
+			provide_code =
+			#provideCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="location">
+			location = #location#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail = #detail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="fare">
+			fare = #fare#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="expireTime">
+			expire_time = #expireTime#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status =
+			#checkStatus#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+
+	<update id="updateStatusByUser" parameterClass="java.util.Map">
+		update goods set gmt_modified=now()
+		<isNotNull prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotNull>
+		<isNotNull prepend="," property="isSell">
+			is_sell = #isSell#
+		</isNotNull>
+		<isNotNull prepend="," property="isGarbage">
+			is_garbage = #isGarbage#
+		</isNotNull>
+		where id =#id#
+	</update>
+
+	<sql id="whereCaulse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="searchDto.companyId">
+				company_id =
+				#searchDto.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.isSell">
+				is_sell =
+				#searchDto.isSell#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.isDel">
+				is_del =
+				#searchDto.isDel#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.checkStatus">
+				check_status =
+				#searchDto.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.isGarbage">
+				is_garbage =
+				#searchDto.isGarbage#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.title">
+				<!-- 后台搜索框取title -->
+				title like concat('%',#searchDto.title#,'%')
+			</isNotEmpty>
+			<!-- 后台时间条件 -->
+			<isNotEmpty prepend="and" property="searchDto.from">
+				<isNotEmpty property="searchDto.dateType">
+					$searchDto.dateType$ >=  #searchDto.from#
+				</isNotEmpty>
+				<isEmpty property="searchDto.dateType">
+					gmt_created >=  #searchDto.from#
+				</isEmpty>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.to">
+				<isNotEmpty property="searchDto.dateType">
+					#searchDto.to# >= $searchDto.dateType$
+				</isNotEmpty>
+				<isEmpty property="searchDto.dateType">
+					#searchDto.to# >= gmt_created
+				</isEmpty>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryBySearchDto" parameterClass="java.util.Map"
+		resultMap="goodsResult">
+		select
+		<include refid="allColumn" />
+		from goods
+		<include refid="whereCaulse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountBySearchDto" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from goods
+		<include refid="whereCaulse" />
+	</select>
+
+	<select id="querySuccessOrder" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0) from `orders`
+		where
+		status = 66
+		<isNotNull prepend="and" property="goodsId">
+			goods_id = #goodsId#
+		</isNotNull>
+		<isNotNull prepend="and" property="companyId">
+			sell_company_id =
+			#companyId#
+		</isNotNull>
+	</select>
+	<!-- 某类别 最新产品信息 -->
+	<select id="queryGoodsByCategory" parameterClass="java.util.Map"
+		resultMap="goodsResult">
+		select
+		<include refid="goods.allColumn" />
+		from goods
+		where is_del='0' and is_sell='1' and check_status='1' and
+		is_garbage='0'
+		<isNotEmpty prepend="and" property="companyId">
+			company_id=#companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="mainCategory">
+			main_category=#mainCategory#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="goodsId">
+			<![CDATA[id <> #goodsId#]]>
+		</isNotEmpty>
+		order by id desc
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+
+	<!-- 供求最终页滚动9条 某类别（相同关键字） -->
+	<!-- type=1：为最新的， -->
+	<select id="queryNewGoodsBySameCategory" parameterClass="java.util.Map"
+		resultMap="goodsResult">
+		select
+		<include refid="goods.allColumn" />
+		from goods
+		where is_del='0' and is_sell='1' and check_status='1' and
+		is_garbage='0'
+		<isNotEmpty prepend="and" property="mainCategory">
+			main_category=#mainCategory#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="goodsId">
+			<![CDATA[id <> #goodsId#]]>
+		</isNotEmpty>
+		order by gmt_modified desc
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+
+	<!-- type=2：销量最高的 resultClass -->
+	<select id="queryHighSalesGoodsBySameCategory" parameterClass="java.util.Map"
+		resultClass="java.util.HashMap">
+		select goods_id as g_id,
+		(select count(0) from feiliao91.orders where
+		goods_id=g_id and status=66) as count
+		from feiliao91.orders as o where
+		o.status=66 and <![CDATA[o.goods_id <> #goodsId#]]>
+		and exists (select id from feiliao91.goods as g where
+		main_category=#mainCategory# and g.id=o.goods_id)
+		group by o.goods_id
+		order by count desc
+		limit #size#;
+	</select>
+
+
+	<!--type=3：随机的 -->
+	<select id="queryRandomGoodsBySameCategory" parameterClass="java.util.Map"
+		resultMap="goodsResult">
+		select
+		<include refid="goods.allColumn" />
+		from goods
+		where is_del='0' and is_sell='1' and check_status='1' and
+		is_garbage='0'
+		<isNotEmpty prepend="and" property="mainCategory">
+			main_category=#mainCategory#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="goodsId">
+			<![CDATA[id <> #goodsId#]]>
+		</isNotEmpty>
+		order by rand()
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+
+
+	<update id="updateCheckStatus" parameterClass="java.util.Map">
+		update goods
+		set
+		check_status = #checkStatus#,
+		is_sell = 1,
+		check_person =
+		#checkPerson#,
+		check_time = now(),
+		refresh_time = now()
+		where id = #id#
+	</update>
+	<!-- 更新数量 -->
+	<update id="updateGoodsQuantityByGoodsId" parameterClass="java.util.Map">
+		update
+		goods
+		set gmt_modified=now(),
+		quantity = #quantity#
+		where id = #id#
+	</update>
+</sqlMap>

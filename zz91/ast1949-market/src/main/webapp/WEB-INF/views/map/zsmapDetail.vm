@@ -1,0 +1,206 @@
+#set($pageName="zsmap")
+#set($layout="/layout/innerLayout.vm")
+<div class="market_nav2 mt12">当前位置：<a href="$!{address.market}">再生产业带</a> 〉再生地图</div>
+<!--end market_nav2-->
+<div class="module mt12">
+	<div class="map_left">
+    	<div class="map_box">
+        	<div class="mpb_title f14"><a href="$!{address.market}/map/zsmap.htm">再生地图</a> >$!{name}</div>
+            <div id="dv2_scroll">
+            	<div class="Scroller-Container" id="dv_scroll_text">
+					#foreach($li in $!{list})
+                	<div class="scroll_item" id="Sel_Left_Menu_Class_$velocityCount">
+                    	<dl>
+                        	<dt><em>$velocityCount</em> <strong>${li.name}</strong></dt>
+                            <dd>市场商户：${li.companyNum}家</dd>
+                            <dd>市场供求：${li.productNum}条</dd>
+                            <dd>主营范围：${li.business}</dd>
+                        </dl>
+                    </div>
+                    <!--end scroll_item-->
+					#end
+                </div>
+            </div>
+            <div id="dv2_scroll_bar">
+            	<div id="dv_scroll_track" class="Scrollbar-Track">
+					<div class="Scrollbar-Handle"></div>
+				</div>
+            </div>
+        </div>
+        <!--end map_box-->
+    </div>
+    <!--end map_left-->
+    <div class="map_right">
+    	<div class="map_info" id="container"></div>
+    </div>
+    <!--end map_right-->
+    <div class="cb"></div>
+</div>
+<!--end module-->
+<script type="text/javascript">
+var map=new BMap.Map("container");//创建地图实例
+#if($!{point})
+    var p=$!{point};
+	var point=new BMap.Point(p.lng,p.lat);//创建点坐标
+	map.centerAndZoom(point,8);//初始化地图，设置中心点坐标和地图级别
+#else
+	var point=new BMap.Point(105.01,35.915);//创建点坐标
+	map.centerAndZoom(point,5);//初始化地图，设置中心点坐标和地图级别
+#end
+map.addControl(new BMap.NavigationControl());//平移缩放控件
+map.addControl(new BMap.ScaleControl());//比例尺控件
+##map.addControl(new BMap.OverviewMapControl());//缩略地图控件，默认位于地图右下方，是一个可折叠的缩略地图
+map.enableScrollWheelZoom(); //启用滚轮放大缩小 
+	var datas =$!{json};
+	var label=new Array();
+	var po=new Array();
+	var infoWindow=new Array()
+	for(var i=0;i<datas.length;i++){  
+  		var t=datas[i];
+        var t1=i+1;
+		point=new BMap.Point(t.lng,t.lat)
+		var myLabel = new BMap.Label(t1,{offset:new BMap.Size(-10,-10),position:point});   //label的偏移量，为了让label的中心显示在点上                              //label的位置
+   	    myLabel.setStyle({                                   //给label设置样式，任意的CSS都是可以的
+			color:"#fff",                     //字体颜色
+			fontWeight:"bold",              //加粗
+            border:"0",                    //边
+            height:"30px",                //高度
+            width:"19px",                 //宽
+            textAlign:"center",            //文字水平居中显示
+            lineHeight:"20px",            //行高，文字垂直居中显示
+            background:"url(http://img0.zz91.com/zz91/industrial/images/mark.png)",    //背景图片，这是房产标注的关键！
+			backgroundRepeat:"no-repeat",
+            cursor:"pointer"
+        });
+      //myLabel.setTitle(t.name);               //为label添加鼠标提示
+	  map.addOverlay(myLabel);
+	  label[i]=myLabel;
+	  po[i]=point;
+	  var content ="<strong>"+t.name +"</strong>"+ "<br/>入驻商户：" +t.companyNum+ "<br/>市场供求：" +t.productNum+ "<br/>主营范围：" +t.business+"<br/><a href=\"${address.market}/"+t.id+"/\">进入"+t.name+"</a>";
+	  infoWindow[i] = new BMap.InfoWindow("<p>" + content + "</p>");
+	}  
+	
+	for(var i=0;i<label.length;i++){
+	 	label[i].addEventListener("click", (function(){
+		    var a=po[i];
+			var b=infoWindow[i];
+			return function(){
+				 map.openInfoWindow(b,a); 
+			}
+		})(i)
+		);	 
+	}
+#if($!{flag})
+	//获取地区轮廓
+	var datas = new Array("$!{name}");  //地区
+	for(var i=0;i<datas.length;i++){  
+   		 getBoundary(datas[i],map); 
+	}
+function getBoundary(data,map){  
+    var bdary = new BMap.Boundary();  //创建地区轮廓实例
+    bdary.get(data, function(rs){  //获取地区的轮廓   
+        var count = rs.boundaries.length; //地区轮廓中有多少个点  
+        for(var i = 0; i < count; i++){  
+            var ply = new BMap.Polygon(rs.boundaries[i], 
+			{
+				strokeWeight:1, //边线的宽度,以像素为单位
+				strokeOpacity:1,//边线透明度,取值范围0 - 1
+				fillColor:"#C0FF3E",//填充颜色,当参数为空时，圆形将没有填充效果
+				strokeColor: "#EE0000",//边线颜色
+				fillOpacity:0.2, //填充的透明度,取值范围0 - 1
+				strokeStyle:'solid' //边线的样式,solid或dashed
+			});  //多边形轮廓的属性设置
+            map.addOverlay(ply); //添加多边形到地图上     
+        }         
+    });  
+}  
+#end
+
+</script>
+<script type="text/javascript">
+ 
+$(document).ready(function() {
+
+	$(".scroll_item").mouseover(function(){
+		$(this).css("background","#02c3a3");
+		$(this).css("color","#fff");
+		$(this).find("em").css("background","#fff");
+		$(this).find("em").css("color","#02c3a3");		
+		
+		//获取当前对象this在数组$(".scroll_item")中的索引，接下来类似的表达式都是这个作用
+		var index = $(".scroll_item").index($(this));
+		//用同样的索引去取对应的另一个数组中的元素，第index个对应下面的第index个
+		$($(".BMapLabel")[index]).css("backgroundPosition","0 -32px");
+	});
+	$(".scroll_item").mouseout(function(){
+		$(this).css("background","#f9f9f9");
+		$(this).css("color","#303030");	
+		$(this).find("em").css("background","#02c3a3");
+		$(this).find("em").css("color","#fff");
+
+		var index = $(".scroll_item").index($(this));
+		$($(".BMapLabel")[index]).css("backgroundPosition","");
+	});
+		
+	$(".BMapLabel").mouseover(function(){
+	
+		$(this).css("backgroundPosition","0 -32px");
+		
+		var index = $(".BMapLabel").index($(this));
+		$($(".scroll_item")[index]).css("background","#02c3a3");
+		$($(".scroll_item")[index]).css("color","#fff");
+		$($(".scroll_item")[index]).find("em").css("background","#fff");
+		$($(".scroll_item")[index]).find("em").css("color","#02c3a3");
+		
+	});
+	$(".BMapLabel").mouseout(function(){
+		$(this).css("backgroundPosition","");
+		
+		var index = $(".BMapLabel").index($(this));
+		$($(".scroll_item")[index]).css("background","#f9f9f9");
+		$($(".scroll_item")[index]).css("color","#303030");	
+		$($(".scroll_item")[index]).find("em").css("background","#02c3a3");
+		$($(".scroll_item")[index]).find("em").css("color","#fff");
+	});
+});
+</script>
+<style>
+/* 再生地图2.0 */
+.infoBox strong {font-weight:bold;font-size:14px;}
+.infoBox p {width:220px;height:140px;padding:15px;background:#fff;line-height:26px;font-size:12px;display:block;}
+.infoBox a {display:block;line-height:25px;text-align:center;color:#fff;background:#02c3a3;margin:10px auto 0}
+.infoBox div{ width:356px; height:22px; background:url(http://style.feijiu.net/images/shichang/map1_19.gif) 0px bottom;}
+</style>
+<script type="text/javascript" src="http://api.map.baidu.com/library/InfoBox/1.2/src/InfoBox_min.js"></script>
+<script>
+var click_num = 0;
+jQuery("div.scroll_item").click(function() {
+        //debugger;
+        click_num = this.id.split('_')[4];
+		//alert(click_num);
+        tipWindow_city(click_num-1);
+        
+});
+	
+	var infoBox = null;
+    function tipWindow_city(click_num){
+		var a=po[click_num];
+		var b=infoWindow[click_num];
+		map.openInfoWindow(b,a); 
+        //var datas =$!{json};
+//		var t=datas[click_num-1];
+//        if (infoBox != null) infoBox.close();
+//        sContent="<p><strong>"+t.name +"</strong>"+ "<br/>入驻商户：" +t.companyNum+ "<br/>市场供求：" +t.productNum+ "<br/>主营范围：" +t.business+"<br/><a href=\"${address.market}/marketIndex.htm?id="+Number(t.id)+"\">进入"+t.name+"</a></p>";
+//        infoBox = new BMapLib.InfoBox(map,sContent,{
+//				closeIconMargin: "10px 10px 0 0",
+//				enableAutoPan: true,
+//				align: INFOBOX_AT_TOP,
+//				closeIconUrl: "http://style.feijiu.net/images/shichang/map1_03.jpg"
+//
+//			});
+//			//map.openInfoWindow(infoWindow,); //开启信息窗口
+//		//var point = new BMap.Point(objJsonAds.leftmenu[(str-1)].sc_x, objJsonAds.leftmenu[(str-1)].sc_y);
+//
+//		infoBox.open(new BMap.Marker(point), point);
+    }
+</script>

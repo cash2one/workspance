@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/dataIndex/index.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/bbs/post.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		var grid=new ast.ast1949.bbs.post.Grid({
+			id:POST.GRID,
+			region:"center"
+		});
+		
+		#if($!{haveRight})
+			grid.topToolbar[0].hidden = true;
+			grid.topToolbar[1].hidden = true;
+		#end
+
+		var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid]
+    	}); 
+
+		var form = new ast.ast1949.bbs.post.SearchForm({
+    		title:"互助信息检索",
+    		collapsible: true,
+            animCollapse: false,
+            frame:true,
+            titleCollapse:true,
+            style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+            height:290,
+            width:250,
+            targetGrid:grid
+    	});
+		
+		form.render(Ext.getBody());
+		 
+		form.resizer = new Ext.Resizable(form.el, {
+            minHeight:50,
+            minWidth:100,
+            handles: "n",
+            pinned: true,
+            transparent:true,
+            resizeElement : function(){
+                var box = this.proxy.getBox();
+                this.proxy.hide();
+                form.setHeight(box.height);
+                return box;
+            }
+        });
+
+		ast.ast1949.bbs.post.queryPost(POST.GRID, {});
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

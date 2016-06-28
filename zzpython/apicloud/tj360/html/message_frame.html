@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>消息</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	dl{
+		padding: 10px;
+		margin: 0px;
+		border-bottom: 1px solid #CCCCCC;
+		line-height: 20px;
+	}
+	dt{
+		font-weight: bold;
+		margin-bottom: 10px;
+	}
+	dt span{
+		float: right;
+		font-weight: normal;
+		font-size: 14px;
+		color: #999999;
+	}
+	dd{
+		font-size: 14px;
+		color: #666666;
+		margin-left: 10px;
+	}
+	.fontbold{
+		font-weight: bold;
+	}
+	.unreadActive{
+		background-color: #CCCCCC !important;
+	}
+	.nodata{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		background-color: #FAFAFA;
+		-webkit-box-flex: 1;
+		font-size: 14px;
+		padding-top: 40px;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		
+	</div>
+</body>
+<script>
+	var pageIndex = 0;
+	var inLoading = false;
+	var needLoadMore = false;
+	
+	apiready = function() {
+		api.showProgress({modal: false});
+		//下拉到页面底部，加载更多
+		api.addEventListener({name:'scrolltobottom'}, function(){
+	        if (needLoadMore) {
+	            localData();
+	        }
+	    });
+	    //下拉刷新
+	    api.setRefreshHeaderInfo({
+	    	visible:true, 
+	    	bgColor: '#F2F2F2', 
+	    	textColor: '#000000',
+	    	textDown: '下拉刷新',
+	    	textUp: '释放刷新',
+	    },function(ret,err){
+	        localData();
+	    });
+	    localData();//加载本地缓存的数据
+	};
+	
+	function localData(){
+	/**
+		var sysmsgs = $api.getStorage('sysmsgs');
+		if(sysmsgs){//如果本地缓存了数据
+			$api.html($api.byId('main'), createContent(sysmsgs.body.list));//取本地缓存显示
+			setTimeout(function(){api.hideProgress();}, 300);
+			if(sysmsgs.pages >1){//如果不止一页，需要加载更多
+				pageIndex++;
+    			needLoadMore = true;
+    		}else{//如果只有一页，不需要加载更多
+    			needLoadMore = false;
+    		}
+			$api.rmStorage('sysmsgs');//移除对系统消息的缓存
+		}else{//没有缓存，请求
+			loadData(true);
+		}	
+		*/	
+		  var model = api.require('model');
+            var query = api.require('query');
+          
+            var model = api.require('model');
+            model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2',host: 'https://d.apicloud.com'});
+		     query.createQuery(function (ret, err) {
+                if (ret && ret.qid) {
+                    var queryId = ret.qid;
+                    model.findAll({class: "Sms", qid: queryId}, function (ret, err) {
+                        api.hideProgress();
+                        if (ret) {
+                            //_ListView(ret)
+                            var html = createContent(ret);
+                            $api.html($api.byId('main'), html);
+                           api.refreshHeaderLoadDone();  
+                            
+                        }else {
+                            api.toast({msg:err.msg,location:'middle'})
+                        }
+                    });
+                }
+
+            });
+	}
+
+	function loadData(isReload_){
+		if (inLoading) {//如果还在加载中，不执行操作
+	        return;
+	    }
+	    inLoading = true;
+	    if (isReload_) {//下拉刷新，即重新载入,pageIndex为0
+	        pageIndex = 0;
+	    }
+	    
+	    function ajaxBack(ret,err){
+	    	inLoading = false;
+	    	if(ret && ret.status){
+	    		if(ret.body.list.length > 0){ 
+	    			var list = ret.body.list;
+	    			var html = createContent(list);	    									
+	    			pageIndex++;
+					if(isReload_){//如果是刷新
+						$api.html($api.byId('main'), html);
+					}else{//如果是加载更多
+						$api.append($api.byId('main'), html);
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					api.parseTapmode();
+	    		}else if(ret.body.list.length == 0){
+	    			api.refreshHeaderLoadDone();
+	    			api.hideProgress();
+	    			if(isReload_){//如果是刷新
+						var html = '<div class="nodata">暂无消息</div>';
+						$api.html($api.byId('main'), html);
+					}
+	    		}
+	    		
+	    		if(pageIndex < ret.pages){
+	    			needLoadMore = true;
+	    		}else{
+	    			needLoadMore = false;
+	    		}
+	    		api.refreshHeaderLoadDone();
+	    	}else{
+	    		api.refreshHeaderLoadDone();
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    		var html = '<div class="nodata">数据错误，请下拉刷新重试！</div>';
+	    		$api.html($api.byId('main'), html);
+	    	}
+	    }
+	    
+    	    var model = api.require('model');
+            var query = api.require('query');
+            model.config({
+                appid: 'A6961693132912',
+                appKey: '727724FF-FD26-C97B-B317-366723CA78A2',
+                host: 'https://www.apicloud.com'
+            });
+            query.createQuery(function (ret, err) {
+                if (ret && ret.qid) {
+                    var queryId = ret.qid;
+                    model.findAll({class: "Sms", qid: queryId}, function (ret, err) {
+                        api.hideProgress();
+                        if (ret) {
+                            //_ListView(ret)
+                            
+                        }else {
+                            api.toast({msg:err.msg,location:'middle'})
+                        }
+                    });
+                }
+
+            });
+	}
+	
+	function createContent(list){
+		var html = '';
+		for(var i=0; i<list.length; i++){
+			if(list[i].isRead == '0'){
+				html += '<dl><dt>' + list[i].smtitle + '<span>' + convertDate2(list[i].createdAt) + '</span></dt>';
+				html += '<dd class="fontbold" tapmode="unreadActive" onclick="readMessage(this, \'' + list[i].smid + '\')">' + list[i].smdetails + '</dd></dl>';
+			}else{
+				html += '<dl><dt>' + list[i].smtitle+ '<span>' + convertDate2(list[i].createdAt) + '</span></dt><dd>' + list[i].smdetails + '</dd></dl>';
+			}
+		}
+		return html;
+	}
+	
+	function readMessage(el, smid){
+		api.ajax({
+	    	url: serverUrl + '/user/SystemMessageRecord',
+		    method:'post',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json',
+		    data:{values:{uid:$api.getStorage('usr').uid, smid: smid}}
+	    },function(ret,err){
+	    	if(ret && ret.status){
+		    	hasClsRemoveIt(el, 'fontbold');
+				$api.removeAttr(el, 'tapmode');
+	    	}
+	    });
+	}
+</script>
+</html>

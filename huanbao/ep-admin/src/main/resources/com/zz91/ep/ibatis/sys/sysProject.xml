@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sysProject">
+
+	<typeAlias alias="sysProject" type="com.zz91.ep.domain.sys.SysProject"/>
+	
+	<select id="queryRightByProject" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select
+			right_code
+		from sys_project
+		where code=#value#
+	</select>
+	
+	<resultMap class="sysProject" id="fullResultMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="code" column="code"/>
+		<result property="password" column="password"/>
+		<result property="rightCode" column="right_code"/>
+		<result property="url" column="url"/>
+		<result property="avatar" column="avatar"/>
+		<result property="remark" column="remark"/>
+		<result property="version" column="version"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		`id`,
+		`name`,
+		`code`,
+		`password`,
+		`right_code`,
+		`url`,
+		`avatar`,
+		`remark`,
+		`version`,
+		`gmt_created`,
+		`gmt_modified`
+	</sql>
+	
+	<select id="querySysProjectById" parameterClass="java.lang.Integer" resultMap="fullResultMap">
+		select 
+		<include refid="sysProject.fullColumn"/>
+		from sys_project
+		where id=#id#
+	</select>
+	
+	<insert id="insertSysProject" parameterClass="sysProject">
+		insert into `sys_project`
+		(
+		`name`,
+		`code`,
+		`password`,
+		`right_code`,
+		`url`,
+		`avatar`,
+		`remark`,
+		`version`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#name#,
+		#code#,
+		#password#,
+		#rightCode#,
+		#url#,
+		#avatar#,
+		#remark#,
+		#version#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateSysProject" parameterClass="sysProject">
+		update sys_project 
+		set
+		name=#name#,
+		code=#code#,
+		password=#password#,
+		right_code=#rightCode#,
+		url=#url#,
+		avatar=#avatar#,
+		remark=#remark#,
+		version=#version#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<delete id="deleteSysProjectById" parameterClass="java.lang.Integer">
+		delete from sys_project 
+		where id=#id#
+	</delete>
+	
+	<sql id="dynmicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="sysProject.name">
+				name like concat('%',#sysProject.name#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="querySysProject" parameterClass="java.util.HashMap" resultMap="fullResultMap">
+		select 
+		<include refid="sysProject.fullColumn"/>
+		from sys_project
+		<include refid="sysProject.dynmicWhere"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="querySysProjectCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from sys_project
+		<include refid="sysProject.dynmicWhere"/>
+	</select>
+</sqlMap>

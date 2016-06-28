@@ -1,0 +1,1398 @@
+server {
+	listen       80;
+	server_name zz91.com china.zz91.com;
+	access_log off;
+	rewrite ^/(.*)$ http://www.zz91.com/$1 permanent;
+}
+
+
+server {
+	listen   80;
+	server_name subject.zz91.com;
+	location / {
+		rewrite /carveout/compmore/ http://www.zz91.com/carveout/ permanent;
+		rewrite ^/(.*)$ http://www.zz91.com/zt/$1 permanent;
+		return 404;
+	}
+}
+server {
+        listen       80;
+        server_name m.caigou.zz91.com;
+        access_log off;
+        rewrite ^/(.*)$ http://m.zz91.com/trust/$1 permanent;
+}
+
+upstream chinaServer {
+    #server 127.0.0.1:7012;
+	server 7003.zz91server.com:8001;
+	server 7004.zz91server.com:8001;
+}
+upstream zz91cpServer {
+    server 7006.zz91server.com:809;
+#	server 7009.zz91server.com:809;
+	server 7012.zz91server.com:809;
+}
+upstream zz91ppcServer {
+    server 7006.zz91server.com:817;
+	server 7009.zz91server.com:817;
+#	server 7012.zz91server.com:817;
+}
+upstream zz91priceServer {
+    server 7003.zz91server.com:8012;
+	server 7004.zz91server.com:8012;
+}
+upstream tradeServer {   
+    #server 127.0.0.1:7124;
+	server 7003.zz91server.com:8004;
+	server 7004.zz91server.com:8004;
+}
+server {
+	listen   80;
+	server_name www.zz91.com;
+	deny 115.29.35.147;
+	rewrite /cn/trade([0-9]+)(.*).html http://www.zz91.com/news/news$1.html permanent;
+    rewrite /cn/trade_Gz([0-9]+).html http://www.zz91.com/news/guanzhu$1.html permanent;
+	rewrite /cn/exhibit/exhibitDetails([0-9]+).html http://zhanhui.zz91.com/details$1.htm permanent;
+	rewrite /company/compinfo([0-9]+)(.*).html http://company.zz91.com/compinfo$1.htm permanent;
+	#rewrite /cn/baojia-show([0-9]+)(.*).html http://price.zz91.com/priceDetails_$1.htm permanent;
+	rewrite /aqsiq/AQSIQ_comp.asp$ http://aqsiq.zz91.com/ permanent;
+	rewrite /cn/productdetail([0-9]+).html http://trade.zz91.com/productdetails$1.htm permanent;	
+    rewrite /cn/offerlist([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)(.*).html http://trade.zz91.com/trade/offerlist.html?id1=$1&id2=$2&id3=$3&id4=$4 permanent;
+	rewrite /cn/offerlist([0-9]+)_([0-9]+)(.*).html http://trade.zz91.com/trade/offerlist.html?id1=$1&id4=$2 permanent;
+    
+	rewrite /cn/tags/infoListByKey([0-9]+).html http://tags.zz91.com/tagsInfoList/$1/ permanent;
+    rewrite /cn/info_index.htm http://jiage.zz91.com/ permanent;
+    rewrite /cn/tags/ http://tags.zz91.com/ permanent;
+    rewrite /cn/postoffer_log.asp http://trade.zz91.com/postoffer_step1.htm permanent;
+    rewrite /member/forgot_passwd.asp http://www.zz91.com/user/passwordReminder.htm permanent;
+	rewrite /cn/joinprocess.asp(.*) http://www.zz91.com/ permanent;
+	rewrite /m-$ http://m.zz91.com/app.html permanent;
+	
+	
+	rewrite /specialsubject/hjzw/ http://service.zz91.com/ppgg.html permanent;
+
+	rewrite /specialsubject/(.*)/ http://daohang.zz91.com/$1/ permanent;
+	rewrite /specialsubject/(.*) http://daohang.zz91.com/$1/ permanent;
+	rewrite /customerprice/(.*) http://jiage.zz91.com/companyprice/ permanent;
+	
+	rewrite /company/(.*) http://company.zz91.com/ permanent;
+	rewrite /Tech/(.*) http://tech.zz91.com/ permanent;
+	rewrite /score/(.*) http://score.zz91.com/ permanent;
+	rewrite /plasticgranules/(.*) http://www.zz91.com/suliao/ permanent;
+	rewrite /subject/(.*) http://www.zz91.com/zt/ permanent;
+	#rewrite /about/(.*) http://about.zz91.com/ permanent;
+
+	#rewrite /service/zst/ http://www.zz91.com/zst/ permanent;
+	# service start
+	rewrite /service/zst/ http://service.zz91.com/zst.html permanent;
+	rewrite /zst/ http://service.zz91.com/zst.html permanent;
+	rewrite /service/ppt/ http://service.zz91.com/ppt.html permanent;
+	# service end
+	
+	rewrite /offer/(.*) http://trade.zz91.com/trade/searchfirst/?keywords=$1 permanent;
+	#rewrite /customerprice/search.asp?page=(.*)&searchText=(.*)$ http://price.zz91.com/companyprice/list.htm?title=$2 permanent;
+	#rewrite /customerPrice/priceDetails.asp?id=([0-9]+)$ http://price.zz91.com/companyprice/priceDetails$1.htm permanent;
+	include /etc/nginx/deny.conf;
+	location / {
+		deny 115.29.35.147;
+ 	        proxy_pass http://chinaServer/;
+		fastcgi_intercept_errors on;
+		access_log  /mnt/var/log/nginx/www.zz91.access.log;
+		error_page   500 502 503 504 404  /50x.html;
+		expires 30m;
+    }
+	
+	
+	location /zt/ {
+		proxy_pass http://7006.zz91server.com:818/zt/;
+		access_log  /mnt/var/log/nginx/www.zz91.zt.log;
+		expires 2h;
+	}
+	location /zt/market/ {
+		proxy_pass http://chinaServer/cn/market/;
+		rewrite ^/zt/market/index([0-9]*)-page([0-9]*).htm(.*)$ /zt/market/index.htm?industry=$1&index=$2 last;
+                rewrite ^/zt/market/august([0-9]*)-page([0-9]*).htm(.*)$ /zt/market/august.htm?industry=$1&index=$2 last;
+                rewrite ^/zt/market/jiuyue([0-9]*)-page([0-9]*).htm(.*)$ /zt/market/jiuyue.htm?industry=$1&index=$2 last;
+                rewrite ^/zt/market/shandong([0-9]*)-page([0-9]*).htm(.*)$ /zt/market/shandong.htm?industry=$1&index=$2 last;
+                rewrite ^/zt/market/hebei([0-9]*)-page([0-9]*).htm(.*)$ /zt/market/hebei.htm?industry=$1&index=$2 last;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	location /mini/ {
+		proxy_pass http://chinaServer/mini/;
+		expires -1;
+	}
+	location /inquiry/ {
+		proxy_pass http://chinaServer/inquiry/;
+		expires -1;
+	}
+	location /user/ {
+		proxy_pass http://chinaServer/user/;
+		expires -1;
+	}
+	location /favorite/ {
+		proxy_pass http://chinaServer/favorite/;
+		expires -1;
+	}
+	location /cn/shuangshiyi/ {
+                proxy_pass http://chinaServer/cn/shuangshiyi/;
+                expires -1;
+        }	
+	location /cn/ {
+		proxy_pass http://7006.zz91server.com:827/cn/;
+		expires 24h;
+	}
+	location /nginx-status {
+        stub_status on;
+        access_log  off;
+    }
+	location /bdunion.txt {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/bdunion.txt;
+		expires 30d;
+    }
+	location /qcloud_cdn.html {
+                proxy_pass http://7006.zz91server.com:830/yanzheng/qcloud_cdn.html;
+                expires 30d;
+    }
+	location /root.txt {
+        proxy_pass http://7006.zz91server.com:830/yanzheng/root.txt;
+		expires 30d;
+    }
+	location /robots.txt {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/robots.txt;
+		expires 30d;
+    }
+	location /74f8f9161b581903f6d6a87f3a367ef9.txt {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/74f8f9161b581903f6d6a87f3a367ef9.txt;
+		expires 30d;
+    }
+	location /sogousiteverification.txt {
+                proxy_pass http://7006.zz91server.com:830/yanzheng/sogousiteverification.txt;
+                expires 30d;
+    }
+	location /alexaup.txt {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/alexaup.txt;
+		expires 30d;
+    }
+	location /baidu_verify_HCwqBUzmx0.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/baidu_verify_HCwqBUzmx0.html;
+		expires 30d;
+    }
+	location /360union.txt{
+		proxy_pass http://7006.zz91server.com:830/yanzheng/360union.txt;
+		expires 1d;
+	}
+	location /googlec3e95a177fe5267d.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/googlec3e95a177fe5267d.html;
+		expires 30d;
+    }
+	location /googlehostedservice.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/googlehostedservice.html;
+		expires 30d;
+    }
+	location /gs_union_verify_file.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/gs_union_verify_file.html;
+		expires 30d;
+    }
+	location /Top-verification.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/Top-verification.html;
+		expires 30d;
+    }
+	location /webmasterhome.htm {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/webmasterhome.htm;
+		expires 30d;
+    }
+	location /webscan_360_cn.html {
+		proxy_pass http://7006.zz91server.com:830/yanzheng/webscan_360_cn.html;
+		expires 30d;
+    }
+	location /yuntu_baidu_com.txt {
+        proxy_pass http://7006.zz91server.com:830/yanzheng/yuntu_baidu_com.txt;
+		expires 30d;
+    }	
+    location /5951e8ad33604ff7a52fa04315910ab5.html {
+        proxy_pass http://7006.zz91server.com:830/yanzheng/5951e8ad33604ff7a52fa04315910ab5.html;
+		expires 30d;
+    }
+
+	location /eWebEditor/ {
+		proxy_pass http://7006.zz91server.com:830/eWebEditor/;
+		expires 24h;
+	}
+	location /images/ {
+		proxy_pass http://7006.zz91server.com:827/images/;
+		expires 24h;
+	}
+	location /ad/ {
+		proxy_pass http://7006.zz91server.com:827/ad/;
+		expires 24h;
+    }
+	location /about/ {
+		proxy_pass http://7006.zz91server.com:827/about/;
+		expires 24h;
+	}
+	location /js/ {
+		proxy_pass http://7006.zz91server.com:827/js/;
+		expires 24h;
+	}
+	location /css/ {
+		proxy_pass http://7006.zz91server.com:827/css/;
+		expires 24h;
+	}
+	location /top/ {
+		proxy_pass http://7006.zz91server.com:827/top/;
+		expires 24h;
+	}
+	location /magazine/ {
+		proxy_pass http://7006.zz91server.com:827/magazine/;
+		expires 24h;
+	}
+	location /member/ {
+		proxy_pass http://7006.zz91server.com:827/member/;
+		expires 24h;
+	}
+	
+	location /service/ {
+		proxy_pass http://7006.zz91server.com:812/service/;
+		expires 24h;
+	}
+	
+	
+	location /hjzw/ {
+		rewrite /hjzw/operation.aspx http://www.zz91.com/hkfs/alipay.html permanent;
+		index index.html index.htm;
+		proxy_pass http://7006.zz91server.com:812/hjzw/;
+		expires 24h;
+	}
+	
+	
+	location /travel/ {
+		proxy_pass http://7006.zz91server.com:812/travel/;
+		expires 24h;
+	}
+	
+	location /upimages/ {
+		proxy_pass http://7006.zz91server.com:827/upimages/;
+		expires 24h;
+	}
+	location /zz91images/ {
+		proxy_pass http://7006.zz91server.com:827/zz91images/;
+		expires 24h;
+	}
+	location /210newIndex/ {
+		proxy_pass http://7006.zz91server.com:827/210newIndex/;
+		expires 24h;
+	}
+	location /favicon.ico {
+		proxy_pass http://7006.zz91server.com:825/favicon.ico;
+		expires 30d;
+	}
+	
+	location /myrc/ {
+		rewrite ^(.*) http://myrc.zz91.com/ permanent;
+        expires 24h;
+	}
+	location /cn/helpcenter/ {
+		rewrite ^(.*) http://help.zz91.com/ permanent;
+        expires 24h;
+	}
+	location /offerlist/
+	{
+		rewrite ^(.*) http://trade.zz91.com/ permanent;
+		access_log off;
+		expires 1h;
+	}
+	location /cp/ 
+	{
+		proxy_pass http://zz91cpServer/cp/;
+		access_log  /mnt/var/log/nginx/www.zz91.cp.log;
+		expires 30m;
+	}
+	location /weixin2014/
+	{
+		#//zz91/cp
+		proxy_pass http://7006.zz91server.com:809/;
+		access_log  /mnt/var/log/nginx/www.zz91.cp.log;
+		expires 3h;
+	}
+	location /news/
+	{
+		#------------------SEO
+		rewrite /news/news116907.html http://dingshengls.zz91.com/news5960.htm permanent;
+		rewrite /news/news116908.html http://dingshengls.zz91.com/news6096.htm permanent;
+		rewrite /news/news116873.html http://tanhuawu.zz91.com/news6044.htm permanent;
+		rewrite /news/news116639.html http://606.zz91.com/news4477.htm permanent;
+		rewrite /news/news116924.html http://yinqh.zz91.com/news6216.htm permanent;
+		rewrite /news/news116891.html http://zhangpu.zz91.com/news6047.htm permanent;
+		rewrite /news/news116923.html http://zhangpu.zz91.com/news6212.htm;
+		rewrite /news/news116912.html http://slzy.zz91.com/news6273.htm;
+		rewrite /news/news116909.html http://slzy.zz91.com/news6291.htm;
+		rewrite /news/news116019.html http://zygjs.zz91.com/news6462.htm;
+		rewrite /news/news116964.html http://liubingzhi.zz91.com/news6716.htm;
+		proxy_pass http://zz91cpServer/news/;
+		access_log  /mnt/var/log/nginx/www.zz91.news.log;
+		expires 2h;
+	}
+	location /carveout/
+	{
+		proxy_pass http://7006.zz91server.com:809/carveout/;
+		access_log  /mnt/var/log/nginx/www.zz91.cp.log;
+		expires 2h;
+	}
+	location /bssteel/ {
+		proxy_pass http://7006.zz91server.com:803/bssteel/;
+		expires 2h;
+	}
+	location /about/contactus.asp {
+		rewrite ^(.*) http://about.zz91.com/contact.html permanent;
+		expires 24h;
+    }
+	location /about/linkus.asp {
+		rewrite ^(.*) http://about.zz91.com/linkus.html permanent;
+		expires 24h;
+    }
+	location /aboutnew/wangzhan.html {
+		rewrite ^(.*) http://www.zz91.com/webmap/ permanent;
+		expires 24h;
+    }
+	location /aboutnew/qiyewenhua.html {
+		rewrite ^(.*) http://about.zz91.com/team.html permanent;
+		expires 24h;
+    }
+	location /about/question.asp {
+		rewrite ^(.*) http://about.zz91.com/contact.html permanent;
+		expires 24h;
+    }
+	location /about/zhaopin.asp {
+		rewrite ^(.*) http://about.zz91.com/jobs.html permanent;
+		expires 24h;
+    }
+	location /about/index.asp {
+		rewrite ^(.*) http://about.zz91.com/ permanent;
+		expires 24h;
+    }
+	location /about/jianjie.asp {
+		rewrite ^(.*) http://about.zz91.com/about.html permanent;
+		expires 24h;
+    }
+	location /about/hezuo.asp {
+		rewrite ^(.*) http://about.zz91.com/cooperation.html permanent;
+		expires 24h;
+    }
+	location /about/licheng.asp {
+		rewrite ^(.*) http://about.zz91.com/events.html permanent;
+		expires 24h;
+    }
+	location /about/wangzhan.asp {
+		rewrite ^(.*) http://www.zz91.com/webmap/ permanent;
+		expires 24h;
+    }
+	location /service/ppt/index.asp {
+		rewrite ^(.*) http://www.zz91.com/service/ppt/ permanent;
+		expires 24h;
+    }
+	location /about/qiyewenhua.asp {
+		rewrite ^(.*) http://about.zz91.com/team.html permanent;
+		expires 24h;
+    }
+	location /webmap.html {
+		rewrite ^(.*) http://www.zz91.com/webmap/ permanent;
+		expires 24h;
+	}
+	location /webmap/ {
+        proxy_pass http://7006.zz91server.com:830/webmap/;
+    }
+	location /zsh/ {
+		rewrite ^(.*) http://www.zz91.com/aboutnew/zsh/ permanent;
+	}
+	location /service/newzst/ {
+		rewrite ^(.*) http://www.zz91.com/zst/ permanent;
+		expires 24h;
+    }
+	location /service/newzst/index.asp {
+		rewrite ^(.*) http://www.zz91.com/zst/ permanent;
+		expires 24h;
+    }
+	location /service/newzst/aboutzst.asp {
+		rewrite ^(.*) http://www.zz91.com/zst/about.html permanent;
+		expires 24h;
+    }
+	location /service/newzst/apply.asp {
+		rewrite ^(.*) http://www.zz91.com/zst/apply.html permanent;
+		expires 24h;
+    }
+	location /service/newzst/payment.asp {
+		rewrite ^(.*) http://www.zz91.com/zst/payment.html permanent;
+		expires 24h;
+    }
+	location /aboutnew/ {
+		proxy_pass http://7006.zz91server.com:830/about/;
+		expires 24h;
+	}
+	location /service/baidu/ {
+        	proxy_pass http://7006.zz91server.com:830/service/baidu/;
+		expires 24h;
+	}
+	location /hkfs/ {
+		proxy_pass http://7006.zz91server.com:830/service/hkfs/;
+		expires 24h;
+	}
+	location /ppt/ {
+        proxy_pass http://7006.zz91server.com:830/service/ppt/;
+		expires 24h;
+    }
+	location /shebei/ {
+		proxy_pass http://tradeServer/shebei/;
+		expires 24h;
+	}
+	location /zst/ {
+	#	proxy_pass http://7006.zz91server.com:821/zst/;
+		proxy_pass http://chinaServer/service/zst.htm;
+		expires 2h;
+	}
+	location /photo/ {
+        proxy_pass http://tradeServer/photo/;
+		expires 2h;
+    }
+	location /xiazai/ {
+		proxy_pass http://chinaServer/xiazai/;
+	}
+	location /cn/index_info.htm {
+		rewrite ^(.*) http://jiage.zz91.com/ permanent;
+	}
+	location /jinshu/ {
+		proxy_pass http://zz91priceServer/jinshu/;
+		include /etc/nginx/proxy.conf; 
+		expires 24h;
+	}
+	location /suliao/ {
+	    proxy_pass http://zz91priceServer/plastic/;
+        include /etc/nginx/proxy.conf;
+        expires 2h;
+	}
+	location /sb/ {
+	    proxy_pass http://chinaServer/cn/shebei/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	location /feitong/ {
+	    proxy_pass http://chinaServer/cn/copper/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	error_page   500 503 502 404 504  /50x.html;
+	location /comp/ {
+		proxy_pass http://7006.zz91server.com:817/comp/;
+		expires 2h;
+	}
+	location /zz91index/ {
+		proxy_pass http://7006.zz91server.com:805/zz91index/;
+		access_log  /mnt/var/log/nginx/www.zz91.index.log;
+        include /etc/nginx/proxy.conf;
+		expires 10h;
+	}
+	location /ppc/ {
+		proxy_pass http://zz91ppcServer/ppc/;
+		access_log  /mnt/var/log/nginx/www.zz91.ppc.log;
+		expires 30m;
+    }
+	location /mobile/ {
+		proxy_pass http://7006.zz91server.com:817/;
+		expires 30d;
+    }
+	location /trade/ {
+		access_log off;
+		rewrite ^/(.*)$ http://trade.zz91.com/trade/$1 permanent;
+		expires 30d;
+    }
+	location /offer/ {
+		access_log off;
+		rewrite ^/(.*)$ http://trade.zz91.com/trade/$1 permanent;
+		expires 30d;
+    }
+	location /404/ {
+		location ~ .*\.(gif|jpg|jpeg|png|PNG|GIF|JPG|JPEG)?$ 
+ 		{ 
+ 			deny all; 
+ 		} 
+                access_log off;
+		proxy_pass http://7006.zz91server.com:826/pyuploadimages/;
+                expires -1;
+    }
+	include /etc/nginx/proxy.conf;
+        include /etc/nginx/err.conf;
+}
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm default.asp;
+	server_name weibo.zz91.com;
+	location / {
+		index index.html index.htm default.asp;
+		proxy_pass http://7006.zz91server.com:830/weibo/;
+		include /etc/nginx/proxy.conf;
+    }
+	access_log  /mnt/var/log/nginx/weibo.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name tech.zz91.com;
+	rewrite /tech_details([0-9]+)_([0-9]+).html http://tech.zz91.com/ permanent;
+	location /index.htm {
+		proxy_pass http://chinaServer/cn/tech/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+	}
+	location /jishu/ {
+		proxy_pass http://chinaServer/jishu/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+	}
+	location / {
+		proxy_pass http://chinaServer/cn/tech/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+	}
+	
+	access_log  /mnt/var/log/nginx/tech.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name www.jnmaimai.com jnmaimai.com;
+	location / {
+		proxy_pass http://192.168.110.130:8097/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	location /google3c070ecb7c343204.html
+	{
+		proxy_pass http://www.jnmaimai.com/google/google3c070ecb7c343204.html;
+	}
+	
+	access_log  /mnt/var/log/nginx/jnmaimai.access.log;
+    include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	index index.html;
+	server_name exhibit.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		access_log off;
+		rewrite ^/(.*)$ http://zhanhui.zz91.com/$1 permanent;
+	}
+}
+upstream zz91zhanhuiServer {
+    server 7003.zz91server.com:8005;
+	server 7004.zz91server.com:8005;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name zhanhui.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+        proxy_pass http://zz91zhanhuiServer/;
+        include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	
+	access_log  /mnt/var/log/nginx/zhanhui.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   80;
+	index index.html index.htm default.aspx;	
+	server_name suliao.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+        proxy_pass http://192.168.110.112:8011/;
+        include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	location /index.htm
+	{
+		rewrite ^(.*) http://www.zz91.com/suliao/ permanent;
+	}
+	
+	access_log  /mnt/var/log/nginx/suliao.zz91.access.log;
+	include /etc/nginx/err.conf;	
+}
+server {
+	listen   80;
+	index index.html index.htm;
+	server_name www.kl91.com;
+	location / {
+		proxy_pass http://127.0.0.1:7018/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	location /bdsitemap.txt {
+        proxy_pass http://7006.zz91server.com:830/kl91/bdsitemap.txt;
+    }
+	location /index.html {
+		proxy_pass http://127.0.0.1:7018/;
+		include /etc/nginx/proxy.conf;
+    }
+	
+	access_log  /mnt/var/log/nginx/www.kl91.access.log;
+    error_page   500 502 503 504 404  /50x.html;
+	location = /50x.html {
+		root   /var/www/error/kl91/;
+	}
+}
+server{
+	listen       80;
+	server_name kl91.com;
+	access_log off;
+	rewrite ^/(.*)$ http://www.zz91.com/$1 permanent;
+}
+
+
+server{
+	listen       80;
+	server_name recyclechina.com www1.recyclechina.com;
+	include /etc/nginx/deny.conf;
+	access_log off;
+	rewrite ^/(.*)$ http://www.recyclechina.com/$1 permanent;
+}
+
+upstream recyclechinawebServer {
+    server 7003.zz91server.com:8010;
+	server 7004.zz91server.com:8010;
+	ip_hash;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name www.recyclechina.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://recyclechinawebServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	location /myrc/ {
+		proxy_pass http://recyclechinawebServer/myrc/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	location /register/ {
+		proxy_pass http://recyclechinawebServer/register/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	location /inquiry/ {
+		proxy_pass http://recyclechinawebServer/inquiry/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	
+	location /bdunion.txt {
+		proxy_pass http://recyclechinawebServer/baidu/bdunion.txt;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+    }
+	
+	access_log  /mnt/var/log/nginx/www.recyclechina.access.log;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name renzheng.recyclechina.com;
+	location / {
+        proxy_pass http://127.0.0.1:8117/;
+        include /etc/nginx/proxy.conf;
+		expires 24h;
+    }
+	include /etc/nginx/err.conf;
+}
+
+upstream recyclechinashopServer {
+    server 7003.zz91server.com:8011;
+	server 7004.zz91server.com:8011;
+}
+
+server {
+	listen 80;
+	server_name *.recyclechina.com;
+	proxy_redirect off;
+	location / {
+        proxy_pass http://recyclechinashopServer/;
+        include /etc/nginx/proxy.conf;
+		expires 2h;
+    }
+	
+	access_log  /mnt/var/log/nginx/esite.recyclechina.access.log;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name news.recyclechina.com;
+	location / {
+		proxy_pass http://127.0.0.1:8113/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+    }
+	
+	access_log  /mnt/var/log/nginx/news.recyclechina.access.log;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name subject.recyclechina.com;
+	location / {
+        proxy_pass http://127.0.0.1:8114/;
+        include /etc/nginx/proxy.conf;
+		expires 2h;
+    }
+
+	access_log  /mnt/var/log/nginx/subject.recyclechina.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+upstream chartServer {
+    server 192.168.110.114:8084;
+}
+server {
+	listen 80;
+	server_name chart.zz91.com;
+	location / {
+		proxy_next_upstream http_502;
+		proxy_pass http://chartServer/;
+		include /etc/nginx/proxy.conf;
+	}
+	include /etc/nginx/err.conf;
+}
+upstream zz91mapServer {
+    server 7003.zz91server.com:8007;
+	server 7004.zz91server.com:8007;
+}
+server {
+    listen 80;
+    index index.htm;
+    server_name map.zz91.com;
+    access_log  /mnt/var/log/nginx/localhost.access.log;
+    location / {
+	    index index.htm;
+	    proxy_pass http://zz91mapServer/;
+        include /etc/nginx/proxy.conf;
+		expires 2h;
+    }
+	
+	access_log  /mnt/var/log/nginx/map.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+upstream huanbaotradeServer {
+	server 7005.zz91server.com:8003;
+#	server 7010.zz91server.com:8003;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name trade.huanbao.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://huanbaotradeServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	
+	access_log  /mnt/var/log/nginx/huanbao_trade.access.log;
+	error_page   500 502 503 504 404 403  /500.html;
+	location = /500.html {
+		   root   /var/www/error/;
+	}
+}
+upstream huanbaoesiteServer {
+    server 7005.zz91server.com:8004;
+#	server 7010.zz91server.com:8004;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name *.huanbao.com;
+	include /etc/nginx/deny.conf;
+	proxy_redirect off;
+	location / {
+		proxy_pass http://huanbaoesiteServer/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	
+	access_log  /mnt/var/log/nginx/huanbao_esite.access.log;
+	error_page   500 502 503 504 404 403  /500.html;
+	location = /500.html {
+		root   /var/www/error/;
+	}
+}
+server
+{
+	listen       80;
+	server_name www1.huanbao.com;
+	access_log off;
+	rewrite ^/(.*)$ http://www.huanbao.com/$1 permanent;
+}
+upstream huanbaoServer {
+    #server 127.0.0.1:7410;
+	server 7005.zz91server.com:8052;
+#	server 7010.zz91server.com:8002;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name www.huanbao.com huanbao.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		#proxy_next_upstream http_502 http_504 error timeout invalid_header;
+		proxy_pass http://huanbaoServer/;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	location /myesite/ {
+		proxy_pass http://huanbaoServer/myesite/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	location /news/ {
+		proxy_pass http://huanbaotradeServer/news/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+	location /mblog/ {
+		proxy_pass http://huanbaotradeServer/mblog/;
+                include /etc/nginx/proxy.conf;
+                expires 2h;
+	}
+	location /exhibit/ {
+		proxy_pass http://huanbaotradeServer/exhibit/;
+                include /etc/nginx/proxy.conf;
+                expires 2h;	
+	}
+	location /esite/ {
+		proxy_pass http://huanbaoesiteServer/esite/;
+                include /etc/nginx/proxy.conf;
+                expires 2h;
+	}
+	location /bdunion.txt {
+		proxy_pass http://huanbaoServer/baidu/bdunion.txt;
+	}
+	location /c32d13eecb1a6c0d850de169d3c3c961.txt {
+		proxy_pass http://huanbaoServer/baidu/c32d13eecb1a6c0d850de169d3c3c961.txt;
+	}
+	location /esite/index50035764.htm {
+		return 403;
+	}
+	location /baidu_verify_BOKcfIBYZU.html
+	{
+		proxy_pass http://huanbaoServer/baidu/baidu_verify_BOKcfIBYZU.html;
+	}
+	access_log  /mnt/var/log/nginx/huanbao.access.log;
+	#error_page   500 502 503 504 404 /500.html;
+	location = /500.html {
+		root   /var/www/error/;
+	}
+}
+
+upstream scoreServer {   
+    #server 127.0.0.1:7123;
+	server 7003.zz91server.com:8009;
+	server 7004.zz91server.com:8009;
+}
+server {
+	listen 80;
+	server_name score.zz91.com;
+	location / {
+		proxy_next_upstream http_502; 
+        proxy_pass http://scoreServer/;
+        include /etc/nginx/proxy.conf;
+		expires 24h;
+    }
+	
+	access_log  /mnt/var/log/nginx/score.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream sbServer {
+    #server 127.0.0.1:7127;
+	#server 7003.zz91server.com:8008;
+	server 7004.zz91server.com:8008;
+}
+server {
+	listen 80;
+	server_name sb.zz91.com;
+	location / {
+	return 403;
+        proxy_next_upstream http_502;
+        #proxy_pass http://sbServer/;
+        include /etc/nginx/proxy.conf;
+        expires 24h;
+    }
+	
+	access_log  /mnt/var/log/nginx/sb.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	server_name mingxing.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_next_upstream http_502;
+		proxy_pass  http://chinaServer/cn/star;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	location /index.htm {
+		proxy_next_upstream http_502;
+		proxy_pass  http://chinaServer/cn/star;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	location /qyft {
+		proxy_next_upstream http_502;
+		proxy_pass  http://chinaServer/cn/star/qyft;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	location /hyjy {
+		proxy_next_upstream http_502;
+		proxy_pass  http://chinaServer/cn/star/hyjy;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	location /starDetail {
+		proxy_next_upstream http_502;
+		proxy_pass http://chinaServer/;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	
+	access_log  /mnt/var/log/nginx/mingxing.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream myrcServer {   
+    #server 127.0.0.1:7125;
+	server 7007.zz91server.com:8005;
+	server 7008.zz91server.com:8005;
+}
+server {
+	listen 80;
+	server_name myrc.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_next_upstream http_502;
+        proxy_pass http://myrcServer/;
+        include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+	location /zz91/myrc/css/ {
+		proxy_next_upstream http_502;
+		proxy_pass http://100.98.27.114:825/zz91/myrc/css/;
+		include /etc/nginx/proxy.conf;
+		expires 1h;
+	}
+	access_log  /mnt/var/log/nginx/myrc.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream yangServer {
+    #server 127.0.0.1:7151;
+#	server 7007.zz91server.com:8006;
+#	server 7008.zz91server.com:8006;
+	server 7009.zz91server.com:8006;
+}
+server {
+	listen 80;
+	server_name yang.zz91.com;
+	include /etc/nginx/deny.conf;
+
+	location /mngr/ {
+                proxy_next_upstream http_502;
+                proxy_pass http://yangServer/mngr/;
+                include /etc/nginx/proxy.conf;
+                expires -1;
+        }
+	location / {
+		proxy_next_upstream http_502;
+		proxy_pass http://yangServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+	
+	access_log  /mnt/var/log/nginx/yang.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+upstream yServer {
+	#server 127.0.0.1:7161;
+	server 7007.zz91server.com:8004;
+	server 7008.zz91server.com:8004;
+}
+server {
+	listen 80;
+	server_name y.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_next_upstream http_502;
+        proxy_pass http://yServer/;
+        include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+	access_log  /mnt/var/log/nginx/y.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+upstream slylServer {
+        #server 127.0.0.1:7162;
+        server 7007.zz91server.com:8007;
+        server 7008.zz91server.com:8007;
+}
+server {
+        listen 80;
+        server_name slyl.zz91.com;
+        include /etc/nginx/deny.conf;
+        location / {
+                proxy_next_upstream http_502;
+        proxy_pass http://slylServer/;
+        include /etc/nginx/proxy.conf;
+                expires 30m;
+    }
+        access_log  /mnt/var/log/nginx/slyl.zz91.access.log;
+        include /etc/nginx/err.conf;
+}
+
+server {
+        listen 80;
+        server_name service.zz91.com;
+        include /etc/nginx/deny.conf;
+        location / {
+                proxy_next_upstream http_502;
+        	proxy_pass http://chinaServer/service/;
+        	include /etc/nginx/proxy.conf;
+                expires 1d;
+    	}
+        access_log  /mnt/var/log/nginx/service.zz91.access.log;
+        include /etc/nginx/err.conf;
+}
+
+upstream companyServer {   
+    #server www.zz91server.com:7121;
+	server 7007.zz91server.com:8002;
+	server 7008.zz91server.com:8002;
+}
+server {
+	listen  80;
+	server_name company.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_next_upstream http_502;		
+		proxy_pass http://companyServer/;
+		include /etc/nginx/proxy.conf;
+		rewrite ^/c(\w+)/$  /index-b-c$1-p1.htm last;
+		rewrite ^/c(\w+)/p(\w+).htm$  /index-b-c$1-p$2.htm last;
+		rewrite ^/b(\w+)/$  /index-b$1-c-p.htm last;
+		expires 2h;
+	}
+
+	location /google990792108202d5f1.html {
+		proxy_pass http://companyServer/google/google990792108202d5f1.html;
+	}
+	
+	access_log  /mnt/var/log/nginx/company.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+
+upstream pythontradeServer {   
+    server 7006.zz91server.com:816;
+	#server 7009.zz91server.com:816;
+	server 7012.zz91server.com:816;
+}
+server {
+	listen 80;
+	server_name trade.zz91.com;
+	include /etc/nginx/deny.conf;
+	rewrite /index.htm http://trade.zz91.com/ permanent;
+	location / {
+		proxy_next_upstream http_502 http_504;
+		proxy_pass http://tradeServer/;
+		include /etc/nginx/proxy.conf;		
+		expires 30m;
+    }
+	location /nginx-status {
+		stub_status on;
+		access_log  off;
+    }
+	location /shebei/ {
+	    return 403;
+	}
+	location /trust/ {
+	    proxy_next_upstream http_502 http_504;
+		proxy_pass http://tradeServer/trust/index.htm;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	location /trade/ {
+	    	proxy_pass http://pythontradeServer/trade/;
+		include /etc/nginx/proxy.conf;
+		expires 10m;
+	}
+	
+	location /pic/ {
+		proxy_pass http://pythontradeServer/pic/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	
+	access_log  /mnt/var/log/nginx/trade.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+upstream esiteServer {   
+    #server 127.0.0.1:7126;
+	server 7003.zz91server.com:8002;
+	server 7004.zz91server.com:8002;
+}
+
+
+server {
+	listen 80;
+	server_name *.zz91.com;
+	deny 104.236.180.129;
+	deny 218.67.60.15;
+	include /etc/nginx/deny.conf;
+	proxy_redirect off;
+	index  index.htm default.htm;
+	if ($http_host ~* "^(.*?)\.zz91\.com$") {
+		set $domain $1;
+	}
+	#rewrite /products([0-9]+)(.*).htm http://trade.zz91.com/productdetails$1.htm permanent;
+	location / {
+		if ($http_user_agent ~* (UCWEB|iPhone|Opera\sMini|MIDP-[0-9]|MIDP[0-9]|SymbianOS|Symbian\sOS|Windows\sCE|BlackBerry|^SonyEricsson|^Nokia|^NOKIA|UP\.Link|^SAMSUNG|^MOT-|^DoCoMo|UP\.Browser|^Mitsu|MAUI|^Palm|^Blazer|^BIRD\.E868)) {
+			
+			rewrite ^/(.*)$ http://$domain.m.zz91.com/$1 permanent;
+		}
+        proxy_pass http://esiteServer/;
+        include /etc/nginx/proxy.conf;
+		expires 1h;
+    }
+	
+	
+	access_log  /mnt/var/log/nginx/esite.zz91.access.log;
+	include /etc/nginx/err.conf;
+	
+}
+
+
+
+server {
+	listen   80;
+	rewrite ^/priceSearch.htm(.*)$ http://price.zz91.com/s/searchfirst.html$1 permanent;
+	rewrite ^/priceDetails_(\d+)_metal.htm$ http://jiage.zz91.com/detail/$1.html permanent;
+	rewrite ^/priceDetails_(\d+).htm$ http://jiage.zz91.com/detail/$1.html permanent;
+	rewrite ^/priceDetails_(\d+)_plastic.htm$ http://jiage.zz91.com/detail/$1.html permanent;
+	rewrite ^/channel/otherWaste.htm$ http://jiage.zz91.com/other/ permanent;
+	rewrite ^/channel/wastePlastic.htm$ http://jiage.zz91.com/suliao/ permanent;
+	rewrite ^/channel/wasteMetal.htm$ http://jiage.zz91.com/jinshu/ permanent;
+	
+	index index.html index.htm;
+	server_name price.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		rewrite ^/(.*)$ http://jiage.zz91.com/$1 permanent;
+	}
+	location /channel/ {
+		proxy_pass http://zz91priceServer/channel/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+    }
+
+	location /companyprice1/ {
+		proxy_pass http://zz91priceServer/companyprice/;
+		include /etc/nginx/proxy.conf;
+		expires 2h;
+	}
+
+	location /s/{
+		proxy_pass http://jiageServer/;
+		include /etc/nginx/proxy.conf;
+	}
+	access_log  /mnt/var/log/nginx/price.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+server {
+	listen 80;
+	index index.html;
+	server_name bbs.zz91.com;
+	location / {
+		access_log off;
+		rewrite ^/(.*)$ http://huzhu.zz91.com/$1 permanent;
+	}
+}
+
+upstream zz91huzhuServer {
+    #server 127.0.0.1:7024;
+	server 7003.zz91server.com:8006;
+	server 7004.zz91server.com:8006;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name huzhu.zz91.com;
+	rewrite /forum_show(.*).html http://www.zz91.com/news/bbs$1.html permanent;
+	rewrite /viewReply(.*).htm http://huzhu.zz91.com/detail/$1.html permanent;
+	location / {
+        proxy_pass http://zz91huzhuServer/;
+        include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+	location /myhuzhu/ {
+        proxy_pass http://zz91huzhuServer/myhuzhu/;
+        include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+
+	
+	access_log  /mnt/var/log/nginx/huzhu.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream xianhuoServer {
+    server 127.0.0.1:7024;
+}
+
+server {
+    listen   80;
+	index index.htm;
+	server_name xianhuo.zz91.com;
+	location / {
+		proxy_pass http://xianhuoServer/;
+		include /etc/nginx/proxy.conf; 
+		expires 30d;
+	}
+	location /xianhuo/{
+		proxy_pass http://xianhuoServer/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+	}
+	
+	access_log  /mnt/var/log/nginx/xianhuo.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+upstream taozaishengServer {
+    server 7009.zz91server.com:8216;
+}
+
+server {
+        listen 80;
+        index index.html;
+        server_name taozaisheng.com;
+        location / {
+                access_log off;
+                rewrite ^/(.*)$ http://www.taozaisheng.com/$1 permanent;
+        }
+}
+server {
+        listen 80;
+        index index.htm;
+        server_name www.taozaisheng.com;
+        include /etc/nginx/deny.conf;
+        proxy_redirect off;
+        location / {
+                proxy_pass http://taozaishengServer/;
+                include /etc/nginx/proxy.conf;
+                expires -1;
+        }
+        access_log  /mnt/var/log/nginx/taozaisheng_www.access.log;
+#	include /etc/nginx/err.conf;
+}
+
+server {
+        listen   80; ## listen for ipv4; this line is default and implied
+        index index.html index.htm;
+        server_name taozaisheng.zz91.com;
+        location / {
+        proxy_pass http://taozaishengServer/;
+        include /etc/nginx/proxy.conf;
+                expires -1;
+    }
+        access_log  /mnt/var/log/nginx/www.taozaisheng.access.log;
+        ##include /etc/nginx/err.conf;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name shebei.zz91.com;
+	location / {
+		rewrite ^/(.*)$ http://www.zz91.com/sb/$1 permanent;
+	}
+	
+	access_log  /mnt/var/log/nginx/shebei.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name feitong.zz91.com;
+	location / {
+		rewrite ^/(.*)$ http://www.zz91.com/feitong/$1 permanent;
+		expires 3d;
+	}
+	
+	access_log  /mnt/var/log/nginx/feitong.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name caigou.zz91.com;
+	location / {
+		proxy_next_upstream http_502 http_504;
+		proxy_pass http://tradeServer/trust/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+
+	
+	access_log  /mnt/var/log/nginx/caigou.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name jinshu.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {	
+		rewrite ^/(.*)$ http://www.zz91.com/jinshu/$1 permanent;
+		expires 30d;
+   	}
+	
+	access_log  /mnt/var/log/nginx/jinshu.zz91.access.log;
+	include /etc/nginx/err.conf;
+}
+
+

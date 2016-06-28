@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="newsTech">
+	<typeAlias alias="newsTech" type="com.ast.ast1949.domain.news.NewsTech" />
+	<resultMap class="newsTech" id="newsTechResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="tags" column="tags" />
+		<result property="categoryCode" column="category_code" />
+		<result property="isDel" column="is_del"/>
+		<result property="postTime" column="post_time" />
+		<result property="viewCount" column="view_count" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		n.id,
+		n.title,
+		n.content,
+		n.tags,
+		n.category_code,
+		n.is_del,
+		n.view_count,
+		n.post_time,
+		n.gmt_created,
+		n.gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="newsTechResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM news_tech n
+		where n.id = #value#
+	</select>
+
+	<insert id="insert" parameterClass="newsTech">
+		INSERT INTO news_tech
+		(
+		title,
+		content,
+		tags,
+		category_code,
+		is_del,
+		post_time,
+		view_count,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#title#,
+		#content#,
+		#tags#,
+		#categoryCode#,
+		#isDel#,
+		now(),
+		#viewCount#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="newsTech">
+		UPDATE news_tech
+		SET
+		gmt_modified = now()
+		<isNotEmpty property="title" prepend=",">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty property="content" prepend=",">
+			content = #content#
+		</isNotEmpty>
+		<isNotEmpty property="tags" prepend=",">
+			tags = #tags#
+		</isNotEmpty>
+		<isNotEmpty property="categoryCode" prepend=",">
+			category_code = #categoryCode#
+		</isNotEmpty>
+		<isNotEmpty property="isDel" prepend=",">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotNull property="postTime" prepend=",">
+			post_time = #postTime#
+		</isNotNull>
+		<isNotNull property="viewCount" prepend=",">
+			view_count = #viewCount#
+		</isNotNull>
+		WHERE id = #id#
+	</update>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty property="newsTech.title" prepend="and">
+				n.title = #newsTech.title#
+			</isNotEmpty>
+			<isNotEmpty property="newsTech.content" prepend="and">
+				n.content = #newsTech.content#
+			</isNotEmpty>
+			<isNotEmpty property="newsTech.tags" prepend="and">
+				n.tags like concat(#newsTech.tags#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="newsTech.categoryCode" prepend="and">
+				n.category_code like concat(#newsTech.categoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="isDel" prepend="and">
+				n.is_del = #newsTech.isDel#
+			</isNotEmpty>
+			<isNotNull property="newsTech.postTime" prepend="and">
+				n.post_time = #newsTech.postTime#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryByConditionForAdmin" parameterClass="java.util.Map" resultMap="newsTechResult">
+		select 
+		<include refid="defaultColumn"/>
+		from news_tech n
+		<include refid="whereClause"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="newsTechResult">
+		select 
+		<include refid="defaultColumn"/>
+		from news_tech n
+		<include refid="whereClause"/>
+		order by n.post_time desc
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCountCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from news_tech n
+		<include refid="whereClause"/>
+	</select>
+	
+	<select id="queryOnNewsTechById" parameterClass="java.lang.Integer"
+		resultMap="newsTechResult">
+		select
+		<include refid="defaultColumn"/>
+		from `news_tech` n
+		<dynamic prepend="where">
+		<![CDATA[ n.id>#id# ]]>
+		</dynamic>
+		and n. is_del= 0
+		and n.category_code in (select category_code from news_tech
+		where id=#id#)
+		order by id
+		asc
+		limit 0,1
+	</select>
+	
+	<select id="queryDownNewsTechById" parameterClass="java.lang.Integer"
+		resultMap="newsTechResult">
+		select
+		<include refid="defaultColumn"/>
+		from `news_tech` n
+		<dynamic prepend="where">
+		<![CDATA[ n.id<#id# ]]>
+		</dynamic>
+		and n. is_del= 0
+		and n.category_code in (select category_code from news_tech
+		where id=#id#)
+		order by id
+		desc
+		limit 0,1
+	</select>
+	
+	<update id="updateTechViewCount" parameterClass="java.util.Map">
+		update news_tech set view_count=#viewCount# where id=#id#
+	</update>
+	
+	<select id="queryTechForIndex" parameterClass="java.util.Map" resultMap="newsTechResult">
+		select 
+		<include refid="defaultColumn"/>
+		from news_tech n
+		order by n.view_count desc
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from news_tech where id=#id#
+	</delete>
+	
+	<update id="updateContent" parameterClass="java.util.HashMap">
+		update news_tech
+		set content=#content#,gmt_modified=now()
+		where id=#id#
+	</update>
+</sqlMap>

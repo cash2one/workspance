@@ -1,0 +1,124 @@
+#set($pageName="marketTrade")
+#set($layout="/layout/marketLayout.vm")
+<div class="module mt12">
+	<div class="mar_mod_left">
+    	<div class="mml_nav">
+        	<div class="m_nav_left"><h4>$!{market.name}</h4></div>
+            <div class="m_nav_center">点击立即<a href="http://myrc.zz91.com/myproducts/office_post1.htm" target="_blank">发布信息</a></div>
+            <div class="m_nav_right">共有<span>$!{page.totalRecords}</span>条供求信息</div>
+            <div class="cb"></div>
+        </div>
+        <!--end mml_nav-->
+        <div class="mml_block">
+        	#parse("/common/market_head.vm")
+        </div>
+        <!--end mml_block-->
+		#foreach($li in $!{page.records})
+        <div class="mml_box">
+        	<div class="i2">
+            	<a href="$!{address.trade}/productdetails$!{li.products.id}.htm" target="_blank"><img #if($!{li.coverPicUrl})src="$!{address.resource}/$!{li.coverPicUrl}" #else src="http://img0.zz91.com/front/images/global/noimage.gif" #end width="122" height="114" alt="$!{li.products.title}" /></a>
+            </div>
+            <div class="zi4">
+            	<div class="zi4_top"><a href="$!{address.trade}/productdetails$!{li.products.id}.htm" target="_blank">$!{li.products.title}</a></div>
+                <div class="zi4_center">#if($!{li.products.productsTypeCode}=="10331000")供应量:#else求购量:#end<span class="zi3">$!{li.products.quantity}</span>
+					价格：
+					<span class="zi3" title="">
+						#if($!{li.products.minPrice}&&$!{li.products.maxPrice}&&$!{li.products.minPrice}!="0.0"&&!$!{li.products.maxPrice}!="0.0") 
+							#set($price=($!{li.products.minPrice}+"-"+$!{li.products.maxPrice}))
+							$price
+						#elseif($!{li.products.minPrice}&&!$!{li.products.maxPrice}&&$!{li.products.minPrice}!="0.0")
+							#if($!{li.products.price}&&$!{li.products.price}!="0.0"&&$!{li.products.price}!="0")
+								$!{li.products.price}
+							#else
+								$!{li.products.minPrice}
+							#end
+						#elseif($!{li.products.maxPrice}&&!$!{li.products.minPrice}&&$!{li.products.maxPrice}!="0.0")
+							#if($!{li.products.price}&&$!{li.products.price}!="0.0"&&$!{li.products.price}!="0")
+								$!{li.products.price}
+							#else
+								$!{li.products.maxPrice}
+							#end
+						#else 
+							面议或电议
+						#end
+					</span>
+				</div>
+                <div class="zi4_center">货源地：$!{li.products.location} #if($!{li.products.manufacture})| 加工说明:$!{li.products.manufacture}#end |</div>
+                <div class="zi4_down">#printTitle($!{li.products.details} 30 "...")#set($del=$!{li.products.details})#if($del.length()>30)<a href="$!{address.trade}/productdetails$!{li.products.id}.htm" target="_blank">>>更多</a>#end</div>
+            </div>
+            <div class="zi5">
+                <br /><br />
+					#if($!{li.company.membershipCode}=="10051000")
+						<a href="$!{address.company}/compinfo$!{li.company.id}.htm" title="$!{li.company.name}">$!{li.company.name}</a>
+						#elseif($!{li.company.membershipCode}=="10051003")
+							<a href="$!{address.www}/ppc/index$!{li.company.id}.htm" title="$!{li.company.name}">$!{li.company.name}</a>
+							#else
+								<a href="http://$!{li.company.domainZz91}.zz91.com" title="$!{li.company.name}">$!{li.company.name}</a>
+					#end
+                <div class="zi5_center">
+					#if($!{li.company.membershipCode}=="100510021002")
+						<a href="http://www.zz91.com/zst/" target="_blank" title="钻石品牌通" class="zsppt_logo"></a>
+						<b>#if($!{li.isZSVip})
+								<a href="javascript:;" target="_blank" title="终身会员"><img src="http://img0.zz91.com/zz91/images/zs2.png" /></a>
+						   #else
+							第<font color="red">$!{li.company.zstYear}</font>年
+						   #end
+						</b>
+					#elseif($!{li.company.membershipCode}=="100510021001")
+						<a href="http://www.zz91.com/zst/" target="_blank" title="金牌品牌通" class="jpppt_logo"></a>
+						<b>#if($!{li.isZSVip})
+								<a href="javascript:;" target="_blank" title="终身会员"><img src="http://img0.zz91.com/zz91/images/zs2.png" /></a>
+						   #else
+							第<font color="red">$!{li.company.zstYear}</font>年
+						   #end
+						</b>
+					#elseif($!{li.company.membershipCode}=="100510021000")
+						<a href="http://www.zz91.com/zst/" target="_blank" title="银牌品牌通" class="ypppt_logo"></a>
+						<b>#if($!{li.isZSVip})
+								<a href="javascript:;" target="_blank" title="终身会员"><img src="http://img0.zz91.com/zz91/images/zs2.png" /></a>
+						   #else
+							第<font color="red">$!{li.company.zstYear}</font>年
+						   #end
+						</b>
+					#elseif($!{li.company.membershipCode}=="10051001")
+						<a href="http://www.zz91.com/zst/" target="_blank" title="再生通" class="zst_logo"></a>
+						<b>#if($!{li.isZSVip})
+								<a href="javascript:;" target="_blank" title="终身会员"><img src="http://img0.zz91.com/zz91/images/zs2.png" /></a>
+						   #else
+							第<font color="red">$!{li.company.zstYear}</font>年
+						   #end
+						</b>
+					#elseif($!{li.company.membershipCode}=="10051003")
+						<a href="http://www.zz91.com/zt/400Treasure/index.html" target="_blank" title="来电宝客户" class="ldb_logo"></a>
+					#else
+						<a href="javascript:;"title="普通会员">普通会员</a>
+					#end
+                </div>
+            </div>
+            <div class="zi6">
+            	<br /><br />
+            	#if($!{li.company.membershipCode}=="10051000")
+					<a href="$!{address.trade}/lxfs$!{li.company.id}.htm" target="_blank" class="zi6_link">联系方式</a>
+					#elseif($!{li.company.membershipCode}=="10051003")
+						<a href="$!{address.www}/ppc/contact$!{li.company.id}.htm" target="_blank" class="zi6_link">联系方式</a>
+						#else
+							<a href="http://$!{li.company.domainZz91}.zz91.com/lxfs.htm" target="_blank" class="zi6_link">联系方式</a>
+				#end
+				<a href="http://www.zz91.com/inquiry/inquiryApi.htm?productId=$!{li.products.id}#messeges" target="_blank" class="zi6_link mt8">在线询价</a>     
+            </div>
+            <div class="cb"></div>
+        </div>
+        <!--end mml_box-->
+        <div class="cb"></div>
+		#end
+		#if($page.records.size()>0)
+		<div class="page_border">
+        	#pageMarket1($page "#springUrl('/')" "$!{market.words}/scgq$!{type}$!{industry}" "")
+		</div>
+		#end
+      	<!--end page_border-->
+    </div>
+    <!--end mar_mod_left-->
+  #parse("/common/right.vm")
+</div>
+<!--end module mt12-->

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>ZZ91再生网</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css">
+		<script type="text/javascript" charset="utf-8" src="../../js/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/zepto.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl/common.js"></script>
+		<script type="text/javascript" charset="utf-8" src="../../js/laytpl/DBapi.js"></script>
+		<link href="../../media/trust/css/caigou.m.css" rel="stylesheet" type="text/css" />
+		<script>
+		var buy_id;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				company_id = self.company_id;
+				buy_id=self.buy_id;
+				loadcompanyid(company_id);
+			});
+
+			function supplyPubsmt(frm) {
+				if (frm.content.value == "") {
+					alert("请输入供货内容！");
+					frm.content.focus();
+					return false;
+				}
+				var nWaiting;
+				if (window.plus) {
+					nWaiting = plus.nativeUI.showWaiting("数据加载中，请稍候......");
+				}
+				var arg = getFormQueryString(frm);
+				arg['buy_id']=buy_id;
+				mui.ajax(zzweburl + "/trust/supplyFormok.html", {
+					data: arg,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					success: function(data) {
+						var ret = data;
+						if (ret.error_code == 0) {
+							if (nWaiting) {
+								nWaiting.close();
+							}
+							openwindow("supplyFormok.html", defaultqueryString);
+							//closewindow();
+						} else {
+							mui.toast('网络错误,请检查网络是否正常！');
+							return false;
+						}
+						if (nWaiting) {
+							nWaiting.close();
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+						mui.toast('网络错误,请检查网络是否正常！');
+						if (nWaiting) {
+							nWaiting.close();
+						}
+					}
+				});
+				return false;
+			}
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" id="apptop">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="closewindow()"></a>
+			<a id="rightbutton" class="mui-icon mui-icon-close mui-pull-right" onclick="closewindow()"></a>
+			<h1 class="mui-title" id="apptopname">我的供货</h1>
+		</header>
+		<div class="supply mui-content">
+			<div class="supply-form">
+				<form action="supplyFormok.html" method="post" id="" onsubmit="return supplyPubsmt(this)">
+					<p>请在下方填写您的真实报价（价格必填），并对您的货物描述清楚。</p>
+					<p>例如：HDPE再生颗粒，吹膜用，白色，优质，杭州，10吨/月，8000元/吨</p>
+					<p>
+						<textarea class="supply-textarea" rows="7" name="content"></textarea>
+					</p>
+					<p>注：不合理报价会被系统自动屏蔽</p>
+					<p>
+						<input type="submit" class="sub_btn" id="" style="width: 100%;font-size: 16px;" name="" value="提交报价" />
+					</p>
+				</form>
+			</div>
+			<!--end supply-form-->
+		</div>
+		<!--end supply-->
+	</body>
+
+</html>

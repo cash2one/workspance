@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneCallClickLog">
+ <typeAlias alias="PhoneCallClickLogDo" type="com.ast.ast1949.domain.phone.PhoneCallClickLog" />
+	<resultMap class="PhoneCallClickLogDo" id="PhoneCallClickLogResult">
+		<result property="id" column="id" />
+		<result property="callerTel" column="caller_tel" />
+		<result property="companyId" column="company_id" />
+		<result property="clickFee" column="click_fee" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />	
+	</resultMap>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="phoneCallClickLog.companyId">
+				company_id = #phoneCallClickLog.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneCallClickLog.from">
+				date(gmt_created) >= #phoneCallClickLog.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="phoneCallClickLog.to">
+				#phoneCallClickLog.to# >= date(gmt_created)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="countLogByBothTel" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*)
+		from phone_call_click_fee
+		where caller_tel=#callTel# and company_id=#companyId#
+	</select>
+	<!-- 插入日志-->
+	<insert id="insertLog" parameterClass="java.util.Map">
+		INSERT INTO phone_call_click_fee
+		(
+		caller_tel,
+		company_id,
+		click_fee,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#callerTel#,
+		#companyId#,
+		'10',
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<!--统计某公司未解电话点击的总费用-->
+	<select id="countCallClickFee" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select sum(click_fee)
+		from phone_call_click_fee
+		where company_id=#companyId#
+	</select>
+	
+	<!--统计某公司点击未接电话的个数 -->
+	<select id="countLogByphoneCallClickLog" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from phone_call_click_fee
+		<include refid="whereClause" />
+	</select>
+	
+	<!--获取某公司点击的未接电话清单-->
+	<select id="queryLogByphoneCallClickLog" parameterClass="java.util.Map" resultMap="PhoneCallClickLogResult">
+		select id,caller_tel,company_id,click_fee,gmt_created,gmt_modified
+		from phone_call_click_fee
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />	
+	</select>
+	
+	<!--统计某公司某段时间内的未接电话点击的总费用-->
+	<select id="sumCallClickFee" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(click_fee)
+		from phone_call_click_fee
+		<include refid="whereClause" />
+	</select>
+	
+	<!--统计未接电话点击的总费用 -->
+	<select id="sumCallFee" resultClass="java.lang.Integer">
+		select sum(click_fee)
+		from phone_call_click_fee
+	</select>
+</sqlMap>

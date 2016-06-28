@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="photo">
+
+	<typeAlias alias="photo" type="com.zz91.ep.domain.trade.Photo" />
+	<typeAlias alias="albumDto" type="com.zz91.ep.dto.trade.PhotoAlbumDto" />
+
+	<resultMap class="photo" id="simpleColumnMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="photoAlbumId" column="photo_album_id" />
+		<result property="title" column="title" />
+		<result property="path" column="path" />
+		<result property="pathThumb" column="path_thumb" />
+		<result property="isDel" column="is_del" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_type" />
+		<result property="gmtCreated" column="gmt_created" />
+        <result property="checkStatus" column="check_status" />
+		<result property="unpassReason" column="unpass_reason" />
+		
+	</resultMap>
+
+	<resultMap class="photo" id="resultCoverImage">
+		<result property="photoAlbumId" column="photo_album_id" />
+		<result property="path" column="path" />
+	</resultMap>
+             
+	<sql id="simpleColumn">
+		id,
+		cid,
+		photo_album_id,
+		title,
+		path,
+		path_thumb,
+		target_id,
+		target_type,
+		is_del,
+		gmt_created,
+		check_status,
+		unpass_reason
+    </sql>
+
+	<select id="queryPhotoByTargetType" parameterClass="java.util.HashMap"
+		resultMap="simpleColumnMap">
+		select
+		<include refid="simpleColumn" />
+		from photo
+		where target_id=#targetId# and target_type=#targetType#  
+		order by gmt_created desc
+		limit #size#
+	</select>
+                
+	<select id="queryPhotoByTypeAndId" parameterClass="java.util.HashMap"
+		resultMap="simpleColumnMap">
+		select
+		<include refid="simpleColumn" />
+		from photo
+		where target_id=#id# and target_type=#type# and is_del = 0  and  check_status = 1
+		order by gmt_created desc
+		limit 1
+	</select>
+	
+	<select id="queryPhotoListByTypeAndId" parameterClass="java.util.HashMap"
+		resultMap="simpleColumnMap">
+		select
+		<include refid="simpleColumn" />
+		from photo
+		where target_id=#id# and target_type=#type# and is_del = 0 and  check_status=#checkStatus#
+		order by gmt_created desc
+	</select>
+	
+<!-- 根据id查询 -->
+   <select id="queryPhotoById" parameterClass="java.util.HashMap" resultMap="simpleColumnMap">
+      select
+      <include refid="simpleColumn" />
+      from photo
+		where id=#id# 
+		order by gmt_created desc
+		limit 1
+    </select>
+
+	<insert id="insertPhoto" parameterClass="photo">
+		insert into photo
+		(
+		uid,
+		cid,
+		photo_album_id,
+		title,
+		path,
+		path_thumb,
+		target_id,
+		target_type,
+		gmt_created,
+		gmt_modified,
+		check_status,
+		unpass_reason
+		)
+		values
+		(
+		#uid#,
+		#cid#,
+		#photoAlbumId#,
+		#title#,
+		#path#,
+		#pathThumb#,
+		#targetId#,
+		#targetType#,
+		now(),
+		now(),
+		#checkStatus#,
+		#unpassReason#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+
+
+
+	<update id="updatePhotoTargetIdById" parameterClass="java.util.Map">
+		update photo
+		set target_id = #targetId#,
+		<dynamic>
+			<isNotEmpty property="targetType">
+				target_type=#targetType#,
+            </isNotEmpty>
+		</dynamic>
+		gmt_modified=now()
+		where id= #id#
+	</update>
+
+	<update id="deletePhotoTargetIdById" parameterClass="java.util.Map">
+		update photo
+		set target_id = 0,
+		gmt_modified=now()
+		where target_id= #id# and target_type=#type#
+    </update>
+
+	<sql id="dynamicByCid">
+		<dynamic prepend="where">
+			cid=#cid#
+			<isNotEmpty property="albumId">
+				and photo_album_id =
+				#albumId#
+			</isNotEmpty>
+			<isNotEmpty property="targetId">
+				and target_id=#targetId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryPhotosByCid" parameterClass="java.util.HashMap"
+		resultMap="simpleColumnMap">
+		select
+		<include refid="simpleColumn" />
+		from photo
+		<include refid="photo.dynamicByCid" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPhotosByCidCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from photo
+		<include refid="photo.dynamicByCid" />
+	</select>
+
+	<!-- 删除图片 -->
+	<delete id="deletePhotoById" parameterClass="java.lang.Integer">
+		delete from photo
+		where id=#id#
+    </delete>
+
+	<resultMap class="albumDto" id="resultAlbum">
+		<result property="photoAlbum.id" column="photo_album_id" />
+		<result property="photoNum" column="photoNum" />
+		<result property="photoCover" column="photoCover" />
+	</resultMap>
+
+	<select id="queryPhotoByCid" parameterClass="java.lang.Integer"
+		resultMap="resultAlbum">
+		SELECT photo_album_id , count(*) as photoNum,
+		(SELECT path FROM photo p1 WHERE cid = #value# and p1.photo_album_id =
+		p2.photo_album_id LIMIT 0,1)
+		AS photoCover FROM photo p2 where photo_album_id >0 GROUP BY
+		photo_album_id order by photo_album_id
+    </select>
+
+
+
+	<select id="queryPhotosByPalidCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from photo
+		where photo_album_id=#palid# and cid = #cid#
+    </select>
+
+	<delete id="deletePhotoByPalId" parameterClass="java.lang.Integer">
+		delete from photo
+		where photo_album_id=#palid#
+    </delete>
+
+
+	<update id="updatePhotoAlbumId" parameterClass="java.util.HashMap">
+		update photo set
+		photo_album_id = #albumId# ,
+		target_type = #type#,
+		gmt_modified=now()
+		where id = #pid#
+    </update>
+
+	<select id="queryPathByAlbumId" parameterClass="java.util.HashMap"
+		resultClass="java.lang.String">
+		select path from photo where cid = #cid# and photo_album_id = #albumId#
+		order by gmt_modified desc limit 1
+    </select>
+
+	<update id="updateAlbum" parameterClass="java.util.HashMap">
+		update photo set
+		photo_album_id=#newAlbum#,
+		gmt_modified=now()
+		where cid=#cid# and photo_album_id=#oldAlbum#
+    </update>
+    
+    
+    <select id="queryPhotoCountByTargetType" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+			
+		from photo
+		where target_id=#targetId# and target_type=#targetType# 
+	</select>
+    
+	<update id="updateCheckStatus" parameterClass="java.util.HashMap">
+		update photo set
+		check_status=#checkStatus#,
+		gmt_modified=now()
+		where id=#id# 
+    </update>
+</sqlMap>

@@ -1,0 +1,172 @@
+<div class="bss_wrapper">
+    <div class="header">
+        <div class="logo">
+                <img src="$!{address.img}/bbs/images/bbs/logo.jpg"  usemap="#Map"/>
+				<map name="Map" id="Map">
+					<area shape="rect" coords="-10,0,132,58" href="$!{address.www}" alt="$!{siteInfo.site_name}"/>
+					<area shape="rect" coords="135,-1,264,54" href="#springUrl('/index.htm')" alt="$!{siteInfo.site_name}互助社区"/>
+				</map>
+        </div>
+		
+        #if($!{sessionUser})
+            <div id="hadlogin" class="header_content" >
+                <div class="report_header3">
+                    #if($!{bbsUserProfilerDO.picturePath})
+                        <a href="#springUrl('/myalterimg.htm')">
+                            <img src="$!{address.resource}/$!{bbsUserProfilerDO.picturePath}"/>
+                        </a>
+                    #else
+                        <a href="#springUrl('/myalterimg.htm')">
+                            <img src="$!{address.img}/bbs/images/50_no_avatar.gif"/>
+                        </a>
+                    #end
+                </div>
+                <div class="report_header1">
+                    <span>#if($!{bbsUserProfilerDO.nickname}) $!{bbsUserProfilerDO.nickname}#else $!{bbsUserProfilerDO.account}#end
+					</span>
+					<span>, <script type="text/javascript">document.write(greetings());</script>
+					</span>
+					<span>
+						<a href="#springUrl('/mymessage.htm')">[消息]</a>
+					</span>
+					<span>
+						<a href="javascript:layout()">[退出]</a>
+					</span>
+					##<a href="$!{address.frontServer}/root/logout.htm?url=$!{url}&account=$!{othersAccount}">[退出]</a>
+                </div>
+                $!{bbsUserProfilerDO.nickName}
+                <div class="report_header1">
+                    #if($!{bbsUserProfilerDO})
+                        <span>[发帖数:#if($!{bbsUserProfilerDO.postNumber})$!{bbsUserProfilerDO.postNumber}#else 0#end]</span>
+##                                <span>[积分:#if($!{bbsUserProfilerDO.integral})$!{bbsUserProfilerDO.integral}#else 0#end]</span>
+                                        #else
+                                            <span>[发帖数:0]</span>
+##                                            <span>[积分:0]</span>
+                    #end
+                    <span>
+                        <strong>
+                            <a href="#springUrl('/myposted.htm')" title="实战社区" target="_blank">[实战社区]</a>
+                        </strong>
+                    </span>
+                </div>
+            </div>
+            #else
+                <!--用户登陆-->
+                <div id="hadnotlogin" class="header_content">
+                    <form id="loginForm" name="loginForm" action="" method="post" onsubmit="return false;">
+                        <p class="p1"><label for="username">用户名:</label>
+                            <input type="text" name="username" id="username" value="$!{username}" tabindex="1"/>
+                            <span class="text_color">
+                                <a href="$!{address.front}/register/register_stp1.htm" title="注册zz91账号" tabindex="4" target="_blank">[申请加入]</a>
+                            </span>
+                            <span class="text_color" >
+                                <a href="$!{address.front}/user/passwordReminder.htm" target="_blank" title="找回密码" tabindex="5">[找回密码]</a>
+                            </span>
+                        </p>
+                        <p class="p1">
+							<label for="password">密<span style="padding-left: 12px;">码</span>:</label>
+                            <input type="password" name="password" id="password" value="$!{password}" tabindex="2"/>
+                            <input type="submit" value="登&nbsp;陆"  class="submit" tabindex="3" />
+							<a href="$!{address.front}/accessToQQLogin.htm" target="_blank">
+								<img src="$!{address.img}/zz91/china/images/qq_login_common.gif" width="80" height="19" alt="使用QQ号码登录" />
+							</a>
+                        </p>
+                    </form>
+                </div>
+        #end
+        <input type="hidden" name="url" id="url" value="$!{url}" />
+        <input type="hidden" name="othersAccount" id="othersAccount" value="$!{othersAccount}"/>
+    </div>
+    <!-- end-->
+</div>
+<!--zz91bbs navigation area start-->	
+<div class="navigationArea">
+	<div class="zz91bbsNavigation">
+		<ul>
+			<li><a href="#springUrl('/')" #if(!${categoryId}) class="selected" #end >互助首页</a></li>
+			<li><a href="#springUrl('/viewQue1.htm')" #if($!{flag}==1) class="selected" #end >发现问题</a></li>
+			<li><a href="#springUrl('/bbsCategory2.htm')" #if($!{categoryId}==2) class="selected" #end >行业知识</a></li>
+			<li><a href="#springUrl('/bbsCategory3.htm')" #if($!{categoryId}==3) class="selected" #end >江湖风云</a></li>
+			<li><a href="#springUrl('/bbsCategory4.htm')" #if($!{categoryId}==4) class="selected" #end >ZZ91动态</a></li>
+		</ul>
+	</div>
+	#parse("/bbs/bbs_top_quick_nav.vm")
+	</div>
+	<!--zz91bbs navigation area end-->
+	
+	<!--zz91bbs search area start-->
+	#parse("/bbs/bbs_top_search.vm")
+	<!--zz91bbs search area end-->
+	<script type="text/javascript">
+	jQuery(document).ready(function(){
+	
+    	var othersAccount = jQuery("#othersAccount").val();
+        jQuery.validator.setDefaults({
+            submitHandler: function(form){
+    			zz91Util.login({
+    				username:jQuery("#username").val(),
+    				password:jQuery("#password").val(),
+    				url:jQuery("#url").val(),
+    				contextpath:"#springUrl('/user')",
+    				success:function(response){
+    					if (response.success) {
+                            if (othersAccount == "") {
+                                window.location.href = response.data;
+                            }else {
+                                window.location.href = response.data + "?account=" + othersAccount;
+                            }
+                        }else {
+                            alert(response.data);
+                        }
+    				}
+    			});
+            }
+        });
+	
+        //开始验证
+        jQuery('#loginForm').validate({
+            rules: {
+                username: {
+                    required: true
+                },
+                password: {
+                    required: true
+                }
+            },
+            messages: {
+                username: {
+                    required: "请输入用户名！"
+                },
+                password: {
+                    required: "请输入密码！"
+                }
+            },
+            focusInvalid: false,
+            onkeyup: false,
+            errorPlacement: function(error, element){
+                error.appendTo(element.parent());
+            }
+        });
+    
+    	if (jQuery("#loginForm .p1 label.error")){
+        	jQuery("#loginForm .p1 input").each(function(){
+        		jQuery(this).focus(function(){
+        			var num = jQuery("#loginForm .p1 input").index(this);
+        			jQuery("#loginForm .p1 label.error").eq(num).fadeOut(300);
+        		});
+        	});
+    	}
+    });
+	
+    function layout(){
+        var othersAccount = jQuery("#othersAccount").val();
+        logout(jQuery("#url").val(), "#springUrl('/user')", function(response){
+            if (response.success) {
+                window.location.href = response.data;
+            }
+            else {
+                alert(response.data);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,160 @@
+#set($layout="/layout/blank.vm")
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{bbsUserProfilerDO.nickname}_再生互助_$!{siteInfo.site_name}</title>
+<meta name="keywords" content="再生互助,$!{bbsUserProfilerDO.nickname}" />
+<meta name="description" content="欢迎来到$!{bbsUserProfilerDO.nickname}在$!{siteInfo.site_name}-互助社区安的新家" />
+
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+##<script src="http://img0.zz91.com/zz91/tradedetails/js/Png.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/lib/jquery-ui/1.8.16/jquery-ui-1.8.16.custom.min.js"></script>
+
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/jquery/ux/validationEngine.css" />
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/validationEngine.js"></script>
+<script type="text/javascript" src="$!{address.img}/lib/jquery/ux/languages/jquery.validationEngine-zh_CN.js"></script>
+
+
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="huzhu">
+	
+	#parse("/common/head_search.vm")    
+    <div class="huzhu_geren">
+		#parse("/common/bbs_info_center.vm")
+        <div class="hg-div3">
+        	<div class="hg-Answer-left">
+            	<div class="myCollection">
+                	<div class="myCollection-title">
+                    	我的私信
+                    </div>
+                    
+                    <div class="cb"></div>
+                </div>
+                <!--end myCollection-->
+                <div class="hg-div3-box">
+                	<div class="hg-div2-nav">
+                        <ul class="fl">
+                            <li><a href="message.htm">收信箱</a></li>
+                            <li>|</li>
+                            <li><a href="mySendMessage.htm">发信箱</a></li>
+                            <div class="cb"></div>
+                        </ul>
+                        <div class="hg-write">
+                        	<a href="sendMessage.htm">写私信</a>
+                        </div>
+                        <!--end hg-write-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end hg-div2-nav-->
+					<form name="form1" id="form1" action="doSendMessage.htm" method="post">
+                    <div class="PrivateLetter">
+						#if($!{error})
+							<span style="color:red">此用户不存在对方将无法送达</span>
+						#end
+                    	<div class="PrivateLetter-Receive">
+                        	<div class="pl-Receive">
+                            	<div class="pl-Receive-title">
+                                	收件人：
+                                </div>
+                                <div class="pl-Receive-content">
+									#if($!{profiler.nickname} &&  $!{profiler.nickname}!="")
+                                	<input type="text" id="accountName" name="accountName" value="$!{profiler.nickname}" class="pl-Receive-text validate[required,ajax[ajaxAccountName]] rightipt" />
+									#else
+									<input type="text" id="accountName" name="accountName" value="$!{profiler.account}" class="pl-Receive-text validate[required,ajax[ajaxAccountName]] rightipt" />	
+									#end
+                                </div>
+                                <div class="cb"></div>
+                                <!--end pl-Receive-content-->
+                            </div>
+                            <div class="pl-Theme">
+                            	<div class="pl-Theme-title">
+                                	主题：
+                                </div>
+                                <div class="pl-Theme-content">
+                                	<input type="text" class="pl-Theme-text validate[required]" name="title" value="$!{bbsPost.title}"/>
+                                </div>
+                                <div class="cb"></div>
+                                <!--end pl-Theme-content-->
+                            </div>
+                            <!--end pl-Theme-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end PrivateLetter-Receive-->
+                        <div class="pl-main">
+                            <div class="pl-main-title">
+                                正文：
+                            </div>
+                            <div class="pl-main-content">
+                                <textarea class="pl-main-text validate[required]" name="content"></textarea>
+                            </div>
+                            <div class="cb"></div>
+                            <!--end pl-main-content-->
+                        </div>
+                        <!--end pl-main-->
+							<input type="hidden"  name="postId" value="$!{bbsPost.id}"/>
+							<input type="hidden"  name="receiverAccount" value="$!{bbsPost.account}"/>
+							<input type="submit" value="发送" class="pl-button"/>
+                        ##	<a href="#">发送</a>
+                      
+                        <!--end pl-button-->
+                        <Div class="cb"></Div>
+                    </div>
+                    <!--end PrivateLetter-->
+					</form>
+                </div>
+                <!--end hg-div3-box-->
+            </div>
+			#parse("/common/message_right.vm")
+			<div class="cb"></div>
+        </div>
+        <!--end hg-div3-->
+		#parse("/common/bbs_info_left.vm")
+    </div>
+    <!--end huzhu_geren-->
+    
+</div>
+<!--end huzhu-->
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+<script >
+jQuery(document).ready(function(){
+	
+    if(jQuery.validationEngineLanguage == undefined || jQuery.validationEngineLanguage.allRules == undefined ){
+    	}else {
+    		jQuery.validationEngineLanguage.allRules["ajaxAccountName"] = {
+    			"url":"/validate/ajaxAccountName.htm",
+    			"alertTextOk": "* 存在此用户可以发送",
+    			"alertText": "* 此用户不存在无法发送",
+    			"alertTextLoad": "* 正在确认此用户是否存在，请稍等。"
+    		};
+    		
+    	}
+		
+	jQuery("#form1").validationEngine("attach");
+});
+
+</script>
+

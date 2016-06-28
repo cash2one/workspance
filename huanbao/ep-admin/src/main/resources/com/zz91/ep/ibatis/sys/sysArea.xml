@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sysArea">
+
+    <typeAlias alias="sysArea" type="com.zz91.ep.domain.sys.SysArea"/>
+
+    <resultMap class="sysArea" id="fullColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="leaf" column="leaf"/>
+        <result property="details" column="details"/>
+        <result property="gmtCreated" column="gmt_created"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+
+    <sql id="fullColumn">
+        id,
+        code,
+        name,
+        leaf,
+        details,
+        gmt_created,
+        gmt_modified
+    </sql>
+
+    <select id="queryAreaAll" resultMap="fullColumnResultMap">
+        select 
+        <include refid="fullColumn"/>
+        from sys_area
+    </select>
+    
+    <select id="queryProvinceCodeByProvinceName" parameterClass="java.lang.String" resultClass="java.lang.String">
+    	select
+    	code
+    	from sys_area
+    	where name like concat('%',#name#,'%') limit 1
+    </select>
+    
+    <select id="querySupplyAreaCodeBySupplyAreaName" parameterClass="java.lang.String" resultClass="java.lang.String">
+    	select
+    	code
+    	from sys_area
+    	where name like concat('%',#name#,'%') limit 1
+    </select>
+    
+    <select id="queryAreaCodeByAreaName" parameterClass="java.lang.String" resultClass="java.lang.String">
+    	select
+    	code
+    	from sys_area
+    	where name like concat('%',#name#,'%') limit 1
+    </select>
+	<!-- 查询父类所属最大code -->
+	<select id="queryMaxCodeByPreCode" parameterClass="String" resultClass="String">
+			select max(code) from sys_area
+			where code like concat(#code#,'____')
+	</select>
+	<!-- 根据父地区code查询子节点 -->
+	<select id="queryChildArea" parameterClass="java.lang.String" resultMap="fullColumnResultMap" >
+		select 
+			<include refid="sysArea.fullColumn" />
+		from sys_area
+		where code like concat(#value#,'____') 
+	</select>
+</sqlMap>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>测试</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/template.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	section{
+		border-bottom: 1px solid #CCCCCC;
+		padding: 10px;
+	}
+	dl, dd{
+		margin: 0px;
+		padding: 0px;
+	}
+	dd{
+		display: -webkit-box;
+	}
+	section div span, section dd, section dd a{
+		font-size: 14px;
+		color: #666666; 
+	}
+	section div, section dl dt, section dl dd{
+		margin-bottom: 10px;		
+	}
+	section div{
+		display: -webkit-box;
+	}
+	section div span{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		-webkit-box-align: center;
+	}
+	section div span:nth-child(2){
+		-webkit-box-pack: end;
+	}
+	section div span label{
+		font-size: 16px;
+		color: #00b8ff;
+	}
+	section dt{
+		font-size: 14px; 
+	}
+	section dd{
+		width: 100%; 
+	}
+	section dd a{
+		width: 50px;
+		height: 20px;
+		padding-top: 1px;
+		padding-bottom: 1px;
+		text-align: center;
+		font-weight: bold;
+		background: url(../image/checkbg.png) no-repeat top;
+		-webkit-background-size: 20px 20px;
+	}
+	section dd span{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		color: inherit;
+	}
+	section dd a input{
+		display: none !important;
+		-webkit-appearance: none;
+	}
+	.checked{
+		background: url(../image/checkedbg.png) no-repeat top !important;
+		-webkit-background-size: 20px 20px !important;
+		color: #FFFFFF !important;
+	}
+	.ddchecked{
+		color: #00b8ff !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+	</div>
+</body>
+<script id="item_template" type="text/html">
+	<%
+		var list = body.list;
+		var length = list.length;
+	%>
+		<input type="hidden" id="count" value="<%=length%>"/>
+	<%
+		if(list[0].multiple == '1'){
+	%>
+			<section>
+				<div>			
+					<span>多选</span>
+					<span><label>1</label>/<%=length%></span>
+				</div>
+				<dl>
+					<dt><%=list[0].testName%></dt>
+	<%
+					for(var j=0; j<list[0].q_options.length; j++){
+						if(list[0].q_options[j].isTrue == '0'){
+	%>
+							<dd tapmode="" onclick="checkboxItem(this, '<%=list[0]._id%>', '<%=list[0].q_options[j].option%>', '0', '<%=list[0].testAnswer%>')">
+								<a><%=list[0].q_options[j].option%></a><span><%=list[0].q_options[j].describe%></span>
+							</dd>
+	<%
+						}else if(list[0].q_options[j].isTrue == '1'){
+	%>
+							<dd tapmode="" onclick="checkboxItem(this, '<%=list[0]._id%>', '<%=list[0].q_options[j].option%>', '0')">
+								<a><%=list[0].q_options[j].option%></a><span><%=list[0].q_options[j].describe%></span>
+							</dd>
+	<%
+						}
+					}
+	%>
+				</dl>
+			</section>
+	<%
+		}else if(list[0].multiple == '0'){
+	%>
+			<section>
+				<div>			
+					<span>单选</span>
+					<span><label>1</label>/<%=length%></span>
+				</div>
+				<dl>
+					<dt><%=list[0].testName%></dt>
+	<%
+					for(var j=0; j<list[0].q_options.length; j++){
+						if(list[0].q_options[j].isTrue == '0'){
+	%>
+							<dd tapmode="" onclick="radioItem(this, 'q0', '<%=list[0]._id%>', '<%=list[0].q_options[j].option%>', '0', '<%=list[0].testAnswer%>')">
+								<a><%=list[0].q_options[j].option%><input type="radio" name="q0"/></a><span><%=list[0].q_options[j].describe%></span>
+							</dd>						
+	<%						
+						}else if(list[0].q_options[j].isTrue == '1'){
+	%>
+							<dd tapmode="" onclick="radioItem(this, 'q0', '<%=list[0]._id%>', '<%=list[0].q_options[j].option%>', '0')">
+								<a><%=list[0].q_options[j].option%><input type="radio" name="q0"/></a><span><%=list[0].q_options[j].describe%></span>
+							</dd>
+	<%
+						}
+					}
+	%>
+				</dl>
+			</section>
+	<%
+		}
+		for(var i=1; i<length; i++){
+			if(list[i].multiple == '1'){
+	%>
+				<section>
+					<div>			
+						<span>多选</span>
+						<span><label><%=(i+1)%></label>/<%=length%></span>
+					</div>
+					<dl>
+						<dt><%=list[i].testName%></dt>
+	<%
+						for(var j=0; j<list[i].q_options.length; j++){
+							if(list[i].q_options[j].isTrue == '0'){
+	%>
+								<dd tapmode="" onclick="beforeCheckboxItem(this, '<%=list[i]._id%>', '<%=list[i].q_options[j].option%>', '<%=i%>', '<%=list[i].testAnswer%>')">
+									<a><%=list[i].q_options[j].option%></a><span><%=list[i].q_options[j].describe%></span>
+								</dd>
+	<%
+							}else if(list[i].q_options[j].isTrue == '1'){
+	%>
+								<dd tapmode="" onclick="beforeCheckboxItem(this, '<%=list[i]._id%>', '<%=list[i].q_options[j].option%>', '<%=i%>')">
+									<a><%=list[i].q_options[j].option%></a><span><%=list[i].q_options[j].describe%></span>
+								</dd>
+	<%
+							}
+						}
+	%>
+					</dl>
+				</section>
+	<%
+			}else if(list[i].multiple == '0'){
+	%>
+				<section>
+					<div>			
+						<span>单选</span>
+						<span><label><%=(i+1)%></label>/<%=length%></span>
+					</div>
+					<dl>
+						<dt><%=list[i].testName%></dt>
+	<%
+						for(var j=0; j<list[i].q_options.length; j++){
+							if(list[i].q_options[j].isTrue == '0'){
+	%>
+								<dd tapmode="" onclick="beforeRadioItem(this, 'q<%=i%>', '<%=list[i]._id%>', '<%=list[i].q_options[j].option%>', '<%=i%>', '<%=list[i].testAnswer%>')">
+									<a><%=list[i].q_options[j].option%><input type="radio" name="q<%=i%>"/></a><span><%=list[i].q_options[j].describe%></span>
+								</dd>						
+	<%						
+							}else if(list[i].q_options[j].isTrue == '1'){
+	%>
+								<dd tapmode="" onclick="beforeRadioItem(this, 'q<%=i%>', '<%=list[i]._id%>', '<%=list[i].q_options[j].option%>', '<%=i%>')">
+									<a><%=list[i].q_options[j].option%><input type="radio" name="q<%=i%>"/></a><span><%=list[i].q_options[j].describe%></span>
+								</dd>
+	<%
+							}
+						}
+	%>
+					</dl>
+				</section>
+	<%
+			}
+		}
+	%>
+</script>
+<script>
+	var userSelection = [];
+	
+	var pageIndex = 0;
+	var inLoading = false;
+	var needLoadMore = false;
+	
+	var jsonList = [];
+	
+	apiready = function() {
+		api.showProgress({modal: false});
+
+		//下拉到页面底部，加载更多，没有监听下拉刷新，是因为刷新之后不能保存之前被选择的值
+		api.addEventListener({name:'scrolltobottom'}, function(){
+	        if (needLoadMore) {
+	            loadData(false);
+	        }
+	    });
+
+	    loadData(true);
+	};
+	
+		function loadData(isReload_){
+		if (inLoading) {//如果还在加载中，不执行操作
+	        return;
+	    }
+	    inLoading = true;
+	    if (isReload_) {//下拉刷新，即重新载入,pageIndex为0
+	        pageIndex = 0;
+	    }
+	    
+	    function ajaxBack(ret,err){
+	    	inLoading = false;
+	    	if(ret && ret.status){
+	    		if(ret.body.list.length > 0){ 
+	    			jsonList = ret.body.list;
+	    			pageIndex++;
+					if(isReload_){//如果是刷新
+						$api.html($api.byId('main'), baidu.template("item_template", ret));
+					
+						setTimeout(function(){api.hideProgress();}, 300);
+					}else{//如果是加载更多
+						$api.append($api.byId('main'), baidu.template("item_template", ret));
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					api.parseTapmode();
+	    		}else if(ret.body.list.length == 0){
+	    			api.refreshHeaderLoadDone();
+	    			api.hideProgress();
+	    			if(isReload_){//如果是刷新
+	    				var html = '<div class="nodata">暂无数据</div>';
+	    				$api.html($api.byId('main'), html);
+	    			}
+	    		}
+	    		
+	    		if(pageIndex < ret.pages){
+	    			needLoadMore = true;
+	    		}else{
+	    			needLoadMore = false;
+	    		}
+	    	}else{
+	    		api.hideProgress();
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    	}
+	    }
+	    
+    	api.ajax({
+	    	url: serverUrl + '/user/Questionnaire?qid=' + api.pageParam.qid + '&qtype=1&pageIndex='+ pageIndex,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, ajaxBack);
+	}
+
+	//在选择之前先进行判断上一题的操作
+	function beforeCheckboxItem(el, testid, select, index, ans){
+		var prelist = jsonList[index-1];
+		if(prelist.multiple == '1'){//如果上一题是复选，要判断是否选择了全部的正确答案
+			if(!getRightAns(index, prelist)){
+				return;
+			}else{
+				if(arguments.length === 5){
+					checkboxItem(el, testid, select, index, ans);
+				}else{
+					checkboxItem(el, testid, select, index);
+				}
+			}
+		}else{
+			if(arguments.length === 5){
+				checkboxItem(el, testid, select, index, ans);
+			}else{
+				checkboxItem(el, testid, select, index);
+			}
+		}
+	}
+	
+	function getRightAns(index, list){
+		var ansLength = 0;
+		var ansArr = [];
+		for(var i=0; i< list.q_options.length; i++){
+			if(list.q_options[i].isTrue == '1'){
+				ansLength ++;
+				ansArr.push(list.q_options[i].option);
+			}
+		}
+		if(!userSelection[index-1] || (ansArr.sort().toString() != userSelection[index-1].selection.sort().toString())){
+			api.alert({
+				title: '第' + index + '题的正确答案是',
+				msg: list.testAnswer,
+				buttons: ['确定']
+			});
+			//将正确答案选中，错误答案不选中，这种做法无法实现或实现过程实在太过麻烦，暂不考虑
+			return false;
+		}
+		return true;
+	}
+
+	function checkboxItem(el, testid, select, index, ans){
+		var cel = el.childNodes[0];
+		if($api.hasCls(cel, 'checked')){
+			$api.removeCls(cel, 'checked');
+			hasClsRemoveIt(el, 'ddchecked');
+			//从userSelection中把该testid对应的相应选项值拿掉
+			var selection = userSelection[index].selection;
+			for(var i=0; i<selection.length; i++){
+				if(selection[i] == select){
+					userSelection[index].selection.splice(i, 1);
+					break;
+				}
+			}
+			//拿掉对应的值后，userSelection[index].selection的长度为0， 则需要移除该testid， 此时该项的值为undefined
+			if(userSelection[index].selection.length == 0){
+				delete userSelection[index];
+			}
+		}else if(!$api.hasCls(cel, 'checked')){
+			$api.addCls(cel, 'checked');
+			hasNoClsAddIt(el, 'ddchecked');
+			//把选项加入userSelection
+			//如果是第一次选，创建
+			if(!userSelection[index]){
+				var o = {
+					testid: testid,
+					selection: [select]
+				};
+				userSelection[index] = o;
+			}else{//如果不是第一次选， 直接修改值，对值进行一个排序
+				userSelection[index].selection.push(select);
+				userSelection[index].selection.sort();
+			}
+			
+			if(arguments.length === 5){
+				api.alert({
+					title: '回答错误',
+					msg: ans,
+					buttons: ['确定']
+				});
+			}
+		}
+	}
+	//el:当前元素
+	//name:单选按钮组的名字
+	//testid:当前题目的id
+	//select:选择的选项
+	//index:当前题目在userSelection中对应的项，从0开始
+	//prelist:前一题的内容
+	//ans:正确答案		
+	
+	//在选择之前先进行判断上一题的操作
+	function beforeRadioItem(el, name, testid, select, index, ans){
+		var prelist = jsonList[index - 1];
+		if(prelist.multiple){//如果上一题是复选，要判断是否选择了全部的正确答案
+			
+			if(!getRightAns(index, prelist)){
+				return;
+			}else{
+				if(arguments.length === 6){
+					radioItem(el, name, testid, select, index, ans);
+				}else{
+					radioItem(el, name, testid, select, index);
+				}
+			}
+		}else{
+			if(arguments.length === 6){
+				radioItem(el, name, testid, select, index, ans);
+			}else{
+				radioItem(el, name, testid, select, index);
+			}
+		}		
+	}
+	
+	function radioItem(el, name, testid, select, index, ans){
+		var cel = el.childNodes[0];
+		if(!$api.hasCls(cel, 'checked')){			
+			//移除另一个被选中的项
+			var radios = document.getElementsByName(name);
+			for(var i=0; i<radios.length; i++){
+				if(radios[i].checked){
+					hasClsRemoveIt(radios[i].parentNode, 'checked');
+					hasClsRemoveIt(radios[i].parentNode.parentNode, 'ddchecked');
+					userSelection[index].selection.splice(0, 1);
+					break;
+				}
+			}
+			
+			$api.addCls(cel, 'checked');
+			hasNoClsAddIt(el, 'ddchecked');
+			$api.last(cel).checked =  true;
+			
+			if(!userSelection[index]){
+				var o = {
+					testid: testid,
+					selection: [select]
+				};
+				userSelection[index] = o;
+			}else{//如果不是第一次选， 直接修改值
+				userSelection[index].selection.splice(0, 1);
+				userSelection[index].selection.push(select);
+			}
+			
+			if(arguments.length === 6){
+				api.alert({
+					title: '回答错误',
+					msg: ans,
+					buttons: ['确定']
+				});
+			}
+		}
+	}
+	
+	function trainingTest(){
+		var count = $api.val($api.byId('count'));
+		//遍历数字，看是否有undefined的
+		var isUndefined = false;
+		for(var i=0; i< userSelection.length; i++){
+			if(!userSelection[i]){
+				isUndefined = true;
+				break;
+			}
+		}
+		
+		//userSelection的长度小于总题目数，说明没有回答完
+		if(userSelection.length<count || isUndefined){
+			api.toast({msg: '您还有未回答的问题!', location: 'middle'});
+		}else{
+    		api.openFrame({
+				name: 'trainingTestShare_frame',
+				url: 'trainingTestShare_frame.html',
+				bounces: false,
+				opaque: false,
+				pageParam: {qid: api.pageParam.qid},
+				hScrollBarEnabled: false,
+				rect: {
+					x: 0,
+					y: 0,
+					w: 'auto',
+					h: 'auto'
+				}
+			});
+			var values = {
+				uid: $api.getStorage('usr').uid,
+				fid: $api.getStorage('usr').fid,
+				qid: api.pageParam.qid
+			};
+			api.ajax({
+		    	url: serverUrl + '/user/SubmitTestQuestionnaire',
+			    method:'post',
+			    cache:false,
+			    timeout:15,
+			    dataType:'json',
+			    data: {values: values}
+		    }, function(ret, err){
+		    });
+		}
+	}
+</script>
+</html>

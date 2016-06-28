@@ -1,0 +1,219 @@
+#parse("/common/importValidate.vm")
+<table width="1000" border="0" align="center" cellpadding="0"
+	cellspacing="0">
+	<tr>
+		<td width="197" valign="top" bgcolor="#128fc4">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td><img
+					src="$!{address.img}/huanbao/images/myesite/cominfotitle.jpg"
+					width="197" height="75" /></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+				<div style="padding-left: 20px;">
+				<ul>
+					<li class="hbnylefts"><a href="#springUrl("/company/updateCompany.htm")">修改基本信息</a></li>
+					##<li class="hbnyleft"><a href="#springUrl("/company/updatePhoto.htm")">修改公司形象照片</a></li>
+					<li class="hbnyleft"><a href="#springUrl("/company/updateAccount.htm")">修改联系人信息</a></li>
+					<li class="hbnyleft"><a href="#springUrl("/company/updatePasswd.htm")">修改密码</a></li>
+				</ul>
+				</div>
+				</td>
+			</tr>
+		</table>
+		</td>
+		<td valign="top" class="hbnycon">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td class="hbnytit">修改基本信息</td>
+			</tr>
+		</table>
+		<form id="companyForm" name="companyForm" action="#springUrl('/company/doCompany.htm')" method="post" >
+		<table width="100%" border="0" cellpadding="0" cellspacing="0" class="hbnyconinfo">
+			<tr>
+				<td width="120" align="right"><span>*</span> 公司名称：</td>
+				<td><input id="name" name="name" type="text" class="hbnyconinput hbnycontit50 validate[required,mimSize[2],maxSize[40]]" value="$!{compProfile.name}"/></td>
+			</tr>
+			<tr>
+				<td align="right"><span>*</span> 公司地址：</td>
+				<td>
+				<select id="provinceCode" name="provinceCode" class="hbnyconselect validate[required]">
+					<option value="">省份</option>
+				</select>
+				<select id="areaCode" name="areaCode" class="hbnyconselect validate[required]">
+					<option value="">城市</option>
+				</select>
+				
+				<input id="address" name="address" type="text" class="hbnyconinput hbnycontit30 validate[required,maxSize[50]]" value="$!{compProfile.address}" /></td>
+			</tr>
+			
+			
+			<tr id="industryChain" #if($!industryChainList.size()<1) style="display : none" #end>
+				<td align="right"><span>*</span> 产业链：</td>
+				<td id="industryChains">
+					#foreach($industryChain in $!{industryChainList})
+						<input name="industryChain" type="checkbox" value="$!{industryChain.id}" class="validate[maxCheckbox[3]]"  $!{industryChain.checked}/>$!{industryChain.industryChain.areaName}$!{industryChain.industryChain.categoryName}
+					#end
+					
+				</td>
+				
+			</tr>
+			
+			<tr>
+				<td align="right"><span>*</span> 所处行业：</td>
+				<td>
+				<select id="industryCode" name="industryCode" class="hbnyconselect validate[required]">
+					<option value="">-----请选择-----</option>
+					#foreach($list in $!{companyIndustry})
+					<option value="$!{list.code}" #if($!{list.code} == $!{compProfile.industryCode}) selected #end>$!{list.name}</option>
+					#end
+				</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="right" valign="top"><span>*</span> 公司简介：</td>
+				<td>
+				<textarea id="details" name="details"  cols="45" rows="5" class="hbnycontext validate[required,maxSize[1000]]">$!{compProfile.details}</textarea>
+				</td>
+			</tr>
+			<tr>
+				#if($!{compProfile.mainSupply}== "1")
+				<td align="right"><span>*</span> 主营产品：</td>
+				<td style="line-height: 18px; padding: 5px;">
+				<input id="mainSupply" name="mainSupply" type="hidden" value="1"/>
+				<input type="text" id="mainProductSupply" name="mainProductSupply" value="$!{compProfile.mainProductSupply}" class="hbnyconinput hbnycontit40 validate[required]" /> <br />
+				<input id="mainBuy" name="mainBuy" type="hidden" value="0"/>
+				<input type="hidden" id="mainProductBuy" name="mainProductBuy" value="$!{compProfile.mainProductBuy}" class="hbnyconinput hbnycontit40" /></td>
+				#else 
+				<td align="right"><span>*</span> 求购产品：</td>
+				<td style="line-height: 18px; padding: 5px;">
+				<input id="mainSupply" name="mainSupply" type="hidden" value="0"/>
+				<input type="hidden" id="mainProductSupply" name="mainProductSupply" value="$!{compProfile.mainProductSupply}" class="hbnyconinput hbnycontit40" /> <br />
+				<input id="mainBuy" name="mainBuy" type="hidden" value="1"/>
+				<input type="text" id="mainProductBuy" name="mainProductBuy" value="$!{compProfile.mainProductBuy}" class="hbnyconinput hbnycontit40 validate[required]" /></td>
+				#end
+			</tr>
+			<tr>
+				<td align="right"><span>*</span> 公司类型：</td>
+				<td>
+				<select id="businessCode" name="businessCode" class="hbnyconselect hbnycontit50 validate[required]" >
+					<option value="">-----请选择-----</option>
+					#foreach($list in $!{companyCategory})
+					<option value="$!{list.value}" #if($!{list.value} == $!{compProfile.businessCode}) selected #end>$!{list.name}</option>
+					#end
+				</select>
+				</td>
+			</tr>
+			<tr>
+				<td align="right">公司网址：</td>
+				<td><input type="text" id="domain" name="domain" value="$!{compProfile.domain}" class="hbnyconinput hbnycontit50 validate[maxSize[100]]" /></td>
+			</tr>
+			<tr>
+				<td align="right">注册资金：</td>
+				<td><input type="text" id="funds" name="funds" value="$!{compProfile.funds}" class="hbnyconinput hbnycontit50 validate[maxSize[50]]" /></td>
+			</tr>
+			<tr>
+				<td align="right">法人：</td>
+				<td><input id="legal" name="legal" value="$!{compProfile.legal}" class="hbnyconinput hbnycontit50 validate[maxSize[50]]" /></td>
+			</tr>
+			<tr>
+				<td align="right">公司形象照片：</td>
+				<td><a href="javascript:selectPhoto()" class="pstf_sub_btnpic">上传图片</a></td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td>
+					<input type="image" src="$!{address.img}/huanbao/images/myesite/hbmem_22.jpg" width="101" height="34" />
+				</td>
+			</tr>
+			<tr>
+				<td align="right">&nbsp;</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+		</form>
+		</td>
+	</tr>
+</table>
+<script language="javascript">
+jQuery(document).ready(function(){
+    
+	jQuery("#provinceCode").change(function(){
+		jQuery("#industryChains").html("");
+		jQuery("#industryChain").hide();
+	});
+	
+	jQuery("#areaCode").change(function(){
+		
+		var areaCode = jQuery("#areaCode").val();
+		if(areaCode!=""){
+		jQuery.ajax({
+			type : "post",
+			url : "$!{address.myesite}/common/getIndustryChains.htm",
+			data : {"areaCode" : areaCode},
+			dataType : "json",
+			success : function(data){
+				jQuery("#industryChains").html("");
+				if(data!=""){
+					jQuery("#industryChain").show();
+					
+					jQuery.each(data,function(index,value){
+						
+						jQuery("#industryChains").append("<input type='checkbox' name = 'industryChain'   value='"+value.industryChain.id+"' "+value.checked+" />"+value.industryChain.areaName+value.industryChain.categoryName);
+					})
+				}else{
+					jQuery("#industryChain").hide();
+				}
+			}
+		});
+		}else{
+			jQuery("#industryChains").html("");
+			jQuery("#industryChain").hide();
+		}
+	});
+	
+    // 地区下拉框初始化
+	var _selectAreaCode=["#provinceCode","#areaCode"];
+	var selectAreaCode=new hb.util.Selector({
+		selects:_selectAreaCode,
+		url:"#springUrl('/common/getAreaCode.htm')",
+		field:{code:"code",label:"name"}
+	});
+	
+	selectAreaCode.init({
+		rootCode:"10011000",
+		initCode:"$!{compProfile.areaCode}"
+	});
+	jQuery("#companyForm").validationEngine("attach");
+});
+var uploadBox=new Asto.util.PopupBox({
+	url:"#springUrl('/photo/uploadMini.htm')?photoType=company&id=$!{compProfile.id}&max=4",
+	modal:true,
+	callbackFn:function(photoCover, imageIds){
+    	jQuery.ajax({
+            url:'#springUrl('/photo/updatePhotoCover.htm')',
+            data:{"id":$!{compProfile.id},"photos":imageIds,"type":'company'},
+            cache:false,
+            dataType:"json",
+            type:"post",
+            success:function(req){
+            },
+            failure:function(){}
+        });
+		uploadBox.close();
+	},
+	width:830,
+	height:500
+});
+
+function selectPhoto(){
+	uploadBox.show();
+}
+</script>

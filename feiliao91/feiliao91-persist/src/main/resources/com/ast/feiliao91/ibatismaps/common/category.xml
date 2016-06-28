@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="category">
+	<typeAlias alias="categoryDo" type="com.ast.feiliao91.domain.common.Category" />
+	<resultMap class="categoryDo" id="categoryResult">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="parentcode" column="parent_code" />
+		<result property="label" column="label" />
+		<result property="pinyin" column="pinyin" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtcreated" column="gmt_created" />
+		<result property="gmtmodified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,
+		code,
+		parent_code,
+		label,
+		pinyin,
+		is_del,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<insert id="insert" parameterClass="categoryDo">
+		insert into category
+		(
+		<include refid="category.fullColumn" />
+		)
+		values
+		(
+		#id#,
+		#code#,
+		#parentcode#,
+		#label#,
+		#pinyin#,
+		#isDel#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="selectById" parameterClass="java.lang.Integer" resultMap="categoryResult">
+		select
+		<include refid="category.fullColumn" />
+		from category where id=#id#
+	</select>
+	<!-- 检索所有类别 -->
+	<select id="queryAllCategory" resultMap="categoryResult">
+		select 
+			<include refid="category.fullColumn" />
+		from category
+		where is_del = 0
+		order by id asc
+	</select>
+	
+	<!-- 根据父类code获取属于父类的所有子类列表 -->
+
+	<select id="queryCategoriesByPreCode" parameterClass="String" resultMap="categoryResult">
+		select 
+			c.id, 
+			c.code, 
+			c.parent_code, 
+			c.label, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.pinyin,
+			is_del
+		from category c
+		where c.code like concat(#code#,'____')
+		order by id asc
+	</select>
+	
+	<!-- 根据父类code获取其最大子类别code,用于添加类别 -->
+	<select id="queryMaxCodeByPreCode" parameterClass="String"
+		resultClass="String">
+			select max(c.code) from category c
+			where c.code like
+			concat(#preCode#,'____')
+	</select>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from category
+		where id = #value#
+	</delete>
+	
+	<!-- 删除记录-->
+	<delete id="deleteCategoryByCode" parameterClass="String">
+		delete from
+		category where code like concat(#code#,'%')
+	</delete>
+	
+	<select id="selectByCode" parameterClass="java.lang.String" resultMap="categoryResult">
+		select
+		<include refid="category.fullColumn" />
+		from category where code=#value#
+	</select>
+	
+	<!-- 更新记录-->
+	<update id="updateCategory" parameterClass="categoryDO">
+			update category
+			set
+			label = #label#,
+			gmt_modified = now()
+			where id=#id:INTEGER#
+	</update>
+	
+
+</sqlMap>

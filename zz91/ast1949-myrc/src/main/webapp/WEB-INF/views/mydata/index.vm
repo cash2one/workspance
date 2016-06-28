@@ -1,0 +1,424 @@
+  <div class="marketing">
+    	<div class="marketing-title"><img src="http://img0.zz91.com/zz91/myrc/images/zxdt.jpg" /></div>
+        <!--end marketing-title-->
+        <div class="marketing-box">
+        	<div class="marketingBox-nav">昨日数据统计</div>
+            <!--end marketingBox-nav-->
+            <div class="marketingBox-item">
+            	<div class="marketingBox-item-list">
+                	<ul class="ml-ul-count">
+                    	<li>
+                       		<span class="ml-text">浏览量</span>
+                            <span class="ml-text">$!{visitor.view}</span>
+                            <span class="ml-wave">较前日：#if($!{visitor.viewData}=="--") $!{visitor.viewData} #elseif($!{visitor.viewFlag}=="1")<img src="http://img0.zz91.com/zz91/myrc/images/up.jpg" /> $!{visitor.viewData} #else <img src="http://img0.zz91.com/zz91/myrc/images/down.jpg" /> $!{visitor.viewData}#end</span>	
+                        </li>
+                        <li>
+                       		<span class="ml-text">访客数</span>
+                            <span class="ml-text">$!{visitor.visit}</span>
+                            <span class="ml-wave">较前日：#if($!{visitor.visitData}=="--") $!{visitor.visitData} #elseif($!{visitor.visitFlag}=="1")<img src="http://img0.zz91.com/zz91/myrc/images/up.jpg" /> $!{visitor.visitData} #else <img src="http://img0.zz91.com/zz91/myrc/images/down.jpg" /> $!{visitor.visitData}#end</span>	
+                        </li>
+                        <li>
+                       		<span class="ml-text">询盘量</span>
+                            <span class="ml-text">$!{visitor.inquiry}</span>
+                            <span class="ml-wave">较前日：#if($!{visitor.inquiryData}=="--") $!{visitor.inquiryData} #elseif($!{visitor.inquiryFlag}=="1")<img src="http://img0.zz91.com/zz91/myrc/images/up.jpg" /> $!{visitor.inquiryData} #else <img src="http://img0.zz91.com/zz91/myrc/images/down.jpg" /> $!{visitor.inquiryData}#end</span>	
+                        </li>
+						#if($!{sessionUser.membershipCode}=="10051003")
+                        <li>
+                       		<span class="ml-text">电话量</span>
+                            <span class="ml-text">$!{visitor.telCount}</span>
+                            <span class="ml-wave">较前日：#if($!{visitor.telCData}=="--") $!{visitor.telCData} #elseif($!{visitor.telCFlag}=="1")<img src="http://img0.zz91.com/zz91/myrc/images/up.jpg" /> $!{visitor.telCData} #else <img src="http://img0.zz91.com/zz91/myrc/images/down.jpg" /> $!{visitor.telCData}#end</span>	
+                        </li>
+						#end
+                    </ul>
+                </div>
+                <!--end marketingBox-item-list-->
+            </div>
+            <!--end marketingBox-item-->
+        </div>
+        <!--end marketing-box-->
+        <div class="marketing-title"><img src="http://img0.zz91.com/zz91/myrc/images/sjgk.jpg" /></div>
+        <!--end marketing-title-->
+        <div class="marketing-box">
+			<form id="clickForm" action="#springUrl('/mydata/index.htm')" method="post" >
+        	<div class="marketingBox-history">
+                <span><a href="#springUrl('/mydata')/index.htm?flag=0" #if($!{flag}==1)style="color:red"#end id="1" onclick="change(id)">昨天</a></span>
+                <span><a href="#springUrl('/mydata')/index.htm?flag=2" #if($!{flag}==2)style="color:red"#end id="2" onclick="change(id)">最近7天</a></span>
+                <span><a href="#springUrl('/mydata')/index.htm?flag=3" #if($!{flag}==3)style="color:red"#end id="3" onclick="change(id)">最近30天</a></span>
+                 选择时间
+                <input class="Wdate" type="text" name="from" value=$!{from} onClick="WdatePicker()"> - <input class="Wdate" type="text" name="to" value=$!{to} onClick="WdatePicker()" id="time">
+				<input type="submit" value="确定"/>
+            </div>
+			</form>
+            <!--end marketingBox-history-->
+            <div class="marketingBox-item">
+            	<div class="marketingBox-item-checkBox" onclick="city()">
+                	<ul class="mc-ul-trend">
+                    	<li>
+                        	<span>
+                            	<input type="checkbox" value="views" class="accessData" name="Nums" id="views" onclick="show(name,id)"/>  
+                                <label>浏览量</label>
+                            </span>
+                        </li>
+                        <li>
+                        	<span>
+                            	<input type="checkbox" value="visitors" class="accessData" name="Nums" id="visitors" onclick="show(name,id)"/>  
+                                <label>访客数</label>
+                            </span>
+                        </li>
+                        <li>
+                        	<span>
+                            	<input type="radio" name="Num" value="enquiries" class="accessData" id="enquiries" onclick="show(name,id)"/>  
+                                <label>询盘量</label>
+                            </span>
+                        </li>
+						#if($!{sessionUser.membershipCode}=="10051003")
+                        <li>
+                        	<span>
+                            	<input type="radio" name="Num" value="calls" class="accessData" id="calls" onclick="show(name,id)" />  
+                                <label>电话量</label>
+                            </span>
+                        </li>
+						#end
+                    </ul>
+                </div>
+                <!--end marketingBox-item-checkBox-->
+                <div class="marketingBox-item-gText" id="line" style="display:none">
+                	<span><span class="mg-blue">———</span>&nbsp;浏览量</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span><span class="mg-pink">———</span>&nbsp;访客数</span>
+                </div>
+                <!--end marketingBox-item-gText-->
+                <div class="marketingBox-item-Data">
+                	  <div id="graph">Loading graph...</div>
+                </div>
+                <!--end marketingBox-item-Data-->
+                <div class="marketingBox-item-table">
+                	<table class="marketingTab" cellpadding="0" cellspacing="0" border="0" id="table" style="display:block">
+                    	<tr>
+                        	<td class="curBg" width="132">访问时间</td>
+                            <td class="curBg" width="190">被访问页面</td>
+                            <td class="curBg" width="84">来访地区</td>
+                            <td class="curBg" width="94">来访联系人</td>
+                            <td class="curBg" width="136">来访公司</td>
+                            <td class="curBg" width="214">来访主营</td>
+							#if($!{sessionUser.membershipCode}=="10051003")
+								<td class="curBg" width="40">是否 询盘</td>
+								<td class="curBg" width="40">是否 来电</td>
+							#else
+								<td class="curBg" width="80">是否询盘</td>
+							#end
+                        </tr>
+						 #foreach($obj in $!{page.records})
+                        <tr>
+                        	<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtTarget})</td>
+                            <td><a href="$!{obj.url}" target="_blank" class="curLink" #set($title=$!{obj.title})#if($title.length()>13) title="$!{obj.title}"#end>#printTitle($!{obj.title},13,"...")</a></td>
+                            <td><a style="color:#303030;text-decoration:none" #set($address=$!{obj.address})#if($address.length()>6)title="$!{obj.address}"#end>#printTitle($!{obj.address},6,"")</a></td>
+						    <td>
+								#if($!{obj.contact}=="游客")
+									$!{obj.contact} 
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051003")
+									<a href="$!{address.www}/ppc/index$!{obj.companyId}.htm" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051001")
+									<a href="http://$!{mapC.get($!{obj.companyId}).domainZz91}.zz91.com" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#else
+									<a href="$!{address.company}/compinfo$!{obj.companyId}.htm" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#end
+							</td>
+							<td>
+								#if($!{obj.name}=="--") 
+									$!{obj.name}
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051003")
+								   <a href="$!{address.www}/ppc/index$!{obj.companyId}.htm" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051001")
+								   <a href="http://$!{mapC.get($!{obj.companyId}).domainZz91}.zz91.com" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#else
+								   <a href="$!{address.company}/compinfo$!{obj.companyId}.htm" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#end
+							</td>
+                            <td><a style="color:#303030;text-decoration:none" #set($business=$!{obj.business})#if($business.length()>14)title="$!{obj.business}"#end>#printTitle($!{obj.business},14,"...")</a></td>
+                            <td>#if($!{obj.inquiryFlag}==1)<a href="#springUrl('/mymessage')/inbox.htm" class="curLink">是</a>#else 否 #end</td>
+							#if($!{sessionUser.membershipCode}=="10051003")
+								<td>#if($!{obj.telFlag}==1)<a href="#springUrl('/myphone')/index.htm" class="curLink">是</a>#else 否 #end</td>
+							#end
+                        </tr>
+						#end
+                    </table>
+					<table class="marketingTab" cellpadding="0" cellspacing="0" border="0" id="tables" style="display:none">
+                    	<tr>
+                        	<td class="curBg" width="132">访问时间</td>
+                            <td class="curBg" width="190">被访问页面</td>
+                            <td class="curBg" width="84">来访地区</td>
+                            <td class="curBg" width="94">来访联系人</td>
+                            <td class="curBg" width="136">来访公司</td>
+                            <td class="curBg" width="214">来访主营</td>
+                            #if($!{sessionUser.membershipCode}=="10051003")
+								<td class="curBg" width="40">是否 询盘</td>
+								<td class="curBg" width="40">是否 来电</td>
+							#else
+								<td class="curBg" width="80">是否询盘</td>
+							#end
+                        </tr>
+						 #foreach($obj in $!{pages.records})
+                        <tr>
+                        	<td>$!date.format('yyyy-MM-dd HH:mm:ss', $!{obj.gmtTarget})</td>
+                            <td><a href="$!{obj.url}" target="_blank" class="curLink" #set($title=$!{obj.title})#if($title.length()>13) title="$!{obj.title}"#end>#printTitle($!{obj.title},13,"...")</a></td>
+                            <td><a style="color:#303030;text-decoration:none" #set($address=$!{obj.address})#if($address.length()>6)title="$!{obj.address}"#end>#printTitle($!{obj.address},6,"")</a></td>
+							<td>
+								#if($!{obj.contact}=="游客")
+									$!{obj.contact} 
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051003")
+									<a href="$!{address.www}/ppc/index$!{obj.companyId}.htm" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051001")
+									<a href="http://$!{mapC.get("company").domainZz91}.zz91.com" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#else
+									<a href="$!{address.company}/compinfo$!{obj.companyId}.htm" target="_blank" class="curLink">#printTitle($!{obj.contact},4,"...")</a>
+								#end
+							</td>
+							<td>
+								#if($!{obj.name}=="--") 
+									$!{obj.name}
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051003")
+								   <a href="$!{address.www}/ppc/index$!{obj.companyId}.htm" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#elseif($!{mapC.get($!{obj.companyId}).membershipCode}=="10051001")
+								   <a href="http://$!{mapC.get($!{obj.companyId}).domainZz91}.zz91.com" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#else
+								   <a href="$!{address.company}/compinfo$!{obj.companyId}.htm" target="_blank" class="curLink" #set($name=$!{obj.name})#if($name.length()>10)title="$!{obj.name}"#end>#printTitle($!{obj.name},10,"...")</a>
+								#end
+							</td>                           
+                            <td><a style="color:#303030;text-decoration:none" #set($business=$!{obj.business})#if($business.length()>14)title="$!{obj.business}"#end>#printTitle($!{obj.business},14,"...")</a></td>
+                            <td>#if($!{obj.inquiryFlag}==1)<a href="#springUrl('/mymessage')/inbox.htm" class="curLink">是</a>#else 否 #end</td>
+							#if($!{sessionUser.membershipCode}=="10051003")
+								<td>#if($!{obj.telFlag}==1)<a href="#springUrl('/myphone')/index.htm" class="curLink">是</a>#else 否 #end</td>
+							#end
+                        </tr>
+						#end
+                    </table>
+                </div>
+                <!--end marketingBox-item-table-->
+                <div class="marketingBox-item-page" id="page" style="margin:auto">
+                	#myrcPageNav($!{page} "#springUrl('/mydata/index.htm')" "tag=0&amp;from=$!{from}&amp;to=$!{to}&amp;flag=$!{flag}&amp;key=$!{key}" "")
+                </div>
+				<div class="marketingBox-item-page" id="pages" style="margin:auto;display:none">
+                	#myrcPageNav($!{pages} "#springUrl('/mydata/index.htm')" "tag=1&amp;from=$!{from}&amp;to=$!{to}&amp;flag=$!{flag}&amp;key=$!{key}" "")
+                </div>
+				<div class="marketingBox-item-chkBtn" id="inquiry" style="display:none"><a href="#springUrl('/mymessage')/inbox.htm" class="curLink">查询询盘明细</a></div>
+				<div class="marketingBox-item-chkBtn" id="tel" style="display:none"><a href="#springUrl('/myphone')/index.htm" class="curLink">查询电话明细</a></div>
+                <!--end marketingBox-item-page-->
+            </div>
+            <!--end marketingBox-item-->
+        </div>
+        <!--end marketing-box-->
+    </div>
+    <!--end marketing-->
+<script>
+   jQuery(function(){
+		myrc.menu(10, 0);
+	});
+   </script>   
+ <script>
+jQuery(function(){
+	myrc.select("Js_select");
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"http://trade.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"http://price.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("http://huzhu.zz91.com/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("http://company.zz91.com/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+});
+</script>
+<script type="text/javascript">
+function city(){
+    var myChart = new JSChart('graph', 'line');
+    var myData =new Array();
+	var val=$("input[name='Num']:checked").val();
+	if(document.getElementsByName('Nums')[0].checked==true){
+	    $('#line').css('display','none');
+		myData=new Array($!{map.get("viewPoint")});
+		myChart.setDataArray(myData,'green');
+		$('#table').css('display','block');
+		$('#page').css('display','block');
+		$('#tables').css('display','none');
+		$('#pages').css('display','none');
+		$('#tel').css('display','none');
+		$('#inquiry').css('display','none');
+	}
+	if(document.getElementsByName('Nums')[1].checked==true){
+		myData=new Array($!{map.get("visitPoint")});
+		myChart.setDataArray(myData,'pink');
+		if(document.getElementsByName('Nums')[0].checked==true){
+		    $('#line').css('display','block');
+			$('#tables').css('display','none');
+			$('#pages').css('display','none');
+			$('#table').css('display','block');
+			$('#page').css('display','block');
+		}else{
+		    $('#line').css('display','none');
+			$('#tables').css('display','block');
+			$('#pages').css('display','block');
+			$('#table').css('display','none');
+			$('#page').css('display','none');
+		}
+		$('#tel').css('display','none');
+		$('#inquiry').css('display','none');
+	}
+	if(val=="enquiries"){
+		myData=new Array($!{map.get("inquiryPoint")});
+		myChart.setDataArray(myData,'inquiry');
+		$('#table').css('display','none');
+		$('#page').css('display','none');
+		$('#tables').css('display','none');
+		$('#pages').css('display','none');
+		$('#tel').css('display','none');
+		$('#inquiry').css('display','block');
+		$('#line').css('display','none');
+	}
+	if(val=="calls"){
+		myData=new Array($!{map.get("telPoint")});
+		myChart.setDataArray(myData,'tel');
+		$('#table').css('display','none');
+		$('#page').css('display','none');
+		$('#tables').css('display','none');
+		$('#pages').css('display','none');
+		$('#inquiry').css('display','none');
+		$('#tel').css('display','block');
+		$('#line').css('display','none');
+	}
+	myChart.setAxisPaddingBottom(40);
+	myChart.setTextPaddingBottom(10);
+	myChart.setTitleFontSize(0);
+	myChart.setAxisNameX("");
+	myChart.setAxisNameY("");
+	myChart.setAxisValuesNumberY(6);
+	myChart.setIntervalStartY(0);
+	myChart.setIntervalEndY($!{map.get("big")});
+	myChart.setShowXValues(false);
+	var strP=new Array($!{map.get("string")});
+	for(var i=0;i<strP.length;i++){
+	 	myChart.setLabelX(strP[i]);
+	}
+	myChart.setAxisValuesNumberX(myData.length);
+	myChart.setTitleColor('#454545');
+	myChart.setAxisValuesColor('#454545');
+	myChart.setLineColor('#FF99FF', 'pink');
+	myChart.setLineColor('#99CCFF', 'green');
+	if(document.getElementsByName('Nums')[0].checked==true&&document.getElementsByName('Nums')[1].checked==true){
+		 var titleView=new Array($!{map.get("titleBV")});
+	 	 for(var i=0;i<titleView.length;i++){
+		 myChart.setTooltip(titleView[i]);
+	  }
+	}else{
+	  var titleView=new Array($!{map.get("titleView")});
+	  for(var i=0;i<titleView.length;i++){
+		myChart.setTooltip(titleView[i]);
+	  }
+	}
+	var titleVisit=new Array($!{map.get("titleVisit")});
+	for(var i=0;i<titleVisit.length;i++){
+		myChart.setTooltip(titleVisit[i]);
+	}
+	var titleInquiry=new Array($!{map.get("titleInquiry")});
+	for(var i=0;i<titleInquiry.length;i++){
+		myChart.setTooltip(titleInquiry[i]);
+	}
+	var titleTel=new Array($!{map.get("titleTel")});
+	for(var i=0;i<titleTel.length;i++){
+		myChart.setTooltip(titleTel[i]);
+	}
+	myChart.setFlagColor('#9D16FC');
+	myChart.setFlagRadius(3);
+	myChart.setSize(915, 260);
+	myChart.setAxisPaddingTop(5);
+	myChart.draw();
+}
+function show(name,id){
+   if(name=="Nums"){
+   		$("[name='Num']").removeAttr("checked");
+   }else{
+   		$("[name='Nums']").removeAttr("checked");
+   }
+    if(!$("[name='Num']").eq(0).is(':checked') && !$("[name='Num']").eq(1).is(':checked') && !$("[name='Nums']").eq(0).is(':checked') && !$("[name='Nums']").eq(1).is(':checked')){
+	  	$("#"+id).attr("checked",'true');
+   }
+}
+
+	function compare(){
+		var today=new Date();
+		var tday=today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+		if((today< new Date($("#time").val().replace(/-/g,"\/")))){
+     		alert("结束时间不能大于今天");
+    		return false;
+		}
+		return true
+	}
+	
+	jQuery("#clickForm").submit(function(){
+		if(!compare()){
+			return false;
+		}else{
+		  if($("#views").is(':checked') && $("#visitors").is(':checked')){
+   	  	     $("#clickForm").attr('action',"#springUrl('/mydata')/index.htm?key=views,visitors");
+	      }else if($("#views").is(':checked')){
+	         $("#clickForm").attr('action',"#springUrl('/mydata')/index.htm?key=views");
+	      }else if($("#visitors").is(':checked')){
+	         $("#clickForm").attr('action',"#springUrl('/mydata')/index.htm?key=visitors");
+	      }else if($("#enquiries").is(':checked')){
+	         $("#clickForm").attr('action',"#springUrl('/mydata')/index.htm?key=enquiries");
+	      }else if($("#calls").is(':checked')){
+	         $("#clickForm").attr('action',"#springUrl('/mydata')/index.htm?key=calls");
+	     }
+	   }
+	});
+function change(id){
+	if($("#views").is(':checked') && $("#visitors").is(':checked')){
+   	  	$("#"+id).attr('href',"#springUrl('/mydata')/index.htm?flag="+id+"&key=views,visitors");
+	}else if($("#views").is(':checked')){
+	    $("#"+id).attr('href',"#springUrl('/mydata')/index.htm?flag="+id+"&key=views");
+	}else if($("#visitors").is(':checked')){
+	    $("#"+id).attr('href',"#springUrl('/mydata')/index.htm?flag="+id+"&key=visitors");
+	}else if($("#enquiries").is(':checked')){
+	    $("#"+id).attr('href',"#springUrl('/mydata')/index.htm?flag="+id+"&key=enquiries");
+	}else if($("#calls").is(':checked')){
+	    $("#"+id).attr('href',"#springUrl('/mydata')/index.htm?flag="+id+"&key=calls");
+	}
+}
+ $(document).ready(function(){ 
+	var array=$!{keys};
+    for(var i=0;i<array.length;i++){
+        $("#"+array[i].value).attr("checked",'true');
+	}
+	city();
+  }); 
+</script>

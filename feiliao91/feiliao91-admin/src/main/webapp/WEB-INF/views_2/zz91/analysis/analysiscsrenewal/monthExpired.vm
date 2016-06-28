@@ -1,0 +1,201 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		Ext.create("Ext.form.FieldSet",{
+			title:"选项",
+			layout:"hbox",
+			defaults: {
+				labelWidth: 60, 
+				align: 'stretch'
+            },
+			renderTo :"toolbar",
+			items:[
+        		Ext.create("Ext.form.field.Date",{
+        			name:"start",
+        			format:"Y-m-01 H:i:s",
+        			emptyText:"请选择开始时间",
+        			value:"$!date.format('yyyy-MM-01 HH:mm:ss',$!{start})"
+        		}),
+				Ext.create("Ext.form.field.Date",{
+        			name:"end",
+					format:"Y-m-01 H:i:s",
+        			emptyText:"请选择结束时间",
+        			value:"$!date.format('yyyy-MM-01 HH:mm:ss',$!{end})",
+					style:{"margin-left":"5px"}
+        		}),
+				Ext.create("Ext.button.Button",{
+        			name:"btn",
+        			text:"提交",
+					style:{"margin-left":"5px"},
+					handler:function(btn){
+						Ext.getDom("form1").submit();
+					}
+        		})
+			]
+		});
+		
+	});
+</script>
+<form action="#springUrl('/zz91/analysis/analysiscsrenewal/monthExpired.htm')" method="post" id="form1">
+<div style="margin:10px 50px;font-size:15px;" id="toolbar">
+	
+</div>
+</form>
+
+<div style="margin:10px 50px;font-size:15px;">
+	再生通过期：
+	<table border="1" style="background-color:#333333;">
+		<tr>
+            <td bgcolor="#ffffff">账户</td>
+			#foreach($month in $!{monthList})
+				<td bgcolor="#ffffff">$!{month}</td>
+			#end
+		</tr>
+		#foreach($!{cs} in $!{expiredCount.keySet()})
+    		#if($!{cs}!='total')
+				#if($!{expiredMark}=="yes")
+        		<tr>
+        			<td bgcolor="#ffffff">
+        				#if($!{csDept.get($!cs)})
+        					$!{csDept.get($!cs)}
+        				#else
+        					$!{cs}
+        				#end
+        			</td>
+        			#foreach($month in $!{monthList})
+        				<td bgcolor="#ffffff">
+        					#if($!{expiredCount.get($!cs).get($!month)})
+        						<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1000&cs=$!{cs}&svrEndMonth=$!month" target="_blank">
+        						$!{expiredCount.get($!cs).get($!month)}
+        						</a>
+        					#else
+        						0
+        					#end
+        				</td>
+        			#end
+        		</tr>
+				#else
+					#if($!{usermark}=="$!{cs}")
+					<tr>
+						<td bgcolor="#ffffff">
+							#if($!{csDept.get($!cs)})
+								$!{csDept.get($!cs)}
+        				    #else
+								$!{cs}
+        				    #end
+        			    </td>
+        			   #foreach($month in $!{monthList})
+        				 <td bgcolor="#ffffff">
+        					#if($!{expiredCount.get($!cs).get($!month)})
+        						<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1000&cs=$!{cs}&svrEndMonth=$!month" target="_blank">
+									$!{expiredCount.get($!cs).get($!month)}
+        						</a>
+        					#else
+        						0
+        					#end
+        				</td>
+        			#end
+        		</tr>
+				#end
+				#end
+    		#end
+		#end
+		#if($!{expiredMark}=="yes")
+		<tr>
+			<td bgcolor="#ffffff">
+				总计
+			</td>
+			#foreach($month in $!{monthList})
+				<td bgcolor="#ffffff">
+					#if($!{expiredCount.get("total").get($!month)})
+						<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1000&svrEndMonth=$!month" target="_blank">
+						$!{expiredCount.get("total").get($!month)}
+						</a>
+					#else
+						0
+					#end
+				</td>
+			#end
+		</tr>
+		#end
+    </table>
+	<br />
+	<br />
+	简版再生通过期：
+	<table border="1" style="background-color:#333333;">
+		<tr>
+            <td bgcolor="#ffffff">账户</td>
+			#foreach($month in $!{monthList})
+				<td bgcolor="#ffffff">$!{month}</td>
+			#end
+		</tr>
+		#foreach($!{cs} in $!{jbExpiredCount.keySet()})
+    		#if($!{cs}!='total')
+				#if($!{expiredMark}=="yes")
+        		<tr>
+        			<td bgcolor="#ffffff">
+        				#if($!{csDept.get($!cs)})
+        					$!{csDept.get($!cs)}
+        				#else
+        					$!{cs}
+        				#end
+        			</td>
+        			#foreach($month in $!{monthList})
+        				<td bgcolor="#ffffff">
+        					#if($!{jbExpiredCount.get($!cs).get($!month)})
+        						<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1006&cs=$!{cs}&svrEndMonth=$!month" target="_blank">
+        						$!{jbExpiredCount.get($!cs).get($!month)}
+        						</a>
+        					#else
+        						0
+        					#end
+        				</td>
+        			#end
+        		</tr>
+				#else
+					#if($!{usermark}=="$!{cs}")
+						<tr>
+							<td bgcolor="#ffffff">
+								#if($!{csDept.get($!cs)})
+									$!{csDept.get($!cs)}
+								#else
+									$!{cs}
+								#end
+							</td>
+							#foreach($month in $!{monthList})
+								<td bgcolor="#ffffff">
+									#if($!{jbExpiredCount.get($!cs).get($!month)})
+										<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1006&cs=$!{cs}&svrEndMonth=$!month" target="_blank">
+											$!{jbExpiredCount.get($!cs).get($!month)}
+										</a>
+									#else
+										0
+									#end
+								</td>
+							#end
+						</tr>
+					#end
+				#end
+    		#end
+		#end
+		#if($!{expiredMark}=="yes")
+		<tr>
+			<td bgcolor="#ffffff">
+				总计
+			</td>
+			#foreach($month in $!{monthList})
+				<td bgcolor="#ffffff">
+					#if($!{jbExpiredCount.get("total").get($!month)})
+						<a href="#springUrl('/zz91/crm/cs/index.htm')?svrCode=1006&svrEndMonth=$!month" target="_blank">
+						$!{jbExpiredCount.get("total").get($!month)}
+						</a>
+					#else
+						0
+					#end
+				</td>
+			#end
+		</tr>
+		#end
+    </table>
+</div>

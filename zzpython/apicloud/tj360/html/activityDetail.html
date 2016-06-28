@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>活动</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		/*color: rgb(0, 184, 255);*/
+		color: #fff;
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: rgb(1, 140, 194) !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title">活动</strong>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="attendActivity()">
+					参加
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	var item = null;
+	
+	apiready = function() {
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		
+		item = api.pageParam.item;
+		if(item.alink){
+			api.openFrame({
+				name: 'activityDetail_frame',
+				url: item.alink,
+				bounces: true,
+				showProgress: true,
+				rect: {
+					x: 0,
+					y: headerPos.h,
+					w: 'auto',
+					h: 'auto'
+				}
+			});			
+		}else{
+			api.openFrame({
+				name: 'activityDetail_frame',
+				url: 'activityDetail_frame.html',
+				bounces: true,
+				pageParam: api.pageParam,
+				rect: {
+					x: 0,
+					y: headerPos.h,
+					w: 'auto',
+					h: 'auto'
+				}
+			});
+		}
+	};
+	
+	function attendActivity(){
+	var values = {
+			name: $api.getStorage('usr').name,
+			aid: item.id 
+		};
+		       var model = api.require('model');
+           var query = api.require('query');
+            model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2',host: 'https://d.apicloud.com'});
+
+		var param = {class:'activitytongji', value:values};
+			model.insert(param, function(ret, err){
+				if(ret ){
+				api.toast({msg: '参加成功', location: 'middle'});
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}	
+	    	}
+			});
+	/**
+		var values = {
+			name: $api.getStorage('usr').name,
+			aid: item._id 
+		};
+		var model = api.require('model');
+           var query = api.require('query');
+            model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2',host: 'https://d.apicloud.com'});
+		var mcm = api.require('mcm');
+		var param = {class:'activitytongji', value:values};
+		mcm.insert(param, function(ret, err){
+	    	if(ret ){
+				api.toast({msg: '参加成功', location: 'middle'});
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}	
+	    	}
+	    });
+	    */
+	}
+</script>
+</html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="descriptionTemplate">
+
+	<typeAlias alias="descriptionTemplateDO" type="com.ast.ast1949.domain.products.DescriptionTemplateDO" />
+	<typeAlias alias="descriptionTemplateDTO" type="com.ast.ast1949.dto.products.DescriptionTemplateDTO" />
+
+	<resultMap id="descriptionTemplateDTOResult" class="descriptionTemplateDTO">
+		<result property="templateName" column="templateName" />
+		<result property="descriptionTemplateDO"
+			resultMap="descriptionTemplate.descriptionTemplateResult" />
+	</resultMap>
+
+
+	<resultMap class="descriptionTemplateDO" id="descriptionTemplateResult">
+		<result property="id" column="id" />
+		<result property="templateCode" column="template_code" />
+		<result property="content" column="content" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="dynamicByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty property="dto.descriptionTemplateDO.templateCode" prepend="and">
+				d.template_code = #dto.descriptionTemplateDO.templateCode#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryDescriptionTemplateRecordCount" parameterClass="java.util.HashMap"
+		resultClass="int">
+		SELECT
+			COUNT(*)
+		FROM
+		description_template d
+		INNER JOIN category c ON c.code=d.template_code
+		<include refid="descriptionTemplate.dynamicByCondition"/>
+	</select>
+	<select id="queryDescriptionTemplateByCondition" parameterClass="java.util.HashMap"
+		resultMap="descriptionTemplateDTOResult">
+		select
+		d.id,
+		d.template_code ,
+		d.content,
+		c.label as templateName,
+		d.gmt_created,
+		d.gmt_modified
+		from
+		description_template d
+		inner join category c on c.code=d.template_code
+		<include refid="descriptionTemplate.dynamicByCondition"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--
+		<select id="queryTemplateCategoryById" parameterClass="int"
+		resultClass="descriptionTemplateDO"> select template_code from
+		description_template where id=#id:INTEGER# </select>
+	-->
+	<insert id="insertDescriptionTemplate" parameterClass="descriptionTemplateDO">
+
+		insert into
+		description_template
+		(
+		template_code,
+		content,
+		gmt_created)
+		values
+		(
+		#templateCode#,
+		#content#,
+		#gmtCreated#)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<delete id="batchDeleteDescriptionTemplateById" parameterClass="int" >
+		delete
+		from description_template
+		where id=#id#
+	</delete>
+
+</sqlMap>

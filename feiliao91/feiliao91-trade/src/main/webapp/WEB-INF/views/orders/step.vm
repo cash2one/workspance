@@ -1,0 +1,217 @@
+#set($layout="/layout/default.vm")
+ <!--[if IE 6]> 
+    <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+    <script type="text/javascript">
+    $(function(){
+        $(".allgoods dd").height($(".allgoods dd").height())
+    })
+    DD_belatedPNG.fix('img');
+    </script>  
+<![endif]-->
+<link rel="stylesheet" href="http://img0.zz91.com/trade/buypay/css/pay-list.css" />
+#parse("/common/buy_menu.vm")
+<div class="content clearfix">
+	
+	#if($!{status}=='0'||$!{status}=='1')
+		#set($step=1)
+	#elseif($!{status}=='2')
+		#set($step=2)
+	#elseif($!{status}=='3')
+		#set($step=3)
+	#elseif($!{status}=='66')
+		#if($hasJudge)
+			#set($step=5)
+		#else
+			#set($step=4)
+		#end
+	#end
+	#parse("/common/buy_status.vm")
+	<div class="confirm_order clearfix">
+		<div class="orderleft fl">
+            <div class="ddan-tt">订单信息</div>
+            <ul class="ddan-infolist">
+                <li>
+                    <span class="ddan-smtt">收货地址：</span>
+                    <span class="ddan-cnt">$!{addr}</span>
+                </li>
+                <li>
+                    <span class="ddan-smtt">买家留言：</span>
+                    <span class="ddan-cnt">#if($!{buyMessage}&&$!{buyMessage}!="") $!{buyMessage} #else -- #end</span>
+                </li>
+                <li>
+                    <span class="ddan-smtt">发票抬头：</span>
+                    <span class="ddan-cnt">#if($!{buyInvoiceTitle}&&$!{buyInvoiceTitle}!="") $!{buyInvoiceTitle} #else -- #end</span>
+                </li>
+                <li>
+                    <span class="ddan-smtt">订单编号：</span>
+                    <span class="ddan-cnt">$!{orderNo}</span>
+                </li>
+                <li>
+                    <span class="ddan-smtt">商&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;家：</span>
+                    <span class="ddan-cnt">$!{sellName}</span>
+                </li>
+            </ul>
+        </div>
+        #if($!{operate}=="buy")
+        	#if($!{status}=='0')
+        		#parse("/common/buy/step_0.vm")
+        	#elseif($!{status}=='1')
+        		#parse("/common/buy/step_1.vm")
+        	#elseif($!{status}=='2')
+        		#parse("/common/buy/step_2.vm")
+        	#elseif($!{status}=='3')
+        		#parse("/common/buy/step_3.vm")
+        	#elseif($!{status}=='66')
+        		#parse("/common/buy/step_66.vm")
+        	#elseif($!{status}=='99')
+        		#parse("/common/buy/step_99.vm")
+			#end
+        #else
+        	#if($!{status}=='0')
+        		#parse("/common/sell/step_0.vm")
+        	#elseif($!{status}=='1')
+        		#parse("/common/sell/step_1.vm")
+        	#elseif($!{status}=='2')
+        		#parse("/common/sell/step_2.vm")
+        	#elseif($!{status}=='3')
+        		#parse("/common/sell/step_3.vm")
+        	#elseif($!{status}=='66')
+        		#parse("/common/sell/step_66.vm")
+        	#elseif($!{status}=='99')
+        		#parse("/common/sell/step_99.vm")
+			#end
+        #end
+    </div>
+    <dl class="allgoods">
+        <dt class="clearfix">
+            <div class="algtle-one fchilde">产品</div>
+            <div class="algtle-two fchilde">单价(元)</div>
+            <div class="algtle-three fchilde">数量</div>
+            <div class="algtle-three fchilde">运费(元)</div>
+            <div class="algtle-three fchilde">状态</div>
+        </dt>
+        <dd class="clearfix">
+            <div class="fl clearfix one-cpif2">
+			#foreach($obj in $logisticsMap.get("data"))
+				#if($velocityCount==1)
+					#set($newtime=$obj.time)
+					#set($context=$obj.context)
+				#end
+			#end
+			#if($!{logisticsNo})
+			<div class="dd-allxx clearfix">
+				## 物流公司并没有选择
+				<span class="fl">$!{logisticsCompany}</span>
+				<span class="fl">运单号：$!{logisticsNo}</span>      
+				<span class="fl">$!newtime</span>
+				<div class="fl wuliu-xq clearfix j_wuliu-xq">
+					<span class="orange fl">$!context</span>
+					#if($logisticsMap.get("data"))
+						<span class="zs-img fl"></span>
+					#end
+					<div class="wuliu-tc" style="display: none; overflow: hidden;  padding-top: 0px; margin-top: 0px;">##height: 291px;
+						<span class="snajiao"></span>
+						<div class="wuliu-list">
+							#foreach($obj in $logisticsMap.get("data"))
+								<p>
+									$!obj.time &nbsp;&nbsp; $!obj.context
+								</p>
+							#end
+							<p>以下信息由物流公司提供，如无跟踪信息或有疑问，请查XXX官方网站或联系其公示电话</p>
+						</div>
+					</div>
+				</div>   
+			</div>
+			#end
+			#set($ss=$resultlist.size())
+			#set($bb=0)
+			#foreach($li in $resultlist)
+				#set($bb=$bb + 1)
+                <div class="algtle-one fchilde">
+                    <div class="algtle-one-main">
+						<a href="$!{address.www}/goods$!{li.goods.id}.htm" target="_blank">
+                        <img src="$!{address.img}$!{li.picAddress}" width="80" height="80" />
+						</a>
+						<a href="$!{address.www}/goods$!{li.goods.id}.htm" target="_blank">
+                        <p>$!{li.goods.title}</p>
+						</a>
+                        <p class="algtle-color">$!{li.format}</p>
+                    </div>
+                </div>
+                <div class="algtle-two fchilde">$!{li.orders.buyPricePay}</div>
+                <div class="algtle-three fchilde">$!{li.orders.buyQuantity}$!{li.goods.unit}</div>
+				#if(!$!{buyPriceLogistics})
+				<div class="algtle-four2 fchilde">
+						#if($!{li.goods.fare})
+							#if($!{li.goods.fare}=="-1") 商议后调整 
+							#elseif($!{li.goods.fare}=="0")
+								<span  style="color:red">包邮</span>
+							#else
+								$!{li.goods.fare} 
+							#end 
+						#else 
+							商议后调整 
+						#end
+				</div>
+				#else
+				<div class="algtle-four2 fchilde" #if($bb<$ss) style="border-bottom:0px"#end <span>#if($bb<2) $!{buyPriceLogistics} #end</span></div>
+				#end
+				#if($!{operate}=="buy")
+            	#if($!{status}=='0')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>等待卖家审核</span></div>
+            	#elseif($!{status}=='1')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>待付款</span></div>
+            	#elseif($!{status}=='2')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>待发货</span></div>
+            	#elseif($!{status}=='3')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>物流中</span></div>
+            	#elseif($!{status}=='66')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>交易成功</span></div>
+            	#elseif($!{status}=='99')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>交易关闭</span></div>
+				#end
+            #else
+            	#if($!{status}=='0')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>买家已下单</span></div>
+            	#elseif($!{status}=='1')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>等待买家付款</span></div>
+            	#elseif($!{status}=='2')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>等待发货</span></div>
+            	#elseif($!{status}=='3')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>物流中</span></div>
+            	#elseif($!{status}=='66')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>交易成功</span></div>
+            	#elseif($!{status}=='99')
+					<div #if($!{logisticsNo}) class="algtle-five fchilde" #else class="algtle-five3 fchilde"  #end><span>交易关闭</span></div>
+				#end
+			#end
+			#end
+        </dd>
+    </dl>
+	#if($!{cost})
+	<div class="allmoery">实付款：<span class="allmoery-num">$!{cost}</span> 元</div>
+	#else
+    <div class="allmoery">实付款：<span class="allmoery-num">$!{sumPirce}</span> 元</div>
+	#end
+</div>
+<div class="estopDiv j_close"></div>
+<script type="text/javascript">
+    $(".j_rma").bind("click",function(){
+        var wHight = $(document).height();
+        var wWidth = $(document).width();
+        var scrollTop = $(document).scrollTop();
+        $(".estopDiv").height(wHight).width(wWidth).show();
+        var left_pop = (wWidth - $(".pop-main").width())/2
+        var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+        $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+    })
+    $(".j_close").bind("click",function(){
+        $(".estopDiv").hide();
+        $(".pop-main").hide();
+    })
+    $(".j_wuliu-xq").bind("hover",function(){
+        $(".zs-img").toggleClass("zs-img2");
+        $(".wuliu-tc").stop().slideToggle();
+    })
+	
+</script>

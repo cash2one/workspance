@@ -1,0 +1,153 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1403","","00")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+	<div class="tishiTitleTop">
+    			您也可以填写下面的表单将您要反馈的信息告诉我们，我们会在第一时间给你解答。<br />
+    			为了更清楚的了解您要反馈的信息，请您认真填写上面的表单。<br />
+    			您也可以直接打电话与我们联系。再次谢谢您对我们的支持。
+	</div>
+    <div class="officetitle" onclick="jQuery('#form1').slideToggle(200)" style="cursor:pointer"><span style="float:left">如果您有任何疑问或建议，请告诉我们！</span><span class="officetitleClose"  id="officetitleBtn"></span></div>
+	<form id="form1" name="form1" action="" onsubmit="return false;" >
+		<div class="productskuang">
+			<div class="publishFormItems">
+				<div class="products_title">
+                        <label for="title">问题/建议：</label>
+				</div>
+				<div class="products_fill">
+                    <input name="title" id="title" value="" maxlength="100" size="60" style="width:350px;"/>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+			<div class="publishFormItems">
+				<div class="products_title">
+                        <label for="content">详细描述：</label>
+				</div>
+                <div class="products_fill">
+                    <textarea id="content" name="content" rows="8" cols="60" maxlength="1000" style="width:500px;"> </textarea>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+			<div class="publishFormItems publishFormSub">
+				<input type="submit" value="提交建议" id="buttonMax"/> 
+			</div>
+        </div>
+	</form>
+	
+	<div class="officetitle">已提交的问题/建议</div>
+	#set($vcount = 0)
+	<div class="feedback">
+	<ul>
+	#foreach($feedback in $!{page.records})
+		<li>
+		<div class="feedbackTit">
+			<b>标题：</b>$!{feedback.title} <span class="dateGray">$!date.format('yyyy-MM-dd HH:mm:ss',$!{feedback.gmtCreated})</span>
+		</div>
+		<div class="feedbackContB">
+			$!{feedback.content}
+		</div>
+		#if(${feedback.checkStatus} == "0")
+		<div class="feedbackContRepCont" >
+			<b>回复：</b>
+			#if($!{myaccount.contact} && $!{myaccount.contact.length()}>4 )
+    			$!{myaccount.contact.substring(0,4)}
+    		#else
+    			$!{myaccount.contact}
+    		#end
+    		#if($!{myaccount.sex} == 1)
+    			女士
+    		#else
+    			先生
+			#end
+			，您的反馈我们已经收到，请耐心等待我们的处理，感谢您提出的宝贵的问题/建议！
+		</div>
+		#end
+		#if(${feedback.checkStatus} == "1")
+		<div class="feedbackContRepCont" >
+            <b>回复：</b>
+			$!{feedback.replyContent}
+			<span>$!date.format('yyyy-MM-dd hh:mm:ss',$!{feedback.gmtReply})</span>
+			
+		</div>
+		#end
+		#if(${feedback.checkStatus} == "2")
+		<div class="feedbackContRepCont">
+			<b>回复：</b>
+			#if($!{myaccount.contact} && $!{myaccount.contact.length()}>4 )
+    			$!{myaccount.contact.substring(0,4)}
+    		#else
+    			$!{myaccount.contact}
+    		#end
+    		#if($!{myaccount.sex} == 1)
+    			女士
+    		#else
+    			先生
+			#end
+			，感谢您提出的问题/建议，我们将尽快处理！
+		</div>
+		#end
+		#set($vcount = 1)
+		</li>
+	#end
+	#if($vcount==0)
+    	<li class="sbtishi">
+    		您暂时还没有提出过问题/建议！
+        </li>
+	#end
+	<div style="clear:both"></div>
+	</ul>
+    </div>
+    <div style="clear:both"></div>
+	<div class="pageNav" style="margin:10px 0">
+		#myrcPageNav($!{page} "#springUrl('/myfeedback/member.htm')" "" "")
+	</div>
+</div>
+
+<script type="text/javascript" >
+jQuery(document).ready(function(){
+	jQuery("#form1").submit(function(){
+		if(!chkfrm()){
+			return false;
+		}
+		
+		jQuery.ajax({
+			url:'#springUrl('/myfeedback/feedbackMember.htm')',
+			data:jQuery("#form1").serialize(),
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					window.location.href=window.location.href;
+				}else{
+					msg.show(req.data);
+					if(req.data="sessionTimeOut"){
+						window.open("#springUrl('/login.htm')");
+					}
+				}
+			},
+			failure:function(){
+				msg.show("commonError");
+			}
+		});
+	});
+});
+
+function chkfrm(){
+	if(jQuery("#title").val().length<=0){
+		alert("请输入问题/建议!");
+		jQuery("#title").focus();
+		return false;
+	}
+	
+	if(jQuery("#content").val().length<=0){
+		alert("请输入反馈的内容!");
+		jQuery("#content").focus();
+		return false;
+	}
+	return true;
+} 
+jQuery(document).ready(function(){
+	new turnLiBgcolor(".feedback","#EFF6EF","#FFF")
+	});
+</script>

@@ -1,0 +1,255 @@
+#set($layout="/layout/defaultSample.vm")
+
+    <link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/account.css">
+    <link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/sample/admin/css/finace.css">
+	<script src="$!{address.img}/lib/asto/modernizr.js"></script>
+    <script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+    <script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+	<script type="text/javascript" src="http://img0.zz91.com/zz91/sample/js/checkForm.js"></script>
+	
+<script>
+	function isOnSubmit()
+	{
+	 	if (!checkFormdata(document.all.contact, "联系人",20,true, false, false, false, false))
+	    {	
+	        return false;
+	    }
+		
+	 	if (checkLength(document.all.addressCode.value)  <20  )
+	    {	
+			alert("请选择所在地区！");
+	        return false;
+	    }
+		
+	 	if (!checkFormdata(document.all.address, "详细地址",100,true, false, false, false, false))
+	    {	
+	        return false;
+	    }
+		
+	 	if (!checkFormdata(document.all.mobile, "手机号码",11,true, false, false, false, true))
+	    {	
+	        return false;
+	    }
+				
+	 	if (checkLength(document.all.mobile.value)<11 )
+	    {	
+			alert("手机号码不能少于11位！");
+	        return false;
+	    }
+		
+		return true;
+	}
+
+	function changevalue(){
+      	 var isdefault=document.getElementById("isdefault");
+     	 if(isdefault.checked==true)
+    	      isdefault.value="1";
+  		 if(isdefault.checked==false)
+     		 isdefault.value="0";
+    }
+</script>
+
+<style >
+a:hover {text-decoration:none} 
+</style>
+
+<body class="gbody1000">
+#parse("mngr/include/nav.vm")
+#parse("mngr/include/head.vm")
+#parse("mngr/include/lm.vm")
+<div class="gm1-5 gw-bcrumb">
+    <span><a href="#springUrl('/mngr/managerIndex.htm')">会员中心</a></span>
+            <strong>
+        <a href="#">收发货地址修改</a>
+    </strong>
+</div>
+<div class="gMain clearfix">
+        
+<!--leftmenu  -->    
+<div class="gMenu">
+            <a href="#springUrl('/mngr/managerIndex.htm')" class="gHome">会员中心</a>
+            <div class="gMenuBox">
+                <div class="gMenuItem">
+                    <h3 class="helper">采购管理</h3>
+                    <ul>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')">全部订单</a> </li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=00">待付款订单</a> <font color=red>#if($!{bc_00})($!{bc_00})#end</font></li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=11">待确认收货</a> <font color=red>#if($!{bc_11})($!{bc_11})#end</font></li>
+                        <li class=""><a href="#springUrl('/mngr/orderAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{bc_13})($!{bc_13})#end</font></li>
+                    </ul>
+                </div>
+                <div class="gMenuItem">
+                    <h3 class="order">供应管理</h3>
+                    <ul>
+                    	<li><a href="#springUrl('/mngr/saleAll.htm')">全部订单</a> </li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=03">待发货订单</a> <font color=red>#if($!{sc_})($!{sc_03})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=06">提醒发货订单</a> <font color=red>#if($!{sc_})($!{sc_06})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=11">等待买家收货</a> <font color=red>#if($!{sc_})($!{sc_11})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=14">退货中订单</a> <font color=red>#if($!{sc_})($!{sc_14})#end</font></li>
+                        <li><a href="#springUrl('/mngr/saleAll.htm')?state=13">已完成订单</a> <font color=red>#if($!{sc_})($!{sc_13})#end</font></li>
+                    </ul>
+                </div>
+				
+                <div class="gMenuItem">
+                    <h3 class="order">积分管理</h3>
+                    <ul>
+                        <li class="">
+                            <a href="#springUrl('/score.htm')"  target="_blank">积分兑换</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreIncome.htm')">积分收入</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/scoreConvert.htm')">积分支出</a>
+                        </li>
+                    </ul>
+                </div>
+								
+                <div class="gMenuItem">
+                    <h3 class="account">账户管理</h3>
+                    <ul>
+                        
+                        <li class="">
+                            <a href="#springUrl('/mngr/finance.htm')">财务概况</a>
+                            <!--收支明细  加  提现记录-->
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/record.htm')">收支记录</a>
+                        </li>
+                        <li   #if($!{flag}=="B") class="current"  #else #end >
+                            <a href="#springUrl('/mngr/address.htm')?flag=B">收货地址</a>
+                        </li>
+                        <li   #if($!{flag}=="S") class="current"  #else #end >
+                            <a href="#springUrl('/mngr/address.htm')?flag=S">发货地址</a>
+                        </li>
+                        <li class="">
+                            <a href="#springUrl('/mngr/safe.htm')">安全中心</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="gift"><a href="http://myrc.zz91.com/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0" target="_blank">样品管理</a></h3>
+                  
+                </div>
+                
+                <div class="gMenuItem">
+                    <h3 class="msg">消息管理</h3>
+                    <ul>
+						<li class=""><a href="#springUrl('/mngr/msgset.htm')">消息提醒设置</a></li>	
+                        <li class=""><a href="http://myrc.zz91.com/mymessage/inbox.htm" target="_blank">询盘管理</a></li>	
+                        <li class=""> <a href="http://myrc.zz91.com/myfeedback/vip.htm" target="_blank">客服留言</a></li>
+                    </ul>
+                </div>
+            </div>
+</div>
+ <!--leftmenu  end --> 
+ 
+        <div class="gContainer">
+			<div class="gwTopic clearfix">
+                <h2>#if(${flag}=='B')收货#else发货#end地址</h2>
+            </div>
+            <div class="basicForm addresBox">
+                <form id="cominfo" name="cominfo" action="#springUrl('/mngr/addressEdit.htm')"    onsubmit="return isOnSubmit();"  method="post">
+					<input type="hidden" class="text" name="flag" value="${flag}" >                   
+					<input type="hidden" class="text" name="companyId" value="${obj.companyId}" >                   
+                    <div class="comInfoBox">
+                        <div class="comInfoTit2">
+                            <h3>修改收获地址</h3>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label"><em>*</em>#if(${flag}=='B')收货#else发货#end人：</div>
+                            <div class="cell">
+                            	<input type="hidden" class="git gw-gw" name="id" value="${obj.id}">
+                                <input type="text" class="text" id="contact"  name="contact" value="${obj.contact}">
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label"><em>*</em>所在地区：</div>
+                            <div class="cell">
+                                 <select id='yp-area-1' class="validate[required]">
+							      <option value="">请选择省份</option>
+						     </select>
+						     <select id='yp-area-2'>
+							      <option value="">请选择城市</option>
+						     </select>
+							 <select id='yp-area-3'>
+							      <option value="">请选择区</option>
+						     </select>
+							 <input type="hidden" name="addressCode" id="areaCode" value=${obj.addressCode} />
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label"><em>*</em>街道地址：</div>
+                            <div class="textareaBox">
+                                <textarea class="text textarea"  id="address"  name="address">${obj.address}</textarea>
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label">邮政编码：</div>
+                            <div class="cell">
+                                <input type="text" class="text" name="addressZip" value="${obj.addressZip}">
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label">电话号码：</div>
+                            <div class="cell">
+                                <input type="text" class="text" name="tel" value="${obj.tel}">
+                                <span class="note">区号-电话号码-分机如：0371-60968689-101</span>
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label"><em>*</em>手机号码：</div>
+                            <div class="cell">
+                                <input type="text" class="text"  id="mobile" name="mobile" value="${obj.mobile}">
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <div class="label">设为默认：</div>
+                            <div class="cell">
+                            	<input type="checkbox" id="isdefault" name="isdefault"  onclick="changevalue();"  value="${obj.isdefault}" #if(${obj.isdefault}==0) #else checked #end > 
+                            </div>
+                        </div>
+                        <div class="bFRow">
+                            <input class="sCSumbitBtn" type="submit" value="确认修改">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+		</div>
+	</div>
+	</div>
+#parse("mngr/include/bottom.vm")
+<script>
+var regarea = new Asto.util.Selector({
+    		selects:["#yp-area-1","#yp-area-2","#yp-area-3"],
+    		url:"#springUrl('/category/areaChild.htm')",
+    		changeCallback:function(c,idx){
+    			setAreaCode();
+    		}
+    	});
+regarea.init({
+				rootCode:"10011000",
+				#if($!{obj.addressCode}&&$!{obj.addressCode}!="")
+    			    initCode:"$!{obj.addressCode}"
+    		    #else
+    			   initCode:"10011000"
+    		    #end
+			});
+function setAreaCode(){
+        		var areacode=jQuery("#yp-area-1").val();
+        		if(jQuery("#reg-area-1").val()!=""){
+        			areacode=jQuery("#yp-area-1").val();
+        		}
+        		if(jQuery("#yp-area-2").val()!=""){
+        			areacode=jQuery("#yp-area-2").val();
+        		}
+				if(jQuery("#yp-area-3").val()!=""){
+        			areacode=jQuery("#yp-area-3").val();
+        		}
+        		jQuery("#areaCode").val(areacode);
+        	}
+</script>
+</body>

@@ -1,0 +1,104 @@
+<div class="wangbox">
+    <div class="mainblock1">
+		<div class="img1">
+			<img src="$!{address.img}/zz91/questionreg/images/img6.jpg" />
+		</div>
+		<div class="zi35">
+			您可以<a href="$!{address.myrc}/mycompany/updateCompany.htm">完善公司信息</a>
+			，以便收到对方的回复。
+		</div>
+		<div class="m1-button">
+			##<div class="m1-button-ok1"><a href="$!{address.myrc}/myproducts/office_post1.htm" target="_blank">发布供求信息</a></div>
+			##<div class="m1-button-ok2"><a href="$!{address.myrc}/mycompanyprice/createPrice.htm" target="_blank">发布报价</a></div>
+		</div>
+		<div class="cb"></div>
+	</div>
+	<!--end mainblock1-->
+	<div class="zi37">ZZ91再生网为您推荐更多优质商机</div>
+	<div class="mainblock1_search fr">
+		<input type="text" class="text" id="searchKey" />
+		<div class="ok2" id="searchBtn">
+			<a>精确搜索</a>
+		</div>
+		<div style="clear:both"></div>
+	</div>
+	<div style="clear:both"></div>
+	<div class="mainblock2">
+		#foreach($obj in $companyPage.records)
+		#set($compurl="#springUrl('/compinfo')$!{obj.company.id}.htm")
+		#set($urlMsg="$!{address.front}/inquiry/inquiryApi.htm?companyId=$!{obj.company.id}")
+        ##set($urlMsg="#springUrl('/compinfo')$!{obj.company.id}.htm#messages")
+        #set($urlProduct="#springUrl('/compinfo')$!{obj.company.id}.htm#supply")
+        #set($urlContact="#springUrl('/compinfo')$!{obj.company.id}.htm")
+        #if($!{obj.company.membershipCode}!="10051000" && $!{obj.company.domainZz91}!="")
+            #set($compurl="http://$!{obj.company.domainZz91}.zz91.com")
+            #set($urlProduct="http://$!{obj.company.domainZz91}.zz91.com/zxgq.htm")
+            #set($urlContact="http://$!{obj.company.domainZz91}.zz91.com/lxfs.htm")
+        #end
+        <div class="listBox clearfix" onMouseOver="this.style.backgroundColor='#FFFCF0'" onMouseOut="this.style.backgroundColor='#fff'">
+            <div class="list_box_title">
+                <a href='http://wangyuelong.zz91.com' target='_blank' title="">$!{obj.company.name}</a>
+                <span class="list_box_zi1">
+					#if($!{obj.company.membershipCode}!="10051000" && $!{obj.company.domainZz91}!="" && $!{obj.company.zstYear} > 0)
+					第<span class="list_box_zi2">$!{obj.company.zstYear}</span>年
+					#end
+				</span>
+            </div>
+            <div class="list_box_left">
+                <span class="list_box_zi3">
+                    类型：<a href="$!{address.company}/index-b$!{obj.company.industryCode}-c-p.htm">$!{industryCodeName}</a>
+                    <br />
+                    地区：$!{obj.province}|$!{obj.city}<br />
+                    联系人：王跃龙<br />
+                    会员：<font color="#990000">$!{com.membershipLabel}</font>
+                    <br />
+                </span>
+                <span class="list_box_zi4">
+                    <a href="$!{urlMsg}" target="_blank">
+                        <img src="http://img0.zz91.com/zz91/company/list/images/i1.jpg" />
+                    </a>
+                    <a href="$!{urlContact}" target="_blank">
+                        <img src="http://img0.zz91.com/zz91/company/list/images/i2.jpg"/>
+                    </a>
+                    <a href="$!{compurl}" target="_blank">
+                        <img src="http://img0.zz91.com/zz91/company/list/images/i3.jpg" />
+                    </a>
+                </span>
+            </div>
+            <!--end list_box_left-->
+            <div class="list_box_line"></div>
+            <!--end list_box_line-->
+            <div class="list_box_right">
+                <span class="list_box_zi5">
+                    <span class="list_box_zi6">主营：</span>
+					#printTitle($!{obj.company.introduction} 100 "")
+				</span>
+                <span class="list_box_zi7">供求：</span>
+                <a href="http://wangyuelong.zz91.com" target="_blank">
+                    <span class="list_box_zi8">更多供求信息>></span>
+                </a>
+				#if($!{obj.buyPro})
+				<a href="$!{address.trade}/productDetails$!{com.buyPro.id}.htm">
+    				<span class="list_box_zi9">#printProductType($!{com.buyPro.productsTypeCode} "" "")$!{com.buyPro.title}</span>
+    			</a>
+				#end
+				#if($!{obj.offerPro})
+				<a href="$!{address.trade}/productDetails$!{com.offerPro.id}.htm">
+    				<span class="list_box_zi10">#printProductType($!{com.offerPro.productsTypeCode} "" "")$!{com.offerPro.title}</span>
+    			</a>
+				#end
+            </div>
+        </div>
+        <!--item-->
+		#end
+        <!--item-->
+        <div style="clear:both"></div>
+    </div>
+    <!--end mainblock2-->
+    <div style="clear:both"></div>
+</div>
+<script type="text/javascript">
+	jQuery("#searchBtn").click(function(){
+		window.open("$!{address.company}/index-p-"+encodeURI(jQuery("#searchKey").val())+".htm");
+	});
+</script>

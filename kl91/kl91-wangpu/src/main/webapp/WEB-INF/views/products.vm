@@ -1,0 +1,72 @@
+#parse("/common/topBar.vm")
+#set($pageName="products")
+#parse("/common/menu.vm")
+
+<div class="wrapper site-main clearfix">
+	
+	## left vm
+	#parse("/common/left.vm")
+	##
+
+	<div class="site-right">
+		<div class="search mt20">
+			<form action="provide_submit" method="">
+				搜索旺铺内产品：
+				<label for="">产品名</label>
+				<input type="text" class="field" />
+				<label for="">信息类型</label>
+				<input type="radio" name="" />供应
+				<input type="radio" name="" />求购
+				<input type="submit" name="" value="搜索" class="btn"/>
+			</form>
+		</div>
+		<div class="sort">
+			<ul>
+				<li>排序</li>
+				<!-- 无class：默认 inc：升序 dec：降序 -->
+				<li><a href="" class="inc">价格<s></s></a></li>
+				<li><a href="" class="dec">时间<s></s></a></li>
+				<li><input type="checkbox" /> 有留言</li>
+			</ul>
+		</div>
+		<div class="list">
+			#foreach($obj in ${page.records})
+				<div class="item">
+					<figure>
+						<a href="productsDetail$!{obj.id}.htm">
+							#if(${obj.picCover})
+								<img src="$!{address.img}/$!{obj.picCover}" title="$!{obj.title}" />
+							#else
+								<img src="$!{address.img}/nophoto.jpg" title="$!{obj.title}" />
+							#end
+						</a>
+					</figure>
+					<div class="pt">
+						<a href="productsDetail$!{obj.id}.htm" class="red">供应 $!{obj.title}</a>
+						<p><a href="">留言（$!{obj.numInquiry}条）</a> <a href="">查看（$!{obj.numView}次）</a></p>
+					</div>
+					<div class="pd">
+						<p>$!{obj.details}</p>
+					</div>
+					<div class="pp">
+						<span class="red">$!{obj.price}</span>$!{obj.priceUnit}/$!{obj.quantityUnit}
+					</div>
+				</div>
+			#end
+		</div>
+		#wangpuPageNav($!{page} "products.htm" "" "")
+##		<div class="pages">
+##			<a href="">首页</a>
+##			<a href="">上一页</a>
+##			<a href="">1</a><a href="">2</a>
+##			<a href="">3</a><a href="">4</a>
+##			<a href="">5</a><a href="">下一页</a>
+##			<a href="">最末页</a>
+##			<a href="">跳转至</a>
+##			<input type="text" class="field" />
+##			<input type="submit" value="go" class="btn"/>
+##		</div>
+		
+	</div>
+
+</div>

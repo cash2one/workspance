@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradePropertyValue">
+
+    <typeAlias alias="tradePropertyValue" type="com.zz91.ep.domain.trade.TradePropertyValue"/>
+    <typeAlias alias="tradePropertyValueDto" type="com.zz91.ep.dto.trade.TradePropertyValueDto"/>
+	
+    <resultMap class="tradePropertyValueDto" id="propertyAndValueDtoResult">
+    	<result property="propertyId" column="property_id"/>
+		<result property="supplyId" column="supply_id"/>
+		<result property="propertyName" column="name"/>
+        <result property="propertyValue" column="property_value"/>
+        <result property="vId" column="id"/>
+    </resultMap>
+    
+    <insert id="insertTradePropertyValue" parameterClass="tradePropertyValue">
+         insert into trade_property_value
+         (
+            supply_id,
+            property_id,
+            property_value,
+            gmt_created,
+            gmt_modified)
+         values
+         (
+             #supplyId#,
+             #propertyId#,
+             #propertyValue#,
+             now(),
+             now()
+          )
+        <selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+    <!-- 
+    <resultMap class="tradePropertyValueDto" id="propertyAndValue">
+        <result property="propertyId" column="property_id"/>
+        <result property="propertyName" column="name"/>
+        <result property="propertyValue" column="property_value"/>
+    </resultMap>
+    
+    <select id="queryPropertyValueBySupply" parameterClass="java.lang.Integer" resultMap="propertyAndValue">
+        select tpv.property_id,tp.name,tpv.property_value
+        from trade_property tp
+        inner join trade_property_value tpv on tpv.property_id = tp.id
+        where tpv.supply_id = #id#
+    </select>
+    
+    <delete id="deleteValueBySupplyId" parameterClass="java.lang.Integer">
+        delete from trade_property_value
+        where supply_id=#sid#
+    </delete>
+    
+    <delete id="deleteTradePropertyValueByPropertyId" parameterClass="java.lang.Integer">
+    	delete from trade_property_value
+    	where property_id=#propertyId#
+    </delete>
+     -->
+
+	<select id="queryPropertyValueBySupplyIdAndCategoryCode" parameterClass="java.util.HashMap" resultMap="propertyAndValueDtoResult">
+		select 
+		tp.id as property_id,#supplyId# as supply_id,tp.name,tpv.property_value,tpv.id
+		from trade_property tp
+		left join trade_property_value tpv 
+			on tp.id=tpv.property_id and tpv.supply_id=#supplyId#
+		where tp.category_code= #categoryCode#
+	</select>
+	
+	<update id="updateTradePropertyValue" parameterClass="tradePropertyValue">
+		update `trade_property_value`
+		set
+		`property_value` = #propertyValue#,
+		`gmt_modified` = now()
+		where `id`=#id#
+	</update>
+</sqlMap>

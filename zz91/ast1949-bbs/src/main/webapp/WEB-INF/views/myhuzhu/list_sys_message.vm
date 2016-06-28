@@ -1,0 +1,60 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+
+#set($headName="waitAnswer")
+#parse("/common/myhuzhu/head.vm")
+<input type="hidden" value="waitAnswer" id="urlType" />
+
+<div class="huzhu">
+    <div class="hz-left fl">
+        <div class="mainblock">
+            <ul class="item5">
+				#foreach($obj in $page.records)
+					<li>
+						<div class="m5-item">
+							##<a href="$!{obj.url}" class="f14 blue" target="_blank">$!{obj.topic}</a>
+						</div>
+						<!--end m5-item-->
+						<div class="m5-box">
+							<div class="m5b-lt fl">
+								<p>
+									<a href=#if(${obj.isRead}==0)"#springUrl('/myhuzhu/do_read.htm?id=')$!{obj.id}&url=$!{obj.url}" #else $!{obj.url} #end target="_blank">
+										$!{obj.content} >>
+									</a>
+								</p>
+							</div>
+							<!--end m5b-info-->
+##							<div class="m5b-gt fr">
+##								<span>$!{li.post.replyCount}</span>
+##							</div>
+##							<!--end m5b-info-->
+							<div class="cb"></div>
+						</div>
+						<!--end m5-box-->
+						<div class="m5-box">
+							<div class="m5b-dire fl">
+								<span></span>
+							</div>
+							<!--end m5b-dire fl-->
+							<div class="m5b-reply fl">
+								<span>$date.format("yyyy-MM-dd HH:mm:ss",$!{obj.gmtCreated})</span>
+							</div>
+							<!--end m5b-reply fr-->
+							<div class="cb"></div>
+						</div>
+						<!--end m5-box-->
+					</li>
+				#end
+            </ul>
+			
+			#pageMyhuzhuNew($page "#springUrl('/myhuzhu/list_sys_message.htm')" "" "")
+			
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	
+	## 右边e个人信息
+	#parse("/common/myhuzhu/right.vm")
+	
+</div>
+<!--end huzhu-->

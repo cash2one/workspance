@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subnetCompRecommend">
+
+	<typeAlias alias="CompProfile" type="com.zz91.ep.domain.comp.CompProfile"/>
+	
+	<resultMap class="CompProfile" id="simplyResultMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+	</resultMap>	
+	
+	<select id="queryCompBySubRec" parameterClass="java.util.Map" resultMap="simplyResultMap">
+		select cp.id,cp.name from comp_profile cp
+		inner join subnet_comp_recommend scr on scr.cid=cp.id
+		where scr.subnet_category=#subnetCategory#
+		and cp.name is not null and cp.name !='' and cp.del_status=0
+		order by scr.gmt_created desc
+		limit #size#
+	</select>
+</sqlMap>

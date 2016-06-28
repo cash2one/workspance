@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>部门跟丢客户</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ldbcrm/phoneCs.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ldbcrm/ldbSvr.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		#if($!{csMap})
+			ast.ast1949.phonecrm.phoneCs.CSMAP=$!{csMap};
+		#end
+
+		var svrGrid= new ast.ast1949.phonecrm.ldbSvr.Grid({
+			title:"服务"
+		});
+		
+		var grid=new ast.ast1949.phonecrm.phoneCs.Grid({
+			id:"csgrid",
+			region:"center",
+			layout:"fit",
+			loadDefault:function(){
+				var B=grid.getStore().baseParams;
+				B["lostCustomerFlag"]="$!{lostCustomerFlag}";
+				B["csAccount"]="$!{cs}";
+				grid.getStore().baseParames=B;
+				grid.getStore().reload();
+			}
+		});
+		
+		## 开通服务的 Grid
+		var companySvrGrid = new ast.ast1949.crm.open.Step1CompanySvrGrid({
+			region:"south",
+			title:"开通的服务",
+			height:150,
+			split:true
+			//collapsible:true
+		});
+		
+		grid.loadDefault();
+		
+		svrGrid.on("rowclick",function(g,rowIndex,e){
+			
+			var row = g.getSelectionModel().getSelected();
+			var svrcode = null;
+			if(row!=null){
+				svrcode=row.get("code");
+			}
+			//=g.getStore().getAt(rowIndex).get("code");
+			
+			var B=grid.getStore().baseParams;
+			B["svrCode"]=svrcode;
+			grid.getStore().baseParames=B;
+			grid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+		});
+		
+		##点击公司,弹出公司所有服务情况##
+		
+		grid.on("rowclick",function(g,rowIndex,e){
+			var B=companySvrGrid.getStore().baseParams;
+			B=B||{};
+    		B["companyId"]=g.getStore().getAt(rowIndex).get("company_id");
+    		companySvrGrid.getStore().baseParams=B;
+    		companySvrGrid.getStore().reload({});
+		});
+		
+		var searchOpt=new ast.ast1949.phonecrm.phoneCs.SearchForm({
+			title:"高级搜索",
+			targetGrid:"csgrid",
+			initForm:function(){
+				this.findById("svrEndFromStr").setValue("$!{svrEndFromStr}");
+				this.findById("svrEndToStr").setValue("$!{svrEndToStr}");
+			}
+		});
+		
+		searchOpt.initForm();
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[{
+				split:true,
+				region:"west",
+				layout:"accordion",
+				width:300,
+				items:[svrGrid,searchOpt]
+			},{
+				split:true,
+				region:"center",
+				layout:"border",
+				items:[grid,companySvrGrid]
+			}]
+		});
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

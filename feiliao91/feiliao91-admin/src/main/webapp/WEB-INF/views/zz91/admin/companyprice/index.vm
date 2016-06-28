@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<!-- for include js code -->
+#parse("/zz91/common/import.vm")
+#parse("/zz91/common/context.vm")
+	
+    <script type="text/javascript" src="$!{address.js}/admin/companyPrice/index.js" ></script>
+    <script type="text/javascript" src="$!{address.js}/admin/categoryCompanyPrice/tree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/category/provinceTree.js" ></script>
+	<script type="text/javascript">
+		Ext.onReady(function() {
+		
+			var tree =new ast.ast1949.admin.categoryCompanyPrice.treePanel({
+				id:CATEGORY.TREE,
+        		region:"west",
+        		width:180
+        	});
+			
+        	var grid = new ast.ast1949.admin.companyPrice.ResultGrid({
+        		id:_C.RESULT_GRID,
+        		region:'center'
+        	});
+			
+			grid.loadCompanyPriceDO("$!{id}");
+
+			var viewport = new Ext.Viewport({
+        		layout:'border',
+        		items:[tree,grid]
+        	});
+			
+    		tree.on('click',function(node,event){
+        		var code = node.attributes['data'];
+        		if(code!=""){
+        			grid.getStore().baseParams["categoryCode"]=code;
+        		}else{
+        			grid.getStore().baseParams["categoryCode"]=null;
+        		}
+        		grid.getStore().reload({params:{"startIndex":0, "limit":Context.PAGE_SIZE}});
+        	});
+		});
+	
+    </script>
+</head>
+	</html>

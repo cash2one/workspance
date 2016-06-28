@@ -1,0 +1,368 @@
+<!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img,i');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+ #parse("/common/return.vm") 
+				#if($!{orderReturn.logisticsNo})
+                <div class="orderright fl">
+                    <div class="odr-h">等待卖家确认退货</div>
+                    <div class="odr-tellus">
+                        <p>如果卖家同意，退货申请将达成并需要您退货给卖家</p>
+                        <p>如果卖家拒绝，将需要您修改退货申请</p>
+                        <p>如果 <span class="close-time anred">
+								<span id="times_day"></span>&nbsp;天 
+								<span id="times_hour"></span>&nbsp;时  
+								<span id="times_minute"></span>&nbsp;分    
+								<span id="second"></span>&nbsp;秒   
+							</span>内卖家未处理，退货申请将达成并需要您退货给卖家</p>
+                    </div>
+                    <div class="remove-form">您还可以：
+                    <a class="rm-a j_rma" href="javascript:void(0)">修改退货申请</a> 
+##                    <span class="gekx">|</span>
+##                    <a class="rm-a" href="#springUrl('/service/service.htm')">要求废料交易网介入</a>
+                    </div>
+                </div>
+				#else
+					<div class="orderright fl">
+                    <div class="odr-h">等待卖家处理退款申请</div>
+                    <div class="odr-tellus">
+                        <p>如果卖家同意，退款申请将达成并会将交易金额返回你您的结算宝</p>
+                        <p>如果卖家拒绝，将需要您修改退款申请,您也可以要求淘再生网介入</p>
+                        <p>如果 <span class="anred">$!{days}&nbsp;天$!{hours}&nbsp;时$!{minutes}&nbsp;分</span> 内卖家未处理，退货申请将达成并需要您退货给卖家</p>
+                    </div>
+                    <div class="remove-form">您还可以：
+                    <a class="rm-a j_rma" href="javascript:void(0)">修改退款申请</a> 
+##                    <span class="gekx">|</span>
+##                    <a class="rm-a" href="#springUrl('/service/service.htm')">要求废料交易网介入</a>
+                    </div>
+                </div>
+				#end
+            </div>
+        </div>
+        <!-- 弹窗 -->
+        <div class="estopDiv j_close"></div>
+        <div class="pop-main">
+            <div class="refund-main">
+                <div class="refund-top clearfix">
+                    <h2 class="fl">修改退款申请</h2>
+                    <a href="javascript:void(0)" class="fr j_close close">x</a>
+                </div>
+                <div class="refund-cnt">
+                    <div class="refund-type">
+                        <span id="spande">我要退货</span>
+                        <span id="spande1">我要退款（无需退货）</span>
+                    </div>
+                    <div class="type-main">
+						<form action="" method="post" id="form1">
+                        <ul class="ft-thmain">
+                            <li>
+                                <div class="tk-reason see-reson">
+                                    退货原因：<select class="reson-list">
+                                    <option value="请选择退货原因">请选择退货原因</option>
+									<option value="7天无理由退货">7天无理由退货</option>
+									<option value="退运费">退运费</option>
+									<option value="收到商品破损">收到商品破损</option>
+									<option value="商品错发/漏发">商品错发/漏发</option>
+									<option value="商品需要维修">商品需要维修</option>
+									<option value="发票问题">发票问题</option>
+									<option value="收到商品与描述不符">收到商品与描述不符</option>
+									<option value="商品质量问题">商品质量问题</option><span id="errret" style="color:red">
+                                       </span>
+									</select>
+                                    <div class="reson-ts">
+                                        <i class="icon-rs iconfont">&#xe60d;</i>申请七天无理由退换货，请注意保持商品的完好，且不影响二次销售。查看规则详情
+                                    </div>
+                                </div>
+                                <div class="tk-reason">
+                                    退款原因：<select class="reson-list reson-list1">
+									<option value="请选择退货原因">请选择退款原因</option>
+									<option value="7天无理由退货">7天无理由退货</option>
+									<option value="退运费">退运费</option>
+									<option value="收到商品破损">收到商品破损</option>
+									<option value="商品错发/漏发">商品错发/漏发</option>
+									<option value="商品需要维修">商品需要维修</option>
+									<option value="发票问题">发票问题</option>
+									<option value="收到商品与描述不符">收到商品与描述不符</option>
+									<option value="商品质量问题">商品质量问题</option>
+									</select>
+									<span id="errret2" style="color:red"></span>
+									 <input type="hidden" value="" id="reason" name="returnReason"/>
+									 <input type="hidden" value="" id="type" name="type"/>
+									 <input type="hidden" value="$!{orderReturn.id}" name="orderReturnId"/>
+                                </div>
+                            </li>
+                            <li>
+                                退款金额：<input placeholder="" id="returnprice" name="reurnPrice" class="refund-my"/>
+                                <span class="color-66">最多<span id="maxpairce"></span>元</span><span id="errmoneny" style="color:red">
+                                </span>
+                            </li>
+                            <li>
+                                退款说明：<textarea class="reson-refund j_stext" id="textareaid" name="returnRemark"></textarea>
+                                <span class="color-66 vd-bt" >还可以输入<span class="j_number">200</span>字</span>
+                            </li>
+							<img class="imgpic" src=""/>
+                            <li class="addimg">
+                                上传凭证：<span class="intoimg intoimg1">上传图片</span>
+                            </li>
+							</form>
+                            <li>
+                                <span class="alter-btn alter-btn11">修改退款申请</span>
+                            </li>
+                        </ul>
+                    </div>
+							<form action="" method="post" enctype="multipart/form-data">
+					          <input type="file"  id="uploadfile" name="uploadfile" style="display:none;"/>
+					        </form>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+	
+	 ##上传图片
+　　$(".intoimg1").click(function(){
+      $("#uploadfile").click(); 
+	})
+	
+	jQuery("#uploadfile").change(function(){
+	var formDate = new FormData(jQuery(this).parent()[0]);
+	formDate.append("targetType", 5);
+	    jQuery.ajax({
+        			url:"#springUrl('/upload/ieupload.htm')",
+        			data:formDate,
+        			type: "POST",
+        			cache: true,
+        			async: false,
+        			dataType:"json",
+        			contentType:false,
+        			processData:false,
+        			success: function(data) {
+					$(".ft-thmain .imgpic").after("<img src="+"$!{address.img}"+data.url+" class=\"firm-img\">"+"<input type=\"hidden\" name=\"picAddress\" value=\""+data.pid+"\">");
+                	$(".addimg").css("display","none");
+					}
+        		});
+	})
+	
+	var ret="";
+	 $(document).ready(function(){
+	   var obj = document.getElementById("ull");
+            var lis = obj.getElementsByTagName("li");
+            for(var i = lis.length-1; i > -1; i--){
+                obj.appendChild(lis[i]);
+            }
+	 
+	  var price;
+	  var sum;
+	  var freight;
+	  var num;
+	   ##判断修改类型
+    	$("#spande").click(function(){
+    	 $("#type").val(0);
+    	})
+    	$("#spande1").click(function(){
+    	 $("#type").val(1);
+    	})
+	      #if($!{order.buyPricePay})
+		  price=parseFloat($!{order.buyPricePay});
+		  #end
+          #if($!{order.buyQuantity})
+          num=parseFloat($!{order.buyQuantity});
+          #end
+          #if($!{order.buyPriceLogistics})
+          freight=parseFloat($!{order.buyPriceLogistics});
+          #end
+          if(price!=null&&num!=null){
+		    sum=price*num;
+		  }else{
+		    return false;
+		  }
+		  ##总计
+		  #if($!{orderTotalPay})
+		  $("#maxpairce").html($!{orderTotalPay});
+		  #else
+		  $("#maxpairce").html($!{zongji});
+		  #end
+		  $("#returnprice").attr("placeholder",sum+freight);
+	  })
+	   
+	  
+	  $(".alter-btn11").click(function(){
+         var extprice=$("#returnprice").val();   
+	     var maxprice=$("#maxpairce").html();
+	     if(parseFloat(extprice)>parseFloat(maxprice)){
+		      $("#errmoneny").html("超出最大金额");
+			  return false;
+		 }else{
+		      $("#errmoneny").html("");
+		 }
+		 if(ret!=""){
+		    $("#reason").val(ret);
+		 }
+		 var da = $("#form1").serialize();
+		 jQuery.ajax({
+		 url:"#springUrl('/ordersreturn/updateRegit.htm')",
+    	    type:'post',
+    		dateType:'json',
+    		data:da,
+    		success:function(data){
+    		ajaxob=eval("("+data+")");
+			if(ajaxob.success){
+			 window.location.reload();
+			}
+		 }
+		 })
+	  })
+	
+	
+     $(".j_ndata li:last").addClass("this-data")
+     $(".j_seller").bind("hover",function(){
+        $(this).toggleClass("seller-tt2");
+        $(".hide-div").stop().slideToggle();
+     })
+
+     $(".j_rma").bind("click",function(){
+        var wHight = $(document).height();
+        var wWidth = $(document).width();
+        var scrollTop = $(document).scrollTop();
+        $(".estopDiv").height(wHight).width(wWidth).show();
+        var left_pop = (wWidth - $(".pop-main").width())/2
+        var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+        $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+		var tmp=$(".pop-main").is(":visible");
+		if($(".pop-main").is(":visible")){
+		    var id;
+			#if($!{orderReturn.id})
+			id=$!{orderReturn.id};
+			#else
+			return false;
+			#end
+    		jQuery.ajax({
+    		url:"#springUrl('/ordersreturn/returnRegit.htm')",
+    	    type:'post',
+    		dateType:'json',
+    		data:{id:id},
+    		success:function(data){
+    		ajaxob=eval("("+data+")");
+		    var idReason=ajaxob.data;
+			if(ajaxob.success){
+				 var logisticsNo=idReason.logisticsNo;
+				 if(logisticsNo==""||logisticsNo==null){
+				   $(".refund-type").find("span").eq(1).addClass("this-refunbd");
+				   $(".reson-list1 .selected").attr("value",idReason.returnReason).html(idReason.returnReason);
+				   $("#reason").val(idReason.returnReason);
+				   $("#returnprice").val(idReason.reurnPrice);
+				   $("#textareaid").val(idReason.returnRemark);
+				   $("#type").val(1);
+				   $(".imgpic").attr("src","$!{address.img}"+idReason.returnPic);
+				   $("#spande1").click();
+				   }
+				 else{
+				 $(".reson-list .selected").attr("value",idReason.returnReason).html(idReason.returnReason);
+				   $(".refund-type").find("span").eq(0).addClass("this-refunbd");
+				   $("#reason").val(idReason.returnReason);
+				   $("#returnprice").val(idReason.reurnPrice);
+				   $("#textareaid").val(idReason.returnRemark);
+				   $("#type").val(0);
+				    $(".imgpic").attr("src","$!{address.img}"+idReason.returnPic);
+				   $("#spande0").click();
+				   }
+			}
+		}
+			})
+		}
+    })
+    $(".j_close").bind("click",function(){
+        $(".estopDiv").hide();
+        $(".pop-main").hide();
+    })
+
+    $(".refund-type span").bind("click",function(){
+        $(".this-refunbd").removeClass("this-refunbd")
+        $(this).addClass("this-refunbd")
+        var index = $(this).index();
+        $(".see-reson").removeClass("see-reson");
+        $(".tk-reason").eq(index).addClass("see-reson")
+    })
+
+    var lastNum = parseInt($(".j_number").html());
+    $(".j_stext").bind("keyup",function(){  
+        var allNumber = $(this).val().length;
+        allNumber = lastNum - allNumber;
+        $(".j_number").html(allNumber);
+        if(allNumber<=0){
+            allNumber = 0;
+            $(".j_number").html(0)
+            $(this).val($(this).val().substring(0,lastNum));
+            $(this).css("background","#f2f2f2")
+        }else{
+            $(this).css("background","#fff")
+        }
+    })
+	
+	
+	function　fntt(obj){
+		ret=obj.attr("value");
+	}
+
+    selectJr(fntt)
+	
+	
+	
+	function getNextDay(d,day){
+        d = new Date(d);
+        d = +d + 1000*60*60*24*day;
+        d = new Date(d);
+        //return d;
+        //格式化
+        return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate() +" "+ d.getHours() + ":" + d.getMinutes() +":" +d.getSeconds();
+         
+    }
+	//根据天，时，分，秒的ID找到相对应的元素
+	var time_day = document.getElementById("times_day");
+	var time_hour = document.getElementById("times_hour");
+	var time_minute = document.getElementById("times_minute");
+	var time_second = document.getElementById("second");
+	var time_end =new Date(getNextDay("$!{ntime}",7));  // 设定活动结束结束时间
+	time_end = time_end.getTime();
+	count_down();
+	function count_down(){ 
+		 var time_now = new Date();  // 获取当前时间
+   		 time_now = time_now.getTime();
+   		 var time_distance = time_end - time_now;  // 时间差：活动结束时间减去当前时间   
+   		 var int_day, int_hour, int_minute, int_second;   
+		 if(time_distance >= 0){   
+		 	 // 相减的差数换算成天数   
+    		 int_day = Math.floor(time_distance/86400000)
+     		 time_distance -= int_day * 86400000; 
+     		 // 相减的差数换算成小时
+            int_hour = Math.floor(time_distance/3600000) 
+        	time_distance -= int_hour * 3600000;  
+        	// 相减的差数换算成分钟   
+     		int_minute = Math.floor(time_distance/60000)    
+    		time_distance -= int_minute * 60000; 
+    		// 相减的差数换算成秒数  
+      		int_second = Math.floor(time_distance/1000)    
+			// 判断小时小于10时，前面加0进行占位
+        	if(int_hour < 10) {
+        		int_hour = "0" + int_hour;  
+        	}
+        	// 判断分钟小于10时，前面加0进行占位      
+  			if(int_minute < 10){    
+   				int_minute = "0" + int_minute;  
+   			}
+   			 // 判断秒数小于10时，前面加0进行占位 
+      		if(int_second < 10) {
+      			int_second = "0" + int_second;  
+      		} 
+      		// 显示倒计时效果       
+			time_day.innerHTML = int_day;
+			time_hour.innerHTML = int_hour; 
+			time_minute.innerHTML = int_minute; 
+			time_second.innerHTML = int_second;	
+			setTimeout("count_down()",1000);    
+		 }else{
+		 }
+	}
+    </script>

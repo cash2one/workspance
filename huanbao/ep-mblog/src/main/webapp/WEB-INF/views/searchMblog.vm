@@ -1,0 +1,386 @@
+#set($layout='/layout/normLayout1.vm')
+
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/jquery.alert.css"/>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.alert.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery-position.js"></script>
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index').htm">首页</a></li>
+                <li><a href="#springUrl('/mblog').htm">个人主页</a></li>
+                <li><a href="#springUrl('/info').htm">账户设置</a></li>
+            </ul>
+        </div>
+        <form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="SearchFind">
+    	<div class="sf-search">
+        	<div class="sf-search-nav">
+            	<ul>
+                	<li><a href="#" style="color:#000;font-weight:bold">微交流</a></li>
+                    <li><a href="#springUrl('/searchFind.htm')">找人</a></li>
+                    <div class="cb"></div>
+                </ul>
+            </div>
+            <!--end sf-nav-->
+			<form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblogForm" name="searchMblogForm">
+            <div class="sf-search-search">
+            	<div class="sf-search-img">
+					<img src="http://img0.huanbao.com/huanbao/mblog/images/search_img.jpg" />
+				</div>
+                <div class="sf-search-box">
+                	<input type="text" class="sf-search-text" id="keywords" name="keywords"/>
+                    <a href="javascript:searchMblog();"></a>
+                </div>
+                <!--end sf-search-box-->
+                <div class="cb"></div>
+            </div>
+            </form>
+            <!--end sf-search-->
+            <div class="sf-search-result">
+            	找到 #if($!{page.records}) $!{page.records.size()}#else 0 #end 条结果  
+            </div>
+            <!--end sf-result-->
+        </div>
+        <!--end sf-search-->
+        <div class="sf-left">
+			#foreach($l in $!{page.records})
+			#if($!{l.tragetBlog})
+			<div class="sm-Forward mt20">
+                <div class="sm-Forward-img">
+                    <a href="#springUrl('/ublog')$!{l.info.id}.htm">
+						#if($!{l.info.headPic} && $!{l.info.headPic}!="")
+						<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:50px;height:50px;" />
+						#else
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+						#end	
+					</a>
+                    <div class="heada"></div>
+                    <div class="cb"></div>
+                </div>
+                <div class="sm-Forward-box">
+                	<div class="sm-Forward-title2">
+                    	<a class="sm-Forward-name" href="#springUrl('/ublog')$!{l.info.id}.htm">$!{l.info.name}:</a>$!{l.mBlog.content}
+                    </div>
+                    <!--end sm-Forward-title2-->
+                	<div class="sm-Forward-top">
+                        <img src="http://img0.huanbao.com/huanbao/mblog/images/sm_border_top1.jpg" />
+                    </div>
+                    <!--end sm-Forward-top-->
+                    <div class="sm-Forward-block">
+                        <div class="sm-Forward-title">
+                            <a class="sm-Forward-name" href="#springUrl('/ublog')$!{l.sentInfo.id}.htm">$!{l.sentInfo.name}:</a>$!{l.tragetBlog.content}
+                        </div>
+                        <!--end sm-Forward-title-->
+                        <div class="sm-Forward-content">
+							
+							#if($!{l.tragetBlog.photoPath} && $!{l.tragetBlog.photoPath}!="")
+       							 <div class="sm-item-images">
+                						<ul>
+                							#foreach(${l} in $!{l.sList})
+                                               <li onclick="img_change(this);">
+        									   <img src="$!{address.resource}$!{l}"/>
+                						   </li>
+                						   #end
+                							</ul>
+                							<div class="cb"></div>
+                						</div>
+                						
+                						<div class="sm-item-images2" onclick="img_changeb(this);">
+                						<img src="">
+										</div>
+    						
+							#end
+                        </div>
+                        <!--end bc-Forward-content-->
+                        <div class="sm-Forward-date">
+                            #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.tragetBlog.gmtCreated})
+                        </div>
+                        <div class="sm-Forward-right">
+                              #if($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} != 0)
+                                <span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论（$!{l.tragetBlog.discussCount}）</a></span>
+							    #elseif($!{l.tragetBlog.sentCount} == 0  && $!{l.tragetBlog.discussCount} != 0)
+								<span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论（$!{l.tragetBlog.discussCount}）</a></span>	
+							   #elseif($!{l.tragetBlog.sentCount} != 0  && $!{l.tragetBlog.discussCount} == 0)
+								<span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发（$!{l.tragetBlog.sentCount}）</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论</a></span>
+							   #else
+								<span><a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">转发</a></span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.tragetBlog.id}"style="color:#006633;">评论</a></span>
+							   #end
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end sm-Forward-block-->
+                </div>
+                <div class="cb"></div>
+                <!--end sm-Forward-box-->
+                <div class="sm-Forward2">
+                    <div class="sm-Forward-box2">
+                        <div class="sm-Forward-date">
+                           #printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                        </div>
+                        <div class="sm-Forward-right">
+							<input type="hidden" id="show$!{l.mBlog.id}" value="0"/>
+            					#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})"> 转发（$!{l.mBlog.sentCount}）</span>|<span onclick='sm_Forward(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论$!{l.mBlog.id}（$!{l.mBlog.discussCount}）</span>
+            					#end
+            					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='sm_Forward(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>		
+            					#end
+            					#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+            					<span onclick="sentComments(this,$!{l.mBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<span onclick='sm_Forward(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+            					#end
+            					#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                                <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='sm_Forward(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+            					#end
+                        </div>
+                    </div>
+                    <!--end sm-Forward-box2-->
+                    <div class="sm-Forward-comments">
+                        <div class="sm-ForwardComments-top"></div>
+                        <div class="sm-ForwardComments-content">
+                             <textarea class="sm-ForwardComments-textarea" onclick="TextWeibo(this)"></textarea>
+                             <div class="sm-ForwardComments-box1">
+                                <ul class="fl">
+                                    <li class="sm-icon1" onClick="face(this);"></li>
+                                    <li><input type="checkbox" class="sm-icon3" id="sentType$!{l.mBlog.id}"/>同时转发到我的微文</li>
+                                    <div class="cb"></div>
+                                </ul>
+                                <div class="sm-ForwardComments-140 fl">最多输入140个字</div>
+                                <div class="sm-ForwardComments-send fr" onClick="sm_ForwardReply(this,$!{l.mBlog.id},1)"></div>
+                                <div class="bc-face" id="bc-face">
+                                    <div class="bc-face-top">
+                                        <div class="bc-close3 fr" id="close2"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                        <div class="cb"></div>
+                                    </div>
+									#parse("/common/showface.vm")                                    <!--end sm-face-box-->
+                                </div>
+                                <!--end sm-face-->
+                                <div class="cb"></div>
+                            </div>
+                            <div id="item$!{l.mBlog.id}"></div>
+                        </div>
+                        <!--end sm-ForwardComments-content-->
+                    </div>
+                    <!--end sm-Forward-comments-->
+					#if($!{l.mBlog.discussCount} >5)
+					#set($value = $!{l.mBlog.discussCount})
+					#set($val = ($value - 5))
+                    <div class="sm-more2" >
+                       <span class="smMore$!{l.mBlog.id}" style="display:none">后面还有$val 条评论，<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}">点击查看>></a>
+                      </span> 
+                    </div>
+					#end
+                    <!--end sm-more-->
+                </div>
+                <!--end Forawrd2-->
+                <div class="cb"></div>
+            </div>
+            <!--end Forawrd-->
+			#else
+        	<div class="sm-item">
+            	<div class="sm-item-img">
+                	<a href="#springUrl('/ublog')$!{l.info.id}.htm">
+						#if($!{l.info.headPic})
+            			<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:50px;height:50px;"/>
+            			#else
+            			<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img3.jpg" />	
+            			#end
+					</a>
+                </div>
+                <div class="sm-item-box">
+                	<div class="sm-item-title">
+                    	<a class="sm-item-name" href="#springUrl('/ublog')$!{l.info.id}.htm">$!{l.info.name}:</a>$!{l.mBlog.content}
+                    </div>
+                    <!--end sm-item-title-->
+                    <div class="sm-item-content">
+						
+                    	#if($!{l.mBlog.photoPath})
+   							 <div class="sm-item-images">
+            						<ul>
+            							#foreach(${l} in $!{l.sList})
+                                           <li onclick="img_change(this);">
+    									   <img src="$!{address.resource}$!{l}"/>
+            						   </li>
+            						   #end
+            							</ul>
+            							<div class="cb"></div>
+            						</div>
+            						
+            						<div class="sm-item-images2" onclick="img_changeb(this);">
+            							<img src="">
+            					</div>
+						#end
+                    </div>
+                    <!--end sm-item-content-->
+                    <div class="sm-item-box2">
+                    	<div class="sm-item-date">
+                        	#printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                        </div>
+                        <div class="sm-item-right">
+							<input type="hidden" id="show$!{l.mBlog.id}" value="0"/> 
+							#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})"> 转发（$!{l.mBlog.sentCount}）</span>|<span onclick='comments3(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} != 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='comments3(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论（$!{l.mBlog.discussCount}）</span>		
+							#end
+							#if($!{l.mBlog.sentCount} !=0 && $!{l.mBlog.discussCount} == 0)
+							<span onclick="sentComments(this,$!{l.mBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<span onclick='comments3(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+							#end
+							#if($!{l.mBlog.sentCount} ==0 && $!{l.mBlog.discussCount} == 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>|<span onclick='comments3(this,$!{l.mBlog.discussCount},$!{l.mBlog.id})'>评论</span>		
+							#end
+                        </div>
+                    </div>
+                    <!--end sm-item-box2-->
+                    <div class="sm-item-comments">
+                    	<div class="sm-comments-top"></div>
+                        <div class="sm-comments-content">
+                        	 <textarea class="sm-comments-textarea" onclick="TextWeibo(this);"></textarea>
+                             <div class="sm-comments-box1">
+                                <ul class="fl">
+                                    <li class="sm-icon1" onclick="face(this);"></li>
+                                    <li><input type="checkbox" class="sm-icon3" id="sentType$!{l.mBlog.id}"/>同时转发到我的微文</li>
+                                    <div class="cb"></div>
+                                </ul>
+                                <div class="sm-comments-140 fl">最多输入140个字</div>
+                                <div class="sm-comments-send fr" onclick="sm_comments(this,$!{l.mBlog.id},1);"></div>
+                                <div class="bc-face">
+                                    <div class="bc-face-top">
+                                        <div class="bc-close3 fr" onclick="closeface(this);"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                        <div class="cb"></div>
+                                    </div>
+									#parse("/common/showface.vm")                               
+								</div>
+                                <!--end bc-face-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end sm-comments-box1-->
+                            <div id="item$!{l.mBlog.id}"></div>
+                        </div>
+                        <!--end sm-comments-content-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end sm-item-comments-->
+                   	#if($!{l.mBlog.discussCount} >5)
+					   #set($value = $!{l.mBlog.discussCount})
+					   #set($val = ($value - 5))
+                    <div class="sm-more">
+                       <span class="smMore$!{l.mBlog.id}" style="display:none"> 后面还有${val}条评论，<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}">点击查看>></a></span>
+                    </div>
+    				#end
+
+                    <!--end sm-more-->
+                </div>
+                <div class="cb"></div>
+                <!--end sm-item-box-->
+            </div>
+            <!--end bc-item-->
+		 #end
+		#end
+            #if($!{page} && $!{keywords})
+			#mBlogPageNav(${page} "#springUrl('/searchMblog')/$!{keywords}" "" "")
+			#end
+            <!--end ff-page-->
+        </div>
+        <!--end sf-left-->
+        <div class="sf-right">
+        	<div class="sf-right-title">
+            	综合热搜网
+            </div>
+            <!--end sf-right-title-->
+            <ul class="sm-hot">
+				#foreach($!{mapKey} in $!{maps.keySet()})
+					#if($!{velocityCount}==4)
+					<li>$!{velocityCount}.</span><a href="#springUrl('/searchMblog').htm?keywords=$!{mapKey}">$!{mapKey}</a></li>
+					#else																							 	
+					<li><span class="sm-hot-orange">$!{velocityCount}.</span><a href="#springUrl('/searchMblog').htm?keywords=$!{mapKey}">$!{mapKey}</a></li>	
+					#end
+				#end
+            	
+            </ul>
+        </div>
+        <!--end sf-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end SearchFind-->
+</div>
+<!--end main-->
+<div id='textHide1'></div>
+<div id='tagBox1'>
+<div class="bc-tagBox-title">请选择最近@的人或者直接输入</div>
+#foreach($!{l} in $!{anteList})
+    <li>$!{l.name}</li>
+#end	
+</div>
+<input type="hidden" id="text_left">
+<input type="hidden" id="text_right">
+<input type="hidden"  id="textInfo" value="" />
+
+
+#if(($!{newFansCount} && $!{newFansCount}>0) || ($!{commentCount} && $!{commentCount}>0) || $!{anteCount} && $!{anteCount}>0)
+	
+<div class="FloatBox">
+	<div class="fb-close">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/close3.jpg" />
+    </div>
+    <!--end fb-close-->
+    <div class="cb"></div>
+	#if($!{newFansCount} && $!{newFansCount}>0)
+	<div class="fb-box">
+    	$!{newFansCount}位新粉丝，<a href="/mblog/newfans.htm">查看粉丝</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{commentCount} && $!{commentCount}>0)
+    <div class="fb-box">
+    	$!{commentCount}条新评论，<a href="/mblog/comments.htm">查看回复</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{anteCount} && $!{anteCount}>0)
+    <div class="fb-box">
+    	$!{anteCount}个新@我，<a href="/mblog/ante.htm">查看@我</a>
+    </div>
+	#end
+    <!--end fb-box-->
+</div>
+<!--end FloatBox-->
+#end
+
+
+<script>
+ function searchMblog(){
+ 	 jQuery("#searchMblogForm").submit();
+ } 
+ 
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+</script>
+

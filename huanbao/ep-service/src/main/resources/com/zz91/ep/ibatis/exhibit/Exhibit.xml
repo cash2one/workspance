@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="exhibit">
+
+	<typeAlias alias="exhibit" type="com.zz91.ep.domain.exhibit.Exhibit" />
+	
+	<resultMap id="fullColumnResult" class="exhibit">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="provinceCode" column="province_code"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="plateCategoryCode" column="plate_category_code"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="showName" column="show_name"/>
+		<result property="details" column="details"/>
+		<result property="organizers" column="organizers"/>
+		<result property="details" column="details"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtSort" column="gmt_sort"/>
+		<result property="pauseStatus" column="pause_status"/>
+		<result property="adminAccount" column="admin_account"/>
+		<result property="adminName" column="admin_name"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap class="exhibit" id="commonResultMap">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="details" column="details"/>
+	</resultMap>
+	
+	<resultMap class="exhibit" id="simpleResultMap" extends="commonResultMap">
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="showName" column="show_name"/>
+		
+	</resultMap>
+	
+	<resultMap id="simpleColumnResult" class="exhibit">
+		<result property="id" column="id" />
+		<result property="name" column="name"/>
+		<result property="showName" column="show_name"/>
+		<result property="provinceCode" column="province_code"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="organizers" column="organizers"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="industryCode" column="industry_code"/>
+		<result property="plateCategoryCode" column="plate_category_code"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+	</resultMap>
+	
+	<sql id="simpleColumn">
+		e.id,
+		e.name,
+		e.show_name,
+		e.province_code,
+		e.area_code,
+		e.gmt_start,
+		e.organizers,
+		e.gmt_end,
+		e.industry_code,
+		e.plate_category_code,
+		e.gmt_publish
+	</sql>
+	
+	<sql id="fullColumn">
+		e.id,
+		e.name,
+		e.province_code,
+		e.area_code,
+		e.gmt_start,
+		e.gmt_end,
+		e.plate_category_code,
+		e.industry_code,
+		e.show_name,
+		e.details,
+		e.organizers,
+		e.gmt_publish,
+		e.gmt_sort,
+		e.pause_status,
+		e.admin_account,
+		e.admin_name,
+		e.gmt_created,
+		e.gmt_modified
+	</sql>
+	
+	<select id="queryExhibitsByRecommend" resultMap="simpleResultMap" parameterClass="java.util.Map">
+		select 
+			e.id,e.name,details,e.gmt_start,e.gmt_end,e.show_name
+		from exhibit e
+		inner join news_recommend nr on nr.news_id=e.id
+		where nr.type=#code# and e.pause_status=1
+		order by nr.gmt_created desc 
+		limit #size#
+	</select>
+	
+	<select id="queryExhibitsByCategory" resultMap="simpleResultMap" parameterClass="java.util.Map">
+		select      
+			id,name,details,gmt_start,gmt_end,show_name
+		from exhibit 
+		where pause_status=1
+		<isNotEmpty prepend="and" property="code">
+			plate_category_code like concat(#code#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="industryCode">
+			industry_code =#industryCode#
+		</isNotEmpty> 
+		order by gmt_publish desc 
+		limit #size#
+	</select>
+
+	<select id="queryByCategory" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select 
+			<include refid="simpleColumn"/>
+		from exhibit e
+		where e.plate_category_code=#code# and e.pause_status=1
+		order by e.gmt_publish desc 
+		limit #size#
+	</select>
+	
+	<sql id="whereByPlateCategory">
+	    where e.plate_category_code=#plateCategoryCode#
+	</sql>
+	<select id="queryByPlateCategory" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select 
+			<include refid="simpleColumn" />
+		from exhibit e
+		<include refid="exhibit.whereByPlateCategory"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryByPlateCategoryCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from exhibit e
+		<include refid="exhibit.whereByPlateCategory"/>
+	</select>
+	
+	<select id="queryExhibitDetailsById" parameterClass="java.lang.Integer" resultMap="fullColumnResult">
+		select 
+			 <include refid="fullColumn" />
+		from exhibit e
+		where e.id=#id#
+	</select>
+</sqlMap>

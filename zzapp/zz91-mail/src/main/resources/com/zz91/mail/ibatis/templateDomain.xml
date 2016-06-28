@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="templateDomain">
+
+	<typeAlias alias="templateDomain" type="com.zz91.mail.domain.TemplateDomain" />
+
+	<sql id="fullColumn">
+		td.`id`,
+		td.`code`,
+		td.`name`,
+		td.`t_content`,
+		td.`gmt_created`,
+		td.`gmt_modified`
+	</sql>
+
+	<resultMap id="templateDomainResult" class="templateDomain">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="tContent" column="t_content" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!-- select template by code -->
+	<select id="queryTemplateByCode" parameterClass="java.lang.String"
+		resultMap="templateDomainResult">
+		select
+		<include refid="templateDomain.fullColumn" />
+		from template td
+		where td.code = #code#
+	</select>
+	<!-- select template by id -->
+	<select id="queryTemplateById" parameterClass="java.lang.Integer"
+		resultMap="templateDomainResult">
+		select
+		<include refid="templateDomain.fullColumn" />
+		from template td
+		where td.id = #id#
+	</select>
+	<insert id="insertTemplate" parameterClass="templateDomain">
+		insert into template
+		(code,name,t_content,gmt_created,gmt_modified)
+		values(#code#,#name#,#tContent#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+
+	<update id="updateTemplate" parameterClass="templateDomain">
+		update template set gmt_modified=now()
+		<isNotEmpty prepend="," property="code">
+			code = #code#
+        </isNotEmpty>
+		<isNotEmpty prepend="," property="name">
+			name = #name#
+        </isNotEmpty>
+		<isNotEmpty prepend="," property="tContent">
+			t_content = #tContent#
+        </isNotEmpty>
+		where id=#id#
+	</update>
+	<delete id="deleteTemplateById" parameterClass="java.lang.Integer">
+		delete from template
+		where id=#id#
+    </delete>
+	<delete id="deleteTemplateByCode" parameterClass="java.lang.String">
+		delete from template
+		where code=#code#
+    </delete>
+    <sql id="dynmicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="template.name">
+				td.name like concat('%',#template.name#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+    <select id="queryTemplate" parameterClass="java.util.HashMap" resultMap="templateDomainResult">
+		select 
+		 <include refid="templateDomain.fullColumn"/> 
+		from template td
+		<include refid="templateDomain.dynmicWhere"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryTemplateCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from template td
+		<include refid="templateDomain.dynmicWhere"/>
+	</select>
+</sqlMap>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogComment">
+	<typeAlias alias="mblogComment" type="com.zz91.ep.domain.mblog.MBlogComment" />	
+	<typeAlias alias="mblogCommentDto" type="com.zz91.ep.dto.mblog.MBlogCommentDto" />
+	<typeAlias alias="mblogInfo" type="com.zz91.ep.domain.mblog.MBlogInfo"/>
+	<typeAlias alias="mblog" type="com.zz91.ep.domain.mblog.MBlog"/>
+	
+    <resultMap class="mblogComment" id="mblogCommentMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="mblogId" column="mblog_id"/>
+    	<result property="targetType" column="target_type"/>
+    	<result property="targetId" column="target_id"/>
+    	<result property="content" column="content"/>
+    	<result property="isDelete" column="is_delete"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <resultMap class="mblogInfo" id="mblogInfoMap">
+    	<result property="name" column="name"/>
+    </resultMap>
+    
+    <resultMap class="mblog" id="mblogMap">
+    	<result property="content" column="mcontent"/>
+    </resultMap>
+    
+    <resultMap class="mblogCommentDto" id="mblogCommentDtoMap">
+    	<result property="comment" resultMap="mblogComment.mblogCommentMap"/>
+    	<result property="info" resultMap="mblogComment.mblogInfoMap"/>
+    	<result property="mBlog" resultMap="mblogComment.mblogMap"/>
+    </resultMap>
+    
+    <resultMap class="mblogCommentDto" id="commentDtoMap">
+    	<result property="comment" resultMap="mblogComment.mblogCommentMap"/>
+    	<result property="info" resultMap="mblogComment.mblogInfoMap"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	mblog_id,
+    	target_id,
+    	target_type,
+    	content,
+    	is_delete,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+    <sql id="simpleWithColumn">
+    	mc.id,
+    	mc.info_id,
+    	mc.mblog_id,
+    	mc.target_id,
+    	mc.target_type,
+    	mc.content,
+    	mc.is_delete,
+    	mc.gmt_created,
+    	mc.gmt_modified,
+    </sql>
+    
+     
+    <select id="queryCommentByMblogId" parameterClass="java.util.Map" resultMap="commentDtoMap">
+    	select
+    	<include refid="simpleWithColumn"/>
+    	mi.name
+    	from
+        mblog_comment mc
+        inner join mblog_info mi on mi.id=mc.info_id
+        where mc.mblog_id=#mblogId#
+        order by mc.gmt_created desc
+    </select>
+    
+    <sql id="dymicWhere">
+		<dynamic prepend="where">
+		    <isNotEmpty property="comment.content" prepend="and">
+    			mc.content like concat(#comment.content#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="info.name" prepend="and">
+    			mi.name like concat(#info.name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="comment.isDelete" prepend="and">
+    			mc.is_delete = #comment.isDelete#
+    		</isNotEmpty>
+		</dynamic>
+	</sql>
+    
+    <select id="queryAllMblogComment" parameterClass="java.util.Map" resultMap="mblogCommentDtoMap">
+    	select
+    	<include refid="simpleWithColumn"/>
+    	mi.name,m.content as mcontent
+    	from 
+    	mblog_comment mc
+    	inner join mblog_info mi on mi.id=mc.info_id
+    	inner join mblog m on m.id=mc.mblog_id
+    	<include refid="mblogComment.dymicWhere"/>
+    	order by mc.gmt_created desc
+    	<include refid="common.pageLimit"/>
+    </select>
+    
+	 <select id="queryAllMblogCommentCount" resultClass="java.lang.Integer">
+    	select
+    	count(0)
+    	from 
+    	mblog_comment mc
+    	inner join mblog_info mi on mi.id=mc.info_id
+    </select>
+	
+    
+    <update id="delete" parameterClass="java.util.Map">
+    	update mblog_comment 
+    	set
+    	is_delete = 1
+    	where id = #id#
+    </update>
+    
+    <update id="updateDeleteStatus" parameterClass="java.util.Map">
+    	update mblog_comment 
+    	set
+    	is_delete = 0
+    	where id = #id#
+    </update>
+    
+    
+     <select id="queryCommentCountBymblogId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+    	select
+    	count(0) 
+        from mblog_comment
+    	where mblog_id=#mblogId#
+    	and is_delete = 0
+    </select>
+    
+    <insert id="insert" parameterClass="mblogComment">
+		insert into mblog_comment
+		(
+		info_id,
+		mblog_id,
+		target_id,
+		target_type,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#infoId#,
+		#mblogId#,
+		#targetId#,
+		#targetType#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryMblogCommentBymblogId" parameterClass="java.util.Map" resultMap="mblogCommentDtoMap">
+    	select
+    	<include refid="defaultColumn"/> 
+        from mblog_comment
+    	where mblog_id=#mblogId#
+    	and is_delete = 0
+    	order by gmt_created desc
+    </select>
+    
+    <select id="queryOneCommentById" parameterClass="java.util.Map" resultMap="mblogCommentMap">
+       select
+    	<include refid="defaultColumn"/> 
+        from mblog_comment
+    	where id=#id#
+    	and is_delete = 0
+    	limit 1
+    </select>
+</sqlMap>

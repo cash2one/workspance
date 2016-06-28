@@ -1,0 +1,121 @@
+##set($suffixUrl="&searchName=$!{searchName}&industryCode=$!{companyDetailsDTO.company.industryCode}&areaCode=$!{areaCode}&gardenCode=$!{companyDetailsDTO.company.gardenCode}&pc=$!{pc}")
+<div id="businesscenter_main" class="wc">
+    <div class="pageAreaTop">
+        ## 组装分页的Url
+        #if($!{company.industryCode}!="" || $!{company.areaCode}!="")
+            #set($urlStr="-b$!{company.industryCode}-c$!{company.areaCode}")
+			#if($urlStr=="-b-c")#set($urlStr="")#end
+		#end
+		#if($!{keywordsEncode}&&$!{keywordsEncode}!="")
+			#set($urlStrs="-$!{keywordsEncode}")
+		#end
+		
+		#staticCompanyPageNav(${page} "$!urlStr" "$urlStrs")
+##        #end        ## 组装分页完成
+    </div>
+    <div class="listColTit clearfix">
+        ##<span class="lctServ">公司/主营产品、服务</span>
+        ##<span class="lctServZZ91">ZZ91服务</span>
+        ##<span class="lctWhere">所在地 </span>
+    </div>
+
+    #foreach($com in ${page.records})
+        #set($compurl="#springUrl('/compinfo')$!{com.company.id}.htm")
+        #set($urlMsg="$!{address.front}/inquiry/inquiryApi.htm?companyId=$!{com.company.id}")
+        #set($urlProduct="#springUrl('/compinfo')$!{com.company.id}.htm#supply")
+        #set($urlContact="#springUrl('/compinfo')$!{com.company.id}.htm")
+        ##set($urlCredit="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+        ##set($urlIntro="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+        #if($!{com.company.membershipCode}!="10051000" && $!{com.company.domainZz91}!="")
+            #set($compurl="http://$!{com.company.domainZz91}.zz91.com")
+            ##set($urlMsg="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{com.company.id}&destUrl=$!{address.company}','在线询价',800,500,0);")
+            #set($urlProduct="http://$!{com.company.domainZz91}.zz91.com/zxgq.htm")
+            #set($urlContact="http://$!{com.company.domainZz91}.zz91.com/lxfs.htm")
+            ##set($urlCredit="http://$!{companyInfo.domainZz91}.zz91.com/cxda.htm")
+            ##set($urlIntro="http://$!{companyInfo.domainZz91}.zz91.com/gsjs.htm")
+            ##set($compurl="http://$!{com.company.domainZz91}.zz91.com")
+            ##set($urlMsg="http://$!{com.company.domainZz91}.zz91.com/mysite_question$!{com.company.id}_15.html")
+            ##set($urlProduct="http://$!{com.company.domainZz91}.zz91.com/mysite_offer$!{com.company.id}_13.html")
+            ##set($urlContact="http://$!{com.company.domainZz91}.zz91.com/mysite_contact$!{com.company.id}.html")
+		#end
+		#if($!{com.isLDB}==true)
+			#set($compurl="$!{address.www}/ppc/index$!{com.company.id}.htm")
+            #set($urlProduct="$!{address.www}/ppc/zxgq$!{com.company.id}.htm")
+            #set($urlContact="$!{address.www}/ppc/contact$!{com.company.id}.htm")
+		#end
+        <div class="listBox clearfix" onmouseover="this.style.backgroundColor='#FFFCF0'" onmouseout="this.style.backgroundColor='#fff'">
+			<div class="list_box_title">
+    			<a href='$!{compurl}' target='_blank' title="">$!{com.company.name}#if(${com.isAttest})<span style="font-weight:normal;font-size:12px;color:red">[已认证]</span>#end</a>
+				#if($!{com.isZSVip}==true)
+					<span class="list_box_zi1">
+						<img src="$!{address.img}/zz91/images/zs1.png" />
+					</span>
+				#else
+    				#if($!{com.company.zstYear}>0 && $!{com.company.membershipCode}!="10051000" )
+    					<span class="list_box_zi1">第<span class="list_box_zi2">$!{com.company.zstYear}</span>
+    						年##指数<span class="list_box_zi2">30</span>
+    					</span>
+    				#else
+    					
+    				#end
+				#end
+    		</div>
+    		<div class="list_box_left">
+    			<span class="list_box_zi3">
+    				类型：<a href="#springUrl('/index-b')$!{com.company.industryCode}-c-p.htm">$!{com.industryLabel}</a><br />
+    				地区：$!{com.province}|$!{com.city}<br />
+					#if($!{com.account.contact}&&$!{com.account.contact}!="")
+    				联系人：$!{com.account.contact}<br />
+					#end
+    				会员：<font color="#990000">$!{com.membershipLabel}</font><br />
+					#if(${com.marketName}&&${com.marketWords})
+						所在市场：<a href="$!{address.market}/${com.marketWords}/" target="_blank">${com.marketName}</a><br/>
+					#end
+    			</span>
+    			<span class="list_box_zi4">
+    				<a href="$!{urlMsg}" target="_blank">
+    					<img src="$!{address.img}/zz91/company/list/images/i1.jpg" />
+    				</a>
+    				<a href="$!{urlContact}" target="_blank">
+    					<img src="$!{address.img}/zz91/company/list/images/i2.jpg"/>
+    				</a>
+    				<a href="$!{compurl}" target="_blank">
+    					<img src="$!{address.img}/zz91/company/list/images/i3.jpg" />
+    				</a>
+    			</span>
+    		</div>
+    		<!--end list_box_left-->
+    		<div class="list_box_line"></div>
+    		<!--end list_box_line-->
+    		<div class="list_box_right">
+    			<span class="list_box_zi5">
+    				<span class="list_box_zi6">公司介绍：</span>
+					#if($!{com.company.membershipCode}=="10051000")
+						#printTitle($validateUtils.checkMobileAndHide($!{com.company.introduction},null,null) 100 "")
+					#else
+						#printTitle($!{com.company.introduction} 100 "")
+					#end
+    			</span>
+    			<span class="list_box_zi7">供求：</span>
+    			<a href="$!{compurl}" target="_blank">
+    				<span class="list_box_zi8">更多供求信息>></span>
+    			</a>
+				#if($!{com.buyPro})
+				<a href="$!{address.trade}/productDetails$!{com.buyPro.id}.htm" target="_blank">
+    				<span class="list_box_zi9">#printProductType($!{com.buyPro.productsTypeCode} "" "")$!{com.buyPro.title}</span>
+    			</a>
+				#end
+				#if($!{com.offerPro})
+				<a href="$!{address.trade}/productDetails$!{com.offerPro.id}.htm" target="_blank">
+    				<span class="list_box_zi10">#printProductType($!{com.offerPro.productsTypeCode} "" "")$!{com.offerPro.title}</span>
+    			</a>
+				#end
+    		</div>
+        </div>
+    #end
+    <div class="pageAreaBtn">
+        ##myrcPageNav(${page} "#springUrl('/index.htm')" "categoryGardenId=$!{company.categoryGardenId}&keywords=$!{keywordsEncode}&industryCode=$!{company.industryCode}&areaCode=$!{company.areaCode}" "")
+		#staticCompanyPageNav(${page} "$!urlStr" "$urlStrs")
+    </div>
+</div>
+

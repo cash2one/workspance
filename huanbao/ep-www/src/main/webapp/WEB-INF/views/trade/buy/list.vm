@@ -1,0 +1,63 @@
+#set($layout="/layout/trade/listlayoutbuy.vm")
+<!----------main list start------------>
+<article class="hb_mainblock">
+		<!----------main list left start------------>
+		<section  class="hb_tradelist_l">
+        		 <!--当前位置 start-->
+                 <header class="tdl_l_pot borderwhitegray html5radius">
+					<a href='$!{address.www}'>首页</a>
+					&gt;
+					<a href='$!{address.trade}'>交易中心</a>
+					&gt;
+					<a href='#springUrl("/trade")/buy/index.htm'>买家中心</a>
+					&gt;
+					<a href="#springUrl('/trade/buy/index')--$!{search.category}--.htm">“<front class="fontorange"> #if("$!{search.keywords}"=="")全部#else$!{search.keywords}#end </front>”</a>
+					<p class="right" style="width:150px;float:right">共搜索到<front class="fontorange"> $!{page.totals} </front>条求购信息</p>
+				 	<div class="clear"></div>
+				 </header>
+                 <!-- 当前位置 end-->
+                 <!--list start-->
+					#parse('/trade/common/buyIndexList.vm')
+
+					#parse('/trade/common/buyIndexHotRecom.vm')
+                 <!--hot recommend end-->
+                 
+                 <!-- maybe interest start-->
+					#parse('/trade/common/buyIndexInterest.vm')
+                 <!-- maybe interest end-->
+                 
+        </section>
+       	<!----------main list end------------------->
+        <!----------main list right start---------->
+        #parse('/trade/common/buyIndexRight.vm')
+        <!----------main list right end------------>
+        <!----------bottom search start------------>
+        #parse('/trade/common/bottomSearch.vm')
+        <!----------bottom search start------------>
+        
+</article>
+
+<script>
+	var btnsrh = new hb.tradelist.searchSlide();
+	btnsrh.btnSearchch({
+		tdlSearchType:"#tdlSearchType",
+		tdlsearchTypeValue:"#tdlSearchTypeValue",
+		tdlsearchKeyWords:"#tdlSearchKeyWords",
+		tdlSearchKeyLabel:"#tdlSearchKeyLabel",
+		tdlSearchKeySub:'#tdlSearchSub'
+	});
+	
+	var lsBox = new hb.tradelist.mouseHover();
+	lsBox.listBox({
+		lsbox:".tdl_ls"
+	});
+	function deleteSearchCateogry(){
+		var categoryCode = "$!{search.category}";
+		if (categoryCode.length > 4) {
+			categoryCode = categoryCode.substring(0,categoryCode.length-4);
+		}
+		jQuery("#searchCateogryDiv").remove();
+		window.location="#springUrl('/trade/buy/index')--"+categoryCode+"--$!{search.keywords}.htm";
+	}
+</script>
+<!----------ain list end----------->

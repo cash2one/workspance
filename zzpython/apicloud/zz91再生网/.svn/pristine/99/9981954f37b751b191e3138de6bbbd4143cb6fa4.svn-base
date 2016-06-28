@@ -1,0 +1,272 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>APP</title>
+    <link rel="stylesheet" type="text/css" href="../../css/aui.css" />
+</head>
+<style>
+.my-header {
+    background: url('../../image/mybg.png') no-repeat;
+    background-size: cover;
+    min-height: 220px;
+    position: relative;
+}
+.my-info {
+    position: relative;
+    padding: 20px 0;
+    width: 100%;
+    bottom: 0;
+    text-align: center;
+    vertical-align: center;
+}
+.my-info img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+.my-info p.nickname {
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: 18px;
+}
+.my-menu {
+    position: absolute;
+    width: 100%;
+    height: 45px;
+    line-height: 45px;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    background: #ffffff;
+    filter:Alpha(opacity=50);
+    background:rgba(255, 255, 255, 0.2) none repeat scroll 0 0 !important;
+    color: #ffffff;
+    font-size: 14px;
+}
+.my-menu .aui-col-xs-3 {
+    border-right: 1px solid #9bd6d5;
+    width: 33.333%
+}
+.my-menu .aui-col-xs-3:last-child {
+    border-right: none;
+}
+.my-menu > div:active {
+    background: #ffffff;
+    filter:Alpha(opacity=50);
+    background:rgba(255, 255, 255, 0.2) none repeat scroll 0 0 !important;
+}
+.aui-list-view-cell {
+    line-height: 26px;
+}
+.aui-list-view i.aui-iconfont{
+    color: #000
+}
+</style>
+<body>
+    <div class="aui-content my-header">
+        <div class="my-info">
+            <img src="../../image/demo5.png" class="login">
+            <p class="nickname my-name">流浪男</p>
+        </div>
+        <div class="my-menu">
+            <div class="aui-col-xs-3 my-infolist">我的消息</div>
+            <div class="aui-col-xs-3 my-shouc">我的收藏</div>
+            <div class="aui-col-xs-3 my-block">再生钱包</div>
+        </div>
+    </div>
+    <div class="aui-content aui-card">
+        <ul class="aui-list-view">
+            <li class="aui-list-view-cell my-xp">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-similar"></i>我的询盘</a>
+            </li>
+            <li class="aui-list-view-cell my-infoout">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-forward"></i>发布供求</a>
+            </li>
+            <li class="aui-list-view-cell my-buyin">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-friendadd"></i>我的供求</a>
+            </li>
+            <li class="aui-list-view-cell my-hd">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-group"></i>互助社区</a>
+            </li>
+        </ul>
+    </div>
+    <div class="aui-content aui-card">
+        <ul class="aui-list-view">
+            <li class="aui-list-view-cell my-tell">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-phone"></i>来电宝</a>
+            </li>
+            <li class="aui-list-view-cell my-yaoqi">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-friend"></i>邀请码</a>
+            </li>
+            <li class="aui-list-view-cell my-revise">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-copy"></i>修改资料</a>
+            </li>
+            <li class="aui-list-view-cell my-password">
+                <a class="aui-arrow-right"><i class="aui-iconfont aui-icon-command"></i>修改密码</a>
+            </li>
+        </ul>
+    </div>
+    <div class="aui-content aui-card">
+        <ul class="aui-list-view">
+            <li class="aui-list-view-cell aui-switch-body loginout">
+                <div class="aui-switch-title"><i class="aui-iconfont aui-icon-roundclose"></i>退出</div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        // UserInfo.clear();//清除登录
+        //登录判断
+        isLogin();
+        $(".loginout").on("click",function(){
+            UserInfo.clear();
+        })
+        $(".login").on("click",function(){
+            var pageParam = {
+              wintitle:"登录再生网",
+              type:"frm-login"
+            };
+            openWin("frm-login","../myrc/frm-login.html",pageParam);
+        })
+        $(".my-tell").on("click",function(){
+            var pageParam = {
+              wintitle:"来电宝",
+              type:"call"
+            };
+            openWin("call","../myrc/call.html",pageParam);
+        })
+        //消息中心
+        $(".my-infolist").on("click",function(){
+            var pageParam = {
+              wintitle:"消息中心",
+              type:"heart-info"
+            };
+            if(UserInfo.has_login()){
+              openWin("heart-info","../comm/heart-info.html",pageParam);
+            }else{
+              pageParam.nextUrl = "widget://html/comm/heart-info.html";
+              pageParam.winName = "heart-info";
+              openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        })
+        $(".my-block").on("click",function(){
+            var pageParam = {
+              wintitle:"再生钱包",
+              type:"burse"
+            };
+            if(UserInfo.has_login()){   //判断是否登录
+                openWin("burse","../myrc/burse.html",pageParam);
+            }else{
+                pageParam.nextUrl = "widget://html/myrc/burse.html";
+                pageParam.winName = "burse";
+                openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        });
+        $(".my-buyin").on("click",function(){
+            var pageParam = {
+                wintitle:"我的供求",
+                type:"infomation-heart",
+                nav_list:[{"typename": "已经审核", "id": 1}, {"typename": "审核中", "id": 2}, {"typename": "未通过", "id": 3}, {"typename": "暂不发布", "id": 4}],
+                frame_url:["../myrc/audit.html","../myrc/my-supply.html","../myrc/not-by.html","../myrc/notout.html"],
+                topnumber:3
+            };
+            if(UserInfo.has_login()){   //判断是否登录
+                openWin("buyinout","widget://html/comm/infomation-heart.html",pageParam);
+            }else{
+                pageParam.nextUrl = "widget://html/comm/infomation-heart.html";
+                pageParam.winName = "buyinout";
+                openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        })
+        $(".my-shouc").on("click",function(){
+            var pageParam = {
+                wintitle:"我的收藏",
+                type:"infomation-heart",
+                nav_list:[{"typename": "供求", "id": 1}, {"typename": "公司", "id": 2}, {"typename": "报价", "id": 3}, {"typename": "社区", "id": 4},{"typename": "资讯", "id": 5}],
+                frame_url:["../myrc/house.html"],
+                topnumber:4
+            };
+            if(UserInfo.has_login()){   //判断是否登录
+                openWin("infomation-heart-2","widget://html/comm/infomation-heart.html",pageParam);
+            }else{
+                pageParam.nextUrl = "widget://html/comm/infomation-heart.html";
+                openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        })
+        $(".my-xp").on("click",function(){
+            var pageParam = {
+                wintitle:"我的询盘",
+                type:"infomation-heart",
+                nav_list:[{"typename": "收到留言", "id": 1}, {"typename": "发送的留言", "id": 2}],
+                frame_url:["../myrc/liuyan-in.html","../myrc/liuyan-out.html"],
+                topnumber:2
+            };
+            if(UserInfo.has_login()){   //判断是否登录
+                openWin("infomation-heart-2","widget://html/comm/infomation-heart.html",pageParam);
+            }else{
+                pageParam.nextUrl = "widget://html/comm/infomation-heart.html";
+                pageParam.winName = "infomation-heart-2";
+                openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        })
+        $(".my-hd").on("click",function(){
+            var pageParam = {
+                wintitle:"我的社区",
+                type:"infomation-heart",
+                nav_list:[{"typename": "消息中心", "id": 1}, {"typename": "我的提问", "id": 2},{"typename": "我的回复", "id": 3}],
+                frame_url:["../myrc/shequ-xx.html","../myrc/shequ-tw.html","../myrc/shequ-hf.html"],
+                topnumber:3
+            };
+            if(UserInfo.has_login()){   //判断是否登录
+                openWin("infomation-heart-2","widget://html/comm/infomation-heart.html",pageParam);
+            }else{
+                pageParam.nextUrl = "widget://html/comm/infomation-heart.html";
+                pageParam.winName = "infomation-heart-2";
+                openWin("frm-login","../myrc/frm-login.html",pageParam);
+            }
+        })
+        $(".my-infoout").on("click",function(){
+            var pageParam = {
+              wintitle:"发布信息",
+              type:"issue-info",
+              module:"发布"
+            };
+            openWin("issue-info","../myrc/issue-info.html",pageParam);
+        });
+        $(".my-password").on("click",function(){
+            var pageParam = {
+              wintitle:"修改密码",
+              type:"pust-password",
+            };
+            openWin("pust-password","../myrc/pust-password.html",pageParam);
+        });
+        $(".my-yaoqi").on("click",function(){
+            var pageParam = {
+              wintitle:"邀请码",
+              type:"invite-code",
+            };
+            openWin("invite-code","../myrc/invite-code.html",pageParam);
+        });
+        $(".my-revise").on("click",function(){
+            var pageParam = {
+              wintitle:"修改资料",
+              type:"pust-data",
+            };
+            openWin("pust-data","../myrc/pust-data.html",pageParam);
+        });
+    }
+    function isLogin(){
+        var login_sn = UserInfo.has_login();
+        if(login_sn){
+            var contact = UserInfo.contactName();
+            $(".my-name").text("您好，"+ contact +",欢迎登录生意管家！")
+        }
+    }
+</script>
+</html>

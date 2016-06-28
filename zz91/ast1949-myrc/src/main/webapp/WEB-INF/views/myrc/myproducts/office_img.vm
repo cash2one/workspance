@@ -1,0 +1,133 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("100102","00","20")
+<div class="office_imgFrame">
+	<div class="commTip">
+		<span class="creditTipPublish">
+			<a href="#springUrl('/myproducts/office_post_list.htm')">返回供求信息列表</a>
+		</span>
+		<div style="clear:both"></div>
+	</div>
+	
+	#if($!{canUploadStatus}==true)
+		<div class="previewImg">
+				<img src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="0" id="imag">
+        </div>
+		<div class="publishFormItems office_imgModifyPic">
+            <div class="products_title"><label>在此上传图片：</label></div>
+			<div class="products_fill">
+				<iframe src="#springUrl('/ajaxUpload.htm?&filetype=img&model=')$!{uploadModel}" id="upfile" frameborder="no" scrolling="no" style="width:100%; height:28px;">
+            	</iframe>
+            </div>
+        </div>
+		<div class="publishFormItems" style="height:64px; line-height:32px;">
+            <div class="products_title"><label for="name">请输入图片名称：</label></div>
+			<div class="products_fill">
+				<input type="text"  name="name" id="name">
+				<br>
+				<font color="#FF6600">提示：</font>所选图片都必须是jpg或gif格式，每张图片的大小不得超过200K
+			</div>
+		</div>
+	#else
+		<div class="viewImg">
+			<img src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="0" id="imag">
+		</div>
+		<div>
+			您已经上传了$!{listsize}张图片，目前系统允许您上传$!{ruleResult}张图片
+			#if($!{mycompany.membershipCode}=="10051000")
+				<a href="#" target="_blank" >升级成为高级会员可以上传更多图片</a>
+			#end
+		</div>
+	#end
+	<input id="pid" type="hidden" name="pid" value="$!{productsId}">
+    <div style="clear:both"></div>
+	<div class="uploadImgPrview">
+    	#foreach($pic in $!piclist)
+    		<div class="imgPrviewBlock">
+    			<img src="$!{address.resource}//$!{pic.picAddress}" class="preview" name="imag$!{pic.id}" width="100" height="100" id="imag$!{list.id}">
+    			<span><img src="$!{address.images}/global/noimage.gif" class="preview" name="imag$!{pic.id}" width="100" height="100" id="imag$!{list.id}"></span>
+                <span class="picname">图片名称：$!{pic.name}</span>
+                <span><a href="#springUrl('/myproducts/deletePic.htm?ids=')$!{pic.id}&productsId=$!{pic.productId}" onclick="return delconfirm();" class="btnA">删除</a></span>
+            </div>
+    	#end
+	</div>
+</div>
+<script type="text/javascript">
+    function show(pic,desc){
+    	document.getElementById("showPic").src=pic;
+    	document.getElementById("showDesc").innerHTML=desc;
+    }
+    function showpic(){
+    	myproduct.pimage.src=myproduct.file.value
+    }
+    function showupload(obj,id){
+    	document.getElementById("uploadpic").style.display=""
+    	piciframe.form1.m.value=id
+    }
+    function delpostpic(obj,id) {
+		alert(confirm("确实要删除该图片吗？"))
+		
+	}
+	
+	jQuery(document).ready(function(){
+		
+		jQuery("#myimage img").click(function(){
+			//var content = "<img width='640' height='466' src='"+this.src+"' />";
+			//TINY.box.show(content,0,0,0,1);
+			var imgsrc=this.src;
+			jQuery("#previewimg").attr("src",imgsrc);
+		});
+		jQuery("#name").focus(function(){
+		
+			if(this.value=="请输入图片名称"){
+			
+				this.value="";
+				this.style.color="#000";
+			}
+		});
+		
+		jQuery("#name").blur(function(){
+			if(this.value=="请输入图片名称"){
+				this.style.color="#666";
+				return ;
+			}
+			if(this.value==""){
+				this.value="请输入图片名称";
+				this.style.color="#666";
+				return ;
+			}
+		});
+	});
+	function onAjaxUpLoad(data, control) {
+		var obj = eval(data);
+		var filename = obj.path+obj.uploadedFilename;
+		var picname=jQuery("#name").val()=="请输入图片名称"?"":jQuery("#name").val();
+		//重新（关联）上传图片
+		var _data={
+			id:jQuery("#imgid"+control).val(),
+			productId:jQuery("#pid").val(),
+			name:picname,
+			fileName:filename
+		};
+		jQuery.ajax({
+			url:"#springUrl('/myproducts/addProductsPicAddr.htm')",
+			type:"POST",
+			data:_data,
+			dataType:"json",
+			cache:false,
+			success:function(response){
+				if(response.success){
+					window.location.reload();
+					//window.location.href="office_img.htm";
+				}
+			}
+		});
+	}
+	
+	function delconfirm(){
+		if(!confirm("你确定要删除这张图片吗？")){
+			return false;
+		}
+		return true;
+	}
+	
+</script>

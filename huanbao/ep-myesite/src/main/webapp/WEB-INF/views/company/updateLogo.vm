@@ -1,0 +1,86 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+        <ul class="breadcrumb">
+			<li><a href="#">公司信息管理</a><span class="divider">/</span></li>
+			<li>修改公司Logo</li>
+		</ul>
+		
+		#if($!{msg})
+    	<div class="alert alert-info">
+        	<a onclick="return false;" target="_blank">$!{msg}</a>
+        </div>
+		#end
+		
+		<div class="well mt" id="Mpic">
+			<div class="well-head">修改公司LOGO</div>
+			<div class="well-content">
+				<div class="control-group" >
+                        <label class="control-label">
+                            当前LOGO
+                        </label>
+                        <div class="controls">
+    						#if(${logoImage.size()} == 0)
+								<img src="$!{address.img}/huanbao/images/esite2/topig_03.gif" width="159" height="71"/><br/>
+								<input type="button" value="上传LOGO" class="uploadBtn btn" id="uploadBtn">
+                			#else
+                				#set($topLogo=${logoImage.get(0)})
+                		    	<img src="$!{address.thumb}$!{address.resource}$!{topLogo.path}&width=159&height=71"/><br/>
+								<a href="#springUrl('/photo/doRemove.htm')?id=$!{topLogo.id}&destUrl=$!{address.myesite}/company/updateLogo.htm" class="btn btn-larger btn-primary">删除当前Logo</a>
+								##<input type="button" onclick="deletePhoto($!{topLogo.id},'$!{topLogo.path}')" value="删除当前Logo" class="uploadBtn btn">
+							#end
+                        </div>
+        		   </div>
+            </div>
+        </div>
+	</div>
+</div>
+<script>
+	jQuery('document').ready(function(){
+	
+		myrc.select("Js_select");
+		myrc.menu(8, 2);
+		
+    	
+    	jQuery("#uploadBtn").click(function(){
+    	
+    		var photoBox=new Asto.util.Modal({
+        		title:"上传公司LOGO",
+        		url:"#springUrl('/photo/promptUpload.htm')?targetType=logo&targetId=$!{epAuthUser.cid}&albumId=-1&max=1",
+        		width:500,
+        		height:400,
+        		modal:true
+        	});
+    
+    		Asto.util.Callback.setSubmitCallback(function(success, data){
+    			if(success=="true"){
+        			window.location.href="#springUrl('/company/updateLogo.htm')?info=1";
+    			}
+    			else{
+    				window.location.href="#springUrl('/company/updateLogo.htm')?info=2";
+    			}
+    			photoBox.close();
+    		});
+    	});
+
+    });
+	
+	
+	function deletePhoto(id,path) {
+  		jQuery.ajax({
+            url:'#springUrl('/photo/deleteCompPhoto.htm')',
+            data:{"id":id,"path":path},
+            cache:false,
+            dataType:"json",
+            type:"post",
+			success:function(req){
+                if(req.success){
+                	window.location.href="#springUrl('/company/updateLogo.htm')?info=1";
+                }
+            },
+            failure:function(){
+				window.location.href="#springUrl('/company/updateLogo.htm')?info=2";
+            }
+       });
+    }
+</script>

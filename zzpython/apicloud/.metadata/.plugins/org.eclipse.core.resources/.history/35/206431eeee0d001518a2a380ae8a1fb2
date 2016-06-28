@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<style>
+			.mui-bar-nav {
+				background-color: #B63798;
+				color: #fff;
+			}
+			.mui-bar-nav a, .mui-title {
+				color: #fff;
+			}
+			.o_main {
+				margin: 10px;
+				margin-top: 50px;
+				color: #333;
+			}
+			.o_main ul {
+				border-bottom: solid 1px #ebebeb;
+				padding: 0;
+				margin: 0;
+			}
+			.o_main li {
+				float: left;
+				line-height: 30px;
+				padding: 10px;
+				list-style: none;
+			}
+			.o_item {
+				width: 70%;
+			}
+			.o_itemright {
+				width: 30%;
+				text-align: right;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="api.closeWin();"></a>
+			<h1 class="mui-title">订阅</h1>
+		</header>
+		<div class="o_main">
+			<ul>
+				<li class="o_item">
+					性与意识
+				</li>
+				<li class="o_itemright">
+					<button type="button" class="mui-btn mui-btn-danger mui-icon mui-icon-checkmarkempty">订阅</button>
+				</li>
+				<div style="clear: both;"></div>
+			</ul>
+			<div id="pageListCont"></div>
+			<script id="orderlist" type="text/html">
+				<ul>
+				<li class="o_item">{{ d.typename }}</li>
+				<li class="o_itemright"><button type="button" class="mui-btn mui-icon" id="o{{d.id}" onclick="checkorder({{d.id}})">订阅</button></li>
+				<div style="clear: both;"></div>
+				</ul>
+			</script>
+		</div>
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/laytpl.js"></script>
+		<script type="text/javascript" src="../script/zepto.min.js"></script>
+		<script>
+			//订阅
+			
+			function checkorder(id){
+				$("#o"+id.toString()).addClass("mui-btn-danger mui-icon-checkmarkempty");
+				api.ajax({
+					type : "get",
+					url : "http://app.zjfriend.com/sex/order.html",
+					data : {
+						"t" :  (new Date()).getTime().toString(),
+						"id" :id.toString(),
+						"deviceId" : deviceId
+					},
+					dataType : "json",
+					returnAll : false
+				}, function(ret, err) {
+					
+				});
+			}
+			//加载分类列表内容
+			function loadListData() {
+				api.showProgress({
+					title : '加载中...',
+					modal : false
+				});
+				var network = api.connectionType;
+				api.ajax({
+					type : "get",
+					url : "http://app.zjfriend.com/sex/navlist.html",
+					data : {
+						"t" : 1
+					},
+					dataType : "json",
+					returnAll : false
+				}, function(ret, err) {
+					var pageHtml = "";
+					if (ret) {
+						$.each(ret, function(index, item) {
+							var getTpl = $api.html($api.byId("orderlist"));
+							laytpl(getTpl).render(item, function(html) {
+								pageHtml = pageHtml + html;
+							});
+						})
+						$api.append($api.byId("pageListCont"), pageHtml);
+					} else {
+						api.toast({
+							msg : '数据引擎异常，请稍候再试。',
+							duration : 2000,
+							location : 'bottom'
+						});
+					}
+					api.hideProgress();
+				});
+			}
+
+			apiready = function() {
+				loadListData();
+				var deviceId = api.deviceId;
+			};
+		</script>
+	</body>
+</html>

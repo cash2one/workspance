@@ -1,0 +1,47 @@
+
+#set($layout="/layout/default.vm")
+<div class="header hb_dhwzs">当前位置：<a href="$!{address.trade2}">产品中心</a>&gt; 
+    <a href="$!{address.trade2}/supply/index.htm">即时供应</a>
+	#if(${cn})
+        &gt; <a href="$!{address.trade2}/supply/index--$!{search.category}.htm">$!{categoryName}</a>
+	#end
+
+</div>
+
+<div class="header hb_classr_infolist">
+	#cacheFragment("$!{address.trade}/getCategory.htm?code=1000&df", "", "", "300")
+        <div class="hb_supplyinfo"><span>按行业搜索：</span>
+			#foreach($ct in $!{cglist})
+				<a href="#springUrl('/supply/index--')$!{ct.code}.htm" >$!{ct.name}</a>
+			#end
+    	</div>
+	#end
+    <div class="hb_supplylist">
+			<ul>
+                <li class="hb_supply_wa"><b >标题</b></li>
+                <li class="hb_supply_wb"><b >地区</b></li>
+                <li class="hb_supply_wc"><b ><font color="#000">价格</font></b></li>
+                <li class="hb_supply_wd"><b >公司名</b></li>
+				#foreach($list in ${page.records})
+                <li class="hb_supply_wa"><a href="#springUrl('/supply/detail')$!{list.supply.id}.htm" target="_blank">#printTitle($!{list.supply.title} 25 '')</a></li>
+                <li class="hb_supply_wb">$!{list.area.city}&nbsp;</li>
+                <li class="hb_supply_wc">
+					#if ("$!{list.supply.priceNum}" != "" && "$!{list.supply.priceNum}" != "0" && "$!{list.supply.priceNum}" != "0.0")
+						$!{list.supply.priceNum}
+						#if("$!{list.supply.priceUnits}" == "") 
+							元 
+						#else 
+							$!{list.supply.priceUnits} 
+						#end 
+					#else 面议 #end 
+				</li>
+                <li class="hb_supply_wd">#printTitle($!{list.comp.name} 15 '')</li>
+				#end
+		</ul>
+            <div class="clear"></div>
+    </div>
+</div>
+
+<div class="flpage">
+        	#genPageNav($!{page} "#springUrl('/supply/index')--$!{search.category}" "" "")
+</div>

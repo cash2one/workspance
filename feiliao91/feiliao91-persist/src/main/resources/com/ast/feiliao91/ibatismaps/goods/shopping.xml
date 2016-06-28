@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="shopping">
+	<typeAlias alias="shopping" type="com.ast.feiliao91.domain.goods.Shopping"/>
+	<resultMap class="shopping" id="shoppingResult">
+			<result property="id" column="id"/>
+			<result property="buyCompanyId" column="buy_company_id"/>
+			<result property="sellCompanyId" column="sell_company_id"/>
+			<result property="goodId" column="good_id"/>
+			<result property="title" column="title"/>
+			<result property="attributes" column="attributes"/>
+			<result property="price" column="price"/>
+			<result property="hasTax" column="has_tax"/>
+			<result property="number" column="number"/>
+			<result property="money" column="money"/>
+			<result property="picAddress" column="pic_address"/>
+			<result property="serviceCodeList" column="service_code_list"/>
+			<result property="isDel" column="is_del"/>
+			<result property="gmtCreated" column="gmt_created"/>
+			<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="allColumn">
+		id, buy_company_id, sell_company_id, good_id, title, attributes, price, has_tax,
+		number, money, pic_address, service_code_list, is_del, gmt_created, gmt_modified
+	</sql>
+	
+	<!-- 创建购物单 -->
+	<insert id ="insertShoppingMenu" parameterClass="shopping">
+		insert  into shopping
+		(
+			buy_company_id,
+			sell_company_id,
+			good_id,
+			title,
+			attributes,
+			price,
+			has_tax,
+			number,
+			money,
+			pic_address,
+			service_code_list,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#buyCompanyId#,
+			#sellCompanyId#,
+			#goodId#,
+			#title#,
+			#attributes#,
+			#price#,
+			#hasTax#,
+			#number#,
+			#money#,
+			#picAddress#,
+			#serviceCodeList#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+				select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 获取卖家列表 -->
+	<select id="querySellCompanyId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select distinct sell_company_id
+		from shopping
+		where is_del='0' and buy_company_id=#buyCompanyId# 
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<!-- 获取卖家列表总条数 -->
+	<select id="countSellCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(distinct sell_company_id)
+		from shopping
+		where is_del='0' and buy_company_id=#buyCompanyId#
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="shoppingResult">
+		select 
+		<include refid="shopping.allColumn"/>
+		from shopping
+		where id = #value#
+	</select>
+	
+	
+	<!-- 获取同一个买家在某卖家处的购物单 同一个用户同一个产品情况 -->
+	<select id="queryShoppingByBothId" parameterClass="java.util.Map" resultMap="shoppingResult">
+		select
+			<include refid="shopping.allColumn"/>
+		from shopping
+		where is_del='0' 
+		<isNotEmpty prepend="and" property="buyCompanyId">
+			buy_company_id=#buyCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="sellCompanyId">
+			sell_company_id=#sellCompanyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="goodId">
+			good_id=#goodId#
+		</isNotEmpty>
+		order by id desc
+	</select>
+	
+	<!-- 买方更新购物单信息 -->
+	<update id="updateShoppingInfo" parameterClass="java.util.Map">
+		update shopping set gmt_modified=now()
+		<isNotEmpty prepend="," property="attribute">
+			attribute = #attribute#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="number">
+			number = #number#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="money">
+			money = #money#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<!-- 购物单删除状态修改 -->
+	<update id="updateIsDel" parameterClass="java.util.Map">
+		update shopping 
+		set 
+		gmt_modified=now(),
+		is_del=#isDel#
+		where id=#id#
+	</update>
+	
+	<!-- 购物车购物单数 -->
+	<select id="countShoppingByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   select count(0) 
+	   from shopping
+	   where is_del = '0'
+	   <isNotEmpty prepend="and" property="buyCompanyId">
+	   		buy_company_id = #buyCompanyId#
+	   </isNotEmpty>
+	    <isNotEmpty prepend="and" property="sellCompanyId">
+	   		sell_company_id = #sellCompanyId#
+	   </isNotEmpty>
+	    <isNotEmpty prepend="and" property="goodId">
+	   		good_id = #goodId#
+	   </isNotEmpty>
+	</select>
+</sqlMap>

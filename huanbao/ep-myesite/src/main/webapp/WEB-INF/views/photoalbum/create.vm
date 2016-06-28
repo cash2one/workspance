@@ -1,0 +1,198 @@
+#set($layout="/layout/defaultS.vm")
+
+## page title
+<section class="container mt" >
+    <ul class="breadcrumb">
+        <li>
+            <a href="#springUrl('/photoalbum/index.htm')">
+                <strong>相册管理</strong>
+            </a>
+        </li>
+        <li>/</li>
+        <li><strong>创建相册</strong></li>
+    </ul>
+</section>
+
+#if($!{num} > 0)
+<section class="container">
+    <div class="alert alert-info">
+        <strong>注意：</strong>
+        您一共可以创建5个相册，现在您还可以创建 $!{num} 个相册
+    </div>
+</section>
+
+<section class="container mt">
+    <form id="form2" name="form2" method="post" action="#springUrl('/photoalbum/doCreate.htm')">
+        <h3 class="divide">相册信息</h3>
+        <div class="control-group">
+            <label for="tags" class="control-label">
+                <span class="red">*</span>相册名称：
+            </label>
+            <div class="controls">
+                <input type="text" class="field input-xxlarge validate[required]" name="name" id="name" />
+            </div>
+        </div>
+            <div class="form-actions">
+            <input type="submit" class="btn btn-primary btn-large" name="publishBtn" id="publishBtn" value="现在创建" />
+            <a class="btn btn-large" href="#springUrl('/photoalbum/index.htm')">取消</a>
+        </div>
+    </form>
+</section>
+
+#parse("/common/importValidate.vm")
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery("#form2").validationEngine("attach");
+    })
+</script>
+
+#else
+<section class="container">
+    <div class="alert alert-error">
+        <strong>注意：</strong>
+        您已经创建了5个相册，无法再创建更多相册
+        <a class="btn btn-small" href="#springUrl('/photoalbum/index.htm')">返回相册管理</a>
+    </div>
+</section>
+#end
+
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(5, null);
+	});
+</script>
+
+##
+##
+##
+##
+##
+##<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+##    <tr>
+##        <td width="197" valign="top" bgcolor="#128fc4">
+##            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+##                <tr>
+##                    <td>
+##                        <img src="$!{address.img}/huanbao/images/myesite/album.jpg" width="197" height="75" />
+##                    </td>
+##                </tr>
+##                <tr>
+##                    <td>&nbsp;</td>
+##                </tr>
+##            </table>
+##            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+##                <tr>
+##                    <td>
+##                        <div style="padding-left:20px;">
+##                            <ul>
+##                                <li class="hbnyleft">
+##                                    <a href="#springUrl('/photoalbum/index.htm')">相册管理</a>
+##                                </li>
+##                                <li class="hbnylefts">
+##                                    <a href="#springUrl('/photoalbum/createAlbum.htm')">创建相册</a>
+##                                </li>
+##                                <li class="hbnyleft">
+##                                    <a href="#springUrl('/photoalbum/uploadPhoto.htm')">上传图片</a>
+##                                </li>
+##                            </ul>
+##                        </div>
+##                    </td>
+##                </tr>
+##            </table>
+##        </td>
+##        <td height="500" valign="top" class="hbnycon">
+##            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+##                <tr>
+##                    <td width="100" class="hbnytit">创建相册</td>
+##                </tr>
+##            </table>
+##            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+##                <tr>
+##                    <td height="80">&nbsp;</td>
+##                </tr>
+##            </table>
+##            #if($!{success})
+##                <center>
+##                    <table width="260" border="0" cellspacing="0" cellpadding="0" style="border:solid 1px #bebdbd;" >
+##                        <tr>
+##                            <td height="150" style="font-size:14px; color:#000; padding:15px; line-height:24px;">相册$!{name}创建成功，是否马上上传图片到这个相册？</td>
+##                        </tr>
+##                        <tr>
+##                            <td style="padding:5px;">
+##                                <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#efeded">
+##                                    <tr>
+##                                        <td height="35">&nbsp;</td>
+##                                        <td width="50">
+##                                            <!--<img src="$!{address.img}/huanbao/images/myesite/yes.jpg" width="24" height="24" />
+##                                            -->
+##                                            <a href="#springUrl('/photoalbum/uploadPhoto.htm')">是</a>
+##                                        </td>
+##                                        <td width="50">
+##                                            <!--<img src="$!{address.img}/huanbao/images/myesite/no.jpg" width="24" height="24" />
+##                                            -->
+##                                            <a href="#springUrl('/photoalbum/index.htm')">否</a>
+##                                        </td>
+##                                    </tr>
+##                                </table>
+##                            </td>
+##                        </tr>
+##                    </table>
+##                </center>
+##                #else
+##                    <form id="form2" name="form2" method="post" action="#springUrl('/photoalbum/doCreateAlbum.htm')">
+##                        <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+##                            <tr>
+##                                <td width="80" style="font-size:14px; color:#555; font-weight:bold;">相册名称：</td>
+##                                <td width="320">
+##                                    <input type="text" name="name" id="name" style="width:300px; height:24px; line-height:24px; border:solid 1px #CCC;" class="validate[required, maxSize[200]]"/>
+##                                </td>
+##                                <td >
+##                                    <input type="hidden"  name="albumType" id="albumType" value="supply"/>
+##                                </td>
+##                                <td style="color:#a9a5a5;">$!{message}</td>
+##                            </tr>
+##                            <tr>
+##								
+##                                <td>&nbsp;</td>
+##                                <td height="100">
+##                                    <input type="image" src="$!{address.img}/huanbao/images/myesite/hbmem_33.jpg" width="82" height="30"/>
+##                                </td>
+##								<td><input type="hidden" id="num" value="$!{num}"/></td>
+##                                
+##                            </tr>
+##                        </table>
+##                    </form>
+##            #end
+##        </td>
+##    </tr>
+##</table>
+##<div id="albumDialog" title="创建相册" style="display:none">
+##    <p>创建相册失败 你已经创建5个相册，无法再创建相册!</p>
+##</div>
+##<script language="javascript">
+##    jQuery(document).ready(function(){
+##    	jQuery("#form2").validationEngine("attach");
+##		
+##		
+##    	jQuery("#form2").submit(function(){
+##			var num = jQuery("#num").val();
+##			if(num<1){
+##    		$( "#albumDialog" ).dialog({
+##   				modal: true,
+##    			buttons: {
+##   				 Ok: function() {
+##    				$( this ).dialog( "close" );
+##   						 }
+##   				 }
+##   			 });
+##    		return false;
+##			}else{
+##			return true;
+##			}
+##			
+##    	});
+##		
+##		
+##    });
+##</script>

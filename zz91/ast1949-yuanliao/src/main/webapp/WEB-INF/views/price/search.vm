@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <title>行情报价列表页</title>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script>
+        <script src="http://img0.zz91.com/zz91/polymer/js/comm.js"></script>   
+    </head>
+    <body>
+		<style >
+			a {
+				cursor:pointer;
+			}
+        </style>
+		#set($layout="layout/yuanliaoLayout.vm")
+		#set($inflag=3)
+		#set($in=4)
+        <div class="pagecenter clearfix">
+            <div class="fl hq-view-left">
+                <h2 class="view-seat">
+                    当前位置：<a href="#springUrl('/price/')">行情报价首页</a>  >  
+                    <span class="crent-seat">$!{keyword}</span>
+                </h2>
+                <div class="select-info">
+                    <div class="select-qh clearfix">
+                       <a onclick="locationOne('$!{keyword}','1')"; ><span #if($!{flag}&&$!{flag}==0) class="this-tyts" #end>$!{keyword}市场行情</span></a>
+                       <a onclick="locationOne('$!{keyword}','2')"; ><span #if($!{flag}&&$!{flag}==1) class="this-tyts" #end>$!{keyword}企业报价</span></a>
+                    </div>
+
+                    
+					#if($!flag&&$flag==0)
+                    <div class="select-qh-get" id="div1">
+
+                        <ul class="market-list">
+                   		#if($page)
+                        <ul class="market-list">
+							#set($ss = 1)
+							#foreach($in in $page.records)
+                            <li>
+                                <a  onclick="locationhref('$!{keyword}',$!{in.id})" target="_blank" class="fl">$!{in.title}</a>
+                                <span class="fr">#printFragmentDate('yyyy-MM-dd' $!{in.gmtCreated})</span>
+                            </li>
+                            #if($ss % 5 == 0)<li class="dianbt"></li>#end
+							#set($ss = $ss + 1)
+							#end
+                        </ul>
+						#else
+                        
+						#end
+						
+						     #if($page&&$page.totalRecords>0)
+								<div class="pagenum">
+									#pageYuanliao4($page)
+								</div>
+							 #end  
+                    </div>
+					#end
+					#if($flag&&$flag==1)
+                    <div class="select-qh-get"  id="div2">
+                        <table cellpadding="0" cellspacing="0" width="100%" class="price-table">
+                            #if(${page2}&&$page2.totalRecords>0)
+							<tr>
+                                <th width="185">产品</th>
+                                <th width="145">价格</th>
+                                <th width="110">所在地</th>
+                                <th width="180">商家</th>
+                                <th>发布时间</th>
+                            </tr>
+							#foreach($in in $page2.records)
+                            <tr>
+                                <td><a onclick="locationhrefTwo('$!{keyword}',$!{in.id})">$!{in.title}</a></td>
+                                <td>#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else #substr($!{in.price} $!{in.priceUnit})  #end</td>
+                                <td>$!{in.province} $!{in.areaName}</td>
+                                <td><a href="#springUrl('/comp/detail')$!{in.companyId}.html" target="_blank">$!{in.companyName}</a></td>
+                                <td>#printFragmentDate('yyyy-MM-dd' ${in.postTime})</td>
+                            </tr>
+							#end
+							#else
+								
+							#end
+                        </table>
+						#if($page2&&$page2.totalRecords>0)
+								<div class="pagenum">
+									#pageYuanliao5($page2)
+								</div>
+						#end 
+                    </div>
+					#end
+					<input type="hidden" value="$!{keyword}" id="keyword"/>
+					<input type="hidden" value="$!{flag}" id="flag"/>
+                    <div class="notset">
+						#if($!{page}&&$!{page.totalRecords}<=0)
+                        <div class="notset-ts">
+                            <p>很抱歉，没有找到与<span class="orange-color"> “$!{keyword}”</span> 相关的信息</p>
+                            <p>建议您：</p>
+                            <p>1.去掉不必要的字句，扩大搜索范围，如“浙江PP”、“白色POM”等。<a class="orange-color searchsubmit3" href="javaScript:void(0)">重新搜索</a></p>
+                            <p>2.马上发布一条与“$!{keyword}”相关的信息。<a class="orange-color" href="javaScript:void(0)" onclick="fabu('$!{address.myrc}/mycompanyprice/createPrice.htm')">马上发布一条 >></a></p>
+                        </div>
+						
+						<div class="other-cansee other-cansee1">
+                            <div class="other-cansee-tt">您可能感兴趣的：</div>
+                            <ul class="other-cansee-ul clearfix">
+								#foreach($in in ${price})
+                                <li>
+                                    <span class="fl"><a href="#springUrl('/price/cdetail')$!{in.id}.html" target="_blank">${in.title}</a></span>
+                                    <span class="fr color-66">#printFragmentDate('MM-dd' ${in.gmtCreated})</span>
+                                </li>
+								#end
+								#foreach($in in ${price2})
+                                <li>
+                                    <span class="fl"><a href="#springUrl('/price/detail')$!{in.id}.html" target="_blank">$!{in.title}</a></span>
+                                    <span class="fr color-66">#printFragmentDate('MM-dd' ${in.gmtCreated})</span>
+                                </li>
+								#end
+                            </ul>
+                        </div>
+						#end
+						#if($!{page2}&&$!{page2.totalRecords}<=0)
+                        <div class="notset-ts">
+                            <p>很抱歉，没有找到与<span class="orange-color"> “$!{keyword}”</span> 相关的信息</p>
+                            <p>建议您：</p>
+                            <p>1.去掉不必要的字句，扩大搜索范围，如“浙江PP”、“白色POM”等。
+                            <a class="orange-color searchsubmit4" href="javaScript:void(0)">重新搜索</a></p>
+                            <p>2.马上发布一条与“$!{keyword}”相关的信息。<a class="orange-color" href="javaScript:void(0)" onclick="fabu('$!{address.myrc}/mycompanyprice/createPrice.htm')">马上发布一条 >></a></p>
+                        </div>
+						
+						 <div class="other-cansee other-cansee2">
+                            <div class="other-cansee-tt">您可能感兴趣的：</div>
+                            <ul class="other-cansee-ul clearfix">
+								#foreach($in in ${list})
+                                <li>
+                                    <span class="fl"><a href="#springUrl('/price/comDetail')$!{in.id}.htm" target="_blank">#printTitle(${in.title} 20 '...')</a></span>
+                                    <span class="fr color-66">#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else #substr($!{in.price} $!{in.priceUnit})  #end</span>
+                                </li>
+								#end
+                            </ul>
+                        </div>
+						#end
+						
+                    </div>             
+                </div>
+            </div>
+            <div class="fr hq-view-right">
+                <div class="hq-price-nav">
+                    <h2 class="titletop">价格行情导航</h2>
+                     #parse("/common/daohang.vm")
+                </div>
+
+                <div class="xguan-type-list xguan-type-list2">
+                    <h2 class="titletop">最新企业报价</h2>
+                    <ul class="xguan-list-ul">
+                   #foreach($in in $!{list})
+                        <li>
+						<span class="f1">
+						<a href="#springUrl('/price/detail')$!{in.id}.html" target="_blank">#printTitle($!{in.title} 12 '...')</a>
+                        </span>	
+						<span class="fr">
+						#if($!{in.minPrice}&&$!{in.minPrice}!="") $!{in.minPrice}-$!{in.maxPrice}$!{in.priceUnit} #else  #substr($!{in.price} $!{in.priceUnit})  #end
+                        </span>
+						</li>
+						#end
+                    </ul>
+                </div>
+                <div class="xguan-type-list">
+                    <h2 class="titletop">最新资讯</h2>
+                    <ul class="xguan-list-ul">
+						#foreach($in in $js)
+                        <li><a href="${in.weburl}" target="_blank">#printTitle($!{in.title} 20 '...')</a></li>
+						#end
+					</ul>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+       stObj("select-qh span","this-tyts","click","select-qh-get");
+		
+	   function fabu(obj){
+	   #if(!$!{yousuyuanUser})
+	   window.location.href="#springUrl('/user/login.html?url=')"+obj;
+	   #else
+	   window.location.href=obj;
+	   #end
+	   }
+	   
+	   
+       $(".other-cansee-ul li:even").addClass("fr")
+       $(".other-cansee-ul li:odd").addClass("fl");
+		
+	   	jQuery(".searchsubmit3,.searchsubmit4").click(function(){
+	    var keyword = jQuery("#_keyword").val().replace(/\s/g,'');
+		keyword = encodeURI(keyword);
+		var search=$("#ssnr").text();
+		if(keyword){
+		if(search=="搜原料"){
+			location.href="#springUrl('/search').htm?keyword="+keyword;
+		}else if(search=="搜企业"){
+			location.href="#springUrl('/comp/list').htm?keyword="+keyword;
+		}else if(search=="搜报价"){
+			location.href="#springUrl('/price/search').htm?keyword="+keyword;
+		}
+		}
+	});
+	   
+	   
+	   function fun(obj){
+	   if(obj==1){
+	   $("#flag").val(1);
+	   }else{
+	   $("#flag").val("");
+	   }
+	   }
+	   
+##	   $(document).ready(function(){
+##	   #if($!{flag})
+##	    #if($!{flag}==0)
+##		 $(".this-tyts").removeClass("this-tyts");
+##		 $(".select-qh span").eq(0).addClass("this-tyts");
+##		 $("#idv1").show();
+##		 $("#div2").hide();
+##		#else
+##		 $(".this-tyts").removeClass("this-tyts");
+##		 $(".select-qh span").eq(1).addClass("this-tyts");
+##		 $("#idv1").hide();
+##		 $("#div2").show();
+##		#end
+##	   #end
+##	   })
+	   
+	    jQuery(".tip").click(function(){
+    	var currentPage = '';
+    	if(jQuery(this).attr("class") == "tip other"){
+    		currentPage = jQuery(this).attr("name");
+    	}
+    	if(jQuery(this).attr("class")=="tip gobtn"){
+    		var num = Number(jQuery("#gopage").val());
+			if(num==""){
+			alert("请输入页码")
+			}
+			if(isNaN(num)){
+				alert("请输入数字")
+				return false;
+			}
+    		if(num<0){
+    			alert("页码不能小于零");
+    			return false;
+    		}
+    		if(num>$totalPage){
+    			num = $totalPage;
+    		}
+    		if(num > 0){
+    			currentPage = num ;
+    		}
+    	}
+    	//跳转链接
+        var url = "#springUrl('/price/search.htm')?flag=0";
+		var keyword=$("#keyword").val();
+		if(keyword!=""){
+		var keyWord=encodeURI(keyword);
+			url=url+"&keyword="+keyWord;
+		}
+		url=url+"&currentPage="+currentPage;
+		location.href=url;
+    });
+	
+	
+	
+	 jQuery(".top").click(function(){
+    	var currentPage = '';
+    	if(jQuery(this).attr("class") == "top other"){
+    		currentPage = jQuery(this).attr("name");
+    	}
+    	if(jQuery(this).attr("class")=="top gobtn gobtn1"){
+    		var num = Number(jQuery("#gopage2").val());
+			if(num==""){
+			alert("请输入页码")
+			}
+			if(isNaN(num)){
+				alert("请输入数字")
+				return false;
+			}
+    		if(num<0){
+    			alert("页码不能小于零");
+    			return false;
+    		}
+    		if(num>$totalPage1){
+    			num = $totalPage1;
+    		}
+    		if(num > 0){
+    			currentPage = num ;
+    		}
+    	}
+    	//跳转链接
+		var url = "#springUrl('/price/search.htm')?flag=1";
+		var keyword=$("#keyword").val();
+		if(keyword!=""){
+		var keyWord=encodeURI(keyword);
+			url=url+"&keyword="+keyWord;
+		}
+		url=url+"&currentPage="+currentPage;
+		location.href=url;
+    });
+	
+	function locationhref(obj,id){
+	   if(obj==""||id==""){
+	    return false;
+	   }
+	   var keyword=encodeURI(obj);
+	   window.open("#springUrl('/price/cdetail')"+id+".html?keyword="+keyword);
+	}
+	
+	function locationhrefTwo(obj,id){
+	   if(obj==""||id==""){
+	    return false;
+	   }
+	   var keyword=encodeURI(obj);
+	   window.open("#springUrl('/price/detail')"+id+".html?keyword="+keyword);
+	}
+	
+	
+	function locationOne(obj,count){
+   	if(obj==""){
+	return false;
+	}
+	var keyword=encodeURI(obj);
+	if(count==1){
+		window.location.href="#springUrl('/price/search.htm?')flag=0&currentPage=1&keyword="+keyword;
+	}else{
+		window.location.href="#springUrl('/price/search.htm?')flag=1&currentPage=1&keyword="+keyword;
+	}
+   }
+    </script>
+</html>

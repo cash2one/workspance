@@ -1,0 +1,133 @@
+#set($layout="/layout/zhushou.vm")
+#parse("/common/importValidator.vm")
+#parse("/common/importCkeditor.vm")
+#set($row="ziliao")
+#parse("/common/zhushou/head.vm")
+<div class="wrapper mt">
+	<fieldset class="st1">
+		<div class="f-caption">
+			<h3 class="caption">个人资料修改</h3>
+			(打<span class="red">*</span>为必填项)
+		</div>
+		#if(${result}==1)
+			<p>修改成功！</p>
+		#elseif(${result}==2)
+			<p>修改失败！</p>
+		#end
+		<form action="doZiliao.htm"id="form2" method="post" >
+			<section>
+				<label for="p" class="t">
+					<span class="red">*</span>联系人：
+				</label>
+				<input type="text" name="contact" id="p" class="field tran validate[required]" style="width:110px" value="$!{company.contact}"/>
+				<input type="radio" name="sex" id="male" value="0" #if($!{company.sex}==0) checked #end /><label for="male">先生</label>
+				<input type="radio" name="sex" id="female" value="1" #if($!{company.sex}==1) checked #end /><label for="female">女士</label>
+			</section>
+			<section>
+				<label for="email" class="t"><span class="red">*</span>邮箱：</label>
+				<input type="text" name="email" id="email" class="field tran validate[required,custom[email]]" value="$!{company.email}"/>
+			</section>
+			<section>
+				<label for="mobile" class="t"><span class="red">*</span>手机号码：</label>
+				<input type="text" name="mobile" id="mobile" class="field tran validate[required,custom[phone]]" value="$!{company.mobile}" />
+			</section>
+			<section>
+				<label for="" class="t"> </label>
+				<input type="submit" value="保存" class="btn_s3" />
+			</section>
+		</form>
+		<div class="f-caption">
+			<h3 class="caption">公司信息修改</h3>
+			(打<span class="red">*</span>为必填项)
+		</div>
+		#if(${result}==3)
+			<p>修改成功！</p>
+		#elseif(${result}==4)
+			<p>修改失败！</p>
+		#end
+		<form id="form3" action="updateCompanyInfo.htm" method="post">
+			<section>
+				<label for="cpn" class="t"><span class="red">*</span>公司名称：</label>
+				<input type="text" name="companyName" id="cpn" class="field tran validate[required]" value="$!{company.companyName}" />
+			</section>
+			<section>
+				<label for="part" class="t">我的部门：</label>
+				<input type="text" name="department" id="part" class="field tran" value="$!{company.department}"/>
+			</section>
+			<section>
+				<label for="pos" class="t"><span class="red">*</span>我的职位：</label>
+				<input type="text" name="position" id="pos" class="field tran validate[required]" value="$!{company.position}" />
+			</section>
+			<section>
+				<label for="tel" class="t"><span class="red">*</span>固定电话：</label>
+				#foreach($o in $arrTel)
+					$o 
+				#end
+				<input type="text" name="tel" class="field tran" style="width:40px" value="$!{tel1}" />- 
+				<input type="text" name="tel" class="field tran" style="width:40px" value="$!{tel2}" />- 
+				<input type="text" name="tel" id="tel" class="field tran validate[required]" style="width:215px" value="$!{tel3}" />
+			</section>
+			<section>
+				<label for="fax" class="t">传真：</label>
+				<input type="text" name="fax" class="field tran" style="width:40px" value="$!{fax1}"/>- 
+				<input type="text" name="fax" class="field tran" style="width:40px" value="$!{fax2}" />- 
+				<input type="text" name="fax" class="field tran" id="fax" style="width:215px" value="$!{fax3}" />
+			</section>
+			<section>
+				<label for="i1" class="t"><span class="red">*</span>主营行业：</label>
+				<input type="radio" name="industryCode" id="i1" value="1000" #if($!{company.industryCode}=="1000") checked #end /><label for="i1">废塑料</label>
+				<input type="radio" name="industryCode" id="i2" value="1001" #if($!{company.industryCode}=="1001") checked #end /><label for="i2">再生料</label>
+				<input type="radio" name="industryCode" id="i3" value="1002" #if($!{company.industryCode}=="1002") checked #end /><label for="i3">综合</label>
+			</section>
+			<section>
+				<label for="area" class="t"><span class="red">*</span>国家地区：</label>
+				<select name="areaCode" id="area">
+					<option value="">请选择国家</option>
+				</select>
+				<select name="areaCode">
+					<option value="">请选择省份</option>
+				</select>
+				<select name="areaCode">
+					<option value="">请选择城市</option>
+				</select>
+				<select name="areaCode">
+					<option value="">请选择区县</option>
+				</select>
+			</section>
+			<section>
+				<label for="address" class="t"><span class="red">*</span>地址：</label>
+				<input type="text" name="address" id="address" class="field tran validate[required]" value="$!{company.address}"/>
+			</section>
+			<section class="clearfix">
+				<div class="r">
+					<textarea name="introduction" class="validate[required]" id="introduction" >$!{company.introduction}</textarea>
+				</div>
+				<!-- label放后面尾解决ie6换行问题 -->
+				<label for="" class="t"><span class="red">*</span>详细描述：</label>
+			</section>
+			<section>
+				<label for="business" class="t"><span class="red">*</span>主营产品：</label>
+				<input type="text" name="business" id="business" class="field tran validate[required]" value="$!{company.business}" />
+			</section>
+			<section>
+				<label for="" class="t"> </label>
+				<input type="submit" class="btn_s2" value="保存" />
+			</section>
+			<input type="hidden" name="id" value="$!{company.id}" />
+		</form>
+	</fieldset>
+</div>
+#parse("/common/login/footer.vm")
+#parse("/common/importValidator.vm")
+<script src="$!{address.img}/kl91/js/kl91.myrc.js"></script>
+<script>
+	kl91.util.tabs("J-tab","click", false);
+	var reg = new kl91.reg.Validate("form2");
+	jQuery(document).ready(function(){
+		CKEDITOR.replace('introduction',{
+			toolbar:"Basic",
+			width:500,
+			height:150
+		});
+	});
+</script>

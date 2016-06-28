@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>front</display-name>
+
+<!--  
+-->	
+	<filter>
+		<filter-name>toHomePageFilter</filter-name>
+		<filter-class>com.zz91.util.filter.HomePageFilter</filter-class>
+		<init-param>
+			<param-name>uri</param-name>
+			<param-value>index.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>exclude</param-name>
+			<param-value>/upload,/stickyImg</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>toHomePageFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>xssFilter</filter-name>
+		<filter-class>com.zz91.util.filter.XssFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>xssFilter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+	<filter>
+		<filter-name>authorizeFilter</filter-name>
+		<filter-class>com.zz91.util.auth.frontsso.SsoFilter</filter-class>
+		<init-param>
+			<param-name>loginURL</param-name>
+			<param-value>/login.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>mustLoginPage</param-name>
+			<param-value>/myrc/*</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>authorizeFilter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+	
+	<servlet>
+		<servlet-name>SpringMVC</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				classpath:/spring-front.xml,
+				classpath:/spring-persist.xml,
+				classpath:/spring-service.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	<!-- 
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+	 -->
+	
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>/index.htm</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 文件上传 -->
+	<servlet>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>com.ast.ast1949.front.servlet.UploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>cacheFragmentServlet</servlet-name>
+		<servlet-class>com.zz91.util.velocity.CacheFragmentManagerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>cacheFragmentServlet</servlet-name>
+		<url-pattern>/fragment/manager.servlet</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.htm</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/errorPage404.htm</location>
+	</error-page>
+	
+</web-app>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="priceOffer">
+	<typeAlias alias="priceOffer" type="com.ast.ast1949.domain.price.PriceOffer" />
+	<resultMap class="priceOffer" id="priceOfferResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="category" column="category" />
+		<result property="companyId" column="company_id" />
+		<result property="instruction" column="instruction" />
+		<result property="excelAddress" column="excel_address" />
+		<result property="excelName" column="excel_name" />
+		<result property="excelContent" column="excel_content" />
+		<result property="downloadNum" column="download_num" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />	
+		<result property="checkTime" column="check_time" />
+		<result property="checkReason" column="check_reason" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />	
+	</resultMap>
+	<sql id="allColunm">
+		id,title,category,company_id,instruction,excel_address,excel_name,excel_content,download_num,check_person,check_status,check_time,check_reason,is_del,gmt_created,gmt_modified
+	</sql>
+	<insert id="insertPriceOffer" parameterClass="priceOffer">
+		insert into `price_offer`
+		(
+			`title`,
+		 	`category`,
+			`company_id`,
+			`instruction`,
+			`excel_address`,
+			`excel_name`,
+			`excel_content`,
+			`gmt_created`,
+			`gmt_modified`
+		)
+		VALUES
+		(
+			#title#,
+		 	#category#,
+			#companyId#,
+			#instruction#,
+			#excelAddress#,
+		    #excelName#,
+			#excelContent#,
+		    now(),
+		 	now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="queryOfferByCompanyId" parameterClass="java.util.Map" resultMap="priceOfferResult">
+		select 
+		<include refid="priceOffer.allColunm" />
+		from price_offer
+		where company_id=#companyId# and is_del='0'
+			<isNotEmpty prepend="and" property="keywords">
+				title like concat("%",#keywords#,"%")
+			</isNotEmpty>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countOfferByCompanyId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from price_offer
+		where company_id=#companyId# and is_del='0'
+			<isNotEmpty prepend="and" property="keywords">
+				title like concat("%",#keywords#,"%")
+			</isNotEmpty>
+	</select>
+	<select id="queryOfferById" parameterClass="java.lang.Integer" resultMap="priceOfferResult">
+		select
+		<include refid="priceOffer.allColunm" />
+		from price_offer
+		where id=#id#
+	</select>
+	<update id="updateOfferById" parameterClass="priceOffer">
+		update price_offer
+		set gmt_modified=now()
+		<isNotEmpty property="category" prepend=",">
+			category=#category#
+		</isNotEmpty>
+		<isNotEmpty property="title" prepend=",">
+			title=#title#
+		</isNotEmpty>
+		<isNotEmpty property="instruction" prepend=",">
+			instruction=#instruction#
+		</isNotEmpty>
+		<isNotEmpty property="excelAddress" prepend=",">
+			excel_address=#excelAddress#
+		</isNotEmpty>
+		<isNotEmpty property="excelContent" prepend=",">
+			excel_content=#excelContent#
+		</isNotEmpty>
+		<isNotEmpty property="excelName" prepend=",">
+			excel_name=#excelName#
+		</isNotEmpty>
+		<isNotEmpty property="checkReason" prepend=",">
+			check_reason=#checkReason#
+		</isNotEmpty>
+		<isNotEmpty property="checkStatus" prepend=",">
+			check_status=#checkStatus#,check_time=now()
+		</isNotEmpty>
+		<isNotEmpty property="checkPerson" prepend=",">
+			check_person=#checkPerson#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+	<update id="updateDownloadNumById" parameterClass="java.util.Map">
+		update price_offer
+		set download_num=#downloadNum#
+		where id=#id#
+	</update>
+	<update id="updateIsDelByid" parameterClass="java.util.Map">
+		update price_offer
+		set is_del=#isDel#
+		where id=#id#
+	</update>
+	<sql id="dynamicByAdmin">
+		<dynamic prepend="where">
+			<isNotEmpty property="priceOffer.isDel" prepend="and">
+				is_del = #priceOffer.isDel#
+			</isNotEmpty>
+			<isEmpty property="priceOffer.isDel" prepend="and">
+				is_del = '0'
+			</isEmpty>
+			<isNotEmpty property="priceOffer.checkStatus" prepend="and">
+				check_status = #priceOffer.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty property="priceOffer.category" prepend="and">
+				category like concat(#priceOffer.category#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="priceOffer.companyId" prepend="and">
+				company_id = #priceOffer.companyId#
+			</isNotEmpty>
+			<isEqual prepend="and" property="menberShip"  compareValue="0">
+				exists( select c.id from company as c where c.id = company_id and c.membership_code="10051000")
+			</isEqual>
+			<isEqual prepend="and" property="menberShip"  compareValue="1">
+				exists( select c.id from company as c where c.id = company_id and c.membership_code!="10051000")
+			</isEqual>
+			<isNotEmpty property="from" prepend="and">
+				gmt_created > #from#
+			</isNotEmpty>
+			<isNotEmpty property="to" prepend="and">
+				#to# > gmt_created
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<!--后台管理-->
+	<select id="pageOfferByCondition"  parameterClass="java.util.Map" resultMap="priceOfferResult">
+		select 
+		<include refid="priceOffer.allColunm" />
+		from price_offer
+		<include refid="priceOffer.dynamicByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countOfferByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from price_offer
+		<include refid="priceOffer.dynamicByAdmin" />
+	</select>
+	<update id="updateCheckInfo" parameterClass="java.util.Map">
+		update price_offer
+		set check_person=#checkPerson#,check_time=now(),gmt_modified=now()
+		<isNotEmpty property="checkReason" prepend=",">
+			check_reason=#checkReason#
+		</isNotEmpty>
+		<isNotEmpty property="checkStatus" prepend=",">
+			check_status=#checkStatus#
+		</isNotEmpty>
+		<isNotEmpty property="isDel" prepend=",">
+			is_del = #isDel#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+</sqlMap>

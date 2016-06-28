@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-lazy-init="true">
+	<context:component-scan base-package="com.ast.ast1949.persist" />
+	<!--此bean告诉Spring去哪找数据库的配置信息,因为有此Bean才出现下面用${}标记来取变量的语句 -->
+	<bean id="propertyConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>${jdbc.location}</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--配置一个数据源,根据上面propertyConfig指定的location去找数据库连接的配置信息 <bean id="dataSource" 
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"> <property 
+		name="driverClassName"> <value>${jdbc.driver}</value> </property> <property 
+		name="url"> <value>${jdbc.astUrl}</value> </property> <property name="username"> 
+		<value>${jdbc.username}</value> </property> <property name="password"> <value>${jdbc.password}</value> 
+		</property> </bean> -->
+
+	<!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${jdbc.driver}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.astUrl}</value>
+		</property>
+		<property name="properties">
+			<props>
+				<prop key="c3p0.minPoolSize">2</prop>
+				<prop key="c3p0.maxPoolSize">50</prop>
+				<prop key="c3p0.timeout">500</prop>
+				<prop key="c3p0.max_statement">100</prop>
+				<prop key="c3p0.testConnectionOnCheckout">true</prop>
+				<prop key="c3p0.idleConnectionTestPeriod">500</prop>
+				<prop key="automaticTestTable">mail_template</prop>
+				<prop key="c3p0.maxIdleTime">500</prop>
+				<prop key="user">${jdbc.username}</prop>
+				<prop key="password">${jdbc.password}</prop>
+			</props>
+		</property>
+	</bean> -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.astUrl}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialSize" value="5" />        <!-- 初始连接数量 -->
+		<property name="maxActive" value="50" />         <!-- 最大连接数量 -->
+		<property name="maxIdle" value="5" />            <!-- 空闲连接数量 -->
+		<property name="maxWait" value="60000" />       <!-- 一个查询10分钟内没有返回，自动放弃 -->
+		<property name="validationQuery" value="SELECT 1" />   <!-- 数据库连接可用性测试语句 -->
+		<property name="testOnBorrow" value="true" />          <!-- 每次获取一个连接的时候，验证一下连接是否可用，语句在validationQuery里面 -->
+		<property name="removeAbandoned" value="true" />       <!-- 自动处理连接未关闭的问题，Setting this to true can recover db connections from poorly written applications which fail to close a connection.  -->
+		<property name="removeAbandonedTimeout" value="300" /> <!-- 连接使用后5分钟未关闭，则抛弃 -->
+		<!-- 每5分钟检查一次，每次检查3个连接，如果连接空闲时间达到5分钟，则认为可以Evict，从连接池排除 
+		     空闲的连接是否排除对连接池似乎没有太大影响，我们只需要保证每次获取的连接都可用，所以暂时先不开启
+		<property name="timeBetweenEvictionRunsMillis" value="300000" />
+		<property name="numTestsPerEvictionRun" value="3" />
+		<property name="minEvictableIdleTimeMillis" value="320000" />-->
+	</bean>
+
+	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${jdbc.driver}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${jdbc.readUrl}</value>
+		</property>
+		<property name="properties">
+			<props>
+				<prop key="c3p0.minPoolSize">2</prop>
+				<prop key="c3p0.maxPoolSize">50</prop>
+				<prop key="c3p0.timeout">500</prop>
+				<prop key="c3p0.max_statement">100</prop>
+				<prop key="c3p0.testConnectionOnCheckout">true</prop>
+				<prop key="c3p0.idleConnectionTestPeriod">500</prop>
+				<prop key="automaticTestTable">mail_template</prop>
+				<prop key="c3p0.maxIdleTime">500</prop>
+				<prop key="user">${jdbc.readUsername}</prop>
+				<prop key="password">${jdbc.readPassword}</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!--根据dataSource和configLocation创建一个SqlMapClient -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocations">
+			<list>
+				<value>classpath:/SqlMapConfig.xml</value>
+			</list>
+		</property>
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+	<!--根据dataSource和configLocation创建一个SqlMapClient -->
+	<bean id="sqlMapClient2" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocations">
+			<list>
+				<value>classpath:/SqlMapConfig.xml</value>
+			</list>
+		</property>
+		<property name="dataSource">
+			<ref bean="dataSource2" />
+		</property>
+	</bean>
+
+	<bean id="baseDaoSupportMultipleDataSource"
+		class="com.ast.ast1949.persist.BaseDaoSupportMultipleDataSource">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+		<property name="sqlMapClient2" ref="sqlMapClient2" />
+	</bean>
+
+
+	<!-- message loader -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="i18n_web" />
+	</bean>
+
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 配置哪些类的方法需要进行事务管理 proxy-target-class="true" -->
+	<aop:config>
+		<aop:pointcut id="crudMethos" expression="execution(* com.ast.ast1949.service..*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="crudMethos" />
+	</aop:config>
+
+	<!--配置哪些方法,什么情况下需要回滚 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Throwable" />
+			<tx:method name="insert*" propagation="REQUIRED" rollback-for="Throwable" />
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Throwable" />
+			<tx:method name="register*" propagation="REQUIRED" rollback-for="Throwable" />
+			<!-- 
+			<tx:method name="*" propagation="REQUIRED" read-only="true"/> 
+			-->  <!-- 除了上面标识的方法,其他方法全是只读方法 -->
+		</tx:attributes>
+	</tx:advice>
+
+</beans>

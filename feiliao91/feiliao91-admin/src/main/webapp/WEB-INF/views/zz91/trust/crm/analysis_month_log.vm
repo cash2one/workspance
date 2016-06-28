@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>销售CRM库统计表</title>
+		<style>
+			table th {
+				background-color:#f5f5f5;
+			}
+		</style>
+    </head>
+    <body>
+        <div style="float:left;width:120px">
+			#foreach($obj in $trustMap.keySet())
+				<p><a  href="?account=$obj">$trustMap.get($obj)</a></p>
+			#end
+        </div>
+        <div style="float:left" >
+			<div>
+				<form action="analysis_month_log.htm" >
+    				<select name="year">
+    					<option value="2015" #if($!{year}==2015) selected #end >2015</option>
+    					<option value="2016" #if($!{year}==2016) selected #end>2016</option>
+    					<option value="2017" #if($!{year}==2017) selected #end>2017</option>
+    					<option value="2018" #if($!{year}==2018) selected #end>2018</option>
+                    </select>
+    				
+    				<select name="month">
+    					<option value="1" #if($!{month}==1) selected #end>1</option>
+    					<option value="2" #if($!{month}==2) selected #end>2</option>
+    					<option value="3" #if($!{month}==3) selected #end>3</option>
+    					<option value="4" #if($!{month}==4) selected #end>4</option>
+    					<option value="5" #if($!{month}==5) selected #end>5</option>
+    					<option value="6" #if($!{month}==6) selected #end>6</option>
+    					<option value="7" #if($!{month}==7) selected #end>7</option>
+    					<option value="8" #if($!{month}==8) selected #end>8</option>
+    					<option value="9" #if($!{month}==9) selected #end>9</option>
+    					<option value="10" #if($!{month}==10) selected #end>10</option>
+    					<option value="11" #if($!{month}==11) selected #end>11</option>
+    					<option value="12" #if($!{month}==12) selected #end>12</option>
+                    </select>
+    				
+    				<input type="submit" value="确定" />
+					<input type="hidden" name="account" value="$!{account}">
+				</form>
+			</div>
+			<div>$!{trustMap.get("$!{account}")} - $!{year}年 $!{month}月份有效联系客户统计</div>
+            <table border="1px">
+                <thead >
+                    <th>
+                        星期日
+                    </th>
+                    <th>
+                        星期一
+                    </th>
+                    <th>
+                        星期二
+                    </th>
+                    <th>
+                        星期三
+                    </th>
+                    <th>
+                        星期四
+                    </th>
+                    <th>
+                        星期五
+                    </th>
+                    <th>
+                        星期六
+                    </th>
+                </thead>
+				<tr>
+					#set($a = 0)
+					#foreach($obj in $list)
+						#if($velocityCount%7==0)
+								#if($obj.size()>0)
+        							#set($a = $a + 1 )
+            						<td style="background-color:rgb(250, 255, 189);">
+										<span style="font-size:10px">$a</span>
+    									<br/>
+										<a href="analysis.htm?account=$!{account}&date=$!{year}-$!{month}-$!{a}" target="_blank">
+        									<span style="color:#2A5685">联系量:</span><span style="color:red">$!obj.get("total")</span>
+        									<br/>
+        									<span style="color:#2A5685">4星:</span><span style="color:red">$!obj.get("4star")</span> 
+        									<span style="color:#2A5685">5星:</span><span style="color:red">$!obj.get("5star")</span>
+										</a>
+            						</td>
+								#else
+									<td>&nbsp;</td>
+        						#end
+							</tr>
+							<tr>
+						#elseif($list.size()==$velocityCount)
+								#if($obj.size()>0)
+        							#set($a = $a + 1 )
+            						<td style="background-color:rgb(250, 255, 189);">
+										<span style="font-size:10px">$a</span>
+    									<br/>
+										<a href="analysis.htm?account=$!{account}&date=$!{year}-$!{month}-$!{a}" target="_blank">
+        									<span style="color:#2A5685">联系量:</span><span style="color:red">$!obj.get("total")</span>
+        									<br/>
+        									<span style="color:#2A5685">4星:</span><span style="color:red">$!obj.get("4star")</span> 
+        									<span style="color:#2A5685">5星:</span><span style="color:red">$!obj.get("5star")</span>
+										</a>
+            						</td>
+								#else
+									<td>&nbsp;</td>
+        						#end
+							</tr>
+						#else
+							#if($obj.size()>0)
+    							#set($a = $a + 1 )
+        						<td style="background-color:rgb(250, 255, 189);">
+										<span style="font-size:10px">$a</span>
+    									<br/>
+										<a href="analysis.htm?account=$!{account}&date=$!{year}-$!{month}-$!{a}" target="_blank">
+        									<span style="color:#2A5685">联系量:</span><span style="color:red">$!obj.get("total")</span>
+        									<br/>
+        									<span style="color:#2A5685">4星:</span><span style="color:red">$!obj.get("4star")</span> 
+        									<span style="color:#2A5685">5星:</span><span style="color:red">$!obj.get("5star")</span>
+										</a>
+            						</td>
+							#else
+								<td>&nbsp;</td>
+    						#end
+						#end
+					#end
+				</tr>
+            </table>
+        </div>
+    </body>
+</html>

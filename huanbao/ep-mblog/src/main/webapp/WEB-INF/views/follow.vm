@@ -1,0 +1,395 @@
+#set($layout='/layout/normLayout2.vm')
+
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index').htm">首页</a></li>
+                <li><a href="#springUrl('/mblog').htm">个人主页</a></li>
+                <li><a href="#springUrl('/info').htm">账户设置</a></li>
+            </ul>
+        </div>
+        
+        <form action="#springUrl('/searchMblog.htm')" method="post" id="searchMblog" name="searchMblog">
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" id="mBlogKeywords" name="mBlogKeywords"/>
+            <a href="javascript:searchFindMblog();"></a>
+        </div>
+        </form>
+        
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="FansFocus">
+    	<div class="f-left">
+        	<div class="f-group">
+            	<div class="f-group-title">
+                	<div class="f-title-left fl">关注中心</div>
+                </div>
+                <!--end bl-info-title-->
+                <ul id="ff-group">
+					<input type="hidden"  value="$!{infogroupId}" id="showFollow"/>
+					
+					#if($!{groupType} && $!{infogroupId})
+						<li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{infogroupId}.htm" style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">特别关注</a></li>
+					#elseif($!{dgroup})	
+						<li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{infogroupId}.htm" style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">特别关注</a></li>
+					#elseif($!{i})
+					<li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{i}.htm" style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">特别关注</a></li>
+					#elseif($!{infogroupId})
+					<li><a href="#springUrl('/follow')$!{infogroupId}.htm">特别关注</a></li>	
+					#else	
+					<li><a href="#springUrl('/follow').htm?groupType=1">特别关注</a></li>	
+					#end
+					
+					#if($!{group} && $!{group}=="默认分组")
+					<li style="background:#c0c0c0"><a href="#springUrl('/follow')0.htm" style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">默认分组</a></li>
+					#else
+					<li><a href="#springUrl('/follow')0.htm">默认分组</a></li>	
+					#end
+					#foreach($group in $!{groupList})
+						
+					#if($velocityCount==4)
+					 </ul>
+                     <ul id="bl-group-hide">
+						#if($!{group.groupName}!="特别关注")
+					   
+    					#if($!{group.id}==$!{groupId})	
+                    	 <li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{group.id}.htm"  style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">$!{group.groupName}</a></li>
+    					#else
+    					<li><a href="#springUrl('/follow')$!{group.id}.htm">$!{group.groupName}</a></li>	
+						#end
+						#end	
+					#else
+						#if($!{group.groupName}!="特别关注")
+						#if($!{group.id}==$!{groupId})
+						<li style="background:#c0c0c0"><a href="#springUrl('/follow')$!{group.id}.htm"  style="background:url(http://img0.huanbao.com/huanbao/mblog/images/group_icon_click.jpg) no-repeat 10px 8px">$!{group.groupName}</a></li>
+						#else
+						<li><a href="#springUrl('/follow')$!{group.id}.htm" >$!{group.groupName}</a></li>	
+						#end
+						#end	
+					#end
+					#end	
+                </ul>
+                #if(3 <= $!{groupList.size()})
+                <div class="bl-an">
+                	<a href="#" onclick="blGroupHide();">展开</a>
+                </div>
+				#else
+				#end
+                <!--bl-an-->
+                <div class="f-left-box">
+                	<img src="http://img0.huanbao.com/huanbao/mblog/images/group.jpg" id="f-newGroup"/>
+                    <div class="g-new-box">
+                        <div class="g-box-textBox">
+                            <input type="text" class="g-box-text" value="新分组">
+                        </div>
+                        <div class="g-box-new" onclick="FFaddGroup(this);">创建</div>
+                        <div class="g-box-cancel">取消</div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end g-new-box-->
+                    <div class="cb"></div>
+                </div>
+            </div>
+            <!--end 关注中心-->
+            <div class="f-fans">
+            	<a href="#springUrl('/myfans.htm')">粉丝（$!{fansCount}）</a>
+            </div>
+            <!--end ff-fans-->
+        </div>
+        <!--end ff-left-->
+        <div class="ff-right">
+        	<div class="focus">
+            	<div class="f-title">
+                	<span class="f-title-first">
+					#if($!{type}) 互相关注	
+                    #elseif($!{i} || $!{groupType})特别关注
+					#elseif($!{group})$!{group.groupName}#else 全部关注 #end
+                    #if($!{groupId}=='0')默认分组#end
+                    </span>
+					#if($!{followCount})
+                    （$!{followCount}） <input type="hidden" value="$!{followCount}" id="followCount"/>
+					#else
+						#if($!{page.records.size()}>0)
+						（$!{page.records.size()}） <input type="hidden" value="$!{page.records.size()}" id="followCount"/>	
+						#else
+						（0） <input type="hidden" value="0" id="followCount"/>		
+						#end	
+					#end	
+                </div>
+                <!--end f-title-->
+                <div class="f-block1">
+                	<div class="f-block1-box1 fl mr20" onclick="f_hide(this);">
+                    	<a>全部关注</a>
+                        <div class="f-box2-hide">
+                        	<ul>
+                            	<li><a href="#springUrl('/follow.htm')?type=1">互相关注</a></li>
+                            </ul>
+                        </div>
+                        <!--end f-box2-hide-->
+                    </div>
+                    <!--end f-block1-box1-->
+                    <div class="f-block1-box2 fl mr20" onclick="f_hide(this);">
+                    	<a>按时间关注</a>
+                        <div class="f-box2-hide">
+                        	<ul>
+                                <li><a href="#springUrl('/follow.htm')">按最新关注时间</a></li>
+                            </ul>
+                        </div>
+                        <!--end f-box2-hide-->
+                    </div>
+                    <!--end f-block1-box1-->
+                    <div class="f-add fl mr20" id="f-add">
+                    	<a onclick="f_hide2(this);"></a>
+                        <div class="f-hide">
+                            <div class="f-hide-checkbox">
+                                <ul id="group_id">
+                                    <li><input type="radio" class="g-block2-checkbox" value="特别关注" name="checkGroupId" id="checkGroupId"/>特别关注</li>
+									<li><input type="radio" class="g-block2-checkbox" value="0" name="checkGroupId" id="checkGroupId"/>默认分组</li>
+									#foreach($group in $!{groupList})
+                    					#if($!{group.groupName}=="特别关注")
+                    					#else
+                    					<li><input type="radio" class="g-block2-checkbox" value="$!{group.id}" name="checkGroupId" id="checkGroupId"/>$!{group.groupName}</li>
+                    					#end
+                    				#end
+                                    <div class="cb"></div>
+                                </ul>
+                            </div>
+                            <!--end g-block2-->
+                            <div class="f-hide-new" style="">
+                                
+								<div class="g-box-new2" onclick="creatGroupToInfo(this);" style="margin-right:80px;">确定</div>
+                                <a id="group_new">创建新分组</a>
+								<div class="g-new-box">
+                                    <div class="g-box-textBox">
+                                        <input type="text" class="g-box-text" value="新分组">
+                                    </div>
+									<div class="g-box-new" onclick="addGroup(this);">创建</div>
+                                    <div class="g-box-cancel">取消</div>
+                                    <div class="cb"></div>
+                                </div>
+                                <!--end g-new-box-->
+								
+                            </div>
+                            <!--end g-new-->
+                        </div>
+                        <!--end f-hide-->
+                    </div>
+                    <!--end f-block1-box1-->
+                    <div class="f-block1-box3 fl mr20" id="f-cancel">
+                    	<a></a>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end f-block1-box1-->
+                    <div class="f-hide-cancel fl">
+                    ##	已选择<span class="red">8</span>人
+					   
+                        <span class="f-hide-blue" id="f-cancel2">取消选择</span>
+                    </div>
+					<form action="#springUrl('/follow.htm')" method="post" id="searchFollowInfo" name="searchFollowInfo">
+                    <div class="f-search fr">
+                    	<input type="text" class="f-search-text" name="keywords" id="keywords" />
+                         <a href="javascript:searchFindFollowInfo();"></a>
+                        <div class="cb"></div>
+                    </div>
+					</form>
+                    <!--end f-search-->
+                    <div class="cb"></div>
+                </div>
+                <!--end f-block1-->
+                <div class="f-block2">
+					
+					#foreach($l in  $!{page.records})
+					#set($value=$velocityCount%3)
+					#if($value==0)
+					  <div class="f-item" id="f-item$velocityCount">
+                    	<div class="f-item-img">
+                        	<a href="#springUrl('/ublog')$!{l.mBlogInfo.id}.htm">
+							#if($!{l.mBlogInfo.headPic})	
+							<img src="$!{address.thumb}$!{address.resource}$!{l.mBlogInfo.headPic}"  style="width:30px;height:30px;"/>	
+							#else
+							<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img4.jpg"/>	
+							#end
+							</a>
+                        </div>
+                        <div class="f-item-text">
+                            <div class="f-text-box1">
+							    <div class="f-box1-left fl" title="${l.mBlogInfo.name}">
+    								#if(${l.noteName})
+										#printTitle(${l.noteName} 4 "")	
+    								#else
+    									#printTitle(${l.mBlogInfo.name} 4 "")
+    								#end		
+								<input type="hidden"  value="${l.mBlogInfo.id}" id="infoId${velocityCount}"/></div>
+                                <div class="f-box1-img fl">
+									#if(${l.mBlogInfo.sex}==1)
+        							<img src="http://img0.huanbao.com/huanbao/mblog/images/icon_ms.jpg" />
+        							#else
+        							<img src="http://img0.huanbao.com/huanbao/mblog/images/img10.jpg" />
+        							#end
+								</div>
+                                <div class="f-box1-text fl" title="$!{l.provinceName}$!{l.areaName}">$!{l.provinceName}&nbsp;#printTitle($!{l.areaName} 2 "")</div>
+                                <div class="cb"></div>
+                            </div>
+                            <!--end ff-text-box1-->
+                            <div class="f-text-box2">
+                                <div class="f-box2-left fl">关注<span class="greed">$!{l.followCount}</span></div>
+                                <div class="f-box2-fans fl">粉丝<span class="greed">$!{l.fansCount}</span></div>
+                                <div class="f-box2-text fl">微博<span class="greed">$!{l.mblogCount}</span></div>
+                                <div class="cb"></div>
+                            </div>
+                            <!--end ff-text-box2-->
+                            <div class="f-text-box3">
+                                简介：
+								#if($!{l.compProfile.details})
+									#printTitle($!{l.compProfile.details} 9 "")...
+								#end	
+                            </div>
+                            <!--end ff-text-box3-->
+                            <div class="f-focus">
+                            	#if(${l.type}=="1")
+                            	<img src="http://img0.huanbao.com/huanbao/mblog/images/focus3.jpg" />
+								#else
+								<img src="http://img0.huanbao.com/huanbao/mblog/images/focus2.jpg" />
+								#end
+                            </div>
+                            <!--end f-focus-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end ff-item-text-->
+                    </div>	
+					#else
+					<div class="f-item mr37" id="f-item$velocityCount">
+                    	<div class="f-item-img">
+                        	<a href="#springUrl('/ublog')$!{l.mBlogInfo.id}.htm">
+							#if($!{l.mBlogInfo.headPic})	
+							<img src="$!{address.thumb}$!{address.resource}$!{l.mBlogInfo.headPic}" style="width:30px;height:30px;"/>	
+							#else
+							<img src="http://img0.huanbao.com/huanbao/mblog/images/heading_img4.jpg"/>	
+							#end
+							</a>
+                        </div>
+                        <div class="f-item-text">
+                            <div class="f-text-box1">
+                                <div class="f-box1-left fl" title="${l.mBlogInfo.name}">
+    								#if(${l.noteName})
+										#printTitle(${l.noteName} 4 "")	
+    								#else
+    									#printTitle(${l.mBlogInfo.name} 4 "")
+    								#end
+								<input type="hidden"  value="${l.mBlogInfo.id}" id="infoId${velocityCount}"/></div>
+                                <div class="f-box1-img fl"><img src="http://img0.huanbao.com/huanbao/mblog/images/icon_ms.jpg" /></div>
+                                <div class="f-box1-text fl" title="$!{l.provinceName}$!{l.areaName}">$!{l.provinceName}&nbsp;#printTitle($!{l.areaName} 2 "")</div>
+                                <div class="cb"></div>
+                            </div>
+                            <!--end ff-text-box1-->
+                            <div class="f-text-box2">
+                                <div class="f-box2-left fl">关注<span class="greed">$!{l.followCount}</span></div>
+                                <div class="f-box2-fans fl">粉丝<span class="greed">$!{l.fansCount}</span></div>
+                                <div class="f-box2-text fl">微博<span class="greed">$!{l.mblogCount}</span></div>
+                                <div class="cb"></div>
+                            </div>
+                            <!--end ff-text-box2-->
+                            <div class="f-text-box3">
+                                简介：
+								#if($!{l.compProfile.details})
+									#printTitle($!{l.compProfile.details} 9 "")...
+								#end	
+								
+                            </div>
+                            <!--end ff-text-box3-->
+                            <div class="f-focus">
+								#if(${l.type}=="1")
+                            	<img src="http://img0.huanbao.com/huanbao/mblog/images/focus3.jpg" />
+								#else
+								<img src="http://img0.huanbao.com/huanbao/mblog/images/focus2.jpg" />
+								#end
+                            </div>
+                            <!--end f-focus-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end ff-item-text-->
+                    </div>	
+					#end	
+                	
+					#end
+					
+                    <div class="cb"></div>
+                </div>
+                <!--end f-block2-->
+				 <!--end ff-right-item-->
+                #mBlogPageNav(${page} "#springUrl('/follow')" "$!{groupId}" "")
+            </div>
+            <!--end focus-->
+        </div>
+        <!--end ff-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end wei-box-->
+</div>
+<!--end main-->
+<input type="hidden" id="f-hide" value="0" />
+<input type="hidden"  id="count" value="0" />
+
+
+
+
+
+
+#if(($!{newFansCount} && $!{newFansCount}>0) || ($!{commentCount} && $!{commentCount}>0) || $!{anteCount} && $!{anteCount}>0)
+	
+<div class="FloatBox">
+	<div class="fb-close">
+    	<img src="http://img0.huanbao.com/huanbao/mblog/images/close3.jpg" />
+    </div>
+    <!--end fb-close-->
+    <div class="cb"></div>
+	#if($!{newFansCount} && $!{newFansCount}>0)
+	<div class="fb-box">
+    	$!{newFansCount}位新粉丝，<a href="/mblog/newfans.htm">查看粉丝</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{commentCount} && $!{commentCount}>0)
+    <div class="fb-box">
+    	$!{commentCount}条新评论，<a href="/mblog/comments.htm">查看回复</a>
+    </div>
+	#end
+    <!--end fb-box-->
+	#if($!{anteCount} && $!{anteCount}>0)
+    <div class="fb-box">
+    	$!{anteCount}个新@我，<a href="/mblog/ante.htm">查看@我</a>
+    </div>
+	#end
+    <!--end fb-box-->
+</div>
+<!--end FloatBox-->
+#end
+<script >
+ function searchFindMblog(){
+ 	jQuery("#searchMblog").submit();
+ }
+ function searchFindFollowInfo(){
+ 	jQuery("#searchFollowInfo").submit();
+ }
+</script>

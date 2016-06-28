@@ -1,0 +1,92 @@
+<link rel="stylesheet" href="$!{address.img}/zz91/xianhuo/css/zz91.xianhuo.inner.css">
+#parse("/common/menu.vm")
+<!-- 查看购物车 -->
+<div class="wrapper mt">
+	<div class="broad">当前位置：<a href="#springUrl('/')">现货商城</a> > <a href="#">查看购物车</a></div>
+	<ul class="steps">
+		<li class="current" style="z-index:9"><s class="f"></s>1.查看购物车<s class="l"></s></li>
+		<li style="z-index:8"><s class="f"></s>2.确认订单信息<s class="l"></s></li>
+		<li style="z-index:7"><s class="f"></s>3.提交完成<s class="l"></s></li>
+	</ul>
+</div>
+<div class="wrapper mt">
+	<form action="#springUrl('/transaction/doConfirm.htm')" id="cartForm">
+	<table class="list_table">
+		<thead>
+			<tr>
+				<th class="chk"></th>
+				<th class="pname">商品</th>
+				<th>单价</th>
+				<th>数量</th>
+				<th>总金额</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			#set($total=0)
+			#foreach($obj in ${page.records})
+			<tr>
+				<td class="narrow"><input type="checkbox" name="id" value="$!{obj.spotOrder.id}" ></td>
+				<td class="pname">
+					<p>标题：<a href="#springUrl('/detail')$!{obj.spotOrder.spotId}.htm" target="_blank">$!{obj.spotOrder.orderProductTitle}</a></p>
+					<p>公司：$!{obj.spotOrder.orderCompanyName}</p>
+					##<p>形态：颗粒</p>
+					##<p>级别：一级</p>
+				</td>
+				<td class="narrow">$!{obj.spotOrder.price} $!{obj.spotOrder.priceUnit}/$!{obj.spotOrder.quantityUnit}</td>
+				<td class="narrow">${obj.spotOrder.quantity}$!{obj.spotOrder.quantityUnit}</td>
+				<td class="narrow">$!{obj.spotOrder.total}$!{obj.spotOrder.priceUnit}</td>
+				<td class="narrow"><a href="#springUrl('/transaction/deleteBySpotId.htm')?id=$!{obj.spotOrder.id}">删除</a></td>
+				#set($total=$total+$!{obj.spotOrder.total})
+			</tr>
+			#end
+		</tbody>
+		<tfoot>
+			<tr>
+				<td class="narrow"><input type="checkbox" id="batCheckBox"></td>
+				<td colspan="3">
+					<input type="button" class="action_btn action_buy" id="batDel" value="删除已选" />
+				</td>
+				<td colspan="2" class="tar">
+					<p>共选中${page.records.size()}种产品，总价<strong class="highlight">$total</strong>元</p>
+##					<a href="" target="_blank">登录</a>
+##					<a href="" target="_blank">注册</a>
+					<input type="submit" value="确认提交" class="action_btn action_quote">
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+	<input type="hidden" name="pageType" value="0" />
+	</form>
+</div>
+<script type="text/javascript" src="$!{address.img}/zz91/xianhuo/js/zz91.xianhuo.js"></script>
+<script>
+jQuery(document).ready(function(){
+	//下拉菜单
+	xianhuo.allsort();
+	//搜索框
+	xianhuo.placeholder();
+	
+	## 批量删除
+	jQuery("#batDel").click(function(){
+		jQuery("input[name='id']").each(function(){
+			if($(this).attr("checked")){
+				jQuery("#cartForm").attr("action","#springUrl('/transaction/deleteBySpotId.htm')");
+				jQuery("#cartForm").submit();
+			}
+		});
+	});
+	
+	## 全选
+	jQuery("#batCheckBox").click(function(){
+		var c = jQuery("#batCheckBox").attr("checked");
+		jQuery("input[name='id']").each(function(){
+			if(c=="checked"){
+				$(this).attr("checked", c);
+			}else{
+				$(this).attr("checked", false);
+			}
+		});
+	});
+});
+</script>

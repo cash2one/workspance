@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPostReply">
+	<typeAlias alias="reply" type="com.ast.ast1949.domain.bbs.BbsPostReplyDO" />
+	<typeAlias alias="profiler"
+		type="com.ast.ast1949.domain.bbs.BbsUserProfilerDO" />
+	<typeAlias alias="replyDto" type="com.ast.ast1949.dto.bbs.BbsPostReplyDto" />
+	<typeAlias alias="post" type="com.ast.ast1949.domain.bbs.BbsPostDO" />
+
+	<resultMap id="profilerResult" class="profiler">
+		<result property="id" column="profiler_id" />
+		<result property="account" column="account" />
+		<result property="picturePath" column="picture_path" />
+		<result property="nickname" column="nickname" />
+		<result property="realName" column="real_name" />
+		<result property="integral" column="integral" />
+		<result property="postNumber" column="post_number" />
+		<result property="replyNumber" column="reply_number" />
+		<result property="essenceNumber" column="essence_number" />
+		<result property="gmtCreated" column="gmt_created" />
+	</resultMap>
+
+	<resultMap id="replyResult" class="reply">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="zanCount" column="zanCount" />
+	</resultMap>
+
+	<resultMap id="replyDtoResult" class="replyDto">
+		<result property="reply" resultMap="bbsPostReply.replyResult" />
+		<result property="profiler" resultMap="bbsPostReply.profilerResult" />
+	</resultMap>
+	<!--
+	<resultMap id="CategoryIdResult" class="post">
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+	</resultMap>
+	<resultMap id="simpleReplyDtoResult" class="replyDto">
+		<result property="reply" resultMap="bbsPostReply.replyResult" />
+		<result property="bbsPostCategoryId" column=post.bbs_post_category_id" />
+	</resultMap>
+	-->
+	
+	<resultMap class="reply" id="fullColumnResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="isDel" column="is_del" />
+		<result property="checkPerson" column="check_person" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkTime" column="check_time" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="uncheckedCheckStatus" column="unchecked_check_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		bpr.`id`,
+		bpr.`company_id`,
+		bpr.`account`,
+		bpr.`bbs_post_id`,
+		bpr.`title`,
+		bpr.`content`,
+		bpr.`is_del`,
+		bpr.`check_person`,
+		bpr.`check_status`,
+		bpr.`check_time`,
+		bpr.`unpass_reason`,
+		bpr.`unchecked_check_status`,
+		bpr.`gmt_created`,
+		bpr.`gmt_modified`
+	</sql>
+
+	<insert id="createReplyByAdmin" parameterClass="reply">
+		insert into `bbs_post_reply`
+		(
+		`bbs_post_id`,
+		`company_id`,
+		`account`,
+		`title`,
+		`content`,
+		`is_del`,
+		`check_status`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#bbsPostId#,
+		#companyId#,
+		#account#,
+		#title#,
+		#content#,
+		#isDel#,
+		#checkStatus#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<delete id="deleteByAdmin" parameterClass="java.lang.Integer">
+		delete from
+		`bbs_post_reply`
+		where id=#value# 
+	</delete>
+
+	<update id="updateCheckStatus" parameterClass="java.util.HashMap">
+		update
+		`bbs_post_reply`
+		set
+		`check_person` = #admin#,
+		`check_status` =
+		#checkStatus#,
+		`check_time` = now(),
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+
+	<update id="updateReplyByAdmin" parameterClass="reply">
+		update
+		`bbs_post_reply`
+		set
+		content=#content#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<sql id="dynamicByAdmin">
+		<dynamic prepend="where">
+			<isNotEmpty property="reply.checkStatus" prepend="and">
+				bpr.check_status=#reply.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty property="reply.bbsPostId" prepend="and">
+				bpr.bbs_post_id=#reply.bbsPostId#
+			</isNotEmpty>
+			<isNotEmpty property="reply.title" prepend="and">
+				bpr.title like concat(#reply.title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="reply.account" prepend="and">
+				bpr.account=#reply.account#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryReplyByAdmin" parameterClass="java.util.HashMap"
+		resultMap="fullColumnResult">
+		select
+		<include refid="bbsPostReply.fullColumn" />
+		from `bbs_post_reply` bpr
+		<include refid="bbsPostReply.dynamicByAdmin" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryReplyByAdminCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from `bbs_post_reply` bpr
+		<include refid="bbsPostReply.dynamicByAdmin" />
+	</select>
+
+	<sql id="dynamicReplyOfPost">
+		where
+		r.is_del='0' and (r.check_status='1' or r.check_status='2')
+		and
+		r.bbs_post_id=#postId# 
+		<isNotEmpty property="companyId">
+-			and r.company_id=#companyId#
+-		</isNotEmpty>
+	</sql>
+
+	<select id="queryReplyOfPost" parameterClass="java.util.HashMap"
+		resultMap="replyDtoResult">
+		select
+		r.id,r.company_id,r.account,r.bbs_post_id,r.title,r.content,r.is_del,r.gmt_created,r.gmt_modified,r.zanCount
+		,
+		p.account,p.nickname,p.picture_path,p.real_name,p.integral,p.post_number,p.reply_number,p.essence_number,p.id
+		as profiler_id,p.gmt_created
+		from bbs_post_reply r
+		left join bbs_user_profiler p on r.account=p.account
+		<include refid="bbsPostReply.dynamicReplyOfPost" />
+		order by r.gmt_created desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryReplyOfPostCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from bbs_post_reply r
+		<include refid="bbsPostReply.dynamicReplyOfPost" />
+	</select>
+
+	<select id="queryBbsPostByReplyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select bbs_post_id from bbs_post_reply where id=#id#
+	</select>
+
+	<!-- bad result -->
+	<resultMap class="post" id="simplePostResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="checkStatus" column="check_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="replyCount" column="reply_count" />
+		<result property="replyTime" column="reply_time" />
+		<result property="bbsPostAssistId" column="bbs_post_assist_id" />
+	</resultMap>
+
+	<select id="queryReplyByUser" parameterClass="java.util.HashMap"
+		resultMap="simplePostResult">
+		select
+		p.id ,p.title,p.bbs_post_category_id,r.gmt_created,r.check_status
+		from
+		bbs_post_reply r
+		inner join bbs_post p on r.bbs_post_id = p.id
+		where
+		r.account=#account#
+		<dynamic>
+			<isNotEmpty property="checkStatus" prepend="and">
+				r.check_status=#checkStatus#
+			</isNotEmpty>
+			<isNotNull property="bbsPostCategoryId" prepend="and">
+				p.bbs_post_category_id = #bbsPostCategoryId#
+			</isNotNull>
+			<isNull property="bbsPostCategoryId" prepend="and">
+				p.bbs_post_category_id not in (11)
+			</isNull>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryReplyByUserCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_reply r
+		inner join bbs_post p on r.bbs_post_id = p.id
+		where p.bbs_post_category_id=#bbsPostCategoryId# and r.company_id>0 and r.is_del='0'
+		<dynamic>
+			<isNotEmpty property="checkStatus" prepend="and">
+				r.check_status=#checkStatus#
+			</isNotEmpty>
+		    <isNotEmpty property="account" prepend="and">
+				 r.account=#account# and r.account!="admin"
+			</isNotEmpty>	
+		</dynamic>	
+	</select>
+    <!--回答数，回帖数，科学学院回答数-->	
+    <select id="countReplyByCompanyId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    select	count(0)
+    from bbs_post_reply r	
+    inner join bbs_post p on r.bbs_post_id = p.id
+    where p.bbs_post_category_id=#categoryId# 
+    <dynamic>
+    <isNotEmpty property="companyId" prepend="and">
+    	r.company_id=#companyId#
+    </isNotEmpty>	
+    </dynamic>		
+    </select>	
+
+	<select id="countBeReply" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_reply r
+		where r.check_status =
+		'1' and r.is_del='0'
+		and
+		exists(
+		select id from bbs_post where r.bbs_post_id = id and account = #account# and
+		check_status ='1' and is_del = '0' 
+		<isNotEmpty prepend="and" property="categoryId">
+			bbs_post_category_id = #categoryId#
+		</isNotEmpty>
+		<isEmpty prepend="and" property="categoryId">
+			( bbs_post_category_id > 11 or 11 > bbs_post_category_id )
+		</isEmpty>
+		)
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="fullColumnResult">
+		select 
+		<include refid="bbsPostReply.fullColumn" />
+		from bbs_post_reply bpr
+		where id = #value#
+	</select>
+	
+	<select id="queryReplyByPostId" parameterClass="java.util.Map" resultMap="fullColumnResult">
+		select 
+		<include refid="bbsPostReply.fullColumn" />
+		from bbs_post_reply bpr
+		where bbs_post_id = #bbsPostId#
+		order by id asc
+		limit 0,#size#
+	</select>
+	
+	<select id="queryLatestReplyByPostId" parameterClass="java.lang.Integer" resultMap="fullColumnResult">
+		select 
+		<include refid="bbsPostReply.fullColumn" />
+		from bbs_post_reply bpr
+		where bbs_post_id = #bbsPostId#
+		order by id desc
+		limit 1
+	</select>
+	
+	<update id="updateIsDel" parameterClass="java.util.HashMap">
+		update bbs_post_reply
+		set is_del=#isDel#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!-- bad result -->
+	<resultMap class="reply" id="simpleReplyResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="bbsPostCategoryId" column="bbs_post_category_id" />
+		<result property="checkStatus" column="check_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="bbsPostId" column="bbs_post_id" />
+	</resultMap>
+	<select id="queryReplyByAccount" parameterClass="java.util.HashMap" resultMap="simpleReplyResult">
+		select
+		p.title,p.bbs_post_category_id,r.id,r.bbs_post_id,r.gmt_created,r.check_status
+		from
+		bbs_post_reply r
+		inner join bbs_post p on r.bbs_post_id = p.id
+		where
+		r.account=#account# and r.is_del='0'
+		<dynamic>
+			<isNotEmpty property="checkStatus" prepend="and">
+				r.check_status=#checkStatus#
+			</isNotEmpty>
+			<isNotEmpty property="bbsPostCategoryId" prepend="and">
+				p.bbs_post_category_id = #bbsPostCategoryId#
+			</isNotEmpty>
+			<isNull property="bbsPostCategoryId" prepend="and">
+				p.bbs_post_category_id not in (11)
+			</isNull>
+			
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<update id="updateReplyByUser" parameterClass="bbsPostReplyDO">
+		update
+		`bbs_post_reply`
+		set
+		`content` = #content#,
+		`check_status` =#checkStatus#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	<sql id="dynamicByAdminSearch">
+		<dynamic prepend="where">
+			(r.check_status='1' or r.check_status='2') 
+			and r.is_del='0'
+			and  p.bbs_post_category_id not in(11)
+	    </dynamic>
+	</sql>
+	<select id="bbsPostReplyCompany" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select 
+		distinct r.company_id
+		from bbs_post_reply r
+		left join bbs_post p on p.id=r.bbs_post_id
+		<include refid="company.dynamicByAdminSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="bbsPostReplyCompanyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select 	count(distinct r.company_id)
+		from bbs_post_reply r
+		left join bbs_post p on p.id=r.bbs_post_id
+		<include refid="company.dynamicByAdminSearch" />
+	</select>
+	<select id="receviceReplyCompany" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+		distinct r.tocompany_id
+		from bbs_post_reply r
+		left join bbs_post p on p.id=r.bbs_post_id
+		<include refid="company.dynamicByAdminSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="receviceReplyCompanyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select	count(distinct r.tocompany_id)
+		from bbs_post_reply r
+		left join bbs_post p on p.id=r.bbs_post_id
+		<include refid="company.dynamicByAdminSearch" />
+	</select>
+   <resultMap id="replySimpleResult" class="reply">
+		<result property="companyId" column="company_id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+	</resultMap>	
+	<!--最佳回答者-->
+	<select id="queryBestAnswerByViewCount" parameterClass="java.lang.Integer" resultMap="replySimpleResult">
+		select r.company_id,count(r.company_id) as bbs_post_id
+	    from bbs_post_reply r
+	 	inner join bbs_post p on r.bbs_post_id = p.id	
+	    where r.company_id>0 and p.bbs_post_category_id = '1' and r.account!="admin"
+	    group by r.company_id
+	    order by bbs_post_id desc
+	    limit #size#			
+	</select>
+    <!--某用户回复的帖子或问答-->
+    <select id="queryBbsReplyByUser" parameterClass="java.util.HashMap" resultMap="simplePostResult">
+   	select
+	p.id ,p.title,p.content,p.bbs_post_category_id,p.bbs_post_assist_id,p.reply_count,p.reply_time,p.check_status,p.gmt_created
+	from
+	bbs_post_reply r
+	inner join bbs_post p on r.bbs_post_id = p.id
+	where r.check_status>'0' and '3'>r.check_status and r.is_del='0' and r.account=#account#	and p.bbs_post_category_id = #categoryId#
+	<isNotEmpty prepend="and" property="keywords">
+		p.title like concat('%',#keywords#,'%')
+	</isNotEmpty>
+	<include refid="common.pageOrderBy" />
+	<include refid="common.pageLimit" />	
+    </select>
+    <!--某用户回复的帖子或问答数-->	
+    <select id="countBbsReplyByUser" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+   		 select count(0)
+       	 from
+		 bbs_post_reply r
+	     inner join bbs_post p on r.bbs_post_id = p.id
+	     where r.check_status>'0' and '3'>r.check_status and r.is_del='0' and r.account=#account#	and p.bbs_post_category_id = #categoryId#
+	     <isNotEmpty prepend="and" property="keywords">
+			p.title like concat('%',#keywords#,'%')
+		</isNotEmpty>
+    </select>
+    <!--某用户回复的帖子--> 
+    <select id="queryReplyByCompanyId" parameterClass="java.util.Map" resultMap="simpleReplyResult">
+    select p.title,p.bbs_post_category_id,r.id,r.bbs_post_id,r.gmt_created,r.check_status
+	from bbs_post_reply r
+	inner join bbs_post p on r.bbs_post_id = p.id
+	where r.is_del='0' and p.bbs_post_category_id=#categoryId# and r.check_status>'0' and '3'>r.check_status and  r.company_id=#companyId#	
+   	order by r.gmt_created desc 
+   	limit #size# 
+    </select>
+   <!--更新点赞数--> 
+    <update id="updateZanCount" parameterClass="java.util.Map">
+   		 update bbs_post_reply
+    	 set zanCount=#zanCount#,
+         gmt_modified=now()	
+   		 where id=#id#		
+    </update> 		
+</sqlMap>

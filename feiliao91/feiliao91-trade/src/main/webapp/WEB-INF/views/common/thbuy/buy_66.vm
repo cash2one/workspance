@@ -1,0 +1,132 @@
+#set($layout="/layout/ordersreturn.vm")
+		<link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/returncp/css/returngd.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/trade/priceindex/css/deal.css" />
+        <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img,i');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+			#parse("/common/returnTwo.vm")
+                <div class="orderright fl">
+                    <div class="bottomdi">
+                        <div class="odr-h">买家申请淘再生网介入</div>
+                        <div class="odr-tellus">
+                            <p>淘再生网会冻结订单及交易金额，一直到处理结束，或买卖双方都协商一致。</p>
+                            <p class="color-99">您还可以拨打 服务电话 0571-56612345 查询维权进度</p>
+                        </div>
+                    </div>
+                    <div class="jr-reason">
+                        <p>申请原因：卖家拒绝退款</p>
+                        <p>卖家拒绝原因：$!{detail.refused}</p>
+						#if($!{detail.refusedText})
+                        <p>卖家拒绝说明：$!{detail.refusedText}</p>
+						#end
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 弹窗 -->
+        <div class="estopDiv j_close"></div>
+        <div class="pop-main">
+            <div class="refund-main">
+                <div class="refund-top clearfix">
+                    <h2 class="fl">修改退款申请</h2>
+                    <a href="javascript:void(0)" class="fr j_close close">x</a>
+                </div>
+                <div class="refund-cnt">
+                    <div class="refund-type">
+                        <span class="this-refunbd">我要退货</span>
+                        <span>我要退款（无需退货）</span>
+                    </div>
+                    <div class="type-main">
+                        <ul>
+                            <li>
+                                <div class="tk-reason see-reson">
+                                    退货原因：<select class="reson-list"><option>七天无理由退换货</option></select>
+                                    <div class="reson-ts">
+                                        <i class="icon-rs iconfont">&#xe60d;</i>申请七天无理由退换货，请注意保持商品的完好，且不影响二次销售。查看规则详情
+                                    </div>
+                                </div>
+                                <div class="tk-reason">
+                                    退款原因：<select class="reson-list"><option>拍错了/订单信息有误</option></select>
+                                </div>
+                            </li>
+                            <li>
+                                退款金额：<input placeholder="151000.00" class="refund-my"/>
+                                <span class="color-66">最多151000.00元</span>
+                            </li>
+                            <li>
+                                退款说明：<textarea class="reson-refund j_stext"></textarea>
+                                <span class="color-66 vd-bt">还可以输入<span class="j_number">200</span>字</span>
+                            </li>
+                            <li>
+                                上传凭证：<span class="intoimg">上传图片</span>
+                            </li>
+                            <li>
+                                <span class="alter-btn">修改退款申请</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+	
+	
+	$(document).ready(function(){
+            var obj = document.getElementById("ull");
+            var lis = obj.getElementsByTagName("li");
+            for(var i = lis.length-1; i > -1; i--){
+            obj.appendChild(lis[i]);
+            }
+	})
+	 $(".j_ndata li:last").addClass("this-data");
+     $(".j_seller").bind("hover",function(){
+        $(this).toggleClass("seller-tt2");
+        $(".hide-div").stop().slideToggle();
+     })
+
+     $(".j_rma").bind("click",function(){
+        var wHight = $(document).height();
+        var wWidth = $(document).width();
+        var scrollTop = $(document).scrollTop();
+        $(".estopDiv").height(wHight).width(wWidth).show();
+        var left_pop = (wWidth - $(".pop-main").width())/2
+        var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+        $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+    })
+    $(".j_close").bind("click",function(){
+        $(".estopDiv").hide();
+        $(".pop-main").hide();
+    })
+
+    $(".refund-type span").bind("click",function(){
+        $(".this-refunbd").removeClass("this-refunbd")
+        $(this).addClass("this-refunbd")
+        var index = $(this).index();
+        $(".see-reson").removeClass("see-reson");
+        $(".tk-reason").eq(index).addClass("see-reson")
+    })
+
+    var lastNum = parseInt($(".j_number").html());
+    $(".j_stext").bind("keyup",function(){  
+        var allNumber = $(this).val().length;
+        allNumber = lastNum - allNumber;
+        $(".j_number").html(allNumber);
+        if(allNumber<=0){
+            allNumber = 0;
+            $(".j_number").html(0)
+            $(this).val($(this).val().substring(0,lastNum));
+            $(this).css("background","#f2f2f2")
+        }else{
+            $(this).css("background","#fff")
+        }
+    })
+
+    selectJr()
+    </script>
+</html>

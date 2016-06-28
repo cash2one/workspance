@@ -1,0 +1,50 @@
+<script type="text/javascript" src="#springUrl('/app/comp/comp.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var recommendCompMenu=new Array();
+		
+		com.zz91.ep.comp.FILTER_RECOMMEND.push({name : "全部类别",  value: ''});
+		#foreach($rcc in $!{recommendCompCategory.keySet()})
+			com.zz91.ep.comp.FILTER_RECOMMEND.push({
+				name:"$!{recommendCompCategory.get($!{rcc})}",
+				value:"$!{rcc}"
+			});
+			recommendCompMenu.push({
+				text:"$!{recommendCompCategory.get($!{rcc})}",
+				handler:function(){
+					com.zz91.ep.comp.recommend("$!{rcc}");
+				}
+			});
+		#end
+
+		var subRecMenu=new Array();
+		
+		#foreach($rc in $!{subnetRec.keySet()})
+			com.zz91.ep.comp.FILTER_SUBREC.push({
+				name:"$!{subnetRec.get($!{rc})}",
+				value:"$!{rc}"
+			});
+			subRecMenu.push({
+				text:"$!{subnetRec.get($!{rc})}",
+				handler:function(){
+					com.zz91.ep.comp.subRecommend("$!{rc}");
+				}
+			});
+		#end
+	
+		var grid=new com.zz91.ep.comp.Grid({
+			id:COMP.COMP_GRID,
+			layout:"fit",
+			region:"center",
+			recommendCompMenu:recommendCompMenu,
+			subRecMenu:subRecMenu
+		});
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid]
+		});
+		
+	})
+</script>

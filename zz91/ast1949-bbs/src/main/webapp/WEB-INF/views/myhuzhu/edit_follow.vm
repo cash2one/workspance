@@ -1,0 +1,113 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+#set($headName="follow")
+#parse("/common/myhuzhu/head.vm")
+<div class="huzhu">
+	 <div class="mainblock">
+            <div class="m5-tab f16">
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/dongtai.html')" #if($type==4) class="up" #end>关注动态</a>
+                </div>
+                <!--end m5t-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/lingyu.htm.html')" #if(!$type) class="up" #end>我的关注领域</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/huida.html')" #if($type==2) class="up" #end>关注的回答</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl">
+                    <a href="#springUrl('/myhuzhu/guanzhu/tiezi.html')" #if($type==1) class="up" #end>关注的帖子</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="cb"></div>
+            </div>
+            <!--end m5-tab-->
+        </div>
+    <div class="hz-left fl">
+		<dl class="main_box fix_follow clearfix pd20">
+			<dt>我的关注领域</dt>
+			<dd>
+				<ul class="follow-item">
+					#foreach($obj in $list)
+						<li>
+							<a href="#springUrl('/viewTags-')$!{obj.id}.htm" target="_blank">
+								$!{obj.tagName}
+							</a>
+							<img src="$!{address.img}/zz91/newhuzhu/images/close_red.jpg" onclick="delFollow($!{obj.id})" class="close" />
+						</li>
+					#end
+					#if($list.size()==0)
+                        <span>您尚未添加关注领域，马上在下面搜索框输入并搜索关键字，添加关注领域！</span>
+					#end
+				</ul>
+			</dd>
+		</dl>
+		<!--end main_box-->
+		<form action="#springUrl('/myhuzhu/guanzhu/lingyu.html')" method="get" id="followFrom">
+		<p class="add_follow bold f14">添加关注领域</p>
+		<div class="mb-dh lt2 mb10">
+			<div class="mdh-item fl">
+				<input type="text" class="form_follow" name="keyword" value="$!{keyword}" />
+			</div>
+			<!--end mdh-item fl-->
+			<div class="mdf-btn fr">
+				<a href="javascript:;" target="_blank" class="white f14" onclick="clickToSub()">搜索关注</a>
+			</div>
+			<!--end mdh-btn fr-->
+			<div class="cb"></div>
+		</div>
+		<!--end mb-dh-->
+		<div class="main_box fix_follow clearfix">
+			<ul class="follow-item">
+				#foreach($obj in $page.records)
+					<li>
+						<a href="javascript:;" target="_blank" onclick="follow($!{obj.id})" #if($idSet.contains($!{obj.id})) class="selected" #end>$!{obj.tagName}</a>
+						#if($idSet.contains($!{obj.id}))
+							<img src="$!{address.img}/zz91/newhuzhu/images/close_green.png" class="close" />
+						#end
+					</li>
+				#end
+				
+			</ul>
+		</div>
+        </form>
+		<!--end main_box-->
+	</div>
+	<!--end hz-left-->
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+</div>
+<!--end huzhu-->
+<script type="text/javascript">
+	function delFollow(id){
+		jQuery.ajax({
+			url:"#springUrl('/myhuzhu/do_del_follow.htm?id=')"+id,
+			dataType:"json",
+			success:function(data){
+				window.location.reload();
+			}
+		});
+		window.location.reload();
+	}
+	
+	function follow(id){
+		jQuery.ajax({
+			url:"#springUrl('/myhuzhu/do_follow.htm?id=')"+id,
+			dataType:"json",
+			success:function(data){
+				window.location.reload();
+			}
+		});
+	}
+	
+	function clickToSub(){
+		jQuery("#followFrom").submit();
+	}
+</script>

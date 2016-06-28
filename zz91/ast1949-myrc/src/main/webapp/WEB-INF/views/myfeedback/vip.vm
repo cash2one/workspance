@@ -1,0 +1,95 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/mymessage/inbox.htm')">留言管理</a><span class="divider">/</span>
+			</li>
+			<li class="active">客服留言</li>
+		</ul>
+		<div class="alert alert-info"> 
+			<b>提示:</b>
+			我是您的小秘书$!{cs_name}，有问题请告诉我哦 :)
+		</div>
+		#if($!{error}=="0")
+		<div class="alert alert-success mt">
+			<strong>提交成功</strong>
+			您的问题/建议已经提交，请耐心等待我们的回复。
+		</div>
+		#else
+		<div class="well mt">
+			<div class="well-head">如果您有任何疑问或建议，请告诉我们！(打<span class="red">*</span>为必填项)</div>
+			<div class="well-content">
+				<form id="form2" name="form2" action="#springUrl('/myfeedback/feedbackVip.htm')" method="post" >
+					<div class="control-group">
+						<label for="title" class="control-label"><span class="red">*</span>问题/建议：</label>
+						<div class="controls">
+							<input name="title" id="title" value="" maxlength="100" class="field input-large validate[required]">
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="content" class="control-label"><span class="red">*</span>详细描述：</label>
+						<div class="controls">
+							<textarea id="content" name="content" rows="8" cols="60" maxlength="1000" class="validate[required]"></textarea>
+						</div>
+					</div>
+					<div class="form-actions">
+						<input type="submit" value="提交建议" class="btn btn-primary">
+					</div>
+				</form>
+			</div>
+		</div>
+		#end
+		<div class="well mt">
+			<div class="well-head">已提交的问题/建议</div>
+			#foreach($feedback in $!{page.records})
+			<div class="well-content">
+				<p><strong>标题：</strong>$!{feedback.title} $!date.format('yyyy-MM-dd HH:mm:ss',$!{feedback.gmtCreated})</p>
+				<p>$!{feedback.content}</p>
+				#if(${feedback.checkStatus} == "0")
+				<strong>回复：</strong>
+					#if($!{myaccount.contact} && $!{myaccount.contact.length()}>4 )
+						$!{myaccount.contact.substring(0,4)}
+					#else
+						$!{myaccount.contact}
+					#end
+					#if($!{myaccount.sex} == 1)
+						女士
+					#else
+						先生
+    				#end
+    			，您的反馈我们已经收到，请耐心等待我们的处理，感谢您提出的宝贵的问题/建议！
+				#end
+				#if(${feedback.checkStatus} == "1")
+				<strong>回复：</strong>
+				$!{feedback.replyContent}
+				<span>$!date.format('yyyy-MM-dd hh:mm:ss',$!{feedback.gmtReply})</span>
+				#end
+				#if(${feedback.checkStatus} == "2")
+				<strong>回复：</strong>
+    			#if($!{myaccount.contact} && $!{myaccount.contact.length()}>4 )
+        			$!{myaccount.contact.substring(0,4)}
+        		#else
+        			$!{myaccount.contact}
+        		#end
+        		#if($!{myaccount.sex} == 1)
+        			女士
+        		#else
+        			先生
+    			#end
+    			，感谢您提出的问题/建议，我们将尽快处理！
+				#end
+    		</div>
+    		#set($vcount = 1)
+			#end
+		</div>
+		#myrcPageNav($!{page} "#springUrl('/myfeedback/vip.htm')" "" "")
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+jQuery(function(){
+	myrc.menu(4, 3);
+	jQuery("#form2").validationEngine("attach");
+})
+</script>

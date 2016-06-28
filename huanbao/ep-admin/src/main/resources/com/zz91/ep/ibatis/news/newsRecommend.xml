@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="news_recommend">
+
+	<typeAlias alias="recommend" type="com.zz91.ep.domain.news.NewsRecommend"/>
+	
+	<insert id="insertRecommend" parameterClass="recommend">
+		insert into `news_recommend`
+		(
+		`news_id`,
+		`type`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#newsId#,
+		#type#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteRecommend" parameterClass="java.util.HashMap">
+		delete from news_recommend
+		where id=#rid# and news_id=#id#
+	</delete>
+	
+	<!-- 
+	<delete id="deleteRecommendById" parameterClass="java.util.HashMap">
+		delete from news_recommend
+		where news_id=#id# and type=#type#
+	</delete>
+	
+	<select id="queryRecommendByNewsId" parameterClass="java.lang.Integer" resultClass="recommend">
+		select 
+			id,
+			news_id,
+			type,
+			gmt_created,
+			gmt_modified
+ 		from news_recommend
+		where news_id=#id#
+	</select>
+	 -->
+	 
+	<select id="queryRecommendByNewsIdAndType" parameterClass="java.util.HashMap" resultClass="recommend">
+		select 
+			id,
+			news_id,
+			type,
+			gmt_created,
+			gmt_modified
+ 		from news_recommend
+		where news_id=#id# and type=#type#
+	</select>
+</sqlMap>

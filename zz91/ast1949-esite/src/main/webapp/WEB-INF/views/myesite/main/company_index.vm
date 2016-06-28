@@ -1,0 +1,88 @@
+<div id="company_index" class="bodyCont moveChild mb"> 
+	#parse("/common/import_fancybox_js.vm")
+	<div class="bodyContTitle"> 
+		#set($navTitle="公司介绍")
+		#foreach($!{obj} in $!{navColumnConfig})
+			#if($!{obj.id}=="gsjs")
+				#set($navTitle=$!{obj.t})
+			#end
+		#end
+        <span class="titleLinkColor titleName t">$!{navTitle}</span>
+        <a href="#springUrl('/gsjs.htm')" class="titleLinkColor more">更多 >></a>
+    </div>
+	<div class="bodyContContent rightConteWidth">
+        <div class="bodyContContentRightCont mainTextColor clearfix">
+            #cacheFragment("$!{address.esiteFragment}/esite/companyPic.htm?cid=$!{cid}","","","")
+				<div class="comany_pic" id="Js_show">
+				#if(1>$!{list.size()})
+					<br/>
+					<p>
+						此公司没有上传公司图片
+					</p>
+					<br/>
+				#else
+					#foreach($pic in $!{list})
+    					##<div>
+							<span>
+								<a class="group" href="$!{address.resource}/${pic.filepath}${pic.filename}">
+									<img src="$!{address.thumb}$!{address.resource}/${pic.filepath}${pic.filename}&width=200&height=200" data-size="200, 200" width="200" height="200" />
+								</a>
+							</span>
+						##</div>
+    				#end
+				#end
+				</div>
+			#end
+			#cacheFragment("$!{address.esiteFragment}/esite/companyDetails.htm?cid=$!{cid}","","1","")
+				##$!{details}
+				#if($!{detailsNoHtml.length()}>450)
+					#set($detailsNoHtml = $detailsNoHtml.replaceAll("&nbsp;", ""))
+					#printTitle($!{detailsNoHtml} 450 "...")
+					##$!{detailsNoHtml}
+					<br/>
+					<a href="#springUrl('/gsjs.htm')" style="font-size:16px;float:right"><b>显示更多</b></a>
+				#else
+					$!{details}
+				#end
+            #end
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+ jQuery(document).ready(function(){
+        $("a.group").fancybox({
+		'transitionIn': 'elastic',
+            'transitionOut': 'elastic',
+            'speedIn': 450,
+            'speedOut': 320
+		});
+    })
+</script>
+<script>
+
+jQuery(function(){
+	picShow();
+})
+function picShow() {
+	var c = jQuery("#Js_show"),
+		item = c.find("img"),
+		num = item.length,
+		cur = 0;
+		if (num === 1) {
+			return
+		}
+		item.each(function(i){
+			if (i !== 0) {
+				$(this).hide();
+			}
+		});
+	var loop = setTimeout(fader, 2000);
+	function fader() {
+		var m = cur - 1 < 0 ? num - 1 : cur - 1;
+		item.eq(m).fadeOut("slow");
+		item.eq(cur).fadeIn("slow");
+		cur = cur + 1 === num ? 0 : cur + 1;
+		setTimeout(fader, 2000);
+	}
+}	
+</script>

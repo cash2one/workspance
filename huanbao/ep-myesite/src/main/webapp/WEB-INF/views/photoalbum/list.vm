@@ -1,0 +1,108 @@
+#set($layout="/layout/defaultS.vm")
+
+## page title
+<section class="container mt" >
+    <ul class="breadcrumb">
+        <li>
+			<a href="#springUrl('/photoalbum/index.htm')">
+                <strong>相册管理</strong>
+            </a>
+		</li>
+		<li >/</li>
+		<li><strong>$!{name}</strong></li>
+    </ul>
+</section>
+#if( 0 >= $!{remainNum})
+<section class="container mt" >
+	<div class="alert alert-error" >
+		<strong>注意：</strong>
+		很抱歉，您暂时不能上传照片到这个相册了，本相册限制了上传图片的数量为<span class="red" >$!{totalAllow}</span>张，现在您已上传<span class="red" >$!{uploadedNum}</span>张！
+	</div>
+</section>
+#end
+
+<section class="container mt well">
+    <div class="well-head"><strong>相册：</strong>$!{name}</div>
+    <div class="well-content">
+
+        <div class="btn-group">
+            <a href="#springUrl('/photoalbum/index.htm')" class="btn btn-small" >返回相册</a>
+			#if( $!{remainNum} > 0)
+			<input type="button" class="btn btn-small" value="上传图片" id="uploadBtn"/>
+			#end
+        </div>
+		
+        <div class="clearfix">
+            #foreach($photo in $!{page.records})
+            <div class="upload-wrap">
+                <a href="$!{address.resource}$!{photo.path}" title="点击看大图" target="_blank" >
+                    <img src="$!{address.resource}$!{photo.path}" width="100" height="100" />
+                </a>
+                <p>
+    				##$photo.id
+                    <a class="btn btn-mini" href="javascript:deletePhoto($!{photo.id})" onclick="return confirm('删除图片可能导致您的信息中图片缺失，您确定真要这么做吗？');" class="removeHref">删除</a>
+				</p>
+            </div>
+            #end
+        </div>
+		#myrcPageNav($page "#springUrl('/photoalbum/list.htm')" "id=$!{id}" "")
+    </div>
+</section>
+
+#if( $!{remainNum} > 0)
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(5, null);
+		
+		jQuery("#uploadBtn").click(function(){
+			var uploadBox = new Asto.util.Modal({
+                title:"上传图片",
+    	    	url:"#springUrl('/photo/promptUpload.htm')?&max=$!{remainNum}&albumId=$!{id}",
+    	    	modal:true,
+    	    	width:550,
+    	    	height:350
+    	    });
+			
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+                uploadBox.close();
+				window.location.reload();
+##				window.location.href="#springUrl('/photoalbum/list.htm')?id=$!{id}";
+            });
+			
+		});
+	});
+</script>
+#end
+
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(5, null);
+	});
+	
+	function deletePhoto(pid){
+		jQuery.ajax({
+            url:'#springUrl('/photoalbum/deletePhoto.htm')',
+            data:{"pid":pid},
+            cache:false,
+            dataType:"json",
+            type:"post",
+            success:function(req){
+                if(req.success){
+                    Asto.util.Message.show({
+					      msg:"删除成功！",
+					      autoClose:10000
+					});
+					window.location.reload();
+				}
+			},
+			failure:function(){
+				Asto.util.Message.show({
+				      msg:"删除失败！",
+				      autoClose:10000
+				});
+			}
+		});
+	}
+</script>

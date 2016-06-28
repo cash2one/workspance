@@ -1,0 +1,146 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{bbsUserProfilerDO.nickname}_再生互助_$!{siteInfo.site_name}</title>
+<meta name="keywords" content="再生互助,$!{bbsUserProfilerDO.nickname}" />
+<meta name="description" content="欢迎来到$!{bbsUserProfilerDO.nickname}在$!{siteInfo.site_name}-互助社区安的新家" />
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+<script src="http://img0.zz91.com/zz91/tradedetails/js/Png.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+<script src="http://img0.zz91.com/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="http://img0.zz91.com/lib/asto/asto-all-1.0.0.js"></script>
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+#parse("/seo/analysis_head.vm")
+
+</head>
+
+<body>
+<div class="huzhu">
+	
+	#parse("/common/head_search.vm")
+    
+    <div class="huzhu_geren">
+		#parse("/common/bbs_info_center.vm")
+        <div class="hg-div2">
+        	<div class="hg-div2-title">
+            	账户设置
+            </div>
+            <!--end hg-div2-title-->
+            <div class="hg-div2-left">
+            	<div class="hg-div2-nav">
+                	<ul>
+                    	<li class="fb"><a href="myalterimg.htm">更改头像</a></li>
+                        <li>|</li>
+                        <li><a href="myalterinfo.htm">修改资料</a></li>
+                        <li>|</li>
+                        <li><a href="mysign.htm">设置签名</a></li>
+                        <div class="cb"></div>
+                    </ul>
+                </div>
+                <!--end hg-div2-nav-->
+                <div class="hg-div2-content">
+                	<div class="hg-div2-button">
+                    	<div class="hg-div2-info">
+                        	当前头像
+						<input id="imgidupfile" name="imgidupfile" type="hidden" id="imgidupfile" value="$!{bbsUserProfilerDO.picturePath}">
+                        </div>
+                        <div class="hg-div2-headNew">
+                        	更换新头像
+                        </div>
+                        <!--end hg-div2-headNew-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end hg-div2-button-->
+                    <div class="hg-div2-img" id="mylogoId">
+						#if($!{bbsUserProfilerDO.picturePath} && $!{bbsUserProfilerDO.picturePath}!="")
+							<img src="$!{address.thumb}$!{address.resource}/$!{bbsUserProfilerDO.picturePath}" width="100px" height="100px"/>
+						#else
+							<img src="http://img0.zz91.com/zz91/huzhu/images/head_img.gif" />
+						#end
+                    </div>
+                    <div class="hg-div2-box">
+						<input type="button" onclick="uploadPic()" value="更改头像"/>
+						<span class="alter_img_tip">提示：图片不要大于2M;只能上传格式为.jpg的图片</span>
+                        <!--end hg-upload-info-->
+                    </div>
+                    <!--end hg-div2-box-->
+                </div>
+                <!--end hg-div2-content-->
+            </div>
+
+		#parse("/common/bbs_info_right.vm")	
+        </div>
+        <!--end hg-div2-->
+		#parse("/common/bbs_info_left.vm")
+    </div>
+    <!--end huzhu_geren-->
+    
+</div>
+<!--end huzhu-->
+<div style="clear:both"></div>
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+<script type="text/javascript">
+    function onAjaxUpLoad(data) {
+    var obj = eval(data);
+    jQuery("#imgidupfile").val(obj.path+obj.uploadedFilename);
+    jQuery.ajax({
+    url:"#springUrl('/myupdateimg.htm')",
+    data:"path="+jQuery("#imgidupfile").val(),
+    type:"GET",
+    dataType:"json",
+    cache:false,
+    success:function(response){
+    if(response.success){
+    window.location.reload();
+    }
+    },
+    error:function(){
+    window.location.reload();
+    }
+    });
+    }
+	
+	## 初始化上传窗口
+	var upload = new Asto.util.PopupBox({
+		url:"/sys/upload/bbs.htm",
+		callbackFn:function(success, data){
+			//关闭窗口
+			//保存图片信息
+			//成功后刷新页面
+			upload.close();
+			window.location.reload();
+		},
+		title:"上传产品图片",
+		width:450,
+		height:250,
+		modal:true
+	});
+	
+	function uploadPic(){
+		Asto.util.Callback.setSubmitCallback(function(success, data){
+			var img="<img src='$!{address.resource}/"+data.picAddress+"'/>"
+			jQuery("#mylogoId").html(img);
+			upload.close();
+ 		});
+    	upload.show("#springUrl('/sys/upload/bbs.htm?type=logo')");
+    }
+</script>
+

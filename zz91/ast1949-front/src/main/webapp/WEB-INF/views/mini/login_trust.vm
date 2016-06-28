@@ -1,0 +1,83 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>会员登录</title>
+    </head>
+	<script src="$!{address.img}/lib/jquery/jquery-1.6.2.min.js"></script>
+	<script src="$!{address.img}/zz91/quikreg/js/login.js" type=text/javascript></script>
+	<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/quikreg/css/base.css"/>
+	<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/purchase/css/reg.css"/>
+	<script>
+	/*导航*/
+	$(document).ready(function() {
+    	$("#nav2").mouseover(function(){
+			$(this).css("background","#3399ee");
+			$(this).find("a").css("color","#FFF");
+		});
+	$("#nav2").mouseout(function(){
+			$(this).css("background","#FFF");
+			$(this).find("a").css("color","#3399ee");
+		});
+	});
+	</script>
+    <body>
+        <div class="snav">
+            <ul>
+                <li class="nav2">
+					#if($!{loginType} && $!{loginType}=='1')
+                    <a href="#springUrl('/mini/login_trust.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&loginType=1" style="color:#FFF">登&nbsp;录</a>
+					#else
+					<a href="#springUrl('/mini/login_trust.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}" style="color:#FFF">登&nbsp;录</a>	
+					#end	
+                </li>
+                <li id="nav2">
+					#if($!{loginType} && $!{loginType}=='1')
+						<a href="#springUrl('/mini/new_reg_trust.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&loginType=1">注&nbsp;册</a>
+					#else
+						<a href="#springUrl('/mini/new_reg_trust.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}">注&nbsp;册</a>
+					#end
+                </li>
+            </ul>
+        </div>
+        <div class="info2">
+            <span class="info2_zi">注意: 已有ZZ91账号？请填写您的登录信息，登录成功后继续操作！</span>
+        </div>
+        <div class="content">
+			<form action="#springUrl('/mini/doLogin.htm')" method="post">
+				<div class="info">
+					#if($!{error}=="1")
+						<div class="item" style="width:500px">
+							<span class="red">注意：$!{errorTxt}</span>
+						</div>
+					#end
+					<div class="item" style="width:500px">
+						<span class="name">用户名：</span>
+						<input type="text" class="text" name="account" id="loginAccount" style="width:220px;"/>
+						<span class="post_error">&nbsp;</span>
+					</div>
+					<div class="item" style="width:500px">
+                        <span class="name">密码：</span>
+                        <input type="password" class="text" name="password" id="loginPassword" style="width:220px;"/>
+                        <span class="post_error">&nbsp;</span>
+                    </div>
+                    <div class="ok">
+                        <input class="login_ok" type="submit"  value="" />
+                        <input class="reg" type="button" value="" onclick="window.location='$!{address.front}/mini/new_reg_trust.htm?destUrl=$!{destUrl}&regfrom=$!{regfrom}&loginType=1'" />
+						##<a href="#springUrl('/mini/new_reg_trust.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&loginType=1"><input class="reg" type="button" value=""/></a>
+                        <a href="$!{address.front}/user/passwordReminder.htm" target="_blank" class="wjmm">忘记密码？</a>
+                    </div>
+                    <div class="qq">
+                        <a href="$!{address.front}/accessToQQLogin.htm?referUrl=$!{referUrl}" target="_blank">
+                            <img src="$!{address.img}/zz91/china/images/qq_login_common.gif" width="124" height="24" alt="使用QQ号码登录" style="margin-left:90px"/>
+                        </a>
+                    </div>
+                </div>
+				<input type="hidden" value="$!{destUrl}" name="destUrl"/>
+				<input type="hidden" value="$!{regfrom}" name="regfrom"/>
+				<input type="hidden" value="$!{loginType}" name="loginType"/>
+            </form>
+        </div>
+    </body>
+</html>

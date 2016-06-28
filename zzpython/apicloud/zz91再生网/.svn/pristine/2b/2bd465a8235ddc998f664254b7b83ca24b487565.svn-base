@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>供求详情</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/trade/firm-detail.css"/>
+</head>
+<body>
+<div class="box">
+	<script id="info-list" type="text/html">
+		<h2 class="firm-name">{{ d.title }}</h2>
+		<div class="firm-img" style="display:{{ d.display }}"><img src="{{ d.piclist[0].images }}" width="100%"></div>
+		<div class="member-type">
+			<span class="color-green">所&nbsp;&nbsp;在&nbsp;&nbsp;地：</span>{{ d.address }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">发布日期：</span>{{ d.refresh_time }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">有&nbsp;&nbsp;效&nbsp;&nbsp;期：</span>{{ d.expire_time }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格：</span>{{ d.min_price }}~{{ d.max_price }}{{ d.price_unit }}
+		</div>
+		<div class="member-type">
+			<span class="color-green">数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;量：</span>{{ d.quantity }}{{ d.quantity_unit }}
+		</div>
+		<div class="member-type">
+			{{ d.details }}
+		</div>
+		<div class="member-type">{{ d.compname }}</div>
+		<div class="member-type">联系人：{{ d.contact }}</div>
+		<div class="member-type">地&nbsp;&nbsp;&nbsp;&nbsp;址：{{ d.address }}</div>
+		<div class="member-type color-red">
+			联系方式：<span class="tell-num"><i></i>{{ d.mobile }}</span>
+		</div>
+	</div>
+	<div class="firm-do clear">
+		<span class="shouc"><i></i>收藏信息</span><span class="liuy"><i></i>给我留言</span>
+	</div>
+	</script>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+var imgList = [];
+apiready = function() {
+ 	$(".box").on("click",".firm-img",function(){
+ 		api.openWin({
+		    name: 'imglist',
+		    url: '../trade/imglist.html',
+		    pageParam: {
+		    	name: 'imglist',
+		    	imglist:imgList
+		    }
+		});
+    })
+    ajaxInfo();
+}
+ function ajaxInfo(){
+	var id = api.pageParam.id;
+	api.showProgress({title:'加载中',modal:false});
+	api.ajax({
+        url : hosturl + 'detail/?id='+ id +'&datatype=json',
+        method : 'get',
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false
+    }, function(ret, err) {
+    	// alert(JSON.stringify(ret))
+        if (ret.list) {
+        	//判断是否有图片，没有图片对象中添加隐藏属性
+        	if(ret.list.piclist.length == 0){
+        		ret.list.piclist[0] =""
+        		ret.list.display="none"
+        	}else{
+        		ret.list.display=""
+        	}
+        	//把图片数组对象的大图单独提取出来拿来做参数提取
+        	$.each(ret.list.piclist,function(index,item){
+        		imgList[index] = item.images_big;
+        	})
+        	//展示获取的信息
+        	var getTpl = $api.html($api.byId("info-list"));
+        	laytpl(getTpl).render(ret.list, function(html){
+    			$(".box").html(html)
+			});
+         	api.hideProgress();
+         	var Pid = ret.id,forcompany_id = ret.forcompany_id;
+         	$("body").on("click",".liuy",function(){
+		    	var pageParam = {
+		      		wintitle:"给我留言",
+		      		type:"huifu",
+		      		Pid:Pid,
+		      		forcompany_id:forcompany_id,
+		      		be_inquired_type:0
+		    	};
+		    	openWin("huifu","../trade/huifu.html",pageParam);
+		    })
+		    $(".shouc").on("click",function(){
+		    	var favorite_type_code = ret.list.products_type_code ==10331000?10091000:10091001;
+		    	var data ={
+		    		company_id:UserInfo.memberID(),
+		    		usertoken:UserInfo.token(),
+		    		appsystem:api.systemType,
+		    		datatype:"json",
+		    		favorite_type_code:favorite_type_code,
+		    		forcompany_id: ret.forcompany_id,
+		    		content_id:ret.id,
+		    		title:ret.list.title,
+		    		pdtid:ret.list.pdtid,
+		    		products_type_code:ret.list.products_type_code
+		    	};
+		    	shoucInfo(data);
+		    })
+        } else {
+        	api.hideProgress();
+        };
+    });
+}
+function shoucInfo(data){
+	api.ajax({
+        url : hosturl + 'favorite/',
+        method : 'post',
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false,
+        data:{
+			values: data
+		}
+    }, function(ret, err) {
+    	// alert(JSON.stringify(ret))
+        if (ret) {
+        	 if (ret.err == "true"){
+        	 	api.alert({
+				    title: '收藏失败',
+				    msg: ret.errkey,
+				    buttons:['确定']
+				},function(ret,err){
+				})
+        	 }else{
+        	 	api.alert({
+				    title: '收藏成功',
+				    msg: "收藏成功",
+				    buttons:['确定']
+				},function(ret,err){
+				})
+        	 }
+        } else {
+        };
+    });
+}
+</script>
+</html>

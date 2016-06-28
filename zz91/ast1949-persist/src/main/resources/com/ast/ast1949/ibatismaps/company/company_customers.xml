@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyCustomers">
+
+	<typeAlias alias="companyCustomersDO"
+		type="com.ast.ast1949.domain.company.CompanyCustomersDO" />
+
+	<typeAlias alias="companyCustomersDTO"
+		type="com.ast.ast1949.dto.company.CompanyCustomersDTO" />
+
+	<resultMap class="companyCustomersDO" id="companyCustomersResult">
+		<result property="id" column="id" />
+		<result property="companyContactsId" column="company_contacts_id" />
+		<result property="companyCustomersGroupId" column="company_customers_group_id" />
+		<result property="name" column="name" />
+		<result property="company" column="company" />
+		<result property="telCountryCode" column="tel_country_code" />
+		<result property="telAreaCode" column="tel_area_code" />
+		<result property="tel" column="tel" />
+		<result property="mobile" column="mobile" />
+		<result property="areaCode" column="area_code" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="foreignCity" column="foreign_city" />
+	</resultMap>
+	
+	<resultMap class="companyCustomersDO" id="companyCustomersDOResult"
+		extends="companyCustomers.companyCustomersResult">
+		<result property="email" column="email" />
+		<result property="sex" column="sex" />
+		<result property="faxCountryCode" column="fax_country_code" />
+		<result property="faxAreaCode" column="fax_area_code" />
+		<result property="fax" column="fax" />
+		<result property="countryCode" column="country_code" />
+		<result property="address" column="address" />
+		<result property="postCode" column="post_code" />
+		<result property="rank" column="rank" />
+		<result property="status" column="status" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="position" column="position" />
+		
+	</resultMap>
+
+	<resultMap class="companyCustomersDTO" id="companyCustomersDTOResult">
+		<result property="cityName" column="cityName" />
+		<result property="provinceName" column="provinceName" />
+		<result property="groupName" column="groupName" />
+		<result property="companyCustomersDO" resultMap="companyCustomers.companyCustomersResult" />
+	</resultMap>
+	<!-- 
+	<select id="queryCompanyCustomersRecordCount" parameterClass="companyCustomersDTO" resultClass="int">
+		select count(0)
+		FROM
+		company_customers cc
+		left JOIN category c
+		ON
+		c.code=cc.area_code
+		left
+		join category c1
+		ON
+		c1.code=SUBSTRING(cc.area_code,1,LENGTH(cc.area_code)-4)
+		left join
+		company_customers_group ccp
+		on cc.company_customers_group_id=ccp.id
+				<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="companyCustomersDO.companyId">
+				cc.company_id=#companyCustomersDO.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and"
+				property="companyCustomersDO.companyCustomersGroupId">
+				cc.company_customers_group_id=#companyCustomersDO.companyCustomersGroupId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.name">
+				cc.name like
+				concat('%',#companyCustomersDO.name#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.company">
+				cc.company like
+				concat('%',#companyCustomersDO.company#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.tel">
+				cc.tel like
+				concat('%',#companyCustomersDO.tel#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.mobile">
+				cc.mobile like
+				concat('%',#companyCustomersDO.mobile#,'%')
+	      </isNotEmpty>
+		</dynamic>
+	</select>
+	 -->
+	
+	<select id="queryCompanyCustomerListByCompanyIdAndGroupId" parameterClass="map"
+		resultMap="companyCustomersDTOResult">
+		SELECT cc.id,
+			cc.company_contacts_id ,
+			cc.company_customers_group_id ,
+			cc.name ,
+			cc.company ,
+			cc.tel_country_code,
+			cc.tel_area_code,
+			cc.tel ,
+			cc.mobile ,
+			cc.foreign_city,
+			cc.area_code ,
+			cc.company_id ,
+			cc.account,
+			c.label AS cityName,
+			c1.label AS provinceName,
+			ccp.name as groupName
+		FROM company_customers cc
+		LEFT JOIN category c ON c.code=cc.area_code
+		LEFT JOIN category c1 ON c1.code=SUBSTRING(cc.area_code,1,LENGTH(cc.area_code)-4)
+		LEFT JOIN company_customers_group ccp ON cc.company_customers_group_id=ccp.id
+		WHERE cc.company_id=#queryParam.companyId#
+		<isNotEmpty prepend="and" property="queryParam.id">
+			<!--所有自定义分组客户分页列表  在此借用customer的ID做为一个判断条件-->
+			cc.company_customers_group_id>3
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="queryParam.companyCustomersGroupId">
+			cc.company_customers_group_id=#queryParam.companyCustomersGroupId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="queryParam.name">
+			cc.name like concat('%',#queryParam.name#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="queryParam.company">
+			cc.company like concat('%',#queryParam.company#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="queryParam.tel">
+			cc.tel like concat('%',#queryParam.tel#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="queryParam.mobile">
+			cc.mobile like concat('%',#queryParam.mobile#,'%')
+		</isNotEmpty>
+		LIMIT #firstResult#,#maxResult#
+	</select>
+	
+	<select id="queryCompanyCustomerListByCompanyIdAndGroupIdCount" parameterClass="companyCustomersDO"
+		resultClass="int">
+		SELECT count(1)
+		FROM company_customers cc
+		LEFT JOIN category c ON c.code=cc.area_code
+		LEFT JOIN category c1 ON c1.code=SUBSTRING(cc.area_code,1,LENGTH(cc.area_code)-4)
+		LEFT JOIN company_customers_group ccp ON cc.company_customers_group_id=ccp.id
+		WHERE cc.company_id=#companyId#
+		<isNotEmpty prepend="and" property="id">
+			<!--所有自定义分组客户分页列表  在此借用customer的ID做为一个判断条件-->
+			cc.company_customers_group_id>3
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="companyCustomersGroupId">
+			cc.company_customers_group_id=#companyCustomersGroupId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="name">
+			cc.name like concat('%',#name#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="company">
+			cc.company like concat('%',#company#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="tel">
+			cc.tel like concat('%',#tel#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="mobile">
+			cc.mobile like concat('%',#mobile#,'%')
+		</isNotEmpty>
+	</select>
+	
+	<!-- 
+	<select id="queryCompanyCustomersForFront" parameterClass="companyCustomersDTO"
+		resultMap="companyCustomersDTOResult">
+		SELECT cc.id ,
+		cc.company_contacts_id ,
+		cc.company_customers_group_id ,
+		cc.name ,
+		cc.company ,
+		cc.tel_country_code,
+		cc.tel_area_code,
+		cc.tel ,
+		cc.mobile ,
+		cc.foreign_city,
+		cc.area_code ,
+		c.label AS cityName,
+		c1.label AS provinceName,
+		ccp.name as groupName,
+		cc.company_id ,
+		cc.account
+		FROM
+		company_customers
+		cc
+		left JOIN category c
+		ON
+		c.code=cc.area_code
+		left join category c1
+		ON
+		c1.code=SUBSTRING(cc.area_code,1,LENGTH(cc.area_code)-4)
+		left join
+		company_customers_group ccp
+		on cc.company_customers_group_id=ccp.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="companyCustomersDO.companyId">
+				cc.company_id=#companyCustomersDO.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and"
+				property="companyCustomersDO.companyCustomersGroupId">
+				cc.company_customers_group_id=#companyCustomersDO.companyCustomersGroupId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.name">
+				cc.name like
+				concat('%',#companyCustomersDO.name#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.company">
+				cc.company like
+				concat('%',#companyCustomersDO.company#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.tel">
+				cc.tel like
+				concat('%',#companyCustomersDO.tel#,'%')
+	      </isNotEmpty>
+			<isNotEmpty prepend="and" property="companyCustomersDO.mobile">
+				cc.mobile like
+				concat('%',#companyCustomersDO.mobile#,'%')
+	      </isNotEmpty>
+	      <isNotEmpty prepend="and" property="isDefinition">
+	        cc.company_customers_group_id >3
+	      </isNotEmpty>
+		</dynamic>
+		ORDER BY cc.gmt_modified desc
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+
+	</select>
+	<select id="queryCompanyCustomersByGroupId" parameterClass="int"
+		resultMap="companyCustomersResult">
+		select id,
+		company_contacts_id,
+		company_customers_group_id,
+		name,
+		company,
+		mobile,
+		area_code,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified
+		from
+		company_customers
+		where
+		company_customers_group_id=#companyCustomersGroupId#
+	</select>
+	
+	<select id="queryCompanyCustomersByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="companyCustomersResult">
+		select id,company_contacts_id,company_customers_group_id,
+		name,company,tel_country_code,tel_area_code,tel,
+		mobile,area_code,company_id,account,foreign_city
+		from
+		company_customers
+		where company_id=#companyId#
+	</select>
+	 -->
+	
+	
+
+	<select id="queryCompanyCustomersById" parameterClass="int"
+		resultMap="companyCustomersDOResult">
+		SELECT id,
+		company_contacts_id,
+		company_customers_group_id,
+		name,
+		position,
+		mobile,
+		email,
+		sex,
+		tel_country_code,
+		tel_area_code,
+		tel,
+		fax_country_code,
+		fax_area_code,
+		fax,
+		company,
+		country_code,
+		area_code,
+		address,
+		post_code,
+		rank,
+		STATUS,
+		remark,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified,
+		foreign_city
+		FROM
+		company_customers
+		where id=#id#
+     </select>
+	<insert id="insertCompanyCustomers" parameterClass="companyCustomersDO">
+		insert into company_customers
+		(
+		company_contacts_id,
+		company_customers_group_id,
+		name,
+		position,
+		mobile,
+		email,
+		sex,
+		tel_country_code,
+		tel_area_code,
+		tel,
+		fax_country_code,
+		fax_area_code,
+		fax,
+		company,
+		country_code,
+		area_code,
+		address,
+		post_code,
+		rank,
+		STATUS,
+		remark,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified,
+		foreign_city
+		)
+		VALUES
+		(
+		#companyContactsId#,
+		#companyCustomersGroupId#,
+		#name#,
+		#position#,
+		#mobile#,
+		#email#,
+		#sex#,
+		#telCountryCode#,
+		#telAreaCode#,
+		#tel#,
+		#faxCountryCode#,
+		#faxAreaCode#,
+		#fax#,
+		#company#,
+		#countryCode#,
+		#areaCode#,
+		#address#,
+		#postCode#,
+		#rank#,
+		#status#,
+		#remark#,
+		#companyId#,
+		#account#,
+		now(),
+		now(),
+		#foreignCity#
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<!-- 不需要更新companyId,accout -->
+	<update id="updateCompanyCustomers" parameterClass="companyCustomersDO">
+		UPDATE
+		company_customers
+		SET
+		company_contacts_id = #companyContactsId# ,
+		company_customers_group_id = #companyCustomersGroupId# ,
+		NAME = #name#
+		,
+		mobile = #mobile# ,
+		email = #email# ,
+		sex = #sex# ,
+		tel_country_code =
+		#telCountryCode# ,
+		tel_area_code = #telAreaCode# ,
+		tel = #tel# ,
+		fax_country_code = #faxCountryCode# ,
+		fax_area_code = #faxAreaCode# ,
+		fax = #fax# ,
+		company = #company# ,
+		country_code = #countryCode# ,
+		area_code = #areaCode# ,
+		address = #address# ,
+		post_code = #postCode# ,
+		rank = #rank# ,
+		STATUS = #status# ,
+		remark = #remark# ,
+		gmt_created =
+		now() ,
+		gmt_modified =now() ,
+		POSITION = #position#,
+		foreign_city=#foreignCity#
+		WHERE
+		id = #id# ;
+	</update>
+	<!-- 更新客户组 -->
+	<update id="updateGroupById" parameterClass="java.util.HashMap">
+		update
+		company_customers
+		set
+		company_customers_group_id =
+		#companyCustomersGroupId#
+		where id=#id#
+	</update>
+	
+	<!-- 
+	 -->
+	<delete id="deleteCompanyCustomersById" parameterClass="java.lang.Integer">
+		delete
+		from company_customers
+		where id=#id#
+    </delete>
+    
+	<delete id="updateCustomersGroup" parameterClass="java.util.Map">
+		update company_customers
+		set company_customers_group_id=#newGroupId#
+		where 	id =#companyCustomersId#
+    </delete>
+    <resultMap class="companyCustomersDO" id="CompanyCustomersForImportResult">
+    	<result property="companyId" column="company_id" />
+    	<result property="companyContactsId" column="company_contacts_id" />
+    	<result property="name" column="name" />
+ 		<result property="position" column="position" />
+		<result property="mobile" column="mobile" />
+		<result property="email" column="email" />
+		<result property="sex" column="sex" />
+		<result property="telCountryCode" column="tel_country_code" />
+		<result property="telAreaCode" column="tel_area_code" />
+		<result property="tel" column="tel" />
+		<result property="faxCountryCode" column="fax_country_code" />
+		<result property="faxAreaCode" column="fax_area_code" />
+		<result property="fax" column="fax" />
+		<result property="address" column="address" />
+		<result property="postCode" column="post_code" />
+		<result property="company" column="company" />
+		<result property="areaCode" column="area_code" /> 
+		<result property="foreignCity" column="foreign_city" />
+	</resultMap>
+    <!--查询询盘的目标是本公司，不在客户列表中的-->
+    <select id="queryCompanyCustomersForImportByInquiry" parameterClass="int" resultMap="CompanyCustomersForImportResult">
+    	select * from (
+    	    select distinct cc.company_id,
+    	        cc.id as company_contacts_id,
+   				cc.contact as name,
+   				cc.position,
+   				cc.mobile,
+	  			cc.email, 
+	  			cc.sex,
+	   			cc.tel_country_code,
+	   			cc.tel_area_code,
+	   			cc.tel,
+	   			cc.fax_country_code,
+	  	 		cc.fax_area_code,
+	  			cc.fax,
+	  			cc.address,
+	   			cc.zip as post_code,
+	   			c.name as company, 
+	  			case  when length(c.area_code)>16 then substring(c.area_code,1,16) else c.area_code end as area_code,
+	   			c.foreign_city
+	 		from company_contacts cc 
+	 		inner join inquiry iq on iq.sender_id=cc.id 
+			inner join company c on c.id=cc.company_id  
+			where cc.company_id=#companyId# ) as mid_view 
+		where not exists (select 
+							company_contacts_id 
+						from  company_customers cc2 
+						where mid_view.company_id = cc2.company_id 
+						and mid_view.company_contacts_id= cc2.company_contacts_id )
+    </select>
+</sqlMap>

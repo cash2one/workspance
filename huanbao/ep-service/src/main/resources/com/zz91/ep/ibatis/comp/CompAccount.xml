@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="compaccount">
+
+	<typeAlias alias="compAccount" type="com.zz91.ep.domain.comp.CompAccount" />
+	<typeAlias alias="resetPwd" type="com.zz91.ep.domain.comp.ResetPwd" />
+
+	<resultMap class="compAccount" id="simpleResultMap">
+		<result property="id" column="id" />
+	    <result property="cid" column="cid" />
+	    <result property="account" column="account" />
+	    <result property="email" column="email" />
+	    <result property="name" column="name" />
+	</resultMap>
+	
+	<resultMap class="compAccount" id="apiResult">
+		<result property="id" column="id" />
+		<result property="cid" column="cid"/>
+		<result property="account" column="account" />
+		<result property="name" column="name" />
+	</resultMap>
+	
+	<resultMap id="resetPwdResult" class="resetPwd">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="uid" column="uid" />
+		<result property="email" column="email" />
+		<result property="authKey" column="auth_key" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<resultMap class="compAccount" id="fullColumnResult">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="passwordClear" column="password_clear" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="mobile" column="mobile" />
+		<result property="qq" column="qq" />
+		<result property="phoneCountry" column="phone_country" />
+		<result property="phoneArea" column="phone_area" />
+		<result property="phone" column="phone" />
+		<result property="faxCountry" column="fax_country" />
+		<result property="faxArea" column="fax_area" />
+		<result property="fax" column="fax" />
+		<result property="dept" column="dept" />
+		<result property="contact" column="contact" />
+		<result property="position" column="position" />
+		<result property="loginCount" column="login_count" />
+		<result property="loginIp" column="login_ip" />
+		<result property="gmtLogin" column="gmt_login" />
+		<result property="gmtRegister" column="gmt_register" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="compAccount" id="simpleResult">
+		<result property="mobile" column="mobile"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		ca.id, ca.cid, ca.account, ca.email, ca.password,
+		ca.password_clear,
+		ca.name, ca.sex, ca.mobile,ca.qq, ca.phone_country,
+		ca.phone_area, ca.phone, ca.fax_country, ca.fax_area, ca.fax, ca.dept,
+		ca.contact,
+		ca.position, ca.login_count, ca.login_ip ,
+		ca.gmt_login,
+		ca.gmt_register, ca.gmt_created, ca.gmt_modified
+	</sql>
+
+	<resultMap class="compAccount" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="passwordClear" column="password_clear" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="mobile" column="mobile" />
+		<result property="phoneCountry" column="phone_country" />
+		<result property="phoneArea" column="phone_area" />
+		<result property="phone" column="phone" />
+		<result property="faxCountry" column="fax_country" />
+		<result property="faxArea" column="fax_area" />
+		<result property="fax" column="fax" />
+		<result property="dept" column="dept" />
+		<result property="contact" column="contact" />
+		<result property="position" column="position" />
+		<result property="loginCount" column="login_count" />
+		<result property="loginIp" column="login_ip" />
+		<result property="gmtLogin" column="gmt_login" />
+		<result property="gmtRegister" column="gmt_register" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<select id="queryCompAccountByEmail" resultMap="simpleResultMap"
+		parameterClass="java.lang.String">
+		select
+		id,cid,account,email,name
+		from comp_account
+		where email =
+		#value#
+	</select>
+
+	<select id="queryCompAccountByAccount" resultMap="simpleResultMap"
+		parameterClass="java.lang.String">
+		select
+		id,cid,account,email,name
+		from comp_account
+		where account =
+		#value#
+	</select>
+
+	<insert id="insertResetPwd" parameterClass="resetPwd">
+		insert into
+		reset_pwd(uid,account,email,gmt_created,auth_key,gmt_modified)
+		values(#uid#,#account#,#email#,now(),#authKey#,now());
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="listResetPwdByKey" parameterClass="java.lang.String"
+		resultMap="resetPwdResult">
+		select
+		id,account,uid,email,auth_key,gmt_created,gmt_modified
+		from reset_pwd
+		where auth_key=#value#
+		limit 1
+	</select>
+
+	<update id="resetPassword" parameterClass="java.util.HashMap">
+		update comp_account
+		set password=#password#,
+		password_clear=#passwordClear#,
+		gmt_modified=now()
+		where account=#account#
+	</update>
+
+	<delete id="deleteResetPwdByKey" parameterClass="java.lang.String">
+		delete from
+		reset_pwd
+		where auth_key=#value#
+	</delete>
+
+	<select id="queryCountCompAcountByEmail" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from comp_account
+		where email = #email#
+	</select>
+
+	<select id="getAccountIdByAccount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select
+		id
+		from comp_account
+		where account = #account#
+	</select>
+	<insert id="insertCompAccount" parameterClass="compAccount">
+		insert into comp_account
+		(`cid`,
+		`account`,
+		`mobile`,
+		`qq`,
+		`email`,
+		`password`,
+		`password_clear`,
+		`name`,
+		`gmt_login`,
+		`gmt_register`,
+		`gmt_created`,
+		`gmt_modified`
+		)values
+		(
+		#cid#,
+		#account#,
+		#mobile#,
+		#qq#,
+		#email#,
+		#password#,
+		#passwordClear#,
+		#name#,
+		now(),
+		now(),
+		now(),
+		now()
+		)
+		
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<update id="updateBaseCompAccount" parameterClass="compAccount">
+		update
+		comp_account
+		set
+		<isNotEmpty property="name">
+			name = #name#,
+		</isNotEmpty>
+		
+		<isNotEmpty property="sex">
+			sex = #sex#,
+		</isNotEmpty>
+		
+		<isNotEmpty property="mobile">
+			mobile = #mobile#,
+		</isNotEmpty>
+		<isNotEmpty property="qq">
+			qq = #qq#,
+		</isNotEmpty>
+		<!-- 
+		<isNotEmpty property="phoneCountry">
+		</isNotEmpty>
+		<isNotEmpty property="phoneArea">
+		</isNotEmpty>
+		 -->
+		phone_country = #phoneCountry#,
+		phone_area = #phoneArea#,
+		phone = #phone#,
+		<!-- 
+		<isNotEmpty property="faxCountry">
+		</isNotEmpty>
+		<isNotEmpty property="faxArea">
+		</isNotEmpty>
+		<isNotEmpty property="fax">
+		</isNotEmpty>
+		 -->
+		fax_country = #faxCountry#,
+		fax_area = #faxArea#,
+		fax = #fax#,
+		<isNotEmpty property="dept">
+			dept = #dept#,
+		</isNotEmpty>
+		<isNotEmpty property="contact">
+			contact = #contact#,
+		</isNotEmpty>
+		<isNotEmpty property="position">
+			position = #position#,
+		</isNotEmpty>
+		gmt_modified = now()
+		where id=#id#
+	</update>
+	<!-- 通过cid查询公司账户信息 -->
+	<select id="queryCompAccountByCid" parameterClass="java.lang.Integer"
+		resultMap="fullColumnResult">
+		select
+		<include refid="fullColumn" />
+		from comp_account ca
+		where ca.cid = #cid#
+		limit 1
+	</select>
+	<!-- 根据id查询注册时间 -->
+	<select id="differenceTime" resultClass="java.lang.Integer"
+		parameterClass="java.lang.Integer">
+		select (year(now()) - year(cp.gmt_created) + 1)
+		differenceTime from
+		comp_account cp
+		where cp.id=#value#
+	</select>
+
+	<select id="queryAccountById" resultClass="java.lang.String"
+		parameterClass="java.lang.Integer">
+		select account from comp_account where id=#value#
+	</select>
+
+	<select id="queryAccountDetails" parameterClass="java.lang.String"
+		resultMap="fullColumnResult">
+		select
+		<include refid="fullColumn" />
+		from comp_account ca
+		where account=#value#
+		limit 1
+	</select>
+
+	<update id="updateAccountPwd" parameterClass="java.util.Map">
+		update comp_account
+		set password = #newPassword#
+		,password_clear = #newPasswordClear#
+		where
+		id = #uid#
+		and password = #password#
+	</update>
+
+	<select id="countUser" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from comp_account
+		where (account=#account# or email=#account#) and password=#password#
+	</select>
+
+	<update id="updateCompAccount" parameterClass="compAccount">
+		update comp_account
+		set
+		login_ip = #loginIp#,
+		login_count = login_count+1,
+		gmt_login=now(),
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<select id="queryImpCompAccount" resultMap="fullResultMap"
+		parameterClass="java.lang.Integer">
+		SELECT
+		`id`,
+		`cid`,
+		`account`,
+		`email`,
+		`password`,
+		`password_clear`,
+		`name`,
+		`sex`,
+		`mobile`,
+		`phone_country`,
+		`phone_area`,
+		`phone`,
+		`fax_country`,
+		`fax_area`,
+		`fax`,
+		`dept`,
+		`contact`,
+		`position`,
+		`login_count`,
+		`login_ip`,
+		`gmt_login`,
+		`gmt_register`,
+		`gmt_created`,
+		`gmt_modified`
+		FROM `comp_account` where id > #value#
+	</select>
+	<select id="validateByAccount" resultClass="java.lang.Integer"
+		parameterClass="java.util.Map">
+		select
+		`cid`
+		from `comp_account` 
+		where account=#account# and password=#password#
+	</select>
+	<select id="validateByEmail" resultClass="java.lang.Integer"
+		parameterClass="java.util.Map">
+		SELECT
+		`cid`
+		FROM `comp_account` 
+		where email=#account# and password=#password#
+	</select>
+	
+	<select id="getCompAccountByCid" parameterClass="java.lang.Integer" resultMap="apiResult">
+		select id,cid,account,name
+		from comp_account
+		where cid=#value#
+	</select>
+	
+	<select id="queryQq" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select qq from comp_account where cid = #value#
+	</select>
+	
+	<select id="queryUidByCid" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select id from comp_account where cid = #value#
+	</select>
+	
+	<select id="queryLoginCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select login_count from comp_account where cid = #value#
+	</select>
+	
+	
+	<select id = "queryAccountInfoByCid" parameterClass="java.lang.Integer" resultMap="simpleResult">
+		select mobile from  comp_account where cid = #value#
+	</select>
+	
+	<select id="queryCountCompAcountByCid" parameterClass="java.lang.Integer"  resultClass="java.lang.Integer">
+		select count(*) from comp_account where cid=#value#
+	</select>
+	
+	
+	<sql id="contactColumn">
+		ca.id,
+		ca.cid,
+		ca.account,
+		ca.email,
+		ca.name,
+		ca.sex,
+		ca.mobile,
+		ca.qq,
+		ca.phone_country,
+		ca.phone_area,
+		ca.phone,
+		ca.fax_country,
+		ca.fax_area,
+		ca.fax,
+		ca.contact,
+		ca.gmt_register
+	</sql>
+	
+	<resultMap class="compAccount" id="contactResult">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="name" column="name" />
+		<result property="sex" column="sex" />
+		<result property="mobile" column="mobile" />
+		<result property="qq" column="qq" />
+		<result property="phoneCountry" column="phone_country" />
+		<result property="phoneArea" column="phone_area" />
+		<result property="phone" column="phone" />
+		<result property="faxCountry" column="fax_country" />
+		<result property="faxArea" column="fax_area" />
+		<result property="fax" column="fax" />
+		<result property="contact" column="contact" />
+		<result property="gmtRegister" column="gmt_register" />
+	</resultMap>
+	
+	<select id="queryContactByCid" parameterClass="java.lang.Integer" resultMap="contactResult">
+		select 
+			<include refid="compaccount.contactColumn"/>
+		from comp_account ca
+		where cid=#value#
+		limit 1
+	</select>
+	
+	<insert id="insertCompAccounts" parameterClass="compAccount">
+		insert into comp_account
+		(`cid`,
+		`account`,
+		`mobile`,
+		`qq`,
+		`email`,
+		`password`,
+		`password_clear`,
+		`name`,
+		`sex`,
+		`gmt_login`,
+		`gmt_register`,
+		`gmt_created`,
+		`gmt_modified`
+		)values
+		(
+		#cid#,
+		#account#,
+		#mobile#,
+		#qq#,
+		#email#,
+		#password#,
+		#passwordClear#,
+		#name#,
+		#sex#,
+		now(),
+		now(),
+		now(),
+		now()
+		)
+		
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	
+	<select id="queryCountCompAcountByMobile" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from comp_account
+		where mobile = #mobile#
+	</select>
+	
+	<select id="queryCountCompAcountByAccount" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from comp_account
+		where account = #account#
+	</select>
+	
+</sqlMap>

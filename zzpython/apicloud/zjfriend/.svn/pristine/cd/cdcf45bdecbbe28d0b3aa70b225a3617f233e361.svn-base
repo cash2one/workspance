@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../css/common.css" />
+		<link rel="stylesheet" type="text/css" href="../css/frm_login.css" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="api.closeWin();"></a>
+			<h1 class="mui-title">用户登录</h1>
+		</header>
+		<div class="content">
+			<div class="form">
+				<div class="input-wrap">
+					<i class="user"></i>
+					<input type="text" placeholder="邮箱账号或手机号" id="username" value="">
+				</div>
+				<div class="input-wrap">
+					<i class="password"></i>
+					<input type="password" placeholder="密码" id="password" value="">
+				</div>
+			</div>
+			<div class="btn" id="login" tapmode="" onclick="login()">
+				登录
+			</div>
+			<div class="other-login-wrap">
+				<div class="other-login-lable">
+					还可选择以下方式登陆
+				</div>
+				<div class="other-login">
+					<div class="sina">
+						<span class="sina-label">新浪微博登陆</span>
+					</div>
+					<div class="qq">
+						<span class="qq-label">QQ登陆</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<div>
+				没有账号？
+			</div>
+			<div class="fast-reg" tapmode="" onclick="toRegister()">
+				立即注册
+			</div>
+		</footer>
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script src="../script/zepto.min.js"></script>
+		<script>
+			apiready = function() {
+			};
+			function toRegister() {
+				api.openWin({
+					name : 'register',
+					url : 'frm_reg.html'
+				})
+			}
+
+			function login() {
+				api.showProgress();
+				var username = $("#username").val();
+				var password = $("#password").val();
+				var user = api.require('user');
+				user.login({
+					username : username,
+					password : password
+				}, function(ret, err) {
+					api.hideProgress();
+					if (ret) {
+						localStorage.setItem('userId', ret.id);
+						api.execScript({
+							name : 'user',
+							script : 'checkUserId()'
+						})
+						api.execScript({
+							name : 'root',
+							script : 'checkUserId()'
+						})
+						api.alert({
+							title : '登陆成功',
+							buttons : ['确定']
+						}, function(ret, err) {
+							if (ret.buttonIndex == 1) {
+								api.closeWin();
+							}
+						});
+					} else {
+						api.toast({
+							msg : err.message,
+							location : "middle"
+						})
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

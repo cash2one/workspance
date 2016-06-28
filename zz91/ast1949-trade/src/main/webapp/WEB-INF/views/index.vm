@@ -1,0 +1,940 @@
+#set($layout="/layout/defaultS.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+<div id="main_box_big">
+<div class="main_box clearfix">
+	#set($categoryFlag="100310001000")
+	#parse("/commonImpt/item/productCategory.vm")
+	<!--te_class-->
+	<div class="te_cen">
+		#parse("/commonImpt/sliderAd.vm")
+		<!--490*215-->
+		<div class="te_banner_info te_tit_border">
+			<div class="te_tit_name" style="float:left; width:238px;">废料卖家<span style="color:#FF0;">热门供应 <!-- $!{gyProductList2.size()}--></span></div>
+			<div class="te_tit_name" style="float:right; width:238px;">废料买家<span style="color:#FF0;">热门求购<!-- $!{qgProductList2.size()}--></span></div>
+			<div class="clearfix">
+				<div class="te_bannerinfotb">
+					<ul>
+					#if($!{gyProductList2.size()}>6)
+						#foreach($obj in $gyProductList2)
+						<li>
+							<span style="float:left;"><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">供应#printTitle($obj.products.title 10 "")</a></span>
+							<span style="float:right; color:#505050;">
+								<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" target="_blank">在线询价</a>
+							</span>
+						</li>
+						#end						
+					#else
+					#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=100310011000&size=7", "", "", "")
+						#foreach($obj in $list)
+						<li>
+							<span style="float:left;"><a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">供应#printTitle($obj.title 10 "")</a></span>
+							<span style="float:right; color:#505050;">
+								<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" target="_blank">在线询价</a>
+							</span>
+						</li>
+						#end
+					#end
+					#end
+					</ul>
+				</div>
+				<div class="te_bannerinforb">
+					<ul>
+				#if($!{qgProductList2.size()}>6)
+						#foreach($obj in $qgProductList2)
+						<li>
+							<span style="float:left;"><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">求购#printTitle($obj.products.title 10 "")</a></span>
+							<span style="float:right; color:#505050;">
+								<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" target="_blank">在线询价</a>
+							</span>
+						</li>
+						#end					
+				#else
+					#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=100310011001&size=7", "", "", "")
+						#foreach($obj in $list)
+						<li>
+							<span style="float:left;"><a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">求购#printTitle($obj.title 10 "")</a></span>
+							<span style="float:right; color:#505050;">
+								<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" target="_blank">在线询价</a>
+							</span>
+						</li>
+						#end
+					#end
+				#end
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--te_banner-->
+	<div class="te_7rx te_tit_border">
+		<div class="te_tit_name">
+			最近<font color="#fed700">7</font>天热销
+		</div>
+		<div class="te_7rx_claas">
+			<ul id="slider0">
+				<li class="ssbjn">废金属</li>
+				<li class="ssbj">废塑料</li>
+				<li class="ssbj">综合废料</li>
+			</ul>
+		</div>
+		<div>
+			<ul id="slider0List">
+				<li>
+		<!--$!{rxfjsProductList.size()}-->			
+		#if($!{rxfjsProductList.size()}>3)
+				#foreach($obj in $rxfjsProductList)
+					<div class="te_7rx_cons">
+						<div class="te_7rx_img te_tit_border">
+							<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+								#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=75&height=75" width="75" height="75" />
+								#else
+									<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+								#end
+							</a>
+						</div>
+						<div class="te_7rx_con">
+							<ul>
+								<li><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" class="te_titlea" title="$!{obj.products.title}">
+										#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 9 "")
+									</a></li>
+								<li><font color="#FF0000"><strong>$!{obj.products.minPrice}#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0)-$obj.products.maxPrice#end</strong></font>$!{obj.products.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+								</li>
+								<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" class="te_classoone" target="_blank">在线询价</a></li>
+								<!-- <li><a href="#" class="te_titlea">到底</a></li> -->
+							</ul>
+						</div>
+					</div>
+					#end
+		#else
+				#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=100310021000&size=4", "", "", "")
+					#foreach($obj in $list)
+					<div class="te_7rx_cons">
+						<div class="te_7rx_img te_tit_border">
+							<a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">
+								#if($!{obj.pic} && $!{obj.pic}!="")
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=75&height=75" width="75" height="75" />
+								#else
+									<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+								#end
+							</a>
+						</div>
+						<div class="te_7rx_con">
+							<ul>
+								<li><a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank" class="te_titlea" title="$!{obj.title}">
+										#printProductType($!{obj.productsType} "" "")#printTitle($!{obj.title} 9 "")
+									</a></li>
+								<li><font color="#FF0000"><strong>$!{obj.minPrice}#if($!{obj.maxPrice} && $!{obj.maxPrice}>0)-$obj.maxPrice#end</strong></font>$!{obj.priceUnit}#if($!{productDetails.quantityUnit})/$!{productDetails.quantityUnit}#end
+								</li>
+								<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" class="te_classoone" target="_blank">在线询价</a></li>
+								<!-- <li><a href="#" class="te_titlea">到底</a></li> -->
+							</ul>
+						</div>
+					</div>
+					#end
+				#end
+		#end
+				</li>
+				<li class="undis">
+				<!-- $!{rxfslProductList.size()}	-->
+				#if($!{rxfslProductList.size()}>3)
+					#foreach($obj in $rxfslProductList)
+						<div class="te_7rx_cons">
+							<div class="te_7rx_img te_tit_border">
+								<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+									#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+										<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=75&height=75" width="75" height="75" />
+									#else
+										<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+									#end
+								</a>
+							</div>
+							<div class="te_7rx_con">
+								<ul>
+									<li><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" class="te_titlea">#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 9 "")</a></li>
+									<li><font color="#FF0000"><strong>$!{obj.products.minPrice}#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0)-$obj.products.maxPrice#end</strong></font>$!{obj.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end</li>
+									<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" class="te_classoone" target="_blank">在线询价</a></li>
+									<!-- <li><a href="#" class="te_titlea">广东佛山市有限公司</a></li> -->
+								</ul>
+							</div>
+						</div>
+					#end					
+					#else
+				#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=100310021001&size=4", "", "", "")
+					#foreach($obj in $list)
+						<div class="te_7rx_cons">
+							<div class="te_7rx_img te_tit_border">
+								<a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">
+									#if($!{obj.pic} && $!{obj.pic}!="")
+										<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=75&height=75" width="75" height="75" />
+									#else
+										<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+									#end
+								</a>
+							</div>
+							<div class="te_7rx_con">
+								<ul>
+									<li><a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank" class="te_titlea">#printProductType($!{obj.productsType} "" "")#printTitle($!{obj.title} 9 "")</a></li>
+									<li><font color="#FF0000"><strong>$!{obj.minPrice}#if($!{obj.maxPrice} && $!{obj.maxPrice}>0)-$obj.maxPrice#end</strong></font>$!{obj.priceUnit}#if($!{productDetails.quantityUnit})/$!{productDetails.quantityUnit}#end</li>
+									<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" class="te_classoone" target="_blank">在线询价</a></li>
+									<!-- <li><a href="#" class="te_titlea">广东佛山市有限公司</a></li> -->
+								</ul>
+							</div>
+						</div>
+					#end
+				#end
+				#end
+					
+				</li>
+				<li class="undis">
+				<!--$!{rxzhflProductList.size()}-->	
+				#if($!{rxzhflProductList.size()}>3)
+					#foreach($obj in $rxzhflProductList)
+						<div class="te_7rx_cons">
+							<div class="te_7rx_img te_tit_border">
+								<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+									#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+										<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=75&height=75" width="75" height="75" />
+									#else
+										<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+									#end
+								</a>
+							</div>
+							<div class="te_7rx_con">
+								<ul>
+									<li><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" class="te_titlea">#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 9 "")</a></li>
+									<li>
+										<font color="#FF0000"><strong>$!{obj.products.minPrice}#if($!{obj.products.maxPrice} && $!{obj.products.maxPrice}>0)-$obj.products.maxPrice#end</strong></font>
+										$!{obj.priceUnit}#if($!{obj.products.quantityUnit}&&$!{obj.products.quantityUnit}!="")/$!{obj.products.quantityUnit}#end
+									</li>
+									<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" class="te_classoone" target="_blank">在线询价</a></li>
+									<!-- <li><a href="#" class="te_titlea">广东佛山市有限公司</a></li> -->
+								</ul>
+							</div>
+						</div>
+					#end					
+					#else
+				#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=100310021002&size=4", "", "", "")
+					#foreach($obj in $list)
+						<div class="te_7rx_cons">
+							<div class="te_7rx_img te_tit_border">
+								<a href="#springUrl('/productdetails')$!{obj.productsId}.htm" target="_blank">
+									#if($!{obj.pic} && $!{obj.pic}!="")
+										<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=75&height=75" width="75" height="75" />
+									#else
+										<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="75" height="75" />
+									#end
+								</a>
+							</div>
+							<div class="te_7rx_con">
+								<ul>
+									<li><a href="#springUrl('/productdetails')$!{obj.productsId}.htm" class="te_titlea">#printProductType($!{obj.productsType} "" "")#printTitle($!{obj.title} 9 "")</a></li>
+									<li>
+										<font color="#FF0000"><strong>$!{obj.minPrice}#if($!{obj.maxPrice} && $!{obj.maxPrice}>0)-$obj.maxPrice#end</strong></font>
+										$!{obj.priceUnit}#if($!{productDetails.quantityUnit})/$!{productDetails.quantityUnit}#end
+									</li>
+									<li><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.productsId}" class="te_classoone" target="_blank">在线询价</a></li>
+									<!-- <li><a href="#" class="te_titlea">广东佛山市有限公司</a></li> -->
+								</ul>
+							</div>
+						</div>
+					#end
+				#end
+				#end
+				</li>
+			</ul>
+		</div>
+	</div>
+<!--te_7rx-->
+</div>
+<div class="main_box">
+
+<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=960&amp;num=5&amp;adposition=647"></script>
+</div>
+<div class="main_box clearfix" style="margin-top:0px;">
+	<div class="teclasleft">
+    	<script type="text/javascript" src="http://gg.zz91.com/show?p=476"></script>
+		<div class="te_tit_border clearfix" style="width:708px;">
+			<a name="viewAll"></a>
+			<div class="te_tit_name">产品目录</div>
+			<div class="tetitclass">
+				<div class="tetitclass_a">
+					<div class="tetitclass_b">
+						<div class="sjtj_titles" style="padding-top:16px;"><a href="/metal.htm" target="_blank" id="1F">废金属</a></div>
+					</div>
+					<div class="tetitclass_c">
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001000.htm" target="_blank" class="tetitclasssstit">废钢铁</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010001000.htm" title="废铁" target="_blank" class="tetitclasssstita">废铁</a> |
+							<a href="/offerlist--mc100010001001.htm" title="废钢" target="_blank" class="tetitclasssstita">废钢</a> |
+							<a href="/offerlist--mc100010001002.htm" title="废钢铁" target="_blank" class="tetitclasssstita">废钢铁</a>
+						</div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001008.htm" target="_blank" class="tetitclasssstit">硅</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010081000.htm" title="硅片" target="_blank" class="tetitclasssstita">硅片</a> |
+							<a href="/offerlist--mc100010081001.htm" title="单晶硅" target="_blank" class="tetitclasssstita">单晶硅</a> |
+							<a href="/offerlist--mc100010081002.htm" title="多晶硅" target="_blank" class="tetitclasssstita">多晶硅</a> |
+							<a href="/offerlist--mc100010081003.htm" title="氧化硅" target="_blank" class="tetitclasssstita">氧化硅</a>
+						</div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001001.htm" target="_blank" class="tetitclasssstit">有色金属</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010011000.htm" title="铜" target="_blank" class="tetitclasssstita">铜</a> |
+							<a href="/offerlist--mc100010011001.htm" title="铝" target="_blank" class="tetitclasssstita">铝</a> |
+							<a href="/offerlist--mc100010011002.htm" title="锡" target="_blank" class="tetitclasssstita">锡</a> |
+							<a href="/offerlist--mc100010011003.htm" title="锰" target="_blank" class="tetitclasssstita">锰</a> |
+							<a href="/offerlist--mc100010011004.htm" title="铬" target="_blank" class="tetitclasssstita">铬</a> |
+							<a href="/offerlist--mc100010011005.htm" title="铅" target="_blank" class="tetitclasssstita">铅</a> | <a href="/offerlist--mc10001001.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001002.htm" target="_blank" class="tetitclasssstit">稀有金属</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010021000.htm" title="钛" target="_blank" class="tetitclasssstita">钛</a> |
+							<a href="/offerlist--mc100010021001.htm" title="锆" target="_blank" class="tetitclasssstita">锆</a> |
+							<a href="/offerlist--mc100010021002.htm" title="钒" target="_blank" class="tetitclasssstita">钒</a> |
+							<a href="/offerlist--mc100010021003.htm" title="铌" target="_blank" class="tetitclasssstita">铌</a> |
+							<a href="/offerlist--mc100010021004.htm" title="钽" target="_blank" class="tetitclasssstita">钽</a> |
+							<a href="/offerlist--mc100010021005.htm" title="钼" target="_blank" class="tetitclasssstita">钼</a> |
+							<a href="/offerlist--mc100010021006.htm" title="钨" target="_blank" class="tetitclasssstita">钨</a> |
+							<a href="/offerlist--mc10001002.htm" target="_blank" class="tetitclasssstita">更多</a>
+						</div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001004.htm" target="_blank" class="tetitclasssstit">再生金属</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010041000.htm" title="再生铝" target="_blank" class="tetitclasssstita">再生铝</a> |
+							<a href="/offerlist--mc100010041001.htm" title="再生铜" target="_blank" class="tetitclasssstita">再生铜</a> |
+							<a href="/offerlist--mc100010041002.htm" title="再生铁" target="_blank" class="tetitclasssstita">再生铁</a> |
+							<a href="/offerlist--mc100010041003.htm" title="再生镍" target="_blank" class="tetitclasssstita">再生镍</a> |
+							<a href="/offerlist--mc10001004.htm" target="_blank" class="tetitclasssstita">更多</a>
+						</div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001003.htm" target="_blank" class="tetitclasssstit">贵金属</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100010031000.htm" title="金" target="_blank" class="tetitclasssstita">金</a> |
+							<a href="/offerlist--mc100010031001.htm" title="银" target="_blank" class="tetitclasssstita">银</a> |
+							<a href="/offerlist--mc100010031002.htm" title="钌" target="_blank" class="tetitclasssstita">钌</a> |
+							<a href="/offerlist--mc100010031003.htm" title="铑" target="_blank" class="tetitclasssstita">铑</a> |
+							<a href="/offerlist--mc100010031004.htm" title="钯" target="_blank" class="tetitclasssstita">钯</a> |
+							<a href="/offerlist--mc100010031005.htm" title="锇" target="_blank" class="tetitclasssstita">锇</a> |
+							<a href="/offerlist--mc100010031006.htm" title="铱" target="_blank" class="tetitclasssstita">铱</a> |
+							<a href="/offerlist--mc10001003.htm" target="_blank" class="tetitclasssstita">更多</a>
+						</div>
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10001005.htm" target="_blank" class="tetitclasssstit">金属混合/复合料</a><br>
+							<a href="/offerlist--mc100010051000.htm" title="废五金" target="_blank" class="tetitclasssstita">废五金</a> |
+							<a href="/offerlist--mc100010051001.htm" title="废变压器" target="_blank" class="tetitclasssstita">废变压器</a> |
+							<a href="/offerlist--mc100010051002.htm" title="废马达(电机)" target="_blank" class="tetitclasssstita">废马达(电机)</a> |
+							<a href="/offerlist--mc100010051003.htm" title="尾矿(矿石)" target="_blank" class="tetitclasssstita">尾矿(矿石)</a> |
+							<a href="/offerlist--mc100010051004.htm" title="废液" target="_blank" class="tetitclasssstita">废液</a><br>
+							<a href="/offerlist--mc100010051005.htm" title="电线/电缆" target="_blank" class="tetitclasssstita">电线/电缆</a> |
+							<a href="/offerlist--mc100010051009.htm" title="废电路板" target="_blank" class="tetitclasssstita">废电路板</a> |
+							<a href="/offerlist--mc100010051010.htm" title="废线路板" target="_blank" class="tetitclasssstita">废线路板</a> |
+							<a href="/offerlist--mc100010051011.htm" title="二级板" target="_blank" class="tetitclasssstita">二级板</a> |
+							<a href="/offerlist--mc100010051006.htm" title="废轴承" target="_blank" class="tetitclasssstita">废轴承</a><br>
+							<a href="/offerlist--mc100010051007.htm" title="其他金属混合/复合料" target="_blank" class="tetitclasssstita">其他金属混合/复合料</a> |
+							<a href="/offerlist--mc100010051008.htm" title="三元催化器" target="_blank" class="tetitclasssstita">三元催化器</a> |
+							<a href="/offerlist--mc10001005.htm" target="_blank" class="tetitclasssstita">更多</a>
+						</div>
+						<div class="tetitclass_d">
+							<p>
+								<a href="/offerlist--mc10001006.htm" target="_blank" class="tetitclasssstit">废金属处理设备</a><br>
+								<a href="/offerlist--mc100010061004.htm" title="金属分离设备" target="_blank" class="tetitclasssstita">金属分离设备</a> |
+								<a href="/offerlist--mc100010061005.htm" title="破碎/磨粉机" target="_blank" class="tetitclasssstita">破碎/磨粉机</a> |
+								<a href="/offerlist--mc100010061006.htm" title="金属打包机" target="_blank" class="tetitclasssstita">金属打包机</a> |
+								<a href="/offerlist--mc100010061007.htm" title="切削加工设备" target="_blank" class="tetitclasssstita">切削加工设备</a>
+							</p>
+							<p>
+								<a href="/offerlist--mc100010061008.htm" title="尾矿回收设备" target="_blank" class="tetitclasssstita">尾矿回收设备</a> |
+								<a href="/offerlist--mc100010061009.htm" title="提炼设备" target="_blank" class="tetitclasssstita">提炼设备</a> |
+								<a href="/offerlist--mc100010061010.htm" title="金属成型设备" target="_blank" class="tetitclasssstita">金属成型设备</a> |
+								<a href="/offerlist--mc100010061011.htm" title="焊接和粘接设备" target="_blank" class="tetitclasssstita">焊接和粘接设备</a> |
+								<a href="/offerlist--mc100010061003.htm" title="铜米机" target="_blank" class="tetitclasssstita">铜米机</a> |
+								<a href="/offerlist--mc100010061001.htm" title="冲床/机车" target="_blank" class="tetitclasssstita">冲床/机车</a> |
+								<a href="/offerlist--mc100010061002.htm" title="机床/车床" target="_blank" class="tetitclasssstita">机床/车床</a> |
+								<a href="/offerlist--mc10001006.htm" target="_blank" class="tetitclasssstita">更多</a>
+							</p>
+						</div>
+						<div class="tetitclass_dss">
+							<a href="/offerlist--mc10001007.htm" target="_blank" class="tetitclasssstit">金属助剂</a>
+						</div>
+					</div><!--tetitclass_c-->
+				</div>
+			</div>
+		</div>
+		<div class="mt" style="width:708px;">
+			<script src="http://gg.zz91.com/show?p=368"></script>
+		</div>
+		<div class="te_tit_border mt clearfix"  style="width:708px;" >
+			<div class="tetitclass">
+				<div class="tetitclass_a">
+					<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;"><a href="/plastic.htm" target="_blank" id="2F">废塑料</a></div></div>
+					<div class="tetitclass_c">
+						<div class="tetitclass_d">
+							<a href="/offerlist--mc10011000.htm" target="_blank" class="tetitclasssstit">通用废塑料</a>&nbsp;&nbsp;
+							<a href="/offerlist--mc100110001000.htm" title="PP" target="_blank" class="tetitclasssstita">PP</a> |
+							<a href="/offerlist--mc100110001001.htm" title="PE" target="_blank" class="tetitclasssstita">PE</a> |
+							<a href="/offerlist--mc100110001002.htm" title="PVC" target="_blank" class="tetitclasssstita">PVC</a> |
+							<a href="/offerlist--mc100110001003.htm" title="PS" target="_blank" class="tetitclasssstita">PS</a> |
+							<a href="/offerlist--mc100110001004.htm" title="ABS" target="_blank" class="tetitclasssstita">ABS</a> |
+							<a href="/offerlist--mc100110001005.htm" title="EVA" target="_blank" class="tetitclasssstita">EVA</a>
+						</div>
+                        <div class="tetitclass_d"><a href="/offerlist--mc10011002.htm" target="_blank" class="tetitclasssstit">特种废塑料</a>&nbsp;&nbsp;<a href="/offerlist--mc100110021000.htm" title="氟塑料类" target="_blank" class="tetitclasssstita">氟塑料类</a> | <a href="/offerlist--mc100110021001.htm" title="有机硅塑料" target="_blank" class="tetitclasssstita">有机硅塑料</a> | <a href="/offerlist--mc10011002.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+                        <div class="tetitclass_d"><a href="/offerlist--mc10011001.htm" target="_blank" class="tetitclasssstit">工程废塑料</a><br><a href="/offerlist--mc100110011000.htm" title="PA" target="_blank" class="tetitclasssstita">PA</a> | <a href="/offerlist--mc100110011001.htm" title="PET" target="_blank" class="tetitclasssstita">PET</a> | <a href="/offerlist--mc100110011002.htm" title="POM" target="_blank" class="tetitclasssstita">POM</a> | <a href="/offerlist--mc100110011003.htm" title="PPO" target="_blank" class="tetitclasssstita">PPO</a> | <a href="/offerlist--mc100110011004.htm" title="PC" target="_blank" class="tetitclasssstita">PC</a> | <a href="/offerlist--mc100110011005.htm" title="纤维素类" target="_blank" class="tetitclasssstita">纤维素类</a> | <a href="/offerlist--mc100110011006.htm" title="PVB" target="_blank" class="tetitclasssstita">PVB</a> | <a href="/offerlist--mc100110011007.htm" title="TPU" target="_blank" class="tetitclasssstita">TPU</a> | <a href="/offerlist--mc100110011008.htm" title="AS" target="_blank" class="tetitclasssstita">AS</a> | <a href="/offerlist--mc100110011009.htm" title="K胶" target="_blank" class="tetitclasssstita">K胶</a> | <a href="/offerlist--mc100110011010.htm" title="PMMA" target="_blank" class="tetitclasssstita">PMMA</a> | <a href="/offerlist--mc100110011011.htm" title="PPS" target="_blank" class="tetitclasssstita">PPS</a> | <a href="/offerlist--mc100110011012.htm" title="PU" target="_blank" class="tetitclasssstita">PU</a> | <a href="/offerlist--mc100110011013.htm" title="其他工程塑料" target="_blank" class="tetitclasssstita">其他工程塑料</a> | <a href="/offerlist--mc100110011014.htm" title="LCP" target="_blank" class="tetitclasssstita">LCP</a> | <a href="/offerlist--mc10011001.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+                        <div class="tetitclass_d"><a href="/offerlist--mc10011003.htm" target="_blank" class="tetitclasssstit">塑料混合/复合料</a><br><a href="/offerlist--mc100110031000.htm" title="塑料合金" target="_blank" class="tetitclasssstita">塑料合金</a> | <a href="/offerlist--mc100110031001.htm" title="纸塑复合料" target="_blank" class="tetitclasssstita">纸塑复合料</a> | <a href="/offerlist--mc100110031002.htm" title="金属塑料复合料" target="_blank" class="tetitclasssstita">金属塑料复合料</a> | <a href="/offerlist--mc100110031003.htm" title="废渔网" target="_blank" class="tetitclasssstita">废渔网</a> | <a href="/offerlist--mc100110031004.htm" title="玻璃胶" target="_blank" class="tetitclasssstita">玻璃胶</a> | <a href="/offerlist--mc100110031006.htm" title="电线/电缆皮" target="_blank" class="tetitclasssstita">电线/电缆皮</a> | <a href="/offerlist--mc100110031007.htm" title="塑料复合膜" target="_blank" class="tetitclasssstita">塑料复合膜</a> | <a href="/offerlist--mc100110031008.htm" title="塑料混合 " target="_blank" class="tetitclasssstita">塑料混合 </a> | <a href="/offerlist--mc10011003.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+                        <div class="tetitclass_d"><a href="/offerlist--mc10011004.htm" target="_blank" class="tetitclasssstit">再生颗粒</a><br><a href="/offerlist--mc100110041000.htm" title="PP再生颗粒" target="_blank" class="tetitclasssstita">PP再生颗粒</a> | <a href="/offerlist--mc100110041001.htm" title="PE再生颗粒" target="_blank" class="tetitclasssstita">PE再生颗粒</a> | <a href="/offerlist--mc100110041002.htm" title="PVC再生颗粒" target="_blank" class="tetitclasssstita">PVC再生颗粒</a> | <a href="/offerlist--mc100110041003.htm" title="ABS再生颗粒" target="_blank" class="tetitclasssstita">ABS再生颗粒<br>
+                        </a><a href="/offerlist--mc100110041004.htm" title="PS再生颗粒" target="_blank" class="tetitclasssstita">PS再生颗粒</a> | <a href="/offerlist--mc100110041005.htm" title="EVA再生颗粒" target="_blank" class="tetitclasssstita">EVA再生颗粒</a> | <a href="/offerlist--mc100110041006.htm" title="PA再生颗粒" target="_blank" class="tetitclasssstita">PA再生颗粒</a> | <a href="/offerlist--mc100110041007.htm" title="PET再生颗粒" target="_blank" class="tetitclasssstita">PET再生颗粒<br>
+                    	</a><a href="/offerlist--mc100110041008.htm" title="PPO再生颗粒" target="_blank" class="tetitclasssstita">PPO再生颗粒</a> | <a href="/offerlist--mc100110041009.htm" title="PC再生颗粒" target="_blank" class="tetitclasssstita">PC再生颗粒</a> | <a href="/offerlist--mc100110041010.htm" title="其他再生颗粒" target="_blank" class="tetitclasssstita">其他再生颗粒</a> | <a href="/offerlist--mc10011004.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+                    	<div class="tetitclass_d"><a href="/offerlist--mc10011006.htm" target="_blank" class="tetitclasssstit">废塑料处理设备</a><br>
+					    <a href="/offerlist--mc100110061000.htm" title="造粒机" target="_blank" class="tetitclasssstita">造粒机</a> | <a href="/offerlist--mc100110061001.htm" title="塑料分离设备" target="_blank" class="tetitclasssstita">塑料分离设备</a> | <a href="/offerlist--mc100110061002.htm" title="注塑机" target="_blank" class="tetitclasssstita">注塑机</a> | <a href="/offerlist--mc100110061003.htm" title="淋膜机" target="_blank" class="tetitclasssstita">淋膜机</a> | <a href="/offerlist--mc100110061004.htm" title="泡沫制造机" target="_blank" class="tetitclasssstita">泡沫制造机</a><br>
+					    <a href="/offerlist--mc100110061005.htm" title="清洗设备" target="_blank" class="tetitclasssstita">清洗设备</a> | <a href="/offerlist--mc100110061006.htm" title="塑料破碎机" target="_blank" class="tetitclasssstita">塑料破碎机</a> | <a href="/offerlist--mc100110061007.htm" title="脱水机" target="_blank" class="tetitclasssstita">脱水机</a> | <a href="/offerlist--mc100110061008.htm" title="压力机" target="_blank" class="tetitclasssstita">压力机</a> | <a href="/offerlist--mc100110061009.htm" title="离心机" target="_blank" class="tetitclasssstita">离心机</a> | <a href="/offerlist--mc100110061010.htm" title="干燥机" target="_blank" class="tetitclasssstita">干燥机</a> | <a href="/offerlist--mc100110061011.htm" title="吹塑机/吹膜机" target="_blank" class="tetitclasssstita">吹塑机/吹膜机</a> | <a href="/offerlist--mc100110061012.htm" title="打包机" target="_blank" class="tetitclasssstita">打包机</a> | <a href="/offerlist--mc100110061013.htm" title="混合机" target="_blank" class="tetitclasssstita">混合机</a> | <a href="/offerlist--mc10011006.htm" title="挤出机" target="_blank" class="tetitclasssstita">更多</a></div>
+					    <div class="tetitclass_dss"><a href="/offerlist--mc10011005.htm" target="_blank" class="tetitclasssstit">塑料助剂</a>&nbsp;&nbsp;<a href="/offerlist--mc100110051000.htm" title="色母剂" target="_blank" class="tetitclasssstita">色母剂</a> | <a href="/offerlist--mc100110051001.htm" title="增塑剂" target="_blank" class="tetitclasssstita">增塑剂</a> | <a href="/offerlist--mc100110051002.htm" title="催化剂" target="_blank" class="tetitclasssstita">催化剂</a> | <a href="/offerlist--mc100110051003.htm" title="增白剂" target="_blank" class="tetitclasssstita">增白剂</a> | <a href="/offerlist--mc100110051004.htm" title="润滑剂" target="_blank" class="tetitclasssstita">润滑剂</a> | <a href="/offerlist--mc100110051005.htm" title="发泡剂" target="_blank" class="tetitclasssstita">发泡剂</a> | <a href="/offerlist--mc100110051006.htm" title="改性剂" target="_blank" class="tetitclasssstita">改性剂</a> | <a href="/offerlist--mc100110051007.htm" title="阻燃剂" target="_blank" class="tetitclasssstita">阻燃剂</a> | <a href="/offerlist--mc100110051008.htm" title="光亮剂" target="_blank" class="tetitclasssstita">光亮剂</a> | <a href="/offerlist--mc10011005.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="te_tit_border mt clearfix"  style="width:708px;" >
+			<div class="tetitclass">
+				<div class="tetitclass_a">
+					<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;">
+					<a href="$!{address.yuanliao}" target="_blank" id="3F">塑料原料</a></div></div>
+					<div class="tetitclass_c">
+						<div class="tetitclass_d">
+							<a href="$!{address.yuanliao}/gppla/gy/" target="_blank" class="tetitclasssstit">通用塑料</a>&nbsp;
+							<a href="$!{address.yuanliao}/pp/gy/" title="PP" target="_blank" class="tetitclasssstita">PP</a> |
+							<a href="$!{address.yuanliao}/abs/gy/" title="ABS" target="_blank" class="tetitclasssstita">ABS</a> |
+							<a href="$!{address.yuanliao}/pvc/gy/" title="PVC" target="_blank" class="tetitclasssstita">PVC</a> |
+							<a href="$!{address.yuanliao}/hdpe/gy/" title="HDPE" target="_blank" class="tetitclasssstita">HDPE</a> |
+							<a href="$!{address.yuanliao}/hips/gy/" title="HIPS" target="_blank" class="tetitclasssstita">HIPS</a> |
+							<a href="$!{address.yuanliao}/ldpe/gy/" title="LDPE" target="_blank" class="tetitclasssstita">LDPE</a> |<br />
+							<a href="$!{address.yuanliao}/lldpe/gy/" title="LLDPE" target="_blank" class="tetitclasssstita">LLDPE</a> |
+							<a href="$!{address.yuanliao}/gpps/gy/" title="GPPS" target="_blank" class="tetitclasssstita">GPPS</a> |
+							<a href="$!{address.yuanliao}/qttysl/gy/" title="其他通用塑料" target="_blank" class="tetitclasssstita">其他通用塑料</a>
+						</div>
+                        <div class="tetitclass_d">
+                        	<a href="$!{address.yuanliao}/sppla/gy/" target="_blank" class="tetitclasssstit">特种塑料</a><br />
+                        	<a href="$!{address.yuanliao}/lcp/gy/" title="LCP" target="_blank" class="tetitclasssstita">LCP</a> |
+                        	<a href="$!{address.yuanliao}/pai/gy/" title="PAI" target="_blank" class="tetitclasssstita">PAI</a> |
+                        	<a href="$!{address.yuanliao}/peek/gy/" title="PEEK" target="_blank" class="tetitclasssstita">PEEK</a> |
+                        	<a href="$!{address.yuanliao}/pei/gy/" title="PEI" target="_blank" class="tetitclasssstita">PEI</a> | 
+                        	<a href="$!{address.yuanliao}/pes/gy/" title="PES" target="_blank" class="tetitclasssstita">PES</a> | 
+                        	<a href="$!{address.yuanliao}/pfa/gy/" title="PFA" target="_blank" class="tetitclasssstita">PFA</a> | 
+                        	<a href="$!{address.yuanliao}/pi/gy/" title="PI" target="_blank" class="tetitclasssstita">PI</a> | 
+                        	<a href="$!{address.yuanliao}/pps/gy/" title="PPS" target="_blank" class="tetitclasssstita">PPS</a> | 
+                        	<a href="$!{address.yuanliao}/psu/gy/" title="PSU" target="_blank" class="tetitclasssstita">PSU</a> | 
+                        	<a href="$!{address.yuanliao}/ptfe/gy/" title="PTFE" target="_blank" class="tetitclasssstita">PTFE</a> | 
+                        	<a href="$!{address.yuanliao}/pvdf/gy/" title="PVDF" target="_blank" class="tetitclasssstita">PVDF</a> | 
+                        	<a href="$!{address.yuanliao}/qttzsl/gy/" title="其他特种塑料" target="_blank" class="tetitclasssstita">其他特种塑料</a> 
+                        </div>
+                        <div class="tetitclass_d">
+                        	<a href="$!{address.yuanliao}/enpla/gy/" target="_blank" class="tetitclasssstit">工程塑料</a><br />
+                        	<a href="$!{address.yuanliao}/pc/gy/" title="PC" target="_blank" class="tetitclasssstita">PC</a> |
+                        	<a href="$!{address.yuanliao}/pbt/gy/" title="PBT" target="_blank" class="tetitclasssstita">PBT</a> | 
+                        	<a href="$!{address.yuanliao}/pet/gy/" title="PET" target="_blank" class="tetitclasssstita">PET</a> | 
+                        	<a href="$!{address.yuanliao}/eva/gy/" title="EVA" target="_blank" class="tetitclasssstita">EVA</a> | 
+                        	<a href="$!{address.yuanliao}/eps/gy/" title="EPS" target="_blank" class="tetitclasssstita">EPS</a> | 
+                        	<a href="$!{address.yuanliao}/pa6/gy/" title="PA6" target="_blank" class="tetitclasssstita">PA6</a> | 
+                        	<a href="$!{address.yuanliao}/pa66/gy/" title="PA66" target="_blank" class="tetitclasssstita">PA66</a> | 
+                        	<a href="$!{address.yuanliao}/pmma/gy/" title="PMMA" target="_blank" class="tetitclasssstita">PMMA</a> |<br /> 
+                        	<a href="$!{address.yuanliao}/pom/gy/" title="POM" target="_blank" class="tetitclasssstita">POM</a> | 
+                        	<a href="$!{address.yuanliao}/ppo/gy/" title="PPO" target="_blank" class="tetitclasssstita">PPO</a> | 
+                        	<a href="$!{address.yuanliao}/tpu/gy/" title="TPU" target="_blank" class="tetitclasssstita">TPU</a> | 
+                        	<a href="$!{address.yuanliao}/as/gy/" title="AS" target="_blank" class="tetitclasssstita">AS</a> | 
+                        	<a href="$!{address.yuanliao}/asa/gy/" title="ASA" target="_blank" class="tetitclasssstita">ASA</a> | 
+                        	<a href="$!{address.yuanliao}/kj/gy/" title="K胶" target="_blank" class="tetitclasssstita">K胶</a> | 
+                        	<a href="$!{address.yuanliao}/mbs/gy/" title="MBS" target="_blank" class="tetitclasssstita">MBS</a> |                          	
+                        	<a href="$!{address.yuanliao}/pa1010/gy/" title="PA1010" target="_blank" class="tetitclasssstita">PA1010</a> | 
+                        	<a href="$!{address.yuanliao}/pa11/gy/" title="PA11" target="_blank" class="tetitclasssstita">PA11</a> |
+                        	<a href="$!{address.yuanliao}/pa12/gy/" title="PA12" target="_blank" class="tetitclasssstita">PA12</a> | 
+                        	<a href="$!{address.yuanliao}/pa46/gy/" title="PA46" target="_blank" class="tetitclasssstita">PA46</a> | 
+                        	<a href="$!{address.yuanliao}/pa610/gy/" title="PA610" target="_blank" class="tetitclasssstita">PA610</a> |
+                        	<a href="$!{address.yuanliao}/pa612/gy/" title="PA612" target="_blank" class="tetitclasssstita">PA612</a> |
+                        	<a href="$!{address.yuanliao}/pa6t/gy/" title="PA6T" target="_blank" class="tetitclasssstita">PA6T</a> | 
+                        	<a href="$!{address.yuanliao}/pa9t/gy/" title="PA9T" target="_blank" class="tetitclasssstita">PA9T</a> | 
+                        	<a href="$!{address.yuanliao}/ppe/gy/" title="PPE" target="_blank" class="tetitclasssstita">PPE</a> | 
+                        	<a href="$!{address.yuanliao}/pla/gy/" title="PLA" target="_blank" class="tetitclasssstita">PLA</a> | 
+                        	<a href="$!{address.yuanliao}/slsz/gy/" title="沙林树脂" target="_blank" class="tetitclasssstita">沙林树脂</a> | 
+                        	<a href="$!{address.yuanliao}/qtgcsl/gy/" title="其他工程塑料" target="_blank" class="tetitclasssstita">其他工程塑料</a>
+                    	</div>                    	
+                    	<div class="tetitclass_d">
+                    		<a href="$!{address.yuanliao}/alpla/gy/" target="_blank" class="tetitclasssstit">塑料合金</a><br />
+					    	<a href="$!{address.yuanliao}/pc-abs/gy/" title="PC/ABS" target="_blank" class="tetitclasssstita">PC/ABS</a> |
+					    	<a href="$!{address.yuanliao}/pa-abs/gy/" title="PA/ABS" target="_blank" class="tetitclasssstita">PA/ABS</a> |
+					    	<a href="$!{address.yuanliao}/pbt-abs/gy/" title="PBT/ABS" target="_blank" class="tetitclasssstita">PBT/ABS</a> |
+					    	<a href="$!{address.yuanliao}/pbt-asa/gy/" title="PBT/ASA" target="_blank" class="tetitclasssstita">PBT/ASA</a> |
+					    	<a href="$!{address.yuanliao}/pc-pbt/gy/" title="PC/PBT" target="_blank" class="tetitclasssstita">PC/PBT</a> |
+					    	<a href="$!{address.yuanliao}/pc-pet/gy/" title="PC/PET" target="_blank" class="tetitclasssstita">PC/PET</a> |
+					    	<a href="$!{address.yuanliao}/pc-ps/gy/" title="PC/PS" target="_blank" class="tetitclasssstita">PC/PS</a> |
+					    	<a href="$!{address.yuanliao}/pa-ptfe/gy/" title="PA/PTFE" target="_blank" class="tetitclasssstita">PA/PTFE</a> |
+					    	<a href="$!{address.yuanliao}/qtslhj/gy/" title="其他塑料合金" target="_blank" class="tetitclasssstita">其他塑料合金</a>
+					    </div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="te_tit_border mt clearfix"  style="width:708px;" >
+			<div class="tetitclass">
+				<div class="tetitclass_a">
+					<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;"><a href="/waste.htm" target="_blank" id="4F">废电子电器</a></div>
+				</div>
+				<div class="tetitclass_c clearfix">
+					<div class="tetitclass_d"><a href="/offerlist--mc10051000.htm" target="_blank" class="tetitclasssstit">废电子</a><br><a href="/offerlist--mc100510001003.htm" title="电路板" target="_blank" class="tetitclasssstita">电路板</a> | <a href="/offerlist--mc100510001004.htm" title="线路板" target="_blank" class="tetitclasssstita">线路板</a> | <a href="/offerlist--mc100510001005.htm" title="CPU" target="_blank" class="tetitclasssstita">CPU</a> | <a href="/offerlist--mc100510001006.htm" title="主板" target="_blank" class="tetitclasssstita">主板</a> | <a href="/offerlist--mc100510001007.htm" title="电容" target="_blank" class="tetitclasssstita">电容</a> | <a href="/offerlist--mc100510001008.htm" title="电池" target="_blank" class="tetitclasssstita">电池</a> | <a href="/offerlist--mc100510001009.htm" title="电瓶" target="_blank" class="tetitclasssstita">电瓶</a><br><a href="/offerlist--mc100510001010.htm" title="光驱(CD-R)" target="_blank" class="tetitclasssstita">光驱(CD-R)</a> | <a href="/offerlist--mc100510001011.htm" title="扬声器" target="_blank" class="tetitclasssstita">扬声器</a> | <a href="/offerlist--mc100510001012.htm" title="MOVP" target="_blank" class="tetitclasssstita">MOVP</a> | <a href="/offerlist--mc100510001013.htm" title="其他电子" target="_blank" class="tetitclasssstita">其他电子</a> | <a href="/offerlist--mc100510001001.htm" title="硬盘" target="_blank" class="tetitclasssstita">硬盘</a> | <a href="/offerlist--mc10051000.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10051002.htm" target="_blank" class="tetitclasssstit">办公设备</a><br><a href="/offerlist--mc100510021001.htm" title="传真机" target="_blank" class="tetitclasssstita">传真机</a> | <a href="/offerlist--mc100510021002.htm" title="打印机" target="_blank" class="tetitclasssstita">打印机</a> | <a href="/offerlist--mc100510021003.htm" title="电话机" target="_blank" class="tetitclasssstita">电话机</a> | <a href="/offerlist--mc100510021004.htm" title="印刷机" target="_blank" class="tetitclasssstita">印刷机</a> | <a href="/offerlist--mc100510021005.htm" title="喷码机" target="_blank" class="tetitclasssstita">喷码机</a> | <a href="/offerlist--mc100510021006.htm" title="数据绘图仪" target="_blank" class="tetitclasssstita">数据绘图仪</a> | <a href="/offerlist--mc100510021007.htm" title="其他办公设备" target="_blank" class="tetitclasssstita">其他办公设备</a> | <a href="/offerlist--mc100510021000.htm" title="复印机" target="_blank" class="tetitclasssstita">复印机</a> | <a href="/offerlist--mc10051002.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_dss"><a href="/offerlist--mc10051001.htm" target="_blank" class="tetitclasssstit">废电器</a>&nbsp;&nbsp;<a href="/offerlist--mc100510011000.htm" title="变压器" target="_blank" class="tetitclasssstita">变压器</a> | <a href="/offerlist--mc100510011001.htm" title="电源" target="_blank" class="tetitclasssstita">电源</a> | <a href="/offerlist--mc100510011002.htm" title="电表" target="_blank" class="tetitclasssstita">电表</a> | <a href="/offerlist--mc100510011003.htm" title="废电脑显示器" target="_blank" class="tetitclasssstita">废电脑显示器</a> | <a href="/offerlist--mc100510011004.htm" title="旧电脑" target="_blank" class="tetitclasssstita">旧电脑</a> | <a href="/offerlist--mc100510011005.htm" title="主机" target="_blank" class="tetitclasssstita">主机</a> | <a href="/offerlist--mc100510011006.htm" title="手机" target="_blank" class="tetitclasssstita">手机</a> | <a href="/offerlist--mc100510011007.htm" title="笔记本电脑" target="_blank" class="tetitclasssstita">笔记本电脑</a> | <a href="/offerlist--mc100510011008.htm" title="洗衣机" target="_blank" class="tetitclasssstita">洗衣机</a> | <a href="/offerlist--mc10051001.htm" title="液晶屏(LCD)" target="_blank" class="tetitclasssstita">更多</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;"><a href="/waste.htm" target="_blank" id="5F">废橡胶</a></div></div>
+				<div class="tetitclass_c">
+					<div class="tetitclass_d"><a href="/offerlist--mc10021001.htm" target="_blank" class="tetitclasssstit">合成橡胶</a><br><a href="/offerlist--mc100210011000.htm" title="硅橡胶" target="_blank" class="tetitclasssstita">硅橡胶</a> | <a href="/offerlist--mc100210011001.htm" title="氟橡胶" target="_blank" class="tetitclasssstita">氟橡胶</a> | <a href="/offerlist--mc100210011002.htm" title="丁苯橡胶(SBR)" target="_blank" class="tetitclasssstita">丁苯橡胶(SBR)</a> | <a href="/offerlist--mc100210011003.htm" title="顺丁橡胶(BR)" target="_blank" class="tetitclasssstita">顺丁橡胶(BR)</a> | <a href="/offerlist--mc100210011004.htm" title="氯丁橡胶(CR)" target="_blank" class="tetitclasssstita">氯丁橡胶(CR)</a> | <a href="/offerlist--mc100210011005.htm" title="乙丙橡胶" target="_blank" class="tetitclasssstita">乙丙橡胶</a> | <a href="/offerlist--mc100210011006.htm" title="丁腈橡胶(NBR)" target="_blank" class="tetitclasssstita">丁腈橡胶(NBR)</a> | <a href="/offerlist--mc100210011007.htm" title="聚硫橡胶" target="_blank" class="tetitclasssstita">聚硫橡胶</a> | <a href="/offerlist--mc100210011008.htm" title="丁基橡胶(IIR)" target="_blank" class="tetitclasssstita">丁基橡胶(IIR)</a> | <a href="/offerlist--mc100210011009.htm" title="丁晴橡胶(BNR)" target="_blank" class="tetitclasssstita">丁晴橡胶(BNR)</a> | <a href="/offerlist--mc100210011010.htm" title="未硫化橡胶(生胶)" target="_blank" class="tetitclasssstita">未硫化橡胶(生胶)</a> | <a href="/offerlist--mc100210011011.htm" title="其他合成橡胶" target="_blank" class="tetitclasssstita">其他合成橡胶</a> | <a href="/offerlist--mc10021001.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10021005.htm" target="_blank" class="tetitclasssstit">废橡胶处理设备</a><br><a href="/offerlist--mc100210051000.htm" title="橡胶处理油" target="_blank" class="tetitclasssstita">橡胶处理油</a> | <a href="/offerlist--mc100210051001.htm" title="切胶机" target="_blank" class="tetitclasssstita">切胶机</a> | <a href="/offerlist--mc100210051002.htm" title="打磨机" target="_blank" class="tetitclasssstita">打磨机</a> | <a href="/offerlist--mc100210051003.htm" title="橡胶挤出机" target="_blank" class="tetitclasssstita">橡胶挤出机</a> | <a href="/offerlist--mc100210051004.htm" title="密炼机" target="_blank" class="tetitclasssstita">密炼机</a> | <a href="/offerlist--mc100210051005.htm" title="剥皮机" target="_blank" class="tetitclasssstita">剥皮机</a> | <a href="/offerlist--mc100210051006.htm" title="开炼机" target="_blank" class="tetitclasssstita">开炼机</a> | <a href="/offerlist--mc100210051007.htm" title="硫化机" target="_blank" class="tetitclasssstita">硫化机</a> | <a href="/offerlist--mc100210051008.htm" title="成型机" target="_blank" class="tetitclasssstita">成型机</a> | <a href="/offerlist--mc100210051009.htm" title="贴合机/贴面机" target="_blank" class="tetitclasssstita">贴合机/贴面机</a> | <a href="/offerlist--mc100210051010.htm" title="橡胶造粒/粉碎机" target="_blank" class="tetitclasssstita">橡胶造粒/粉碎机</a> | <a href="/offerlist--mc100210051011.htm" title="制袋机" target="_blank" class="tetitclasssstita">制袋机</a> | <a href="/offerlist--mc100210051012.htm" title="炼油机/混炼机" target="_blank" class="tetitclasssstita">炼油机/混炼机</a> | <a href="/offerlist--mc100210051013.htm" title="分离设备" target="_blank" class="tetitclasssstita">分离设备</a> | <a href="/offerlist--mc100210051014.htm" title="胎缘切除机" target="_blank" class="tetitclasssstita">胎缘切除机</a> | <a href="/offerlist--mc100210051016.htm" title="轮胎翻新设备" target="_blank" class="tetitclasssstita">轮胎翻新设备</a> | <a href="/offerlist--mc10021005.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10021000.htm" target="_blank" class="tetitclasssstit">天然废橡胶</a> | <a href="/offerlist--mc100210001001.htm" title="乳胶" target="_blank" class="tetitclasssstita">乳胶</a> | <a href="/offerlist--mc100210001000.htm" title="天然橡胶" target="_blank" class="tetitclasssstita">天然橡胶</a> | <a href="/offerlist--mc10021000.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10021003.htm" target="_blank" class="tetitclasssstit">再生胶</a> | <a href="/offerlist--mc100210031000.htm" title="胶鞋(鞋底)" target="_blank" class="tetitclasssstita">胶鞋(鞋底)</a> | <a href="/offerlist--mc100210031001.htm" title="橡胶粉" target="_blank" class="tetitclasssstita">橡胶粉</a> | <a href="/offerlist--mc100210031002.htm" title="橡胶颗粒" target="_blank" class="tetitclasssstita">橡胶颗粒</a> | <a href="/offerlist--mc100210031003.htm" title="橡胶破碎料" target="_blank" class="tetitclasssstita">橡胶破碎料</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10021004.htm" target="_blank" class="tetitclasssstit">废轮胎</a> | <a href="/offerlist--mc100210041000.htm" title="内胎" target="_blank" class="tetitclasssstita">内胎</a> | <a href="/offerlist--mc100210041001.htm" title="外胎" target="_blank" class="tetitclasssstita">外胎</a> | <a href="/offerlist--mc10021004.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10021002.htm" target="_blank" class="tetitclasssstit">热塑性弹性体</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;"><a href="/waste.htm" target="_blank" id="6F">废纸</a></div></div>
+				<div class="tetitclass_c">
+					<div class="tetitclass_d"><a href="/offerlist--mc10041004.htm" target="_blank" class="tetitclasssstit">包装废纸</a><br><a href="/offerlist--mc100410041000.htm" title="白板纸" target="_blank" class="tetitclasssstita">白板纸</a> | <a href="/offerlist--mc100410041001.htm" title="白卡纸" target="_blank" class="tetitclasssstita">白卡纸</a> | <a href="/offerlist--mc100410041002.htm" title="牛皮纸" target="_blank" class="tetitclasssstita">牛皮纸</a> | <a href="/offerlist--mc100410041003.htm" title="瓦楞纸" target="_blank" class="tetitclasssstita">瓦楞纸</a> | <a href="/offerlist--mc100410041004.htm" title="箱板纸" target="_blank" class="tetitclasssstita">箱板纸</a> | <a href="/offerlist--mc100410041005.htm" title="淋膜纸" target="_blank" class="tetitclasssstita">淋膜纸</a><br>
+					<a href="/offerlist--mc100410041006.htm" title="商标纸" target="_blank" class="tetitclasssstita">商标纸</a> | <a href="/offerlist--mc100410041007.htm" title="标签纸" target="_blank" class="tetitclasssstita">标签纸</a> | <a href="/offerlist--mc100410041008.htm" title="无菌包" target="_blank" class="tetitclasssstita">无菌包</a> | <a href="/offerlist--mc100410041009.htm" title="羊皮纸" target="_blank" class="tetitclasssstita">羊皮纸</a> | <a href="/offerlist--mc100410041010.htm" title="灰卡纸" target="_blank" class="tetitclasssstita">灰卡纸</a> | <a href="/offerlist--mc10041004.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041008.htm" target="_blank" class="tetitclasssstit">生活废纸</a><br><a href="/offerlist--mc100410081000.htm" title="卫生纸" target="_blank" class="tetitclasssstita">卫生纸</a> | <a href="/offerlist--mc100410081001.htm" title="面巾纸" target="_blank" class="tetitclasssstita">面巾纸</a> | <a href="/offerlist--mc100410081002.htm" title="餐巾纸" target="_blank" class="tetitclasssstita">餐巾纸</a> | <a href="/offerlist--mc100410081003.htm" title="纸尿裤" target="_blank" class="tetitclasssstita">纸尿裤</a> | <a href="/offerlist--mc100410081004.htm" title="卫生巾" target="_blank" class="tetitclasssstita">卫生巾</a> | <a href="/offerlist--mc100410081005.htm" title="湿巾纸" target="_blank" class="tetitclasssstita">湿巾纸</a> | <a href="/offerlist--mc100410081006.htm" title="其他生活废纸" target="_blank" class="tetitclasssstita">其他生活废纸</a> | <a href="/offerlist--mc10041008.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+                    <div class="tetitclass_d"><a href="/offerlist--mc10041005.htm" target="_blank" class="tetitclasssstit">印刷废纸</a>&nbsp;&nbsp;<a href="/offerlist--mc100410051000.htm" title="废报纸(ONP)" target="_blank" class="tetitclasssstita">废报纸(ONP)</a> | <a href="/offerlist--mc100410051001.htm" title="书刊" target="_blank" class="tetitclasssstita">书刊</a> | <a href="/offerlist--mc100410051002.htm" title="铜版纸" target="_blank" class="tetitclasssstita">铜版纸</a> | <a href="/offerlist--mc10041005.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041006.htm" target="_blank" class="tetitclasssstit">工业废纸</a> | <a href="/offerlist--mc100410061000.htm" title="工业废纸" target="_blank" class="tetitclasssstita">工业废纸</a> | <a href="/offerlist--mc10041006.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041007.htm" target="_blank" class="tetitclasssstit">办公废纸</a>&nbsp;&nbsp;<a href="/offerlist--mc100410071001.htm" title="复写纸" target="_blank" class="tetitclasssstita">复写纸</a> | <a href="/offerlist--mc100410071002.htm" title="打印纸" target="_blank" class="tetitclasssstita">打印纸</a> | <a href="/offerlist--mc100410071003.htm" title="复印纸" target="_blank" class="tetitclasssstita">复印纸</a> | <a href="/offerlist--mc100410071004.htm" title="相纸" target="_blank" class="tetitclasssstita">相纸</a> | <a href="/offerlist--mc10041007.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041009.htm" target="_blank" class="tetitclasssstit">特种废纸</a> | <a href="/offerlist--mc100410091000.htm" title="特种废纸" target="_blank" class="tetitclasssstita">特种废纸</a> | <a href="/offerlist--mc100410091001.htm" title="贴墙纸" target="_blank" class="tetitclasssstita">贴墙纸</a> | <a href="/offerlist--mc10041009.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041010.htm" target="_blank" class="tetitclasssstit">废纸制品</a> | <a href="/offerlist--mc100410101001.htm" title="纸箱" target="_blank" class="tetitclasssstita">纸箱</a> | <a href="/offerlist--mc100410101002.htm" title="纸盒(OCC)" target="_blank" class="tetitclasssstita">纸盒(OCC)</a> | <a href="/offerlist--mc100410101000.htm" title="纸板箱" target="_blank" class="tetitclasssstita">纸板箱</a> | <a href="/offerlist--mc10041010.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041014.htm" target="_blank" class="tetitclasssstit">混合/复合废纸</a> | <a href="/offerlist--mc100410141000.htm" title="纸塑复合纸" target="_blank" class="tetitclasssstita">纸塑复合纸</a> | <a href="/offerlist--mc100410141001.htm" title="纸金属复合纸" target="_blank" class="tetitclasssstita">纸金属复合纸</a> | <a href="/offerlist--mc10041014.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041015.htm" target="_blank" class="tetitclasssstit">废纸处理设备</a> | <a href="/offerlist--mc100410151000.htm" title="废纸处理设备" target="_blank" class="tetitclasssstita">废纸处理设备</a> | <a href="/offerlist--mc10041015.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10041000.htm" target="_blank" class="tetitclasssstit">美废</a> | <a href="/offerlist--mc10041001.htm" target="_blank" class="tetitclasssstit">欧废</a> | <a href="/offerlist--mc10041002.htm" target="_blank" class="tetitclasssstit">日废</a> | <a href="/offerlist--mc10041011.htm" target="_blank" class="tetitclasssstit">纸浆</a> | <a href="/offerlist--mc10041012.htm" target="_blank" class="tetitclasssstit">卡纸</a> | <a href="/offerlist--mc10041013.htm" target="_blank" class="tetitclasssstit">纸边</a> | <a href="/offerlist--mc10041003.htm" target="_blank" class="tetitclasssstit">其他</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b">
+					<div class="sjtj_titles" style="padding-top:3px;padding-bottom:3px;"><a href="/waste.htm" target="_blank">废皮革</a></div>
+				</div>
+				<div class="tetitclass_c" style="height:30px;">
+					<div class="tetitclass_d">
+						<a href="/offerlist--mc10101000.htm" target="_blank" class="tetitclasssstit">人造皮革</a> | <a href="/offerlist--mc10101001.htm" target="_blank" class="tetitclasssstit">动物皮革</a> | <a href="/offerlist--mc10101002.htm" target="_blank" class="tetitclasssstit">皮料</a> | <a href="/offerlist--mc10101003.htm" target="_blank" class="tetitclasssstit">头层皮</a> | <a href="/offerlist--mc10101004.htm" target="_blank" class="tetitclasssstit">二层皮</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	-->
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:8px;"><a href="/waste.htm" target="_blank" id="7F">废纺织品和皮革</a></div></div>
+				<div class="tetitclass_c clearfix">
+					<div class="tetitclass_d"><a href="/offerlist--mc10031002.htm" target="_blank" class="tetitclasssstit">坯布面料</a>&nbsp;&nbsp;<a href="/offerlist--mc100310021000.htm" title="坯布" target="_blank" class="tetitclasssstita">坯布</a> | <a href="/offerlist--mc100310021001.htm" title="服装下脚料" target="_blank" class="tetitclasssstita">服装下脚料</a> | <a href="/offerlist--mc100310021002.htm" title="废布/碎布" target="_blank" class="tetitclasssstita">废布/碎布</a> | <a href="/offerlist--mc10031002.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031004.htm" target="_blank" class="tetitclasssstit">废棉料</a>&nbsp;&nbsp;<a href="/offerlist--mc100310041000.htm" title="精硫落棉" target="_blank" class="tetitclasssstita">精硫落棉</a> | <a href="/offerlist--mc100310041001.htm" title="聚酯/脱脂棉" target="_blank" class="tetitclasssstita">聚酯/脱脂棉</a> | <a href="/offerlist--mc100310041002.htm" title="再生棉" target="_blank" class="tetitclasssstita">再生棉</a> | <a href="/offerlist--mc10031004.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031003.htm" target="_blank" class="tetitclasssstit">皮革</a> | <a href="/offerlist--mc100310031000.htm" title="人造皮革" target="_blank" class="tetitclasssstita">人造皮革</a> | <a href="/offerlist--mc100310031001.htm" title="动物皮革" target="_blank" class="tetitclasssstita">动物皮革</a> | <a href="/offerlist--mc100310031002.htm" title="皮料" target="_blank" class="tetitclasssstita">皮料</a> | <a href="/offerlist--mc100310031003.htm" title="头层皮" target="_blank" class="tetitclasssstita">头层皮</a> |  <a href="/offerlist--mc10031003.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031006.htm" target="_blank" class="tetitclasssstit">丝</a> | <a href="/offerlist--mc100310061000.htm" title="真丝" target="_blank" class="tetitclasssstita">真丝</a> | <a href="/offerlist--mc100310061001.htm" title="废丝" target="_blank" class="tetitclasssstita">废丝</a> | <a href="/offerlist--mc10031006.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031008.htm" target="_blank" class="tetitclasssstit">家纺废料</a> | <a href="/offerlist--mc100310081000.htm" title="地毯料" target="_blank" class="tetitclasssstita">地毯料</a> | <a href="/offerlist--mc100310081001.htm" title="毛巾" target="_blank" class="tetitclasssstita">毛巾</a> | <a href="/offerlist--mc10031008.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031000.htm" target="_blank" class="tetitclasssstit">化纤</a> | <a href="/offerlist--mc100310001000.htm" title="合成化纤" target="_blank" class="tetitclasssstita">合成化纤</a> | <a href="/offerlist--mc100310001001.htm" title="人造纤维" target="_blank" class="tetitclasssstita">人造纤维</a> | <a href="/offerlist--mc100310001002.htm" title="特种化纤" target="_blank" class="tetitclasssstita">特种化纤</a> | <a href="/offerlist--mc10031000.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10031009.htm" target="_blank" class="tetitclasssstit">麻</a> | <a href="/offerlist--mc10031010.htm" target="_blank" class="tetitclasssstit">编织料</a> | <a href="/offerlist--mc10031011.htm" target="_blank" class="tetitclasssstit">纺织设备</a> | <a href="/offerlist--mc10031001.htm" target="_blank" class="tetitclasssstit">纱线</a> | <a href="/offerlist--mc10031007.htm" target="_blank" class="tetitclasssstit">牛仔布</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b">
+					<div class="sjtj_titles" style="padding-top:16px;"><a href="/waste.htm" target="_blank" id="8F">废旧二手设备</a></div>
+				</div>
+				<div class="tetitclass_c clearfix">
+					<div class="tetitclass_d"><a href="/offerlist--mc10071004.htm" target="_blank" class="tetitclasssstit">冶炼设备</a><br />
+					<a href="/offerlist--mc100710041000.htm" title="锅炉" target="_blank" class="tetitclasssstita">锅炉</a> | <a href="/offerlist--mc100710041001.htm" title="转炉" target="_blank" class="tetitclasssstita">转炉</a> | <a href="/offerlist--mc100710041002.htm" title="压铸机" target="_blank" class="tetitclasssstita">压铸机</a> | <a href="/offerlist--mc100710041003.htm" title="油压机" target="_blank" class="tetitclasssstita">油压机</a> | <a href="/offerlist--mc100710041004.htm" title="轧管机" target="_blank" class="tetitclasssstita">轧管机</a> | <a href="/offerlist--mc100710041005.htm" title="冷轧机" target="_blank" class="tetitclasssstita">冷轧机</a><br>
+					<a href="/offerlist--mc100710041006.htm" title="其他冶炼设备" target="_blank" class="tetitclasssstita">其他冶炼设备</a> | <a href="/offerlist--mc100710041007.htm" title="冶金成套设备" target="_blank" class="tetitclasssstita">冶金成套设备</a> | <a href="/offerlist--mc100710041008.htm" title="炼铁设备" target="_blank" class="tetitclasssstita">炼铁设备</a> | <a href="/offerlist--mc100710041009.htm" title="轧钢设备" target="_blank" class="tetitclasssstita">轧钢设备</a><br>
+					<a href="/offerlist--mc100710041010.htm" title="炼钢设备" target="_blank" class="tetitclasssstita">炼钢设备</a> | <a href="/offerlist--mc100710041011.htm" title="焦化设备" target="_blank" class="tetitclasssstita">焦化设备</a> | <a href="/offerlist--mc100710041012.htm" title="液压设备" target="_blank" class="tetitclasssstita">液压设备</a> | <a href="/offerlist--mc100710041013.htm" title="高速轧制线" target="_blank" class="tetitclasssstita">高速轧制线</a> |<a href="/offerlist--mc10071004.htm" target="_blank" class="tetitclasssstita"> 更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071012.htm" target="_blank" class="tetitclasssstit">电力电工设备</a><br />
+					<a href="/offerlist--mc100710121000.htm" title="电站汽轮机" target="_blank" class="tetitclasssstita">电站汽轮机</a> | <a href="/offerlist--mc100710121001.htm" title="燃气轮机" target="_blank" class="tetitclasssstita">燃气轮机</a> | <a href="/offerlist--mc100710121002.htm" title="水泵" target="_blank" class="tetitclasssstita">水泵</a> | <a href="/offerlist--mc100710121003.htm" title="水轮机" target="_blank" class="tetitclasssstita">水轮机</a> | <a href="/offerlist--mc100710121004.htm" title="水轮发电机" target="_blank" class="tetitclasssstita">水轮发电机</a><br>
+					<a href="/offerlist--mc100710121005.htm" title="背压式汽轮机" target="_blank" class="tetitclasssstita">背压式汽轮机</a> | <a href="/offerlist--mc100710121006.htm" title="凝气式汽轮机" target="_blank" class="tetitclasssstita">凝气式汽轮机</a> | <a href="/offerlist--mc100710121007.htm" title="控制开关柜" target="_blank" class="tetitclasssstita">控制开关柜</a> | <a href="/offerlist--mc100710121008.htm" title="电站锅炉" target="_blank" class="tetitclasssstita">电站锅炉</a><br>
+					<a href="/offerlist--mc100710121009.htm" title="变压设备" target="_blank" class="tetitclasssstita">变压设备</a> | <a href="/offerlist--mc100710121010.htm" title="输电设备" target="_blank" class="tetitclasssstita">输电设备</a> | <a href="/offerlist--mc100710121012.htm" title="电工电气产品" target="_blank" class="tetitclasssstita">电工电气产品</a> | <a href="/offerlist--mc10071012.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071002.htm" target="_blank" class="tetitclasssstit">化工设备</a><br /><a href="/offerlist--mc100710021021.htm" title="清洗机" target="_blank" class="tetitclasssstita">清洗机</a> | <a href="/offerlist--mc100710021022.htm" title="挤压机" target="_blank" class="tetitclasssstita">挤压机</a> | <a href="/offerlist--mc100710021023.htm" title="撕碎机" target="_blank" class="tetitclasssstita">撕碎机</a> | <a href="/offerlist--mc100710021024.htm" title="离心机" target="_blank" class="tetitclasssstita">离心机</a> | <a href="/offerlist--mc100710021025.htm" title="炼焦机" target="_blank" class="tetitclasssstita">炼焦机</a> | <a href="/offerlist--mc100710021026.htm" title="电解槽" target="_blank" class="tetitclasssstita">电解槽</a><br>
+					<a href="/offerlist--mc100710021027.htm" title="反应釜" target="_blank" class="tetitclasssstita">反应釜</a> | <a href="/offerlist--mc100710021028.htm" title="磨碎机" target="_blank" class="tetitclasssstita">磨碎机</a> | <a href="/offerlist--mc100710021029.htm" title="旋窑" target="_blank" class="tetitclasssstita">旋窑</a> | <a href="/offerlist--mc100710021030.htm" title="制氧机" target="_blank" class="tetitclasssstita">制氧机</a> | <a href="/offerlist--mc100710021031.htm" title="热接收器" target="_blank" class="tetitclasssstita">热接收器</a> | <a href="/offerlist--mc100710021036.htm" title="实验设备" target="_blank" class="tetitclasssstita">实验设备</a><br>
+					<a href="/offerlist--mc100710021037.htm" title="混合设备" target="_blank" class="tetitclasssstita">混合设备</a> | <a href="/offerlist--mc100710021038.htm" title="成型设备" target="_blank" class="tetitclasssstita">成型设备</a> | <a href="/offerlist--mc100710021039.htm" title="粉碎设备" target="_blank" class="tetitclasssstita">粉碎设备</a> | <a href="/offerlist--mc100710021020.htm" title="化工装置" target="_blank" class="tetitclasssstita">化工装置</a> |  <a href="/offerlist--mc10071002.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071011.htm" target="_blank" class="tetitclasssstit">纺织设备</a><br />
+					<a href="/offerlist--mc100710111000.htm" title="针织设备" target="_blank" class="tetitclasssstita">针织设备</a> | <a href="/offerlist--mc100710111001.htm" title="纺纱设备" target="_blank" class="tetitclasssstita">纺纱设备</a> | <a href="/offerlist--mc100710111002.htm" title="梭织设备" target="_blank" class="tetitclasssstita">梭织设备</a> | <a href="/offerlist--mc100710111004.htm" title="自动络筒机" target="_blank" class="tetitclasssstita">自动络筒机</a> | <a href="/offerlist--mc100710111005.htm" title="捻线机提花机" target="_blank" class="tetitclasssstita">捻线机提花机</a> | <a href="/offerlist--mc100710111006.htm" title="卸料脱水机" target="_blank" class="tetitclasssstita">卸料脱水机</a> | <a href="/offerlist--mc100710111007.htm" title="织带机编织机" target="_blank" class="tetitclasssstita">织带机编织机</a> | <a href="/offerlist--mc100710111008.htm" title="印染整套设备" target="_blank" class="tetitclasssstita">印染整套设备</a> | <a href="/offerlist--mc100710111009.htm" title="非织造布设备" target="_blank" class="tetitclasssstita">非织造布设备</a> | <a href="/offerlist--mc100710111010.htm" title="工业脱水机" target="_blank" class="tetitclasssstita">工业脱水机</a> | <a href="/offerlist--mc100710111011.htm" title="检针器检针机" target="_blank" class="tetitclasssstita">检针器检针机</a> | <a href="/offerlist--mc10071011.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071028.htm" target="_blank" class="tetitclasssstit">食品设备</a><br />
+					<a href="/offerlist--mc100710281000.htm" title="糖果设备" target="_blank" class="tetitclasssstita">糖果设备</a> | <a href="/offerlist--mc100710281001.htm" title="制糖设备" target="_blank" class="tetitclasssstita">制糖设备</a> | <a href="/offerlist--mc100710281002.htm" title="水产品加工设备" target="_blank" class="tetitclasssstita">水产品加工设备</a> | <a href="/offerlist--mc100710281003.htm" title="淀粉设备" target="_blank" class="tetitclasssstita">淀粉设备</a><br>
+					<a href="/offerlist--mc100710281004.htm" title="面粉设备" target="_blank" class="tetitclasssstita">面粉设备</a> | <a href="/offerlist--mc100710281005.htm" title="味精设备" target="_blank" class="tetitclasssstita">味精设备</a> | <a href="/offerlist--mc100710281006.htm" title="香料设备" target="_blank" class="tetitclasssstita">香料设备</a> | <a href="/offerlist--mc100710281007.htm" title="冰冻脱水蔬菜设备" target="_blank" class="tetitclasssstita">冰冻脱水蔬菜设备</a><br>
+					<a href="/offerlist--mc100710281008.htm" title="食品加工机械设备" target="_blank" class="tetitclasssstita">食品加工机械设备</a> | <a href="/offerlist--mc100710281009.htm" title="食醋设备" target="_blank" class="tetitclasssstita">食醋设备</a> | <a href="/offerlist--mc100710281010.htm" title="酱油设备" target="_blank" class="tetitclasssstita">酱油设备</a> |  <a href="/offerlist--mc10071028.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071001.htm" target="_blank" class="tetitclasssstit">工程设备</a><br />
+					<a href="/offerlist--mc100710011001.htm" title="起重机" target="_blank" class="tetitclasssstita">起重机</a> | <a href="/offerlist--mc100710011002.htm" title="沥青桶" target="_blank" class="tetitclasssstita">沥青桶</a> | <a href="/offerlist--mc100710011003.htm" title="抽水机" target="_blank" class="tetitclasssstita">抽水机</a> | <a href="/offerlist--mc100710011004.htm" title="挖土机" target="_blank" class="tetitclasssstita">挖土机</a> | <a href="/offerlist--mc100710011005.htm" title="推土机" target="_blank" class="tetitclasssstita">推土机</a> | <a href="/offerlist--mc100710011006.htm" title="挖掘机械" target="_blank" class="tetitclasssstita">挖掘机械</a><br>
+					<a href="/offerlist--mc100710011007.htm" title="装载机械" target="_blank" class="tetitclasssstita">装载机械</a> | <a href="/offerlist--mc100710011008.htm" title="搅拌机械" target="_blank" class="tetitclasssstita">搅拌机械</a> | <a href="/offerlist--mc100710011009.htm" title="焊接设备" target="_blank" class="tetitclasssstita">焊接设备</a> | <a href="/offerlist--mc100710011010.htm" title="路面机械" target="_blank" class="tetitclasssstita">路面机械</a> | <a href="/offerlist--mc100710011011.htm" title="叉车" target="_blank" class="tetitclasssstita">叉车</a> | <a href="/offerlist--mc100710011012.htm" title="海港吊" target="_blank" class="tetitclasssstita">海港吊</a> | <a href="/offerlist--mc100710011013.htm" title="履带吊" target="_blank" class="tetitclasssstita">履带吊</a> | <a href="/offerlist--mc100710011014.htm" title="汽车吊" target="_blank" class="tetitclasssstita">汽车吊</a> | <a href="/offerlist--mc100710011015.htm" title="混凝土机械" target="_blank" class="tetitclasssstita">混凝土机械</a> | <a href="/offerlist--mc100710011016.htm" title="提升机" target="_blank" class="tetitclasssstita">提升机</a> |  <a href="/offerlist--mc10071001.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071015.htm" target="_blank" class="tetitclasssstit">农业设备</a><br />
+					<a href="/offerlist--mc100710151000.htm" title="粮油加工机械" target="_blank" class="tetitclasssstita">粮油加工机械</a> | <a href="/offerlist--mc100710151001.htm" title="肥料加工机械" target="_blank" class="tetitclasssstita">肥料加工机械</a> | <a href="/offerlist--mc100710151002.htm" title="饲料机械" target="_blank" class="tetitclasssstita">饲料机械</a> | <a href="/offerlist--mc100710151004.htm" title="土壤耕整机械" target="_blank" class="tetitclasssstita">土壤耕整机械</a><br>
+					<a href="/offerlist--mc100710151005.htm" title="食品加工设备" target="_blank" class="tetitclasssstita">食品加工设备</a> | <a href="/offerlist--mc100710151006.htm" title="无土栽培设备" target="_blank" class="tetitclasssstita">无土栽培设备</a> | <a href="/offerlist--mc100710151007.htm" title="智能温室设备" target="_blank" class="tetitclasssstita">智能温室设备</a> | <a href="/offerlist--mc100710151008.htm" title="养殖设备" target="_blank" class="tetitclasssstita">养殖设备</a> | <a href="/offerlist--mc100710151009.htm" title="方便面生产线" target="_blank" class="tetitclasssstita">方便面生产线</a> | <a href="/offerlist--mc100710151010.htm" title="收割机" target="_blank" class="tetitclasssstita">收割机</a> | <a href="/offerlist--mc100710151011.htm" title="牧草打捆机" target="_blank" class="tetitclasssstita">牧草打捆机</a> |  <a href="/offerlist--mc10071015.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071027.htm" target="_blank" class="tetitclasssstit">木工建材</a><br />
+					<a href="/offerlist--mc100710271000.htm" title="木工机械" target="_blank" class="tetitclasssstita">木工机械</a> | <a href="/offerlist--mc100710271001.htm" title="铝塑板生产线" target="_blank" class="tetitclasssstita">铝塑板生产线</a> | <a href="/offerlist--mc100710271002.htm" title="石材设备" target="_blank" class="tetitclasssstita">石材设备</a> | <a href="/offerlist--mc100710271003.htm" title="frp板材生产线" target="_blank" class="tetitclasssstita">frp板材生产线</a> | <a href="/offerlist--mc100710271004.htm" title="阳光板生产线" target="_blank" class="tetitclasssstita">阳光板生产线</a> | <a href="/offerlist--mc100710271005.htm" title="玻璃钢设备" target="_blank" class="tetitclasssstita">玻璃钢设备</a> | <a href="/offerlist--mc100710271006.htm" title="彩钢板生产线" target="_blank" class="tetitclasssstita">彩钢板生产线</a> | <a href="/offerlist--mc100710271007.htm" title="地板生产线" target="_blank" class="tetitclasssstita">地板生产线</a> | <a href="/offerlist--mc100710271008.htm" title="人造板生产线" target="_blank" class="tetitclasssstita">人造板生产线</a> | <a href="/offerlist--mc100710271009.htm" title="石膏板生产线" target="_blank" class="tetitclasssstita">石膏板生产线</a> | <a href="/offerlist--mc100710271010.htm" title="胶合板生产线" target="_blank" class="tetitclasssstita">胶合板生产线</a> |  <a href="/offerlist--mc10071027.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071029.htm" target="_blank" class="tetitclasssstit">服装设备</a><br />
+					<a href="/offerlist--mc100710291000.htm" title="洗涤设备" target="_blank" class="tetitclasssstita">洗涤设备</a> | <a href="/offerlist--mc100710291001.htm" title="裁剪设备" target="_blank" class="tetitclasssstita">裁剪设备</a> | <a href="/offerlist--mc100710291002.htm" title="切带机厚料机" target="_blank" class="tetitclasssstita">切带机厚料机</a> | <a href="/offerlist--mc100710291003.htm" title="封包机特种机" target="_blank" class="tetitclasssstita">封包机特种机</a><br>
+					<a href="/offerlist--mc100710291004.htm" title="标签机削皮机" target="_blank" class="tetitclasssstita">标签机削皮机</a> | <a href="/offerlist--mc100710291005.htm" title="包缝机曲折机" target="_blank" class="tetitclasssstita">包缝机曲折机</a> | <a href="/offerlist--mc100710291006.htm" title="花样机平缝机" target="_blank" class="tetitclasssstita">花样机平缝机</a> | <a href="/offerlist--mc100710291007.htm" title="干洗设备烘干机" target="_blank" class="tetitclasssstita">干洗设备烘干机</a> | <a href="/offerlist--mc100710291008.htm" title="家用机编织机" target="_blank" class="tetitclasssstita">家用机编织机</a> | <a href="/offerlist--mc100710291009.htm" title="卷线机摺景机" target="_blank" class="tetitclasssstita">卷线机摺景机</a> |  <a href="/offerlist--mc10071029.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071031.htm" target="_blank" class="tetitclasssstit">变压器设备</a><br />
+					<a href="/offerlist--mc100710311000.htm" title="隔离变压器" target="_blank" class="tetitclasssstita">隔离变压器</a> | <a href="/offerlist--mc100710311001.htm" title="变压器测试仪器" target="_blank" class="tetitclasssstita">变压器测试仪器</a> | <a href="/offerlist--mc100710311003.htm" title="变压器附属机械" target="_blank" class="tetitclasssstita">变压器附属机械</a> | <a href="/offerlist--mc100710311004.htm" title="低压变压器" target="_blank" class="tetitclasssstita">低压变压器</a> | <a href="/offerlist--mc100710311005.htm" title="高频变压器" target="_blank" class="tetitclasssstita">高频变压器</a> | <a href="/offerlist--mc100710311006.htm" title="三相变压器" target="_blank" class="tetitclasssstita">三相变压器</a> | <a href="/offerlist--mc100710311007.htm" title="试验变压器" target="_blank" class="tetitclasssstita">试验变压器</a> | <a href="/offerlist--mc100710311008.htm" title="控制变压器" target="_blank" class="tetitclasssstita">控制变压器</a> | <a href="/offerlist--mc100710311009.htm" title="电子变压器" target="_blank" class="tetitclasssstita">电子变压器</a> | <a href="/offerlist--mc100710311010.htm" title="自耦变压器" target="_blank" class="tetitclasssstita">自耦变压器</a> | <a href="/offerlist--mc100710311011.htm" title="特种变压器" target="_blank" class="tetitclasssstita">特种变压器</a> | <a href="/offerlist--mc10071031.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071013.htm" target="_blank" class="tetitclasssstit">机床设备</a><br />
+					<a href="/offerlist--mc100710131000.htm" title="抛光机" target="_blank" class="tetitclasssstita">抛光机</a> | <a href="/offerlist--mc100710131001.htm" title="拉床" target="_blank" class="tetitclasssstita">拉床</a> | <a href="/offerlist--mc100710131002.htm" title="珩磨机" target="_blank" class="tetitclasssstita">珩磨机</a> | <a href="/offerlist--mc100710131003.htm" title="冲床设备" target="_blank" class="tetitclasssstita">冲床设备</a> | <a href="/offerlist--mc100710131005.htm" title="钻床" target="_blank" class="tetitclasssstita">钻床</a> | <a href="/offerlist--mc100710131006.htm" title="压力机" target="_blank" class="tetitclasssstita">压力机</a><br>
+					<a href="/offerlist--mc100710131007.htm" title="折边,卷板设备" target="_blank" class="tetitclasssstita">折边,卷板设备</a> | <a href="/offerlist--mc100710131008.htm" title="剪切机床" target="_blank" class="tetitclasssstita">剪切机床</a> | <a href="/offerlist--mc100710131009.htm" title="车床" target="_blank" class="tetitclasssstita">车床</a> | <a href="/offerlist--mc100710131010.htm" title="铣床" target="_blank" class="tetitclasssstita">铣床</a> | <a href="/offerlist--mc100710131011.htm" title="镗床" target="_blank" class="tetitclasssstita">镗床</a> | <a href="/offerlist--mc100710131012.htm" title="磨床" target="_blank" class="tetitclasssstita">磨床</a><br>
+					<a href="/offerlist--mc100710131013.htm" title="锯床" target="_blank" class="tetitclasssstita">锯床</a> | <a href="/offerlist--mc100710131014.htm" title="刨床" target="_blank" class="tetitclasssstita">刨床</a> | <a href="/offerlist--mc100710131015.htm" title="轴承加工设备" target="_blank" class="tetitclasssstita">轴承加工设备</a> | <a href="/offerlist--mc100710131016.htm" title="组合专机" target="_blank" class="tetitclasssstita">组合专机</a> | <a href="/offerlist--mc10071013.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071018.htm" target="_blank" class="tetitclasssstit">印刷设备</a><br />
+					<a href="/offerlist--mc100710181001.htm" title="印后加工设备" target="_blank" class="tetitclasssstita">印后加工设备</a> | <a href="/offerlist--mc100710181002.htm" title="排版设备" target="_blank" class="tetitclasssstita">排版设备</a> | <a href="/offerlist--mc100710181003.htm" title="印刷机械" target="_blank" class="tetitclasssstita">印刷机械</a> | <a href="/offerlist--mc100710181004.htm" title="制版设备" target="_blank" class="tetitclasssstita">制版设备</a> | <a href="/offerlist--mc100710181005.htm" title="捆扎机" target="_blank" class="tetitclasssstita">捆扎机</a> | <a href="/offerlist--mc100710181006.htm" title="上光机" target="_blank" class="tetitclasssstita">上光机</a> | <a href="/offerlist--mc100710181007.htm" title="压痕机" target="_blank" class="tetitclasssstita">压痕机</a> | <a href="/offerlist--mc100710181008.htm" title="烫金机" target="_blank" class="tetitclasssstita">烫金机</a> | <a href="/offerlist--mc100710181009.htm" title="折页机" target="_blank" class="tetitclasssstita">折页机</a> | <a href="/offerlist--mc100710181010.htm" title="复膜机" target="_blank" class="tetitclasssstita">复膜机</a> | <a href="/offerlist--mc100710181011.htm" title="压光机" target="_blank" class="tetitclasssstita">压光机</a> | <a href="/offerlist--mc100710181012.htm" title="分切机" target="_blank" class="tetitclasssstita">分切机</a> | <a href="/offerlist--mc100710181013.htm" title="喷码机" target="_blank" class="tetitclasssstita">喷码机</a> | <a href="/offerlist--mc100710181014.htm" title="复合机" target="_blank" class="tetitclasssstita">复合机</a> | <a href="/offerlist--mc100710181015.htm" title="包本机" target="_blank" class="tetitclasssstita">包本机</a> | <a href="/offerlist--mc100710181016.htm" title="晒版机" target="_blank" class="tetitclasssstita">晒版机</a> |  <a href="/offerlist--mc10071018.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071003.htm" target="_blank" class="tetitclasssstit">制冷设备</a><br /><a href="/offerlist--mc100710031002.htm" title="制冷配件" target="_blank" class="tetitclasssstita">制冷配件</a> | <a href="/offerlist--mc100710031003.htm" title="制冷机" target="_blank" class="tetitclasssstita">制冷机</a> | <a href="/offerlist--mc100710031004.htm" title="空调" target="_blank" class="tetitclasssstita">空调</a> | <a href="/offerlist--mc100710031001.htm" title="压缩机" target="_blank" class="tetitclasssstita">压缩机</a> | <a href="/offerlist--mc100710031000.htm" title="其他制冷设备" target="_blank" class="tetitclasssstita">其他制冷设备</a><br>
+					<a href="/offerlist--mc100710031005.htm" title="蒸发器" target="_blank" class="tetitclasssstita">蒸发器</a> | <a href="/offerlist--mc100710031006.htm" title="风冷热泵机组" target="_blank" class="tetitclasssstita">风冷热泵机组</a> | <a href="/offerlist--mc100710031007.htm" title="冷却塔" target="_blank" class="tetitclasssstita">冷却塔</a> | <a href="/offerlist--mc100710031009.htm" title="制冷机组" target="_blank" class="tetitclasssstita">制冷机组</a> |  <a href="/offerlist--mc10071003.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071005.htm" target="_blank" class="tetitclasssstit">交通工具</a><br />
+					<a href="/offerlist--mc100710051007.htm" title="废旧汽车" target="_blank" class="tetitclasssstita">废旧汽车</a> | <a href="/offerlist--mc100710051008.htm" title="废旧摩托车" target="_blank" class="tetitclasssstita">废旧摩托车</a> | <a href="/offerlist--mc100710051009.htm" title="其他废旧交通工具" target="_blank" class="tetitclasssstita">其他废旧交通工具</a> | <a href="/offerlist--mc100710051010.htm" title="车辆修理设备" target="_blank" class="tetitclasssstita">车辆修理设备</a> | <a href="/offerlist--mc100710051000.htm" title="火车" target="_blank" class="tetitclasssstita">火车</a> | <a href="/offerlist--mc100710051001.htm" title="各种汽车配件" target="_blank" class="tetitclasssstita">各种汽车配件</a> | <a href="/offerlist--mc100710051002.htm" title="汽配加工设备" target="_blank" class="tetitclasssstita">汽配加工设备</a> | <a href="/offerlist--mc10071005.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071019.htm" target="_blank" class="tetitclasssstit">包装设备</a><br />
+					<a href="/offerlist--mc100710191000.htm" title="包装印刷加工" target="_blank" class="tetitclasssstita">包装印刷加工</a> | <a href="/offerlist--mc100710191001.htm" title="复合材料包装设备" target="_blank" class="tetitclasssstita">复合材料包装设备</a> | <a href="/offerlist--mc100710191002.htm" title="布料包装设备" target="_blank" class="tetitclasssstita">布料包装设备</a> | <a href="/offerlist--mc100710191003.htm" title="包装相关设备" target="_blank" class="tetitclasssstita">包装相关设备</a> | <a href="/offerlist--mc100710191004.htm" title="玻璃包装设备" target="_blank" class="tetitclasssstita">玻璃包装设备</a> | <a href="/offerlist--mc100710191005.htm" title="竹木包装设备" target="_blank" class="tetitclasssstita">竹木包装设备</a> | <a href="/offerlist--mc100710191006.htm" title="包装检测设备" target="_blank" class="tetitclasssstita">包装检测设备</a> | <a href="/offerlist--mc100710191007.htm" title="塑料包装设备" target="_blank" class="tetitclasssstita">塑料包装设备</a> | <a href="/offerlist--mc100710191008.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc100710191009.htm" title="金属包装设备" target="_blank" class="tetitclasssstita">金属包装设备</a> |  <a href="/offerlist--mc10071019.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071026.htm" target="_blank" class="tetitclasssstit">备品备件</a><br />
+					<a href="/offerlist--mc100710261000.htm" title="阀门" target="_blank" class="tetitclasssstita">阀门</a> | <a href="/offerlist--mc100710261001.htm" title="轴承" target="_blank" class="tetitclasssstita">轴承</a> | <a href="/offerlist--mc100710261002.htm" title="模具" target="_blank" class="tetitclasssstita">模具</a> | <a href="/offerlist--mc100710261003.htm" title="泵" target="_blank" class="tetitclasssstita">泵</a> | <a href="/offerlist--mc100710261004.htm" title="电动工具" target="_blank" class="tetitclasssstita">电动工具</a> | <a href="/offerlist--mc100710261005.htm" title="工具" target="_blank" class="tetitclasssstita">工具</a> | <a href="/offerlist--mc100710261007.htm" title="汽配" target="_blank" class="tetitclasssstita">汽配</a> | <a href="/offerlist--mc100710261008.htm" title="刀具、夹具" target="_blank" class="tetitclasssstita">刀具、夹具</a> | <a href="/offerlist--mc100710261009.htm" title="五金模具" target="_blank" class="tetitclasssstita">五金模具</a> | <a href="/offerlist--mc100710261010.htm" title="锻件" target="_blank" class="tetitclasssstita">锻件</a> | <a href="/offerlist--mc100710261011.htm" title="铸件" target="_blank" class="tetitclasssstita">铸件</a> | <a href="/offerlist--mc100710261012.htm" title="工程机械备件" target="_blank" class="tetitclasssstita">工程机械备件</a> | <a href="/offerlist--mc100710261013.htm" title="电力设备备件" target="_blank" class="tetitclasssstita">电力设备备件</a> | <a href="/offerlist--mc100710261014.htm" title="化工设备备件" target="_blank" class="tetitclasssstita">化工设备备件</a> | <a href="/offerlist--mc100710261015.htm" title="冶炼设备备件" target="_blank" class="tetitclasssstita">冶炼设备备件</a> | <a href="/offerlist--mc10071026.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071036.htm" target="_blank" class="tetitclasssstit">配件设备</a><br />
+					<a href="/offerlist--mc100710361000.htm" title="电动工具" target="_blank" class="tetitclasssstita">电动工具</a> | <a href="/offerlist--mc100710361001.htm" title="汽配" target="_blank" class="tetitclasssstita">汽配</a> | <a href="/offerlist--mc100710361002.htm" title="备件" target="_blank" class="tetitclasssstita">备件</a> | <a href="/offerlist--mc100710361003.htm" title="五金模具" target="_blank" class="tetitclasssstita">五金模具</a> | <a href="/offerlist--mc100710361004.htm" title="刀具、夹具" target="_blank" class="tetitclasssstita">刀具、夹具</a> | <a href="/offerlist--mc100710361005.htm" title="阀门" target="_blank" class="tetitclasssstita">阀门</a> | <a href="/offerlist--mc100710361006.htm" title="轴承" target="_blank" class="tetitclasssstita">轴承</a> | <a href="/offerlist--mc100710361007.htm" title="模具" target="_blank" class="tetitclasssstita">模具</a> | <a href="/offerlist--mc100710361008.htm" title="工具" target="_blank" class="tetitclasssstita">工具</a> | <a href="/offerlist--mc100710361009.htm" title="泵" target="_blank" class="tetitclasssstita">泵</a> | <a href="/offerlist--mc100710361010.htm" title="风机备件" target="_blank" class="tetitclasssstita">风机备件</a> | <a href="/offerlist--mc100710361011.htm" title="印刷设备备件" target="_blank" class="tetitclasssstita">印刷设备备件</a> | <a href="/offerlist--mc100710361012.htm" title="锅炉备件" target="_blank" class="tetitclasssstita">锅炉备件</a> | <a href="/offerlist--mc100710361013.htm" title="压缩设备备件" target="_blank" class="tetitclasssstita">压缩设备备件</a> | <a href="/offerlist--mc100710361014.htm" title="造纸设备备件" target="_blank" class="tetitclasssstita">造纸设备备件</a> |  <a href="/offerlist--mc10071036.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071020.htm" target="_blank" class="tetitclasssstit">风机设备</a><br />
+					<a href="/offerlist--mc100710201000.htm" title="矿井风机" target="_blank" class="tetitclasssstita">矿井风机</a> | <a href="/offerlist--mc100710201001.htm" title="锅炉鼓引风机" target="_blank" class="tetitclasssstita">锅炉鼓引风机</a> | <a href="/offerlist--mc100710201002.htm" title="船用风机" target="_blank" class="tetitclasssstita">船用风机</a> | <a href="/offerlist--mc100710201003.htm" title="污水处理风机" target="_blank" class="tetitclasssstita">污水处理风机</a> | <a href="/offerlist--mc100710201004.htm" title="电站风机" target="_blank" class="tetitclasssstita">电站风机</a> | <a href="/offerlist--mc100710201005.htm" title="一般离心通风机" target="_blank" class="tetitclasssstita">一般离心通风机</a> | <a href="/offerlist--mc100710201006.htm" title="一般轴流通风机" target="_blank" class="tetitclasssstita">一般轴流通风机</a> | <a href="/offerlist--mc100710201007.htm" title="屋顶风机" target="_blank" class="tetitclasssstita">屋顶风机</a> | <a href="/offerlist--mc100710201008.htm" title="离心鼓风机" target="_blank" class="tetitclasssstita">离心鼓风机</a> | <a href="/offerlist--mc100710201009.htm" title="鼓引风机" target="_blank" class="tetitclasssstita">鼓引风机</a> | <a href="/offerlist--mc100710201010.htm" title="其他未分类风机" target="_blank" class="tetitclasssstita">其他未分类风机</a> |  <a href="/offerlist--mc10071020.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071022.htm" target="_blank" class="tetitclasssstit">矿业设备</a><br />
+					<a href="/offerlist--mc100710221000.htm" title="采掘设备" target="_blank" class="tetitclasssstita">采掘设备</a> | <a href="/offerlist--mc100710221001.htm" title="破碎设备" target="_blank" class="tetitclasssstita">破碎设备</a> | <a href="/offerlist--mc100710221002.htm" title="选矿设备" target="_blank" class="tetitclasssstita">选矿设备</a> | <a href="/offerlist--mc100710221003.htm" title="勘探设备" target="_blank" class="tetitclasssstita">勘探设备</a> | <a href="/offerlist--mc100710221004.htm" title="安防设备" target="_blank" class="tetitclasssstita">安防设备</a><br>
+					<a href="/offerlist--mc100710221006.htm" title="球磨机" target="_blank" class="tetitclasssstita">球磨机</a> | <a href="/offerlist--mc100710221007.htm" title="皮带机" target="_blank" class="tetitclasssstita">皮带机</a> | <a href="/offerlist--mc100710221008.htm" title="雷蒙磨" target="_blank" class="tetitclasssstita">雷蒙磨</a> | <a href="/offerlist--mc100710221009.htm" title="烘干、干燥设备" target="_blank" class="tetitclasssstita">烘干、干燥设备</a> | <a href="/offerlist--mc10071022.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071037.htm" target="_blank" class="tetitclasssstit">电梯设备</a><br />
+					<a href="/offerlist--mc100710371000.htm" title="乘客电梯" target="_blank" class="tetitclasssstita">乘客电梯</a> | <a href="/offerlist--mc100710371001.htm" title="载货电梯" target="_blank" class="tetitclasssstita">载货电梯</a> | <a href="/offerlist--mc100710371002.htm" title="医用电梯" target="_blank" class="tetitclasssstita">医用电梯</a> | <a href="/offerlist--mc100710371003.htm" title="杂物电梯" target="_blank" class="tetitclasssstita">杂物电梯</a> | <a href="/offerlist--mc100710371004.htm" title="观光电梯" target="_blank" class="tetitclasssstita">观光电梯</a> | <a href="/offerlist--mc100710371005.htm" title="船舶电梯" target="_blank" class="tetitclasssstita">船舶电梯</a> | <a href="/offerlist--mc100710371006.htm" title="车辆电梯" target="_blank" class="tetitclasssstita">车辆电梯</a> | <a href="/offerlist--mc100710371008.htm" title="建筑施工电梯" target="_blank" class="tetitclasssstita">建筑施工电梯</a> | <a href="/offerlist--mc100710371009.htm" title="特种电梯" target="_blank" class="tetitclasssstita">特种电梯</a> | <a href="/offerlist--mc10071037.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071041.htm" target="_blank" class="tetitclasssstit">塑料设备</a><br />
+					<a href="/offerlist--mc100710411000.htm" title="吹膜设备" target="_blank" class="tetitclasssstita">吹膜设备</a> | <a href="/offerlist--mc100710411001.htm" title="压延设备" target="_blank" class="tetitclasssstita">压延设备</a> | <a href="/offerlist--mc100710411002.htm" title="造粒设备" target="_blank" class="tetitclasssstita">造粒设备</a> | <a href="/offerlist--mc100710411003.htm" title="成型设备" target="_blank" class="tetitclasssstita">成型设备</a> | <a href="/offerlist--mc100710411004.htm" title="塑料破碎机" target="_blank" class="tetitclasssstita">塑料破碎机</a><br>
+					<a href="/offerlist--mc100710411006.htm" title="吹瓶机" target="_blank" class="tetitclasssstita">吹瓶机</a> | <a href="/offerlist--mc100710411007.htm" title="制桶设备" target="_blank" class="tetitclasssstita">制桶设备</a> | <a href="/offerlist--mc100710411008.htm" title="泡沫塑料生产线" target="_blank" class="tetitclasssstita">泡沫塑料生产线</a> | <a href="/offerlist--mc100710411009.htm" title="pvc管材生产设备" target="_blank" class="tetitclasssstita">pvc管材生产设备</a><br>
+					<a href="/offerlist--mc100710411010.htm" title="型材生产线" target="_blank" class="tetitclasssstita">型材生产线</a> | <a href="/offerlist--mc100710411011.htm" title="塑料编织设备" target="_blank" class="tetitclasssstita">塑料编织设备</a> | <a href="/offerlist--mc100710411012.htm" title="制杯机" target="_blank" class="tetitclasssstita">制杯机</a> |  <a href="/offerlist--mc10071041.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071039.htm" target="_blank" class="tetitclasssstit">通用设备</a><br />
+					<a href="/offerlist--mc100710391000.htm" title="避孕套生产设备" target="_blank" class="tetitclasssstita">避孕套生产设备</a> | <a href="/offerlist--mc100710391001.htm" title="库存积压设备" target="_blank" class="tetitclasssstita">库存积压设备</a> | <a href="/offerlist--mc100710391002.htm" title="体育休闲设施" target="_blank" class="tetitclasssstita">体育休闲设施</a> | <a href="/offerlist--mc100710391003.htm" title="安防设备" target="_blank" class="tetitclasssstita">安防设备</a> | <a href="/offerlist--mc100710391004.htm" title="电脑加工设备" target="_blank" class="tetitclasssstita">电脑加工设备</a> | <a href="/offerlist--mc100710391005.htm" title="环保设备" target="_blank" class="tetitclasssstita">环保设备</a> | <a href="/offerlist--mc100710391006.htm" title="电脑及配件" target="_blank" class="tetitclasssstita">电脑及配件</a> | <a href="/offerlist--mc100710391007.htm" title="物流设备" target="_blank" class="tetitclasssstita">物流设备</a> | <a href="/offerlist--mc100710391008.htm" title="通信器材" target="_blank" class="tetitclasssstita">通信器材</a> | <a href="/offerlist--mc100710391010.htm" title="游艺设备" target="_blank" class="tetitclasssstita">游艺设备</a> | <a href="/offerlist--mc100710391011.htm" title="照明器材" target="_blank" class="tetitclasssstita">照明器材</a> | <a href="/offerlist--mc100710391012.htm" title="广电设备" target="_blank" class="tetitclasssstita">广电设备</a> | <a href="/offerlist--mc10071039.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071035.htm" target="_blank" class="tetitclasssstit">水泥设备</a><br />
+					<a href="/offerlist--mc100710351000.htm" title="水泥罐车" target="_blank" class="tetitclasssstita">水泥罐车</a> | <a href="/offerlist--mc100710351001.htm" title="破碎机" target="_blank" class="tetitclasssstita">破碎机</a> | <a href="/offerlist--mc100710351002.htm" title="制砖机" target="_blank" class="tetitclasssstita">制砖机</a> | <a href="/offerlist--mc100710351003.htm" title="球磨机" target="_blank" class="tetitclasssstita">球磨机</a> | <a href="/offerlist--mc100710351004.htm" title="回转窑" target="_blank" class="tetitclasssstita">回转窑</a> | <a href="/offerlist--mc100710351005.htm" title="提升机" target="_blank" class="tetitclasssstita">提升机</a> | <a href="/offerlist--mc100710351006.htm" title="搅拌车" target="_blank" class="tetitclasssstita">搅拌车</a> | <a href="/offerlist--mc100710351007.htm" title="烘干机" target="_blank" class="tetitclasssstita">烘干机</a> | <a href="/offerlist--mc100710351008.htm" title="冷却机" target="_blank" class="tetitclasssstita">冷却机</a> | <a href="/offerlist--mc100710351009.htm" title="除尘设备" target="_blank" class="tetitclasssstita">除尘设备</a> | <a href="/offerlist--mc100710351010.htm" title="燃烧器" target="_blank" class="tetitclasssstita">燃烧器</a> | <a href="/offerlist--mc100710351011.htm" title="混凝土搅拌机" target="_blank" class="tetitclasssstita">混凝土搅拌机</a> | <a href="/offerlist--mc100710351012.htm" title="包装机" target="_blank" class="tetitclasssstita">包装机</a> | <a href="/offerlist--mc100710351013.htm" title="立磨" target="_blank" class="tetitclasssstita">立磨</a> | <a href="/offerlist--mc100710351014.htm" title="计量设备" target="_blank" class="tetitclasssstita">计量设备</a> | <a href="/offerlist--mc100710351015.htm" title="输送机" target="_blank" class="tetitclasssstita">输送机</a> |  <a href="/offerlist--mc10071035.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071040.htm" target="_blank" class="tetitclasssstit">造纸设备</a><br />
+					<a href="/offerlist--mc100710401000.htm" title="纸箱生产线" target="_blank" class="tetitclasssstita">纸箱生产线</a> | <a href="/offerlist--mc100710401001.htm" title="瓦楞机" target="_blank" class="tetitclasssstita">瓦楞机</a> | <a href="/offerlist--mc100710401002.htm" title="长网造纸机" target="_blank" class="tetitclasssstita">长网造纸机</a> | <a href="/offerlist--mc100710401003.htm" title="漂白设备" target="_blank" class="tetitclasssstita">漂白设备</a> | <a href="/offerlist--mc100710401004.htm" title="纸加工设备" target="_blank" class="tetitclasssstita">纸加工设备</a> | <a href="/offerlist--mc100710401005.htm" title="蒸煮设备" target="_blank" class="tetitclasssstita">蒸煮设备</a> | <a href="/offerlist--mc100710401006.htm" title="碱回收设备" target="_blank" class="tetitclasssstita">碱回收设备</a> | <a href="/offerlist--mc100710401007.htm" title="切纸机" target="_blank" class="tetitclasssstita">切纸机</a> | <a href="/offerlist--mc100710401008.htm" title="纸杯机" target="_blank" class="tetitclasssstita">纸杯机</a> | <a href="/offerlist--mc100710401009.htm" title="压光机" target="_blank" class="tetitclasssstita">压光机</a> | <a href="/offerlist--mc100710401010.htm" title="单缸造纸机" target="_blank" class="tetitclasssstita">单缸造纸机</a> | <a href="/offerlist--mc100710401011.htm" title="圆网纸机" target="_blank" class="tetitclasssstita">圆网纸机</a> | <a href="/offerlist--mc100710401012.htm" title="复卷机" target="_blank" class="tetitclasssstita">复卷机</a> | <a href="/offerlist--mc100710401013.htm" title="双缸造纸机" target="_blank" class="tetitclasssstita">双缸造纸机</a> | <a href="/offerlist--mc10071040.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071021.htm" target="_blank" class="tetitclasssstit">变速箱设备</a><br />
+					<a href="/offerlist--mc100710211000.htm" title="变速器" target="_blank" class="tetitclasssstita">变速器</a> | <a href="/offerlist--mc100710211001.htm" title="减速机" target="_blank" class="tetitclasssstita">减速机</a> | <a href="/offerlist--mc100710211002.htm" title="其他未分类" target="_blank" class="tetitclasssstita">其他未分类</a> | <a href="/offerlist--mc100710211003.htm" title="蜗轮螺杆升降机" target="_blank" class="tetitclasssstita">蜗轮螺杆升降机</a> | <a href="/offerlist--mc100710211004.htm" title="釜用立式减速机" target="_blank" class="tetitclasssstita">釜用立式减速机</a> | <a href="/offerlist--mc100710211005.htm" title="齿轮减速器" target="_blank" class="tetitclasssstita">齿轮减速器</a> | <a href="/offerlist--mc100710211006.htm" title="蜗杆减速器" target="_blank" class="tetitclasssstita">蜗杆减速器</a> | <a href="/offerlist--mc100710211007.htm" title="联轴器、制动器与变速器" target="_blank" class="tetitclasssstita">联轴器、制动器与变速器</a> | <a href="/offerlist--mc100710211008.htm" title="行星齿轮减速器" target="_blank" class="tetitclasssstita">行星齿轮减速器</a> | <a href="/offerlist--mc100710211009.htm" title="机械无级变速器" target="_blank" class="tetitclasssstita">机械无级变速器</a> | <a href="/offerlist--mc10071021.htm" target="_blank" class="tetitclasssstita">更多&gt;&gt;</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071014.htm" target="_blank" class="tetitclasssstit">石油设备</a><br />
+					<a href="/offerlist--mc100710141000.htm" title="练化设备" target="_blank" class="tetitclasssstita">练化设备</a> | <a href="/offerlist--mc100710141001.htm" title="钻采设备" target="_blank" class="tetitclasssstita">钻采设备</a> | <a href="/offerlist--mc100710141002.htm" title="储运设备" target="_blank" class="tetitclasssstita">储运设备</a> | <a href="/offerlist--mc100710141003.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc100710141004.htm" title="钻井设备" target="_blank" class="tetitclasssstita">钻井设备</a> | <a href="/offerlist--mc100710141005.htm" title="采油设备" target="_blank" class="tetitclasssstita">采油设备</a> | <a href="/offerlist--mc100710141006.htm" title="修井设备" target="_blank" class="tetitclasssstita">修井设备</a> | <a href="/offerlist--mc100710141007.htm" title="固井设备" target="_blank" class="tetitclasssstita">固井设备</a> | <a href="/offerlist--mc100710141008.htm" title="炼油设备" target="_blank" class="tetitclasssstita">炼油设备</a> | <a href="/offerlist--mc100710141009.htm" title="燃气设备" target="_blank" class="tetitclasssstita">燃气设备</a> | <a href="/offerlist--mc100710141010.htm" title="储存设备" target="_blank" class="tetitclasssstita">储存设备</a> | <a href="/offerlist--mc100710141011.htm" title="润滑设备" target="_blank" class="tetitclasssstita">润滑设备</a> | <a href="/offerlist--mc100710141012.htm" title="石油" target="_blank" class="tetitclasssstita">石油</a> | <a href="/offerlist--mc10071014.htm" target="_blank" class="tetitclasssstita">更多&gt;&gt;</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071038.htm" target="_blank" class="tetitclasssstit">陶瓷设备</a><br />
+					<a href="/offerlist--mc100710381000.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc100710381001.htm" title="喷雾干燥塔" target="_blank" class="tetitclasssstita">喷雾干燥塔</a> | <a href="/offerlist--mc100710381002.htm" title="成品修整设备" target="_blank" class="tetitclasssstita">成品修整设备</a> | <a href="/offerlist--mc100710381003.htm" title="干燥设备" target="_blank" class="tetitclasssstita">干燥设备</a><br>
+					<a href="/offerlist--mc100710381004.htm" title="刮板分级机" target="_blank" class="tetitclasssstita">刮板分级机</a> | <a href="/offerlist--mc100710381005.htm" title="分散机" target="_blank" class="tetitclasssstita">分散机</a> | <a href="/offerlist--mc100710381006.htm" title="高效磨剥机" target="_blank" class="tetitclasssstita">高效磨剥机</a> | <a href="/offerlist--mc100710381007.htm" title="搅拌机" target="_blank" class="tetitclasssstita">搅拌机</a> | <a href="/offerlist--mc100710381008.htm" title="陶瓷球阀" target="_blank" class="tetitclasssstita">陶瓷球阀</a><br>
+					<a href="/offerlist--mc100710381009.htm" title="捣浆机" target="_blank" class="tetitclasssstita">捣浆机</a> | <a href="/offerlist--mc100710381010.htm" title="压滤机" target="_blank" class="tetitclasssstita">压滤机</a> | <a href="/offerlist--mc100710381011.htm" title="柱塞泵" target="_blank" class="tetitclasssstita">柱塞泵</a> | <a href="/offerlist--mc100710381012.htm" title="练泥机" target="_blank" class="tetitclasssstita">练泥机</a> | <a href="/offerlist--mc100710381013.htm" title="脱水设备" target="_blank" class="tetitclasssstita">脱水设备</a> | <a href="/offerlist--mc10071038.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071024.htm" target="_blank" class="tetitclasssstit">发电机</a><br />
+					<a href="/offerlist--mc100710241000.htm" title="其它发电机组" target="_blank" class="tetitclasssstita">其它发电机组</a> | <a href="/offerlist--mc100710241001.htm" title="水利发电设备" target="_blank" class="tetitclasssstita">水利发电设备</a> | <a href="/offerlist--mc100710241003.htm" title="康明斯发电机(组)" target="_blank" class="tetitclasssstita">康明斯发电机(组)</a> | <a href="/offerlist--mc100710241004.htm" title="劳斯莱斯发电机(组)" target="_blank" class="tetitclasssstita">劳斯莱斯发电机(组)</a> | <a href="/offerlist--mc100710241005.htm" title="柴油发电机组" target="_blank" class="tetitclasssstita">柴油发电机组</a> | <a href="/offerlist--mc100710241006.htm" title="汽油发电机组" target="_blank" class="tetitclasssstita">汽油发电机组</a> | <a href="/offerlist--mc100710241007.htm" title="汽轮发电机组" target="_blank" class="tetitclasssstita">汽轮发电机组</a> | <a href="/offerlist--mc100710241008.htm" title="热力发电设备" target="_blank" class="tetitclasssstita">热力发电设备</a> | <a href="/offerlist--mc100710241009.htm" title="风力发电设备" target="_blank" class="tetitclasssstita">风力发电设备</a> | <a href="/offerlist--mc10071024.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071030.htm" target="_blank" class="tetitclasssstit">电子数码</a><br />
+					<a href="/offerlist--mc100710301000.htm" title="数码摄像机" target="_blank" class="tetitclasssstita">数码摄像机</a> | <a href="/offerlist--mc100710301001.htm" title="数码相机" target="_blank" class="tetitclasssstita">数码相机</a> | <a href="/offerlist--mc100710301002.htm" title="手机" target="_blank" class="tetitclasssstita">手机</a> | <a href="/offerlist--mc100710301003.htm" title="电脑" target="_blank" class="tetitclasssstita">电脑</a> | <a href="/offerlist--mc100710301004.htm" title="笔记本电脑" target="_blank" class="tetitclasssstita">笔记本电脑</a><br>
+					<a href="/offerlist--mc100710301005.htm" title="电脑耗材" target="_blank" class="tetitclasssstita">电脑耗材</a> | <a href="/offerlist--mc100710301006.htm" title="电脑配件" target="_blank" class="tetitclasssstita">电脑配件</a> | <a href="/offerlist--mc100710301007.htm" title="摄影设备" target="_blank" class="tetitclasssstita">摄影设备</a> | <a href="/offerlist--mc100710301008.htm" title="音乐/影视/vcd/dvd" target="_blank" class="tetitclasssstita">音乐/影视/vcd/dvd</a><br>
+					<a href="/offerlist--mc100710301009.htm" title="家用电器" target="_blank" class="tetitclasssstita">家用电器</a> | <a href="/offerlist--mc100710301010.htm" title="办公设备" target="_blank" class="tetitclasssstita">办公设备</a> | <a href="/offerlist--mc100710301011.htm" title="掌上电脑" target="_blank" class="tetitclasssstita">掌上电脑</a> | <a href="/offerlist--mc100710301012.htm" title="贴片机" target="_blank" class="tetitclasssstita">贴片机</a> | <a href="/offerlist--mc10071030.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071034.htm" target="_blank" class="tetitclasssstit">船舶设备</a><br />
+					<a href="/offerlist--mc100710341000.htm" title="锚机" target="_blank" class="tetitclasssstita">锚机</a> | <a href="/offerlist--mc100710341001.htm" title="拖轮" target="_blank" class="tetitclasssstita">拖轮</a> | <a href="/offerlist--mc100710341002.htm" title="散货船" target="_blank" class="tetitclasssstita">散货船</a> | <a href="/offerlist--mc100710341003.htm" title="冷藏船" target="_blank" class="tetitclasssstita">冷藏船</a> | <a href="/offerlist--mc100710341004.htm" title="挖泥船" target="_blank" class="tetitclasssstita">挖泥船</a> | <a href="/offerlist--mc100710341005.htm" title="起重船" target="_blank" class="tetitclasssstita">起重船</a> | <a href="/offerlist--mc100710341006.htm" title="沙船" target="_blank" class="tetitclasssstita">沙船</a> | <a href="/offerlist--mc100710341007.htm" title="多用途船" target="_blank" class="tetitclasssstita">多用途船</a> | <a href="/offerlist--mc100710341008.htm" title="集装箱船" target="_blank" class="tetitclasssstita">集装箱船</a> | <a href="/offerlist--mc100710341009.htm" title="化学品船" target="_blank" class="tetitclasssstita">化学品船</a> | <a href="/offerlist--mc100710341010.htm" title="油船" target="_blank" class="tetitclasssstita">油船</a> | <a href="/offerlist--mc100710341011.htm" title="甲板驳" target="_blank" class="tetitclasssstita">甲板驳</a> | <a href="/offerlist--mc100710341012.htm" title="浮吊船" target="_blank" class="tetitclasssstita">浮吊船</a> | <a href="/offerlist--mc100710341013.htm" title="杂货船" target="_blank" class="tetitclasssstita">杂货船</a> | <a href="/offerlist--mc100710341014.htm" title="驳船" target="_blank" class="tetitclasssstita">驳船</a> | <a href="/offerlist--mc100710341015.htm" title="客船" target="_blank" class="tetitclasssstita">客船</a> | <a href="/offerlist--mc100710341016.htm" title="渔船" target="_blank" class="tetitclasssstita">渔船</a> | <a href="/offerlist--mc100710341018.htm" title="船舶配件" target="_blank" class="tetitclasssstita">船舶配件</a> | <a href="/offerlist--mc10071034.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071017.htm" target="_blank" class="tetitclasssstit">工业锅炉</a><br />
+					<a href="/offerlist--mc100710171000.htm" title="锅炉" target="_blank" class="tetitclasssstita">锅炉</a> | <a href="/offerlist--mc100710171001.htm" title="燃气锅炉" target="_blank" class="tetitclasssstita">燃气锅炉</a> | <a href="/offerlist--mc100710171002.htm" title="锅炉配件" target="_blank" class="tetitclasssstita">锅炉配件</a> | <a href="/offerlist--mc100710171003.htm" title="燃油锅炉" target="_blank" class="tetitclasssstita">燃油锅炉</a> | <a href="/offerlist--mc100710171004.htm" title="链条锅炉" target="_blank" class="tetitclasssstita">链条锅炉</a><br>
+					<a href="/offerlist--mc100710171005.htm" title="蒸汽锅炉" target="_blank" class="tetitclasssstita">蒸汽锅炉</a> | <a href="/offerlist--mc100710171006.htm" title="其它未分类锅炉" target="_blank" class="tetitclasssstita">其它未分类锅炉</a> | <a href="/offerlist--mc100710171007.htm" title="燃煤热水锅炉" target="_blank" class="tetitclasssstita">燃煤热水锅炉</a> | <a href="/offerlist--mc100710171008.htm" title="电厂锅炉" target="_blank" class="tetitclasssstita">电厂锅炉</a><br>
+					<a href="/offerlist--mc100710171009.htm" title="立式锅炉" target="_blank" class="tetitclasssstita">立式锅炉</a> | <a href="/offerlist--mc100710171010.htm" title="炉排锅炉" target="_blank" class="tetitclasssstita">炉排锅炉</a> | <a href="/offerlist--mc100710171011.htm" title="卧式锅炉" target="_blank" class="tetitclasssstita">卧式锅炉</a> | <a href="/offerlist--mc100710171012.htm" title="燃煤蒸汽锅炉" target="_blank" class="tetitclasssstita">燃煤蒸汽锅炉</a> | <a href="/offerlist--mc10071017.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071042.htm" target="_blank" class="tetitclasssstit">橡胶设备</a><br />
+					<a href="/offerlist--mc100710421000.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc100710421001.htm" title="切割机" target="_blank" class="tetitclasssstita">切割机</a> | <a href="/offerlist--mc100710421002.htm" title="挤出机" target="_blank" class="tetitclasssstita">挤出机</a> | <a href="/offerlist--mc100710421003.htm" title="成型机" target="_blank" class="tetitclasssstita">成型机</a> | <a href="/offerlist--mc100710421004.htm" title="磨边机" target="_blank" class="tetitclasssstita">磨边机</a> | <a href="/offerlist--mc100710421005.htm" title="密炼机" target="_blank" class="tetitclasssstita">密炼机</a> | <a href="/offerlist--mc100710421006.htm" title="开炼机" target="_blank" class="tetitclasssstita">开炼机</a> | <a href="/offerlist--mc100710421007.htm" title="硫化罐" target="_blank" class="tetitclasssstita">硫化罐</a> | <a href="/offerlist--mc100710421008.htm" title="压延机" target="_blank" class="tetitclasssstita">压延机</a> | <a href="/offerlist--mc100710421009.htm" title="破胶机" target="_blank" class="tetitclasssstita">破胶机</a> | <a href="/offerlist--mc100710421010.htm" title="裁断机" target="_blank" class="tetitclasssstita">裁断机</a> | <a href="/offerlist--mc100710421011.htm" title="硫化机" target="_blank" class="tetitclasssstita">硫化机</a> | <a href="/offerlist--mc100710421012.htm" title="炼胶机" target="_blank" class="tetitclasssstita">炼胶机</a> | <a href="/offerlist--mc10071042.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071033.htm" target="_blank" class="tetitclasssstit">注塑机设备</a><br />
+					<a href="/offerlist--mc100710331000.htm" title="双色注塑机" target="_blank" class="tetitclasssstita">双色注塑机</a> | <a href="/offerlist--mc100710331001.htm" title="立式注塑机" target="_blank" class="tetitclasssstita">立式注塑机</a> | <a href="/offerlist--mc100710331002.htm" title="圆盘注塑机" target="_blank" class="tetitclasssstita">圆盘注塑机</a> | <a href="/offerlist--mc100710331003.htm" title="挤出机" target="_blank" class="tetitclasssstita">挤出机</a> | <a href="/offerlist--mc100710331004.htm" title="多色注塑机" target="_blank" class="tetitclasssstita">多色注塑机</a> | <a href="/offerlist--mc100710331005.htm" title="卧式注塑机" target="_blank" class="tetitclasssstita">卧式注塑机</a> | <a href="/offerlist--mc100710331007.htm" title="双螺杆注塑机" target="_blank" class="tetitclasssstita">双螺杆注塑机</a> | <a href="/offerlist--mc100710331009.htm" title="直压注塑机" target="_blank" class="tetitclasssstita">直压注塑机</a> | <a href="/offerlist--mc10071033.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071025.htm" target="_blank" class="tetitclasssstit">电动机</a><br />
+					<a href="/offerlist--mc100710251000.htm" title="调速电机" target="_blank" class="tetitclasssstita">调速电机</a> | <a href="/offerlist--mc100710251001.htm" title="电机生产设备" target="_blank" class="tetitclasssstita">电机生产设备</a> | <a href="/offerlist--mc100710251002.htm" title="进口电动机" target="_blank" class="tetitclasssstita">进口电动机</a> | <a href="/offerlist--mc100710251003.htm" title="直流电动机" target="_blank" class="tetitclasssstita">直流电动机</a><br>
+					<a href="/offerlist--mc100710251004.htm" title="防爆电动机" target="_blank" class="tetitclasssstita">防爆电动机</a> | <a href="/offerlist--mc100710251006.htm" title="交流电动机" target="_blank" class="tetitclasssstita">交流电动机</a> | <a href="/offerlist--mc100710251007.htm" title="轧钢电动机" target="_blank" class="tetitclasssstita">轧钢电动机</a> | <a href="/offerlist--mc10071025.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071023.htm" target="_blank" class="tetitclasssstit">仪器仪表</a><br />
+					<a href="/offerlist--mc100710231000.htm" title="仪器设备" target="_blank" class="tetitclasssstita">仪器设备</a> | <a href="/offerlist--mc100710231001.htm" title="仪表" target="_blank" class="tetitclasssstita">仪表</a> | <a href="/offerlist--mc100710231002.htm" title="光学仪器" target="_blank" class="tetitclasssstita">光学仪器</a> | <a href="/offerlist--mc100710231003.htm" title="流量仪表" target="_blank" class="tetitclasssstita">流量仪表</a> | <a href="/offerlist--mc100710231004.htm" title="电工仪器" target="_blank" class="tetitclasssstita">电工仪器</a><br>
+					<a href="/offerlist--mc100710231005.htm" title="压力仪表" target="_blank" class="tetitclasssstita">压力仪表</a> | <a href="/offerlist--mc100710231006.htm" title="温度仪表" target="_blank" class="tetitclasssstita">温度仪表</a> | <a href="/offerlist--mc100710231007.htm" title="分析仪器" target="_blank" class="tetitclasssstita">分析仪器</a> | <a href="/offerlist--mc100710231008.htm" title="实验仪器" target="_blank" class="tetitclasssstita">实验仪器</a> | <a href="/offerlist--mc10071023.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071032.htm" target="_blank" class="tetitclasssstit">行车设备</a><br />
+					<a href="/offerlist--mc100710321000.htm" title="花架龙门吊" target="_blank" class="tetitclasssstita">花架龙门吊</a> | <a href="/offerlist--mc100710321001.htm" title="单梁行车" target="_blank" class="tetitclasssstita">单梁行车</a> | <a href="/offerlist--mc100710321002.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc100710321003.htm" title="冶金吊" target="_blank" class="tetitclasssstita">冶金吊</a> | <a href="/offerlist--mc100710321004.htm" title="葫芦吊" target="_blank" class="tetitclasssstita">葫芦吊</a><br>
+					<a href="/offerlist--mc100710321005.htm" title="龙门吊" target="_blank" class="tetitclasssstita">龙门吊</a> | <a href="/offerlist--mc100710321006.htm" title="双梁天车" target="_blank" class="tetitclasssstita">双梁天车</a> | <a href="/offerlist--mc100710321007.htm" title="桥式行车	" target="_blank" class="tetitclasssstita">桥式行车 </a> | <a href="/offerlist--mc100710321008.htm" title="双梁行车" target="_blank" class="tetitclasssstita">双梁行车</a> | <a href="/offerlist--mc10071032.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071016.htm" target="_blank" class="tetitclasssstit">压缩分离</a><br />
+					<a href="/offerlist--mc100710161000.htm" title="气体分离设备" target="_blank" class="tetitclasssstita">气体分离设备</a> | <a href="/offerlist--mc100710161001.htm" title="过滤分离设备" target="_blank" class="tetitclasssstita">过滤分离设备</a> | <a href="/offerlist--mc100710161002.htm" title="空压机" target="_blank" class="tetitclasssstita">空压机</a> | <a href="/offerlist--mc100710161003.htm" title="压缩机" target="_blank" class="tetitclasssstita">压缩机</a> | <a href="/offerlist--mc100710161004.htm" title="潜孔钻" target="_blank" class="tetitclasssstita">潜孔钻</a> | <a href="/offerlist--mc100710161005.htm" title="离心压缩机" target="_blank" class="tetitclasssstita">离心压缩机</a> | <a href="/offerlist--mc100710161006.htm" title="其它未分类" target="_blank" class="tetitclasssstita">其它未分类</a> | <a href="/offerlist--mc10071016.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10071010.htm" target="_blank" class="tetitclasssstit">废橡胶轮胎处理设备</a> | <a href="/offerlist--mc10071000.htm" target="_blank" class="tetitclasssstit">废纸处理设备</a> | <a href="/offerlist--mc10071008.htm" target="_blank" class="tetitclasssstit">废塑料处理设备</a> | <a href="/offerlist--mc10071009.htm" target="_blank" class="tetitclasssstit">废金属处理设备</a> | <a href="/offerlist--mc10071006.htm" target="_blank" class="tetitclasssstit">其他二手设备</a> | <a href="/offerlist--mc10071007.htm" target="_blank" class="tetitclasssstit">其它二手商品</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:16px;"><a href="/waste.htm" target="_blank" id="9F">废玻璃</a></div></div>
+				<div class="tetitclass_c clearfix">
+					<div class="tetitclass_d"><a href="/offerlist--mc10061003.htm" target="_blank" class="tetitclasssstit">玻璃纤维</a>&nbsp;&nbsp;<a href="/offerlist--mc100610031000.htm" title="玻璃棉" target="_blank" class="tetitclasssstita">玻璃棉</a> | <a href="/offerlist--mc100610031001.htm" title="玻璃长纤维" target="_blank" class="tetitclasssstita">玻璃长纤维</a> | <a href="/offerlist--mc100610031002.htm" title="玻璃短纤维" target="_blank" class="tetitclasssstita">玻璃短纤维</a> | <a href="/offerlist--mc10061003.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10061000.htm" target="_blank" class="tetitclasssstit">工业玻璃</a>&nbsp;&nbsp;<a href="/offerlist--mc100610001000.htm" title="工业玻璃" target="_blank" class="tetitclasssstita">工业玻璃</a></div>
+					<div class="tetitclass_dss"><a href="/offerlist--mc10061001.htm" target="_blank" class="tetitclasssstit">碎玻璃</a> | <a href="/offerlist--mc10061002.htm" target="_blank" class="tetitclasssstit">显像管玻璃</a> | <a href="/offerlist--mc10061004.htm" target="_blank" class="tetitclasssstit">玻璃粉</a> | <a href="/offerlist--mc10061005.htm" target="_blank" class="tetitclasssstit">浮法玻璃</a> | <a href="/offerlist--mc10061006.htm" target="_blank" class="tetitclasssstit">平板玻璃</a> | <a href="/offerlist--mc10061007.htm" target="_blank" class="tetitclasssstit">玻璃瓶</a> | <a href="/offerlist--mc10061008.htm" target="_blank" class="tetitclasssstit">玻璃轧辊</a> | <a href="/offerlist--mc10061009.htm" target="_blank" class="tetitclasssstit">格法玻璃</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:5px;"><a href="/waste.htm" target="_blank" id="10F">其他废料</a></div></div>
+				<div class="tetitclass_c clearfix" style="height:50px;">
+					<div class="tetitclass_d"><a href="/offerlist--mc10081000.htm" target="_blank" class="tetitclasssstit">废木</a> | <a href="/offerlist--mc100810001000.htm" title="废木制品" target="_blank" class="tetitclasssstita">废木制品</a> | <a href="/offerlist--mc100810001001.htm" title="刨花/木削" target="_blank" class="tetitclasssstita">刨花/木削</a> | <a href="/offerlist--mc100810001002.htm" title="木屑/木粉" target="_blank" class="tetitclasssstita">木屑/木粉</a> | <a href="/offerlist--mc10081000.htm" target="_blank" class="tetitclasssstita">更多>></a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10081001.htm" target="_blank" class="tetitclasssstit">化工废料</a> | <a href="/offerlist--mc100810011000.htm" title="废硫" target="_blank" class="tetitclasssstita">废硫</a> | <a href="/offerlist--mc100810011001.htm" title="废碘" target="_blank" class="tetitclasssstita">废碘</a> | <a href="/offerlist--mc100810011002.htm" title="废油" target="_blank" class="tetitclasssstita">废油</a> | <a href="/offerlist--mc100810011003.htm" title="其他化工废料" target="_blank" class="tetitclasssstita">其他化工废料</a> | <a href="/offerlist--mc10081001.htm" target="_blank" class="tetitclasssstita">更多</a></div>
+					<div class="tetitclass_d"><a href="/offerlist--mc10081002.htm" target="_blank" class="tetitclasssstit">其他废料</a> | <a href="/offerlist--mc100810021000.htm" title="其他废料" target="_blank" class="tetitclasssstita">其他废料</a> | <a href="/offerlist--mc10081002.htm" target="_blank" class="tetitclasssstita">更多>></a></div>
+                </div>
+			</div>
+		</div>
+	</div>
+	<div class="te_tit_border mt clearfix"  style="width:708px;">
+		<div class="tetitclass">
+			<div class="tetitclass_a">
+				<div class="tetitclass_b"><div class="sjtj_titles" style="padding-top:6px;"><a href="/waste.htm" target="_blank"  id="11F">服务</a></div></div>
+				<div class="tetitclass_c">
+					<div class="tetitclass_dss"><a href="/offerlist--mc10091000.htm" target="_blank" class="tetitclasssstit">服务</a> | <a href="/offerlist--mc100910001002.htm" title="报关/清关服务" target="_blank" class="tetitclasssstita">报关/清关服务</a> | <a href="/offerlist--mc100910001003.htm" title="物流服务" target="_blank" class="tetitclasssstita">物流服务</a> | <a href="/offerlist--mc100910001004.htm" title="招聘" target="_blank" class="tetitclasssstita">招聘</a> | <a href="/offerlist--mc100910001000.htm" title="技术" target="_blank" class="tetitclasssstita">技术</a> | <a href="/offerlist--mc100910001001.htm" title="其他服务" target="_blank" class="tetitclasssstita">其他服务</a> | <a href="/offerlist--mc100910001005.htm" title="代理" target="_blank" class="tetitclasssstita">代理</a> | <a href="/offerlist--mc10091000.htm" target="_blank" class="tetitclasssstita">更多>></a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+##	<!--结束优质废料商推荐-->
+##	<div style="height:8px;"></div>
+##	#parse("/commonImpt/item/hotProduct3.vm")
+	<div style="height:8px;"></div>
+	#parse("/commonImpt/item/tags.vm")
+	</div>
+	<!--teclasleft-->
+	<div class="terightinfo">
+		
+		#parse("/commonImpt/item/joinus.vm")
+		<script src="http://pyapp.zz91.com/app/yangad.html?keywords=颗粒&amp;w=240&amp;adposition=646"></script>
+		<div style="height:8px;"></div>
+		<!--热门废料供应  热门废料求购-->
+		<div class="te_tit_border">
+			<div class="te_tit_name">
+				<ul id="slider1">
+					<li class="ssbjnf" >热门废料供应</li>
+					<li class="ssbjf" style="text-align:right;">热门废料求购</li>
+				</ul>
+			</div>
+
+			<div id="slider1List">
+				<div id="fltbc_01" class="dis">
+					<ul style="padding-top:10px;">
+						##gyProductList
+						#foreach($obj in $gyProductList)
+							#if($velocityCount <=10)
+							<li class="terightgew"><span>$!date.format('MM-dd',$!{obj.products.refreshTime})</span><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" class="te_classotwo" target="_blank" title="$!{obj.products.title}" >#printTitle($!{obj.products.title} 10 "")</a></li>
+							#end
+						#end
+##						<li class="terightege">
+##							<a href="#" class="te_classoone">更多>></a>
+##						</li>
+					</ul>
+				</div>
+				<div id="fltbc_02" class="undis">
+					<ul style="padding-top:10px;">
+						#foreach($obj in $qgProductList)
+							#if($velocityCount <=10)
+							<li class="terightgew"><span>$!date.format('MM-dd',$!{obj.products.refreshTime})</span><a href="#springUrl('/productdetails')$!{obj.products.id}.htm" class="te_classotwo" target="_blank" title="$!{obj.products.title}" >#printTitle($!{obj.products.title} 10 "")</a></li>
+							#end
+						#end
+##						<li class="terightege">
+##							<a href="#" class="te_classoone">更多>></a>
+##						</li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+		<!--结束热门废料供应  热门废料求购-->
+		<div style="height:8px;"></div>
+
+		#set($hotType="热门废料")
+        #parse("/commonImpt/item/compPrice.vm")
+
+		<div style="height:8px;"></div>
+		<!--最新废料线下展会-->
+		<div class="te_tit_border">
+			<div class="te_tit_name">最新废料线下展会</div>
+			<div>
+				<ul style="padding-top:10px;">
+
+					#foreach($obj in $newestExhibit)
+						<li class="terightgew"><span>$!date.format('MM-dd',$!{obj.startTime})</span><font color="#0b8621">·</font><a href="$!{address.exhibit}/details$!{obj.id}.htm" class="te_classotwo" target="_blank">#printTitle($!{obj.name} 14 "")</a></li>
+					#end
+
+					<li class="terightege">
+						<a href="$!{address.exhibit}" target="_blank" class="te_classoone">更多>></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--结束最新废料线下展会-->
+		<div style="height:8px;"></div>
+		<!--最新废料资讯-->
+		<div class="te_tit_border">
+			<div class="te_tit_name">最新废料资讯</div>
+			<div>
+				<ul style="padding-top:10px;">
+					#cacheFragment("$!{address.fragment}/price/newHotPrice.htm?code=price_comment&size=12" "" "" "")
+						#foreach($tn in $!{list})
+							<li class="terightgew">
+								<font color="#0b8621">·</font><a href="$!{address.jiage}/detail/$!{tn.id}.html" target="_blank" title="$!{tn.title}" class='a1'>
+									#printTitle($!{tn.title} 14 "")
+								</a>
+							</li>
+						#end
+					#end
+
+					<li class="terightege">
+						<a href="$!{address.jiage}" target="_blank" class="te_classoone">更多>></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--结束最新废料资讯-->
+		<div style="height:8px;"></div>
+		<!--废塑料精确搜索-->
+		#parse("/commonImpt/item/search.vm")
+		<!--结束废塑料精确搜索-->
+
+		<!--优质废料商推荐-->
+		<div style="height:8px;"></div>
+		#parse("/commonImpt/item/hotProduct4.vm")
+        <!--结束优质废料商推荐-->
+		<div style="clear:both;"></div>
+
+		<!--6.28新增加内容-->
+        <!--二手设备资讯中心-->
+		<!--<div style="height:8px;"></div>
+
+		#parse("/commonImpt/item/seoNews.vm")-->
+
+		<div style="height:8px;"></div>
+
+		#parse("/commonImpt/item/seoDaohang.vm")
+
+##		<div style="height:8px;"></div>
+##
+##		<div class="te_tit_border usedbox">
+##			<div class="te_tit_name">
+##				<a href="http://daohang.zz91.com/news/" target="_blank">二手设备资讯中心</a></div>
+##				<h6>二手设备资讯类别</h6>
+##
+##		</div>
+##		<!--结束二手设备资讯中心-->
+##		<!--废料产品导航-->
+##		<div style="height:8px;"></div>
+##		<div class="te_tit_border usedbox flbox">
+##			<div class="te_tit_name"><a href="http://daohang.zz91.com/" target="_blank">废料产品导航</a></div>
+##			<h6>废料产品类别</h6>
+##            <ul>
+##				<li><a href="http://daohang.zz91.com/jinshu/" target="_blank">金属产品</a></li>
+##    			<li><a href="http://daohang.zz91.com/suliao/" target="_blank">废塑料产品</a></li>
+##    			<li><a href="http://daohang.zz91.com/feizhi/" target="_blank">废纸产品</a></li>
+##    			<li><a href="http://daohang.zz91.com/xiangjiao/" target="_blank">废橡胶产品</a></li>
+##    			<li><a href="http://daohang.zz91.com/dianzhi/" target="_blank">电子电器</a></li>
+##    			<li><a href="http://daohang.zz91.com/shebei/" target="_blank">二手设备</a></li>
+##    			<li><a href="http://daohang.zz91.com/feifangzhi/" target="_blank">纺织产品</a></li>
+##    			<li><a href="http://daohang.zz91.com/feiliaofuwu/" target="_blank">废料服务</a></li>
+##    			<li><a href="http://daohang.zz91.com/feitie/" target="_blank">废铁价格</a></li>
+##    			<li><a href="http://daohang.zz91.com/feitong/" target="_blank">废铜价格</a></li>
+##    			<li><a href="http://daohang.zz91.com/feiluntai/" target="_blank">废旧轮胎</a></li>
+##    			<li><a href="http://daohang.zz91.com/feidianping/" target="_blank">废电瓶</a></li>
+##    			<li><a href="http://daohang.zz91.com/feidianping/" target="_blank">贵金属</a></li>
+##    			<li><a href="http://daohang.zz91.com/shengtie/" target="_blank">生铁</a></li>
+##    			<li><a href="http://daohang.zz91.com/feilv/" target="_blank">废铝</a></li>
+##    			<li><a href="http://daohang.zz91.com/feixin/" target="_blank">废锌</a></li>
+##    			<li><a href="http://daohang.zz91.com/feixi/" target="_blank">废锡网</a></li>
+##    			<li><a href="http://daohang.zz91.com/gongchengsuliao/" target="_blank">工程塑料</a></li>
+##    			<li><a href="http://daohang.zz91.com/suliaokeli/" target="_blank">塑料颗粒</a></li>
+##    			<li><a href="http://daohang.zz91.com/feisuliaowang/" target="_blank">废塑料</a></li>
+##    			<li><a href="http://daohang.zz91.com/ershouyifu/" target="_blank">二手衣服</a></li>
+##    			<li><a href="http://daohang.zz91.com/jiuyifu/" target="_blank">旧衣服</a></li>
+##			</ul>
+##		</div>
+		<!--结束废料产品导航-->
+	</div>
+	<!--结束6.28新增加内容-->
+
+	<!--terightinfo-->
+</div>
+## #parse("/commonImpt/floatMenu.vm")
+#parse("/commonImpt/returnTop.vm")
+#####友情链接
+#parse("/commonImpt/item/friendLink.vm")
+	</div>
+	<!--侧边滚动-->
+<script language="javascript" src="$!{address.img}/zz91/trade/js/jquery.Sonline.js"></script>
+<script type="text/javascript">
+  $(function() {
+        $("body").Sonline({
+            Position: "left",
+            Top: -85,
+            Effect: true,
+            DefaultsOpen: true,
+            Qqlist: ""
+        })
+    });
+
+function bookmarks(obj){
+	var obj1=$(obj).attr("action-data");
+	var zuobiao=$("#"+obj1).offset().top-60;
+	$('body,html').animate({scrollTop:zuobiao+'px'},"slow");
+}
+</script>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+
+		jQuery("#slider0 li").mouseover(function(e){
+			jQuery("#slider0 li").not("eq("+(jQuery(this).index())+")").attr("class","ssbj");
+			jQuery(this).attr("class","ssbjn");
+
+			//jQuery("#slider0List > li").not("eq("+(jQuery(this).index())+")").attr("class","undis");
+			//jQuery("#slider0List > li").eq(jQuery(this).index()).attr("class","dis");
+
+			jQuery("#slider0List > li").not("eq("+(jQuery(this).index())+")").hide();
+			jQuery("#slider0List > li").eq(jQuery(this).index()).show();
+		});
+
+
+		jQuery("#tj0 li").mouseover(function(e){
+			jQuery("#tj0 li").not("eq("+(jQuery(this).index())+")").attr("class","ssbj");
+			jQuery(this).attr("class","ssbjn");
+
+			//jQuery("#tj0List > li").not("eq("+(jQuery(this).index())+")").attr("class","undis");
+			//jQuery("#tj0List > li").eq(jQuery(this).index()).attr("class","dis");
+
+			jQuery("#tj0List > li").not("eq("+(jQuery(this).index())+")").hide();
+			jQuery("#tj0List > li").eq(jQuery(this).index()).show();
+		});
+
+		jQuery("#slider1 li").mouseover(function(e){
+			jQuery("#slider1 li").not("eq("+(jQuery(this).index())+")").attr("class","ssbjf");
+			jQuery(this).attr("class","ssbjnf");
+
+			jQuery("#slider1List > div").not("eq("+(jQuery(this).index())+")").hide();
+			jQuery("#slider1List > div").eq(jQuery(this).index()).show();
+		});
+
+		jQuery("#tj0 li").mouseover(function(e){
+			jQuery("#tj0 li").not("eq("+(jQuery(this).index())+")").attr("class","ssbj");
+			jQuery(this).attr("class","ssbjn");
+
+			//jQuery("#tj0List > li").not("eq("+(jQuery(this).index())+")").attr("class","undis");
+			//jQuery("#tj0List > li").eq(jQuery(this).index()).attr("class","dis");
+
+			jQuery("#tj0List > li").not("eq("+(jQuery(this).index())+")").hide();
+			jQuery("#tj0List > li").eq(jQuery(this).index()).show();
+		});
+
+		jQuery("#tj1 li").mouseover(function(e){
+			jQuery("#tj1 li").not("eq("+(jQuery(this).index())+")").attr("class","ssbjf");
+			jQuery(this).attr("class","ssbjnf");
+
+			jQuery("#tj1List > div").not("eq("+(jQuery(this).index())+")").hide();
+			jQuery("#tj1List > div").eq(jQuery(this).index()).show();
+		});
+	});
+</script>
+## 百度商桥
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>

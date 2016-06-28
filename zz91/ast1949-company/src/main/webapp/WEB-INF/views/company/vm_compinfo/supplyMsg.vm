@@ -1,0 +1,163 @@
+<div class="ey-left fl">
+	<div class="left-nav">
+        <div class="nav-item f14 fb fl w226">
+        	<a href="#springUrl('/compinfo.htm?id=')$!{companyinfo.id}&flag=0" class="gray">公司简介</a>
+        </div>
+        <div class="nav-item f14 fb fl bl w225 bg">
+        	<a href="#springUrl('/compinfo.htm?id=')$!{companyinfo.id}&flag=1">供应信息</a>
+        </div>
+        <div class="nav-item f14 fb fl bl w225 ">
+			<a href="$!{address.company}/compinfo.htm?id=$!{companyinfo.id}&flag=2">求购信息</a>
+        </div>
+        <!--end nav-item-->
+        <div class="cb"></div>
+    </div>
+    <!--end left-nav-->
+	 <h3 class="title-h3">产品分类</h3>
+	 <div class="qh-span">
+		<span #if(!$mark) class="qh-span-now" #end index="0">废料供应信息</span>
+		<span index="1" #if($mark) class="qh-span-now" #end>原料供应信息</span>
+	 </div>
+    <div class="left-content">
+		#foreach($obj in $!{page.records})
+			<div class="left-item mt10">
+				<div class="left-item-img fl">
+					<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+						<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=155&height=118" />
+						#if($!{obj.sample} && $!{obj.sample.id})
+							<div class="yang_"></div>
+						#end
+					</a>
+				</div>
+				<!--left-item-img-->
+				<div class="left-item-box fr">
+					<ul>
+						<li>
+							<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+								#if($!{obj.products.productsTypeCode}=="10331001")求购#else 供应#end$!{obj.products.title}
+							</a>
+							<span class="time">$!date.format("yyyy-MM-dd",$!{obj.products.refreshTime})</span>
+						</li>
+						<li class="box-pm">
+							#if($!{obj.products.quantity} && $!{obj.products.quantity}!="")
+								供应量:<span style="color:red">$!{obj.products.quantity}</span><span class="pm7">$!{obj.products.quantityUnit}</span>
+							#end
+							
+							#if($!{obj.sample} && $!{obj.sample.takePrice})		
+								拿样价：	#if($!{obj.sample.takePrice}>0)<span style="color:red">$!{obj.sample.takePrice}</span><span class="pm7">元/件</span>#else <span style="color:red">免费</span> #end
+							#end 
+							<br />
+							
+							#if($!{obj.products.source} && $!{obj.products.source} !=''  && ( $!{obj.products.source.length()}>1) )
+								货源地:<span>$!{obj.products.source} </span> <i class="pm12"> | </i> 
+							#end
+							
+							#if($!{obj.products.manufacture} && $!{obj.products.manufacture} != '')
+								加工说明:<span>$!{obj.products.manufacture}</span> <i class="pm12"> | </i>
+							#end
+							
+							#if($!{obj.products.color} && $!{obj.products.color} != '')
+								颜色:<span>$!{obj.products.color}</span> <i class="pm12"> | </i>
+							#end
+							
+							#if($!{obj.products.useful} && $!{obj.products.useful} != '')
+								用途:<span>$!{obj.products.useful}</span> <i class="pm12"> | </i>
+							#end
+							
+							#if($!{obj.products.appearance} && $!{obj.products.appearance} != '')
+								外观:<span>$!{obj.products.appearance}</span> <i class="pm12"> | </i>
+							#end
+							
+							#if($!{obj.products.specification} && $!{obj.products.specification} != '')
+								产品规格:<span>$!{obj.products.specification}</span> <i class="pm12"> | </i>
+							#end
+						</li>
+						#if($!{obj.products.details} && $!{obj.products.details} != '')
+							<li class="box-pm_">#printTitle($!{obj.products.details} 25 "")
+								<a href=#if( $!{obj.sample} && $!{obj.sample.id} && $!{obj.products.productsTypeCode}=="10331000" ) "$!{address.yang}/sale/$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end target="_blank" style="color:black"><b>>>更多</b></a>
+							</li>
+						#end
+						<li class="left-item-box-info">
+							<img src="$!{address.img}/zz91/tradelist/images/zaixian.png" />&nbsp;<a href="$!{address.china}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}#messeges" target="_blank" style="color:black">在线询价</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<img src="$!{address.img}/zz91/tradelist/images/phone1.png" />&nbsp;<a href="$!{address.trade}/lxfs$!{id}.htm" target="_blank" style="color:black">联系方式</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							#if($!{obj.sample} && $!{obj.sample.id})
+								<img src="$!{address.img}/zz91/tradelist/images/yang.png" />&nbsp;<a href=#if($!{obj.products.productsTypeCode}=="10331000")"$!{address.yang}/sale/$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end target="_blank" style="color:black">申请拿样</a>
+							#end
+						</li>
+					</ul>
+				</div>
+				<!--end left-item-box-->
+				<div class="cb"></div>
+			</div>
+			#end
+			#compPageNav($!{page} "#springUrl('/compinfo')$!{id}"$!{flag} "" )
+		<!--end left-item-->
+    </div>
+    <!--end left-content-->
+	 <div class="left-content" style="display:none">
+		#foreach($li in $!{ylpage.records})
+		<div class="left-item mt10">
+			<div class="left-item-img fl">
+				<a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank">
+					#if($!{li.picAddress})
+						<img src="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=140&height=140"/>
+					#else
+						<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="140" height="140" />
+					#end
+				</a>
+            </div>
+			<!--left-item-img-->
+			<div class="left-item-box fr">
+				<ul>
+					<li>
+						<a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" "$!{li.yuanliao.title}")">#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" "")#printTitle($!{li.yuanliao.title} 20 "...")</a>
+						<span class="time time-bold">$!date.format('yyyy-MM-dd',$!{li.yuanliao.refreshTime})</span>
+					</li>
+					<li class="box-pm">
+						<!-- 厂家（产地）:韩国LG /  牌号：S10023 /  类型：正牌料 -->
+						#if($!{li.categoryMainLabel})厂家（产地）: <span class="pm8">$!{li.categoryMainLabel}</span> /&nbsp;&nbsp;#end
+						牌号： <span class="pm8">$!{li.yuanliao.tradeMark}</span> 
+						#if($!{li.typeLabel})/&nbsp;&nbsp;类型： <span class="pm8">$!{li.typeLabel}</span>#end
+						<br>
+						产品价格：
+						<span style="color:red">
+							#if($!{li.yuanliao.minPrice})
+								$!{li.yuanliao.minPrice}-$!{li.yuanliao.maxPrice}
+							#else
+								#if($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')
+									$!{li.yuanliao.price}
+								#else
+									面议
+								#end
+							#end
+							#if(($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')||$!{li.yuanliao.minPrice}) $!{li.yuanliao.priceUnit}/$!{li.yuanliao.unit}#end
+						</span>&nbsp;&nbsp;
+						供应量：<span style="color:red">#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.quantity}#else 不限#end#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.unit}#end</span>
+                    </li>
+					<li class="box-pm_">
+						#printTitle($!{li.yuanliao.description} 70 "...") <a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" style="color:black"><b>&gt;&gt;更多</b></a>
+					</li>
+					<li class="left-item-box-info">
+						<img src="$!{address.img}/zz91/tradelist/images/zaixian.png">&nbsp;<a href="http://www.zz91.com/inquiry/inquiryApi.htm?yuanliaoId=$!{li.yuanliao.id}#messeges" target="_blank" style="color:black">在线询价</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+						<img src="$!{address.img}/zz91/tradelist/images/phone1.png">&nbsp;
+						#if($!{li.company.membershipCode}=="10051000")
+							<a href="$!{address.company}/compinfo$!{li.yuanliao.companyId}.htm" target="_blank" style="color:black">联系方式</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						#elseif($!{li.company.membershipCode}=="10051003")
+							<a href="$!{address.www}/ppc/contact$!{li.yuanliao.companyId}.htm" target="_blank" style="color:black">联系方式</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						#else
+							<a href="http://$!{li.company.domainZz91}.zz91.com/lxfs.htm" target="_blank" style="color:black">联系方式</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						#end
+                    </li>
+                </ul>
+            </div>
+            <!--end left-item-box-->
+			<div class="cb"></div>
+  		 </div>
+         <!--end left-item-->
+		#end
+		#compPageNav($!{ylpage} "#springUrl('/compinfo')$!{id}-m1"$!{flag}"" )
+    </div>          
+	<!--end left-content-->
+	
+    <!--end page-->
+</div>

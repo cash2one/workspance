@@ -1,0 +1,227 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("100101","00","20")
+<div class="myrcNormalFrame">
+#if($!{result})
+	<!--需要判断客户的公司资料是否填写完整，如果填写不完整，则只显示一张被覆盖的图片的层。  $!{show}是临时放在这用的-->
+	#if($!{show})
+		 <div class="container-info">
+        	<div class="container-info-title">
+            	重要提示：
+            </div>
+            <!--end container-info-title-->
+            <div class="container-info-content">
+            	您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+            </div>
+            <!--end container-info-content-->
+        </div>
+        <!--end ontainer-info-->
+		<div class="container-float1"></div>
+	#else
+		<div class="publishStep">
+    		<ul>
+                <li class="stepNow">
+        			
+        			<img src="$!{address.images}/myrc/step_1_up.gif" width="15" height="15" align="absmiddle" /> 填写基本信息
+        		</li>
+        		<li>
+        			<span class="STYLE6">
+        				<img src="$!{address.images}/myrc/step_2_down.gif" width="15" height="15" align="absmiddle" /> 填写详细信息
+        			</span>
+        		</li>
+        		<li>
+        			<span class="STYLE6"> 
+        				<img src="$!{address.images}/myrc/step_3_down.gif" width="15" height="15" align="absmiddle" /> 发布成功
+        			</span>
+        		</li>
+            </ul>
+            <div style="clear:both"></div>
+    	</div>
+    	
+    	<div class="tishiTitleTop">
+    			重要提醒：请您务必确认您所发布的信息真实、合法、准确、及时，未侵犯他人合法权利，以免引致不必要的纠纷! 
+    	</div>
+    	
+    	<div class="officetitle">您要发布的信息(提示：带<font color="#FF0000"> * </font>为必填项)</div>
+    	
+    	<form name="form1" id="form1" method="post" action="#springUrl('/myproducts/office_post2.htm')" onsubmit="return false;">
+    		<input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode" value=""/>
+    		<div class="productskuang">
+    			<div class="publishFormItems">
+    				<div class="products_title"><font color="RED">*</font><label>信息类型：</label></div>
+    				<div class="products_fill">
+    						<input name="productsTypeCode" type="radio"  value="10331000" checked="true" class="radioPositionFix" style="border:none"/> 供应信息
+    						<input name="productsTypeCode" type="radio"  value="10331001" class="radioPositionFix"  style="border:none"s/> 求购信息
+    						<input name="productsTypeCode" type="radio" value="10331002" class="radioPositionFix" style="border:none"/> 合作信息
+    				</div>
+    			</div>
+    			<div id="sortchang1" class="publishFormItems">
+    				<div class="products_title">
+    					<font color="RED">*</font>
+    					<label for="c1">废料所属类别：</label>
+    					<span class="zz91fillTip">
+    						<b>专家提示:</b>为了使您的信息排名更靠前,有更多的曝光机会,强烈建议您
+    						<font style="color:red">一条信息只发布一个产品.</font>
+    					</span>
+    				</div>
+    				<div class="products_selectSorts">
+    					<select id='c1' class="c1" name='c1'  onblur="validateValueout(document.getElementById('c2'))" >
+                            <option value="">--请选择主类别--</option>
+                        </select>
+    					<span class="errinbox" id="c2Err" style="display:none"></span>
+    					<span class="infoinbox" id="c2Info" style="display:none"></span>
+    					
+                        <select id='c2' class="c2" name='c2' size='10' onblur="validateValueout(document.getElementById('c2'))" onchange="filltitle('c2');">
+                            <option value="">--二级分类--</option>
+                        </select>
+                        <span class="mustfillA">*二级分类</span>
+                        <select id='c3' class="c3" name='c3' size='10'  onchange="filltitle('c3');">
+                            <option value="">--三级分类--</option>
+                        </select>
+                        <select id='c4' class="c4" name='c4' size='10'  onchange="filltitle('c4');">
+                            <option value="">--四级分类--</option>
+                        </select>
+    					
+                		<select id='ac' class="ac" name='categoryProductsAssistCode' size='10' s>
+                            <option value="">--请选择辅助类别--</option>
+                        </select>
+    				</div>
+    			</div>
+    			
+        		<div class="publishFormItems">
+        			<div class="products_title">
+        				<label for="title"><font color="RED">*</font> 产品名称：</label>
+        			</div>
+        			<div class="products_fill">
+        				<input name="title" type="text" id="title" size="48" maxlength="96" class="title" value="输入您要供应/求购的产品,如:废铜" onblur="validateValueout(this)" onfocus="if(this.value=='输入您要供应/求购的产品,如:废铜'){this.value='';this.style.color='#000000'}"  />
+        				<span class="errinbox" id="titleErr" style="display:none"></span>
+        				<span class="infoinbox" id="titleInfo" style="display:none"></span>
+        			</div>
+                    <div style="clear:both"></div>
+        		</div>
+        		<div class="publishFormSub">
+        				<input type="submit" id="buttonSub" class="buttonMax" value=" 进入下一步  "/>
+        		</div>
+            </div>
+    	</form>
+    
+    <script type="text/javascript" >
+    	jQuery(document).ready(function(){
+    		var category=new zz91Selector({
+    			url:"$!{address.server}/category/productChild.htm",
+    			assistUrl:"$!{address.server}/category/productAssist.htm"
+    		});
+    		
+    		category.init({
+    			selects:["#c1","#c2","#c3","#c4"],
+    			assistSelects:["#ac"],
+    			initAssistCode:"",
+    			initCode:"",
+    			rootCode:""
+    		});
+    		
+    		jQuery("#form1").submit(function(){
+    			checkTitle(function(){
+    				if(chkfrm()){
+    					document.forms["form1"].submit();
+    				}
+    			});
+    			return false;
+    		});
+    	});
+    	
+    	function filltitle(cid){
+    		jQuery("#title").val(jQuery("#"+cid+" :selected").text());
+    		jQuery("#title").css("color","#000");
+    	}
+    	
+    	function checkTitle(fn){
+    		if (jQuery("#title").val().length <= 0 || jQuery("#title").val()=="输入您要供应/求购的产品,如:废铜") {
+                alert("请输入产品名称!");
+                jQuery("#title").focus();
+                return false;
+            }
+    		
+    		jQuery.ajax({
+            	url:'#springUrl('/myproducts/validateProductTitle.htm')',
+            	data:{"title":jQuery("#title").val()},
+            	cache:false,
+            	dataType:"json",
+            	type:"post",
+            	success:function(req){
+            		if(req.success){
+            			fn();
+            		}else{
+            			alert("同名的产品已经存在，请重新发布新的产品！");
+            		}
+            	},
+            	failure:function(){
+    				
+            	}
+            });
+    	}
+        
+        function chkfrm() {
+            var frm = document.forms["form1"];
+        
+            if (frm.c1.value == "" || frm.c1.value == 0) {
+                alert("请选择产品大类!");
+                frm.first.focus();
+                return false;
+            }
+        
+            if (frm.c2.value == "") {
+                alert("请选择第二类!");
+                frm.second.focus();
+                return false;
+            }
+        
+            
+        
+            var maincode = jQuery("#c2").val();
+            if (jQuery("#c3").val() != "" && jQuery("#c3").val()!=null) {
+                maincode = jQuery("#c3").val();
+            }
+            if (jQuery("#c4").val() != "" && jQuery("#c4").val()!=null) {
+                maincode = jQuery("#c4").val();
+            }
+            jQuery("#categoryProductsMainCode").val(maincode);
+    		
+    		return true;
+        	
+            //frm.submit();
+            //frm.Submitsave.value = "正在提交数据，请稍候..."
+        }
+        
+        var msgerrInfo = new Array();
+        msgerrInfo["title"] = '请输入信息主题。';
+        msgerrInfo["c1"] = '请选择产品分类';
+    	msgerrInfo["c2"] = '请选择产品分类';
+        
+        function validateValueout(obj) {
+            var infoboxinfo = obj.id + "Info"
+            var infobox = document.getElementById(infoboxinfo);
+            var infoboxErr = obj.id + "Err"
+            var infoboxE = document.getElementById(infoboxErr);
+    
+            if (obj.value != "") {
+                infobox.style.display = ""
+                infoboxE.style.display = "none"
+                infobox.innerHTML = "<img src='$!{address.images}/myrc/icon_right_19x19.gif' width='19' height='16'>输入正确";
+            } else {
+                infobox.style.display = "none"
+                infoboxE.style.display = ""
+                infoboxE.innerHTML = msgerrInfo[obj.name];
+            }
+        }
+    </script>
+	#end
+#else
+<div class="myrc_warning">
+	<p>
+		作为本网站的注册会员，您每天只能发布 <span class="STYLE1">3</span> 条供求信息<br>
+		<a href="#" target="_blank"><b>升级成为再生通会员</b></a>，即可无限制的发布供求信息。
+	</p>
+    <p><a href="#" target="_blank"><img src="$!{address.images}/myrc/upgrade_zst.gif" width="177" height="33" border="0"></a> </p>
+</div>
+#end
+</div>

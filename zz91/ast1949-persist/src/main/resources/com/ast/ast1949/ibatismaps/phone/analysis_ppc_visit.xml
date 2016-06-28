@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phonePpcVisit">
+	<typeAlias alias="phonePpcVisitDo" type="com.ast.ast1949.domain.phone.PhonePpcVisit" />
+	<typeAlias alias="phonePpcVisitDto" type="com.ast.ast1949.dto.phone.PhonePpcVisitDto" />
+	<resultMap class="phonePpcVisitDo" id="phonePpcVisitResult">
+		<result property="id" column="id" />
+		<result property="targetId" column="target_id" />
+		<result property="cid" column="cid" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="phonePpcVisitDto" id="phonePpcVisitDtoResult">
+		<result property="phonePpcVisit" resultMap="phonePpcVisit.phonePpcVisitResult"/>
+	</resultMap>
+	
+	<!--获取某公司的所有访客-->
+	<select id="queryVisitByTargetId" parameterClass="java.util.Map" resultMap="phonePpcVisitDtoResult">
+		select distinct cid,id,target_id,max(gmt_target) gmt_target,gmt_created,gmt_modified
+		from analysis_ppc_visit
+		where target_id=#phonePpcVisit.targetId# 
+		group by target_id,cid
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<!--获取某公司的所有访客的总数-->
+	<select id="countVisitByTargetId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(distinct cid)
+		from analysis_ppc_visit
+		where target_id=#targetId#
+	</select>
+	
+	<!--获取被某公司访问的次数-->
+	<select id="countVisitByBoth" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from analysis_ppc_visit
+		where target_id=#targetId# and cid=#cid#
+	</select>
+	</sqlMap>

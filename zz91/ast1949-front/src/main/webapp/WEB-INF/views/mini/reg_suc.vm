@@ -1,0 +1,148 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>会员注册</title>
+		<script src="http://img0.zz91.com/zz91/js/2013reg.js" type="text/javascript"></script>
+		<script src="http://img0.zz91.com/lib/jquery/jquery-1.6.2.min.js"></script>
+    </head>
+	<style>
+		.nav{width:710px;margin:8px auto 150px auto;}
+		.nav span{font-family:"宋体";font-weight:bold;font-size:16px;color:#ff6600;}
+		.nav_item {padding:10px}
+		.nav_item ul{list-style:none}
+		.nav_li1{height:142px;border-right:1px dashed #ccc;padding-right:25px;float:left}
+		.nav_li{border-right:1px dashed #ccc;padding:0 30px;float:left}
+		.nav_li_{padding-left:20px;float:left}
+		.ni-img{height:87px;background:url(http://img0.zz91.com/zz91/quikreg/images/scode.jpg) no-repeat;margin:5px 0}
+		.ni-txt{font-family:"宋体";font-size:14px;}
+		.ni-txt_{font-family:"宋体";font-size:14px;color:#959595}
+		.ni-txt font{color:#ff0000}
+		.ni-input{line-height:40px;font-size:14px;margin:15px 0}
+		.ni-input-yz{width:100px;border:1px solid #009944;padding:4px;height:25px;}
+		.ni-btn{width:110px;height:35px;line-height:35px;text-align:center;background:#009944}
+		.ni-btn a{width:110px;height:35px;line-height:35px;color:#fff}
+		.ni-txt1{line-height:40px;font-size:14px;color:#959595}
+	</style>
+    #parse("/common/importMiniLogin.vm")
+    <body>
+        <div class="snav">
+			<ul>
+				<li id="nav1">
+					<a href="#springUrl('/mini/login.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}">登&nbsp;录</a>
+				</li>
+				<li class="nav1">
+					<a href="#springUrl('/mini/reg.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}" style="color:#FFF">注&nbsp;册</a>
+				</li>
+			</ul>
+		</div>
+		
+		
+        <div class="info2"></div>
+		<!--2014-05-19添加微信验证-->
+		<div class="nav">
+			<span>绑定微信</span>
+			<div class="nav_item">
+				<ul>
+					<li class="nav_li1">
+						<div class="ni-txt">第一步：用微信扫描，并关注</div>
+						<!--end ni-txt-->
+						<div class="ni-img"></div>
+						<!--end ni-img-->
+						<div class="ni-txt">第二步：在微信中输入<font>1</font>，获得验证码</div>
+						<!--end ni-txt-->
+					</li>
+					<li class="nav_li">
+					<form id="wxForm" method="post">
+						<div class="ni-txt">第三步：微信验证</div>
+						<!--end ni-txt-->
+						<div class="ni-txt_">请输入验证码</div>
+						<!--end ni-txt_-->
+						<div class="ni-input" id="hiddenText">
+						<input type="hidden" name="account" value="$!{account}" id="wxAccount">
+							<input type="text" class="ni-input-yz" name="yzm" id="yzm">
+						</div>
+						<!--end ni-input-->
+						<div class="ni-btn">
+						<a href="#" id="clickToCheck">确认验证</a>
+						<a id="clickSuccess" style="display:none">验证成功</a>
+						</div>
+						<!--end ni-btn-->
+						</form>
+					</li>
+					<li class="nav_li_">
+						<div class="ni-txt">绑定微信的好处？</div>
+						<!--end ni-txt-->
+						<div class="ni-txt1">1、查看普通会员联系方式</div>
+						<!--end ni-txt1-->
+						<div class="ni-txt1">2、随时刷新您的供求，让您排名靠前</div>
+						<!--end ni-txt1-->
+						<div class="ni-txt1">3、专题推荐，免费推广您的产品</div>
+						<!--end ni-txt1-->
+					</li>
+				</ul>
+			</div>
+			<!--end nav_item-->
+		</div>
+		<!--end nav-->
+        <div class="regsucpic"></div>
+        <div class="regsuc">
+			#if($!{regType})
+			<div class="registered-box-title">
+        	恭喜您$!{account}，您已经成功注册zz91再生网
+			</div>
+			<!--end registered-box-title-->
+			#else
+			您已成功完善资料，立即登录继续操作吧！
+			#end
+			
+		</div>
+        <div style="text-align:center; margin-top:40px;">
+			<span id="submitBtn">
+				<img src="$!{address.img}/zz91/quikreg/images/login1.jpg" />
+			</span>
+        </div>
+        <div class="content"></div>
+        <input type="hidden" value="$!{destUrl}" name="destUrl"/>
+    </body>
+    <script type="text/javascript" >
+    	jQuery(document).ready(function(){
+			jQuery("#submitBtn").click(function(){
+                godesturl();
+            });
+##            setTimeout("godesturl()",5000);
+        });
+       function godesturl(){
+            var param='?success=$!{success}&data=$!{data}';
+            #if($!{destUrl}!="")
+    			window.location="$!{destUrl}"+param;
+    		#else
+   			window.location="#springUrl('/submitCallback.htm')"+param;
+          #end
+        }
+    </script>
+	<script type="text/javascript">
+			jQuery("#clickToCheck").click(function(){
+				var yzm = jQuery("#yzm").val();
+				var account = jQuery("#wxAccount").val();
+				jQuery.ajax({
+					url:"/validate/validateWXCode.htm",
+					data:{
+						"yzm":yzm,
+						"account":account
+					},
+					dataType:"json",
+					success:function(data){
+						if(data.success){
+							jQuery("#hiddenText").hide();
+							jQuery("#clickToCheck").hide();
+							jQuery("#clickSuccess").show();
+						}else{
+							alert("微信验证码错误或者已过期");
+						}
+					}
+				});
+							});
+		</script>
+</html>

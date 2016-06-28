@@ -1,0 +1,85 @@
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<div class="am-popup" id="search-modal">
+    <div class="am-popup-inner">
+        <div class="am-popup-hd">
+            <h4 class="am-popup-title">搜索</h4>
+            <span data-am-modal-close="" class="am-close">×</span>
+        </div>
+        <div class="am-popup-bd">
+            <form action="#springUrl('/search.htm')" method="post" id="searchForm">
+                <div class="am-input-group am-input-group-primary">
+                    <input type="text" name="k" id="searchKey" class="am-form-field" placeholder="输入关键词进行搜索" />
+                    <span class="am-input-group-btn">
+                        <button class="am-btn am-btn-primary" id="am-select-btn">
+                            <span class="am-icon-search"></span>
+                        </button>
+                    </span>
+                </div>
+                <div class="am-margin-top-sm am-text-left">
+                    <div class="am-cf">
+                        <strong>最近搜索:</strong>
+						<i class="am-icon-trash am-fr" onclick="cleanCookie()"></i>
+                    </div>
+                    <div class="am-search-all cookie-content">
+						#foreach($obj in $mySearch)
+                            <a style="cursor:pointer" target="_self" onclick="clickToSearch('$obj')">$obj</a>
+							#if(6 > $velocityCount&&$velocityCount!=$mySearch.length)
+								&nbsp;
+							#end
+							#if($velocityCount==6)
+								#break;
+							#end
+						#end
+##                            <a href="/s.html?key=方便面" target="_self">方便面</a>
+##                            &nbsp;
+##                            <a href="/s.html?key=泡凤爪" target="_self">泡凤爪</a>
+                    </div>
+                </div>
+                <div class="am-margin-top-sm am-text-left">
+                    <div class="am-cf">
+                        <strong>热门搜索:</strong>
+                    </div>
+                    <div class="am-search-all">
+						#foreach($obj in $!{hotTags.keySet()})
+							<a href="#springUrl('/search.htm?k=')$!{obj}" target="_self">$!{obj}</a>
+							#if(6 > $velocityCount&&$velocityCount!=$hotTags.size())
+								&nbsp;
+							#end
+							#if($velocityCount==6)
+								#break;
+							#end
+						#end
+##                            <a href="/s.html?key=方便面" target="_self">方便面</a>
+##                            &nbsp;
+##                            <a href="/s.html?key=泡凤爪" target="_self">泡凤爪</a>
+                    </div>
+                </div>
+                ##<input type="hidden" name="__hash__" value="6666cd76f96956469e7be39d750cc7d9_b1c4ee1c8b7d5bc7a7d3e0a703f2ba20" />
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	jQuery("#searchForm").submit(function(){
+		jQuery.ajax({
+			url:"#springUrl('/searchKey.htm')",
+			data:{k:encodeURI(jQuery("#searchKey").val())}
+		});
+	});
+	
+	function clickToSearch(str){
+		window.location = "#springUrl('/search.htm?k=')" + encodeURI(str);
+	}
+	
+	function cleanCookie(){
+		jQuery.ajax({
+			url:"#springUrl('/cleanSearchCookie.htm')",
+			dataType:"json",
+			success:function(data){
+				if(data.success){
+					jQuery(".cookie-content").empty();
+				}
+			}
+		});
+	}
+</script>

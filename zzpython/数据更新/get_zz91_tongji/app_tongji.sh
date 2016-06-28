@@ -1,0 +1,1 @@
+python /mnt/python/get_zz91_tongji/app_tongji.py

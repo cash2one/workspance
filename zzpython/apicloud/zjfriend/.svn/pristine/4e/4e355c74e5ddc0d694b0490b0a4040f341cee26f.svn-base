@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <title>子窗口测试用例</title>
+        <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+        <style>
+            label{
+                display: inline-block;
+            }
+        </style>
+    </head>
+    <body>
+            
+            <div id="main" >
+                <div style="margin-left:100px;">
+                <h4>文本示例</h4>
+                <p style="white-space:nowrap;">
+                    If you're like me
+                </p>
+                <p>
+                    这里是一个子窗口<br>
+                </p>
+                
+                <button tapmode="active" class="btn btn-default" onclick="closeFrame()" style="background:#B0E2FF">关闭 子窗口</button>
+                <br>
+                <button tapmode="active" class="btn btn-default" onclick="openFrame2()" style="background:#96CDCD">打开子窗口2</button>
+                <br>
+                <div id="radios">
+                    <br>
+                    <h4>是否弹动</h4>
+                    <input type="radio" name="bounces" value=true checked id="bounces1"><label for="bounces1">true</label>
+                    <input type="radio" name="bounces" value=false id="bounces2"><label for="bounces2">false</label>
+                    <br>
+                    <h4>不透明</h4>
+                    <input type="radio" name="opaque" value=true checked id="opaque1"><label for="opaque1">true</label>
+                    <input type="radio" name="opaque" value=false id="opaque2"><label for="opaque2">false</label>
+                    <br>
+                    <h4>背景色</h4>
+                    <input type="radio" name="bgColor" value="#000" checked id="bgColor1"><label for="bgColor1">黑色</label>
+                    <input type="radio" name="bgColor" value="#fff" id="bgColor2"><label for="bgColor2">白色</label>
+                    <br>
+                    <h4>水平滚动条</h4>
+                    <input type="radio" name="hScrollBarEnabled" value=true checked id="hScrollBarEnabled1"><label for="hScrollBarEnabled1">true</label>
+                    <input type="radio" name="hScrollBarEnabled" value=false id="hScrollBarEnabled2"><label for="hScrollBarEnabled2">false</label>
+                    <br>
+                    <h4>垂直滚动条</h4>
+                    <input type="radio" name="vScrollBarEnabled" value=true checked id="vScrollBarEnabled1"><label for="hScrollBarEnabled1">true</label>
+                    <input type="radio" name="vScrollBarEnabled" value=false id="vScrollBarEnabled2"><label for="vScrollBarEnabled2">false</label>
+                    <br>
+                    <button tapmode="active" class="btn btn-default" onclick="setFrame()" style="background:#BC8F8F">设置子窗口属性</button>
+                    <br>
+                        </div>
+                </div>
+                <div style="margin-left:80px;">
+                    <button tapmode="active" class="btn btn-default" onclick="setFront()" style="background:#68838B">到最上层</button>
+                    <button tapmode="active" class="btn btn-default" onclick="setBack()" style="background:#68838B">到最下层</button>
+                </div>
+            </div>
+            </div>
+            
+    </body>
+    <script type="text/javascript" src="../../script/api.js"></script>
+    <script type="text/javascript">
+        function setFront(){
+            api.bringFrameToFront ({
+            　　from: 'frame1'
+            });
+        };
+        function setBack(){
+            api.sendFrameToBack ({
+            　　from: 'frame1'
+            });
+        };
+            
+        function setFrame(){
+            var aRadio = $api.domAll('input:checked');
+            var op = aRadio[1].value;
+            if (op == 'true') {
+                api.setFrameAttr(
+                    {
+                        name: "frame1",
+                        rect: {x:0,y:60,w:320,h:450},
+                        bounces: aRadio[0].value,
+                        opaque: aRadio[1].value,
+                        bgColor: aRadio[2].value,
+                        hScrollBarEnabled: aRadio[3].value,
+                        vScrollBarEnabled: aRadio[4].value
+                    }
+                );
+            } else{
+                api.setFrameAttr(
+                    {
+                        name: "frame1",
+                        rect: {x:0,y:60,w:320,h:450},
+                        bounces: aRadio[0].value,
+                        opaque: aRadio[1].value,
+                        bgColor: 'rgba(0,0,0,0)',
+                        hScrollBarEnabled: aRadio[3].value,
+                        vScrollBarEnabled: aRadio[4].value
+                    }
+                );
+            };    
+        }
+        function openFrame2(){
+            api.openFrame(
+                {
+                    name: 'frame2',
+                    url: './frame2.html',
+                    bounces: true,
+                    rect: {
+                        x: 0,
+                        y: 64,
+                        w: 320,
+                        h: 380
+                    },
+                    pageParam: {},
+                    bounces: true,
+                    opaque: false,
+                    bgColor: 'rgba(0,0,0,0)',
+                    animation: {
+                        type: 'movein',
+                        subType: 'from_bottom',
+                        duration: 200
+                    }
+                }
+            );
+        };
+        function closeFrame(){
+            api.closeFrame({
+                name: 'frame1'
+            });
+        }
+        apiready = function(){
+            var header = $api.byId('header');
+            $api.fixIos7Bar(header);
+        } 
+    </script>
+</html>

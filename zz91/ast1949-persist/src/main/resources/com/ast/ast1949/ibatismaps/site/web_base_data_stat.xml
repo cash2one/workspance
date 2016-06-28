@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="webBaseDataStat">
+	<typeAlias alias="webBaseDataDo" type="com.ast.ast1949.domain.site.WebBaseDataStatDo" />
+
+	<resultMap id="webBaseDataDoResult" class="webBaseDataDo">
+		<result property="id" column="id" />
+		<result property="statCate" column="stat_cate" />
+		<result property="statCateName" column="stat_cate_name" />
+		<result property="gmtStatDate" column="gmt_stat_date" />
+		<result property="statCount" column="stat_count" />
+		<result property="gmtCreated" column="gmt_created" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id, stat_cate, stat_cate_name, gmt_stat_date, stat_count, gmt_created
+	</sql>
+	
+	<select id="queryDataByDate" parameterClass="java.util.Date" resultMap="webBaseDataDoResult">
+		select 
+		<include refid="fullColumn" />
+		from web_base_data_stat
+		where gmt_stat_date=#value#
+	</select>
+	
+	<select id="queryDataByCate" parameterClass="java.util.HashMap" resultMap="webBaseDataDoResult">
+		select 
+			<include refid="fullColumn" />
+		from web_base_data_stat
+		where gmt_stat_date=#gmtStatDate#
+		and stat_cate=#statCate#
+		limit 1
+	</select>
+	
+	<select id="queryWebBaseDataStat" parameterClass="java.util.HashMap" resultMap="webBaseDataDoResult">
+		select 
+		<include refid="fullColumn" />
+		from web_base_data_stat
+		<dynamic prepend="where">
+			<isNotEmpty property="statCate" prepend="and">
+				stat_cate=#statCate#
+			</isNotEmpty>
+			<isNotEmpty property="statDate" prepend="and">
+				gmt_stat_date=#statDate#
+			</isNotEmpty>
+		</dynamic>
+		order by gmt_stat_date desc
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryWebBaseDataStatCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from web_base_data_stat
+		<dynamic prepend="where">
+			<isNotEmpty property="statCate" prepend="and">
+				stat_cate=#statCate#
+			</isNotEmpty>
+			<isNotEmpty property="statDate" prepend="and">
+				gmt_stat_date=#statDate#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryWeekPublish" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select sum(stat_count) from web_base_data_stat
+		where gmt_stat_date &gt; #gmtStart#
+		and gmt_stat_date &lt; #gmtEnd#
+	</select>
+</sqlMap>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="myfavorite">
+	<typeAlias alias="myfavoriteDO"
+		type="com.ast.ast1949.domain.company.MyfavoriteDO" />
+
+	<resultMap id="myfavoriteResult" class="myfavoriteDO">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="contentId" column="content_id" />
+		<result property="contentTitle" column="content_title" />
+		<result property="account" column="account" />
+		<result property="favoriteTypeCode" column="favorite_type_code" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<typeAlias alias="myfavoriteDTO" type="com.ast.ast1949.dto.company.MyfavoriteDTO" />
+	<resultMap id="myfavoriteDTOResult" class="myfavoriteDTO">
+		<result property="id" column="id" />
+		<result property="contentId" column="contentId" />
+		<result property="favoriteType" column="favoriteType" />
+		<result property="title" column="title" />
+		<result property="updateTime" column="updateTime" />
+		<result property="addTime" column="addTime" />
+	</resultMap>
+
+	<select id="queryMyfavoriteByMap" parameterClass="java.util.Map"
+		resultMap="myfavoriteResult">
+		select
+		id,company_id,account,content_id,favorite_type_code,gmt_created,gmt_modified
+		from
+		myfavorite
+		where content_id=#contentId#
+		and company_id=#companyId#
+	</select>
+	<select id="queryMyfavoriteByCondition" parameterClass="myfavoriteDTO"
+		resultMap="myfavoriteDTOResult">
+		select
+		m.id as id,
+		m.content_id AS contentId,
+		c.label AS favoriteType,
+		p.title AS
+		title,
+		p.refresh_time AS updateTime ,
+		m.gmt_created AS addTime
+		from
+		myfavorite m
+		left JOIN products p
+		ON m.content_id=p.id
+		left JOIN
+		category c
+		ON m.favorite_type_code=c.code
+		<dynamic prepend="where">
+			<isNotEmpty property="myfavoriteDO.companyId" prepend="and">
+				m.company_id=#myfavoriteDO.companyId#
+			</isNotEmpty>
+			<isNotEmpty property="myfavoriteDO.favoriteTypeCode"
+				prepend="and">
+				m.favorite_type_code=#myfavoriteDO.favoriteTypeCode#
+			</isNotEmpty>
+		</dynamic>
+
+
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	<select id="queryMyfavoriteCountByCondition" parameterClass="myfavoriteDTO"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from myfavorite m
+		INNER JOIN products p
+		ON
+		m.content_id=p.id
+		left JOIN category c
+		ON m.favorite_type_code=c.code
+		where m.company_id=#myfavoriteDO.companyId#
+		<isNotEmpty property="myfavoriteDO.favoriteTypeCode"
+			prepend="and">
+			m.favorite_type_code=#myfavoriteDO.favoriteTypeCode#
+		</isNotEmpty>
+
+	</select>
+	<!--<insert id="insertMyfavorite" parameterClass="myfavoriteDO">
+		INSERT INTO myfavorite
+		(
+		favorite_type_code,
+		content_id,
+		gmt_created,
+		gmt_modified,
+		company_id,
+		account
+		)
+		VALUES
+		(
+		#favoriteTypeCode#,
+		#contentId#,
+		now(),
+		now(),
+		#companyId#,
+		#account#
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			select last_insert_id()
+	    </selectKey>
+	</insert>
+	-->
+	<delete id="deleteMyfavoriteById" parameterClass="int">
+		delete from
+		myfavorite
+		where id=#id:Integer#
+	</delete>
+	<!-- 以上是老代码：我的篮子 以下是：我的收藏夹-->
+
+
+	<!-- 检索用户收藏该信息的条数  -->
+	<select id="isExist" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from myfavorite
+		where
+		favorite_type_code = #favoriteTypeCode# and
+		content_id = #contentId# and
+		company_id = #companyId#
+	</select>
+
+	<insert id="insertMyfavorite" parameterClass="myfavoriteDO">
+		INSERT INTO myfavorite
+		(
+		favorite_type_code,
+		content_id,
+		content_title,
+		gmt_created,
+		gmt_modified,
+		company_id,
+		account
+		)
+		VALUES
+		(
+		#favoriteTypeCode#,
+		#contentId#,
+		#contentTitle#,
+		now(),
+		now(),
+		#companyId#,
+		#account#
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	
+	<!--分页查询 收藏内容	-->
+	<resultMap id="pageMyfavoriteResult" class="myfavoriteDO">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="contentId" column="content_id" />
+		<result property="contentTitle" column="content_title" />
+		<result property="favoriteTypeCode" column="favorite_type_code" />
+		<result property="gmtCreated" column="gmt_created" />
+	</resultMap>
+	
+	<sql id="collectWhereClause">
+		<isNotEmpty property="favoriteTypeCode" prepend="and">
+			favorite_type_code=#favoriteTypeCode#
+		</isNotEmpty>
+		<isNotEmpty property="theday" prepend="and">
+			TO_DAYS(NOW()) - TO_DAYS(gmt_created) &lt;  #theday#
+		</isNotEmpty>
+		<isNotEmpty property="start" prepend="and">
+			gmt_created &gt; #start#
+		</isNotEmpty>
+		<isNotEmpty property="end" prepend="and">
+			gmt_created &lt; #end#
+		</isNotEmpty>
+		<isNotEmpty property="keywrods" prepend="and">
+			content_title like concat('%',#keywrods#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="isHuzhu" prepend="and">
+			exists( select b.id from bbs_post b where b.id = content_id )
+		</isNotEmpty>
+	</sql>
+	
+	<select id="pageMyCollect" parameterClass="java.util.HashMap"
+		resultMap="pageMyfavoriteResult">
+		select
+		id,company_id,content_id,content_title,favorite_type_code,gmt_created
+		from myfavorite
+		where
+		company_id=#companyId#
+		<include refid="collectWhereClause"/>
+		order by gmt_created desc
+		<include refid="common.pageLimit" />
+	</select>
+	
+		
+	<select id="pageMyCollectCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0) from  myfavorite
+		where 
+		company_id=#companyId#
+		<include refid="collectWhereClause"/>
+	</select>
+	<!-- 删除收藏内容	-->
+	<delete id="deleteMyCollect" parameterClass="java.util.HashMap" >
+		delete from myfavorite where id=#id# and company_id=#companyId#
+	</delete>
+	
+	<select id="countByCodeAndContentId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) 
+		from myfavorite 
+		where favorite_type_code = #favoriteTypeCode# and content_id = #contentId#
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0) 
+		from myfavorite 
+		where company_id = #value#
+	</select>
+	<select id="queryNoticeByCondition" parameterClass="java.util.Map" resultMap="myfavoriteResult">
+		select my.id,my.company_id,my.account,my.content_id,my.content_title,my.favorite_type_code,my.gmt_created,my.gmt_modified
+	    from myfavorite as my
+	    where my.company_id=#companyId# and my.favorite_type_code=#favoriteTypeCode# and exists(select id from price_offer as pr where my.content_id=id and is_del='0')	
+			<isNotEmpty prepend="and" property="keywords">
+				my.content_title like concat("%",#keywords#,"%")
+			</isNotEmpty>	
+		<include refid="common.pageOrderBy" />                                       
+		<include refid="common.pageLimit" />		
+	</select>
+	<select id="countNoticeByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+	    from myfavorite as my
+	    where my.company_id=#companyId# and my.favorite_type_code=#favoriteTypeCode# and exists(select id from price_offer as pr where my.content_id=id and is_del='0')
+			<isNotEmpty prepend="and" property="keywords">
+				my.content_title like concat("%",#keywords#,"%")
+			</isNotEmpty>			
+	</select>
+    <delete id="deleteCollection" parameterClass="java.util.Map">
+   	 	delete from myfavorite
+       	where company_id=#companyId# and favorite_type_code=#favoriteTypeCode# and content_id=#contentId#
+    </delete>	
+   <select id="queryYuanliaoCollectList" parameterClass="java.util.Map" resultMap="myfavoriteResult">
+   		select my.id,my.company_id,my.account,my.content_id,my.content_title,my.favorite_type_code,my.gmt_created,my.gmt_modified
+	    from myfavorite as my
+   		where my.company_id=#companyId# and my.favorite_type_code=#favoriteTypeCode#
+   				
+   </select> 				
+</sqlMap>

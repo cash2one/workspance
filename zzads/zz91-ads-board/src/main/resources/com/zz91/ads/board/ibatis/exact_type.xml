@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="exactType">
+	<typeAlias alias="exactType" type="com.zz91.ads.board.domain.ad.ExactType"/>
+	
+	<resultMap id="exactTypeResult" class="exactType">
+		<result property="id" column="id" />
+		<result property="exactName" column="exact_name" />
+		<result property="jsFunction" column="js_function" />
+		<result property="javaKey" column="java_key" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fields">
+		id,exact_name,js_function,java_key,remark,gmt_created,gmt_modified
+	</sql>
+	
+	<insert id="insertExactType" parameterClass="exactType">
+		INSERT INTO exact_type (
+			exact_name,
+			js_function,
+			java_key,
+			remark,
+			gmt_created,
+			gmt_modified
+		)
+		VALUES (
+			#exactName#,
+			#jsFunction#,
+			#javaKey#,
+			#remark#,
+			NOW(),
+			NOW()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteExactTypeById" parameterClass="java.lang.Integer">	
+		DELETE FROM exact_type 
+		WHERE id=#value#
+	</delete>
+	
+	<select id="queryExactTypeById" parameterClass="java.lang.Integer" resultMap="exactTypeResult">
+		SELECT 
+			<include refid="fields" />
+		FROM exact_type
+		WHERE id=#value#
+	</select>
+	
+	<select id="queryExactTypeByAdPositionId" parameterClass="java.lang.Integer" resultMap="exactTypeResult">
+		SELECT 
+			et.id,
+			et.exact_name,
+			et.js_function,
+			et.java_key,
+			et.remark,
+			et.gmt_created,
+			et.gmt_modified
+		FROM exact_type et
+		inner join position_exact_type pet on pet.exact_type_id=et.id 
+		where pet.ad_position_id=#value#
+	</select>
+	
+	<select id="queryExactType" parameterClass="java.util.HashMap" resultMap="exactTypeResult">
+		SELECT 
+			<include refid="fields" />
+		FROM exact_type
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryExactTypeCount" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM exact_type
+	</select>
+	
+	<select id="queryExactTypeByExactName" parameterClass="java.lang.String" resultMap="exactTypeResult">
+		SELECT 
+			<include refid="fields" />
+		FROM exact_type
+		WHERE exact_name=#value#
+	</select>
+</sqlMap>

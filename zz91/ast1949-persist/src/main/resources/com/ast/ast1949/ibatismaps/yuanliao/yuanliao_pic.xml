@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="yuanliaoPic">
+	<typeAlias alias="yuanliaoPic" type="com.ast.ast1949.domain.yuanliao.YuanliaoPic" />
+	<resultMap id="yuanliaoPicResult" class="yuanliaoPic">
+		<result property="id" column="id" />
+		<result property="yuanliaoId" column="yuanliao_id" />
+		<result property="picAddress" column="pic_address" />
+		<result property="isDel" column="is_del" />
+		<result property="checkStatus" column="check_status" />
+		<result property="isDefault" column="is_default" />
+		<result property="checkPerson" column="check_person" />
+		<result property="unpassReason" column="unpass_reason" />
+		<result property="checkTime" column="check_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="allColumn">
+		id,
+		yuanliao_id,
+		pic_address,
+		is_del,
+		check_status,
+		is_default,
+		check_person,
+		unpass_reason,
+		check_time,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<!--插入一张图片-->
+	<insert id="insertYuanliaoPic" parameterClass="yuanliaoPic">
+		insert into yuanliao_pic
+		(
+			yuanliao_id,
+			pic_address,
+			is_default,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#yuanliaoId#,
+			#picAddress#,
+			#isDefault#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!--更新图片信息-->
+	<update id="updateYuanliaoPic" parameterClass="yuanliaoPic">
+		update yuanliao_pic
+		set gmt_created = now()
+		<isNotEmpty prepend="," property="picAddress">
+			pic_address = #picAddress#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status = #checkStatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDefault">
+			is_default = #isDefault#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkPerson">
+			check_person = #checkPerson#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="unpassReason">
+			unpass_reason = #unpassReason#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="checkTime">
+			check_time = #checkTime#
+		</isNotEmpty>
+		where 
+		<isNotEmpty property="id">
+			id = #id#
+		</isNotEmpty>
+		<isNotEmpty property="yuanliaoId">
+			yuanliao_id = #yuanliaoId# and is_del = '0'
+		</isNotEmpty>
+	</update>	
+	
+	<!--检索某原料供求的图片信息-->
+	<select id="queryYuanliaoPicByYuanliaoId" parameterClass="java.util.Map" resultMap="yuanliaoPicResult">
+		select
+		<include refid="yuanliaoPic.allColumn"/>
+		from yuanliao_pic
+		where yuanliao_id = #yuanliaoPic.yuanliaoId#
+		<isNotEmpty prepend="and" property="yuanliaoPic.isDel">
+			is_del = #yuanliaoPic.isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="yuanliaoPic.checkStatus">
+			check_status = #yuanliaoPic.checkStatus#
+		</isNotEmpty>
+		order by is_default desc,gmt_created desc
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+	
+</sqlMap>

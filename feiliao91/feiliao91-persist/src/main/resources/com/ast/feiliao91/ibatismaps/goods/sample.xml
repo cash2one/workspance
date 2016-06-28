@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="sample">
+	<typeAlias alias="sampleDO" type="com.ast.feiliao91.domain.goods.Sample" />
+	<resultMap class="sampleDO" id="sampleResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="goodsId" column="goods_id" />
+		<result property="weight" column="weight" />
+		<result property="price" column="price" />
+		<result property="number" column="number" />
+		<result property="fare" column="fare" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insertSample" parameterClass="sampleDO">
+		insert into sample
+		(
+			name,
+			goods_id,
+			weight,
+			price,
+			number,
+			fare,
+			is_del,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#name#,
+			#goodsId#,
+			#weight#,
+			#price#,
+			#number#,
+			#fare#,
+			#isDel#,
+			now(),
+			now()
+		)
+	</insert>
+	
+	<insert id="iterateInsert" parameterClass="java.util.List">
+		<![CDATA[ 
+			insert into sample
+				(
+					name,
+					goods_id,
+					weight,
+					price,
+					number,
+					fare,
+					is_del,
+					gmt_created,
+					gmt_modified
+				)
+			values
+		]]> 
+		<iterate conjunction =",">
+			<![CDATA[
+			(
+				#list[].name#,
+				#list[].goodsId#,
+				#list[].weight#,
+				#list[].price#,
+				#list[].number#,
+				#list[].fare#,
+				0,
+				now(),
+				now()
+			)
+			]]> 
+		</iterate>
+	</insert>
+</sqlMap>

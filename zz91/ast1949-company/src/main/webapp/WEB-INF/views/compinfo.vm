@@ -1,0 +1,294 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importJqueryui.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+## newCompany import
+#parse("/common/importNewCompany.vm")
+
+<div class="wrapper mt clearfix">
+    <div class="zz91leader">当前位置:
+		<a href="$!{address.www}">$!{siteInfo.site_name}</a> 
+		&gt; 
+		<a href="#springUrl('/')">公司黄页</a>
+        &gt; 
+		${companyinfo.name}#if($!{defaultContact.contact})(${defaultContact.contact})#end
+    </div>
+	##parse("/company/vm_company/searchBar.vm")
+##    <div class="cpyCont mt">
+##    #parse("/company/vm_compinfo/Content.vm")
+##	<script type="text/javascript">
+##/*公司简介 普会 中部 640*60，创建于2013-3-30*/
+##var cpro_id = "u1248132";
+##</script>
+##<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+##    </div>
+ <script>
+	 jQuery(document).ready(function() {
+ 		$(".qh-span span").live("click",function(){
+             	$(".qh-span-now").removeClass("qh-span-now")
+            	$(this).addClass("qh-span-now");
+                var index = $(this).attr("index");
+               $(".left-content").hide().eq(index).show()
+        })
+		if("$!{mark}"){
+			$(".qh-span span").eq(1).click();
+		}
+	});
+</script>
+<div class="EnterpriseYellow">
+	#if($!{flag} == "1")
+		#parse("/company/vm_compinfo/supplyMsg.vm")
+	#elseif($!{flag} == "2")
+		#parse("/company/vm_compinfo/buyMsg.vm")
+	#else
+		#parse("/company/vm_compinfo/compInfo.vm")
+	#end
+	
+	<div class="ey-right fr">
+    	<div class="right-item">
+        	<div class="right-item-title f14 fb">
+            	联系方式
+            </div>
+			#if($!{viewFlag}||$!{ldbFlag}||$!{wxResult})
+    			<dl id="info">
+    				<dt class="viewContactBtn">
+						#if(!$!{wxResult}||$!{ldbFlag})
+							<div class="w-title" id="clickToSee"><a href="javascript:contact();">点击查看联系方式</a></div>
+						#elseif($wxResult==4)
+						## 未绑定微信帐号
+						<div class="w-title">您还不能查看该会员的联系方式</div>
+						<div class="w-title1">两步即可查看</div>
+						<div class="w-step">
+							步骤一：扫描微信公众号<br />
+							<img src="$!{address.img}/zz91/weixin/images/weixin.jpg" /><br />
+							步骤二：用微信绑定ZZ91帐号 <br />
+							<a href="javascript:contact();" class="w-botton">绑定后立即查看</a>
+						</div>
+						#elseif($wxResult==5)
+							## 试用过期
+							<div class="w-title">查看联系方式上限</div>
+							<div class="w-sx">VIP使用7天权限已经到期</div>
+							<div class="w-title1">还想继续查看?</div>
+							<div class="w-line"></div>
+							<div class="w-joinzst"><a href="http://www.zz91.com/zst/">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+							<div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+						#elseif($wxResult==3)
+							## 超过 15条
+							<div class="w-title">当天查看联系方式上限</div>
+							<div class="w-sx">您已经达到当天查看的上限</div>
+							<div class="w-title1">还想继续查看</div>
+							<div class="w-line"></div>
+							<div class="w-joinzst"><a href="http://www.zz91.com/zst/">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+							<div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+						#elseif($wxResult==2)
+							## 超过10条 未超过15条
+							<div class="w-title">当天查看联系方式上限</div>
+							<div class="w-sx">今天您已经查看了10家客户的联系方式</div>
+							<div class="w-title1">还想继续查看</div>
+							<div class="w-step">
+								（1）给相关客户发10条询价信息<br />
+								或 （2）每天发5条供求信息
+								<a href="javascript:void()" id="clickToSee" class="w-botton">发布好了立即查看</a>
+							</div>
+							<div class="w-line"></div>
+							<div class="w-joinzst"><a href="http://www.zz91.com/zst/">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+							<div class="w-joincontact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+						#elseif($wxResult==1)
+							<a href="javascript:contact();" id="clickToSee" class="mb-box-img" title="点击查看">
+								<img src="$!{address.img}/zz91/tradedetails/images/contact.jpg" alt="查看联系方式" title="查看联系方式"/>
+							</a>
+						#else
+							## 默认
+##							<div class="w-title">查看联系方式</div>
+##							<div class="w-line"></div>
+##							<div class="w-joinzst"><a href="http://www.zz91.com/zst/">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+##							<div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+						#end
+    				</dt>
+    				<dd>
+    					<ul id="info_contact">
+    						<li>联系人：<span id="showcontact"></span></li>
+    						<li>电话：<span id="showtel"></span></li>
+    						<li id="ldbMobile">移动电话：<span id="showmobile"></span></li>
+    						<li>MSN：<span id="showmsn"></span></li>
+    						<li>QQ：<span id="showqq"></span></li>
+    						<li>微信ID： <span id="showweixin"></span></li> 
+    						<li>电子邮箱：<span id="showemail"></span></li>
+    						<li>地址：<span id="showaddress"></span></li>
+    						<li>邮编：<span id="showzip"></span></li>
+    					</ul>
+    				</dd>
+    			</dl>
+    			<script type="text/javascript">
+    			jQuery(document).ready(function(){
+    				var dl = jQuery("#info"),dt = dl.find("dt"),dd = dl.find("dd");
+    				jQuery("#clickToSee").click(function(){
+    					## 来电宝
+    					#if($!{ldbFlag}=="1")
+    					if(confirm("查看客户联系方式，将会扣除“来电宝”信息点击费（金额为 $!{clickFee}元），确定要查看吗？")){
+    						jQuery.ajax({
+    							url:'#springUrl("/markToClick.htm")',
+    							data:{"targetId":$!{companyinfo.id}}
+    						});
+    					}else{
+    						return false;
+    					}
+    					#elseif($!{ldbFlag}=="0")
+    						alert("“来电宝”信息费余额不足！请您充值后再试。");
+    						return false;
+    					#end
+            			jQuery.ajax({
+            				url:"#springUrl('/createImageContactInfo.htm')",
+            				data:{"cid":"$!{companyinfo.id}"},
+            				cache:false,
+            				dataType:"json",
+            				type:"post",
+            				success:function(req){
+            					if(req.success){
+            						dt.hide();
+            						dd.show();
+            						jQuery("#showqq").html(req.data.account.qq);
+            						jQuery("#showmsn").html(req.data.account.msn);
+            						jQuery("#showweixin").html(req.data.account.weixin);
+						            jQuery("#showaddress").html(req.data.company.address);
+            						jQuery("#showzip").html(req.data.company.addressZip);
+            						jQuery("#showcontact").html(req.data.account.contact);
+            						if(req.data.account.tel!=null){
+            							var affix = "";
+            							if(req.data.isLDB){
+            								affix = "red";
+    										jQuery("#ldbMobile").hide();
+            							}
+            							jQuery("#showtel").html("<img src='#springUrl("/company")/viewContactInfo.htm?key="+req.data.account.tel+"&color="+affix+"' />");
+            						}
+            						if(req.data.account.mobile!=null){
+            							jQuery("#showmobile").html("<img src='#springUrl('/viewContactInfo.htm')?key="+req.data.account.mobile+"' />");
+            						}
+            						if(req.data.account.email!=null){
+            							jQuery("#showemail").html("<img src='#springUrl('/viewContactInfo.htm')?key="+req.data.account.email+"' />");
+            						}
+            					} else{
+    								Asto.util.Message.show({
+    									msg:req.data,
+    									msgType:Asto.util.Message.ERROR,
+    									autoClose:10000
+    								});
+            					}
+            					//恢复按钮可用状态
+            				},
+            				failure:function(){
+            					//请求提交失败，可能是网络或登录超时问题
+            					//恢复按钮可用状态
+    							Asto.util.Message.show({
+    								msg:"服务器发生错误",
+    								msgType:Asto.util.Message.ERROR,
+    								autoClose:10000
+    							});
+            				}
+            			});
+            		});
+    			});
+                </script>
+			#else
+##                <div class="w219 mc10">
+##                	<a href="$!{address.www}/service/zst/" target="_blank"><img src="$!{address.img}/zz91/newcompany/images/img2.jpg" /></a>
+##                </div>
+				## 未绑定微信帐号
+				<div class="w-title">您还不能查看该会员的联系方式</div>
+				<div class="w-title1">两步即可查看</div>
+				<div class="w-step">
+					步骤一：扫描微信公众号<br />
+					<img src="$!{address.img}/zz91/weixin/images/weixin.jpg" /><br />
+					步骤二：用微信绑定ZZ91帐号 <br />
+					<a id="loginBtn" href="javascript:void()" class="w-botton">立即登录查看</a>
+				</div>
+			#end
+			<div class="right-item-ok">
+				#if($!{sessionUser})
+					<a href="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{defaultContact.companyId}&destUrl=$!{address.company}','在线询价',800,500,0);"><img src="$!{address.img}/zz91/newcompany/images/online.jpg" /></a>
+				#else
+					<a href="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{defaultContact.companyId}&destUrl=$!{address.company}','询价/注册/登录',800,500,0);"><img src="$!{address.img}/zz91/newcompany/images/online.jpg" /></a>
+				#end
+            </div>
+        </div>
+        <!--right-item-->
+        <div class="right-item mt10">
+        	<div class="right-item-title f14 fb">
+            	最新相关供求信息
+            </div>
+            <!--end right-item-title-->
+            <div class="right-item-ul">
+                <ul>
+					#foreach($pro in $!{list2})
+                    <li>
+						<div class="fl w200 oh">
+							<a title="$!{products.title}" href="$!{address.trade}/productdetails$!{pro.products.id}.htm" target="_blank">
+								#printProductType(${pro.products.productsTypeCode} "" "")#printTitle($!{pro.products.title} 15 "")
+							</a>
+						</div>
+						<div class="fr">$!date.format('MM-dd',$!{pro.products.refreshTime})</div>
+						<div class="cb"></div>
+					</li>
+					#end
+                </ul>
+            </div>
+        </div>
+        <!--right-item-->
+    </div>
+    <!--end ey-right-->
+    <div class="cb"></div>
+</div>
+##<div class="wrapper mt clearfix">
+    <!-- S-->
+##        #parse("/company/vm_compinfo/SupplyList.vm")
+    <!-- E-->
+##</div>
+<!--在线留言  S-->
+	<div class="wrapper mt" id="message">
+##	#if($!{sessionUser})
+##        <input type="hidden" id="loginFlag" value="1" />
+##    #else
+##        <input type="hidden" id="loginFlag" value="0" />
+##    #end
+	##parse("/common/inquiry.vm")
+    </div>
+</div>
+<!--百度商桥-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+ </script>
+ 
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	
+##		jQuery("#inquiryBtn").button();
+		
+		#if($!{sessionUser})
+			var loginStatus=true;
+		#else
+			var loginStatus=false;
+		#end
+
+		## 登录弹出框
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{address.trade}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+
+		jQuery("#loginBtn").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				loginBox.close();
+				window.parent.location.reload();
+			});
+			openoverlay('$!{address.china}/mini/login.htm?destUrl=$!{address.company}/submitCallback.htm&regfrom=10031003','注册/登录',750,400,0);
+		});
+
+	});
+	
+</script>

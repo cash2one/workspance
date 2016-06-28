@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <title>数据库操作</title>
+        <link rel='stylesheet' type='text/css' href='../bootstrap/css/bootstrap.min.css' />
+		<link rel='stylesheet' href='../css/github.css'>
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+		</style>
+		
+    </head>
+    <body>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/demo.js'></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script>
+	// 设置是否开启调试模式.
+	// dlog.debug = true;
+	
+	var demo = Demo.createNew();
+	demo.show(function(){
+				$('pre code').each(function(i, block) {
+				    hljs.highlightBlock(block);
+				  });});
+	</script>
+	
+    <script type='text/javascript' src='../script/api.js'></script>
+    <script type='text/javascript'>
+    var transType = $api.byId('transType');
+
+    function objOpenDb(){
+        var db = api.require('db');
+        var oName = $api.byId('dbname');
+        var name = oName.value;
+        if(!name){return;}
+        
+        db.openDatabase({
+            name: name
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'数据库打开成功'});
+                $api.setStorage('dbname', name);
+            }else{
+                api.alert({msg:err.msg});
+            }
+        });
+    };
+    function objTrans(){
+	    var transType = $api.byId('transType');
+		
+        var db = api.require('db');
+        var type = $api.val(transType);
+        var dbname = $api.getStorage('dbname');
+        if(!dbname){return;}
+        db.transaction({
+            name: dbname,
+            operation: type
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'事务操作成功'});
+            }else{
+                api.alert({msg:err.msg});
+            }
+        });
+    };
+    function objExec1(){
+        var db = api.require('db');
+      
+        var sql2 = $api.byId('sql2').value;
+        var dbname = $api.getStorage('dbname');
+
+        if(!dbname){return;}
+        db.executeSql({
+            name: dbname,
+            sql: sql2
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'执行SQL成功'});
+            }else{
+                api.alert({msg:err.msg});
+            }
+        });
+        
+    };
+    function objExec(){
+        var db = api.require('db'); 
+        var sql = $api.byId('sql').value;
+        var dbname = $api.getStorage('dbname');
+        if(!dbname){return;}
+        db.executeSql({
+            name: dbname,
+            sql: sql
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'执行SQL成功'});
+            }else{
+                api.alert({msg:err.msg});
+            }
+        });
+    };
+    function objDelete(){
+        var db = api.require('db');
+        var sql = $api.byId('sql3').value;
+        var dbname = $api.getStorage('dbname');
+        if(!dbname){return;}
+        db.executeSql({
+            name: dbname,
+            sql: sql
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'删除表成功'});
+            }else{
+                api.alert({msg:err.msg});
+            }
+        });
+    };
+    function objSelect(){
+        var db = api.require('db');          
+        var sql = $api.byId('sql1').value;
+        var dbname = $api.getStorage('dbname');
+
+        if(!dbname){return;}
+        db.selectSql({
+            name: dbname,
+            sql: sql
+        }, function(ret, err){
+            if(ret.status){
+                var dbInfo = $api.byId('dbInfo');
+                var data = ret.data;
+                // $api.html(dbInfo, JSON.stringify(data));
+				dbInfo.value = JSON.stringify(data);
+            }else{
+                api.alert({msg:'无数据'});
+                $api.html(dbInfo, '');
+            };
+            /*if(ret.status){alert('查询成功')}
+            var dbInfo = $api.byId('dbInfo');
+            var data = ret.data;
+            $api.html(dbInfo, JSON.stringify(data));*/
+            
+            
+        });
+    };
+    function objClose(){
+        var db = api.require('db');           
+        var dbname = $api.getStorage('dbname');
+
+        if(!dbname){return;}
+        db.closeDatabase({
+            name: dbname
+        }, function(ret, err){
+            if(ret.status){
+                api.alert({msg:'关闭数据库成功'});
+                // $api.setStorage('dbname', '');
+
+            }else{
+                api.alert({msg:'error'});
+            }
+        });
+    };
+    </script>
+</html>

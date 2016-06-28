@@ -1,0 +1,781 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeBuy">
+
+    <typeAlias alias="tradeBuy" type="com.zz91.ep.domain.trade.TradeBuy"/>
+    <typeAlias alias="tradeBuyDto" type="com.zz91.ep.dto.trade.TradeBuyDto"/>
+
+    <resultMap class="tradeBuy" id="simpleColumnMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="uid" column="uid"/>
+        <result property="cid" column="cid"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="photoCover" column="photo_cover"/>
+        <result property="provinceCode" column="province_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="buyType" column="buy_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="quantityYear" column="quantity_year"/>
+        <result property="quantityUntis" column="quantity_untis"/>
+        <result property="supplyAreaCode" column="supply_area_code"/>
+        <result property="useTo" column="use_to"/>
+        <result property="gmtPublish" column="gmt_publish"/>
+        <result property="gmtRefresh" column="gmt_refresh"/>
+        <result property="gmtExpired" column="gmt_expired"/>
+        <result property="validDays" column="valid_days"/>
+        <result property="detailsQuery" column="details_query"/>
+        <result property="messageCount" column="message_count"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="favoriteCount" column="favorite_count"/>
+        <result property="plusCount" column="plus_count"/>
+        <result property="htmlPath" column="html_path"/>
+        <result property="pauseStatus" column="pause_status"/>
+    </resultMap>
+    
+    <resultMap class="tradeBuy" id="simpleColumnDtoMap" extends="simpleColumnMap">
+        <result property="checkStatus" column="check_status"/>
+        <result property="delStatus" column="del_status"/>
+        <result property="checkAdmin" column="check_admin"/>
+        <result property="checkRefuse" column="check_refuse"/>
+        <result property="gmtCheck" column="gmt_check"/>
+        <result property="tagsSys" column="tags_sys"/>
+        <result property="gmtConfirm" column="gmt_confirm"/>
+        <result property="gmtReceive" column="gmt_receive"/>
+    </resultMap>
+    
+    <resultMap class="tradeBuy" id="simpleColumnDtoDetailsMap" extends="simpleColumnDtoMap">
+        <result property="details" column="details"/>
+    </resultMap>
+    
+     <resultMap class="tradeBuyDto" id="longDetailsMap">
+        <result property="tradeBuy" resultMap="tradeBuy.shortBuyResult"/>
+        <result property="compName" column="name"/>
+        <result property="isDel" column="delStatus"/>
+        <result property="memberCodeBlock" column="member_code_block"/>
+        <result property="rid" column="rid"/>
+        <result property="memberCode" column="member_code"/>
+    </resultMap>
+    
+    <resultMap class="tradeBuy" id="shortBuyResult">
+    	<result property="id" column="id"/>
+        <result property="uid" column="uid"/>
+        <result property="cid" column="cid"/>
+        <result property="title" column="title"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="provinceCode" column="province_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="buyType" column="buy_type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="quantityYear" column="quantity_year"/>
+        <result property="quantityUntis" column="quantity_untis"/>
+        <result property="useTo" column="use_to"/>
+        <result property="validDays" column="valid_days"/>
+        <result property="pauseStatus" column="pause_status"/>
+        <result property="checkAdmin" column="check_admin"/>
+        <result property="checkStatus" column="check_status"/>
+        <result property="gmtPublish" column="gmt_publish"/>
+    	<result property="delStatus" column="del_status"/>
+        <result property="gmtRefresh" column="gmt_refresh"/>
+        <result property="gmtCheck" column="gmt_check"/>
+        <result property="gmtExpired" column="gmt_expired"/>
+    </resultMap>
+    
+    <resultMap class="tradeBuyDto" id="shortCompBuyResult">
+    	<result property="tradeBuy" resultMap="tradeBuy.shortBuyResult"/>
+    	<result property="compName" column="name"/>
+    	<result property="isDel" column="delStatus"/>
+    	<result property="memberCodeBlock" column="member_code_block"/>
+    	<result property="memberCode" column="member_code"/>
+    </resultMap>   
+    
+    <sql id="shortCompBuyColumn">
+    	tb.id,
+    	tb.uid,
+    	tb.cid,
+    	tb.title,
+    	tb.category_code,
+    	tb.province_code,
+    	tb.area_code,
+    	tb.buy_type,
+    	tb.quantity,
+    	tb.quantity_year,
+    	tb.quantity_untis,
+    	tb.use_to,
+    	tb.valid_days,
+    	tb.pause_status,
+    	tb.check_admin,
+    	tb.check_status,
+    	tb.gmt_publish,
+    	tb.gmt_expired,
+    	tb.del_status,
+    	tb.gmt_refresh,
+    	tb.gmt_check,
+    	cp.name,
+    	cp.del_status as delStatus,
+    	cp.member_code_block,
+    	cp.member_code
+    </sql>
+    
+    <sql id="simpleDtoColumnByAdmin">
+            tb.id,
+            tb.title,
+            tb.uid,
+            tb.cid,
+            tb.category_code,
+            tb.photo_cover,
+            tb.province_code,
+            tb.area_code,
+            tb.buy_type,
+            tb.quantity,
+            tb.quantity_year,
+            tb.quantity_untis,
+            tb.supply_area_code,
+            tb.use_to,
+            tb.gmt_publish,
+            tb.gmt_refresh,
+            tb.gmt_expired,
+            tb.valid_days,
+            tb.details_query,
+            tb.message_count,
+            tb.view_count,
+            tb.favorite_count,
+            tb.plus_count,
+            tb.html_path,
+            tb.pause_status,
+            tb.check_status,
+            tb.del_status,
+            tb.check_admin,
+	        tb.check_refuse,
+	        tb.gmt_check,
+	        tb.details_query,
+	        tb.tags_sys,
+	        tb.gmt_confirm,
+	        tb.gmt_receive
+    </sql>
+    
+    <sql id="normalWhere">
+        del_status = 0 and check_status = 1
+    </sql>
+    
+    <sql id="normalWhereforData">
+        del_status = 0
+    </sql>
+
+    <insert id="insertTradeBuy" parameterClass="tradeBuy" >
+        insert into trade_buy
+        (
+        uid,
+        cid,
+        title,
+        details,
+        category_code,
+        province_code,
+        area_code,
+        buy_type,
+        quantity,
+        quantity_year,
+        quantity_untis,
+        supply_area_code,
+        use_to,
+        gmt_confirm,
+        gmt_receive,
+        gmt_publish,
+        gmt_refresh,
+        valid_days,
+        tags_sys,
+        details_query,
+        check_status,
+        pause_status,
+        html_path,
+        gmt_created,
+        gmt_modified,
+        gmt_expired,
+        photo_cover,
+        info_come_from)
+        VALUES
+        (
+        #uid#,
+        #cid#,
+        #title#,
+        #details#,
+        #categoryCode#,
+        #provinceCode#,
+        #areaCode#,
+        #buyType#,
+        #quantity#,
+        #quantityYear#,
+        #quantityUntis#,
+        #supplyAreaCode#,
+        #useTo#,
+        #gmtConfirm#,
+        #gmtReceive#,
+        #gmtPublish#,
+        #gmtRefresh#,
+        #validDays#,
+        #tagsSys#,
+        #detailsQuery#,
+        #checkStatus#,
+        #pauseStatus#,
+        #htmlPath#,
+        now(),
+        now(),
+        #gmtExpired#,
+        #photoCover#,
+        #infoComeFrom#
+        )
+        <selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+<!-- 
+
+	<sql id="simpleColumn">
+            id,
+            title,
+            uid,
+            cid,
+            category_code,
+            photo_cover,
+            province_code,
+            area_code,
+            buy_type,
+            quantity,
+            quantity_year,
+            quantity_untis,
+            supply_area_code,
+            use_to,
+            gmt_publish,
+            gmt_refresh,
+            gmt_expired,
+            valid_days,
+            details_query,
+            message_count,
+            view_count,
+            favorite_count,
+            check_status,
+            pause_status,
+            plus_count,
+            html_path
+    </sql>
+    
+   <resultMap class="tradeBuy" id="recommendResult">
+    	<result property="id" column="id"/>
+    	<result property="cid" column="cid"/>
+    	<result property="title" column="title"/>
+    	<result property="validDays" column="valid_days"/>
+   </resultMap>
+   
+    <resultMap class="tradeBuy" id="simpleColumnDetailsMap" extends="simpleColumnMap">
+        <result property="details" column="details"/>
+    </resultMap>
+    
+    <select id="queryBuySimpleDetailsById" parameterClass="java.lang.Integer" resultMap="simpleColumnMap">
+        select
+            <include refid="simpleColumn"/>
+        from trade_buy 
+        where 
+            <include refid="normalWhere"/>
+            and id = #id#
+    </select>
+    
+    <select id="queryBuyDetailsById" parameterClass="java.lang.Integer" resultMap="simpleColumnDetailsMap">
+        select
+            <include refid="simpleColumn"/>
+            ,details
+        from trade_buy 
+        where 
+            <include refid="normalWhere"/>
+            and id = #id#
+    </select>
+    
+   <select id="queryBuyListById" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        select
+            id
+        from trade_buy 
+        where 
+            <include refid="normalWhere"/>
+            and cid = #cid#
+        limit #max#
+    </select>
+    
+   <select id="queryCommonBuyByCategory" parameterClass="java.util.Map" resultMap="simpleColumnMap">
+        select
+              <include refid="simpleColumn"/>
+       from trade_buy
+       where
+             <include refid="normalWhere"/>
+             and category_code = #categoryCode# limit #max#
+    </select>
+    
+   <select id="queryNewestBuyByCategory" parameterClass="java.util.Map" resultMap="simpleColumnMap">
+        select
+            <include refid="simpleColumn"/>
+        from trade_buy
+        where
+            <include refid="normalWhere"/>
+            <dynamic>
+                <isNotNull property="category" prepend="and">
+                     <isEqual property="isDirect" compareValue="false">
+                           category_code = #category#
+                    </isEqual>
+                    <isEqual property="isDirect" compareValue="true">
+                           category_code like concat(#category#,'%')
+                    </isEqual>
+                </isNotNull>
+           </dynamic>
+       order by gmt_publish desc
+       limit #max#
+    </select>
+    
+   <sql id="dynamicConditionsWhere">
+        <dynamic prepend="where">
+            cid = #cid# and del_status = 0
+            <isNotEmpty property="pauseStatus">
+                and pause_status = #pauseStatus#
+            </isNotEmpty>
+            <isNotEmpty property="checkStatus">
+                and check_status = #checkStatus#
+            </isNotEmpty>
+            <isEqual property="overdueStatus" compareValue="0">
+                and now() > gmt_expired
+            </isEqual>
+            <isEqual property="overdueStatus" compareValue="1">
+                and gmt_expired > now()
+            </isEqual>
+        </dynamic>
+    </sql>
+   <select id="queryBuyByConditions" resultMap="simpleColumnMap" parameterClass="java.util.Map">
+        select
+            <include refid="simpleColumn"/>
+        from
+            trade_buy
+        <include refid="dynamicConditionsWhere"/>
+        <include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+    </select>
+    
+    <select id="queryBuyByConditionsCount" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+        select count(*)
+        from 
+            trade_buy
+        <include refid="dynamicConditionsWhere"/>
+    </select>
+    
+    <update id="updateBaseBuyById" parameterClass="java.util.Map">
+        update trade_buy set
+            title = #buy.title#,
+            details = #buy.details#,
+            category_code = #buy.categoryCode#,
+            province_code = #buy.provinceCode#,
+            area_code = #buy.areaCode#,
+            buy_type = #buy.buyType#,
+            quantity = #buy.quantity#,
+            quantity_year = #buy.quantityYear#,
+            quantity_untis = #buy.quantityUntis#,
+            supply_area_code = #buy.supplyAreaCode#,
+            use_to = #buy.useTo#,
+            check_status = #buy.checkStatus#,
+            details_query = #buy.detailsQuery#,
+            valid_days = #buy.validDays#,
+            gmt_modified = now(),
+            photo_cover = #buy.photoCover#
+        where id = #id# and cid=#cid#
+    </update>
+    
+   <update id="updateCategoryById" parameterClass="java.util.Map">
+        update trade_buy set
+            category_code = #category#
+            ,gmt_modified = now()
+        where id = #id# and cid=#cid#
+    </update>
+    
+   <update id="updatePauseStatusById" parameterClass="java.util.Map">
+        update trade_buy set
+            pause_status = #newStatus#
+            ,gmt_modified = now()
+        where id = #id# and cid=#cid#
+    </update>
+    
+   	<update id="updateRefreshById" parameterClass="java.util.Map">
+        update trade_buy set
+            gmt_refresh = now(),
+            gmt_expired = date_add(now(),INTERVAL valid_days day),
+            gmt_modified=now()
+        where id = #id# and cid=#cid# and valid_days != 0
+    </update>
+    
+    <select id="queryUpdateBuyById" parameterClass="java.util.Map" resultMap="simpleColumnDetailsMap">
+        select
+            <include refid="simpleColumn"/> 
+            ,details
+        from trade_buy 
+        where 
+            <include refid="normalWhereforData"/>
+            and id = #id# and cid=#cid#
+    </select>
+    
+   	<sql id="simpleDtoColumn">
+            tb.id,
+            tb.title,
+            tb.uid,
+            tb.cid,
+            tb.category_code,
+            tb.photo_cover,
+            tb.province_code,
+            tb.area_code,
+            tb.buy_type,
+            tb.quantity,
+            tb.quantity_year,
+            tb.quantity_untis,
+            tb.supply_area_code,
+            tb.use_to,
+            tb.gmt_publish,
+            tb.gmt_refresh,
+            tb.gmt_expired,
+            tb.valid_days,
+            tb.details_query,
+            tb.message_count,
+            tb.view_count,
+            tb.favorite_count,
+            tb.plus_count,
+            tb.html_path
+    </sql>
+    
+    <select id="queryBuyByCategoryCode" parameterClass="java.util.HashMap" resultMap="simpleColumnDetailsMap">
+		select 
+		<include refid="simpleDtoColumn"/>
+		 ,tb.details
+		,cp.name
+		from trade_buy tb
+		inner join comp_profile cp on cp.id=tb.cid
+		where tb.category_code like concat(#dto.tradeBuy.categoryCode#,'%')
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryBuyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from trade_buy
+		where category_code like concat(#dto.tradeBuy.categoryCode#,'%')
+	</select>
+	
+   <select id="queryRecommendBuy" parameterClass="java.lang.Integer" resultMap="recommendResult">
+		select
+			tb.id,
+			tb.cid,
+			tb.title,
+			(to_days(tb.gmt_expired) - to_days(now())) valid_days
+		from trade_recommend tr,trade_buy tb
+		where tr.target_id=tb.id and tr.type=1 and ((to_days(tb.gmt_expired) - to_days(now())) > 0 or tb.valid_days = 0)
+		order by tr.gmt_created desc
+		limit #value#
+    </select>
+    
+   	<update id="updatePhotoCoverById" parameterClass="java.util.Map">
+        update trade_buy 
+            set photo_cover = #photoCover#,
+            gmt_modified=now()
+        where id = #id# and cid = #cid#
+    </update>
+ -->
+
+    <update id="updateMessageCount" parameterClass="java.lang.Integer">
+        update trade_buy 
+            set message_count = message_count+1,
+            gmt_modified = now()
+        where id = #id#
+    </update>
+    
+     <delete id="deleteBuyById" parameterClass="java.lang.Integer">
+    	delete 
+    	from trade_buy
+    	where id=#id#
+    </delete>
+    
+    <update id="updateBuyCheckStatus" parameterClass="java.util.HashMap">
+		update trade_buy 
+		set check_status=#checkStatus#,
+		check_admin=#check_admin#,
+		check_refuse=#check_refuse#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	  <update id="updateStatusOfTradeBuy" parameterClass="java.util.HashMap">
+		update trade_buy
+		set check_status=#checkStatus#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+    <select id="querySupplyCount" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+        select count(*) from trade_buy
+		where cid=#cid#
+		and del_status = 0
+		and pause_status = 0
+		and check_status=1
+    </select>
+
+	<sql id="dymicCompByAdmin">
+		<dynamic prepend="where">
+			<isNotEmpty property="tradeBuy.cid" prepend="and">
+				tb.cid=#tradeBuy.cid#
+			</isNotEmpty>
+			
+			<isNotEmpty property="tradeBuy.title" prepend="and">
+				tb.title like concat('%',#tradeBuy.title#,'%')
+			</isNotEmpty>
+			
+			<isNotEmpty property="tradeBuy.checkStatus" prepend="and">
+				tb.check_status=#tradeBuy.checkStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+    <select id="queryCompBuyByAdmin" parameterClass="java.util.HashMap" resultMap="shortCompBuyResult">
+		select
+		<include refid="tradeBuy.shortCompBuyColumn"/>
+		from trade_buy tb
+		inner join comp_profile cp on cp.id=tb.cid
+		<include refid="tradeBuy.dymicCompByAdmin"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+    </select>
+	
+    <select id="queryCompBuyByAdminCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from trade_buy tb
+		inner join comp_profile cp on cp.id=tb.id
+		<include refid="tradeBuy.dymicCompByAdmin"/>
+    </select>
+
+ <sql id="dynamicByAdmin">
+		<dynamic prepend="where" >
+			<isNotEmpty property="dto.tradeBuy.categoryCode" prepend="and">
+				exists(select id from comp_profile cp where cp.id=tb.id)
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.categoryCode" prepend="and">
+				tb.category_code like concat(#dto.tradeBuy.categoryCode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.title" prepend="and">
+				tb.title like concat('%',#dto.tradeBuy.title#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.cid" prepend="and">
+				tb.cid=#dto.tradeBuy.cid#
+			</isNotEmpty>
+			<isNotEmpty property="dto.compName" prepend="and">
+				cp.name like concat(#dto.compName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.memberCode" prepend="and">
+				cp.member_code =#dto.memberCode#
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.checkStatus" prepend="and">
+				tb.check_status=#dto.tradeBuy.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.checkAdmin" prepend="and">
+				tb.check_admin=#dto.tradeBuy.checkAdmin#
+			</isNotEmpty>
+			<isNotEmpty property="dto.tradeBuy.delStatus" prepend="and">
+				tb.del_status=#dto.tradeBuy.delStatus#
+			</isNotEmpty>
+			<isEqual property="queryType" compareValue="0" prepend="and">
+                tb.gmt_publish between #gmtPublishStart# and #gmtPublishEnd#
+            </isEqual>
+            <isEqual property="queryType" compareValue="1" prepend="and">
+                tb.gmt_refresh between #gmtPublishStart# and #gmtPublishEnd#
+            </isEqual>
+            <isEqual property="queryType" compareValue="2" prepend="and">
+                tb.gmt_check between #gmtPublishStart# and #gmtPublishEnd#
+            </isEqual>
+			<isNotEmpty property="regComeFrom" prepend="and">
+				cp.register_code=#regComeFrom#
+			</isNotEmpty>
+			<isNotEmpty property="infoComeFrom" prepend="and">
+				tb.info_come_from=#infoComeFrom#
+			</isNotEmpty>
+		</dynamic>
+		</sql>
+	<select id="queryBuyByCategoryCodeAndTitleAndCheckStatus" parameterClass="java.util.HashMap" resultMap="longDetailsMap">
+		select 
+		<include refid="shortCompBuyColumn"/>
+		 <isNotEmpty property="recommendType">
+			,trr.id as rid
+		</isNotEmpty>
+		<isEmpty property="recommendType">
+			,0 as rid
+		</isEmpty>
+		from trade_buy tb
+		inner join comp_profile cp on cp.id=tb.cid
+		<isNotEmpty property="recommendType">
+			inner join (select tr.id,tr.target_id from trade_recommend tr where tr.type=#recommendType#) trr on trr.target_id=tb.id
+		</isNotEmpty>
+		<include refid="tradeBuy.dynamicByAdmin"/>
+		order by tb.gmt_publish desc
+		<!--
+		<include refid="common.pageOrderBy"/>
+		-->
+		<include refid="common.pageLimit"/>
+	</select>
+	<select id="queryBuysCountByTitleAndCheckStatus" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from trade_buy tb
+		inner join comp_profile cp on cp.id=tb.cid
+		<isNotEmpty property="recommendType">
+			inner join (select tr.id,tr.target_id from trade_recommend tr where tr.type=#recommendType#) trr on trr.target_id=tb.id
+		</isNotEmpty>
+		<include refid="tradeBuy.dynamicByAdmin"/>
+	</select>
+	<update id="updateDelStatus" parameterClass="java.util.HashMap">
+		update trade_buy
+		set
+		del_status=#delStatus#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<update id="updateGmtRefresh" parameterClass="java.util.HashMap">
+		update trade_buy 
+		set gmt_refresh=now(),
+		gmt_expired = #gmtExpired#,
+		valid_days = #validDays#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<select id="queryOneBuy" parameterClass="java.lang.Integer" resultMap="simpleColumnDtoDetailsMap">
+		select 
+		<include refid="simpleDtoColumnByAdmin"/>
+		,tb.details
+		from trade_buy tb
+		where tb.id=#id#
+	</select>
+	<update id="updateUnPassCheckStatus" parameterClass="java.util.HashMap">
+		update trade_buy
+		set
+		check_status = #checkStatus#,
+		check_admin = #admin#,
+		check_refuse= #checkRefuse#,
+		gmt_check= now(),
+		gmt_modified = now()
+		where id=#id#
+	</update>
+	<select id="queryCidById" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select cid from trade_buy
+		where id=#id#
+	</select>
+	 <update id="updateTradeBuy" parameterClass="tradeBuy">
+        update trade_buy tb set
+            tb.title = #title#,
+            tb.details = #details#,
+            tb.category_code = #categoryCode#,
+            tb.province_code = #provinceCode#,
+            tb.area_code = #areaCode#,
+	 		<isNotEmpty property="buyType">
+				tb.buy_type = #buyType#,
+			</isNotEmpty>
+            tb.quantity = #quantity#,
+			<isNotEmpty property="quantityYear">
+				tb.quantity_year = #quantityYear#,
+			</isNotEmpty>
+            tb.quantity_untis = #quantityUntis#,
+            tb.supply_area_code = #areaCode#,
+			<isNotEmpty property="useTo">
+				tb.use_to = #useTo#,
+			</isNotEmpty>
+	 		<isNotEmpty property="gmtPublish">
+				tb.gmt_publish=#gmtPublish#,
+			</isNotEmpty>
+			<isNotEmpty property="gmtRefresh">
+				tb.gmt_refresh=#gmtRefresh#,
+			</isNotEmpty>
+            <isNotEmpty property="gmtExpired">
+				tb.gmt_expired=#gmtExpired#,
+			</isNotEmpty>
+            tb.valid_days=#validDays#,
+			<isNotEmpty property="detailsQuery">
+            	tb.details_query=#detailsQuery#,
+			</isNotEmpty>
+	 		<isNotEmpty property="messageCount">
+				tb.message_count=#messageCount#,
+			</isNotEmpty>
+			<isNotEmpty property="viewCount">
+				tb.view_count=#viewCount#,
+			</isNotEmpty>
+            <isNotEmpty property="favoriteCount">
+				tb.favorite_count=#favoriteCount#,
+			</isNotEmpty>
+            <isNotEmpty property="plusCount">
+				tb.plus_count=#plusCount#,
+			</isNotEmpty>
+            <isNotEmpty property="htmlPath">
+				tb.html_path=#htmlPath#,
+			</isNotEmpty>
+			<isNotEmpty property="pauseStatus">
+				tb.pause_status=#pauseStatus#,
+			</isNotEmpty>
+            
+			<isNotEmpty property="delStatus">
+				tb.del_status=#delStatus#,
+			</isNotEmpty>
+            tb.check_admin=#checkAdmin#,
+	        tb.check_refuse=#checkRefuse#,
+	        tb.gmt_check=now(),
+	        
+	        tb.tags_sys=#tagsSys#,
+			<isNotEmpty property="gmtConfirm">
+				tb.gmt_confirm=#gmtConfirm#,
+			</isNotEmpty>
+			<isNotEmpty property="gmtReceive">
+				tb.gmt_receive=#gmtReceive#,
+			</isNotEmpty>
+            tb.gmt_modified = now()
+        where tb.id = #id#
+    </update>
+    
+     <update id="updateCategoryCodeById" parameterClass="java.util.HashMap" >
+    	update trade_buy
+    	set category_code=#categoryCode#,
+    	gmt_modified=now()
+    	where id=#id#
+    </update>
+    
+    <select id="countTradeBuy" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+    	select count(*) from trade_buy
+    	where 
+    	uid=#uid# and cid=#cid# and title=#title#
+    </select>
+    
+    <update id="updateGmtmodifiedBySvrClose" parameterClass="java.lang.Integer">
+    	update trade_buy
+    	set gmt_modified=now()
+    	where cid=#cid#
+    </update>
+    
+    <select id="queryMaxId" resultClass="java.lang.Integer">
+       select max(id) from trade_buy where 10000000 > id
+    </select>
+    
+    <resultMap class="tradeBuy" id="simplyDataResultMap">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="gmtPublish" column="gmt_publish"/>
+    </resultMap>
+        
+    <select id="queryBuys" parameterClass="java.util.HashMap" resultMap="simplyDataResultMap">
+    	select id,title,gmt_publish
+    	from trade_buy
+    	where del_status=0
+    	<!-- 
+    	<include refid="common.pageOrderBy"/>
+    	 -->
+    	 order by gmt_publish desc
+        <include refid="common.pageLimit"/>
+    </select>
+    
+    <select id="queryBuysCount" resultClass="java.lang.Integer">
+    	select count(*) from trade_buy where del_status=0
+    </select>
+</sqlMap>

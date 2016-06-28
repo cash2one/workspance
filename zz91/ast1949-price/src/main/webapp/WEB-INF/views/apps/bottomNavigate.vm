@@ -1,0 +1,138 @@
+#set($layout="/layout/blank.vm")
+    var data0 = $!{susList};
+    var data1 = $!{suspList};
+	#cacheFragment("$!{address.exadmin}/reborn-admin/sms/apps/priceForZZ91Price.htm?code=$!{smsCode}&1", "", "", "")
+		var data2 = $!{smsList};
+	#end
+    (function(d, d0, d1, d2){
+        var html = "<h2>为您推荐</h2><div class='scroll'><ul></ul><a href='http://price.zz91.com' class='more' target='_blank'>更多</a></div><div class='scroll'><ul></ul><a href='http://trade.zz91.com' class='more' target='_blank'>更多</a></div><dl class='priceList'><dt></dt><dd></dd></dl><div class='min'><span></span><a href='javascript:void(0)'></a></div>";
+        var body = d.body,
+        	nav = d.createElement("div");
+        nav.innerHTML = html;
+        nav.className = "bottomNav";
+        var	scroll0 = nav.children[1],
+        	scroll1 = nav.children[2],
+            dl = nav.getElementsByTagName("dl")[0],
+            dt = nav.getElementsByTagName("dt")[0],
+            dd = nav.getElementsByTagName("dd")[0],
+            min = nav.getElementsByTagName("a")[2],
+            p,
+        	isMin = false;
+        insert(scroll0, d0);
+        insert(scroll1, d1);
+        for (var str in d2) {
+            if (str === "str0") {
+            	dt.innerHTML = d2[str];
+            } else {
+            	p = d.createElement("p");
+            	p.innerHTML = d2[str];
+				p.setAttribute("title", d2[str]);
+            	dd.appendChild(p);
+            }
+        }
+        var btn0 = d.createElement("button"),
+        	btn1 = d.createElement("button");
+        btn0.innerHTML = "订制报价";
+        btn1.innerHTML = "查看我订制的报价";
+        btn0.onclick = function(){
+        	window.open("http://myrc.zz91.com/mysubscribe/subscribesms.htm");
+		};
+        btn1.onclick = function(){
+        	window.open("http://myrc.zz91.com/mysubscribe/manageSubscribeSms.htm");	
+        }; 
+        dd.appendChild(btn0);
+        dd.appendChild(btn1);
+    dl.onmouseover = function(){
+    this.className = "priceList on";
+    };
+    dl.onmouseout = function(){
+    this.className = "priceList";
+    };
+    min.onclick = function(e){
+    if (isMin) {
+    nav.className = "bottomNav";
+    isMin = false;
+    } else {
+    nav.className = "bottomNav hide";
+    isMin = true;
+    }
+    }
+    body.appendChild(nav);
+    init();
+    
+    function insert(el, data){
+        var i = 0, num = data.length, j,
+        ul = el.getElementsByTagName("ul")[0],
+        li, a;
+        for (; i < num * 2; i++) {
+        li = d.createElement("li");
+        a = d.createElement("a");
+        j = i < num ? i : i - num;
+        if (!data[j].productsTypeLabel) {
+        a.innerHTML = data[j].title;
+        a.href = "$!{address.price}/priceDetails_" + data[j].id + ".htm";	
+        } else {
+        a.innerHTML = data[j].productsTypeLabel + data[j].products.title;
+        a.href = "$!{address.trade}/productdetails" + data[j].products.id + ".htm";
+        }
+        a.target = "_blank";
+        li.appendChild(a);
+        ul.appendChild(li);
+        }
+    }
+    // function anim(el, n, h){
+    //     sTop = el.scrollTop;
+    //     el.scrollTop = sTop < n * h ? sTop + 1 : 0;
+    //     el.loop = setTimeout(function(){
+    //         anim(el, n, h);
+    //     }, 50);
+    // }
+    function anim(el, n, h){
+        sTop = el.scrollTop;
+        el.scrollTop = sTop < n * h ? sTop: 0;
+        step(el, h);
+        el.loop = setTimeout(function(){
+            anim(el, n, h);
+        }, 3000);
+    }
+    function step(el, delt) {
+        var d = Math.ceil(delt / 10);
+        el.scrollTop = el.scrollTop + d;
+        delt = delt - d;
+        if (delt > 0) {
+            setTimeout(function(){
+                step(el, delt);
+            }, 50);
+        } 
+    }  
+    function init(){
+        var ul0 = scroll0.getElementsByTagName("ul")[0],
+        ul1 = scroll1.getElementsByTagName("ul")[0],
+        height = 26,
+        n0 = d0.length,
+        n1 = d1.length;
+        anim(ul0, n0, height);
+        anim(ul1, n1, height);
+        ul0.onmouseover = function(){
+       	    clearTimeout(this.loop);
+        }; 
+        ul1.onmouseover = function(){
+        	clearTimeout(this.loop);
+        };
+        ul0.onmouseout = function(e){
+            evt = e || window.event;
+            target = evt.relatedTarget || evt.toElement;
+            if (!ul0.contains(target)) {
+            	anim(ul0, n0, height);
+            }
+        };
+        ul1.onmouseout = function(e){
+            evt = e || window.event;
+            target = evt.relatedTarget || evt.toElement;
+            if (!ul1.contains(target)) {
+        	   anim(ul1, n1, height);
+            }
+        };
+        }
+    })(document, data0, data1, data2[0]);
+	##data2[0].list[0]

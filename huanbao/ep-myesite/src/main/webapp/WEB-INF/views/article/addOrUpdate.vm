@@ -1,0 +1,113 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+            <li>
+                <strong>网站动态管理</strong>
+			</li>
+			<li >
+				/
+            </li>
+			<li >
+				<a href="#springUrl('/article/index.htm')?type=$!{type}">$!{category.get($!type)}</a>
+            </li>
+		</ul>
+
+		<form id="articleForm" name="articleForm" method="post" action="#springUrl('/article/doAddOrUpdate.htm')">
+			
+			##<input name="categoryCode" type="hidden" id="categoryCode" value="$!{type}"/>
+			<input name="id" type="hidden" id="id" value="$!{compNews.id}"/>
+			<input name="pauseStatus" type="hidden" id="pauseStatus" value="$!{compNews.pauseStatus}"/>
+			
+			<div class="control-group">
+				 <label for="tags" class="control-label">
+					<span class="red">*</span>文章标题：
+				</label>
+				<div class="controls">
+						<input name="title" type="text" id="title" value="$!{compNews.title}" class="field input-xlarge validate[required,maxSize[20]]">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				 <label for="tags" class="control-label">
+					<span class="red">*</span>类別：
+				</label>
+				<div class="controls">
+					<select name="categoryCode">
+    					#foreach( $c in $!{category.keySet()})
+                            <option value="$c" #if($!{type}==$!c) selected #end>$!{category.get($c)}</option>
+    					#end
+    				</select>
+				</div>
+			</div>
+			
+			
+			 <div class="control-group">
+				<label for="details" class="control-label"><span class="red">*</span>文章内容：</label>
+				<div class="controls">
+					<textarea name="details" cols="45" rows="16" id="details">$!{compNews.details}</textarea>
+				</div>
+			</div>
+			
+			
+			<div class="form-actions">
+				<input type="submit" id="submitBtn" class="btn btn-primary btn-large" value="提交" />
+				<a href="#springUrl('/article/index.htm')?type=$!{type}" class="btn btn-large" >取消</a>
+			</div>
+		</form>	
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+#parse("/common/importCkeditor.vm")
+<script>
+	
+	#set($idx=1)
+	#if("$!{type}"=="1001")
+	#set($idx=2)
+	#end
+	#if("$!{type}"=="1002")
+	#set($idx=3)
+	#end
+
+	jQuery(document).ready(function() { 
+		myrc.select("Js_select");
+		myrc.menu(4, $!{idx});
+	
+		var editor=CKEDITOR.replace("details",{
+			toolbar:[
+				['Styles','Format','FontSize'],  
+				['Bold', 'Italic', '-', 'NumberedList', 'BulletedList'],
+				['TextColor','BGColor'],
+				['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+				['Table','Image'],['Maximize']
+			],
+			height:300,
+			language:"zh-cn",
+			enterMode:CKEDITOR.ENTER_BR,
+			shiftEnterMode:CKEDITOR.ENTER_P
+		});
+		
+		jQuery("#articleForm").validationEngine("attach");
+		
+		jQuery("#articleForm").submit(function(){
+			//验证详细说明
+			if(editor.getData().length < 1){
+				jQuery("#details").focus();
+				alert("详细说明不能为空！");
+				return false;
+			}
+
+			if(editor.getData().length > 3000) {
+				jQuery("#details").focus();
+				alert("详细说明过长,最多3000字符！");	
+				return false;
+			}
+			
+		});
+		
+##		jQuery("#management").click(function(){
+##			var type = jQuery("#articleType").val();
+##			window.location="$!{address.myesite}/article/index.htm?pause=1&type="+type;
+##		});
+	});
+</script>

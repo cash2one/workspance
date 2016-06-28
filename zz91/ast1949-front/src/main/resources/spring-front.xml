@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+	default-autowire="byName" default-lazy-init="true">
+	<context:component-scan base-package="com.ast.ast1949"/>
+
+	<!-- property loader -->
+	<bean id="webPropertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<!--property name="placeholderPrefix" value="${web_" / -->
+		<property name="locations">
+			<list>
+				<value>classpath:/web.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- message loader -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="i18n/i18n_web" />
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="com.ast.ast1949.front.util.AstBindingInitializer" />
+		</property>
+	</bean>
+	
+	<!-- CoC for controller classes -->
+	<bean
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+		<property name="caseSensitive"  value="false" />
+		<property name="basePackage"    value="com.ast.ast1949.front.controller" />
+		<property name="defaultHandler" value="rootController" />
+	</bean>
+
+	<!--  shared velocity engine which will be used by email and page presentation -->
+	<bean id="velocityEngine"
+		class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+		<property name="resourceLoaderPath" value="${velocity.resourceLoaderPath}"         />
+		<property name="preferFileSystemAccess" value="${velocity.preferFileSystemAccess}" />
+		<property name="velocityProperties">
+			<props>
+				<prop key="input.encoding">${input.encoding}</prop>
+				<prop key="output.encoding">${output.encoding}</prop>
+				<prop key="file.resource.loader.cache">false</prop>
+				<prop key="file.resource.loader.modificationCheckInterval">2</prop>
+				<prop key="velocimacro.library">macro.vm</prop>
+				<prop key="userdirective">${velocity.userdirective}</prop>
+				<!-- 针对开发而非实际应用的 -->
+				<prop key="velocimacro.library.autoreload">true</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="velocityConfig"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="velocityEngine" ref="velocityEngine" />
+	</bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver">
+		<property name="exposeSpringMacroHelpers" value="true"             />
+		<property name="suffix" value="${velocity.suffix}"                 />
+		<property name="layoutUrl" value="layout/default.vm"               />
+		<property name="contentType" value="text/html;charset=utf-8"       />
+		<property name="toolboxConfigLocation"    value="WEB-INF/vm-toolbox.xml" />
+	</bean>
+	
+	<bean id="initSystem" class="com.ast.ast1949.front.servlet.InitSystem" init-method="initSystem" destroy-method="destroySystem" lazy-init="false"></bean>
+	
+	<bean id="initSsoConst" class="com.zz91.util.auth.frontsso.SsoConst" init-method="startup" lazy-init="false">
+		<property name="api" value="${sso.api}"></property>
+		<property name="domain" value="${sso.domain}"></property>
+	</bean>
+	
+</beans>

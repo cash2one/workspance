@@ -1,0 +1,47 @@
+<script type="text/javascript" src="#springUrl('/app/sale/hunMa.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var grid=new com.zz91.ep.crm.deptGrid({
+			id:DEPTCOMP.FIVESTAR_GRID,
+			region:"center",
+			layout:"fit",
+			contextmenu:new Ext.menu.Menu({
+				items:[{
+					text: '分配给',
+					menu:[
+					#foreach($l in $!{deptSale})
+    					#if($velocityCount > 1),#end
+    					{
+    						text:"${l.name}",
+    						handler:function(){
+    							var rows=grid.getSelectionModel().getSelections();
+    							var assignArr=new Array();
+    							for(var i=0;i<rows.length;i++){
+    								assignArr.push({
+										saleCompId:rows[i].get("sale_comp_id"),
+    									cid:rows[i].get("id"),
+    									companyType:0,
+    									saleAccount:"$!{l.account}",
+    									saleDept: "$!{l.deptCode}",
+    									saleName:"$!{l.name}",
+										oldSaleName:rows[i].get("sale_name")
+    								})
+    							}
+    							com.zz91.ep.crm.reassign(grid, assignArr, "$!{l.name}");
+    						}
+    					}
+					#end
+					]
+				}]
+			})
+		});
+		
+		grid.loadCompany("$!{search.star}");
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid]
+		});
+	})
+</script>

@@ -1,0 +1,248 @@
+#set($layout='/layout/compnews/promptLayout.vm')
+
+
+<script src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/huanbao/www/login/js/register.js" type=text/javascript></script>
+<link href="http://img0.zz91.com/zz91/china/css/style_1.0.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/huanbao/www/login/css/reg.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+                
+<!--main-->
+<div class="DengLuZhuCe">
+    <div class="main">
+            <div class="nav">
+                <ul>
+                    <li id="nav_user">
+                        <a href="register2.htm??title=$!{title}&tags=$!{tags}&jsdetails=$!{jsdetails}">登&nbsp;录</a>
+                    </li>
+                    <li class="nav_user">
+                        <a href="register.htm?title=$!{title}&tags=$!{tags}&jsdetails=$!{jsdetails}">注&nbsp;册</a>
+                    </li>
+                </ul>
+            </div><!--end nav-->
+			
+            <div class="title">
+                <span class="title_zi">以下信息均为必填！</span>
+            </div><!--end title-->
+            <div class="content">
+                    <form action="#springUrl('/compnews/technicalarticles/doRegist.htm')" method="post" id="form_register">
+						#if($!{error})
+                        		<div class="reg_items" style="margin-left:5cm">
+                        			<div class="regi_label">
+                        				&nbsp;
+                        			</div>
+                        			<div class="regi_input" style="color:red;font-weight:bold;font-size:14px;">
+                        				$!{error}
+                        			</div>
+                        		</div>
+						   #end
+						<div class="project">
+                            <div class="project_title">
+                                账户信息
+                            </div>
+                            <!--end project_title-->
+                            <div class="item">
+                                <span class="name">
+                                    用户名：</span>
+                                    <input type="text" class="text" name="account" value="$!{compAccount.account}"  id="js_register_username" />
+                                    <span class=post_error></span>
+                            </div>
+                            <div class="item">
+                                <span class="name">
+                                    姓名：</span>
+                                    <input type="text"  class="text_small" name="accountName" id="js_register_name" value="$!{compAccount.name}"/>
+                                    <input name='sex' type="radio" value="0" checked="checked" />
+                                    先生
+                                    <input name='sex' type="radio" value="1" />
+                                    女士
+                                    <span class=post_error></span>
+                            </div>
+                            <div style="clear:both"></div>
+                            <div class="item">
+                                <span class="name">
+                                    密码：</span>
+                                    <input name="passwordClear" type="password" class="text" id="js_register_password" />
+                                    <span id="post_error1"></span>
+                                    <br/>
+                                    <ul class="check">
+                                        <li id="weak" style="background:#666"></li>
+                                        <li id="middle" style="background:#666"></li>
+                                        <li id="strength" style="background:#666"></li>
+                                    </ul>
+                            </div>
+                            
+                            <div class="item">
+                                <span class="name">
+                                    手机：</span>
+                                    <input type="text" class="text" name="mobile" value="$!{compAccount.mobile}" id="js_register_phone" />
+                                    <span class=post_error></span>
+                            </div>
+                            <div style="clear:both"></div>
+                             <div class="item" style="margin-top:10px">
+                                <span class="name">
+                                    确认密码：</span>
+                                    <input type="password" class="text" name="passwordConfirm" id="js_register_password_confirm" />
+                                    <span class=post_error></span>
+                            </div>
+                            
+                            <div class="item">
+                                <span class="name">
+                                    公司地址：</span>
+                                   <select id="provinceCode" name="provinceCode" style="width:70px;" class="select">
+                                     <option value="">省份</option>
+                                   </select>
+                                   <select id="areaCode" name="areaCode" style="width:100px;" class="select">
+                                     <option value="">城市</option>
+                                   </select>
+                                      
+                                    <span class=post_error></span>
+                            </div>
+                            <div style="clear:both"></div>
+                            
+                            
+                            
+                            <div class="item">
+                                <span class="name">
+                                    邮箱：</span>
+                                    <input type="text" class="text" name="email" id="js_register_email" value="$!{compAccount.email}"/>
+                                    <span class=post_error></span>
+                            </div>
+                            
+                            
+                            
+                            <div class="item">
+                                <span class="name">
+                                    详细地址：</span>
+                                    <input type="text" class="text" name="address" id="js_register_business" />
+                                    <span class=post_error></span>
+                            </div>
+                            <div style="clear:both"></div>
+                        
+                        </div>
+                        <!--end project-->
+                        <div class="project">
+                            <div class="project_title">
+                                公司信息
+                            </div>
+                            <!--end project_title-->
+                            <div class="project_left">
+                                <div class="item">
+                                    <span class="name">
+                                        公司名称：</span>
+                                        <input type="text" class="text" name="compName" id="js_register_company"  value="$!{profile.name}"/>
+                                        <span class=post_error></span>
+                                </div>
+                                
+                                <div class="item">
+                                    <span class="name">
+                                        所处行业：</span>
+										<select id="industryCode" name="industryCode" class="company_select">
+            					              <option value="">-----请选择-----</option>
+            					              #foreach($list in $!{companyIndustry})
+            					                <option value="$!{list.code}" #if($!{list.code} == $!{profile.industryCode}) selected #end>$!{list.name}</option>
+            					              #end
+        					           </select>
+                                        <span class=post_error></span>
+                                </div>
+                                <div class="item">
+                                    <span class="name">
+                                        主营产品：</span>
+                                        <input type="text" class="text" name="mainProductSupply"  id="js_register_ChanPing" value="$!{profile.mainProductSupply}"/>
+                                        <span class=post_error></span>
+                                </div>
+                                <div class="item">
+                                    <span class="name">
+                                        公司类型：</span>
+                                        <select class="company_select" name="businessCode">
+                                            <option value="">-----请选择-----</option>
+            					                #foreach($list in $!{companyCategory})
+            					                <option value="$!{list.value}" #if($!{list.value} == $!{profile.businessCode}) selected #end>$!{list.name}</option>
+            					                #end
+                                        </select>
+                                        <span class=post_error></span>
+                                </div>
+                                <div class="item">
+                                    <span class="name">
+                                        验证码：</span>
+                                        <input type="text" class="text" name="verifyCode" id="verifyCode" style="width:120px"/>
+                                        <span class=post_error   id="vtip">输入验证码</span>
+										<span id="vspan" style="display:none;">
+        				            	<img id="vcodeimg" src="$!{address.img}/front/images/global/loading.gif" align="absmiddle" width="90" height="28" title="看不清楚？点击图片换一张"/>
+        					            <a id="changeImg" href="javascript:void(0);" >看不清楚？换一张</a>
+        				</span>
+
+                                </div>
+                            </div>
+                            <!--end project_left-->
+                            <div class="project_right">
+                                <div class="item">
+                                    <div class="project_right_title">
+                                        <span style="color:red">*</span>
+                                        公司简介：</div>
+                                        <textarea name="details" cols="" rows="" class="text10">$!{profile.details}</textarea>
+                                        
+                                </div>
+                                <div style="clear:both"></div>
+                                <div class="TiaoKuan">
+                                    <input name="agreeterms" type="checkbox" value="agreeterms" checked>
+										我已阅读《<a href="javascript:void(0);" class="readertermsbtn" title="点击查看中国环保环注册服务条款">中国环保网服务条款</a>》
+                                </div>
+                            </div>
+                            <!--end project_right-->
+                        </div>
+                        <!--end project-->
+                        
+                        <div class="ok">
+                             
+                            <br/>
+                            <input class="submit" type="submit" value="" />
+                        </div><!--end ok-->
+                        <input type="hidden" value="http://www.zz91.com/submitCallback.htm" name="destUrl"/>
+                        <input type="hidden" value="10031003" name="regfrom"/>
+						<input type="hidden" name="token" value="$!{token}" />
+						<input type="hidden"  name="title" value="$!{title}"/>
+						<input type="hidden"  name="tags" value="$!{tags}"/>
+						<input type="hidden"  name="jsdetails" value="$!{jsdetails}"/>
+                    </form>
+            </div><!--end content-->
+    </div>
+    <!--end main-->
+    </div>
+<!--end DengLuZhuCe-->
+
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+  		
+          //控制验证码显示与切换
+		jQuery("#vcodeimg").click(function(){
+		                               
+            jQuery(this).attr("src", "$!{address.myesite}/validate/vcode.htm?"+new Date());
+        });
+		
+		jQuery("#changeImg").click(function(){
+            jQuery("#vcodeimg").attr("src", "$!{address.myesite}/validate/vcode.htm?"+new Date());
+        });
+  
+		jQuery("#verifyCode").click(function(){
+		jQuery("#vtip").hide();
+		jQuery("#vspan").show();
+		if(jQuery("#vcodeimg").attr("src")=="$!{address.img}/front/images/global/loading.gif"){
+			jQuery("#vcodeimg").attr("src", "$!{address.myesite}/validate/vcode.htm?"+new Date());
+	    	}
+	    });
+		 
+	    // init selector
+    	var selector = new Asto.util.Selector({
+    		url:"#springUrl('/compnews/technicalarticles/getAreaCode.htm')",
+    		selects:["#provinceCode","#areaCode"],
+    		field:{code:"code",label:"name"}
+    	});
+    	
+    	selector.init({ 
+    		rootCode:"10011000",
+           	initCode:"$!{compProfile.areaCode}"
+    	});
+  
+  });
+  
+</script>

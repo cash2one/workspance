@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ibdcategory">
+
+	<typeAlias alias="ibdCategory" type="com.zz91.ep.domain.trade.IbdCategory"/>
+	
+	<resultMap class="ibdCategory" id="simpleColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="downloadPath" column="download_path"/>
+    </resultMap>
+
+	<sql id="simpleColumn">
+        id,
+        code,
+        name,
+        download_path
+    </sql>
+    
+	<select id="queryCategoryByParentCode" resultMap="simpleColumnResultMap" parameterClass="java.lang.String">
+        select 
+        <include refid="simpleColumn"/>
+        FROM ibd_category 
+        where code like concat(#value#, '____') and is_show = 1 order by sort asc
+    </select>
+</sqlMap>

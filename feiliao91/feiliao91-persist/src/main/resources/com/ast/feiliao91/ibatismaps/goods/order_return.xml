@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="orderReturn">
+	<typeAlias alias="orderReturn" type="com.ast.feiliao91.domain.goods.OrderReturn" />
+	<resultMap class="orderReturn" id="orderReturnResult">
+		<result property="id" column="id" />
+		<result property="orderId" column="order_id" />
+		<result property="orderNo" column="order_no" />
+		<result property="logisticsNo" column="logistics_no" />
+		<result property="status" column="status" />
+		<result property="returnReason" column="return_reason" />
+		<result property="reurnPrice" column="return_price" />
+		<result property="returnRemark" column="return_remark" />
+		<result property="returnPic" column="return_pic" />
+		<result property="detailAll" column="detail_all" />
+		<result property="refuseReason" column="refuse_reason" />
+		<result property="recodeDetail" column="recode_detail" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="allColumn">
+		id,
+		order_id,
+		order_no,
+		logistics_no,
+		status,
+		return_reason,
+		return_price,
+		return_remark,
+		return_pic,
+		detail_all,
+		refuse_reason,
+		recode_detail,
+		company_id,
+		target_id,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="orderReturn">
+		insert into order_return
+		(
+		<include refid="orderReturn.allColumn" />
+		)values(
+		#id#,
+		#orderId#,
+		#orderNo#,
+		#logisticsNo#,
+		#status#,
+		#returnReason#,
+		#reurnPrice#,
+		#returnRemark#,
+		#returnPic#,
+		#detailAll#,
+		#refuseReason#,
+		#recodeDetail#,
+		#companyId#,
+		#targetId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="selectById" parameterClass="java.lang.Integer"
+		resultMap="orderReturnResult">
+		select
+		<include refid="orderReturn.allColumn" />
+		from order_return
+		where id=#id#
+	</select>
+
+	<update id="updateStatus" parameterClass="java.util.Map">
+		update order_return set
+		gmt_modified=now(),
+		status=#status#
+		where id=#orderReturnId#
+	</update>
+
+	<update id="updateOrdersReturn" parameterClass="orderReturn">
+		update order_return set gmt_modified=now()
+		<isNotEmpty prepend="," property="returnReason">
+			return_reason=#returnReason#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="reurnPrice">
+			return_price=#reurnPrice#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnRemark">
+			return_remark=#returnRemark#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnPic">
+			return_pic=#returnPic#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="status">
+			status=#status#
+		</isNotEmpty>
+		,logistics_no=#logisticsNo#
+		where id=#id#
+	</update>
+	
+	<update id="updateAll" parameterClass="orderReturn">
+		update order_return set gmt_modified=now()
+		<isNotEmpty prepend="," property="orderId">
+			order_id=#orderId#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="orderNo">
+			order_no=#orderNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="logisticsNo">
+			logistics_no=#logisticsNo#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="status">
+			status=#status#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnReason">
+			return_reason=#returnReason#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="reurnPrice">
+			return_price=#reurnPrice#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnRemark">
+			return_remark=#returnRemark#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnPic">
+			return_pic=#returnPic#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detailAll">
+			detail_all=#detailAll#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="refuseReason">
+			refuse_reason=#refuseReason#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="recodeDetail">
+			recode_detail=#recodeDetail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="companyId">
+			company_id=#companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="targetId">
+			target_id=#targetId#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+
+	<update id="updateOrdersReturnTwo" parameterClass="orderReturn">
+		update order_return set gmt_modified=now()
+		<isNotEmpty prepend="," property="detailAll">
+			detail_all=#detailAll#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="status">
+			status=#status#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="recodeDetail">
+			recode_detail=#recodeDetail#
+		</isNotEmpty>
+        where id=#id#
+	</update>
+	
+	<select id="selectByOrderId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	  select count(0) from order_return where order_id=#orderId#
+	</select>
+	
+	<select id="queryByOrderId" parameterClass="java.lang.Integer" resultMap="orderReturnResult">
+	   select 
+	   <include refid="orderReturn.allColumn"/>
+	   from order_return 
+	   where order_id=#orderId#
+	</select>
+	
+	<select id="queryByLogistics" parameterClass="java.lang.String" resultMap="orderReturnResult">
+	   select
+	   <include refid="orderReturn.allColumn"/>
+	   from order_return 
+	   where logistics_no=#logisticsNo#
+	</select>
+	
+	<select id="myRefund" parameterClass="java.util.Map" resultMap="orderReturnResult">
+	     select
+	      <include refid="orderReturn.allColumn"/>
+	      from order_return
+	      where company_id=#companyId#
+	      <include refid="common.pageOrderBy" />
+		  <include refid="common.pageLimit" />
+	</select>
+	
+	<select id="myRefundCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	   select count(0)
+	   from order_return
+	   where company_id=#companyId#
+	</select>
+	
+	<select id="getRefund" parameterClass="java.util.Map" resultMap="orderReturnResult">
+	     select
+	      <include refid="orderReturn.allColumn"/>
+	      from order_return
+	      where target_id=#companyId#
+	      <include refid="common.pageOrderBy" />
+		  <include refid="common.pageLimit" />
+	</select>
+	
+	<select id="getRefundCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	   select count(0)
+	   from order_return
+	   where target_id=#companyId#
+	</select>
+	
+	<select id="selectByOrdId" parameterClass="java.lang.Integer" resultMap="orderReturnResult">
+	  select 
+	  <include refid="orderReturn.allColumn"/>
+	  from order_return where order_id = #orderId#
+	</select>
+</sqlMap>

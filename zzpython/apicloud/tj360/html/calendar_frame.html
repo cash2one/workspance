@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>培训日历</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%; 
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	#calendar{
+		background-color: #434343;
+		height:290px;
+	}
+	section,dl,dt,dd{
+		margin: 0px;
+	}
+	#detail{
+		padding: 10px;
+		line-height: 20px;
+	}
+	dt{
+		font-weight: bold;
+		margin-bottom: 10px;
+	}
+	dd{
+		color: #666666;
+		margin-left: 10px;
+		word-wrap: break-word;
+		word-break: break-all;
+	}
+	dd span{
+		display: -webkit-box;
+		-webkit-box-pack: end;
+	}
+	dd span label{
+		font-weight: bolder;
+		color: #00b8ff;
+	}
+	.ddgap{
+		border-bottom: 1px solid #CCCCCC;
+		margin-bottom: 10px;
+		padding-bottom: 10px;
+		padding-top: 10px;
+	}
+	.nodata{
+		font-size: 14px;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<section id="calendar"></section>
+		<section id="detail">
+		</section>	
+	</div>
+</body>
+<script>
+	apiready = function() {
+		var pageParam = api.pageParam;
+		var specialDate = pageParam.specialDate;
+		var detailList = pageParam.detailList;
+		var calendar = api.require('calendar');
+		calendar.open({
+			x: 0,
+			y: pageParam.y,
+			width: api.winWidth,
+			height: 290,
+			specialDate: specialDate
+		}, function(ret, err){
+			var b = false;
+			for(var i=0; i<specialDate.length; i++ ){
+				if(ret.date == specialDate[i] ){
+					b = true;
+					createContent(b, i, detailList);
+					return;
+				}
+			}
+			createContent(b);
+		});
+	};
+	
+	function createContent(b, index, detailList){
+		if(b){
+			var html = '<dl><dt>培训通知：</dt>';
+			var length = detailList[index].list.length;
+			for(var i=0; i<length; i++){
+				html += '<dd><span><label>' + (i+1) + '</label>/' + length + '</span></dd>';
+				html += '<dd>培训项目：' + detailList[index].list[i].ccname + '</dd>';
+				html += '<dd>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;点：' + detailList[index].list[i].ccplace + '</dd>';
+				html += '<dd>地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：' + detailList[index].list[i].ccaddress + '</dd>';
+				html += '<dd>时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间：' + detailList[index].ccdate + '&nbsp;&nbsp;&nbsp;&nbsp;' + convertDate3(detailList[index].list[i].cctime) + '</dd>';
+				html += '<dd class="ddgap">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：' + detailList[index].list[i].remark + '</dd></dl>';
+			}
+			$api.html($api.byId('detail'), html);
+		}else{
+			var html = '<div class="nodata">今日无活动。</div>';
+			$api.html($api.byId('detail'), html);
+		}
+	}
+	
+	
+</script>
+</html>

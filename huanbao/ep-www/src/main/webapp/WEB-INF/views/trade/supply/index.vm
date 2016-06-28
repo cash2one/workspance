@@ -1,0 +1,110 @@
+#set($layout="/layout/trade/listlayout.vm")
+<!----------main list start------------>
+<article class="hb_mainblock">
+		<!----------main list left start------------>
+		<section  class="hb_tradelist_l">
+        		 <!--当前位置 start-->
+                 <header class="tdl_l_pot borderwhitegray html5radius comm_em_red">
+					<h1>
+                    <a href='$!{address.www}'>首页</a>
+					&gt;
+					<a href='$!{address.trade}'>交易中心</a>
+					
+					#foreach($category in $!{categoryPath})
+            			&gt;
+        				<a href="#springUrl('/trade/supply/index')--$!{category.code}--.htm">$!{category.name}</a>
+        			#end
+        			#if($!{search.keywords} != "")
+        				&gt;
+                        关键字：<em >$!{search.keywords}</em>
+        			#end
+					</h1>
+				 </header>
+                 <!-- 当前位置 end-->
+                 <!--您已经选择 start-->
+                 <div class="tdl_l_slt margintop8 html5radius borderwhitegray">
+                 		<span class="fontbold floatleft">您已选择：</span>
+                        <span id="searchPropertyDiv" class="tdl_l_slt_itm floatleft">
+                        	<a id="searchCateogryDiv" href="javascript:deleteSearchCateogry()">$!{categoryName}</a>
+                        </span>
+                        <div class="clear"></div>
+                 </div>
+                 <!--您已经选择 end-->
+				#parse('/trade/common/supplyIndexSorts.vm')
+                </div>
+				<!--热门标签 start-->
+                 <div class="clear"></div>
+				
+				 <div style="padding-top:35px;">
+                        #if("$!{search.encodeKeywords}"!="")
+                            <script type="text/javascript" src="http://gg.zz91.com/show?p=149&keywords=$!{search.encodeKeywords}"></script>
+                        #end      
+                </div>
+                
+                 <div class="tdl_l_hotags html5radius borderwhitegray">
+                        <span class=" fontbold"><a href="#springUrl('/trade')/newbq.htm" target="_blank">热门标签：</a></span>
+						#cacheFragment("$!{address.fragment}/fragment/tags/tradeCategoryTags.htm?categoryCode=$!{search.category}&size=10","","","600")
+						#foreach($value in $!{list})
+                			<span class="tdl_l_hotags_itm"><a href="#springUrl('/trade')/supply/index----${value}.htm" target="_blank">$value</a></span>
+						#end
+						#end
+                 </div>
+                 <!--热门标签 end-->
+                 <!--list start-->
+					#parse('/trade/common/supplyIndexList.vm')
+					#parse('/trade/common/supplyIndexHotRecom.vm')
+                 <!--hot recommend end-->
+                 <!-- maybe interest start-->
+					#parse('/trade/common/supplyIndexInterest.vm')
+                 <!-- maybe interest end-->
+        </section>
+       	<!----------main list end------------------->
+        <!----------main list right start---------->
+        #parse('/trade/common/supplyIndexRight.vm')
+        <!----------main list right end------------>
+        <!----------bottom search start------------>
+        #parse('/trade/common/bottomSearch.vm')
+        <!----------bottom search start------------>
+        
+</article>
+
+<script>
+    jQuery(document).ready(function(){
+        var propertyStr = "$!{search.propertyValue}";
+        var propertyArr = propertyStr.split(":");
+        for(var i = 0; i < propertyArr.length; i++) {
+            if(propertyArr[i] != "") {
+                var propertyValueArr = propertyArr[i].split("_");
+                var id = propertyValueArr[0];
+                var value = propertyValueArr[1];
+                var name = jQuery("#propertyName"+id).html();
+                jQuery("#searchPropertyDiv").append("<a id='property"+id+"' href='javascript:deleteSearchProperty("+id+")'>"+name+value+"</a>");
+                jQuery("#searchPropertyValueDiv").append("<input id='propertyValue"+id+"' name='propertyValueItems' type='hidden' value='"+id+"_"+value+"' />");
+            }
+        }
+		
+		var lsBox = new hb.tradelist.mouseHover();
+    	lsBox.listBox({
+    		lsbox:".tdl_ls"
+    	});
+		
+    	var btnsrh = new hb.tradelist.searchSlide();
+    	btnsrh.btnSearchch({
+    		tdlSearchType:"#tdlSearchType",
+    		tdlsearchTypeValue:"#tdlSearchTypeValue",
+    		tdlsearchKeyWords:"#tdlSearchKeyWords",
+    		tdlSearchKeyLabel:"#tdlSearchKeyLabel",
+    		tdlSearchKeySub:'#tdlSearchSub'
+    	});
+    });
+
+	function deleteSearchCateogry(){
+		var categoryCode = "$!{search.category}";
+		if (categoryCode.length > 4) {
+			categoryCode = categoryCode.substring(0,categoryCode.length-4);
+		}
+		jQuery("#searchCateogryDiv").remove();
+		window.location="#springUrl('/trade/supply/index')--"+categoryCode+"--$!{search.encodeKeywords}.htm";
+	}
+</script>
+<!----------ain list end----------->

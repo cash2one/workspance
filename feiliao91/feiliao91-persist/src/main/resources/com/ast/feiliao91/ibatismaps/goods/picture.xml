@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="picture">
+	<typeAlias alias="picture" type="com.ast.feiliao91.domain.goods.Picture"/>
+	<resultMap class="picture" id="pictureResult">
+			<result property="id" column="id"/>
+			<result property="targetId" column="target_id"/>
+			<result property="targetType" column="target_type"/>
+			<result property="companyId" column="company_id"/>
+			<result property="picAddress" column="pic_address"/>
+			<result property="isDel" column="is_del"/>
+			<result property="gmtCreated" column="gmt_created"/>
+			<result property="gmtModified" column="gmt_modified"/>
+			<result property="status" column="status"/>
+			<result property="checkPerson" column="check_person"/>
+	</resultMap>
+	<!-- 创建图片 -->
+	<insert id="insertPicture" parameterClass="picture">
+		insert into picture
+		(
+			target_id,
+			target_type,
+			company_id,
+			pic_address,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#targetId#,
+			#targetType#,
+			#companyId#,
+			#picAddress#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 确认产品编号 -->
+	<update id="updateTargetId" parameterClass="java.util.Map">
+		update picture set gmt_modified=now(),
+		target_id=#targetId#
+		<isNotEmpty prepend="," property="targetType">
+			target_type = #targetType#
+		</isNotEmpty>
+		where id=#id#
+	</update>
+	<sql id="allColumn">
+		id, target_id, target_type, company_id, pic_address, is_del, gmt_created, gmt_modified,status,check_person
+	</sql>
+	
+	<!-- 根据编号检索图片信息 -->
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="pictureResult">
+			select 
+				<include refid="picture.allColumn" />
+			from picture
+			where id = #id#
+	</select>
+	
+	<!-- 各相册数据列表 -->
+	<select id="queryPicList" parameterClass="java.util.Map" resultMap="pictureResult">
+		select 
+			<include refid="picture.allColumn" />
+		from picture
+		where company_id=#companyId# and is_del='0' and target_id > 0
+		<isNotEmpty prepend="and" property="targetType">
+				target_type=#targetType#
+		</isNotEmpty>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<!-- 各相册图片数 -->
+	<select id="countPicList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from picture
+		where company_id=#companyId# and is_del='0' and target_id > 0
+		<isNotEmpty prepend="and" property="targetType">
+				target_type=#targetType#
+		</isNotEmpty>
+	</select>
+	<!-- 用户、类型获取图片 -->
+	<select id="queryPictureByCondition" parameterClass="java.util.Map" resultMap="pictureResult">
+		select 
+			<include refid="picture.allColumn" />
+		from picture
+		where is_del='0'
+		<isNotEmpty prepend="and" property="companyId">
+			company_id=#companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="targetType">
+			target_type=#targetType#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="targetId">
+			target_id = #targetId#
+		</isNotEmpty>
+		order by id asc
+		<isNotEmpty property="size">
+			limit #size#
+		</isNotEmpty>
+	</select>
+	
+	<update id="deletePic" parameterClass="java.lang.Integer">
+	   update picture set gmt_modified=now(),is_del=1
+	   where id=#id#
+	</update>
+	
+	<select id="selectByAddr" parameterClass="java.lang.String">
+	    select id from picture
+	    where pic_address=#arr#
+	</select>
+	<!-- 删除改商品下的所有图片 -->
+	<!-- 提交更新产品时有用到 -->
+	<update id="deleteAllPicInThisGoods" parameterClass="java.lang.Integer">
+	   update picture set gmt_modified=now(),is_del=1
+	   where target_id=#targetId# and (target_type='1' or target_type='2')
+	</update>
+	
+	<update id="updateSellPostGoodsPic" parameterClass="java.util.Map">
+		update picture set gmt_modified=now(),target_id=#targetId#
+		where is_del=0 and id=#id#
+	</update>
+	
+	<!-- 后台商品审核时获得商品图片和检测报告等queryPictureByAdmin -->
+	<select id="queryPictureByAdmin" parameterClass="java.util.Map" resultMap="pictureResult">
+		select 
+			<include refid="picture.allColumn" />
+		from picture
+		where is_del='0'
+		and 
+		<![CDATA[target_type <= '2']]>
+		<isNotEmpty prepend="and" property="companyId">
+			company_id=#companyId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="targetId">
+			target_id = #targetId#
+		</isNotEmpty>
+	</select>
+	
+	<update id="batchUpdatePicStatus" parameterClass="java.util.Map">
+		update picture set gmt_modified=now(),status=#status#,check_person=#checkPerson#
+		where id=#id#
+	</update>
+</sqlMap>

@@ -1,0 +1,447 @@
+#set($layout="/layout/defaultS.vm")
+<script src="$!{address.img}/zz91/newsample/js/style.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/newsample/css/jcarousel.connected-carousels.css">
+<script type="text/javascript" src="$!{address.img}/zz91/newsample/js/jquery.jcarousel.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/zz91/newsample/js/jcarousel.connected-carousels.js"></script>
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+	
+<style>
+.i-box-m{width:208px;border:1px solid #f48432;border-top:none;padding:10px 5px 10px 10px;overflow:hidden;margin:0 auto}
+#i-box{width:237px;position:relative}
+.i-box-lt{position:absolute;left:0;top:0}
+.i-box-gt{position:absolute;right:0;top:0}
+</style>
+<script>
+function myFunction(){
+	alert("数量不足");
+}
+function cute(){
+	alert("对不起，您不能向自己申请拿样");
+}
+
+jQuery(document).ready(function(){
+	
+	#if($!{orderPage.startIndex} > 0)
+		change('1');
+	#end
+	
+});
+
+</script>
+	
+	
+<div class="content">
+	
+	## 顶部 搜索框
+	#parse("/common/searchLabel.vm")
+    <!--end top-->
+	#parse("/common/topMenu.vm")
+	
+    <div class="con-dh">
+        <a href="#springUrl('/')" target="_blank">样品中心</a>
+        >
+		<a href="#springUrl('/nyzx.htm')">拿样中心</a>
+        >
+		<a href="#springUrl('/nyzx.htm?title=')$!{mainEncode}" target="_blank">$!{mainLabel}</a>
+    </div>
+    <!--end con-dh-->
+    <div class="pro">
+        <div class="pro-left">
+            <div class="pl-item">
+                <div class="pl-item-i">
+                    <div class="wrapper">
+                        <div class="connected-carousels">
+                            <div class="stage">
+                                <div class="carousel carousel-stage">
+                                    <ul>
+                                        #if($picList.size()>0)
+											#foreach($obj in $picList)
+												<li style="float:none">
+													<a href="http://trade.zz91.com/pic/$!{dto.products.id}.html" target=_blank><img src="$!{address.img3}/300x270/$!{obj.picAddress}" alt="$!{dto.products.title}" /></a>
+												</li>
+											#end
+										#else
+											<li>
+												<img src="$!{address.img}/front/images/global/noimage.gif" alt="$!{dto.products.title}" />
+											</li>
+										#end
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="navigation">
+                                <a href="#" class="prev prev-navigation">&lsaquo;</a>
+                                <a href="#" class="next next-navigation">&rsaquo;</a>
+                                <div class="carousel carousel-navigation">
+                                    <ul>
+                                        #if($picList.size()>0)
+											#foreach($obj in $picList)
+                                                <li>
+                                                    <img src="$!{address.img3}/80x80/$!{obj.picAddress}" width="50" height="50" alt="$!{dto.products.title}" />
+                                                </li>
+											#end
+										#else
+											<li>
+												<img src="$!{address.img}/front/images/global/noimage.gif" width="50" height="50" alt="$!{dto.products.title}" />
+											</li>
+										#end
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end pl-itme-i-->
+				<div class="pl-item-m" style="width:380px">
+					<div class="mr-txt" title="$!{dto.products.title}">#printTitle($!{dto.products.title} 26 "")</div>
+					<!--end mr-txt-->
+					<div class="mr-text">
+						<div class="mrt-img">
+							<img src="$!{address.img}/zz91/newsample/images/yang.jpg" />
+						</div>
+						<!--end mrt-img-->
+						<div class="mrt-txt">
+							拿样价格:
+							#if($!{dto.sample.takePrice}&&$!{dto.sample.takePrice}>0)
+								<font>$!{dto.sample.takePrice}</font>元
+							#else
+								<span style="color:red"><b>免费</b></span>
+							#end
+						</div>
+						<!--end mrt-txt-->
+						<div class="cb"></div>
+                    </div>
+                    <!--end mr-text-->
+                    <div class="mrt-content">
+                        <div class="mc-item">
+                            <ul>
+                                <li>样品总量:<font>$!{accSum}件  ($!{takeAmount}人已申请)</font>
+                                </li>
+                                <li>剩余数量:<font>$!{dto.sample.amount}件</font>
+                                </li>
+                                <li>单位重量:<font>$!{dto.sample.weight}千克/件</font>
+                                </li>
+                                <li>运&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费:<font>
+										    #if($!{dto.sample.sendPrice}&&$!{dto.sample.sendPrice}>0)
+											$!{dto.sample.sendPrice}元    
+    												#if($!{dto.sample.isCashDelivery}==1) 
+    													<a  style="color:#666;text-decoration:none;cursor:pointer"  title="买家收到货后，由买家支付运费" >（支持货到付款）</a>
+    												#end	
+											#else 卖家承担运费
+									        #end</font>
+                                    <span class="mc-txt">
+										货物从
+										<span class="mc-txt1">$!{sampleAreaLabel}</span>
+										发出
+									</span>
+                                </li>
+                                <li>交易方式:<font>支持支付宝交易</font>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--end mc-item-->
+                    </div>
+                    <!--end mrt-content-->
+					
+                    <div class="mc-box">
+						#if($!{dto.sample.amount}>0 && $!{dto.sample.amount}!="")
+							<div class="mc-btn1">
+								<div class="mc-btn-item" >
+									#if($!{cute}==0)
+										<a href="#" onclick="cute()">申请拿样</a>
+									#else
+										<a href="javascript:openoverlay('$!{address.yang}/apply_zxny.htm?sampleId=${dto.sample.id}&destUrl=$!{address.yang}/submitCallback.htm','在线拿样/电话拿样',755,438,0);">申请拿样</a>
+									#end
+								</div>
+							</div>
+						#else
+							<div class="mc-btn1" style="border:0px">
+								<div class="mc-btn-item" onclick="myFunction()">
+									<img src="$!{address.img}/zz91/sample/images/sell_out_large.jpg" alt="已售罄" />
+								</div>
+							</div>
+						#end
+                        <!--end mc-btn-->
+                        <div class="mc-btn">
+                            <div class="mc-btn-item1">
+                                <a href="#springUrl('/order.htm')">定制样品</a>
+                            </div>
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mc-box-->
+##					<div class="mc-box-points">
+##						    <img src="http://img0.zz91.com/zz91/newsample/images/bell.jpg" />
+##							奖励：拿样付款后，可获得<span class="mb-credit">5个积分</span>,一分=一块钱。<a href="#springUrl('/score.htm')" target="_blank">查看详情</a>
+##						</div>
+						<!--end mc-box-points-->
+					<div class="mc-box-tel">
+							#if($!{tel400} && $!{tel400} !="")
+								<span class="mb-tel-lt">商家免费热线：</span>
+								<span class="mb-tel-gt">$!{tel400}</span>
+							#else
+								<span class="mb-tel-lt">拿样咨询热线：</span>
+								<span class="mb-tel-gt">0571-56635663</span>
+							#end 
+					</div>
+					<!--end mc-box-tel-->
+                </div>
+                <!--end pl-item-m-->
+                <div class="cb"></div>
+            </div>
+            <!--end pl-item-->
+            <div class="pl-block">
+                <div class="pro-lc">
+                    <img src="$!{address.img}/zz91/newsample/images/lc.jpg" />
+                </div>
+                <!--end pro-lc-->
+				<a name="pageList"></a>
+                <div  class="mc-tle"  id="menu">
+                    <div class="mt-txt0" onclick="change('0')" id="mt0">详细信息</div>
+                    <div class="mt-txt1" onclick="change('1')" id="mt1">
+						#if($!{orderPage.totalRecords}&&$!{orderPage.totalRecords}>0)
+							#set($totalNY = $!{orderPage.totalRecords})
+						#else
+							#set($totalNY = 0)
+						#end
+						拿样纪录【${totalNY}件】
+					</div>
+                    <div class="cb"></div>
+                </div>
+                <div class="mc-list" style="display:none;" id="JKDiv_1">
+					<div class="l-lst">
+						#if($orderPage.records.size() > 0)
+						<table class="nav" cellspacing="0" cellpadding="2">
+							<tr>
+								<td><b>买家</b></td>
+								<td><b>数量(件)</b></td>
+								<td><b>单价(元)</b></td>
+								<td><b>下单时间</b></td>
+								<td><b>状态</b></td>
+							</tr>
+							#foreach($obj in $orderPage.records)
+							<tr>
+								<td>$!{obj.buyerCompanyAccount.substring(0,3)}*****</td>
+								<td>$!{obj.number}</td>
+								<td>$!{obj.unitPrice}</td>
+								<td>#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{obj.updateTime})</td>
+								<td>
+									#if($!{obj.state}=="13")
+										成交
+									#else
+										交易中
+									#end
+								</td>
+							</tr>
+							#end
+						</table>
+						#detailNav($!{orderPage} "#springUrl('/sale/')$!{dto.products.id}" "" "")
+						#end
+					</div>
+                </div>
+                <div class="mc-list1" style="display:block;" id="JKDiv_0">
+                    <div class="l-lst">
+                        <table class="nav" cellspacing="0" cellpadding="2">
+                            <tr class="nav_tr">
+							#foreach($obj in $properties.keySet())
+								#if($velocityCount%2==0)
+									#if($velocityCount == $properties.size())
+        										<td><b>$obj</b></td>
+        									<td>$properties.get("${obj}")</td>
+        								</tr>
+									#else
+        									<td><b>$obj</b></td>
+        									<td>$properties.get("${obj}")</td>
+        								</tr>
+        								<tr class="nav_tr_">
+									#end
+								#else
+									<td><b>$obj</b></td>
+									<td>$properties.get("${obj}")</td>
+								#end
+							#end
+                        </table>
+                    </div>
+                    <div class="mc-dev">$!{dto.products.details}</div>
+                </div>
+                <!--end mc-tle-->
+                <div class="lb-tle">
+                    <div class="lb-txt">相关样品</div>
+                    <!--end lb-txt-->
+                    <div class="lb-more">
+						<a href="#springUrl('/k-')$!{mainEncode}" target="_blank">查看更多>></a>
+                    </div>
+                    <!--end lb-more-->
+                    <div class="cb"></div>
+                </div>
+                <!--end lb-tle--> 
+                <div class="pl-box">
+                    <ul>
+						#set($count=0)
+						#foreach($obj in $relateList)
+						#if($!{dto.products.id}==$!{obj.products.id}||$count>=3)
+						#else
+						#set($count = $count + 1 )
+                        <li class="yang-block-li_">
+                            <div class="li-photo">
+                                <div class="lp-img">
+                                    <a href="#springUrl('/sale/')$!{obj.products.id}.htm" target="_blank" class="lp-img-a">
+                                        <img src="$!{address.img3}/227x227/$!{obj.coverPicUrl}" />
+                                    </a>
+                                </div>
+                                <!--end lp-img-->
+                            </div>
+                            <!--end li-photo-->
+                            <div class="li-photoBottombar_">
+                                <div class="li-photoBottombar-tle">
+                                    <a href="#springUrl('/sale/')$!{obj.products.id}.htm" class="li-photoBottombar-a">#printProductType($!{obj.products.productsTypeCode},"",$!{obj.products.title})</a>
+                                </div>
+                                <!--end li-photoBottombar-tle-->
+                            </div>
+                            <!--end li-photoBottombar-tle-->
+                            <div class="li-block">
+                                <div class="li-block-l">
+                                    <h2>剩余：$!{obj.sample.amount}件</h2>
+                                    <h2>拿样价：
+										#if($!{obj.sample.takePrice}&&$!{obj.sample.takePrice}>0)
+											<span class="h2-price">$!{obj.sample.takePrice}</span>
+											元/件
+										#else
+											<span class="h2-price"><b>免费</b></span>
+										#end
+									</h2>
+                                </div>
+                                <!--end li-block-l-->
+								#if($!{obj.sample.amount} > 0)
+									<div class="li-block-r">
+										<a href="#springUrl('/sale/')$!{obj.products.id}.htm"   target="_blank">申请拿样</a>
+									</div>
+								#else
+									<a href="#springUrl('/sale/')$!{obj.products.id}.htm"   target="_blank">
+										<img src="$!{address.img}/zz91/sample/images/sell_out_small.jpg" alt="已售罄" />
+									</a>
+								#end
+							<!-- 
+								<a href=#if($!{obj.products.productsTypeCode}=="10331000")"#springUrl('/sale/')$!{obj.products.id}.htm" #else "$!{address.trade}/productdetails$!{obj.products.id}.htm" #end target="_blank">
+									<div class="li-block-r">申请拿样</div>
+								</a>
+							-->
+							
+                                <!--end li-block-r-->
+                                <div class="cb"></div>
+                            </div>
+                            <!--end li-block-->
+                            <div class="li-company">
+                                <a href=#if($!{obj.company.membershipCode}=="10051000") "$!{address.company}/compinfo$!{obj.products.companyId}.htm" #elseif($!{obj.company.membershipCode}=="10051003")"http://www.zz91.com/ppc/index$!{obj.products.companyId}.htm"   #else "http://$!{obj.company.domainZz91}.zz91.com" #end target="_blank" class="li-comInfo" title="$!{obj.company.name}">
+									#printTitle($!{obj.company.name} 17 "")
+								</a>
+                            </div>
+                            <!--end li-company-->
+                        </li>
+						#end
+						#end
+                    </ul>
+                </div>
+                <!--end pl-box--> 
+            </div>
+        </div>
+        <!--end pro-left-->
+        <div class="pro-right">
+            <div class="pr-item">
+                <div class="pr-item-box">
+                    <div class="i-box-tle" style="height:auto;line-height:25px;">
+						<a style="color:white" href=#if($!{dto.company.membershipCode}=="10051000") "$!{address.company}/compinfo$!{dto.products.companyId}.htm" #elseif($!{dto.company.membershipCode}=="10051003")"http://www.zz91.com/ppc/index$!{dto.products.companyId}.htm" #else "http://$!{dto.company.domainZz91}.zz91.com" #end target="_blank" title="$!{dto.company.name}">
+							$!{dto.company.name}
+						</a>
+					</div>
+                    <!--end i-box-tle-->
+                    <div class="i-box">
+                        <div class="i-box-m">
+                            <ul>
+                                <li>样品数量：#if($ypCount&&$ypCount>0) $ypCount#else 0#end件</li>
+                                <li>供求数量：#if($!{gqCount}&&$!{gqCount}>0) $!{gqCount}#else 0#end条</li>
+                                <li>询价数量：#if($!{inquiryCount}&&$!{inquiryCount}>0) $!{inquiryCount}#else 0#end条</li>
+                                <li class="dash">主营：$!{dto.company.business}</li>
+                                <li>所在地区：#if($!{dto.products.location}) $!{dto.products.location} #else $!{companyAreaLabel} #end</li>
+                            </ul>
+                        </div>
+                        <!--end i-box-m-->
+						<img src="$!{address.img}/zz91/newsample/images/ll.jpg" class="i-box-lt" />
+                    	<img src="$!{address.img}/zz91/newsample/images/rr.jpg" class="i-box-gt" />
+                    </div>
+                    <!--end i-box-->
+                    <div class="i-box">
+                        <div class="i-box-name">
+                            <div class="name-l">该商家其他供求</div>
+                            <!--end name-l-->
+                            <div class="name-r">
+								#if($!{dto.company.membershipCode}=="10051003")
+        							#set($companyUrl = "http://www.zz91.com/ppc/zxgq$!{dto.products.companyId}.htm")
+        						#elseif($!{dto.company.membershipCode}=="10051000")
+        							#set($companyUrl = "http://company.zz91.com/compinfo.htm?id="+$!{dto.products.companyId}+"&flag=1")
+        						#else
+        							#if($!{dto.company.domainZz91}!="")
+        								#set($companyUrl = "http://$!{dto.company.domainZz91}.zz91.com/zxgq.htm")
+        							#else
+        								#set($companyUrl = "#springUrl('/nyzx.htm?title=')$!{mainEncode}")
+        							#end
+        						#end
+                                <a href="$companyUrl" target="_blank">更多</a>
+                            </div>
+                            <!--end name-r-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end i-box-name-->
+                        <div class="i-box-con">
+							#foreach($obj in $ownList)
+                            <div class="mi-box">
+                                
+                                <!--end mt-img-->
+								<div class="mi-txt">
+									#if($obj.sample)
+    									#if($!{obj.products.productsTypeCode}=="10331000")
+    										<span class="span-yang">[样]</span><a href="#springUrl('/sale/')$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">#printProductType($!{obj.products.productsTypeCode},"","")#printTitle($!{obj.products.title} 9 "")</a>
+    									#else
+    										<span class="span-yang">[样]</span><a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">#printProductType($!{obj.products.productsTypeCode},"","")#printTitle($!{obj.products.title} 9 "")</a>
+    									#end
+									#else
+										<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">#printProductType($!{obj.products.productsTypeCode},"","")#printTitle($!{obj.products.title} 11 "")</a>
+									#end
+								</div>
+##                                <div class="mi-txt">
+##                                    <a href="">供应PP</a>
+##                                </div>
+                                <!--end mi-txt-->
+                                <div class="mi-txt1">#printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})</div>
+                                <!--end mi-txt1-->
+                                <div class="cb"></div>
+                            </div>
+							#end
+                            <!--end mi-box-->
+                        </div>
+                        <!--end i-box-con-->
+                    </div>
+                    <!--end i-box-->
+                    <div class="i-box_">
+                        <div class="i-box-que">不是你想找的样品？</div>
+                        <!--end i-box-ad-->
+                        <div class="i-box-btn">
+                            <a href="#springUrl('/buy/order.htm')" target="_blank">发布定制样品</a>
+                        </div>
+                        <!--end i-box-btn-->
+                    </div>
+                    <!--end i-box-->
+                </div>
+                <!--end pr-item-box-->
+            </div>
+            <!--end pr-item-->
+        </div>
+        <!--end pro-rihgt-->
+        <div class="cb"></div>
+    </div>
+    <!--end pro-->
+</div>
+
+

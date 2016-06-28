@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisPhoneLog">
+	<typeAlias alias="analysisPhoneLog" type="com.ast.ast1949.domain.analysis.AnalysisPhoneLog"/>
+	<resultMap id="analysisPhoneLogResult" class="analysisPhoneLog">
+		<result property="adposition" column="adposition" />
+		<result property="companyId" column="company_id" />
+		<result property="telCount" column="tel_count" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--某段时间某广告位某公司的通话量 -->
+	<select id="queryTelCByCompanyIdATAA" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(tel_count)
+		from analysis_phone_log
+		where company_id=#companyId# and adposition=#adposition# and gmt_target>=#from# and #to#>=gmt_target 
+	</select>
+	<!--某段时间某公司的通话量-->
+	<select id="queryTelCByCompanyIdAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(tel_count)
+		from analysis_phone_log
+		where company_id=#companyId# and gmt_target>=#from# and #to#>=gmt_target 
+	</select>
+    <!--某段时间某广告位的通话量-->
+    <select id="queryTelCByAdpositionAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+    	select sum(tel_count)
+    	from analysis_phone_log
+		where adposition=#adposition# and gmt_target>=#from# and #to#>=gmt_target 
+    </select>
+   </sqlMap>

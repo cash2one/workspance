@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subnetLink">
+
+	<typeAlias alias="subnetLink" type="com.zz91.ep.domain.trade.SubnetLink"/>
+	
+	<resultMap class="subnetLink" id="fullColumnMap">
+		<result property="id" column="id"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="name" column="name"/>
+		<result property="link" column="link"/>
+		<result property="sort" column="sort"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+
+	<sql id="fullColumn">
+		`id`,
+		`parent_id`,
+		`name`,
+		`link`,
+		`sort`,
+		`gmt_created`,
+		`gmt_modified`
+	</sql>
+	
+	<insert id="insertSubnetLink" parameterClass="subnetLink">
+		insert into `subnet_link`
+		(
+		`parent_id`,
+		`name`,
+		`link`,
+		`sort`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#parentId#,
+		#name#,
+		#link#,
+		#sort#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateSubnetLink" parameterClass="subnetLink">
+		update `subnet_link`
+		set
+		`parent_id` = #parentId#,
+		`name` = #name#,
+		`link` = #link#,
+		`sort` = #sort#,
+		`gmt_modified` = now()
+		 where id=#id#
+	</update>
+	
+	<select id="queryParentLink" resultMap="fullColumnMap">
+		select
+		<include refid="fullColumn"/>
+		from subnet_link
+		where parent_id=0 
+	</select>
+	
+	<select id="queryChildLinkByParentId" parameterClass="java.util.Map" resultMap="fullColumnMap">
+		select 
+		<include refid="fullColumn"/>
+		from subnet_link
+		where parent_id=#parentId#
+		<include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryChildCountByParentId" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) 
+		from subnet_link
+		where parent_id=#id#
+	</select>
+	
+	<delete id="deleteLinkById" parameterClass="java.lang.Integer">
+		delete from subnet_link
+		where id=#id#
+	</delete>
+</sqlMap>

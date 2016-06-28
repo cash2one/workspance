@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>我的收藏</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/myrc/house.css"/>
+</head>
+<body>
+<!-- <div class="nav-heart" id="header">
+	<ul class="nav-heart-ul clear" id="wrapper">
+		<li class="current-nav">供求</li>
+		<li>公司</li>
+		<li>报价</li>
+		<li>社区</li>
+	</ul>
+	<span class="current-nav-bottom" id="navmark"></span>
+</div> -->
+<ul class="look-list">
+	<!-- <li>
+		<div class="look-title">供应PP再生料</div>
+		<div class="look-time">发布时间：2015-03-12  17:36
+			<span class="alter">删除</span>
+		</div>
+	</li> -->
+</ul>
+</body>
+<script id="info-list" type="text/html">
+	<li id={{ d.content_id }} class="change-bgcolor">
+		<div class="look-title">{{ d.content_title }}</div>
+		<div class="look-time">发布时间：2015-03-12  17:36
+			<span class="alter">删除</span>
+		</div>
+	</li>
+</script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script type="text/javascript">
+var currPage = 1;
+apiready = function(){
+	api.showProgress({title:'加载中',modal:false});
+	ajaxInfo();
+	//加载更多
+	api.addEventListener({
+		name : 'scrolltobottom'
+	}, function(ret, err) {
+		currPage += 1;
+		if($(".mui-spinner").length==0){
+			$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+		}
+		
+		setTimeout(function(){
+			ajaxInfo();
+		},1000)
+	});
+	//页面刷新
+	api.setRefreshHeaderInfo({
+		visible : true,
+		// bgColor: '#F2F2F2',
+		bgColor : '#E6E6E6',
+		textColor : '#000000',
+		textDown : '下拉刷新',
+		textUp : '释放刷新',
+	}, function(ret, err) {
+		currPage = 1;
+		ajaxInfo();
+		api.refreshHeaderLoadDone();
+		api.hideProgress();
+		api.toast({
+			msg : '数据已是最新！',
+			duration : 3000,
+			location : 'bottom'
+		});
+	});
+	$(".look-list").on("click",".alter",function(event){
+		event.stopPropagation();
+		$(this).parents("li").slideUp("",function(){
+			$(this).remove()
+		})
+	})	
+	$(".look-list").on("click","li",function(event){
+		event.stopPropagation();
+		var id = $(this).attr("id");
+		if(checkStatus==1){
+			var pageParam = {
+	            wintitle:"供求详情",
+	            type:"infomation-heart",
+	            id:id,
+	            nav_list:[{"typename": "供求详情", "id": 1}, {"typename": "公司简介", "id": 2}], //头部划动标题
+	            frame_url:["widget://html/trade/firm-detail.html","widget://html/trade/firm.html"], //打开frame组的页面集合
+	            topnumber:2,
+	            bounces:false
+	          };
+	      	openWin("infomation-heart","widget://html/comm/infomation-heart.html",pageParam);
+		}else if(checkStatus==2){
+			var pageParam = {
+                wintitle:"公司详情",
+                type:"firm",
+                id:id,
+                topnumber:2,
+                bounces:false
+            };
+            openWin("firm","../trade/firm.html",pageParam);
+		}else if(checkStatus==3){
+			var pageParam = {
+			    wintitle:"报价详情",
+			    type:"price-detail",
+			    id:id
+			};
+			openWin("price-detail"+id,"widget://html/price/price-detail.html",pageParam);
+		}else if(checkStatus==4){
+			var pageParam = {
+	          wintitle:"互助详情",
+	          type:"cunity-detail",
+	          bounces:false,
+	          infoid:id
+	        };
+	        openWin("cunity-detail","widget://html/huzhu/cunity-detail.html",pageParam);
+		}else if(checkStatus==5){
+			var pageParam = {
+	          wintitle:"资讯详情",
+	          type:"detail",
+	          bounces:false,
+	          infoid:id
+	        };
+	        openWin("detail","widget://html/news/detail.html",pageParam);
+		}
+	})	
+}
+var checkStatus;
+function ajaxInfo(){
+	checkStatus = api.pageParam.typeid;
+	var company_id = UserInfo.memberID();
+	var usertoken = UserInfo.token();
+	api.ajax({
+	    url : hosturl + 'myrc_favorite/?company_id='+ company_id +'&usertoken='+ usertoken +'&appsystem='+ api.systemType +'&datatype=json&checkStatus='+checkStatus +'&page=' + currPage,
+	    method : 'get',
+	    timeout : 30,
+	    dataType : 'json',
+	    returnAll : false
+	}, function(ret, err) {
+	    if (ret) {
+	        var pageHtml = "";
+	        $.each(ret.list, function(index, item) {
+		        var getTpl = $api.html($api.byId("info-list"));
+		        laytpl(getTpl).render(item, function(html) {
+		            pageHtml = pageHtml + html;
+		        });
+	        })
+	        if(currPage == 1){
+	        	$(".look-list").html(pageHtml)
+	        }else{
+	        	$(".look-list").append(pageHtml)
+	        }
+	        api.hideProgress();
+	        $(".mui-spinner").remove();
+	    } else {
+	    	api.hideProgress();
+	    };
+	});
+}
+</script>
+</html>

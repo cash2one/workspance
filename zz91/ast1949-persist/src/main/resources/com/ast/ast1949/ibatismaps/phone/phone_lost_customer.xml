@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="phoneLostCus">
+	<typeAlias alias="phoneLostCusDO" type="com.ast.ast1949.domain.phone.PhoneLostCus"/>
+	<resultMap id="phoneLostCusResult" class="phoneLostCusDO">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="gmtTarget" column="gmt_target"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		gmt_target,
+		gmt_created,
+		gmt_modified
+	</sql>
+	<select id="queryIdBycompanyId" parameterClass="java.lang.Integer" resultMap="phoneLostCusResult">
+		select 
+		<include refid="defaultColumn" />
+		from phone_lost_customer 
+		where company_id=#companyId#  limit 1
+	</select>
+	<delete id="deletePhoneLostCusBycompanyId" parameterClass="java.lang.Integer">
+		delete from phone_lost_customer where company_id=#companyId#
+	</delete>
+</sqlMap>

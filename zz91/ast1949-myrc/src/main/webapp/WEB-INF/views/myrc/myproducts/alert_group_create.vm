@@ -1,0 +1,71 @@
+#set( $layout = "/layout/blank.vm" )
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" /> 
+<title>创建供求系列编辑窗口</title> 
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+<link href="$!{address.css}/global/comm_hack.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/myrc/zz91_myrc.css" rel="stylesheet" type="text/css" />
+#parse("/common/context.vm")
+<script>
+function subgroup(frm) {
+    if (frm.name.value=="") {
+        alert ("请输入系列名称");
+        frm.name.focus();
+        return false;
+    }
+    
+    //提交
+	jQuery.ajax({
+    	url:Context.ROOT+"/myrc/myproducts/addProductsSeries.htm",
+    	type:"POST",
+    	cache:false,
+    	async:false,
+    	dataType:"json",
+    	data:jQuery("#"+frm.id).serialize(),
+    	success:function(msg){
+    		if(msg!=null&&msg.success==true){
+                parent.groupclose();
+                parent.document.location.reload();
+    		} else {
+    			alert(msg.data);
+    		}
+    	},
+    	error:function(e){
+    		alert(" 添加失败！");
+    	}
+    });
+}
+</script> 
+</head> 
+<body> 
+<div class="editFloatFrame">
+<form name="sForm" id="sForm"> 
+    <div class="editAddSorts">
+        <div class="editItemsTit">
+    		<label for="name">系列名称：</label>
+    	</div>
+    	<div class="editItemsFill">
+    			<input name="name" type="text" class="inputTxt" id="name" style="width:290px">
+    			<input name="seriesOrder" type="hidden" id="seriesOrder" value="1"/>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+	<div class="editAddSorts">
+        <div class="editItemsTit">
+    		<label for="seriesDetails">系列描述：</label>
+        </div>
+        <div class="editItemsFill">
+    		<textarea name="seriesDetails" cols="30" rows="10" class="inputTxt" id="seriesDetails" style="width:290px; height:130px"></textarea>
+        </div> 
+        <div style="clear:both"></div>
+    </div>
+	<div class="editSub">
+			<input name="Submit" type="button" class="buttonMinGray" value=" 提交 " onclick="subgroup(this.form)"/> 
+	</div> 
+</form>
+</div>
+</body> 
+</html> 

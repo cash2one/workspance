@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyManagerUser">
+	<typeAlias alias="companyManagerUserDO" type="com.ast.ast1949.domain.company.CompanyManagerUserDO"/>
+	
+	<insert id="insertCompanyManagerUser" parameterClass="companyManagerUserDO">
+		insert into company_manager_user
+            (company_id,
+             admin_user_id,
+             gmt_created,
+             gmt_modified)
+		values (#companyId#,
+		        #adminUserId#,
+		        now(),
+		        now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteCompanyManagerUserByCompanyId" parameterClass="java.lang.Integer">
+		delete
+		from company_manager_user
+		where company_id = #value#
+	</delete>
+	
+	<select id="countCompanyManagerUserByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(cmu.id)
+		from company_manager_user cmu
+		where cmu.company_id=#value#
+	</select>
+	
+	<update id="updateAdminUserIdByCompanyId" parameterClass="companyManagerUserDO" >
+		update company_manager_user
+		set 
+		  admin_user_id = #adminUserId#,
+		  gmt_modified = now()
+		where company_id = #companyId#
+	</update>
+	
+	<select id="queryCompanyManagerUserByCompanyId" parameterClass="java.lang.Integer" resultClass="companyManagerUserDO">
+		SELECT
+		  id AS id,
+		  company_id AS companyId,
+		  admin_user_id AS adminUserId,
+		  gmt_created AS gmtCreated,
+		  gmt_modified AS gmtModified 
+		FROM company_manager_user
+		WHERE company_id=#value#
+	</select>
+</sqlMap>

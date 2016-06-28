@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsPostTags">
+
+	<typeAlias alias="bbsPostTags" type="com.ast.ast1949.domain.bbs.BbsPostTags" />
+	<resultMap id="bbsPostTagsResult" class="bbsPostTags">
+		<result property="id" column="id" />
+		<result property="category" column="category" />
+		<result property="tagName" column="tag_name" />
+		<result property="noticeCount" column="notice_count" />
+		<result property="articleCount" column="article_count" />
+		<result property="isDel" column="is_del" />
+        <result property="mark" column="mark" />
+        <result property="gmtCreated" column="gmt_created" />		
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="allColumn">
+		id,category,tag_name,notice_count,article_count,is_del,mark,gmt_created,gmt_modified
+	</sql>
+	<!--热门标签-->
+	<select id="queryTagsByArticleC" parameterClass="java.lang.Integer" resultMap="bbsPostTagsResult">
+		select 
+		<include refid="bbsPostTags.allColumn"/>
+		from bbs_post_tags
+		where is_del='0'
+		order by article_count desc,gmt_modified desc
+		limit #size#
+	</select>
+	<!--根据标签名获取该标签的信息-->
+	<select id="queryTagByName" parameterClass="java.util.HashMap" resultMap="bbsPostTagsResult">
+		select
+		<include refid="bbsPostTags.allColumn"/>
+		from bbs_post_tags
+		where tag_name=#tagName# and category=#category#
+			<dynamic>
+				<isNotEmpty property="isDel" prepend="and">
+					is_del=#isDel#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	<!--大类别下的标签-->
+	<select id="queryTagByCategory" parameterClass="java.util.HashMap" resultMap="bbsPostTagsResult">
+		select 
+		<include refid="bbsPostTags.allColumn"/>
+		from bbs_post_tags
+		where category=#category# and is_del='0'
+		order by notice_count desc
+		limit #size#
+	</select>
+	<!--插入新标签-->
+	<insert id="insertTag" parameterClass="bbsPostTags">
+		insert into `bbs_post_tags`
+		(
+		`category`,
+		`tag_name`,
+		`notice_count`,
+		`article_count`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#category#,
+		#tagName#,
+		#noticeCount#,
+		#articleCount#,
+		now(),
+		now()
+		)	
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<!--更新标签信息-->
+	<update id="updateTag" parameterClass="bbsPostTags">
+		update bbs_post_tags
+		set notice_count=#noticeCount#,
+		article_count=#articleCount#,
+		mark=#mark#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--根据id获取标签信息-->
+	<select id="queryTagById" parameterClass="java.lang.Integer" resultMap="bbsPostTagsResult">
+		select 
+		<include refid="bbsPostTags.allColumn"/>
+		from bbs_post_tags
+	    where id=#id#
+	</select>
+	<!--大家都在关注，通过后台推送-->
+	<select id="queryTagsByMark" parameterClass="java.lang.Integer" resultMap="bbsPostTagsResult">
+		select 
+		<include refid="bbsPostTags.allColumn"/>
+		from bbs_post_tags
+		where mark='1' and category='3'
+		order by gmt_modified desc
+		limit #size#
+	</select>
+	
+	<update id="updateNoticeCountById" parameterClass="java.util.Map">
+		update bbs_post_tags
+		set 
+		gmt_modified = now(),
+		notice_count=#noticeCount#
+		where id = #id#
+	</update>
+	
+	<update id="updateIsdelById" parameterClass="java.util.Map">
+		update bbs_post_tags
+		set 
+		gmt_modified = now(),
+		is_del=#isDel#
+		where id = #id#
+	</update>
+	<!--标签库中的所有标签-->
+	<select id="queryAllTagsByCategory" parameterClass="java.util.Map" resultMap="bbsPostTagsResult">
+		select 
+		<include refid="bbsPostTags.allColumn" />
+		from bbs_post_tags
+		<dynamic prepend="where">
+			<isEmpty property="isDel" prepend="and"> 
+				is_del='0'
+			</isEmpty>
+			<isNotEmpty property="category" prepend="and">
+				category=#category#
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<!--标签列表数-->
+	<select id="countAllTagsByCategory" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_post_tags
+		<dynamic prepend="where">
+			<isEmpty property="isDel" prepend="and"> 
+				is_del='0'
+			</isEmpty>
+			<isNotEmpty property="category" prepend="and">
+				category=#category#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!--修改标签名称和标签类别-->
+	<update id="updateNameAndCategory" parameterClass="java.util.Map">
+		update bbs_post_tags
+		set 
+		tag_name=#tagName#,
+		category=#category#
+		where id=#id#
+	</update>
+</sqlMap>

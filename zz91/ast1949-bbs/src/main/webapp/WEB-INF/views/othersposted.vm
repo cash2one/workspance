@@ -1,0 +1,59 @@
+#set( $layout = "/layout/wendaLayout.vm" )
+##otherspostLayout.vm
+##parse("/common/import.vm")
+##parse("/common/dialogBoxInclude.vm")
+
+<div class="report_content">
+
+#parse("/bbs/bbs_others_left.vm")
+
+<!--report_content2 start--> 
+<div class="report_content2"> 
+	<!--report_content2_1 start--> 
+	<div class="report_content2_1"> 
+		<div class="report_content2_1_1"> 
+			<span class="report_content2_color1">
+				#if($!{type}=="2")
+					他发表的问题
+				#else
+					他发表的帖子
+				#end
+			</span> 
+			<span class="report_content2_text2">所属类别</span> 
+			<span class="report_content2_text3">发表时间</span> 
+			<span class="report_content2_text4">状态</span> 
+		</div> 
+		<div id="report_content2_1_2" class="report_content2_1_2"> 
+			<ul> 
+				#foreach($!{bbsPostDTOList} in $!{page.records})
+					<li>
+						<span class="report_content2_li1">
+							<a href="#springUrl('/viewReply')$!{bbsPostDTOList.id}.htm" target="_blank" title="$!{bbsPostDTOList.title} (点击量/回复数：$!{bbsPostDTOList.visitedCount}/$!{bbsPostDTOList.replyCount})">
+								#printTitle($!{bbsPostDTOList.title} 18 "")
+							</a><font class="fontGray">($!{bbsPostDTOList.visitedCount}/$!{bbsPostDTOList.replyCount})</font></span>
+						<span class="report_content2_li2">
+							<a href="#springUrl('/bbsCategory')$!{bbsPostDTOList.bbsPostCategoryId}.htm" target="_blank">
+								[$!categoryMap.get($!{bbsPostDTOList.bbsPostCategoryId})]
+							</a> 
+						</span>
+						<span class="report_content2_li3" title="$!{date.format('yyyy-MM-dd HH:mm:ss', ${bbsPostDTOList.postTime})}">$!{date.format('yyyy-MM-dd', ${bbsPostDTOList.postTime})}</span>
+						<span class="report_content2_li4">#if($!{bbsPostDTOList.checkStatus}==0)未审核#elseif($!{bbsPostDTOList.checkStatus}==1)已审核#end</span>
+					</li>
+				#end
+			</ul> 
+		</div>
+		<div style="clear:both"></div>
+		<div class="tips_content2">
+			<div class="pages_my">
+				#myrcPageNav($page "#springUrl('/othersposted.htm')" "id=$!{id}&type=$!{type}" "")
+			</div>
+			<div style="clear:both"></div>
+		</div>
+	</div> 
+	<!--report_content2_1 end--> 
+</div> 
+<!--conten2 end-->
+
+#parse("/bbs/bbs_right.vm")
+<div style="clear:both"></div>
+</div>

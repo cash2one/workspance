@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmRepeat">
+	<typeAlias alias="crmRepeat" type="com.zz91.crm.domain.CrmRepeat"/>
+	<typeAlias alias="crmRepeatDto" type="com.zz91.crm.dto.CrmRepeatDto"/>
+	
+	<resultMap class="crmRepeat" id="simplyResultMap">
+		<result property="id" column="id"/>
+		<result property="orderId" column="order_id"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="gmtCreated" column="gmt_created"/>
+	</resultMap>
+	
+	<resultMap class="crmRepeatDto" id="simplyDtoResultMap" extends="simplyResultMap">
+		<result property="name" column="name"/>
+		<result property="oldName" column="old_name"/>
+		<result property="mobile" column="mobile"/>
+		<result property="phone" column="phone"/>
+		<result property="contact" column="contact"/>
+		<result property="address" column="address"/>
+		<result property="email" column="email"/>
+		<result property="cname" column="cname"/>
+	</resultMap>
+	
+	<insert id="insertCrmRepeat" parameterClass="crmRepeat">
+		insert into `crm_repeat`
+		(
+		`cid`,
+		`order_id`,
+		`check_status`,
+		`sale_name`,
+		`sale_dept`,
+		`sale_account`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#cid#,
+		#orderId#,
+		#checkStatus#,
+		#saleName#,
+		#saleDept#,
+		#saleAccount#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateCheckStatus" parameterClass="java.util.HashMap">
+		update `crm_repeat`
+		set
+		`check_status` = #status#,
+		`gmt_modified` = now()
+		where cid=#id#
+	</update>
+	
+	<select id="queryRepeat" parameterClass="java.util.HashMap" resultMap="simplyResultMap">
+		select id,order_id,sale_name,gmt_created
+		from crm_repeat
+		where check_status=#status#
+		group by order_id
+		<include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryRepeatCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from crm_repeat
+		where check_status=#status#
+	</select>
+	
+	<select id="queryRepeatByOrderId" parameterClass="java.util.HashMap" resultMap="simplyDtoResultMap">
+		select cc.id,cr.order_id,cc.name,csc.sale_name as old_name,cr.sale_name,
+		cc.mobile,cc.phone,cc.contact,cc.address,cc.email,cc.cname,cr.gmt_created
+		from crm_company cc
+		left join crm_sale_comp csc on csc.cid=cc.id
+		inner join crm_repeat cr on cr.cid=cc.id
+		where cc.id in (select cr.cid from crm_repeat  where  cr.check_status=#status# and cr.order_id=#orderId# )
+	</select>
+</sqlMap>

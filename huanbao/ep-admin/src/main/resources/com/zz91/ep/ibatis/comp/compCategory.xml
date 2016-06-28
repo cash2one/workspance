@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="compCategory">
+
+    <typeAlias alias="compCategory" type="com.zz91.ep.domain.comp.CompCategory" ></typeAlias>
+    
+    <resultMap class="compCategory" id="compCategoryResultMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="gmtCreated" column="gmt_created"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+     
+     <sql id="compCategoryColumn">
+     	cc.id,
+        cc.name,
+        cc.code,
+        cc.gmt_created,
+        cc.gmt_modified
+     </sql>
+     
+     <select id="listAllCompCategory" resultMap="compCategoryResultMap">
+	     select 
+	     <include refid="compCategory.compCategoryColumn"/>
+	     from comp_category cc
+     </select>
+     
+     <insert id="createCompCategory" parameterClass="compCategory">
+     	insert into comp_category 
+     	(name, code, gmt_created, gmt_modified)
+     	values
+     	(#name#, #code#, now(), now())
+     	<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+     		select last_insert_id()
+     	</selectKey>
+     </insert>
+     
+     <delete id="deleteCompCategory" parameterClass="java.lang.Integer">
+     	delete from comp_category 
+     	where id=#id#
+     </delete>
+     
+     <select id="listOneCompCategoryById" parameterClass="java.lang.Integer" resultMap="compCategoryResultMap">
+     	select
+     	<include refid="compCategory.compCategoryColumn"/>
+     	from comp_category cc
+     	where cc.id=#id#
+     </select>
+     
+     <update id="updateCompCategory" parameterClass="compCategory">
+     	update comp_category cc set
+     	cc.name=#name#,
+     	cc.code=#code#,
+     	cc.gmt_modified=now()
+     	where cc.id=#id#
+     </update>
+
+</sqlMap>

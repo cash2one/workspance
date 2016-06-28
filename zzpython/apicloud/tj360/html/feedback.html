@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>反馈</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(0, 184, 255);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color:  rgb(1, 140, 194) !important;
+	}
+	textarea{
+		/*width: 100%;*/
+		background-color: #FFFFFF;
+		border-bottom: 1px solid #D9D9D9;
+		padding: 10px;
+		outline: none;
+	}
+	section {padding: 10px;}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title">反馈</strong>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="submitFeedback()">
+					提交
+				</a>
+			</nav>
+		</header>
+			<textarea placeholder="100字以内" id="feedback" onkeypress="validateWordNum(event)"></textarea>
+		<!-- <section id='content'>
+		</section> -->
+	</div>
+</body>
+<script>
+	apiready = function() {
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		$api.byId('feedback').style.height = api.winHeight * 0.4 + 'px';
+	};
+	
+	function validateWordNum(event){
+		var value = $api.val($api.byId('feedback'));
+		if(value.length >= 100){
+			api.toast({msg: '您输入的内容已超过100字！', location: 'middle'});
+			event.preventDefault();
+		}
+	}
+	
+	function submitFeedback(){
+		var feedback = $api.val($api.byId('feedback'));
+		if(feedback.length <= 0){
+			api.toast({msg: '请输入内容', location: 'middle'});
+			return;
+		}
+		if(feedback.length > 100){
+			feedback = feedback.substr(0, 100);
+		}
+		var account = 'guest';
+		if($api.getStorage('usr')){
+			account = $api.getStorage('usr').name;
+		}
+		var fid = 'guest';
+		if($api.getStorage('fid')){
+			account = $api.getStorage('usr').fid;
+		}
+		var values = {account: account, 'feedback': feedback, fid: fid};
+		doNetRequest(values);
+	}
+	
+	function doNetRequest(values){
+	
+	 var model = api.require('model');
+           var query = api.require('query');
+            model.config({appId:'A6961693132912',appKey:'727724FF-FD26-C97B-B317-366723CA78A2',host: 'https://d.apicloud.com'});
+
+		var param = {class:'feedback', value:values};
+			model.insert(param, function(ret, err){
+				if(ret ){
+				api.toast({msg: '提交成功', location: 'middle'});
+				setTimeout(function(){
+					api.closeWin();//关闭此页面
+				}, 2000);
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}	
+	    	}
+			});
+	
+	}
+</script>
+</html>

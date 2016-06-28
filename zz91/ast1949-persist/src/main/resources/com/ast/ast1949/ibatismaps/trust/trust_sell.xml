@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustSell">
+	<typeAlias alias="trustSellDO" type="com.ast.ast1949.domain.trust.TrustSell" />
+	<typeAlias alias="trustRelateSellDO" type="com.ast.ast1949.domain.trust.TrustRelateSell" />
+	<typeAlias alias="trustRelateDealerDO" type="com.ast.ast1949.domain.trust.TrustRelateDealer" />
+	<typeAlias alias="trustSellDto" type="com.ast.ast1949.dto.trust.TrustSellDto" />
+	<typeAlias alias="trustBuySearchDO" type="com.ast.ast1949.dto.trust.TrustBuySearchDto" />
+
+	<resultMap class="trustSellDO" id="trustSellResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="status" column="status" />
+		<result property="content" column="content" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="trustRelateSellDO" id="trustRelateSellResult">
+		<result property="id" column="id" />
+		<result property="buyId" column="buy_id" />
+		<result property="sellId" column="sell_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap id="sellDtoResult" class="trustSellDto">
+		<result property="sell" resultMap="trustSell.trustSellResult" />
+		<result property="relateSell" resultMap="trustSell.trustRelateSellResult" />
+	</resultMap>		
+
+	<sql id="defaultColumn">
+		ts.id,
+		ts.company_id,
+		ts.status,
+		ts.content,
+		ts.gmt_created,
+		ts.gmt_modified
+	</sql>
+	<sql id="trustRelateSellColumn">
+		trs.id,
+		trs.buy_id,
+		trs.sell_id,
+		trs.gmt_created,
+		trs.gmt_modified
+	</sql>	
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="trustSellResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_sell ts
+		where ts.id = #value#
+	</select>
+	<!--供货信息的保存-->
+	<insert id="insert" parameterClass="trustSellDO">
+		INSERT INTO trust_sell
+		(
+		company_id,
+		status,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(	
+		#companyId#,
+		#status#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<sql id="whereSellCaluse">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="sell.companyId">
+				ts.company_id = #sell.companyId#
+			</isNotNull>
+			<isNotEmpty prepend="and" property="sell.status">
+				ts.status = #sell.status#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+		
+	<!--获取某个用户的所有供货-->
+	<select id="querySupplyByCondition" parameterClass="java.util.Map" resultMap="sellDtoResult">
+		select
+		<include refid="defaultColumn"/>,
+		<include refid="trustRelateSellColumn"/>
+		from trust_sell as ts INNER JOIN trust_relate_sell as trs ON ts.id=trs.sell_id	
+		<include refid="trustSell.whereSellCaluse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />		
+	</select>
+	
+    <!--获取某个用户的供货数-->
+    <select id="countSupplyByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_sell as ts INNER JOIN trust_relate_sell as trs ON ts.id=trs.sell_id	
+		<include refid="trustSell.whereSellCaluse"/>
+	</select>	
+	
+	<update id="update" parameterClass="trustSellDO" >
+		update trust_sell 
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="status">
+			status = #status#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			content = #content#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<update id="updateStatusByAdmin" parameterClass="java.util.Map" >
+		update trust_sell 
+		set 
+		gmt_modified = now(),
+		status = #status#
+		where id = #id#
+	</update>
+	
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="searchDto.companyId">
+				ts.company_id = #searchDto.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.from">
+				ts.gmt_created >=  #searchDto.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.to">
+				#searchDto.to# >= ts.gmt_created
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.status">
+				ts.status = #searchDto.status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.buyNo">
+				tb.buy_no=#searchDto.buyNo#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.title">
+				ts.content like concat('%',#searchDto.title#,'%')
+			</isNotEmpty>
+			<!--是否登录-->
+			<isNotNull property="searchDto.isLogin">
+				<isNotEmpty prepend="and" property="searchDto.mobile">
+					ca.mobile = #searchDto.mobile#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="searchDto.companyName">
+					c.name like concat('',#searchDto.companyName#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNull property="searchDto.isLogin">
+				<isNotEmpty prepend="and" property="searchDto.mobile">
+					tb.mobile = #searchDto.mobile#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="searchDto.companyName">
+					tb.companyName like concat('',#searchDto.companyName#,'%')
+				</isNotEmpty>
+			</isNull>
+			
+			<!--
+			<isNotEmpty prepend="and" property="searchDto.mobile">
+				ca.mobile = #searchDto.mobile#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				c.name like concat('',#searchDto.companyName#,'%')
+			</isNotEmpty>
+			-->
+			
+			<isNotEmpty prepend="and" property="searchDto.dealerId">
+				exists(select id from trust_relate_dealer where tb.buy_no = buy_no and dealer_id = #searchDto.dealerId#)
+			</isNotEmpty>
+			
+			<!-- 今日第一次发布 -->
+			<isNotNull prepend="and" property="searchDto.isFirst">
+				exists ( select a1.id from trust_sell a1 where ts.company_id = a1.company_id and TO_DAYS(now()) = TO_DAYS(a1.gmt_created) )
+				and not exists ( select a2.id from trust_sell a2 where ts.company_id = a2.company_id and TO_DAYS(now()) > TO_DAYS(a2.gmt_created) )
+			</isNotNull>
+			
+		</dynamic>
+	</sql>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="sellDtoResult">
+		select 
+		<include refid="defaultColumn"/>,
+		<include refid="trustRelateSellColumn"/>
+		from trust_sell as ts 
+		inner join trust_relate_sell as trs ON ts.id=trs.sell_id
+		inner join trust_buy tb on tb.id = trs.buy_id
+		<isNotNull property="searchDto.isLogin">	
+			<isNotEmpty property="searchDto.mobile">
+				inner join company_account ca on ca.company_id = tb.company_id
+			</isNotEmpty>
+			<isNotEmpty property="searchDto.companyName">
+				inner join company c on c.id = tb.company_id
+			</isNotEmpty>
+		</isNotNull>	
+		<include refid="trustSell.whereCaluse"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer" >
+		select count(0)
+		from trust_sell as ts 
+		inner join trust_relate_sell as trs ON ts.id=trs.sell_id
+		inner join trust_buy tb on tb.id = trs.buy_id
+		<isNotNull property="searchDto.isLogin">	
+			<isNotEmpty property="searchDto.mobile">
+				left join company_account ca on ca.company_id = tb.company_id
+			</isNotEmpty>
+			<isNotEmpty property="searchDto.companyName">
+				left join company c on c.id = tb.company_id
+			</isNotEmpty>
+		</isNotNull>
+		<include refid="trustSell.whereCaluse"/>
+	</select>	
+    <!--获取某用户的所有供过货的求购-->	
+	<select id="queryBuyIdByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select trs.buy_id
+	    from trust_sell as ts
+	    left join trust_relate_sell trs on trs.sell_id = ts.id
+		where ts.company_id=#companyId#	 
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_sell 
+		where company_id = #value#
+	</select>
+	
+</sqlMap>

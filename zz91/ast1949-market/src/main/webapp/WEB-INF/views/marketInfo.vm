@@ -1,0 +1,121 @@
+#set($pageName="marketInfo")
+#set($layout="/layout/marketLayout.vm")
+<div class="module mt12">
+	<div class="mar_mod_left">
+       <div class="mml_scroll">
+       		<div class="mls_left">
+            	#if($list.size()==0)
+				<li style="z-index:1;"><img src="http://img0.zz91.com/front/images/global/noimage.gif"  width="300" height="290"/></li>
+				#else
+            	<div id="playimages" class="play">
+    				<ul class="big_pic">
+						<div class="prev"></div>
+						<div class="next"></div>
+						<a class="mark_left" href="javascript:;"></a>
+						<a class="mark_right" href="javascript:;"></a>
+						#foreach($li in $!{list})
+						#if($velocityCount==1)
+        				<li style="z-index:1;"><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222"/></li>
+						#end
+						#end
+						#foreach($li in $!{list})
+						#if($velocityCount>1)
+							<li><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+						
+    				</ul>
+    			<div class="small_pic">
+        			<ul>
+						#foreach($li in $!{list})
+						#if($velocityCount==1)
+							<li style="filter: 100; opacity: 1;"><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+						#foreach($li in $!{list})
+						#if($velocityCount>1)
+							<li><img src="$!{address.resource}/$!{li.picAddress}" width="310" height="222" /></li>
+						#end
+						#end
+        			</ul>
+    			</div>
+			</div>
+			#end
+				<!--End play-->
+            </div>
+            <!--end mls_left-->
+            <div class="mls_right">
+            	<div class="msr_title">市场简介</div>
+                <div class="msr_content">
+					<div id="dv_scroll">
+						<div id="dv_scroll_text" class="Scroller-Container">
+							<div class="scrollist">
+								$!{market.introduction}
+							</div>
+            				<!--end scrollist-->
+						</div>
+					</div>
+    				<!--dv_scroll end-->
+					<div id="dv_scroll_bar">
+						<div id="dv_scroll_track" class="Scrollbar-Track">
+							<div class="Scrollbar-Handle"></div>
+						</div>
+					</div>
+    				<!--dv_scroll_bar end-->
+				</div>
+            	<!--end msr_content-->
+            </div>
+            <div class="cb"></div>
+       </div>
+       <!--end mml_scroll-->
+       <a name="map" id="map"></a>
+       <div class="mml_map mt12">
+       		<div class="mmap_title">市场地图</div>
+            <div class="mmap_info"><div class="map_bg" id="container1"></div></div>
+       </div>
+       <!--end mml_map-->
+       <div class="mml_content mt12">
+       		<div class="mcon_title">临近市场</div>
+            <div class="mcon_info">
+            	<div class="mc_in_box">
+					#set($count=0)
+					#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?area=$!{areaCode}&size=4&3" "" "" "")
+					#foreach($li in $!{list})
+						#if($count<4)
+						#if($!{li.name}!=$!{market.name})
+							    #set($count=$count+1)
+								<div class="mib_item">
+									<div class="mib_item_img"><a href="#springUrl("/$!{li.words}/")" target="_blank"><img alt="" src="" id="img" /><img src="$!{address.thumb}$!{address.resource}/$!{li.pic.picAddress}&width=210&height=218" /></a></div>
+									<div class="mib_item_text"><a href="#springUrl("/$!{li.words}/")" target="_blank" title="$!{li.name}">$!{li.name}</a></div>
+								</div>
+						#end
+						#end
+					#end
+					#end
+                </div>
+                <!--end mc_in_box-->
+            </div>
+       </div>
+       <!--end mml_content-->
+    </div>
+    <!--end mar_mod_left-->
+  #parse("/common/right.vm")
+</div>
+<!--end module mt12-->
+<script >
+var map1=new BMap.Map("container1");//创建地图实例
+##map.addControl(new BMap.NavigationControl());//平移缩放控件
+map1.addControl(new BMap.ScaleControl());//比例尺控件
+##map.addControl(new BMap.OverviewMapControl());//缩略地图控件，默认位于地图右下方，是一个可折叠的缩略地图
+map1.enableScrollWheelZoom(); //启用滚轮放大缩小
+// 创建地址解析器实例
+var myGeo = new BMap.Geocoder();
+// 将地址解析结果显示在地图上，并调整地图视野
+myGeo.getPoint("$!{market.address}", function(point){ 
+    if (point) { 
+         var marker=new BMap.Marker(point);//创建标注
+		 map1.centerAndZoom(point,9);
+         map1.addOverlay(marker);   
+     } 
+ }, "中国");
+</script>

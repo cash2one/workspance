@@ -1,0 +1,35 @@
+<script type="text/javascript" src="#springUrl('/app/sale/applyMerger.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/gridCopy.js')" ></script>
+<style type="text/css">
+	.target-row{background-color:#FF9797!important;}
+</style>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+	
+		var grid2= new com.zz91.ep.crm.apply.CheckGrid({
+			title:"公司合并审核",
+			region:"center"
+		});
+		
+		var grid= new com.zz91.ep.crm.apply.ApplyGrid({
+			id:APPLY.APPLY_GRID,
+			title:"公司合并申请",
+			split:true,
+			region:"west",
+			width:235,
+			listeners:{
+				"rowclick":function(grid,rowindex,e){
+					grid2.getStore().reload({
+						params:{"orderId":grid.getStore().getAt(rowindex).get("order_id")}
+					});
+				}
+			}
+		});
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid,grid2]
+		});
+		
+	});
+</script>

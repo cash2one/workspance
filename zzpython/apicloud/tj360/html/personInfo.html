@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>个人信息</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="closeWin()">
+				</a>
+				<div id="middle">
+					<strong id="title">个人信息</strong>
+				</div>
+				<a id="right">
+				</a>
+			</nav>
+		</header>
+		<section id='content'></section>
+	</div>
+</body>
+<script>
+	var citylist = '';
+	apiready = function() {
+		api.addEventListener({name: 'keyback'}, function(ret, err){
+			if(citylist){
+				//如果打开了下载管理，点back的时候，关闭下载管理插件
+				citylist.close();
+				citylist = '';
+			}else{
+				closeWin();
+			}
+		});
+		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		var headerPos = $api.offset(header);
+		api.openFrame({
+			name: 'personInfo_frame',
+			url: 'personInfo_frame.html',
+			bounces: true,
+			pageParam: {y:headerPos.h},
+			rect: {
+				x: 0,
+				y: headerPos.h,
+				w: 'auto',
+				h: 'auto'
+			}
+		});
+	};
+	
+	function closeWin(){
+		api.closeWin();
+	}
+	
+	function updateAddress(){
+		citylist = api.require('cityList');
+		citylist.open({
+			x: 0,
+			y: 0,
+			width: api.winWidth,
+			height: api.winHeight,
+			currentCity: '成都',
+			resource: 'widget://res/cityList.json'
+		}, function(ret, err){
+			if(ret.cityInfo){
+				citylist.close();
+				citylist = '';
+				//更新server内容
+				api.ajax({
+			    	url: serverUrl + '/user/UpdateUser',
+				    method: 'post',
+				    cache: false,
+				    timeout: 15,
+				    dataType: 'json',
+				    data: {'values': {'uid': $api.getStorage('usr').uid, 'caddress': ret.cityInfo.city}}
+			    }, function(ret2, err2){
+			    	if(ret2 && ret2.status){
+			    		//更新缓存
+						var usr = $api.getStorage('usr');
+				    	usr.caddress = ret.cityInfo.city;
+				    	$api.setStorage('usr', usr);
+				    	//更新主页的地址
+			    		api.execScript({name: 'root', script: 'afterUpdateCity("' + ret.cityInfo.city + '");'});
+				    	//更新页面内容
+				    	api.execScript({name: 'personInfo', frameName: 'personInfo_frame', script: 'modifyAddress("' + ret.cityInfo.city + '");'});
+				    }else{
+				    	if(ret2){
+	    					api.toast({msg: ret2.msg, location: 'middle'});
+	    				}else if(err2){
+	    					api.toast({msg: err2.msg, location: 'middle'});
+	    				}else{
+	    					api.toast({msg: '数据错误', location: 'middle'});
+	    				}
+				    }
+			    });
+			}
+		});
+	}
+</script>
+</html>

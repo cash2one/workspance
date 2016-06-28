@@ -1,0 +1,197 @@
+#set( $layout = "/layout/myrcLayout.vm")
+#leftMenu("1602","","00")
+<link href="$!{address.css}/jquery-ui/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js""></script>
+<script type="text/javascript" src="$!{address.js}/jquery.ui.core.js"></script>
+<script type="text/javascript" src="$!{address.js}/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="$!{address.js}/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="$!{address.js}/jquery.ui.datepicker-zh-CN.js"></script>
+<style >
+    .bottomTip {
+    BORDER-RIGHT: #ffcb99 1px solid; 
+    BORDER-TOP: #ffcb99 1px solid; 
+    PADDING-LEFT: 10px; 
+    PADDING-BOTTOM: 10px; 
+    BORDER-LEFT: #ffcb99 1px solid; 
+    PADDING-TOP: 10px; 
+    BORDER-BOTTOM: #ffcb99 1px solid; 
+    BACKGROUND-COLOR: #fff8ee;}
+</style>
+
+<div class="myrcNormalFrame">
+	<div class="commTip">
+		<span class="commTipRight">
+			<a href="#springUrl('/credit/creditfile/index.htm')" class="commArrowNews">返回证书列表</a>
+		</span>
+		<div style="clear:both"></div>
+	</div>
+	
+    <form name="form1" id="form1" action="#springUrl('/credit/creditfile/updateFile.htm')" method="post" onSubmit="return false;">
+		<input type="hidden" id="id" name="id" value="$!{creditFile.id}" />
+		<div class="officetitle">修改证书(打<font style="color:red">*</font>为必填项)</div>
+		<div class="productskuang">
+			<div class="publishFormItems">
+				<div class="products_title"><label for="categoryCode"><font color=#ff0000>*</font> 选择证书类别：</label></div>
+				<div class="products_fill">
+					<select name='categoryCode' id='categoryCode' >
+						<option value=''>请选择证书类别</option>
+						#foreach($category in ${categoryMap.entrySet()})
+							<option value="$!{category.key}"  #if($!{category.key}==$!{creditFile.categoryCode}) selected #end>${category.value}</option>
+						#end
+					</select>
+				</div>
+			</div>
+			 <div class="publishFormItems">
+				<div class="products_title"><label for="fileName"><font color=#ff0000>*</font>证书名称：</label></div>
+				<div class="products_fill">
+					<input name="fileName" id="fileName" size="48" maxLength="100" value="$!{creditFile.fileName}"/>
+					<span class="grayed">证书名称要体现证书的认证内容，一目了然。</span>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="startTimeStr"><font color=#ff0000>*</font>证书生效时间：</label></div>
+				<div class="products_fill">
+					<input name="startTimeStr" id="startTime" size="20" maxLength="10" readonly="true" value="$!date.format('yyyy-MM-dd',$!{creditFile.startTime})"/>
+					<span class="grayed"> 如：20011-01-01</span>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="endTimeStr">证书有效期截止：</label></div>
+				<div class="products_fill">
+					<input name="endTimeStr" id="endTime" size="20" maxLength="10"  readonly="true" value="$!date.format('yyyy-MM-dd',$!{creditFile.endTime})"/>
+					<span class="grayed"> 如果证书上有，必须填写</span>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="fileNumber">证书编号：</label></div>
+				<div class="products_fill"><input name="fileNumber"  id="fileNumber" size="27" maxLength="64" value="$!{creditFile.fileNumber}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="organization"><font color=#ff0000>*</font>发证机构：</label></div>
+				<div class="products_fill"><input name="organization" id="organization" size="45" maxLength="128" value="$!{creditFile.organization}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="tel">发证机构联系电话：</label></div>
+				<div class="products_fill"><input name="tel" id="tel" size="45" maxLength="50" value="$!{creditFile.tel}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="tel">发证机构网址：</label></div>
+				<div class="products_fill"><input name="website" id="website" size="45" maxLength="50" value="$!{creditFile.website}"/></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="tel"><font color=#ff0000>*</font>上传证书图片：</label></div>
+				<div class="products_fill" style="padding-bottom:8px;">
+					<span style="line-height:18px;">
+						<a href="$!{resourceUrl}/$!{creditFile.picName}" target="_blank" >
+							<img id="previewImage" src="$!{address.resource}/$!{creditFile.picName}" width="100" height="100" />
+						</a>
+						<br>
+						<iframe src="#springUrl('/ajaxUpload.htm')?&filetype=img&model=$!{uploadModel}" id="upfile" frameborder="no" scrolling="no" style="width:460px; height:26px;"></iframe>
+						<input type="hidden" id="picName" name="picName" />
+					</span>
+					<div style="clear:both"></div>
+					<span class="grayed" style="line-height:18px;">
+						您可将证书扫描（或到附近的电脑图文社请他们替您扫描）、或用数码相机拍成照片。证书上传所花费时间是由图片大小决定的，大的图片会占用比较长的上传时间。
+					</span>
+				</div>
+				 <div style="clear:both"></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title"><label for="tel">证书介绍：</label></div>
+				<div class="products_fill"><textarea name="introduction" cols="50" rows="6" style="width:580px;" id="introduction">$!{creditFile.introduction}</textarea></div>
+				<div style="clear:both"></div>
+			</div>
+			<div class="publishFormSub">
+				<input type="hidden" id="companyId" name="companyId" value="$!{companyId}"/>
+				<input type="hidden" id="companyId" name="account" value="$!{account}"}/>
+				<input type="hidden" id="companyName" name="companyName" value="$!{companyName}"/>
+				<input class="buttonMax" type="submit" value="提交修改" name="btSubmit" />
+			</div>
+		</div>
+    </form>
+   <div style="clear:both"></div>
+	<div class="tishiNormal">
+		<h6><b>证书规范：</b></h6>
+		<p>1. 证书图片务必保证<font color="#E77817">清晰，信息完整 </font>，明确标识<font color="#E77817">公司名</font>；</p>
+		<p>2. 相同的证书图片<font color="#E77817">不要重复添加</font>；</p>
+		<p>3. <font color="#E77817">营业执照</font>涉及贵公司在工商部门的注册记录，上传请慎重；<font color="#E77817">已失效证书</font>不能上传；</p>
+		<p>4. 证书图片和所选证书<font color="#E77817">类别应该相符合</font> ；</p>
+		<p>5. 图片格式必须为<font color="#E77817">jpg或gif</font>格式，色彩模式为<font color="#E77817">RGB</font>，图片大小不超过<font color="#E77817">1M(1024K)</font>。</p>
+	</div>
+</div>
+<script type="text/javascript" >
+    jQuery(document).ready(function(){
+        jQuery("#startTime").datepicker();
+        jQuery("#endTime").datepicker();
+		
+		jQuery("#form1").submit(function(){
+    		if(!chkfrm()){
+    			return false;
+    		}
+    		
+    		jQuery.ajax({
+    			url:'#springUrl('/credit/creditfile/updateFile.htm')',
+    			data:jQuery("#form1").serialize(),
+    			cache:false,
+    			dataType:"json",
+    			type:"post",
+    			success:function(req){
+    				if(req.success){
+    					//保存成功后给出提示 或 跳转到提示页面
+    					window.location.href="#springUrl('/credit/creditfile/index.htm')";
+    				}else{
+    					msg.show(req.data);
+    					if(req.data="sessionTimeOut"){
+    						window.open("#springUrl('/login.htm')");
+    					}
+    				}
+    			},
+    			failure:function(){
+    				msg.show("commonError");
+    			}
+    		});
+    	});
+    });
+	
+	function onAjaxUpLoad(data) {
+		var obj = eval(data);
+		jQuery("#picName").val(obj.path+obj.uploadedFilename);
+		jQuery("#previewImage").attr("src","$!{address.resource}/"+obj.path+obj.uploadedFilename)
+	}
+	
+	
+	function chkfrm(){
+	
+    	if(jQuery("#categoryCode").val().length<=0){
+    		alert("请选择证书类别!");
+    		jQuery("#categoryCode").focus();
+    		return false;
+    	}
+    	if(jQuery("#fileName").val().length<=0){
+    		alert("请填写证书名称！");
+    		jQuery("#fileName").focus();
+    		return false;
+    	}
+    	if(jQuery("#startTime").val().length<=0){
+    		alert("请选择证书生效时间！");
+    		jQuery("#startTime").focus();
+    		return false;
+    	}
+    	
+    	if(jQuery("#organization").val().length<=0){
+    		alert("请填写发证机构!");
+    		jQuery("#organization").focus();
+    		return false;
+    	}
+		
+		if(jQuery("#picName").val().length<=0){
+    		alert("请上传证书图片!");
+    		jQuery("#picName").focus();
+    		return false;
+    	}
+		
+    	
+    	return true;
+    }
+	
+</script>

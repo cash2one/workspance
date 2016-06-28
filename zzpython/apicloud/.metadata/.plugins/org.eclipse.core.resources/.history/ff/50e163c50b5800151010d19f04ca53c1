@@ -1,0 +1,221 @@
+function openWin(name, url, pageParam) {
+	var systemType = api.systemType;
+	if (name && url) {
+		if (systemType == "ios") {
+			var animationType = ["none", "fade", "flip", "ripple", "suck", "cube"];
+			var num = rd(0, 4);
+			api.openWin({
+				name : name,
+				url : url,
+				pageParam : pageParam,
+				bounces : false,
+				vScrollBarEnabled : false,
+				hScrollBarEnabled : false,
+				animation : {
+					type : "movein", //动画类型（详见动画类型常量）
+					subType : "from_right", //动画子类型（详见动画子类型常量）
+					duration : 300,                //动画过渡时间，默认300毫秒
+				},
+				showProgress : true
+			});
+		} else {
+			api.openWin({
+				name : name,
+				url : url,
+				pageParam : pageParam,
+				bounces : false,
+				vScrollBarEnabled : false,
+				hScrollBarEnabled : false,
+				animation : {
+					type : "movein", //动画类型（详见动画类型常量）
+					subType : "from_right", //动画子类型（详见动画子类型常量）
+					duration : 300,                //动画过渡时间，默认300毫秒
+				},
+				showProgress : true
+			});
+		}
+	}
+	api.closeSlidPane();
+}
+
+//获取n到m随机整数
+function rd(n, m) {
+	var c = m - n + 1;
+	return Math.floor(Math.random() * c + n);
+}
+
+function openFrame(name, url, pageParam) {
+	var header = $api.byId('header');
+	$api.fixIos7Bar(header);
+	var headerPos = $api.offset(header);
+
+	api.openFrame({
+		name : name,
+		url : url,
+		pageParam : pageParam,
+		bounces : false,
+		vScrollBarEnabled : false,
+		hScrollBarEnabled : false,
+		rect : {
+			x : 0,
+			y : headerPos.h,
+			w : 'auto',
+			h : 'auto'
+		}
+	});
+}
+
+function openSearchBar(){
+	var searchBar = api.require('searchBar');
+	searchBar.open({
+		placeholder:"请输入菜谱关键词进行搜索",
+		bgImg:"widget://res/searchBar_bg.png"
+	},function(ret,err){
+	    if(ret.isRecord){
+	    api.toast({
+		    msg: "暂未上线",
+		    duration:2000,
+		    location: 'bottom'
+		});
+	        //录音功能
+//	        var obj = api.require('speechRecognizer');
+//			obj.record({
+//			},function(ret,err){
+//			    if(ret.status){
+//				    searchBar.setText({
+//					     text:ret.wordStr
+//					 });
+//			    }else{
+////			        api.toast({
+////					    msg: err.msg,
+////					    duration:2000,
+////					    location: 'bottom'
+////					});
+//			    }
+//			});
+	    }else{
+	        var pageParam = {key:ret.text};
+	        
+	        openWin("searchlist","./html/searchlist.html",pageParam);
+	    }
+	});
+}
+
+function UserInfo() {};
+UserInfo.web_query = function(func_url, params, onSuccess, onError, retry){
+	    var retry = arguments[4]?arguments[4]:3;
+	    func_url = zzweburl + func_url;
+	    mui.ajax(func_url, {
+	        data:params,
+	        dataType:'json',
+	        type:'get',
+	        timeout:3000,
+	        success:function(data){
+	            if(data.err === 'false'){
+	                UserInfo.onSuccess(data);
+	            }
+	            else{
+	                UserInfo.onError(data.errkey);
+	            }
+	        },
+	        error:function(xhr,type,errorThrown){
+	            retry--;
+	            if(retry > 0) return UserInfo.web_query(func_url, params, onSuccess, onError, retry);
+	            UserInfo.onError('FAILED_NETWORK');
+	        }
+	    })
+	};
+	//清除登录信息
+	UserInfo.clear = function() {
+		plus.storage.removeItem('username');
+		plus.storage.removeItem('password');
+		plus.storage.removeItem('token');
+		plus.storage.removeItem('usercomid');
+		company_id="0";
+	};
+
+	//检查是否包含自动登录的信息
+	UserInfo.auto_login = function() {
+		var username = UserInfo.username();
+		var pwd = UserInfo.password();
+		if (!username || !pwd) {
+			return false;
+		}
+		return true;
+	};
+	//检查是否已登录
+	UserInfo.has_login = function() {
+		var username = UserInfo.username();
+		var pwd = UserInfo.password();
+		var token = UserInfo.token();
+		if (!username || !pwd || !token) {
+			return false;
+		}
+		return true;
+	};
+
+	UserInfo.username = function() {
+		if (arguments.length == 0) {
+			return plus.storage.getItem('username');
+		}
+		if (arguments[0] === '') {
+			plus.storage.removeItem('username');
+			return;
+		}
+		plus.storage.setItem('username', arguments[0]);
+	};
+	
+	UserInfo.companyid = function() {
+		if (arguments.length == 0) {
+			return plus.storage.getItem('usercomid');
+		}
+		if (arguments[0] === '') {
+			plus.storage.removeItem('usercomid');
+			return;
+		}
+		plus.storage.setItem('usercomid', arguments[0]);
+	};
+
+	UserInfo.password = function() {
+		if (arguments.length == 0) {
+			return plus.storage.getItem('password');
+		}
+		if (arguments[0] === '') {
+			plus.storage.removeItem('password');
+			return;
+		}
+		plus.storage.setItem('password', arguments[0]);
+	};
+
+	UserInfo.token = function() {
+		if (arguments.length>=1){
+			plus.storage.setItem('token', arguments[0]);
+		}
+		if (arguments.length == 0) {
+			return plus.storage.getItem('token');
+		}
+		if (arguments[0] === '') {
+			plus.storage.removeItem('token');
+			return;
+		}
+		
+	};
+	UserInfo.get_pwd_hash=function(pwd) {
+		return $.md5(pwd);
+		//var salt = 'hbuilder'; //此处的salt是为了避免黑客撞库，而在md5之前对原文做一定的变形，可以设为自己喜欢的，只要和服务器验证时的salt一致即可。
+		//return $.md5(salt + pwd); //此处假设你已经引用了md5相关的库，比如github上的JavaScript-MD5
+	};
+	UserInfo.onSuccess = function(data,username,pwd_hash,company_id) {
+		UserInfo.username(username);
+		UserInfo.companyid(company_id);
+		UserInfo.password(pwd_hash);
+		UserInfo.token(data.token); //把获取到的token保存到storage中
+	};
+
+	UserInfo.onError = function(errcode) {
+		mui.toast(errcode);
+	};
+	if (UserInfo.has_login()) {
+		usertoken=UserInfo.token();
+		company_id=UserInfo.companyid();
+	}

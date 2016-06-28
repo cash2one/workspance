@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="categoryGarden">
+
+	<typeAlias alias="categoryGardenDO" type="com.ast.ast1949.domain.company.CategoryGardenDO" />
+	<typeAlias alias="categoryGardenDTO" type="com.ast.ast1949.dto.company.CategoryGardenDTO" />
+	<typeAlias alias="categoryDO" type="com.ast.ast1949.domain.site.CategoryDO" />
+
+	<resultMap id="categoryGardenResult" class="categoryGardenDTO">
+		<result property="industryName" column="industryName" />
+		<result property="areaName" column="areaName" />
+		<result property="gardenTypeName" column="gardenTypeName" />
+		<result property="categoryGardenDO" resultMap="categoryGarden.gardenResult" />
+	</resultMap>
+
+	<resultMap id="gardenResult" class="categoryGardenDO">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="shorterName" column="shorter_name" />
+		<result property="industryCode" column="industry_code" />
+		<result property="areaCode" column="area_code" />
+		<result property="gardenTypeCode" column="garden_type_code" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="categoryGardenDO" id="gardenNameResult">
+		<result property="name" column="name" />
+		<result property="shorterName" column="shorter_name" />
+	</resultMap>
+	
+	<select id="queryGardenNameById" parameterClass="java.lang.Integer" resultMap="gardenNameResult" >
+		select name,shorter_name from category_garden where id=#value#
+	</select>
+
+	<select id="queryCategoryGardenById" parameterClass="int" resultMap="gardenResult">
+		select
+		id,
+		name,shorter_name,industry_code,area_code,garden_type_code,gmt_created,gmt_modified
+		from
+		category_garden
+		where id=#id#
+	</select>
+	
+	<select id="getCategoryGardenRecordCountByCondition" parameterClass="categoryGardenDTO"
+		resultClass="int">
+		select count(0)
+		from
+		category_garden cg,
+		category a,
+		category b,
+		category c
+		where
+		cg.industry_code=a.code
+		and cg.garden_type_code=b.code
+		and cg.area_code=c.code
+	</select>
+	
+	<select id="queryCategoryGardenByAreaCode" parameterClass="java.lang.String"
+		resultClass="categoryGardenDO">
+		SELECT cg.id ,cg.name ,cg.shorter_name AS shorterName,
+		cg.industry_code AS industryCode,
+		cg.area_code AS areaCode,cg.garden_type_code AS gardenTypeCode,
+		cg.gmt_created AS gmtCreated,cg.gmt_modified AS gmtModified
+		FROM
+		category_garden cg
+		WHERE cg.area_code=#value#
+	</select>
+	
+	<!-- 
+	<select id="queryCategoryGardenByAreaCodeFroRegister" parameterClass="categoryGardenDO"
+		resultClass="categoryGardenDO">
+		SELECT cg.id ,cg.name ,cg.shorter_name AS shorterName,
+		cg.industry_code AS industryCode,
+		cg.area_code AS areaCode,cg.garden_type_code AS gardenTypeCode,
+		cg.gmt_created AS gmtCreated,cg.gmt_modified AS gmtModified
+		FROM
+		category_garden cg,
+		category a
+		WHERE
+		cg.area_code=a.code
+		<dynamic prepend="and">
+			<isNotEmpty property="areaCode" prepend="and">
+            	<![CDATA[ cg.area_code like concat(#areaCode#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+            	<![CDATA[ cg.id=#id# ]]>
+			</isNotEmpty>
+		</dynamic>
+		
+	</select>
+	 -->
+
+	<select id="queryCategoryGardenByCondition" parameterClass="categoryGardenDTO" resultMap="categoryGardenResult">
+		select cg.id ,cg.name ,cg.shorter_name,cg.gmt_created,cg.gmt_modified,
+		cg.industry_code,
+		cg.area_code,
+		cg.garden_type_code,
+		cg.gmt_created,
+		cg.gmt_modified,
+		a.LABEL AS industryName,
+		b.LABEL AS gardenTypeName,
+		c.LABEL AS areaName
+		from
+		category_garden cg,
+		category a,
+		category b,
+		category c
+		where  cg.industry_code=a.code
+		and  cg.garden_type_code=b.code
+		and  cg.area_code=c.code
+		<dynamic prepend="">
+			<isNotEmpty property="searchName" prepend="and">
+            	<![CDATA[cg.name like concat('%',#searchName#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="industryName" prepend="and">
+            	<![CDATA[a.code like concat('%',#industryName#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="gardenTypeName" prepend="and">
+            	<![CDATA[b.code like concat('%',#gardenTypeName#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="areaName" prepend="and">
+            	<![CDATA[c.code like concat('%',#areaName#,'%') ]]>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				<![CDATA[ cg.$pageDto.sort$ ]]>
+				<isNotEmpty property="pageDto.dir">
+					 <![CDATA[ $pageDto.dir$ ]]>
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					<![CDATA[ #pageDto.startIndex#,#pageDto.pageSize# ]]>
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	<insert id="insertCategoryGrden" parameterClass="categoryGardenDO">
+		insert into category_garden
+		(
+		name,
+		shorter_name,
+		area_code,
+		industry_code,
+		garden_type_code,
+		gmt_created,
+		gmt_modified)
+		values(#name#,#shorterName#,#areaCode#,#industryCode#,#gardenTypeCode#,#gmtCreated#,#gmtModified#)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<update id="updateCategoryGrden" parameterClass="categoryGardenDO">
+		update category_garden
+		set
+		name=#name#,shorter_name=#shorterName#,area_code=#areaCode#,
+		industry_code=#industryCode#,garden_type_code=#gardenTypeCode#,
+		gmt_modified=#gmtModified#
+		where
+		id=#id:Integer#
+	</update>
+	<delete id="batchDeleteCategoryGrdenById" parameterClass="int">
+		delete from
+		category_garden
+		where id=#id#
+	</delete>
+	
+	<select id="queryCategoryGardenBySomeCode" parameterClass="categoryGardenDO" resultMap="gardenResult">
+		select
+		id,
+		name,shorter_name,industry_code,area_code,garden_type_code,gmt_created,gmt_modified
+		from
+		category_garden
+		<dynamic prepend="where">
+			<isNotEmpty property="industryCode" prepend="and">
+            	<![CDATA[ industry_code=#industryCode# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="areaCode" prepend="and">
+            	<![CDATA[ area_code=#areaCode# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="gardenTypeCode" prepend="and">
+            	<![CDATA[ garden_type_code=#gardenTypeCode# ]]>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

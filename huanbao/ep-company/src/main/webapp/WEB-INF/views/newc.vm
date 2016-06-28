@@ -1,0 +1,63 @@
+#set($layout="/layout/qymapdefault.vm")
+
+<div class="sonspace"></div>
+<div class="header sonmenu_bj">
+        <div class="sonmenu_left"></div>
+        <div class="sonmenu_cen">
+                <ul>
+                    <li class="sonmenu_centit"><a href="$!{address.www}">首页</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/ws">污水处理</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/ys">原水处理</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/kq">空气净化</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/yj">材料药剂</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/beng">泵</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/fa">阀</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/fj">风机</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/hw">环卫设备</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/yqyb">仪器仪表</a></li>
+                    <li class="sonmenu_centit"><a href="$!{address.www}/zh">综合设备</a></li>
+                </ul>
+        </div>
+        <div class="sonmenu_right"></div>
+        <div class="clear"></div>
+</div>
+<div class="sonspace"></div>
+<div class="header">
+  <div class="qyleft_oneclass">
+ 			<div style="border:solid 1px #FFF;">
+				<div class="qyleft_oneclass_cpcity">
+                <b>按行业搜索：</b>
+				#cacheFragment("$!{address.company}/getParamsByType.htm?code=comp_industry", "", "", "10")
+					#foreach($pa in $!{params})
+					<span><a href="$!{address.company}/newc-c$!{pa.key}.htm">$!{pa.name}</a></span>
+					#end
+				#end
+           		</div>
+                <div class="qyleft_oneclass_cpcity">
+                <b>按地区搜索：</b>
+				#cacheFragment("$!{address.company}/getAreaCodeJson.htm?parentCode=10011000", "", "", "10")
+					#foreach($ct in $!{areas})
+					<span><a href="$!{address.company}/newc-a$!{ct.code}.htm">$!{ct.name}</a></span>
+					#end
+				#end
+           		</div>
+            </div>
+			<div class="qyleft_oneclass_cpinfo">
+				<ul >
+					 #foreach($list in $!{page.records})
+						<li><a href="$!{address.esite}/index$!{list.company.id}.htm" target="_blank">#printTitle($!{list.company.name} 18 "")</a></li>
+					 #end
+                </ul>
+			<div class="clear"></div>
+            </div>
+			<div class="qypage">
+				#if($!{search.provinceCode})
+					#set($sc="-a"+$!{search.provinceCode})
+				#elseif($!{search.industryCode})
+					#set($sc="-c"+$!{search.industryCode})
+				#end
+				
+				#qyPageNav($!{page} "#springUrl('/newc')" "$!{sc}" "")
+			</div>
+   </div>
+</div>

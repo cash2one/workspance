@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="analysisOptNumDaily">
+	<typeAlias alias="analysisOptNumDaily"
+		type="com.ast.ast1949.domain.analysis.AnalysisOptNumDaily" />
+
+	<sql id="fullColumnWithoutId">
+		company_id,account,category_code,opt_num,gmt_daily,gmt_created,gmt_modified
+	</sql>
+	
+	<sql id="userOptToday" >
+		account=#account# and category_code=#categoryCode# and gmt_daily=curdate()
+	</sql>
+	
+
+	<insert id="insertOptNumToday" parameterClass="analysisOptNumDaily">
+		insert into analysis_opt_num_daily(
+		<include refid="analysisOptNumDaily.fullColumnWithoutId" />
+		)
+		values(
+		#companyId#,#account#,#categoryCode#,#optNum#,curdate(),now(),now()
+		)
+	</insert>
+	
+	<update id="updateOptNumToday" parameterClass="java.util.HashMap">
+		update analysis_opt_num_daily
+		set opt_num=opt_num+1
+		where 
+		<include refid="analysisOptNumDaily.userOptToday" />
+	</update>
+	
+	<select id="queryOptNumTodayCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from analysis_opt_num_daily
+		where 
+		<include refid="analysisOptNumDaily.userOptToday" />
+	</select>
+	
+	<select id="queryOptNumByAccountToday" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select opt_num from analysis_opt_num_daily
+		where 
+		<include refid="analysisOptNumDaily.userOptToday" />
+		limit 1
+	</select>
+	
+</sqlMap>

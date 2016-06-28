@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustRelateDealer">
+	<typeAlias alias="trustRelateDealerDO" type="com.ast.ast1949.domain.trust.TrustRelateDealer" />
+
+	<resultMap class="trustRelateDealerDO" id="trustRelateDealerResult">
+		<result property="id" column="id" />
+		<result property="buyNo" column="buy_no" />
+		<result property="dealerId" column="dealer_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--检索采购与交易员的关系-->
+	<select id="queryRelateDealerByBuyNo" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select dealer_id
+	    from trust_relate_dealer
+	    where buy_no=#buyNo#			
+	</select>
+	
+	<insert id="insertRelateDealer" parameterClass="trustRelateDealerDO">
+		insert into trust_relate_dealer
+		(
+			buy_no,
+			dealer_id,
+			gmt_created,
+			gmt_modified
+		
+		)
+		VALUES
+		(
+			#buyNo#,
+			#dealerId#,
+		    now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="updateRelateDealer" parameterClass="java.util.Map">
+		update trust_relate_dealer
+		set dealer_id=#dealerId#,
+		    gmt_modified=now()
+		where buy_no=#buyNo#
+	</update>
+
+</sqlMap>

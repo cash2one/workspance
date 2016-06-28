@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="company">
+	<typeAlias alias="company" type="com.ast1949.shebei.domain.Company" />
+
+	<resultMap class="company" id="resultCompanyAllColumn">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="contact" column="contact" />
+		<result property="categoryCode" column="category_code"/>
+		<result property="sex" column="sex" />
+		<result property="mobile" column="mobile" />
+		<result property="phone" column="phone" />
+		<result property="fax" column="fax" />
+		<result property="address" column="address" />
+		<result property="details" column="details" />
+		<result property="categoryCode" column="category_code" />
+		<result property="mainBuy" column="main_buy" />
+		<result property="mainProductBuy" column="main_product_buy" />
+		<result property="mainSupply" column="main_supply" />
+		<result property="mainProductSupply" column="main_product_supply" />
+		<result property="gmtShow" column="gmt_show" />
+	</resultMap>
+
+	<resultMap class="company" id="resultCompanyContact">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="categoryCode" column="category_code"/>
+		<result property="contact" column="contact" />
+		<result property="mobile" column="mobile" />
+		<result property="phone" column="phone" />
+		<result property="fax" column="fax" />
+		<result property="address" column="address" />
+		<result property="gmtShow" column="gmt_show" />
+		<result property="mainProductSupply" column="main_product_supply" />
+	</resultMap>
+
+	<sql id="sqlCompanyAllColumn">
+		id,
+		name,
+		contact,
+		category_code,
+		sex,
+		mobile,
+		phone,
+		fax,
+		address,
+		address_zip,
+		details,
+		category_code,
+		main_buy,
+		main_product_buy,
+		main_supply,
+		main_product_supply,
+		gmt_show
+	</sql>
+
+	<sql id="sqlCompanyContact">
+		id,
+		name,
+		category_code,
+		contact,
+		mobile,
+		phone,
+		fax,
+		address,
+		gmt_show,
+		main_product_supply
+	</sql>
+	<select id="queryCompanyById" resultMap="resultCompanyAllColumn"
+		parameterClass="java.lang.Integer">
+		select
+		<include refid="sqlCompanyAllColumn" />
+		from company
+		where id=#value#
+	</select>
+
+	<sql id="simpWhere">
+		where now() > gmt_show
+		<isNotEmpty prepend="and" property="categoryCode">
+			category_code =
+			#categoryCode# and main_supply = 1
+		</isNotEmpty>
+	</sql>
+
+	<select id="queryCompanys" resultMap="resultCompanyContact"
+		parameterClass="java.util.Map">
+		select
+		<include refid="sqlCompanyContact" />
+		from company
+		<include refid="company.simpWhere" />
+		<!-- 
+		<include refid="common.pageOrderBy" />
+		 -->
+		 order by gmt_show desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCompanyCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.Map">
+		select
+		count(id)
+		from company
+		<include refid="company.simpWhere" />
+	</select>
+
+	<select id="queryDeatilsById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		details
+		from company
+		where id = #value#
+	</select>
+
+	<select id="queryContactById" parameterClass="java.lang.Integer"
+		resultMap="resultCompanyContact">
+		select
+		<include refid="sqlCompanyContact" />
+		from company
+		where id = #value#
+	</select>
+
+	<select id="queryMaxGmtShow" resultClass="java.util.Date">
+		select
+		max(gmt_show)
+		from company
+	</select>
+
+	<select id="queryNameById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select
+		name
+		from company
+		where id = #value#
+	</select>
+
+	<select id="queryNewestCompany" parameterClass="java.util.Map"
+		resultMap="resultCompanyContact">
+		select
+		<include refid="sqlCompanyContact" />
+		from company
+		where now() > gmt_show
+		<isNotEmpty property="categoryCode">
+			category_code = #categoryCode#
+		</isNotEmpty>
+		order by gmt_show desc 
+		LIMIT #size#
+	</select>
+	
+	<select id="queryCompIdByAccount" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from company where account=#value# limit 1
+	</select>
+	
+	<insert id="insertCompany" parameterClass="company">
+		insert into `company`
+		(
+		`name`,
+		`contact`,
+		`sex`,
+		`mobile`,
+		`phone`,
+		`fax`,
+		`address`,
+		`address_zip`,
+		`details`,
+		`category_code`,
+		`main_buy`,
+		`main_product_buy`,
+		`main_supply`,
+		`main_product_supply`,
+		`account`,
+		`gmt_show`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#name#,
+		#contact#,
+		#sex#,
+		#mobile#,
+		#phone#,
+		#fax#,
+		#address#,
+		#addressZip#,
+		#details#,
+		#categoryCode#,
+		#mainBuy#,
+		#mainProductBuy#,
+		#mainSupply#,
+		#mainProductSupply#,
+		#account#,
+		#gmtShow#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+</sqlMap>

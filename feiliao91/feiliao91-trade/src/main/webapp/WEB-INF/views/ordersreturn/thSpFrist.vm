@@ -1,0 +1,90 @@
+#set($layout="/layout/ordersreturn.vm")   
+<!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img,i');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+	 #parse("/common/buy_menu.vm")
+	    <div class="content clearfix">
+	
+	 #if(!$!{orderReturn})
+		 <div class="pay-steps">
+                <ul class="pay-steps-list clearfix th-step">
+                    <li class="clearfix frist-step this-paystep">
+                        <span>1<em class="stepname">买家申请退货</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>2<em class="stepname">卖家处理退货申请</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>3<em class="stepname">买家退货给卖家</em></span>
+                    </li>
+                    <li class="clearfix">
+                        <span>4<em class="stepname">卖家确认收货，退款完成</em></span>
+                    </li>
+                </ul>
+            </div>
+	
+	 #else
+	  #if($!{orderReturn.logisticsNo})
+            <div class="pay-steps">
+                <ul class="pay-steps-list clearfix th-step">
+                    <li class="clearfix frist-step this-paystep old-step">
+                        <span>1<em class="stepname">买家申请退货</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==2||$!{orderReturn.status}==0) class="clearfix this-paystep" #elseif($!{orderReturn.status}==3||$!{orderReturn.status}==99||$!{orderReturn.status}==1) class="clearfix this-paystep old-step" #else class="clearfix"  #end>
+                        <span>2<em class="stepname">卖家处理退货申请</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==3||$!{orderReturn.status}==1) class="clearfix this-paystep" #elseif($!{orderReturn.status}==99) class="clearfix this-paystep old-step" #else class="clearfix" #end>
+                        <span>3<em class="stepname">买家退货给卖家</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==99) class="clearfix this-paystep" #else class="clearfix" #end>
+                        <span>4<em class="stepname">卖家确认收货，退款完成</em></span>
+                    </li>
+                </ul>
+            </div>
+		#else
+			 <div class="pay-steps">
+                <ul class="pay-steps-list clearfix th-step th-step2">
+                    <li class="clearfix frist-step this-paystep old-step">
+                        <span>1<em class="stepname">买家申请退款</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==0) class="clearfix this-paystep" #else class="this-paystep old-step" #end>
+                        <span>2<em class="stepname">卖家处理退款申请</em></span>
+                    </li>
+                    <li #if($!{orderReturn.status}==99) class="clearfix this-paystep" #end>
+                        <span>3<em class="stepname">退款完成</em></span>
+                    </li>
+                    <!-- <li class="clearfix">
+                        <span>4<em class="stepname">卖家确认收货，退款完成</em></span>
+                    </li> -->
+                </ul>
+            </div>
+	  #end
+	  #end
+			#if(!$!{orderReturn})
+			    #parse("/common/thbuy/buy_1.vm")
+			#else
+			  #if($!{orderReturn.status}==0)
+			    #parse("/common/thbuy/buy_2.vm")
+				#elseif($!{orderReturn.status}==1)
+				#parse("/common/thbuy/buy_3.vm")
+				#elseif($!{orderReturn.status}==2)
+				#parse("/common/thbuy/buy_44.vm")
+				#elseif($!{orderReturn.status}==3)
+				#parse("/common/thbuy/buy_4.vm")
+				#elseif($!{orderReturn.status}==66)
+				#if($!{detail.whoService}!=1)
+				#parse("/common/returnTwo.vm")
+				#parse("/common/thsell/sell_66.vm")
+				#else
+				#parse("/common/thbuy/buy_66.vm")
+				#end
+				#elseif($!{orderReturn.status}==99)
+				#parse("/common/thbuy/buy_99.vm")
+			  #end
+			#end
+			
+         </div>

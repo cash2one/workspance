@@ -1,0 +1,135 @@
+<!doctype html>
+<html >
+<head>
+	<meta charset="UTF-8">
+	<meta name="view-port" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
+	<title>APICloud</title>
+	<link rel="stylesheet" type="text/css" href="../css/base.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <script>
+    
+    	var signfortext = null;
+    	var signforhash = null;
+    	var verifyfortext = null;
+    	var verifyforhash = null;
+    	
+		apiready = function(){
+	    	signfortext = api.require('signfortext');
+	    	signforhash = api.require('signforhash');
+	    	verifyfortext = api.require('verifyfortext');
+	    	verifyforhash = api.require('verifyforhash');
+	    	verifyModuledemo = api.require('verifyDemo');
+	    }
+        function signText(){
+        	var content = document.getElementById("content").value;
+        	if(content!=null){ 
+        		var params = {content:content};	
+        	    signfortext.signfortext(params,function(ret, err){
+					if(ret.res_message!=null&&ret.res_code!=null){
+						document.getElementById('signresult').innerText = "签名结果["+ret.res_code+"]:"+ret.res_message;
+					}else if(err.msg!=null){
+						document.getElementById('signresult').innerText =  err.msg;
+					}else{
+						alert("error!");
+					}
+				} );
+        	    
+        	}else{
+        		alert('null');
+        	}   	
+        }
+        
+        function verifyText(){
+        	var content = document.getElementById("content").value;
+        	if(content!=null){ 
+        		var params = {content:content};
+        		
+        	    verifyfortext.verifyfortext(params,function(ret, err){
+					if(ret.res_message!=null&&ret.res_code!=null){
+						document.getElementById('signresult').innerText = "验证结果["+ret.res_code+"]:"+ret.res_message;
+					}else if(err.msg!=null){
+						document.getElementById('signresult').innerText =  err.msg;
+					}else{
+						alert("error!");
+					}
+				} );
+        	    
+        	}else{
+        		alert('null');
+        	}   	
+        }
+        
+        function signHash(){
+        	var hashcode = document.getElementById("hash").value;
+        	if(hashcode!=null){ 
+        		var params = {hashcode:hashcode}
+        		
+        	    signforhash.signforhash(params,function(ret, err){
+					if(ret.res_message&&ret.res_code){
+						document.getElementById('verifyresult').innerText = "签名结果["+ret.res_code+"]:"+ret.res_message;
+					}else if(err.msg!=null){
+						document.getElementById('verifyresult').innerText =  err.msg;
+					}else{
+						alert("error!");
+					}
+				}  );
+        	}
+        
+        }
+        
+        function verifyHash(){
+        	var hashcode = document.getElementById("hash").value;
+        	if(hashcode!=null){ 
+        		var params = {hashcode:hashcode}
+        	    verifyforhash.verifyforhash(params,function(ret, err){
+					if(ret.res_message&&ret.res_code){
+						document.getElementById('verifyresult').innerText = "验证结果["+ret.res_code+"]:"+ret.res_message;
+					}else if(err.msg!=null){
+						document.getElementById('verifyresult').innerText =  err.msg;
+					}else{
+						alert("error!");
+					}
+				} );
+        	}
+        }
+        
+        
+    </script>
+</head>
+<body>
+	<div>
+   	 输入待签名文本：
+    <table>
+        <tr>
+            <td><input id="content" type="text" name="signContent"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><input  type="button" value="签名" onclick="signText()"> </td>
+            <td><input  type="button" value="验证" onclick="verifyText()"> </td>
+        </tr>
+    </table>
+     </div>
+    <span id="signresult"></span>
+    <br/>
+    <br/>
+     
+    <div>
+   	 输入待签名的hash值：
+    <table>
+        <tr>
+            <td><input id="hash" type="text" name="signHash"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><input  type="button" value="签名" onclick="signHash()"> </td>
+            <td><input  type="button" value="验证" onclick="verifyHash()"></td>
+        </tr>
+    </table>
+     </div>
+     <span id="verifyresult"></span>
+    <br/>
+    <br/>
+
+    
+</body>

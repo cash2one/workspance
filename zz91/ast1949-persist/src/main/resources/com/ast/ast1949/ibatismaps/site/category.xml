@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="category">
+
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="categoryDO" type="com.ast.ast1949.domain.site.CategoryDO" />
+	<typeAlias alias="categoryDto" type="com.ast.ast1949.dto.site.CategoryDTO" />
+
+	<!-- 类别表映射关系 -->
+	<resultMap id="categoryResult" class="categoryDO">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="parentCode" column="parent_code" />
+		<result property="showIndex" column="show_index" />
+		<result property="label" column="label" />
+		<result property="abbreviation" column="abbreviation" />
+		<result property="isLeaf" column="is_leaf" />
+		<result property="creator" column="creator" />	
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />		
+		<result property="description" column="description" />
+		<result property="pinyin" column="pinyin" />
+		
+	</resultMap>
+		
+	
+	<!-- 根据id获取一条记录 -->
+	<select id="queryCategoryById" parameterClass="java.lang.Integer"
+		resultMap="categoryResult">
+			select 
+			id, 
+			code, 
+			parent_code, 
+			show_index, 
+			label, 
+			abbreviation, 
+			is_leaf, 
+			creator, 
+			gmt_created, 
+			gmt_modified, 
+			description,
+			pinyin
+			from category
+			where c.id=#id:INTEGER#
+	</select>
+	<!-- 根据label获取一条记录 -->
+	<select id="queryCategoryByLabel" parameterClass="String"
+		resultMap="categoryResult">
+			select 
+			id, 
+			code, 
+			parent_code, 
+			show_index, 
+			label, 
+			abbreviation, 
+			is_leaf, 
+			creator, 
+			gmt_created, 
+			gmt_modified, 
+			description,
+			pinyin
+			from category
+			where label=#label# and code like "1001%"
+	</select>
+
+	<!-- 根据条件获取记录总数 
+	<select id="queryRecordCountByCondition" parameterClass="categoryDto"
+		resultClass="java.lang.Integer">
+			select count(0) from category c
+		<dynamic prepend="where">
+			<isNotEmpty property="searchName">
+				 c.label like concat('%',#searchName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="preCode">
+				 c.code like concat(#preCode#,'____')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	-->
+
+	<!-- 根据条件分页获取记录 -->
+
+	<select id="queryCategoriesByCondition" parameterClass="categoryDto" resultMap="categoryResult">
+
+			select 
+			c.id, 
+			c.code, 
+			c.parent_code, 
+			c.show_index, 
+			c.label, 
+			c.abbreviation, 
+			c.is_leaf, 
+			c.creator, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.description,
+			c.pinyin
+			from category c
+		<dynamic prepend="where">
+			<isNotEmpty property="searchName">
+				c.label like concat('%',#searchName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="preCode">
+				 c.code like concat(#preCode#,'____')
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				 c.$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					 c.$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			c.code
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterThan property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterThan>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<!-- 根据父类code获取其最大子类别code,用于添加类别 -->
+	<select id="queryMaxCodeByPreCode" parameterClass="String"
+		resultClass="String">
+			select max(c.code) from category c
+			where c.code like
+			concat(#preCode#,'____')
+	</select>
+
+	<!-- 根据父类code获取属于父类的所有子类列表 -->
+
+	<select id="queryCategoriesByPreCode" parameterClass="String" resultMap="categoryResult">
+
+		select 
+			c.id, 
+			c.code, 
+			c.parent_code, 
+			c.show_index, 
+			c.label, 
+			c.abbreviation, 
+			c.is_leaf, 
+			c.creator, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.description,
+			c.pinyin
+		from category c
+		where c.code like concat(#code#,'____')
+		order by show_index asc
+	</select>
+
+	<select id="queryCategoriesByParentCode" parameterClass="String" resultMap="categoryResult">
+		select 
+			c.id, 
+			c.code, 
+			c.parent_code, 
+			c.show_index, 
+			c.label, 
+			c.abbreviation, 
+			c.is_leaf, 
+			c.creator, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.description,
+			c.pinyin
+		from category c
+		where c.parent_code=#parentCode#
+		order by c.show_index asc
+	</select>
+   <!-- 根据code 查询 label -->
+   <select id="queryCategoryByCode" parameterClass="String" resultMap="categoryResult">
+      select c.id, 
+			c.code, 
+			c.parent_code, 
+			c.show_index, 
+			c.label, 
+			c.abbreviation, 
+			c.is_leaf, 
+			c.creator, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.description,
+			c.pinyin
+		from category c
+		where c.code=#code#
+   </select>
+	<!-- 添加记录 -->
+	<insert id="insertCategory" parameterClass="categoryDO">
+			insert into category (
+			code,
+			parent_code,
+			show_index,
+			label,
+			abbreviation,
+			is_leaf,
+			creator,
+			gmt_created,
+			gmt_modified,
+			description
+			)
+			values (
+			#code#,#parentCode#, #showIndex#, #label#,#abbreviation#,#isLeaf#,#creator#,now(),now(),#description#
+			)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+				SELECT
+				LAST_INSERT_ID() as value
+		</selectKey>
+	</insert>
+
+	<!-- 更新记录-->
+	<update id="updateCategory" parameterClass="categoryDO">
+			update category
+			set
+			show_index = #showIndex#,
+			label = #label#,
+			abbreviation=#abbreviation#,
+			description=#description#,
+			gmt_modified = now()
+			where
+			id=#id:INTEGER#
+	</update>
+
+	<!-- 删除记录-->
+	<delete id="deleteCategoryByCode" parameterClass="String">
+			delete from
+			category where code like concat(#code#,'%')
+	</delete>
+	<select id = "queryCategoryList" resultMap="categoryResult">
+		select 
+			c.id, 
+			c.code, 
+			c.parent_code, 
+			c.show_index, 
+			c.label, 
+			c.abbreviation, 
+			c.is_leaf, 
+			c.creator, 
+			c.gmt_created, 
+			c.gmt_modified, 
+			c.description,
+			c.pinyin
+		from category c
+		order by c.parent_code,c.show_index
+	</select>
+	<select id="queryCodeByLabel" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select code
+	    from category
+	    where label=#label# and length(code)='12'			
+	</select>
+</sqlMap>

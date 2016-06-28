@@ -1,0 +1,617 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/zz91/polymer/images/yousuyuan.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+		<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css" />
+        <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script> 
+        <script src="http://img0.zz91.com/zz91/polymer/js/comm.js"></script>  
+        <script src="$!{address.img}/zz91/js/2015reg.js" type=text/javascript></script>
+        <script src="$!{address.img}/zz91/js/province.js" type=text/javascript></script>
+		<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+		<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<style>
+.item{margin:5px 0}
+.item-title{width:80px;text-align:right;color:#333;font-size:12px;;line-height:28px;text-align:right;float:left}
+.item-content{width:410px;float:left}
+.item-content-text{width:270px;height:20px;border:1px solid #ccc;padding:4px}
+.item-content-text2{width:130px;height:20px;border:1px solid #ccc;padding:4px}
+.item-content-radio{ vertical-align:middle;margin-right:5px;margin-left:10px}
+#school{color: #666;}
+#school-box{
+	width:308px;
+	border:1px solid #CCC;
+	box-shadow:2px 3px 0 rgba(190,190,190,0.3);
+	background-color: #fff;
+	z-index: 9;
+	position: absolute;
+	display: none;
+}
+#school-box a{    
+    color:#3777bc;
+    text-decoration: none;
+    padding: 5px;
+    text-align: center;
+    display: inline-block;
+}
+#school-box a:hover{    
+    background-color:#ccc;
+    color: #fff;
+    cursor: pointer;
+}
+#school-box a.active{    
+    background-color:#666;
+    color:#fff;
+}
+#school-box a:hover{    
+    background-color:#ccc;
+    color: #fff;
+    cursor: pointer;
+}
+#school-box h1{
+	color: #333;
+	line-height: 2;
+	padding-left: 10px;
+	background-color: #ebebeb;
+}
+#school-box #province, #school-box #school,#school-box #country{
+    border: 1px solid #ccc;
+    margin:10px;
+    padding: 2px;
+    line-height: 1.5;
+}
+#school-box #school {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 200px;
+}
+#school-box #school a{
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+	float:left;
+}
+#school-box .nav
+{
+	padding-right: 2px;
+	padding-left: 2px;
+	color: #333;
+	height: 22px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-bottom-style: dotted;
+	border-top-color: #CCC;
+	border-right-color: #CCC;
+	border-bottom-color: #CCC;
+	border-left-color: #CCC;
+	width:auto;
+	text-align:left;
+}
+#school-box .navselect
+{
+	cursor:pointer;
+	
+}
+.area_blue
+{
+	background-image: url(../image/arr.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	height: 24px;
+	width: 240px;
+	border: 1px solid #A0B4C5;
+	line-height: 24px;
+	padding-right: 4px;
+	padding-left: 4px;
+	cursor:pointer;
+}
+</style>
+	#set($layout="/layout/topfoolLayout.vm")
+		 <div class="login-nav clearfix">
+            <div class="fl"><img src="http://img0.zz91.com/zz91/polymer/images/logo_suliao1.jpg"></div>
+            <div class="fl login-name">会员注册</div>
+        </div>
+		<div class="pagecenter clearfix">
+            <div class="fl loginmain">
+                <div class="clearfix loginmain-top">
+                    <div class="fl loginmain-type clearfix">
+                        <span class="this-res-type">企业用户注册</span>
+                        <span>个人用户注册</span>
+                    </div>
+                    <div class="fr loginmain-go">已有账号，点击 <a href="#springUrl('/user/login.html')" class="orange-color">登录</a></div>
+                </div>
+                <div class="zcinfo">
+					<form method="post" action="" id="form1">
+                    <ul class="zcinfo-ul">
+                        <li>
+                            <span class="rest-name"><em class="red" >*</em> 手机号码：</span>
+                            <input class="res-inpt" name="mobile" id="mobile"/>
+							<span class="post_error"></span>
+                            <span class="tsno red" id="erromobile">请输入您的手机</span>
+							<span id="erromobile" style="display:none;color:red">请输入手机号码</span>
+							<span id="checkmobile" style="display:none;color:red">请输入正确的手机号码</span>
+							<span id="checkmobile1" style="display:none;color:red">手机号码已被注册</span>
+                        </li> 
+                        <li>
+                            <span class="rest-name"><em class="red">*</em> 密码：</span>
+                            <input class="res-inpt"  type="password" name="password" id="password"/>
+                            <span id="erropassword" style="display:none;color:red">请输入您的密码</span>
+							<span id="erropassword1" style="display:none;color:red">最少输入6个字符</span>
+                        </li> 
+                        <li>
+                            <span class="rest-name"><em class="red">*</em> 确认密码：</span>
+                            <input class="res-inpt"  type="password"  name="aginpassword" id="aginpassword"/>
+                            <span class="tsno red" id="erroaginpassword">请输入确认密码</span>
+							<span class="tsno2" style="display:none;color:red">2次密码不一致</span>
+                        </li> 
+                        <li>
+                            <span class="rest-name"><em class="red">*</em> 邮箱：</span>
+                            <input class="res-inpt" name="email" id="email"/>
+                            <span class="tsno red" id="erroemail">请输入邮箱</span>
+							<span id="checkemail" style="display:none;color:red">请输入正确的邮箱</span>
+							<span id="checkemail1" style="display:none;color:red">邮箱已经被注册使用</span>
+                        </li> 
+                    </ul>
+                </div>
+                <div class="myinfo">
+                    <h3 class="myinfo-tt">基本资料</h3>
+                    <ul class="myinfo-ul">
+                        <li>
+                            <span class="rest-name"><em class="red">*</em> 公司名称：</span>
+                            <input class="res-inpt" name="name" id="companyName"/>
+                            <span class="tsno red" id="errocompanyName">请输入公司名称</span>
+                        </li>
+                        <li class="tixie-ts"><span class="rest-name">&nbsp;</span>
+                         企业注册填写公司名称，个体注册填写个体经营（名字）
+                         </li> 
+                        <li>
+							<div class="item">
+                            <div class="item-title">
+                                <span class="red">*</span>
+                                国家/地区：
+                            </div>
+                            <div class="item-content">
+                                <div class="area_blue" id="area_blue" style="float:left">
+									----国家/地区----
+								</div>
+                                <input type="hidden" name="areaCode" id="areacode"/>
+                                <span class="post_error" style="color:red">&nbsp;</span>
+                            </div>
+                            <div id="school-box">
+                                <h1>国家/地区</h1>
+                                <div id="country">
+                                    <a id="1" href="javascript:getprovince('','10011000',1)">中国</a>
+                                    <a href="javascript:getprovince('','1001',1)">其他国家</a>
+                                </div>
+                                <div id="school"></div>
+                            </div>
+                            <div class="cb"></div>
+							<span style="display:none;color:red;" id="erroareaCode">请选择国家/地区</span>
+                        </div>
+                        </li> 
+                        <li>
+                            <span class="rest-name"></span>
+                            <input class="res-inpt" placeholder="街道名称，楼层，门牌号码" name="address"/>
+                        </li> 
+                        <li>
+                            <span class="rest-name"><em class="red">*</em> 联系人：</span>
+                            <input class="res-inpt res-inpt2" name="contact" id="name"/>
+                            <label class="sexlb"><input type="radio" value="" name="sex1" onclick="fun(0)" checked="" />先生</label>
+                            <label class="sexlb"><input type="radio" value="" name="sex1" onclick="fun(1)" />女士</label>
+							<input value="0" type="hidden" name="sex" id="sex"/>
+                            <span class="tsno red" id="erroname">请输入联系人</span>
+                        </li> 
+                        <li class="qiye-ipt">
+                            <span class="rest-name">服务类型：</span>
+                            <select class="res-inpt" id='reg-area-0'><option>请选择公司类型</option></select>
+							<input type="hidden" name="serviceCode" id="serviceCode"/>
+							<input type="hidden" value="$!{token}" name="token"/>
+                        </li> 
+                        <li class="qiye-ipt">
+                            <span class="rest-name">主营业务：</span>
+                            <input class="res-inpt" name="business" id="business"/>
+                        </li> 
+                        <input  type="hidden" id="registerType" value="公司"></input>
+                        <li class="qiye-ipt">
+                            <span class="rest-name">公司简介：</span>
+                            <textarea class="res-inpt res-inpt3" name="introduction" id="introduction"></textarea>
+                        </li> 
+                    </ul>
+					</form>
+                    <div class="dorest-go"><a href="javascript:openoverlay('/register/firstview.htm','服务条款',800,400,0);" class="orange-color">点击阅读服务条款</a></div>
+                    <div class="dorest-post"><a href="javascript:void(0)" class="dorest-btn dorest-btn1">同意条款并提交注册</a></div>
+                </div>
+            </div>
+            <div class="fr login-right">
+                <div class="fwu-teq">
+                    <div class="fwu-teq-list">
+                        <h3 class="fwu-teq-tt">优塑源频道四大服务：</h3>
+                        <p class="fwu-teq-p">1、搭建塑料原料商家与废料市场交易的桥梁</p>
+                        <p class="fwu-teq-p">2、打通塑料产业链上下游企业间信息共享</p>
+                        <p class="fwu-teq-p">3、开启塑料在线交易的财富大门</p>
+                        <p class="fwu-teq-p">4、提供更全面的产品展示、品牌宣传</p>
+                    </div>
+                    <div class="fwu-teq-list2">
+                        <h3 class="fwu-teq-tt">成为优塑源会员，您可以享受四大特权：</h3>
+                        <p class="fwu-teq-p">1、免费发布塑料原料供求商机</p>
+                        <p class="fwu-teq-p">2、免费发布塑料原料企业报价</p>
+                        <p class="fwu-teq-p">3、免费全方位产品展示、品牌宣传</p>
+                        <p class="fwu-teq-p">4、免费享受我们为您提供的商机匹配</p>
+                    </div>
+                </div>
+                <div class="adimg"></div>
+                <div class="adimg"></div>
+            </div>
+        </div>
+    </body>
+	
+	
+    <script>
+	
+	var regarea = new Asto.util.Selector({
+		selects: ["#reg-area-0"],
+		url: "#springUrl('/register/catChild.htm')",
+		changeCallback: function (c, idx) {
+		setAreaCode();
+		}
+	});
+	regarea.init({
+		initCode:"1020",
+		rootCode: "1020"
+	});
+	
+	## 组装code
+ 	function setAreaCode(){
+		var areacode="";
+		if(jQuery("#reg-area-0").val()!=""){
+			areacode=jQuery("#reg-area-0").val();
+		}
+		jQuery("#serviceCode").val(areacode);
+	}
+	
+	
+        stObj("loginmain-type span","this-res-type","click","",restType);//企业用户和个人用户注册切换
+        function restType(){    //切换回调显示企业注册内容
+            var typeIndex = $(".this-res-type").index();
+            if(typeIndex==0){
+				$("#registerType").val("公司");
+                $(".qiye-ipt").show();
+            }else{
+				$("#registerType").val("个人");
+                $(".qiye-ipt").hide();
+            }
+        }
+        restType();
+
+        //给res-inpt添加index属性
+        $(".res-inpt").each(function(i,item){
+            $(item).attr("index",i);
+        })
+        //获取焦点时提示隐藏
+        $(".res-inpt").bind("focus",function(){
+            $(this).parents("li").find(".tsno").hide();
+        })
+		
+		$("#aginpassword").blur(function(){
+			var pas=$("#password").val();
+			var pas2=$("#aginpassword").val();
+		 if(pas2!=""){
+		if(pas2!=pas){
+		$(".tsno2").show();
+		}else{
+		$(".tsno2").hide();
+		}
+		}
+		})
+		
+		$("#password").blur(function(){
+			var password=$("#password").val();
+			var aginpassword=$("#aginpassword").val();
+			if(password==""||password==undefined){
+				$("#erropassword").show();
+				return false;
+				}else{
+				$("#erropassword").hide();
+				}
+				if(password.length<6){
+				$("#erropassword1").show();
+				return false;
+				}else{
+				$("#erropassword1").hide();				
+				}
+				if(aginpassword==""||aginpassword==undefined){
+				$("#erroaginpassword").show();
+				return false;
+				}else{
+				$("#erroaginpassword").hide();
+				}
+				if(aginpassword!=password){
+				$(".tsno2").show();
+				return false;
+				}else{
+				$(".tsno2").hide();
+				}
+		})
+		
+		
+		
+		$("#mobile").blur(function(){
+		$("#erromobile").hide();
+		$("#checkmobile").hide();
+		$("#checkmobile1").hide();
+		var mobile=$("#mobile").val();
+		if(mobile==""){
+			 $("#erromobile").show();
+			   return false;
+			}else{
+			   $("#erromobile").hide();
+			}
+		if(isNaN(mobile)){
+				$("#checkmobile").show();
+    			return false;
+			}else{
+				$("#checkmobile").hide();
+		}
+			var ph3 =/^\d{11}$/;
+    		if(!ph3.test(mobile)){
+    			$("#checkmobile").show();
+    			return false;
+    		}else{
+    			$("#checkmobile").hide();
+    		}
+		if(mobile!=""){
+			checkMobile1(mobile,
+			function(isReg) {
+				if (isReg) {
+					$("#checkmobile1").hide();
+				} else {
+					$("#checkmobile1").show();
+				}
+			});
+		}
+		})
+		
+		$("#email").blur(function(){
+		$("#erroemail").hide();
+		$("#checkemail").hide();
+		$("#checkemail1").hide();
+		var email=$("#email").val();
+		if(email==""){
+				$("#erroemail").show();
+				return false;
+		}else{
+				$("#erroemail").hide();
+		}
+		var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,5}$/;
+	    if(!myreg.test(email)){
+		        $("#checkemail").show();
+				return false;
+		}else{
+		        $("#checkemail").hide();
+		}
+		if(email!=""){
+			checkEmail1(email,
+			function(isReg) {
+				if (isReg) {
+					$("#checkemail1").hide();
+				} else {
+					$("#checkemail1").show();
+				}
+			});
+			}
+		})
+		
+		function fun(obj){
+		if(obj==0){
+		$("#sex").val(0);
+		}
+		if(obj==1){
+		$("#sex").val(1);
+		}
+		}
+		
+		
+        //失去焦点时判断没填写的必填内容
+        $(".res-inpt").bind("blur",function(){
+            var iptIndex = $(this).attr("index");
+            for(var i=0;i<=iptIndex;i++){
+                var iptVal = $(".res-inpt").eq(i).val();
+                if(!iptVal){
+                    $(".res-inpt").eq(i).parents("li").find(".tsno").show();
+                }else if($(".res-inpt").eq(i).get(0).tagName=="SELECT"&&iptVal=="请选择地区"){
+                    $(".res-inpt").eq(i).parents("li").find(".tsno").show();
+                }
+            }
+        })
+		
+		$(".dorest-btn1").click(function(){
+				$("#erromobile").hide();
+				$("#checkmobile").hide();
+				$("#checkmobile1").hide();
+				$("#erroemail").hide();
+				$("#checkemail").hide();
+				$("#checkemail1").hide();
+				var type1=$("#registerType").val();
+				var mobile=$("#mobile").val();
+				var password=$("#password").val();
+				var aginpassword=$("#aginpassword").val();
+				var email=$("#email").val();
+				var companyName=$("#companyName").val();
+				var areacode=$("#areacode").val();
+				var name=$("#name").val();
+				if(mobile==""){
+				$("#erromobile").show();
+				return false;
+				}else{
+				$("#erromobile").hide();
+				}
+				if(isNaN(mobile)){
+					$("#checkmobile").show();
+    				return false;
+				}else{
+					$("#checkmobile").hide("");
+				}
+				var ph3 =/^\d{11}$/;
+    			if(!ph3.test(mobile)){
+    				$("#checkmobile").show();
+    				return false;
+    			}else{
+    				$("#checkmobile").hide("");
+    			}
+				
+				checkMobile1(mobile,
+				function(isReg) {
+				if (isReg) {
+					$("#checkmobile1").hide();
+					} else {
+						$("#checkmobile1").show();
+						return false;
+					}
+				});
+				
+				if(password==""||password==undefined){
+				$("#erropassword").show();
+				return false;
+				}else{
+				$("#erropassword").hide();
+				}
+				if(password.length<6){
+				$("#erropassword1").show();
+				return false;
+				}else{
+				$("#erropassword1").hide();				
+				}
+				
+				if(aginpassword==""||aginpassword==undefined){
+				$("#erroaginpassword").show();
+				return false;
+				}else{
+				$("#erroaginpassword").hide();
+				}
+				if(aginpassword!=password){
+				$(".tsno2").show();
+				return false;
+				}else{
+				$(".tsno2").hide();
+				}
+				if(email==""){
+				$("#erroemail").show();
+				return false;
+				}else{
+				$("#erroemail").hide();
+				}
+				var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+	    	    if(!myreg.test(email)){
+		        $("#checkemail").show();
+				return false;
+		        }else{
+		        $("#checkemail").hide();
+		        }
+				checkEmail1(email,
+				function(isReg) {
+				if (isReg) {
+					$("#checkemail1").hide();
+				} else {
+					$("#checkemail1").show();
+					return false;
+				}
+				});
+				
+				if(companyName==""){
+				$("#errocompanyName").show();
+				return false;
+				}else{
+				$("#errocompanyName").hide();
+				}
+				if(areacode==""){
+				alert("请选择国家/地区");
+				return false;
+				}
+				if(name==""){
+				$("#erroname").show();
+				return false;
+				}else{
+				$("#erroname").hide();
+				}
+				
+				
+			if(type1=="个人"){
+			$("#serviceCode").val("");
+			$("#business").val("");
+			$("#introduction").val("");
+			}
+			var da=$("#form1").serialize();
+		   jQuery.ajax({
+		   url:"#springUrl('/register/register_stp2.htm')",
+		   type:'post',
+		   dataType:'json',
+		   data:da,
+		   cache:false,
+		   success:function(data){
+		   var f =data.success;
+				if(f){
+				location.href="#springUrl('/register/rest_success.htm')"
+				}else{
+				alert(data.data)
+				}
+			}
+			})
+		})
+		
+		
+		
+	function checkMobile1(mobile, callBack) {
+	if (typeof(callBack) !== "function") {
+		callBack = function() {};
+	}
+	jQuery.ajax({
+		"type": "GET",
+		"url": "/register/regMobile.htm?"+(new Date()).getTime().toString(),
+		"dataType": "json",
+		"data": {
+			"mobile": mobile
+		},
+		"success": function(json) {
+			if (json.success) {
+				callBack(true);
+			} else{
+				callBack(false);
+			}
+		},
+		"error": function() {
+		}
+		});
+	}
+	
+	
+	function checkEmail1(email, callBack) {
+	if (typeof(callBack) !== "function") {
+		callBack = function() {};
+	}
+	jQuery.ajax({
+		"type": "GET",
+		"url": "/register/regEmail.htm?"+(new Date()).getTime().toString(),
+		"dataType": "json",
+		"data": {
+			"email": email
+		},
+		"success": function(json) {
+			if (json.success == true) {
+				callBack(true);
+			} else {
+				callBack(false);
+			}
+		},
+		"error": function() {
+		}
+		});
+	}
+		
+		
+##        //点击提交定位到没填写的位子
+##        $(".dorest-btn").bind("click",function(){
+##            var goWhere = $(".tsno:visible").offset().top-20;
+##            $("body,html").animate({"scrollTop":goWhere+"px"})
+##        })
+    </script>
+</html>

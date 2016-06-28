@@ -1,0 +1,136 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+
+#set($headName="qa")
+#parse("/common/myhuzhu/head.vm")
+<input type="hidden" value="qa" id="urlType" />
+
+<link href="http://img0.zz91.com/bbs/css/zz91.bbs.dialog.css" rel="stylesheet" type="text/css">
+<script src="http://img0.zz91.com/bbs/js/zz91.bbs.dialog.js" type="text/javascript"></script>
+<script type="text/javascript">
+	function showme(id){
+		var url="#springUrl('/postEdit.htm')?postId="+id;
+		dialog("修改帖子", "iframe:"+url+"", "800px", "500px", "iframe");
+		 
+	}
+</script>
+
+<div class="huzhu">
+    <div class="hz-left fl">
+        <div class="mainblock">
+            <div class="m5-tab f16">
+                <div class="m5t-item1 fl" id="m51">
+                    <a href="#springUrl('/myhuzhu/mywenda/posted.html')" #if($!{type}!=2)  class="up" #end >发起的提问</a>
+                </div>
+                <!--end m5t-item1-->
+                <div class="m5t-item-line fl"></div>
+                <!--end m5t-item-line-->
+                <div class="m5t-item1 fl" id="m52">
+                    <a href="#springUrl('/myhuzhu/mywenda/reply.html')" #if($!{type}==2) class="up" #end >我的回答</a>
+                </div>
+                <!--end m56-item1-->
+                <div class="cb"></div>
+            </div>
+            <!--end m5-tab-->
+        </div>
+        <!--end mainblock-->
+		
+        <div class="mainblock">
+			#if($page.records.size()>0)
+            <ul class="post_ul">
+				#foreach($obj in $page.records)
+				#if($type!=2)
+            	<li>
+                	<div class="pu2">
+                    	<div class="p2-left fl">
+                        	<div class="pl-top">
+                            	<a href="#springUrl('/detail/')$!{obj.post.id}.html" target="_blank" title="$!{obj.post.title}">$!{obj.post.title}</a>
+                            </div>
+                            <!--end pl-top-->
+                            <div class="pl-center">                            	
+                        		#printTitle($!{obj.post.content} 100 "...")
+                            	<a href="#springUrl('/detail/')$!{obj.post.id}.html" target="_blank">[查看全文]</a>
+                            </div>
+                            <!--end pl-center-->
+                        </div>
+                        <!--end p2-left fl-->
+                        <div class="p2-right fr">
+                        	<div class="pr-top">#if($!{obj.post.replyCount})$!{obj.post.replyCount}#else 0 #end</div>
+                            <!--end pr-top-->
+                            <a href="javascript:;" onclick="javascript:showme('$!{obj.post.id}')">编辑</a>
+                            <a href="#springUrl('/postDel_p')$!{obj.post.id}.htm" onclick="return confirm('确实要删除吗？')">删除</a>
+                        </div>
+                        <!--end p2-right fr-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end pu2-->
+                    <div class="pu4 mt8">
+                    	<div class="p4-author fl">$!{obj.replyName}</div>
+                        <!--end p4-author fl-->
+                        <div class="p4-time fl">
+								发布时间：$date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.postTime})
+						</div>
+                        <!--end p4-time fl-->
+                        <div class="p4-state fr tr">
+                        	类别：<a href="$!{address.huzhu}/wenda/">#if($!{obj.post.bbsPostAssistId}&&$!{obj.post.bbsPostAssistId}==24) 手机互助 #else 废料问答 #end</a>
+                            <span>状态：#if($!{obj.post.checkStatus}==0) 未审核 #elseif($!{obj.post.checkStatus}==1) 已审核 #else 退回 #end</span>
+                        </div>
+                        <!--end p4-state fl-->
+                    	<div class="cb"></div>
+                    </div>
+                    <!--end pu4 mt8-->
+                </li>
+				#else
+					<li>
+                	<div class="pu2">
+                    	<div class="p2-left fl">
+                        	<div class="pl-top">
+                            	<a href="#springUrl('/detail/')$!{obj.post.id}.html" target="_blank" title="$!{obj.post.title}">$!{obj.post.title}</a>
+                            </div>
+                            <!--end pl-top-->
+                            <div class="pl-center">                            	
+                        		#printTitle($!{obj.post.content} 100 "...")
+                            	<a href="#springUrl('/detail/')$!{obj.post.id}.html" target="_blank">[查看全文]</a>
+                            </div>
+                            <!--end pl-center-->
+                        </div>
+                        <!--end p2-left fl-->
+                        <div class="p2-right fr">
+                        	<div class="pr-top">#if($!{obj.post.replyCount})$!{obj.post.replyCount}#else 0 #end</div>
+                        </div>
+                        <!--end p2-right fr-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end pu2-->
+                    <div class="pu4 mt8">
+                    	<div class="p4-author fl">$!{obj.replyName}</div>
+                        <!--end p4-author fl-->
+                        <div class="p4-time fl">
+								最后回复：$date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.replyTime})
+						</div>
+                        <!--end p4-time fl-->
+                        <div class="p4-state fr tr">
+                        	类别：<a href="$!{address.huzhu}/wenda/">#if($!{obj.post.bbsPostAssistId}&&$!{obj.post.bbsPostAssistId}==24) 手机互助 #else 废料问答 #end</a>
+                        </div>
+                        <!--end p4-state fl-->
+                    	<div class="cb"></div>
+                    </div>
+                    <!--end pu4 mt8-->
+                </li>	
+				#end
+				#end
+            </ul>
+				## 分页
+				#pageViewQA($page "#springUrl('/myhuzhu/')" "$!{path}" "")
+				
+			#else
+				您暂无该问答记录！
+			#end
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+
+</div>
+<!--end huzhu-->

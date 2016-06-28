@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productSeries">
+	
+	<!--<typeAlias alias="ProductsSeriesContactsDO" type="com.ast.ast1949.domain.products.ProductsSeriesContactsDO" />
+	<typeAlias alias="ProductsSeriesDTO" type="com.ast.ast1949.dto.products.ProductsSeriesDTO" />-->
+	
+	<!-- 插入ProductsSeriesDO信息 -->
+	
+	
+	<!-- 插入ProductsSeriesContactsDO信息 
+	<insert id="insertProductsSeriesContacts" parameterClass="ProductsSeriesContactsDO">
+		INSERT INTO products_series_contacts 
+			(products_id,products_series_id, 
+			gmt_created,gmt_modified
+			)
+		VALUES(#productsId#,#productsSeriesId#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	-->
+	
+	<!-- 根据ProductsSeriesDO查询类别 
+	<select id="queryProductsSeries" parameterClass="ProductsSeriesDO" resultClass="ProductsSeriesDO">
+		select id,company_id as companyId,account,name,
+			series_details as seriesDetails,series_order as seriesOrder, 
+			gmt_created as gmtCreated,gmt_modified as gmtModified
+		from products_series
+		WHERE company_id=#companyId#
+		order by series_order
+	</select>
+	-->
+	
+	<!-- 根据ProductsSeriesDO查询已分类别 
+	<select id="queryHadSubSeries" parameterClass="ProductsSeriesDO" resultClass="ProductsSeriesDTO">
+		SELECT 	a.id,
+			a.company_id AS companyId,
+			a.account,
+			a.name,
+			a.series_details AS seriesDetails, 
+			a.series_order AS seriesOrder,
+			b.id AS productsSeriesContactsId,
+			c.id AS productsId, 
+			c.title
+		FROM products_series a
+		LEFT JOIN products_series_contacts b
+		ON a.id=b.products_series_id
+		LEFT JOIN products c
+		ON b.products_id = c.id
+		WHERE a.company_id=#companyId#
+		and a.id = #id#
+	</select>
+	-->
+	
+	<!-- 根据companyId查询未分类别 
+	<select id="queryNoHadSubSeries" parameterClass="java.lang.Integer" 
+			resultClass="ProductsSeriesDTO">
+		select id as productsId,title,company_id as companyId  
+		from products
+		where company_id=#companyId# 
+		and id not in (select distinct products_id 
+		from products_series_contacts)
+	</select>
+	
+	<select id="queryProductInSeriesListByProductsSeries" parameterClass="map" 
+			resultClass="ProductsSeriesDTO">
+		SELECT 	a.id,
+			a.company_id AS companyId,
+			a.account,
+			a.name,
+			a.series_details AS seriesDetails, 
+			a.series_order AS seriesOrder,
+			b.id AS productsSeriesContactsId,
+			c.id AS productsId, 
+			c.title
+		FROM products_series a,products_series_contacts b , products c
+		WHERE a.id=b.products_series_id and b.products_id = c.id
+		and a.id = #userSeriesId#
+		order by a.series_order
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	
+	<select id="queryProductNotInSeriesListByCompanyId" parameterClass="map" 
+			resultClass="ProductsSeriesDTO">
+		select id as productsId,title,company_id as companyId  
+		from products
+		where company_id=#companyId#
+		and not exists (select products_id 
+			from products_series_contacts where products.id=products_id)
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	-->
+	
+	<!--<select id="queryProductInSeriesListByProductsSeriesCount" parameterClass="int" 
+			resultClass="java.lang.Integer">
+		SELECT count(1)
+		FROM products_series a,products_series_contacts b , products c
+		WHERE a.id=b.products_series_id and b.products_id = c.id
+		and a.id = #userSeriesId#
+		order by a.series_order
+	</select>
+	<select id="queryProductNotInSeriesListByCompanyIdCount" parameterClass="int" 
+			resultClass="java.lang.Integer">
+		SELECT count(1)
+		from products
+		where company_id=#companyId#
+		and not exists (select products_id 
+			from products_series_contacts where products.id=products_id)
+	</select>
+	
+	-->
+	
+	
+	<!-- 查询ProductsSeriesDO中的id在 ProductsSeriesContactsDO不存在的ProductsSeriesContactsDO信息 
+	<select id="queryNoContactsIdBySeriesId" resultClass="ProductsSeriesContactsDO">
+		select id,products_id as productsId,products_series_id as productsSeriesId,
+			gmt_created as gmtCreated,gmt_modified as gmtModified
+		from products_series_contacts
+		where id not in(select distinct a.id
+			from products_series_contacts a ,products_series b
+			where a.products_series_id = b.id)
+	</select>
+	-->
+	
+	<!-- 根据id查询ProductsSeriesDO信息 
+	<select id="queryProductsSeriesById" parameterClass="java.lang.Integer" 
+			resultClass="ProductsSeriesDO">
+		select id,company_id as companyId,account,name,
+			series_details as seriesDetails,series_order as seriesOrder, 
+			gmt_created as gmtCreated,gmt_modified as gmtModified
+		from products_series
+		where id=#id#
+	</select>
+	-->
+	
+	<!-- 修改ProductsSeriesDO信息 
+	<update id="updateProductsSeries" parameterClass="ProductsSeriesDO">
+		update products_series 
+		set company_id =#companyId# ,account =#account# ,name =#name# , 
+			series_details =#seriesDetails# ,series_order =#seriesOrder# ,gmt_modified =now() 
+		where id =#id# 
+	</update>
+	-->
+	
+	<!-- 修改ProductsSeriesDO信息 
+	<update id="updateProductsSeriesOrder" parameterClass="ProductsSeriesDO">
+		UPDATE products_series 
+		SET 
+		<isNotEmpty property="seriesOrder" >
+			series_order =#seriesOrder#,
+		</isNotEmpty>
+		<isNotEmpty property="name" >
+			name = #name#,
+		</isNotEmpty>
+		<isNotEmpty property="seriesDetails" >
+			series_details = #seriesDetails#,
+		</isNotEmpty>
+		gmt_modified = NOW()
+		WHERE id =#id# 
+	</update>
+	-->
+	
+	<!-- 修改ProductsSeriesDO中的name信息 
+	<update id="updateProductsSeriesName" parameterClass="ProductsSeriesDO">
+		update products_series 
+		set name =#name#
+		where id =#id#
+	</update>
+	-->
+	
+	
+	
+	<!-- 删除ProductsSeriesContactsDO信息 -->
+	
+	<!-- 修改ProductsSeriesContactsDO信息 
+	<delete id="deleteProductsSeriesContacts" parameterClass="java.lang.Integer">
+		delete from products_series_contacts
+		where id =#id#	
+	</delete>
+	<update id="updateProductsSeriesContacts" parameterClass="ProductsSeriesContactsDO">
+		update products_series_contacts 
+		set products_id = #productsId#, 
+		    products_series_id = #productsSeriesId#, 
+		    gmt_modified = now() 
+		where id = #id# 
+	</update>
+	-->
+	
+	<!-- 根据ProductsId查询ProductsSeriesContactsDO信息
+	<select id="selectProductSeriesContactsByProductsId" parameterClass="java.lang.Integer"
+			resultClass="ProductsSeriesContactsDO">
+		select 	id,products_id as productsId,products_series_id as productsSeriesId, 
+			gmt_created as gmtCreated,gmt_modified as gmtModified
+		from products_series_contacts
+		where products_id = #productsId#
+	</select>
+	-->
+	
+	<!-- 以下新代码 -->
+	<typeAlias alias="series" type="com.ast.ast1949.domain.products.ProductsSeriesDO" />
+	
+	<resultMap class="series" id="seriesResult">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="account" column="account"/>
+		<result property="name" column="name"/>
+		<result property="seriesDetails" column="series_details"/>
+		<result property="seriesOrder" column="series_order"/>
+	</resultMap>
+	
+	<sql id="seriesResultColumn">
+		p.id,p.company_id,p.account,p.name,p.series_details,p.series_order
+	</sql>
+	
+	<select id="countSeriesOfCompany" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*) from products_series where company_id=#value#
+	</select>
+	
+	<delete id="deleteSeriesContacts" parameterClass="java.util.HashMap" >
+		delete from products_series_contacts
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="productId">
+				products_id=#productId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="groupId">
+				products_series_id=#groupId#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+	<insert id="insertSeriesContacts" parameterClass="java.util.HashMap">
+		insert into products_series_contacts (products_id, products_series_id)
+		values(#productId#, #groupId#)
+		
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="querySeriesOfCompany" parameterClass="java.lang.Integer" resultMap="seriesResult">
+		select
+			<include refid="productSeries.seriesResultColumn" />
+		from products_series p
+		where p.company_id=#value#
+		order by p.series_order
+		limit 100
+	</select>
+	
+	<insert id="insertProductsSeries" parameterClass="series">
+		insert into products_series 
+			(company_id,account,name,series_details, 
+			series_order,gmt_created,gmt_modified)
+		values(#companyId#,#account#,#name#,#seriesDetails#
+			,#seriesOrder#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryProductsSeriesById" parameterClass="java.lang.Integer" resultMap="seriesResult">
+		select
+			<include refid="productSeries.seriesResultColumn" />
+		from products_series p
+		where p.id=#value#
+		limit 1
+	</select>
+	
+	<update id="updateProductsSeries" parameterClass="series">
+		update products_series
+		set name=#name#,
+		series_details=#seriesDetails#,
+		series_order=#seriesOrder#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<!-- 删除ProductsSeriesDO信息 -->
+	<delete id="deleteProductsSeries" parameterClass="java.lang.Integer">
+		delete from products_series 
+		where id =#id#	
+	</delete>
+	
+	<select id="queryProductsSeriesByProudctId" parameterClass="java.lang.Integer" resultMap="seriesResult">
+		select
+			<include refid="productSeries.seriesResultColumn" />
+		from products_series p
+		left join products_series_contacts ps on p.id = ps.products_series_id
+		where ps.products_id=#value#
+		limit 1
+	</select>
+	
+	<select id="querySeriesContacts" parameterClass="java.lang.Integer" resultClass="java.lang.Integer" >
+		select count(0) from products_series_contacts
+		where products_series_id = #value#
+		limit 1
+	</select>
+	
+</sqlMap>

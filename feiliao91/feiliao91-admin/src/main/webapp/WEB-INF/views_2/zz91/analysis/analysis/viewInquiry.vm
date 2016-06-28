@@ -1,0 +1,108 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/analysis/analysis.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+	
+		var typeMap=[
+			{name:"--请选择--",value:""},
+			{name:'针对产品',value:'0'},
+			{name:'针对公司',value:'1'},
+			{name:'留言回复',value:'2'}
+		]
+	
+		var chart=Ext.create("ast.ast1949.analysis.analysis.ChartView",{
+			region:"south",
+			height:400,
+			split:true,
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryInquiry.htm",
+			storeModel:"InquiryModel"
+		});
+		
+		var mainGrid=Ext.create("ast.ast1949.analysis.analysis.MainPageGrid",{
+			region:"center",
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/pageInquiry.htm",
+			storeModel:"InquiryModel",
+			cm:[
+				{text:"编号",dataIndex:"id",width:30,hidden:true},
+    			{header:"留言类型",dataIndex:"inquiryType",renderer:function(v,m,record,ridx,cidx,store,view){
+					if(record.get("inquiryType")=="0"){
+						return "针对供求";
+					}
+					if(record.get("inquiryType")=="1"){
+						return "针对公司";
+					}
+					if(record.get("inquiryType")=="2"){
+						return "留言回复";
+					}
+					return v;
+				}},
+				{text:"数量",dataIndex:"num"},
+				{text:"百分比",dataIndex:"num",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						var sum=store.getAt(store.getCount()-1);
+						return (Math.round(v / sum.get("num") * 10000) / 100.00)+"%";
+    				}
+				},
+    			{header:"目标",dataIndex:"inquiryTarget",width:500,renderer:function(v,m,record,ridx,cidx,store,view){
+					if(record.get("inquiryType")=="0"){
+						return Ext.String.format("<a href='http://trade.zz91.com/productdetails{0}.htm' target='_blank' >http://trade.zz91.com/productdetails{0}.htm</a>",v);
+					}
+					if(record.get("inquiryType")=="1"){
+						return Ext.String.format("<a href='http://company.zz91.com/compinfo{0}.htm' target='_blank' >http://company.zz91.com/compinfo{0}.htm</a>",v);
+					}
+					if(record.get("inquiryType")=="2"){
+						return "询盘回复："+v;
+					}
+					return v;
+				}},
+				{text:"统计日期",dataIndex:"gmtTarget",renderer:function(v,m,record,ridx,cidx,store,view){
+					if(v!=null){
+						return Ext.Date.format(new Date(v.time),"Y-m-d");
+					}
+				}}
+			],
+			tbar:["->",{
+					xtype:"combo",
+					displayField:'name',
+					valueField:'value',
+					value:"",
+					store:Ext.create('Ext.data.Store', {
+						fields: ['name', 'value'],
+						data : typeMap
+					}),
+					listeners:{
+						"change":function(field){
+							mainGrid.getStore().setExtraParam("inquiryType",field.getValue());
+							mainGrid.getStore().load();
+						}
+					}
+			},{
+				xtype:"datefield",
+				format:"Y-m-d",
+				submitFormat:"Y-m-d H:i:s",
+				emptyText:"统计日期",
+				name : 'gmtTarget',
+				id : 'gmtTarget',
+				listeners:{
+					"change":function(field, nv, ov, e){
+						mainGrid.getStore().setExtraParam("gmtTarget",field.getSubmitValue());
+						mainGrid.getStore().load();
+					}
+				}
+			}],
+			listeners:{
+				"itemclick":function(_this,record,item,idx){
+					chart.getChartStore().setExtraParam("inquiryType",record.get("inquiryType"));
+					chart.getChartStore().setExtraParam("inquiryTarget",record.get("inquiryTarget"));
+					chart.getChartStore().load();
+				}
+			}
+		});
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[mainGrid,chart]
+		});
+		
+	});
+</script>

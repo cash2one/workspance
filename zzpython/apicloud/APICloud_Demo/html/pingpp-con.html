@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="chs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+</head>
+<body>
+<div class="container-fluid">
+    <div class="page-header"><h2>ping++多渠道支付</h2><small>请到网站控制台云编译体验</small></div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="payWx()" class="btn btn-primary">
+                            微信
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="payAli()" class="btn btn-primary">
+                            支付宝
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payUp()" class="btn btn-primary">
+                            银联
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payBfb()" class="btn btn-primary">
+                            百度钱包
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payWx(0)" class="btn btn-primary">
+                            微信(Testmode)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payAli(0)" class="btn btn-primary">
+                            支付宝(Testmode)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payUp(0)" class="btn btn-primary">
+                            银联(Testmode)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="payBfb(0)" class="btn btn-primary">
+                            百度钱包(Testmode)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="showVersion()" class="btn btn-primary">
+                            SDK 版本号
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var pingpp = null;
+    var systemType = null;
+    apiready = function(){
+        pingpp = api.require('pingpp');
+        systemType = api.systemType;
+    }
+
+    function request(channel, amount, livemode) {
+        var pay_url = "http://114.215.237.77:8080/tests/pay.php";
+        var requestParams = {
+            channel: channel,
+            amount: amount
+        };
+        if (typeof livemode != "undefined" && livemode == 0) {
+            requestParams['livemode'] = 0;
+        }
+        api.ajax({
+            url: pay_url,
+            method: 'post',
+            dataType: 'json',
+            returnAll: false,
+            data: {
+                values: requestParams
+            }
+        },function(ret, err){
+            if (ret) {
+                var chargeJson = JSON.stringify(ret);
+                var param = {
+                    charge: chargeJson,
+                    scheme: "wx452efc73f9397542"
+                };
+                pingpp.createPayment(param, callBack);
+            }else {
+                api.alert({
+                    msg:('错误码：'+err.code+'；错误信息：'+err.msg+'网络状态码：'+err.statusCode)
+                });
+            };
+        });
+    }
+
+    function payWx(livemode){
+        request("wx", 10, livemode);
+    }
+    function payAli(livemode){
+        request("alipay", 10, livemode);
+    }
+    function payUp(livemode){
+        request("up", 10, livemode);
+    }
+    function payBfb(livemode){
+        if (systemType == "ios") {
+            request("bfb_wap", 10, livemode);
+        } else {
+            request("bfb", 10, livemode);
+        }
+    }
+
+    function callBack(ret, err){
+        var str = "result="+ret.result;
+        if (err) {
+            str+=";err.code="+err.code+",err.msg="+err.msg;
+        }
+        api.alert({msg:str});
+    }
+
+    function showVersion() {
+        pingpp.getVersion(function(ret){
+            api.alert({msg:ret.version});
+        });
+    }
+</script>
+</html>

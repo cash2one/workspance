@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>厂家直购</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/zhigou/vender.css"/>
+</head>
+<body>
+    <div class="top-tell clear">
+        <div class="phone"><i></i>委托采购热线：<span>0571-56600066</span></div>
+        <div class="active ftcolor">周一到周五8:30-18:00</div>
+    </div>
+    <div class="nav">
+        <div class="now-nav j_fabu">免费发布</div>
+        <div class="j_caigou">我的采购单</div>
+        <div class="j_supply">我的供货单</div>
+    </div>
+    <ul class="out-info">
+        <!-- <li>
+            <div class="info-detail">
+                <div class="info-div impt-info">
+                    <div>PE/PA复合膜</div>
+                    <div>造粒</div>
+                    <div>30吨/月</div>
+                </div>
+                <div class="info-div">
+                    <div><span class="ftcolor">价格：</span>2500元/吨</div>
+                    <div><span class="ftcolor">所在地：</span>嘉兴</div>
+                    <div><span class="ftcolor">NO.151008609</span></div>
+                </div>
+                <div class="info-div">
+                    <div><span class="ftcolor">颜色：</span>不限</div>
+                    <div><span class="ftcolor">级&nbsp;&nbsp;&nbsp;别：</span>一级</div>
+                    <div><span class="ftcolor">4小时前</span></div>
+                </div>
+            </div>
+            <div class="handle clear">
+                <span>正在报价</span><span class="callphone"><i></i>电话</span><span class="j_gh">我要供货</span>
+            </div>
+        </li> -->
+    </ul>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/jquery.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/laytpl.js"></script>
+<script id="info-list" type="text/html">
+    <li>
+        <div class="info-detail">
+            <div class="info-div impt-info">
+                <div>{{ d.title }}</div>
+                <div>{{ d.useful }}</div>
+                <div>{{ d.quantity }}吨/月</div>
+            </div>
+            <div class="info-div">
+                <div><span class="ftcolor">价格：</span>{{ d.price }}元/吨</div>
+                <div><span class="ftcolor">所在地：</span>{{ d.area }}</div>
+                <div><span class="ftcolor">NO.{{ d.buy_no }}</span></div>
+            </div>
+            <div class="info-div">
+                <div><span class="ftcolor">颜色：</span>{{ d.color }}</div>
+                <div><span class="ftcolor">级&nbsp;&nbsp;&nbsp;别：</span>{{ d.level }}</div>
+                <div><span class="ftcolor">{{ d.differ_time }}</span></div>
+            </div>
+        </div>
+        <div class="handle clear">
+            <span>{{ d.status }}</span><span class="callphone" dealertel="{{ d.dealertel }}"><i></i>电话</span><span class="j_gh" company_id="{{ d.company_id }}">我要供货</span>
+        </div>
+    </li>
+</script>
+<script type="text/javascript">
+var currPage = 1;
+apiready = function(){
+    $(".j_caigou").on("click",function(){
+        var pageParam = {
+            wintitle:"我的采购单",
+            type:"purchase",
+        };
+        openWin("purchase","../zhigou/vender-purchase.html",pageParam);
+    })
+    $(".out-info").on("click",".j_gh",function(){
+        var buy_id = $(this).attr("company_id")
+        var pageParam = {
+            wintitle:"我的供货",
+            type:"supply",
+            buy_id:buy_id
+        };
+        if(UserInfo.has_login()){
+            openWin("supply","../zhigou/vender-supply.html",pageParam);
+        }else{
+            pageParam.nextUrl = "widget://html/zhigou/vender-supply.html";
+            pageParam.winName = "supply";
+            openWin("frm-login","../myrc/frm-login.html",pageParam);
+        }
+        
+    })
+    $(".j_supply").on("click",function(){
+        var pageParam = {
+            wintitle:"我的供货单",
+            type:"supply-list",   
+        };
+        openWin("supply-list","../zhigou/supply-list.html",pageParam);
+    })
+    //拨打电话
+    $(".out-info").on("click",".callphone",function(){
+        var num = $(this).attr("dealertel")
+        api.call({
+            type: 'tel_prompt',
+            number:num,
+        });
+    })
+    $(".j_fabu").on("click",function(){
+        var pageParam = {
+            wintitle:"发布采购信息",
+            type:"purchase-issue",
+        };
+        openWin("purchase-issue","../zhigou/purchase-issue.html",pageParam);
+    });
+    api.showProgress({title:'加载中',modal:false});
+    ajaxInfo();
+    //底部加载更多
+    api.addEventListener({
+        name : 'scrolltobottom'
+    }, function(ret, err) {
+        currPage += 1;
+        //如果底部没有加载更多提示，添加加载更多提示
+        if($(".mui-spinner").length==0){
+          $("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:16px;'>更多加载中...</div>");
+        }
+        setTimeout(function(){
+          ajaxInfo();
+        },1000)
+    });
+      //页面刷新
+    api.setRefreshHeaderInfo({
+        visible : true,
+        // bgColor: '#F2F2F2',
+        bgColor : '#E6E6E6',
+        textColor : '#000000',
+        textDown : '下拉刷新',
+        textUp : '释放刷新',
+    }, function(ret, err) {
+        currPage = 1;
+        ajaxInfo();
+        api.refreshHeaderLoadDone();
+        api.hideProgress();
+        api.toast({
+          msg : '数据已是最新！',
+          duration : 3000,
+          location : 'bottom'
+        });
+    });
+}
+function ajaxInfo(){
+    api.ajax({
+        url : hosturl + 'trust/list.html?page=' + currPage,
+        method : 'get',
+        timeout : 30,
+        dataType : 'json',
+        returnAll : false
+    }, function(ret, err) {
+        if (ret) {
+          var pageHtml = "";
+          $.each(ret.result, function(index, item) {
+              var getTpl = $api.html($api.byId("info-list"));
+              laytpl(getTpl).render(item, function(html) {
+                  pageHtml = pageHtml + html;
+              });
+          })
+          //如果是刷新页面，数据替换，如果不是插上新数据在底部，currPage == 1为刷新数据
+          if(currPage == 1){
+            $(".out-info").html(pageHtml);
+          }else{
+            $(".out-info").append(pageHtml);
+          }
+          $(".mui-spinner").remove();
+          api.hideProgress();
+        } else {
+        };
+    });
+}
+</script>
+</html>

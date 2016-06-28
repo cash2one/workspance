@@ -1,0 +1,217 @@
+#set( $layout = "/layout/default.vm" )
+
+	
+#if($!{checkInfo} && $!{checkInfo}=="1")
+    <div class="container">	
+        ##完善提示#
+        <div class="container-info">
+        	<div class="container-info-title">
+            	重要提示：
+            </div>
+            <!--end container-info-title-->
+            <div class="container-info-content">
+            	您的公司资料还不完整，目前只能查看信息！请<a href="http://myrc.zz91.com/mycompany/updateCompany.htm">编辑完整的资料</a>，获得发布信息的权利！
+            </div>
+            <!--end container-info-content-->
+        </div>
+        <!--end ontainer-info-->
+    	
+    	<div class="container-float-companyCustomers"></div>	
+    </div>	
+#else	
+<div class="container mt clearfix">	
+	
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li><a href="#springUrl('/mycompanycustomers/list.htm')">客户管理</a> <span class="divider">/</span></li>
+            <li class="active">编辑客户信息</li>
+        </ul>
+	#if($!{error}==1)
+		<div class="alert alert-error"> <strong>提示：</strong>发生错误，您的客户信息没有被更新！</div>
+	#end
+	<div class="well">
+        <div class="well-head">客户信息</div>
+        <div class="well-content">
+        <form id="editForm" name="editForm" method="post" action="#springUrl('/mycompanycustomers/save.htm')">
+            <input type="hidden" value="$!{companyCustomers.id}" name="id" />
+        	<div class="control-group">
+                <label for="name" class="control-label"><span class="red">*</span>联系人姓名：</label>
+            	<div class="controls">
+					<input name="name" type="text" id="name" value="$!{companyCustomers.name}" class="field input-xlarge validate[required]">
+            	</div>
+        	</div>
+        	<div class="control-group">
+                <label for="position" class="control-label">职务：</label>
+                <div class="controls">
+					<input name="position" type="text" id="position"  value="$!{companyCustomers.position}" class="field input-xlarge">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="" class="control-label">性别：</label>
+                <div class="controls">
+                    <label class="radio">
+					   <input type="radio" name="sex"  value="0" #if(!$!{companyCustomers.sex} || $!{companyCustomers.sex}==0) checked="checked" #end>先生
+                    </label>
+                    <label class="radio">
+					   <input type="radio" name="sex" value="1" #if($!{companyCustomers.sex}==1) checked="checked" #end >女士
+                    </label>
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="telCountryCode" class="control-label">电话：</label>
+                <div class="controls">
+					<input name="telCountryCode" type="text" id="telCountryCode" placeholder="国家号" value="$!{companyCustomers.telCountryCode}" class="field input-mini validate[custom[number]]">
+					<input name="telAreaCode" type="text" id="telAreaCode" placeholder="区号" value="$!{companyCustomers.telAreaCode}" class="field input-mini validate[custom[number]]">
+					<input name="tel" type="text" id="tel" value="$!{companyCustomers.tel}" placeholder="电话号码" class="field validate[custom[number]]">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="faxCountryCode" class="control-label">传真：</label>
+                <div class="controls">
+					<input name="faxCountryCode" type="text" id="faxCountryCode"  placeholder="国家号" value="$!{companyCustomers.faxCountryCode}" class="field input-mini validate[custom[number]]">
+					<input name="faxAreaCode" type="text" id="faxAreaCode" value="$!{companyCustomers.faxAreaCode}" placeholder="区号" class="field input-mini validate[custom[number]]">
+					<input name="fax" type="text" id="fax" value="$!{companyCustomers.fax}" placeholder="传真号码" class="field validate[custom[number]]">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="mobile" class="control-label">
+                    <span class="red">*</span>手机：</label>
+                <div class="controls">
+					<input name="mobile" type="text" id="mobile" value="$!{companyCustomers.mobile}" class="field input-xlarge validate[required, custom[phone]]">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="email" class="control-label">邮箱：</label>
+                <div class="controls">
+					<input name="email" type="email" id="email" class="field input-xlarge validate[custom[email]]" value="$!{companyCustomers.email}">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="title" class="control-label">
+                    <span class="red">* </span>公司名称：</label>
+                <div class="controls">
+					<input name="company" type="text" id="company" value="$!{companyCustomers.company}" size="40" class="field input-xlarge validate[required]">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="reg-area-0" class="control-label">
+                    <span class="red">*</span>国家/地区：
+                </label>
+                <div class="controls">
+					<select id='reg-area-0' class="validate[required]">
+						<option value="">请选择国家</option>
+					</select>
+					<select id='reg-area-1'  >
+						<option value="">请选择省份</option>
+					</select>
+					<select id='reg-area-2'>
+						<option value="">请选择城市</option>
+					</select>
+					<select id='reg-area-3'>
+						<option value="">请选择区县</option>
+					</select>
+					<input type="hidden" name="areaCode" id="areaCode" value="$!{companyCustomers.areaCode}" />
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="address" class="control-label">地址：</label>
+                <div class="controls">
+					<input name="address" type="text" id="address" value="$!{companyCustomers.address}"  class="field input-xlarge">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="postCode" class="control-label">邮编：</label>
+                <div class="controls">
+					<input name="postCode" type="text" id="postCode" value="$!{companyCustomers.postCode}" class="field validate[custom[number]]">
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="companyCustomersGroupId" class="control-label">客户分组归入：</label>
+                <div class="controls">
+					<select name="companyCustomersGroupId" id="companyCustomersGroupId" class="groupSel">
+                        <option value="" #if(!$!{companyCustomers.companyCustomersGroupId} || $!{companyCustomers.companyCustomersGroupId}=="") selected #end>--选择分组--</option>
+                    	<optgroup label="系统分组">
+                            <option value="1" #if($!{companyCustomers.companyCustomersGroupId}==1) selected #end>我的供应商</option>
+                            <option value="2" #if($!{companyCustomers.companyCustomersGroupId}==2) selected #end>我的采购商</option>
+                            <option value="3" #if($!{companyCustomers.companyCustomersGroupId}==3) selected #end>商界好友</option>
+                    	</optgroup>
+                    	<optgroup label="自定义分组">
+                    	#foreach($customersGroup in $customersGroupList)
+                            <option value="$!{customersGroup.id}" #if($!{companyCustomers.companyCustomersGroupId}==$!{customersGroup.id}) selected #end>$!{customersGroup.name}</option>
+                    	#end
+                    	</optgroup>
+                    </select>
+            	</div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">客户等级：</label>
+                <div class="controls">
+                    #if($!{companyCustomers.rank} && $!{companyCustomers.rank}!="")
+                        #set($rankValue=$!{companyCustomers.rank})
+                    #else
+                        #set($rankValue=3)
+                    #end
+                    <label for="star" class="rateStar" id="rateStar" data-rate="$rankValue">
+                        #foreach($rankIdx in [1..5])
+                            #if($!{rankValue}>=${rankIdx}) 
+                            <s class="on"></s>  
+                            #else
+                            <s></s>
+                            #end
+                        #end
+                        <input name="rank" type="hidden" value="$rankValue"> 
+                    </label>
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="status1" class="control-label">公司状态：</label>
+                <div class="controls">
+                    <label class="radio">
+					   <input name="status" id="status1" type="radio" value="1" #if($!{companyCustomers.status}==1) checked="checked" #end> 潜在
+                    </label>
+                    <label class="radio">
+    				    <input name="status" id="status2" type="radio" value="0"  #if($!{companyCustomers.status}==0||!${companyCustomers.status}) checked="checked" #end> 有意向	
+                    </label>
+                    <label class="radio">
+        				<input name="status" id="status3" type="radio" value="2"  #if($!{companyCustomers.status}==2) checked="checked" #end> 已成交
+                    </label>
+            	</div>
+            </div>
+            <div class="control-group">
+                <label for="textarea" class="control-label">备注：</label>
+                <div class="controls">
+            		<textarea name="remark" id="textarea" cols="60" rows="5">$!{companyCustomers.remark}</textarea>
+            	</div>
+            </div>
+            <div class="form-actions">
+        		<input type="submit" id="submitBtn" class="btn btn-primary" value="提 交"/>
+        	</div>
+    	</form>
+    </div>
+</div>
+#end
+
+#parse("/common/importValidate.vm")
+<script>
+	jQuery(function(){
+        myrc.menu(4, 1);
+        myrc.rate("rateStar");
+		jQuery("#editForm").validationEngine("attach");
+		
+		var regarea = new Asto.util.Selector({
+    		url:"#springUrl('/category/areaChild.htm')",
+			selects:["#reg-area-0","#reg-area-1","#reg-area-2","#reg-area-3"],
+			changeCallback:function(){
+				jQuery("#areaCode").val(regarea.getValue());
+			}
+    	});
+		#set($areaCode=$!{companyCustomers.areaCode})
+		#if(!$!{areaCode} || $!{areaCode} == "")
+			#set($areaCode="10011000")
+		#end
+    	regarea.init({
+    		rootCode:"1001",
+    		initCode:"$!{areaCode}"
+    	});
+	});
+</script>

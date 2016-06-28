@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCompSvr">
+	<typeAlias alias="crmCompSvr" type="com.zz91.ep.domain.crm.CrmCompSvr" />
+	<typeAlias alias="crmSvr" type="com.zz91.ep.domain.crm.CrmSvr" />
+	<typeAlias alias="compProfile" type="com.zz91.ep.domain.comp.CompProfile"/>
+	<typeAlias alias="compAccount" type="com.zz91.ep.domain.comp.CompAccount"/>
+	<typeAlias alias="crmCompSvrDto" type="com.zz91.ep.dto.crm.CrmCompSvrDto"/>
+	<resultMap id="crmCompSvrResult" class="crmCompSvr">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="crmSvrId" column="crm_svr_id" />
+		<result property="applyGroup" column="apply_group"/>
+		<result property="signedStatus" column="signed_status"/>
+		<result property="memberCode" column="member_code"/>
+		<result property="gmtPreStart" column="gmt_pre_start"/>
+		<result property="gmtPreEnd" column="gmt_pre_end"/>
+		<result property="gmtSigned" column="gmt_signed"/>
+		<result property="gmtStart" column="gmt_start"/>
+		<result property="gmtEnd" column="gmt_end"/>
+		<result property="applyStatus" column="apply_status"/>
+		<result property="saleCategory" column="sale_category" />
+		<result property="remark" column="remark"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<resultMap class="compProfile" id="simpleCompanyResult">
+		<result property="id" column="comp_id" />
+		<result property="name" column="comp_name" />
+		<result property="address" column="comp_address" />
+	</resultMap>
+	
+	<resultMap class="compAccount" id="simpleAccountResult">
+		<result property="email" column="email"/>
+	</resultMap>
+	<resultMap class="crmCompSvrDto" id="companySvrDtoResult">
+		<result property="compProfile" resultMap="crmCompSvr.simpleCompanyResult"/>
+		<result property="compAccount" resultMap="crmCompSvr.simpleAccountResult"/>
+		<result property="crmCompSvr" resultMap="crmCompSvr.crmCompSvrResult"/>
+		<result property="saleStaff" column="sale_staff"/>
+	</resultMap>
+	<resultMap class="crmCompSvrDto" id="companySvrWithSvrDtoResult">
+		<result property="crmCompSvr" resultMap="crmCompSvr.crmCompSvrResult"/>
+		<result property="svrName" column="svrName" />
+		<result property="svrPrice" column="svrPrice"/>
+		<result property="svrRemark" column="svrDetails"/>
+	</resultMap>
+	
+	<sql id="crmCompSvrSql" >
+		ccs.id,
+		ccs.cid,
+		ccs.crm_svr_id,
+		ccs.apply_group,
+		ccs.signed_status,
+		ccs.member_code,
+		ccs.gmt_pre_start,
+		ccs.gmt_pre_end,
+		ccs.gmt_signed,
+		ccs.gmt_start,
+		ccs.gmt_end,
+		ccs.apply_status,
+		ccs.sale_category,
+		ccs.remark,
+		ccs.gmt_created,
+		ccs.gmt_modified
+	</sql>
+	
+	<sql id="dynamicApplyCompany">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="crmSvrId">
+				ccs.crm_svr_id=#crmSvrId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="applyStatus">
+				ccs.apply_status=#applyStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="account">
+				cc.sale_staff=#account#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<insert id="insertCompSvr" parameterClass="crmCompSvr">
+		insert into crm_comp_svr
+		(`cid`,`crm_svr_id`,`apply_group`,`signed_status`,`member_code`,`gmt_pre_start`,`gmt_pre_end`,`gmt_signed`,`gmt_start`,`gmt_end`,`apply_status`,`sale_category`,`remark`,`gmt_created`,`gmt_modified`)
+		values
+		(#cid#,#crmSvrId#,#applyGroup#,#signedStatus#,#memberCode#,#gmtPreStart#,#gmtPreEnd#,#gmtSigned#,#gmtStart#,#gmtEnd#,#applyStatus#,#saleCategory#,#remark#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryApplyCompany" parameterClass="java.util.HashMap" resultMap="companySvrDtoResult">
+		select 
+		<include refid="crmCompSvr.crmCompSvrSql"/>
+		,c.id as comp_id,c.name as comp_name,c.address as comp_address,ca.email,cc.sale_staff
+		from comp_profile c
+		inner join crm_comp_svr ccs on ccs.cid=c.id
+		inner join comp_account ca on ca.cid = c.id
+		left join crm_cs_comp cc on cc.cid= c.id and cc.del_status=0
+		<include refid="crmCompSvr.dynamicApplyCompany"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryApplyCompanyCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer" >
+		select count(*) 
+		from comp_profile c
+		inner join crm_comp_svr ccs on ccs.cid=c.id
+		inner join comp_account ca on ca.cid = c.id
+		left join crm_cs_comp cc on cc.cid= c.id and cc.del_status=0
+		<include refid="crmCompSvr.dynamicApplyCompany"/>
+	</select>
+	
+	<select id="queryApplySvrHistory" parameterClass="java.lang.Integer" resultMap="crmCompSvrResult">
+		select
+		<include refid="crmCompSvr.crmCompSvrSql"/>
+		from crm_comp_svr ccs
+		where ccs.cid=#companyId# 
+	</select>
+	
+	<select id="countOpenedApplyByGroup" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(0) from crm_comp_svr
+		where apply_group=#applyGroup# and apply_status=1;
+	</select>
+	
+	<select id="queryApplyByGroup" parameterClass="java.lang.String" resultMap="companySvrWithSvrDtoResult">
+		select 
+		<include refid="crmCompSvr.crmCompSvrSql"/>
+		,cs.name as svrName,cs.unit_price as svrPrice, cs.details as svrDetails
+		from crm_comp_svr ccs 
+		inner join crm_svr cs on cs.id=ccs.crm_svr_id
+		where ccs.apply_group=#applyGroup# 
+	</select>
+	<select id="querySvrHistory" parameterClass="java.util.HashMap" resultMap="crmCompSvrResult">
+		select
+		<include refid="crmCompSvr.crmCompSvrSql"/>
+		from crm_comp_svr ccs
+		where ccs.cid=#companyId# and ccs.crm_svr_id=#crmSvrId#
+	</select>
+	<update id="updateCrmCompSvr" parameterClass="crmCompSvr">
+		update crm_comp_svr ccs set
+		ccs.signed_status=#signedStatus#,
+		ccs.member_code=#memberCode#,
+		ccs.gmt_pre_start=#gmtPreStart#,
+		ccs.gmt_pre_end=#gmtPreEnd#,
+		ccs.gmt_signed=#gmtSigned#,
+		ccs.gmt_start=#gmtStart#,
+		ccs.gmt_end=#gmtEnd#,
+		ccs.apply_status=#applyStatus#,
+		ccs.sale_category=#saleCategory#,
+		ccs.remark=#remark#,
+		ccs.gmt_modified=now()
+		where ccs.id=#id#
+	</update>
+	<select id="queryRecentHistory" parameterClass="java.util.HashMap" resultMap="crmCompSvrResult">
+		select <include refid="crmCompSvr.crmCompSvrSql"/>
+		from crm_comp_svr ccs
+		where ccs.cid=#cid# and ccs.crm_svr_id=#crmSvrId#
+		and ccs.id !=#id#
+		order by ccs.gmt_end desc
+	</select>
+	<select id="queryCompanySvrById" parameterClass="java.lang.Integer" resultMap="crmCompSvrResult">
+		select <include refid="crmCompSvr.crmCompSvrSql"/>
+		from crm_comp_svr ccs
+		where ccs.id = #companySvrId#
+	</select>
+	<update id="refusedApplyUpdateApplyStatus" parameterClass="java.util.HashMap">
+		update crm_comp_svr 
+		set 
+		apply_status=#applyStatusFailure#,
+		gmt_modified=now()
+		where apply_group=#applyGroup#
+	</update>
+	
+	<update id="updateSvrStatusById" parameterClass="java.util.HashMap">
+		update crm_comp_svr set
+		member_code=10011000,
+		gmt_end=now(),
+		apply_status=#status#,
+		gmt_modified=now()
+		where id=#compSvrId# and apply_status=1
+	</update>
+</sqlMap>

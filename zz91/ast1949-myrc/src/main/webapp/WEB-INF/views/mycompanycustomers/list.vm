@@ -1,0 +1,226 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/mycompanycustomers/list.htm')">客户管理</a> <span class="divider">/</span></li>
+			<li class="active">客户信息管理</li>
+		</ul>
+	#if($!{error}==0)
+		<div class="alert alert-success"><strong>提示：</strong>您刚刚的操作成功了！</div>
+	#end
+	#if($!{error}==1)
+		<div class="alert alert-error"> <strong>提示：</strong>发生错误，您的客户信息没有被更新！</div>
+	#end
+	#parse("/commonImpt/companyCustomer/searchBar.vm")
+	#parse("/commonImpt/companyCustomer/filterBar.vm")
+	<button id="createBtn" class="btn btn-mini">新增</button>
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+		        <tr>
+		            <th width="4%"></th>
+		            <th width="11%" class="tac">
+		                <strong>联系人</strong>
+		            </th>
+		            <th width="25%" class="tac">
+		                <strong>公司名称</strong>
+		            </th>
+		            <th width="12%" class="tac">
+		                <strong>公司电话</strong>
+		            </th>
+		            <th width="12%" class="tac">
+		                <strong>手机</strong>
+		            </th>
+		            <th width="16%" class="tac">
+		                <strong>地区</strong>
+		            </th>
+		            <th width="10%" class="tac">
+		                <strong>分组</strong>
+		            </th>
+		            <th width="10%" class="tac">
+		                <strong>操作</strong>
+		            </th>
+		        </tr>
+	        </thead>
+	        <tbody>
+	        	#foreach($companyCustomer in ${page.records})
+				<tr>
+		            <td class="tac va">
+						<input type="checkbox" name="cbb" value="$!{companyCustomer.companyCustomersDO.id}"/>
+		            </td>
+		            <td class="tac">
+						<a href="#springUrl('saveCompanyCustomers.htm')?id=$!{companyCustomer.companyCustomersDO.id}">
+							$!{companyCustomer.companyCustomersDO.name}
+						</a>
+		            </td>
+		            <td class="tac">
+						<a href="#springUrl('saveCompanyCustomers.htm')?id=$!{companyCustomer.companyCustomersDO.id}">
+							$!{companyCustomer.companyCustomersDO.company}
+						</a>
+		            </td>
+		            <td class="tac">
+						<a href="#springUrl('saveCompanyCustomers.htm')?id=$!{companyCustomer.companyCustomersDO.id}">
+							$!{companyCustomer.companyCustomersDO.telCountryCode}
+							#if($!{companyCustomer.companyCustomersDO.telAreaCode} && $!{companyCustomer.companyCustomersDO.telAreaCode}!="")
+							-
+							$!{companyCustomer.companyCustomersDO.telAreaCode}
+							#end
+							#if($!{companyCustomer.companyCustomersDO.tel} && $!{companyCustomer.companyCustomersDO.tel} != "")
+							-
+							$!{companyCustomer.companyCustomersDO.tel}
+							#end
+						</a>
+		            </td>
+		            <td class="tac">
+						<a href="#springUrl('saveCompanyCustomers.htm')?id=$!{companyCustomer.companyCustomersDO.id}">
+						$!{companyCustomer.companyCustomersDO.mobile}
+						</a>
+		            </td>
+		            <td class="tac">
+						#if($!{companyCustomer.provinceName}=="国家")
+							$!{companyCustomer.cityName} $!{companyCustomer.companyCustomersDO.foreignCity}
+						#elseif($!{companyCustomer.provinceName})
+							$!{companyCustomer.provinceName} $!{companyCustomer.cityName}
+						#end
+		            </td>
+		            <td class="tac">
+						#if($!{companyCustomer.groupName})
+		                    $!{companyCustomer.groupName}
+						#else
+							<span class="grey">无分组</span>
+						#end
+		            </td>
+		            <td class="tac">
+						<a href="#springUrl('/mycompanycustomers/saveCompanyCustomers.htm')?id=$!{companyCustomer.companyCustomersDO.id}">修改</a>
+						<a href="#springUrl('/mycompanycustomers/delete.htm')?ids=$!{companyCustomer.companyCustomersDO.id}" onclick="javascript:return confirm('删除后将无法恢复，您确定要删除这个客户信息吗?');">删除</a>
+		            </td>
+				</tr>
+				#end
+	        </tbody>
+	    </table>
+		#if($!{page.records.size()}==0)
+	    <div class="alert">您还没有添加任何客户信息！</div>
+		#end
+		#parse("/commonImpt/companyCustomer/filterBar.vm")
+		#myrcPageNav($!{page} "#springUrl('/mycompanycustomers/list.htm')" "companyCustomersGroupId=$!{customer.companyCustomersGroupId}&company=$!{companyEncode}&name=$!{nameEncode}&tel=$!{customer.tel}&mobile=$!{customer.mobile}" "")
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(5, 2);
+	jQuery("#createBtn").click(function(){
+		window.location.href="#springUrl('/mycompanycustomers/saveCompanyCustomers.htm')";
+	});
+	
+	jQuery(".checkAllToggle").click(function(){
+		var chk=jQuery(this).attr("checked");
+		jQuery("input[name=cbb]").each(function(index, obj){
+			obj.checked=chk;
+		});
+	});
+	
+	jQuery(".groupSel").change(function(){
+		window.location.href="#springUrl('/mycompanycustomers/list.htm')?companyCustomersGroupId="+jQuery(this).val()+"&company=$!{companyEncode}&name=$!{nameEncode}&tel=$!{customer.tel}&mobile=$!{customer.mobile}";
+	});
+	
+	jQuery(".deleteBtn").click(function(){
+		var ids=getAllSelectIds();
+		if(ids.length==0){
+			alert ("请选择要删除的客户信息！");
+			return false;
+		}
+		if (confirm("你选中了"+ids.length+"条客户信息,确实要删除这些客户信息吗?")){
+			window.location.href="#springUrl('/mycompanycustomers/delete.htm')?ids="+ids.join(",");
+		}
+	});
+	
+	var manageBox = new Asto.util.PopupBox({
+		url:"#springUrl('/mycompanycustomers/groupList.htm')",
+		destUrl:"#springUrl('/submitCallback.htm')",
+		modal:true,
+		height:300,
+		title:'客户分组设置',
+		width:475,
+		buttons: {
+			"关闭": function() {
+				jQuery( this ).dialog( "close" );
+			}
+		}
+	});
+		
+	jQuery(".manageBtn").click(function(){
+		manageBox.show("#springUrl('/mycompanycustomers/groupList.htm')");
+	});
+});
+
+function getAllSelectIds(){
+	var ids = new Array();
+	jQuery.each(jQuery("[name=cbb]"),function(index,obj){
+		if(obj.checked){
+			ids.push(obj.value);
+		}
+	});
+	return ids;
+}
+
+function groupCustomer(){
+	//选择所有选中项
+	var ids=getAllSelectIds();
+	if(ids.length<=0){
+		alert("请选选择要分组的客户信息");
+		return false;
+	}
+	
+	var win= new Asto.util.PopupBox({
+		url:"#springUrl('/mycompanycustomers/groupCustomer.htm?ids=')"+ids.join(","),
+		destUrl:"#springUrl('/submitCallback.htm')",
+		modal:true,
+		title:'将客户归入分组',
+		width:475,
+		height:300,
+		callbackFn:function(success, data){
+			win.close();
+			window.location.reload();
+		}
+	});
+	
+	win.show();
+}
+
+function unGroupCustomer(){
+	var ids=getAllSelectIds();
+	if(ids.length==0){
+		alert ("选择你要取消分组设置的信息！");
+		return false;
+	}
+	if (confirm("你选中了"+ids.length+"个客户,确实要取消该客户的分组设置？")){
+		jQuery.ajax({
+			url:"#springUrl('/mycompanycustomers/doUnGroupCustomer.htm')",
+			cache:false,
+			data:{ids:ids.join(',')},
+			dataType:"json",
+			success:function(msg){
+				if(msg!=null&&msg.success==true){
+					Asto.util.Message.show({
+						msg:"您的客户已从分组中移除！",
+						msgType:Asto.util.Message.INFO,
+						bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+							Asto.util.Message.clear();
+						}}],	
+						autoClose:5000
+					});
+					window.location.reload();
+				} else {
+					Asto.util.Message.show({
+						msg:"发生错误，您的操作没有正确执行！",
+						msgType:Asto.util.Message.ERROR,
+						bar:[{text:Asto.util.Message.BAR_CLOSE,handler:function(){
+							Asto.util.Message.clear();
+						}}],
+						autoClose:5000
+					});
+				}
+			}
+		});
+	}
+}
+</script>

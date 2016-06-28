@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="newsZhuanti">
+	<typeAlias alias="zhuanti" type="com.zz91.ep.domain.news.Zhuanti"/>
+	<typeAlias alias="zhuantiDto" type="com.zz91.ep.dto.news.ZhuantiDto"/>
+	
+	<resultMap class="zhuanti" id="zhuantiResult">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="review" column="review"/>
+		<result property="targetUrl" column="target_url"/>
+		<result property="category" column="category"/>
+		<result property="photoPreview" column="photo_preview"/>
+		<result property="tags" column="tags"/>
+		<result property="recommandStatus" column="recommand_status"/>
+		<result property="attentionStatus" column="attention_status"/>
+		<result property="gmtPublish" column="gmt_publish"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap class="zhuantiDto" id="zhuantiDtoResult">
+		<result property="zhuanti" resultMap="zhuanti.zhuantiResult" />
+	</resultMap>
+
+	<sql id="fullColumn">
+	nz.id,
+	nz.title,
+	nz.review,
+	nz.target_url,
+	nz.category,
+	nz.photo_preview,
+	nz.tags,
+	nz.recommand_status,
+	nz.attention_status,
+	nz.gmt_publish,
+	nz.gmt_created,
+	nz.gmt_modified
+	</sql>
+	
+	<sql id ="dynamicByCategory">
+		<dynamic prepend="where">
+			<isNotEmpty property="category" prepend="and">
+				nz.category=#category#
+			</isNotEmpty>
+			<isNotEmpty property="recommandStatus" prepend="and">
+				nz.recommand_status=#recommandStatus#
+			</isNotEmpty>
+			<isNotEmpty property="attentionStatus" prepend="and">
+				nz.attention_status=#attentionStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryZhuanti" parameterClass="java.util.HashMap" resultMap="zhuantiResult">
+		select 
+		<include refid="newsZhuanti.fullColumn"/>
+		from news_zhuanti nz
+		<include refid="newsZhuanti.dynamicByCategory"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryZhuantiCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) 
+		from news_zhuanti nz
+		<include refid="newsZhuanti.dynamicByCategory"/>
+	</select>
+	
+	<select id="queryZhuantiDetail" parameterClass="java.lang.Integer" resultMap="zhuantiResult">
+		select 
+		<include refid="newsZhuanti.fullColumn"/>
+		from news_zhuanti nz
+		where 
+		nz.id=#value#
+	</select>
+	
+	<insert id="insert" parameterClass="zhuanti">
+		insert into news_zhuanti(
+		title,
+		review,
+		target_url,
+		category,
+		tags,
+		recommand_status,
+		attention_status,
+		gmt_publish,
+		gmt_created,
+		gmt_modified
+		)
+		value(
+		#title#,
+		#review#,
+		#targetUrl#,
+		#category#,
+		#tags#,
+		#recommandStatus#,
+		#attentionStatus#,
+		#gmtPublish#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="zhuanti">
+		update news_zhuanti
+		set
+		title=#title#,
+		review=#review#,
+		target_url=#targetUrl#,
+		category=#category#,
+		photo_preview=#photoPreview#,
+		tags=#tags#,
+		recommand_status=#recommandStatus#,
+		attention_status=#attentionStatus#,
+		gmt_modified=now(),
+		gmt_publish=#gmtPublish#
+		where id=#id#
+	</update>
+	
+	<update id="updateAttention" parameterClass="zhuanti">
+		update news_zhuanti
+		set
+		attention_status=#attentionStatus#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<update id="updateRecommend" parameterClass="zhuanti">
+		update news_zhuanti
+		set
+		recommand_status=#recommandStatus#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<delete id="delete" parameterClass="java.lang.Integer" >
+		delete from news_zhuanti
+		where id=#id#
+	</delete>
+</sqlMap>

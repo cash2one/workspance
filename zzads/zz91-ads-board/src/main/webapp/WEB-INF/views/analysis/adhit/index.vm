@@ -1,0 +1,33 @@
+<script type="text/javascript" src="#springUrl('/app/ad/position.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/analysis/adhit.js')" ></script>
+<script type="text/javascript">
+Ext.onReady(function() {
+	var tree = new com.zz91.ads.board.ad.position.TreePanel({
+		region:"west",
+		split:true,
+		collapsible:true,
+		width:200,
+		contextmenu:null
+	});
+	
+	var grid = new com.zz91.ads.board.analysis.adhit.Grid({
+		layout:"fit",
+		region:"center"
+	});
+	
+	var viewport = new Ext.Viewport({
+		layout:"border",
+		items:[grid,tree]
+	});
+	
+	tree.on('click',function(node,event){
+		var _id = node.attributes['data'];
+		if(_id!=""){
+			grid.getStore().baseParams["positionId"]=_id;
+		}else{
+			grid.getStore().baseParams["positionId"]=null;
+		}
+		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+	});
+});
+</script>

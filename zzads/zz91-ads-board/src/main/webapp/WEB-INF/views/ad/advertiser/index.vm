@@ -1,0 +1,62 @@
+<script type="text/javascript" src="#springUrl('/app/ad/advertiser.js')" ></script>
+<script type="text/javascript">
+    var ADVERTISER = new function() {
+    	this.GRID="GRID";
+    	this.EDIT_WIN="EDIT_WIN";
+    	this.ADD_FORM="ADD_FORM";
+    	this.EDIT_FORM="EDIT_FORM";
+    	this.EDIT_WIN="EDIT_WIN"
+    }
+    
+    Ext.onReady(function() {
+    	var _grid=new com.zz91.ads.board.ad.advertiser.Grid({
+		##var _grid=new com.zz91.ads.board.ad.advertiser.AdvertiserGrid({
+					
+    		id:ADVERTISER.GRID,
+    		region:"center"
+    	});
+    	
+    	var tree=new Ext.tree.TreePanel({
+    		root:new Ext.tree.AsyncTreeNode({
+    			text:"所有分类",
+    			children:[
+    				{text:Context.ADVERTISER_CATEGORY[0],leaf:true,data:"0"},
+    				{text:Context.ADVERTISER_CATEGORY[1],leaf:true,data:"1"},
+    				{text:Context.ADVERTISER_CATEGORY[2],leaf:true,data:"2"}
+    			]
+    		})
+    	});
+    	
+    	var _west = {
+    		title:"广告主分类",
+    		region : "west",
+    		layout : "fit",
+    		width:300,
+    		collapsible:true,
+    		margins:  "0 0 2 2",
+    		cmargins: "0 2 2 2",
+    		split: true,
+    		maxSize: 240,
+    		minSize:120,
+    		items : [tree]
+    	};
+    	
+    	var viewport=new Ext.Viewport({
+    		layout:"border",
+    		items:[_west,_grid]
+    	})
+    	
+    	tree.getRootNode().expand();
+    	tree.on("click",function(node,e){
+    		var grid = Ext.getCmp(ADVERTISER.GRID);
+    		var B=grid.getStore().baseParams||{};
+    		if(node.attributes.data!="" && node!=tree.getRootNode()){
+    			B["category"] = node.attributes.data;
+    		}else{
+    			B["category"] = null;
+    		}
+    		grid.getStore().baseParams = B;
+    		grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+    	});
+    })
+</script>

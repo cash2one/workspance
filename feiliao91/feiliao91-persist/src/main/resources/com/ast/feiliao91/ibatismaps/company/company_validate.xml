@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyValidate">
+	<typeAlias alias="validate" type="com.ast.feiliao91.domain.company.CompanyValidate"/>
+	<resultMap class="validate" id="validateResult">
+			<result property="id" column="id"/>
+			<result property="targetName" column="target_name"/>
+			<result property="vcode" column="vcode"/>
+			<result property="targetType" column="target_type"/>
+			<result property="isValidate" column="is_validate"/>
+			<result property="gmtCreated" column="gmt_created"/>
+			<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<!-- 创建验证信息 -->
+	<insert id="insertValidate" parameterClass="validate">
+		insert into company_validate
+		(
+			target_name,
+			vcode,
+			target_type,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#targetName#,
+			#vcode#,
+			#targetType#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<sql id="allColumn">
+		id, target_name, vcode, target_type, is_validate, gmt_created, gmt_modified
+	</sql>
+	
+	<!-- 搜索最新的验证信息 -->
+	<select id="queryValidateByNameAndType" parameterClass="java.util.Map" resultMap="validateResult">
+		select 
+			<include refid="companyValidate.allColumn"/>
+		from company_validate
+		where target_name=#targetName# and target_type=#targetType#
+		order by id desc
+		limit 1
+	</select>
+	
+	<!-- 更新验证状态 -->
+	<update id="updateValidateById" parameterClass="java.lang.Integer">
+		update company_validate
+		set is_validate = '1', gmt_modified = now()
+		where id = #id#
+	</update>
+	
+	<sql id="whereCaulseAdmin">
+		<dynamic prepend="where"> 
+			<isNotEmpty prepend="and" property="searchDto.companyName">
+				ci.name = #searchDto.companyName#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="searchDto.targetName">
+				cv.target_name = #searchDto.targetName#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="querycompanyValidateByAdmin" parameterClass="java.util.Map" resultMap="validateResult">
+		select 
+			<include refid="companyValidate.allColumn" />
+		from company_validate  
+		<include refid="companyValidate.whereCaulseAdmin"/>
+		<isNotEmpty property="searchDto.isGroupBy">
+				group by target_name
+		</isNotEmpty>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countcompanyValidateByAdmin" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_validate
+		<include refid="companyValidate.whereCaulseAdmin"/>
+		<isNotNull property="searchDto.isGroupBy">
+				group by target_name
+		</isNotNull>
+	</select>
+</sqlMap>

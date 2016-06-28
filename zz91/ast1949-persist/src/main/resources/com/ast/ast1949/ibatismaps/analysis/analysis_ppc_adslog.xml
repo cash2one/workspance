@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisPpcAdslog">
+	<typeAlias alias="analysisPpcAdslog" type="com.ast.ast1949.domain.analysis.AnalysisPpcAdslog"/>
+	<resultMap id="analysisPpcAdslogResult" class="analysisPpcAdslog">
+		<result property="id" column="id" />
+		<result property="adposition" column="adposition" />
+		<result property="companyId" column="company_id" />
+		<result property="showcount" column="showcount" />
+		<result property="checkcount" column="checkcount" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="phour" column="phour" />
+		<result property="pdate" column="pdate" />
+	</resultMap>
+	<!--某段时间某广告位某公司的展现量-->
+	   <select id="queryShowCByCompanyIdATAA" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(showcount)
+	   	from analysis_ppc_adlog
+	   	where company_id = #companyId# and adposition=#adposition# and pdate >= #from# and #to#>= pdate
+	   </select>
+	<!--某段时间某广告位的展现量-->
+	   <select id="queryShowCByAdpositionAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(showcount)
+	   	from analysis_ppc_adlog
+	   	where pdate >= #from# and #to#>= pdate and adposition=#adposition# 
+	   </select>
+	<!--某段时间某公司的展现量-->
+	   <select id="queryShowCByCompanyIdAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(showcount)
+	   	from analysis_ppc_adlog
+	   	where pdate >= #from# and #to#>= pdate and company_id = #companyId#
+	   </select>
+	<!--某段时间某广告位某公司的点击量-->
+	   <select id="queryCheckCByCompanyIdATAA" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(checkcount)
+	   	from analysis_ppc_adlog
+	   	where company_id = #companyId# and adposition=#adposition# and pdate >= #from# and #to#>= pdate
+	   </select>
+	<!--某段时间某广告位的点击量-->
+	   <select id="queryCheckCByAdpositionAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(checkcount)
+	   	from analysis_ppc_adlog
+	   	where adposition=#adposition# and pdate >= #from# and #to#>= pdate
+	   </select>
+	<!--某段时间某公司的点击量-->
+	   <select id="queryCheckCByCompanyIdAT" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	   	select sum(checkcount)
+	   	from analysis_ppc_adlog
+	   	where company_id = #companyId# and pdate >= #from# and #to#>= pdate
+	   </select>
+	 <!--根据广告位id搜索出该广告位下的所有公司id-->
+	 <select id="queryCompanyIdById" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+	 	select distinct(company_id)
+	 	from analysis_ppc_adlog
+	 	where adposition=#adposition#
+	 </select>
+   </sqlMap>

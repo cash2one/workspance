@@ -1,0 +1,154 @@
+#set($layout="/layout/publish.vm")
+#parse("/common/importValidate.vm")
+<!------trade postbuy stpone mainblock start------>
+<article class="hb_mainblock">
+	 <form id="publishStpOne" action="#springUrl('/buy/doStpOne.htm')" method="post"/>
+	 <input type="hidden" id="categoryCode" name="categoryCode" value="1001" />
+	 <input type="hidden" id="photoCover" name="photoCover" value="" />
+	 <section class="trade_pstbuynoe_leader style style2"><span class="fontbold">发布求购信息</span>（<span class="fontorange">*</span>为必填项）</section>
+        <section class="trade_pstbuyone_conts margintop8">                           
+              <h3 class='tit'>采购信息</h3>
+              <div class="pstbuyone_form">
+                   <div class="pstbuyone_l_txt"><label for="title" class="melab"><span class="fontorange">*</span>产品名称：</span></label></div>
+                   <div class="pstbuyone_m_elems">
+                       <input type="text" id="title" name="title" class="meipta validate[required,maxSize[30]]"/>
+    			   </div>
+              </div>
+              </div>
+              <div class="pstbuyone_form">
+                   <div class="pstbuyone_l_txt">
+						<label for="quantityYear" class="melab"><span class="fontorange">*</span>采购数量：</label>
+				   </div>
+                   <div class="pstbuyone_m_elems">
+                       <input type="number" id="quantity" name="quantity" class="meipt validate[required,custom[number],maxSize[10]]"/>
+                       <select id="quantityUntis" name="quantityUntis" class="meselecta ">
+                          	<option value="">请选择</option>
+                          	<option value="套" >套</option>
+                          	<option value="台" >台</option>
+                          	<option value="件" >件</option>
+                          	<option value="吨" >吨</option>
+                          	<option value="个" >个</option>
+                          	<option value="斤" >斤</option>
+                          	<option value="千克" >千克</option>
+                          	<option value="袋" >袋</option>
+                          	<option value="盒" >盒</option>
+                       </select>
+                   </div>
+              </div>
+			  
+			  <div class="pstbuyone_form">
+                  <div class="pstbuyone_l_txt">
+					<label for="provinceCode" class="melab"><span class="fontorange">*</span>收货地址：</label>
+				  </div>
+                  <div class="pstbuyone_m_elems">
+                       <select id="provinceCode" name="provinceCode" class="meselect">
+                           <option value="">省份</option>
+                       </select>
+                       <select id="areaCode" name="areaCode" class="meselect validate[required]">
+                           <option value="">城市</option>
+                       </select>
+                   </div>
+              </div>
+              <div class="pstbuyone_form">
+					<div class="pstbuyone_l_txt">
+						<label for="pstbuyone_form_area">
+						期望供应商所在地区：</label>
+					</div>
+                    <div class="pstbuyone_m_elems">
+						  <select id="supplyProvinceCode" class="meselect">
+							    <option value="">省份</option>
+                          </select>
+                          <select id="supplyAreaCode" name="supplyAreaCode" class="meselect">
+                               <option value="">城市</option>
+                          </select>
+                    </div>
+              </div>
+              <div class="pstbuyone_form">
+                   <div class="pstbuyone_l_txt">
+					<label for="pstbuyone_form_date">信息有效期：</label> 
+                   </div>
+				   <div class="pstbuyone_m_elems">
+		             <input name="validDays" type="radio" name="validDays" value="3" id="datedays10"/><label for="datedays10">3天</label>
+                     <input name="validDays" type="radio" name="validDays" value="5" id="datedays20"/><label for="datedays20">5天</label>
+		             <input name="validDays" type="radio" name="validDays" value="7" checked id="datemonth"/><label for="datemonth">7天</label>
+		             <input name="validDays" type="radio" name="validDays" value="10" id="dateonethrmonth"/><label for="dateonethrmonth">10天</label>
+		             <input name="validDays" type="radio" name="validDays" value="0" id="dateforever"/><label for="dateforever">长期有效</label>
+		          </div>
+				</div>
+				
+
+          <div class="pstbuyone_form">
+                <div class="pstbuyone_l_txt"><label for="details" class="melab"><span class="fontorange">* </span>详细要求：</label></div>
+				<div class="pstbuyone_m_elems">
+                  <textarea id="details" name="details" class="metextarea validate[required,maxSize[500]]"></textarea>
+				  <div><span class="fontblue" id="readTerms">填写详细具体采购要求的买家收到的报价数量是其他买家的</span></div>
+				</div>
+		  </div>		  
+		
+		  
+    		  <div class="pstbuyone_sub">
+					<input type="button" onclick="javascript:publishBuy()" value="马上发布" class="formSub"/>	
+    		  </div>
+						
+    		  <aside class="pstbuyone_bottom_tips">
+    				<p><span class="fontbold">本网建议</span>：优质的信息更能得到买家的青睐，以下方面建议您发布前可以再检查一下：</p>
+    				<p class="fontgrey">在详细说明中插入产品细节图 彰显产品专业品质</p>
+    				<p class="fontgrey">优化您的信息标题 突出产品特点，使标题更具有吸引力</p>
+    				<p class="fontgrey">上传更多精美的产品图片 让买家对产品印象深刻</p>
+    				<p class="fontgrey">填写更详细的产品属性 增加被买家搜索到的机会</p>
+    				
+             </aside>
+				<div class="clear"></div>
+        </section>
+		</form>
+    </section>
+    #if($!{epAuthUser})
+		<input type="hidden" id="loginstatus" value="1" />
+	#else
+		<input type="hidden" id="loginstatus" value="0" />
+    #end
+</article>
+<script>
+	jQuery(document).ready(function(){
+		// 地区下拉框初始化
+		var _selectAreaCode=["#provinceCode","#areaCode"];
+		var selectAreaCode=new hb.util.Selector({
+			selects:_selectAreaCode,
+			url:"$!{address.myesite}/common/getAreaCode.htm",
+			field:{code:"code",label:"name"}
+		});
+		selectAreaCode.init({
+			rootCode:"10011000"
+		});
+		
+		// 期望供货地区下拉框初始化
+		var _selectAreaCode=["#supplyProvinceCode","#supplyAreaCode"];
+		var selectAreaCode=new hb.util.Selector({
+			selects:_selectAreaCode,
+			url:"$!{address.myesite}/common/getAreaCode.htm",
+			field:{code:"code",label:"name"}
+		});
+		selectAreaCode.init({
+			rootCode:"10011000"
+		});
+		jQuery("#publishStpOne").validationEngine("attach");
+	});
+	function publishBuy() {
+		if(jQuery("#loginstatus").val()!="1" ){
+            var loginbox=new Asto.util.PopupBox({
+    	  		url:"$!{address.myesite}/loginMini.htm",
+    		  	destUrl:"$!{address.myesite}/callback/login.htm",
+    	  		callbackFn:function(success, data){
+    	  			loginbox.close();
+    	  			jQuery("#loginstatus").val("1");
+    				jQuery("#publishStpOne").submit();
+    	 		},
+    	  		width:510,
+    	  		height:400
+      		});
+    	  	loginbox.show();
+		} else {
+			jQuery("#publishStpOne").submit();
+		}
+	}
+</script>

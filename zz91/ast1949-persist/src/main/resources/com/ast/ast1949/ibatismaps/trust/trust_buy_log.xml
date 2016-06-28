@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustBuyLog">
+	<typeAlias alias="trustBuyLogDO" type="com.ast.ast1949.domain.trust.TrustBuyLog" />
+
+	<resultMap class="trustBuyLogDO" id="trustBuyLogResult">
+		<result property="id" column="id" />
+		<result property="buyId" column="buy_id" />
+		<result property="content" column="content" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="star" column="star"/>
+		<result property="gmtNextVisit" column="gmt_next_visit"/>
+		<result property="situation" column="situation"/>
+		<result property="trustType" column="trust_type"/>
+		<result property="offerCompanyId" column="offer_company_id"/>
+		<result property="trustAccount" column="trust_account"/>
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		buy_id,
+		content,
+		gmt_created,
+		gmt_modified,
+		star,
+		gmt_next_visit,
+		situation,
+		trust_type,
+		offer_company_id,
+		trust_account
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="trustBuyLogResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_buy_log
+		where id = #value#
+	</select>
+
+	<insert id="insert" parameterClass="trustBuyLogDO">
+		INSERT
+		INTO
+		trust_buy_log
+		(
+		`content`,
+		`buy_id`,
+		`gmt_created`,
+		`gmt_modified`,
+		star,
+		gmt_next_visit,
+		situation,
+		trust_type,
+		offer_company_id,
+		trust_account
+		)
+		VALUES
+		(
+		#content#,
+		#buyId#,
+		now(),
+		now(),
+		#star#,
+		#gmtNextVisit#,
+		#situation#,
+		#trustType#,
+		#offerCompanyId#,
+		#trustAccount#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="trustBuyLog.buyId">
+				buy_id = #trustBuyLog.buyId#
+			</isNotNull>
+			<isNotNull prepend="and" property="trustBuyLog.offerCompanyId">
+				offer_company_id = #trustBuyLog.offerCompanyId#
+			</isNotNull>
+			<isNotNull prepend="and" property="trustBuyLog.companyId">
+				exists(select id from trust_buy a where a.id = buy_id and a.company_id = #trustBuyLog.companyId# and is_del = 0)
+			</isNotNull>
+			<isNotNull prepend="and" property="trustBuyLog.from">
+				gmt_created >= #trustBuyLog.from#
+			</isNotNull>
+			<isNotNull prepend="and" property="trustBuyLog.to">
+				#trustBuyLog.to#  > gmt_created
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map"
+		resultMap="trustBuyLogResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_buy_log
+		<include refid="whereCaluse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountByCondition" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from trust_buy_log
+		<include refid="whereCaluse" />
+	</select>
+	
+	<select id="countByCompanyIdForOneMonth" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_buy_log
+		where exists( select a.id from trust_buy a where a.company_id = #value# and buy_id = a.id ) and date(gmt_created) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+	</select>
+	
+	<sql id="whereAdminCaluse">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="searchDto.from">
+				UNIX_TIMESTAMP(gmt_created) >= UNIX_TIMESTAMP(#searchDto.from#)
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.to">
+				UNIX_TIMESTAMP(#searchDto.to#)  > UNIX_TIMESTAMP(gmt_created)
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.trustAccount">
+				trust_account like concat('%',#searchDto.trustAccount#,'%') 
+			</isNotNull>
+			<isNotNull prepend="and" property="searchDto.star">
+				star = #searchDto.star# 
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryByConditionByAdmin" parameterClass="java.util.Map" resultMap="trustBuyLogResult">
+		select
+		<include refid="defaultColumn" />
+		from trust_buy_log
+		<include refid="whereAdminCaluse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountByConditionByAdmin" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_buy_log
+		<include refid="whereAdminCaluse" />
+	</select>
+	
+	<select id = "queryRecentStar" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select star
+		from trust_buy_log
+		where buy_id = #buyId# and #id# > id
+		order by id desc
+		limit 1
+	</select>
+
+</sqlMap>

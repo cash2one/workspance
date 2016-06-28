@@ -1,0 +1,78 @@
+ <script type="text/javascript">
+ function greetings(){
+	now = new Date(),hour = now.getHours()
+	if(hour < 6){return "凌晨好！"}
+	else if (hour < 9){return "早上好！"}
+	else if (hour < 12){return "上午好！"}
+	else if (hour < 14){return "中午好！"}
+	else if (hour < 17){return "下午好！"}
+	else if (hour < 19){return "傍晚好！"}
+	else if (hour < 22){return "晚上好！"}
+	else {return "夜里好！"}
+}
+
+   function layout(){
+        var othersAccount = jQuery("#othersAccount").val();
+        logout(jQuery("#url").val(), "#springUrl('/user')", function(response){
+            if (response.success) {
+                window.location.href = "#springUrl('/viewReply')$!{bbsPostDO.id}.htm";
+            }
+            else {
+                alert(response.data);
+            }
+        });
+    }
+ </script> 
+ #if($!{sessionUser})
+   <div class="header2"style="position:relative">
+        <a href="http://www.zz91.com" class="headers-logo"></a>
+    	<div class="login">
+        	<div class="login-box">
+            	<div class="login-name">
+                	<div class="login-hello">
+						#if($!{bbsUserProfilerDO.nickname} && $!{bbsUserProfilerDO.nickname}!="")
+							$!{bbsUserProfilerDO.nickname}
+						#else $!{bbsUserProfilerDO.account}
+						#end <script type="text/javascript">document.write(greetings());</script>
+					</div>
+                    <div class="login-message">
+                    	<a href="#springUrl('/myposted').htm">[消息]</a>
+                        <a href="javascript:layout()">[退出]</a>
+                    </div>
+                    <!--end login-message-->
+                    <div class="cb"></div>
+                </div>
+                <!--end login-name-->
+                <div class="login-text">
+                	[提问数：$!{countPostedQA}] [回答数：$!{countReplyQA} ] [发帖数：$!{countPosted}] [回帖数：$!{countReply}]
+                </div>
+                <!--end login-text-->
+            </div>
+            <div class="login-img">
+				#if($!{bbsUserProfilerDO.picturePath})
+					<img src="$!{address.thumb}$!{address.resource}/$!{bbsUserProfilerDO.picturePath}&width=40" width="40px" height="40px"/>
+            	#else
+					<img src="http://img0.zz91.com/zz91/huzhu/images/no_head.jpg">
+				#end	
+            </div>
+            <!--end login-img-->
+        </div>
+        <!--end login-->
+        <div class="cb"></div>
+   </div>
+    <!--end header-->
+#else
+   <div class="header2" style="position:relative">
+        <a href="http://www.zz91.com" class="headers-logo"></a>
+    	<div class="login">
+        	<div class="login-box">
+                
+            </div>
+
+        </div>
+        <!--end login-->
+        <div class="cb"></div>
+   </div>
+    <!--end header-->
+	
+#end	

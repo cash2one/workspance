@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>$!{seoTitle}</title>
+    <meta name="description" content="$!{seoDescription}" />
+    <meta name="keywords" content="$!{seoKeywords}" />
+    #parse("/common/importS.vm")
+    #parse("/common/contextS.vm")
+    <style>
+        .bodyLeft { width: 175px;}
+        #if($!{esiteConfig.position} == "layout_right")
+        .bodyLeft { float: right; margin: 7px 0 0 10px; }
+        .bodyRight { float: right; margin-top: 7px;}
+        #else
+        .bodyLeft { float: left; margin-top: 7px; }
+        .bodyRight { float: left; margin: 7px 0 0 10px;}
+        #end
+        #foreach($style in $!{styleContent})
+            .$!{style.cn} {#set($pidx=${style.sl.keys()}) 
+                #foreach ($styledetail in $!{style.sl}) 
+                    ${pidx.next()}:${styledetail}  
+                    #if ($velocityCount != $!{style.sl.size()});
+                #end 
+            #end}
+        #end
+        /**/
+    </style>
+    <script src="$!{address.img}/zz91/esite/js/topic_static.js"></script>
+</head>
+<body class="bodyBg" onLoad="Location();">
+	<div class="topbar">
+	    <div class="topbarin">
+            <ul>
+                <li class="logo"><a href="http://www.zz91.com">ZZ91再生网</a></li>
+                <li>
+                    <span id="memberId1">您好, 欢迎来ZZ91再生网&nbsp;</span>
+                    <a class="draft_no_link" href="$!{address.front}/login.htm" rel="nofollow">[请登录]</a>
+                    <a class="draft_no_link" href="$!{address.front}/register/register_stp1.htm" rel="nofollow">[免费注册]</a>
+                </li>
+                <li><a href="$!{address.myrc}" class="sygj" target="_blank">生意管家</a></li>
+                <li><a href="$!{address.www}/service/zst/" target="_blank">再生通</a></li>
+				<li><a href="$!{address.www}/service/baidu/yh.html" target="_blank" rel="nofollow">百度优化</a></li>
+				<li><a href="http://xianhuo.zz91.com/" target="_blank">现货商城</a></li>
+			</ul>
+            <form name="form_bar" method="post" action="$!{address.trade}/offerlist--a--b--c--d--e--f--p1--pp.htm" onSubmit="searchSubmit(this)">
+            <fieldset class="searchbar">
+                <input name="searchname" id="searchname" type="text" placeholder="请输入供求名称" class="field">
+                <input type="submit" name="imageField" class="submit" id="imageField" value="">
+            </fieldset>
+            </form>
+            </div>
+        </div>
+        <div class="inBg wrapper clearfix">
+        <div id="headList" class="headList">
+            #foreach($!{headerList} in $!{headerConfig})
+                #if($!{headerList.id}!="")
+                    #parse("/myesite/head/$!{headerList.id}.vm")
+                #end
+            #end
+        </div>
+        $screen_content
+        #parse("/myesite/common/buttom.vm")
+    </div>
+<script>
+	$(document).ready(function() {
+		$(".headerMenuList .navlistoff").css("color",$(".headerMenuList").css("color"));
+	});
+    #if($!{sessionUser})
+	    var flag = true;
+    #else
+	    var flag = false;
+    #end
+    var messageBox = new Asto.util.PopupBox({
+        url:"$!{address.front}/inquiry/company.htm?id=$!{companyinfo.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm",
+        destUrl:"$!{esiteAddress}/submitCallback.htm",
+        modal:true,
+        height:370,
+        width:660
+    });
+
+    var loginBox = new Asto.util.PopupBox({
+        url:"$!{address.front}/inquiry/company.htm?id=$!{companyinfo.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm)",
+        destUrl:"$!{esiteAddress}/submitCallback.htm",
+        modal:true,
+        height:450,
+        width:631
+    });
+	
+    jQuery(function(){
+        function pop() {
+            if(!flag) {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    flag = true;
+                    Asto.util.Callback.setSubmitCallback(function(success, data){
+                        messageBox.close();
+                    });
+                    loginBox.close();
+                    messageBox.show("$!{address.front}/inquiry/company.htm?id=$!{companyinfo.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm");
+            });
+                loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+            } else {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    messageBox.close();
+                    if(!success){
+                        flag = false;
+                    }
+                });
+                messageBox.show("$!{address.front}/inquiry/company.htm?id=$!{companyinfo.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm");
+            }
+        }
+		function poq() {
+            if(!flag) {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    flag = true;
+                    Asto.util.Callback.setSubmitCallback(function(success, data){
+                        productBox.close();
+                    });
+                    loginBox.close();
+                    productBox.show("$!{address.front}/inquiry/product.htm?productId=$!{picList.products.id}&mainCode=$!{picList.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm");
+            });
+                loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+            } else {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    productBox.close();
+                    if(!success){
+                        flag = false;
+                    }
+                });
+                	productBox.show("$!{address.front}/inquiry/product.htm?productId=$!{picList.products.id}&mainCode=$!{picList.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm");
+            }
+        }
+        var msg = jQuery("#Js_msg");
+        jQuery("#imageBtn").click(function(){
+            pop();
+        });
+		
+        msg.click(function(event){
+            pop();
+        });
+        msg.find("a").bind("click", function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            msg.hide();
+        });
+        scroll();
+        jQuery(window).bind("scroll", scroll);
+        function scroll() {
+            var adTop = jQuery(document).scrollTop();
+            var sTop = adTop - msg.height() + 300;
+            msg.animate( {top: sTop}, {duration:600, queue:false});
+        }
+		//banner
+		banner("#theme_pic");
+		banner1("#theme_pic1");
+     });
+	var productBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/inquiry/product.htm?productId=$!{productDetails.products.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{esiteAddress}/submitCallback.htm",
+			destUrl:"$!{esiteAddress}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+	 function proMessage(id){
+			if(!flag) {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    flag = true;
+                    Asto.util.Callback.setSubmitCallback(function(success, data){
+                        productBox.close();
+                    });
+                    loginBox.close();
+                    productBox.show("$!{address.front}/inquiry/product.htm?productId="+id+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+            });
+                loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{esiteAddress}/submitCallback.htm");
+            } else {
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    productBox.close();
+                    if(!success){
+                        flag = false;
+                    }
+                });
+                	productBox.show("$!{address.front}/inquiry/product.htm?productId="+id+"&destUrl=$!{esiteAddress}/submitCallback.htm");
+            }
+		}
+		
+	function banner(el) {
+		var el = jQuery(el);
+		if (!el.attr("data-banner")) {
+			return;
+		}
+		var nav = jQuery("<ul class='naver'></ul>"),
+			img = el.find("img"),
+			num = img.length,
+			lis = [],
+			cur = 0,
+			timer;
+		for (var i = 0; i < num; i ++) {
+			lis[i] = jQuery("<li>" + (i + 1) + "</li>");
+			nav.append(lis[i]);
+		}
+		el.append(nav);
+		img.eq(0).show();
+		lis[0].addClass("cur");
+		timer = setInterval(anim, 3000);
+		
+		jQuery(lis).each(function(index){
+			jQuery(this).click(function(){
+				if (index !== cur) {
+					img.eq(cur).fadeOut();
+        			lis[cur].removeClass("cur");
+					cur = index;
+        			img.eq(cur).fadeIn();
+        			lis[cur].addClass("cur");
+				}
+			});
+		});
+		
+		nav.hover(function(){
+			clearInterval(timer);
+		}, function(){
+			timer = setInterval(anim, 3000);
+		});
+		
+		function anim(){
+			img.eq(cur).fadeOut();
+			lis[cur].removeClass("cur");
+			cur = cur === num - 1 ? 0: cur + 1;
+			img.eq(cur).fadeIn();
+			lis[cur].addClass("cur");
+		}
+	}
+	function banner1(el) {
+		var el = jQuery(el);
+		if (!el.attr("data-banner")) {
+			return;
+		}
+		var nav = jQuery("<ul class='naver'></ul>"),
+			img = el.find("img"),
+			num = img.length,
+			lis = [],
+			cur = 0,
+			timer;
+		el.append(nav);
+		img.eq(0).show();
+		
+		
+	}
+
+</script>
+
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"slide":{"type":"slide","bdImg":"1","bdPos":"left","bdTop":"100"},"image":{"viewList":["qzone","tsina","tqq","renren","t163"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","t163"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=86835285.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+## 客户行为分析
+<script type="text/javascript" src="$!{address.front}/app/log.htm?$!{date.getSystemTime()}&companyId=$!{companyId}&vipPv=$!{vipPv}"></script>
+
+</body>
+</html>

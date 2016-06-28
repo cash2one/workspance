@@ -1,0 +1,94 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app_2/comp/comCategory.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+	
+		var childGrid=Ext.create("com.zz91.ep.comTags.ChildGrid",{
+			id:"childGrid",
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				grandSon.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var grandSon=Ext.create("com.zz91.ep.comTags.GrandSon",{
+			id:"grandSon",
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				greatGrandSon.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var greatGrandSon = Ext.create("com.zz91.ep.comTags.GreatGrandSon",{
+			id:"greatGrandSon"
+		});
+		
+		var mainGrid=Ext.create("com.zz91.ep.comTags.MainGrid",{
+			id:"mainGrid",
+    		split:true,
+			listeners:{
+    			"itemclick":function(t,record,item,index,e,o){
+    				childGrid.getStore().load({
+    					params:{parentId:record.get("id")}
+    				});
+    			}
+    		}
+		});
+		
+		var _father = {
+	    	title: "第一大类",
+			region : "west",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 350,
+			items : [mainGrid]
+		} ;
+
+		var _son = {
+			title: "第二子类",
+			region : "center",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 400,
+			items : [childGrid]
+		} ;
+		
+		var _grandSon = {
+			title: "第三子类",
+			region : "east",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 400,
+			items : [grandSon]
+		} ;
+		
+		
+		var _greatGrandSon = {
+			title: "第四子类",
+			region : "south",
+			layout : "fit",
+			collapsible:true,
+			split: true,
+			width: 350,
+			items : [greatGrandSon]
+		} ;
+		
+		
+		Ext.create("Ext.container.Viewport",{
+			layout : "border",
+			border : true,
+			items:[_father,_son,_grandSon,_greatGrandSon]
+		});
+		
+	});
+
+</script>

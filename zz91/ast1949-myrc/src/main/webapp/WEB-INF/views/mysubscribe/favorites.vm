@@ -1,0 +1,179 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/index.htm')">我的管家</a> <span class="divider">/</span>
+            </li>
+            <li class="active">我的收藏夹</li>
+        </ul>
+        <div class="table-select" id="Js_label">
+			<div class="group">
+				<form id="collectSearchForm">
+    				<input type="text" name="keywords" class="field" id="keywords" value="$!{keywords}"/>
+    				<input type="submit" id="find" class="btn btn-small" value="搜索"/>
+				</form>
+			</div>
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					<a #if(!$!{favoriteTypeCode}||$!{favoriteTypeCode}=="") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?aa=1">全部收藏</a>
+				</div>
+	##			#foreach($obj in $!{fcode.keySet()})
+	##				#if()
+	##					<a #if($!{favoriteTypeCode}==$!{obj}) class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{obj}&theday=$!{theday}&keywords=$!{encodeKeywords}">$!{fcode.get($obj)}</a>
+	##				#end
+	##			#end
+				<div class="btn-group">
+					<a #if($!{favoriteTypeCode}=="10091006") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091006&theday=$!{theday}&keywords=$!{encodeKeywords}">供求</a>
+					<a #if($!{favoriteTypeCode}=="10091005") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091005&theday=$!{theday}&keywords=$!{encodeKeywords}">帖子</a>
+					<a #if($!{favoriteTypeCode}=="10091004") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091004&theday=$!{theday}&keywords=$!{encodeKeywords}">报价</a>
+					<a #if($!{favoriteTypeCode}=="10091007") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091007&theday=$!{theday}&keywords=$!{encodeKeywords}">门市部供求</a>
+					<a #if($!{favoriteTypeCode}=="10091003") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091003&theday=$!{theday}&keywords=$!{encodeKeywords}">门市部</a>
+					<a #if($!{favoriteTypeCode}=="10091008") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091008&theday=$!{theday}&keywords=$!{encodeKeywords}">展会</a>
+					<a #if($!{favoriteTypeCode}=="10091009") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091009&theday=$!{theday}&keywords=$!{encodeKeywords}">现货商城</a>
+					<a #if($!{favoriteTypeCode}=="10091010") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091010&theday=$!{theday}&keywords=$!{encodeKeywords}">问答</a>
+					<a #if($!{favoriteTypeCode}=="10091011") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091010&theday=$!{theday}&keywords=$!{encodeKeywords}">废料学院</a>
+					<a #if($!{favoriteTypeCode}=="10091015"||$!{favoriteTypeCode}=="10091016") class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=10091015&theday=$!{theday}&keywords=$!{encodeKeywords}">原料收藏</a>		
+				</div>
+				<div class="btn-group"> 
+					<a #if($!{theday}==7) class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{favoriteTypeCode}&theday=7&keywords=$!{encodeKeywords}">7天内</a>
+					<a #if($!{theday}==30) class="btn btn-small btn_active" #else class="btn btn-small" #end href="#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{favoriteTypeCode}&theday=30&keywords=$!{encodeKeywords}">30天内</a>
+				</div>
+			</div>
+		</div>
+		<div class="table-select">
+			<input type="checkbox" class="check_all_box">
+			<button class="btn btn-mini checkdel">删除</button>
+		</div>
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="50%">标题</th>
+					<th width="30%" class="tac">收藏时间</th>
+					<th width="20%" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			#foreach($obj in $!{page.records})
+				<tr>
+					<td><input type="checkbox" name="ckTitle" class="Js_check" value="$!{obj.id}"/>&nbsp;&nbsp;
+						<a target="_blank" href="#springUrl('/mysubscribe/toCollectPage.htm')?favoriteTypeCode=$!{obj.favoriteTypeCode}&contentId=$!{obj.contentId}"> $!{obj.contentTitle} </a></td>
+					<td class="tac">$!date.format("yyyy-MM-dd",$!{obj.gmtCreated})</td>
+					<td class="tac"><a class="Js_delCollect" id="$!{obj.id}" href="javascript:void(0)">删除</a></td>####
+				</tr>
+			#end
+			</tbody>
+		</table>
+		<div class="table-select">
+			<input type="checkbox" class="check_all_box"> <button class="btn btn-mini checkdel">删除</button>
+		</div>
+	#myrcPageNav1($!{page} "#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{favoriteTypeCode}&theday=$!{theday}&keywords=$!{encodeKeywords}" "$!{suffixUrl}" "")
+	</div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	
+	//check all action
+	jQuery(".check_all_box").on("click", function(){
+		var cresult=false;
+		
+		if(jQuery(this).attr("checked")){
+			cresult=true;
+		}
+		
+		jQuery(".Js_check").attr("checked",cresult);
+		jQuery(".check_all_box").attr("checked",cresult);
+		
+		
+	});
+	
+	
+	//delete selected info
+	jQuery(".checkdel").click(function(){
+	
+		var idArr=new Array();
+		
+		jQuery(".Js_check").each(function(){
+			if(jQuery(this).attr("checked")){
+				idArr.push(jQuery(this).val());
+			}
+		});
+		
+		//判断有无选中
+		if(idArr.length==0){
+			//alert(没有选中数据);
+			return false;
+		}
+		
+		if(! confirm("删除后将无法恢复，您确定要删除选中的"+idArr.length+"条数据吗？") ){
+			return false;
+		}
+		
+		var len=idArr.length;
+		var success=0;
+		jQuery(idArr).each(function(){
+    		jQuery.ajax({
+        		url:"#springUrl('/mysubscribe/deleteMyCollect.htm')?id="+this,
+    			type:'post', 
+        		success:function(data){
+					success++;
+					Asto.util.Message.show({
+						msg:"正在删除第"+success+"条信息",
+						msgType:Asto.util.Message.INFO,
+						autoClose:10000
+					});
+					
+    				if(success==len){
+    					//正确删除提示
+    					window.location.reload();
+    				}
+        		}
+        	});
+		});
+		
+	});
+	
+	//del one info
+	jQuery(".Js_delCollect").click(function(){
+		if(!confirm("确认删除？")){
+			return false;
+		}
+		jQuery.ajax({
+    		url:"#springUrl('/mysubscribe/deleteMyCollect.htm')?id="+this.id,
+			type:'post', 
+    		success:function(data){
+    			window.location.reload();
+    		}
+    	});
+		
+	});
+	
+	
+	//search action
+##	jQuery("#find").click(function(){
+##		var key = encodeURI(jQuery("#keywords").val()) ;
+##		
+##		if(key!=""){
+##			var url = "#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{favoriteTypeCode}&theday=$!{theday}&keywords="+key;
+##			window.location.href= url;
+##			return false;
+##		}
+##	});
+	
+	//submit search action
+	jQuery("#collectSearchForm").submit(function(){
+		var key = encodeURI(jQuery("#keywords").val()) ;
+		
+		if(key!=""){
+			var url = "#springUrl('/mysubscribe/favorites.htm')?favoriteTypeCode=$!{favoriteTypeCode}&theday=$!{theday}&keywords="+key;
+			window.location.href= url;
+			return false;
+		}
+	});
+	
+	//init menu
+	myrc.menu(5, 5);
+});
+
+
+</script> 

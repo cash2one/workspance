@@ -1,0 +1,111 @@
+<script type="text/javascript" src="#springUrl('/app/auth/right/rightTree.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/auth/member/memberTree.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/auth/member/member.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+	/*载入权限树*/
+		var right=new com.zz91.ep.auth.right.Tree({
+			layout:"fit",
+			nodeUrl:Context.ROOT+"/auth/crmmember/rightChild.htm",
+			region:"center"
+		});
+		
+		/*载入会员类型树*/
+		var member=new com.zz91.ep.member.Tree({
+			id:MEMBER.TREE,
+			region:"west",
+			layout:"fit",
+			width:300,
+			contextmenu:new Ext.menu.Menu({
+        		items:[{
+        			text:"添加会员类型",
+        			cls:"add16",
+        			handler:function(menu){
+						com.zz91.ep.member.AddFormWin();
+        			}
+        		},{
+					text:"修改会员类型",
+					cls:"edit16",
+					handler:function(menu){
+						var d=member.getSelectionModel().getSelectedNode();
+						com.zz91.ep.member.EditFormWin(d.attributes["id"]);
+					}
+				},{
+					text:"删除会员类型",
+					cls:"delete16",
+					handler:function(menu){
+						var node = member.getSelectionModel().getSelectedNode();
+						if(member.getRootNode() == node){
+							return ;
+						}
+						
+						Ext.MessageBox.confirm(MESSAGE.title,MESSAGE.confirmDelete, function(btn){
+							if(btn != "yes"){
+								return false;
+							}
+							Ext.Ajax.request({
+                                url:Context.ROOT+"/auth/crmmember/deleteCrmMember.htm",
+                                params:{"memberCode":node.attributes.data},
+                                success:function(response,opt){
+                                    var obj = Ext.decode(response.responseText);
+                                    if(obj.success){
+                                        node.remove();
+                                    }else{
+                                        Ext.MessageBox.show({
+                                            title:MESSAGE.title,
+                                            msg : MESSAGE.saveFailure,
+                                            buttons:Ext.MessageBox.OK,
+                                            icon:Ext.MessageBox.ERROR
+                                        });
+                                    }
+                                },
+                                failure:function(response,opt){
+                                    Ext.MessageBox.show({
+                                        title:MESSAGE.title,
+                                        msg : MESSAGE.submitFailure,
+                                        buttons:Ext.MessageBox.OK,
+                                        icon:Ext.MessageBox.ERROR
+                                    });
+                                }
+                        	});
+						});
+					}
+				}]
+    		})
+		});
+		
+		right.getRootNode().expand();
+		member.getRootNode().expand();
+		
+		/*通过选择会员类型得到会员权限信息*/
+		right.getLoader().on("beforeload",function(treeLoader,node){
+			this.baseParams["parentCode"]=node.attributes["data"];
+			var d=member.getSelectionModel().getSelectedNode();
+			if(typeof(d)!="undefined" && d!=null){
+				this.baseParams["memberCode"]=d.attributes["data"];
+			}
+		});
+		
+		/*树的选择状态改变后立即调用更新会员类型权限方法*/
+		right.on("checkchange",function(node, checked){
+			var d=member.getSelectionModel().getSelectedNode();
+			if(typeof(d)!="undefined"){
+    			com.zz91.ep.member.UpdateMemberRight(d.attributes["data"], node.attributes["id"], checked);
+			}
+		});
+		
+		/*点击会员类型树展开对应的权限树*/
+		member.on("click",function(node,e){
+			node.select();
+			right.getLoader().load(right.getRootNode());
+			if(!right.getRootNode().isExpanded()){
+    			right.getRootNode().expand();
+			}
+		});
+		/*将视图直接渲染到BODY*/
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[member,right]
+		})
+	})
+</script>

@@ -1,0 +1,250 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN">
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/base.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/myrc_album.css" />
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script>
+<style type="text/css">
+</style>
+
+</head>
+<body style="padding:0px">
+
+  <div class="nbox" id="upload6">
+    <div class="overlaylist">
+      <div class="albtn mb20"> <span class="f14">选择您要上传图片的来源</span>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok" value="本地上传" id="LocalUpload" onclick="productsUpload()" />
+        &nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok bold" style="font-weight:bold" value="相册上传" />
+      </div>
+      <!--end albtn-->
+      <div class="alblock clearfix" style="width:600px">
+        <div class="alblock-tle f14" >
+          <select id="selectId">
+			#set($list=["我的相册","企业相册","产品相册","互助相册"])
+			#foreach($item in $list)
+				<option value="$!{velocityCount}"#if($!{groupId}==$!{velocityCount}) selected #end>$item</option>
+			#end
+          </select>
+          &nbsp;&nbsp;&nbsp;&nbsp;请从以下图片中选择您要上传的图片，重复图片只能上传1次 </div>
+        <!--end alblock-tle-->
+        <div class="alblock-box mt10">
+          <ul class="list_small" id="album"  style="width:600px">
+			 #foreach($photoAbum in $!{page.records})
+					<li onclick="photoadd($!velocityCount)">
+						<img src="$!{address.resource}/$!{photoAbum.picAddress}" width="80" height="80"/>
+						<input type="hidden" id="p$!velocityCount" value="$!{photoAbum.picAddress}"/>
+						<input type="hidden" id="pId$!velocityCount" value="$!{photoAbum.id}"/>
+					</li>
+			#end
+          </ul>
+		  <!--翻页功能 start -->
+		 #if($!{page.totalRecords}>0)
+			#set($totalPage=((${page.totalRecords} - 1)/${page.pageSize})+1)
+			#set($currentPage=(${page.startIndex}/${page.pageSize})+1)
+			<div class="pagination pagination-centered mt">
+				<ul>
+					<li><a href='javascript:;' onclick="pageturn(0)" >首页</a></li>
+					#set($startIndex=${page.startIndex})
+					#if(0 >= $startIndex)
+						#set($startIndex = 0)
+					#else
+						#set($startIndex=(${page.startIndex}-${page.pageSize}))
+						<li><a href='javascript:;' onclick="pageturn($!{startIndex})">上一页</a></li>
+					#end
+					
+					#foreach($jj in [-3..2])
+						#if(($currentPage+$jj)>=0 && $totalPage > ($currentPage+$jj))
+							#set($startIndex = ($currentPage + $jj)*${page.pageSize} )
+							#set($nowPage = $currentPage + $jj + 1)
+							#if($startIndex == ${page.startIndex})
+								<li class="active"><a href="javascript:void(0)">$nowPage</a></li>
+							#else
+								<li><a href='javascript:;' onclick="pageturn($!{startIndex})" >$nowPage</a></li>
+							#end
+						#end
+					#end
+					#set($startIndex=${page.startIndex} + ${page.pageSize})
+					#if($startIndex >= ${page.totalRecords})
+						#set($startIndex=(${totalPage} - 1)*${pageContext.pageSize})
+					#else
+					<li><a href='javascript:;' onclick="pageturn($!{startIndex})">下一页</a></li>
+					#end
+					#set($startIndex=(${totalPage} - 1)*${page.pageSize})
+					<li><a href='javascript:;' onclick="pageturn($!{startIndex})">末页</a></li>
+				</ul>
+			</div>
+		 #end
+          <!--翻页功能 end -->
+		</div>
+        <!--end alblock-box-->
+        <div class="page cb">
+          <div class="pagination-holder clearfix fr">
+            <div id="compact-pagination"></div>
+          </div>
+          <!--end pagination-holder--> 
+        </div>
+      </div>
+      <!--end alblock-->
+      <div class="alblock mt15 clearfix" style="width:600px">
+        <div class="alblock-tle f14">已选择需上传的图片&nbsp;&nbsp;<span class="gray f12">点击以下图片可撤销已选择图片</span></div>
+        <!--end alblock-tle-->
+        <div class="alblock-box mt10">
+		 
+          <ul class="list_small" id="selected">
+			#foreach($item in ${photoMap.keySet()})
+			<li id="uy$item" onclick="removePhoto($item)">
+				<img src=$!{address.resource}/$!{photoMap.get($item).get("picAdress")} width="80" height="80"/>
+			</li>
+			#end
+          </ul>
+        </div>
+        <!--end alblock-box-->
+        <div class="cb"></div>
+        <div class="page clearfix">
+          <div class="pagination-holder clearfix fr">
+            <div id="compact-pagination2"></div>
+          </div>
+          <!--end pagination-holder--> 
+        </div>
+        <div class="cb"></div>
+      </div>
+      <!--end alblock-->
+	  <input type="hidden" id="photoPath" name="photoPath" value="$!{photoPath}"/>
+	  <input type="hidden" id="groupId" name="groupId" value="$!{groupId}"/>
+	    <input type="hidden" id="albumId" name="albumId" value="$!{albumId}"/>
+	   <form id="form1" method="post" action="#springUrl('/upload/doAlbumUpload.htm')">
+	   <input type="hidden" id="photoCount" name="photoCount" value="$!{photoCount}"/>
+	   <input type="hidden" id="photoIds" name="photoIds" value="$!{photoIds}"/>
+	   <input type="hidden" id="photoNum" name="photoNum" value="$!{photoNum}"/>
+	   <input type="hidden" id="limitCount" name="limitCount" value="$!{limitCount}"/>
+	   <input type="hidden" id="uploadFlag" name="uploadFlag" value="$!{uploadFlag}"/>
+	   #if($!{photoNum}==0)
+		<div class="albtn mt15"><a href="javascript:;" id="upload2" onclick="subit(form1)" class="btn btn-small" style="padding:5px 22px;color:#ccc">上传</a>
+			<span style=" color:#FF0000 ;display: none" id="showId">最多上传$!{limitCount}张</span>
+		</div>
+	  #else
+		 <div class="albtn mt15"><a href="javascript:;" id="upload2" onclick="subit(form1)" class="btn btn-small" style="padding:5px 22px;color:#000000">上传</a>
+			<span style=" color:#FF0000 ;display: none" id="showId">最多上传$!{limitCount}张</span>
+		 </div>
+	  #end
+	  </form>
+      <!--end albtn--> 
+    </div>
+    <!--end overlaylist--> 
+  </div>
+  <!--end nbox--> 
+
+  <div class="nbox" id="nbox2" style="display: none;">
+    <div class="overlaylist">
+      <div class="suc_btn tc"> <span class="clearfix">您的图片已经成功上传!</span> <a href="javascript:;" onclick="refersh()" class="btn btn-small" style="padding:7px 23px">立即关闭</a> </div>
+      <!--end suc_btn--> 
+    </div>
+    <!--end overlaylist--> 
+  <!--end mbox--> 
+</div>
+  <script src="http://img0.zz91.com/zz91/myrc/js/album.js"></script> 
+	<script type="text/javascript">
+		
+		jQuery(document).ready(function(){
+				jQuery("#selectId").change(function(){
+					window.location.href = "#springUrl('/upload/albumUpload.htm')?albumId=$!{albumId}&limitCount=$!{limitCount}&uploadFlag=$!{uploadFlag}&groupId="+jQuery(this).val();
+				});
+				
+		});
+		 function subit(frm){
+		 	if(jQuery("#photoNum").val()>0){
+				frm.submit();
+			}
+		 };
+		 function photoadd(id){
+		   var pathArray=jQuery("#photoPath").val();
+           var has=pathArray.indexOf(jQuery("#p"+id).val());
+		   if(has<0){
+		 		if(jQuery("#photoNum").val()<$!{limitCount}){
+		   			var num=Number(jQuery("#photoCount").val())+Number(1);
+					jQuery("#photoCount").val(num);
+					//改变上传按钮的颜色
+					var a=jQuery("#photoNum").val();
+					if(a==0){
+						document.getElementById("upload2").style.color="#000000";
+					}
+					var photoNum=Number(jQuery("#photoNum").val())+Number(1);
+					jQuery("#photoNum").val(photoNum);
+					//图片地址
+					var path=jQuery("#photoPath").val()+","+jQuery("#p"+id).val();
+					jQuery("#photoPath").val(path);
+					//图片ids
+					var ids=jQuery("#photoIds").val()+","+jQuery("#pId"+id).val();
+					jQuery("#photoIds").val(ids);
+			
+					var t=jQuery("#p"+id).val();
+					//添加操作 
+					var $selLi="<li  id=\"uy"+num+"\" onclick=\"removePhoto( "+num+" )\"><img src=$!{address.resource}/"+t+" width=\"80\" height=\"80\"/></li>"
+					var $ul = $('#selected');   //获取UL对象
+        			$ul.append($selLi); //将$htmlLi追加到$ul元素的li列表
+					
+				}else{
+					jQuery("#showId").show();
+				}
+			}
+		};
+		   
+		 function removePhoto(id){
+		 		//图片地址
+		   		var str = jQuery("#photoPath").val();
+				var arr = str.split(",");
+				//图片id
+				var ids = jQuery("#photoIds").val();
+				var picId= ids.split(",");
+				
+				var picAddress="";
+				var picIds="";
+				for(var i=1;i<arr.length;i++){
+					if(i==id){
+						arr[i]="";
+						picId[i]="";
+					}
+					picAddress=picAddress+","+arr[i];
+					picIds=picIds+","+picId[i];
+				}
+				var photoNum=Number(jQuery("#photoNum").val())-Number(1);
+				//改变上传按钮的颜色
+				if(photoNum==0){
+					document.getElementById("upload2").style.color="#ccc";
+				}
+				jQuery("#photoNum").val(photoNum);
+				if(photoNum<$!{limitCount}){
+					jQuery("#showId").hide();
+				}
+			    jQuery("#photoPath").val(picAddress);
+				jQuery("#photoIds").val(picIds);
+		   		jQuery("#uy"+id).remove();
+		   }
+		function pageturn(startIndex){
+			var path=jQuery("#photoPath").val();
+			var ids=jQuery("#photoIds").val();
+			var u=startIndex;
+			var photoNum=jQuery("#photoNum").val();
+			window.location="#springUrl('/upload/albumUpload.htm?albumId=')$!{albumId}&groupId=$!{groupId}&uploadFlag=$!{uploadFlag}&limitCount=$!{limitCount}&photoPath="+path+"&startIndex="+startIndex+"&photoNum="+photoNum+"&photoIds="+ids+"";
+		}
+		function productsUpload(){
+ 			window.location="#springUrl('/upload/myrcUpload.htm?albumId=')$!{albumId}&limitCount=$!{limitCount}&uploadFlag=$!{uploadFlag}";
+		 }
+		 function refersh(){
+		 	window.parent.location.reload();
+		 }
+		jQuery(function(){
+			myrc.menu();
+		})
+    </script>
+	
+  <!--end yangContent-->
+</body>
+</html>

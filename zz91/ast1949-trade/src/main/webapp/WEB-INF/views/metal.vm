@@ -1,0 +1,341 @@
+#set($layout="/layout/defaultS.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+<div class="te_body lineheight30">当前位置：
+	<a href="$!{address.www}" >ZZ91再生网</a>
+	>
+	<a href="#springUrl('')" >交易中心</a> 
+	>
+	<a href="#springUrl('/metal.htm')" >废金属</a>
+</div>
+<div class="te_body">
+	#set($categoryFlag="100310001001")
+	#parse("/commonImpt/item/productCategory.vm")
+	<!--te_class-->
+    <div class="te_cen">
+		<!-- #3786-->
+        #parse("/commonImpt/sliderAd.vm")
+        <div class="te_banner_info te_tit_border">
+            <div class="te_tit_name">
+                <ul>
+                    <li style="width:410px; float:left;">废金属热门供求  <!-- $!{gyProductList_1.size()} && $!{qgProductList_1.size()} --></li>
+                    <li style="float:left; height:22px; padding-top:2px;">
+                        <img src="$!{address.img}/zz91/trade/images/zz91te_left.jpg" width="23" height="22" style="cursor:pointer;" class="plistChange" />
+                    </li>
+                    <li style="width:50px; padding-top:2px; height:22px; text-align:center; float:right;">
+                        <img src="$!{address.img}/zz91/trade/images/zz91te_right.jpg" width="23" height="22" style="cursor:pointer;" class="plistChange"/>
+                    </li>
+                </ul>
+            </div>
+            <div class="listscrpic" id="ISL_Cont">
+                <div class="ScrCont">
+					
+			#if($!{gyProductList_1.size()}>3 && $!{qgProductList_1.size()}>3)
+					#foreach($list in [$gyProductList_1,$qgProductList_1 ])
+					<div id="plist$velocityCount" #if(1 < $velocityCount ) style="display:none" #end>
+							#foreach($obj in $list)
+								<div class="listcont">
+									<ul>
+										<li>
+											<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank">
+												#if($!{obj.coverPicUrl} && $!{obj.coverPicUrl}!="")
+													<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=100&height=100" width="100" height="100" />
+												#else
+													<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="100" height="100" />
+												#end
+											</a>
+										</li>
+										<li>
+											<a href="#springUrl('/productdetails')$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">
+												#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 6 "")
+											</a>
+											<br />
+											<span>数量：</span>
+											<font color="#FF0000">$!{obj.products.quantity}</font>
+										</li>
+									</ul>
+								</div>
+							#end
+					</div>
+					#end	
+					
+			#else					
+					
+					#foreach($code in [1003100510001000,1003100510001001])
+                    <div id="plist$velocityCount" #if(1 < $velocityCount ) style="display:none" #end>
+						#cacheFragment("$!{address.fragment}/china/indexProductsByCode.htm?code=$!{code}&size=4&td", "", "", "")
+							#foreach($obj in $list)
+                                <div class="listcont">
+                                    <ul>
+                                        <li>
+                                            <a href="#springUrl('productdetails')$!{obj.productsId}.htm" target="_blank">
+												#if($!{obj.pic} && $!{obj.pic}!="")
+        											<img src="$!{address.thumb}$!{address.resource}/$!{obj.pic}&width=100&height=100" width="100" height="100" />
+        										#else
+        											<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="100" height="100" />
+        										#end
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#springUrl('productdetails')$!{obj.productsId}.htm" target="_blank" title="$!{obj.title}">
+												#printProductType($!{obj.productsType} "" "")#printTitle($!{obj.title} 6 "")
+											</a>
+                                            <br />
+                                            <span>数量：</span>
+                                            <font color="#FF0000">$!{obj.quantity} $!{obj.quantityUnit}</font>
+                                        </li>
+                                    </ul>
+                                </div>
+							#end
+						#end
+                    </div>
+				   #end
+			#end
+                </div>
+            </div>
+            <div>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+    <!--te_banner-->
+	#set($hotType="100310021000")
+    #parse("/commonImpt/item/hot7day.vm")
+	
+    <!--te_7rx-->
+</div>
+<div style="clear:both"></div>
+<div class="te_body">
+    <div class="teclasleft">
+		#set($hotType="废金属")
+		#parse("/commonImpt/item/hotProduct.vm")
+		
+        <div style="height:8px;"></div>
+        <!--行情价格-->
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废金属&showborder=1&showposition=1&m=4&padding=8&w=718&num=4&adposition=683"></script>
+        <div class="te_tit_border" style="width:708px;">
+            <div class="te_tit_name">废金属行情价格</div>
+            <div class="xq_xqjg">
+                <ul>
+				#cacheFragment("$!{address.fragment}/price/overPrice.htm?parentId=17&size=18", "", "1", "")
+                	#foreach($obj in $overPrice)
+                		#if($velocityCount<=18)
+                            <li>
+                                <span>[</span>
+                                <a href="$!{address.price}/moreList_p3_t$!{obj.typeId}_metal.htm" target="_blank">$!{obj.typeName}</a>
+                                <span>]</span>
+                                <a href="$!{address.jiage}/detail/${obj.id}.html" target="_blank" title="$!{obj.title}">$!{obj.title}</a>
+                    			<a href="#springUrl('/priceList_t')$!{obj.id}_metal.htm" target="_blank" title="$!{obj.name}">
+									$!{obj.name}
+                    			</a>
+                            </li>
+                		#end
+                	#end
+                #end
+                </ul>
+                <div style="clear:both;"></div>
+            </div>
+            <!--xq_xqjg-->
+        </div>
+        <!--结束行情价格--> 
+        <div style="height:8px;"></div>
+        <div class="te_tit_border" style="width:708px;"><!--日评周评 标题-->
+            <div class="te_tit_name">
+                <div class="cl_rmtitl">废金属行情日评</div>
+                <div class="cl_rmtitr">废金属行情周评</div>
+            </div>
+            <!--te_tit_name结束标题-->
+            <div><!--列表信息-->
+                <div style="width:330px; padding:10px; border-right:solid 1px #caebd0; line-height:26px; float:left;" class="xq_listl">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{dayId}&size=7", "", "", "")
+							#foreach($day in $list)
+                                <li>
+                                    <font color="#005d11">·</font>
+                                    <span>
+                                        <a target="_blank" href="$!{address.jiage}/detail/$!{day.id}.html" title="$!{day.title}" class="a1">$!{day.title}</a>
+                                    </span>
+                                </li>
+							#end
+						#end
+                    </ul>
+                </div>
+                <!--xq_listl结束左边信息-->
+                <div class="xq_listr">
+                    <ul>
+						#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{weekId}&size=7&td", "", "", "")
+                            #foreach($week in $list)
+    							<li>
+                                    <font color="#005d11">·</font>
+                                    <span>
+                                        <a target="_blank" href="$!{address.jiage}/detail/$!{week.id}.html" title="$!{week.title}" class="a1">$!{week.title}</a>
+                                    </span>
+								</li>
+							#end
+    					#end
+                    </ul>
+                </div>
+                <!--xq_listr结束右边信息-->
+                <div style="clear:both;"></div>
+            </div>
+            <!--结束列表信息-->
+        </div>
+        <div style="height:8px;"></div>
+		
+		#set($hotType="废金属")
+		#parse("/commonImpt/item/hotProduct2.vm")
+		
+        <div style="height:8px;"></div>
+        
+		#parse("/commonImpt/item/tags.vm")
+		
+    </div>
+    <!--teclasleft-->
+    <div class="terightinfo">
+        #parse("/commonImpt/item/joinus.vm")
+        <div style="height:8px;"></div>
+        #parse("/commonImpt/item/vipCompany.vm")
+        <div style="height:8px;"></div>
+		#set($hotType="废金属")
+        #parse("/commonImpt/item/compPrice.vm")
+        <div style="height:8px;"></div>
+		#set($hotType="废金属")
+		#parse("/commonImpt/item/price0.vm")
+		
+		<div style="height:8px;"></div>
+		<!--废金属热门产品-->
+		<div class="te_tit_border">
+			<div class="te_tit_name">废金属热门产品</div>
+			<div>
+				<ul>
+					<li>
+						<div class="rmcp_tabline">
+							<ul>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p1--废铁.htm" target="_blank">废铁回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p1--废铝.htm" target="_blank">废铝供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--圆钢.htm" target="_blank">圆钢回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--废钢.htm" target="_blank">废钢供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--废锌.htm" target="_blank">废锌回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--废钨.htm" target="_blank">废钨供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--锂.htm" target="_blank">废锂回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铍.htm" target="_blank">废铍供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p1--镓.htm" target="_blank">废镓回收</a>
+								</li>
+								<li>
+									<a href="/offerlist1_3_39_0.html" target="_blank">废铟供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--钢丝.htm" target="_blank">回收钢丝</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--钢板.htm" target="_blank">供应钢板</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--钢管.htm" target="_blank">回收钢管</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p1--矽钢.htm" target="_blank">供应矽钢</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p1--钢渣.htm" target="_blank">钢渣回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铁沙.htm" target="_blank">供应铁沙</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铁渣.htm" target="_blank">回收铁渣</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铁粉.htm" target="_blank">铁粉供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铁泥.htm" target="_blank">回收铁泥</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铁削.htm" target="_blank">供应铁削</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铁销.htm" target="_blank">回收铁销</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--镍铁.htm" target="_blank">镍铁供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--钼铁.htm" target="_blank">回收钼铁</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铜泥.htm" target="_blank">供应铜泥</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铜渣.htm" target="_blank">回收铜渣</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铜灰.htm" target="_blank">铜灰回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a1--b--c--d--e--f--p--铜粉.htm" target="_blank">铜粉供应</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--磷铜.htm" target="_blank">磷铜回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--铜锭.htm" target="_blank">铜锭回收</a>
+								</li>
+								<li>
+									<a href="/offerlist--a2--b--c--d--e--f--p--紫铜.htm" target="_blank">紫铜回收</a>
+								</li>
+							</ul>
+							<div style="clear:both;"></div>
+						</div>
+					</li>
+					<li class="terightege">
+						<a href="http://daohang.zz91.com" class="te_classoone">更多>></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--结束废金属热门产品-->
+		<div style="height:8px;"></div>
+		<!--废塑料精确搜索-->
+		#parse("/commonImpt/item/search.vm")
+		<!--结束废塑料精确搜索-->
+	</div>
+	<!--terightinfo-->
+</div>
+<!--te_body-->
+#parse("/commonImpt/floatMenu.vm")
+#parse("/commonImpt/returnTop.vm")
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+		jQuery(".plistChange").click(function(){
+			if($("#plist1").css("display")=="block"){
+				jQuery("#plist1").fadeToggle(function(){
+					jQuery("#plist2").fadeToggle();
+				});
+			}else{
+				jQuery("#plist2").fadeToggle(function(){
+					jQuery("#plist1").fadeToggle();
+				});
+			}
+	});
+});
+</script>

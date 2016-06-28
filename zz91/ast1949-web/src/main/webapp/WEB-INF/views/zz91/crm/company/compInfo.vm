@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.index</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/company.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		var companyForm= new ast.ast1949.crm.company.CompanyForm({
+			title:"公司信息",
+			companyId:"$!{companyId}",
+			region:"center"
+		});
+		#if($!{haveRight})
+			Ext.getCmp('refresh').setVisible(false);  
+			Ext.getCmp('save').setVisible(false);  
+			Ext.getCmp('black').setVisible(false);  
+			Ext.getCmp('unblack').setVisible(false);  
+		#end
+		companyForm.loadCompany();
+	
+		var accountContactGrid=new ast.ast1949.crm.company.CompanyAccountContactGrid({
+			title:"账户联系人",
+			region:"south",
+			height:250
+		});
+		
+		var accountGrid= new ast.ast1949.crm.company.CompanyAccountGrid({
+			id:ACCOUNT.ACCOUNT_GRID,
+			title:"公司账户信息",
+			region:"center",
+			listeners:{
+				"rowclick":function(g,rowIndex,e){
+					accountContactGrid.getStore().baseParams["account"]=g.getStore().getAt(rowIndex).get("account");
+					accountContactGrid.getStore().reload();
+				}
+			}
+		});
+		
+		accountGrid.loadAccount("$!{companyId}");
+		
+		var viewport = new Ext.Viewport({
+			layout : "border",
+			items : [companyForm,{
+					region:"east",
+					width:400,
+					layout:"border",
+					split:true,
+					items:[accountGrid,accountContactGrid]
+			}]
+		});
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="feedback">
+	<typeAlias alias="feedbackDo" type="com.ast.ast1949.domain.site.FeedbackDo" />
+	<typeAlias alias="feedbackDto" type="com.ast.ast1949.dto.site.FeedbackDto" />
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+	<typeAlias alias="companyAccount" type="com.ast.ast1949.domain.company.CompanyAccount" />
+	
+	<resultMap id="feedbackDoResult" class="feedbackDo">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="category" column="category" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="replyContent" column="reply_content" />
+		<result property="gmtReply" column="gmt_reply" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap id="companyResult" class="company">
+		<result property="name" column="name" />
+	</resultMap>
+	
+	<resultMap id="companyAccountResult" class="companyAccount">
+		<result property="contact" column="contact" />
+		<result property="tel" column="tel" />
+		<result property="telAreaCode" column="tel_area_code" />
+		<result property="telCountryCode" column="tel_country_code" />
+		<result property="mobile" column="mobile" />
+	</resultMap>
+	
+	<resultMap id="feedbackDtoResult" class="feedbackDto">
+		<result property="feedback" resultMap="feedback.feedbackDoResult" />
+		<result property="company" resultMap="feedback.companyResult" />
+		<result property="contact" resultMap="feedback.companyAccountResult" />
+	</resultMap>
+	
+	<insert id="insertFeedback" parameterClass="feedbackDo">
+		INSERT INTO feedback
+			(
+				company_id,
+				account,
+				email,
+				category,
+				title,
+				content,
+				reply_content,
+				check_status,
+				check_person,
+				gmt_created,
+				gmt_reply,
+				gmt_modified
+			)
+		VALUES
+			(
+				#companyId#,
+				#account#,
+				#email#,
+				#category#,
+				#title#,
+				#content#,
+				#replyContent#,
+				#checkStatus#,
+				#checkPerson#,
+				NOW(),
+				null,
+				NOW()
+			)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT LAST_INSERT_ID() AS VALUE
+		</selectKey>
+	</insert>
+	
+	<sql id="fullColumn">
+		fb.id,fb.company_id,fb.account,fb.email,fb.category,fb.title,fb.content,fb.reply_content,fb.gmt_created,
+		fb.gmt_reply,fb.gmt_modified,fb.check_status,fb.check_person
+	</sql>
+	
+	<select id="queryFeedbackById" parameterClass="java.lang.Integer" resultMap="feedbackDoResult">
+		SELECT
+			<include refid="fullColumn" />
+		FROM feedback fb
+		WHERE fb.id=#value#
+	</select>
+	
+	<update id="updateFeedbackForReply" parameterClass="java.util.Map">
+		UPDATE feedback
+		SET
+			reply_content = #replyContent#,
+			gmt_reply = now(),
+			check_status = #checkStatus#,
+			check_person = #checkPerson#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateCheckStatus" parameterClass="java.util.Map">
+		UPDATE feedback
+		SET
+			check_status = #checkStatus#,
+			check_person = #checkPerson#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<delete id="deleteFeedbackById" parameterClass="java.lang.Integer">
+		DELETE FROM feedback
+		WHERE id=#value#
+	</delete>
+	
+	<sql id="dynamicFeedback">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="feedback.companyId">
+				fb.company_id=#feedback.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="feedback.account">
+				fb.account=#feedback.account#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="feedback.category">
+				fb.category=#feedback.category#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="feedback.checkStatus">
+				fb.check_status=#feedback.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="feedback.checkPerson">
+				fb.check_person=#feedback.checkPerson#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryFeedback" parameterClass="java.util.Map" resultMap="feedbackDoResult">
+		SELECT
+			<include refid="fullColumn" />
+		FROM feedback fb
+		<include refid="dynamicFeedback" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryFeedbackCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM feedback fb
+		<include refid="dynamicFeedback" />
+	</select>
+	
+	<select id="queryFeedbackWithUserInfo" parameterClass="java.util.Map" resultMap="feedbackDtoResult">
+		SELECT
+			<include refid="fullColumn" />
+			,c.name
+			,cc.contact,cc.tel,cc.tel_area_code,cc.tel_country_code,cc.mobile
+		FROM feedback fb
+		LEFT JOIN company c ON c.id=fb.company_id
+		LEFT JOIN company_account cc ON cc.account=fb.account
+		<include refid="feedback.dynamicFeedback"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryFeedbackWithUserInfoCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM feedback fb
+		<include refid="feedback.dynamicFeedback"/>
+	</select>
+</sqlMap>

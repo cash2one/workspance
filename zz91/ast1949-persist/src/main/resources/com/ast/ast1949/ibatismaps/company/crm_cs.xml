@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCs">
+
+	<typeAlias alias="crmCsDto" type="com.ast.ast1949.dto.company.CrmCsDto" />
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+	<typeAlias alias="account"
+		type="com.ast.ast1949.domain.company.CompanyAccount" />
+	<typeAlias alias="crmCs" type="com.ast.ast1949.domain.company.CrmCs" />
+	<typeAlias alias="crmCompanySvr"
+		type="com.ast.ast1949.domain.company.CrmCompanySvr" />
+
+
+	<delete id="deleteCs" parameterClass="java.util.HashMap">
+		delete from crm_cs
+		where
+		cs_account=#csAccount# and company_id=#companyId#
+	</delete>
+	<delete id="deleteLdbCs" parameterClass="java.lang.Integer" >
+		delete from crm_cs
+		where  company_id=#companyId#
+	</delete>
+	<resultMap class="crmCsDto" id="crmCsDtoResult">
+		<result property="company" resultMap="crmCs.simpleCompanyResult" />
+		<result property="account" resultMap="crmCs.simpleAccountResult" />
+		<result property="crmCs" resultMap="crmCs.simpleCsResult" />
+		<result property="crmCompanySvr" resultMap="crmCs.simpleSvrResult" />
+	</resultMap>
+
+	<resultMap class="company" id="simpleCompanyResult">
+		<result property="id" column="company_id" />
+		<result property="membershipCode" column="membership_code" />
+		<result property="serviceCode" column="service_code" />
+		<result property="classifiedCode" column="classified_code" />
+		<result property="starSys" column="star_sys" />
+		<result property="star" column="star" />
+		<result property="numVisitMonth" column="num_visit_month" />
+		<result property="name" column="name" />
+		<result property="areaCode" column="area_code" />
+		<result property="gmtVisit" column="gmt_visit" />
+		<result property="domain" column="domain" />
+		<result property="domainZz91" column="domain_zz91" />
+		<result property="isBlock" column="is_block" />
+	</resultMap>
+
+	<resultMap class="account" id="simpleAccountResult">
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="numLogin" column="num_login" />
+		<result property="gmtLastLogin" column="gmt_last_login" />
+		<result property="mobile" column="mobile" />
+		<result property="contact" column="contact" />
+	</resultMap>
+
+	<resultMap class="crmCs" id="simpleCsResult">
+		<result property="csAccount" column="cs_account" />
+		<result property="gmtNextVisitPhone" column="gmt_next_visit_phone" />
+		<result property="gmtNextVisitEmail" column="gmt_next_visit_email" />
+	</resultMap>
+	
+	<resultMap class="crmCompanySvr" id="simpleSvrResult">
+		<result property="gmtEnd" column="gmt_end"/>
+	</resultMap>
+
+	<select id="queryCoreCompanyById" parameterClass="java.util.HashMap"
+		resultMap="crmCsDtoResult">
+		select
+		c.id as company_id, c.membership_code, c.service_code, c.classified_code,
+		c.star_sys,
+		c.star, c.num_visit_month, c.name, c.area_code, c.gmt_visit, c.domain,
+		c.domain_zz91, c.is_block,
+		ca.account, ca.email, ca.num_login, ca.gmt_last_login, ca.mobile, ca.contact,
+		cs.cs_account, cs.gmt_next_visit_phone, cs.gmt_next_visit_email
+		from
+		company c
+		inner join company_account ca on c.id=ca.company_id
+		left join
+		crm_cs cs on c.id=cs.company_id
+		where c.id=#companyId#
+		limit 1
+	</select>
+
+	<insert id="insertCs" parameterClass="java.util.HashMap">
+		insert into crm_cs (cs_account, company_id,gmt_created,gmt_modified)
+		values(#csAccount#, #companyId#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<update id="updateLogInfo" parameterClass="java.util.HashMap">
+		update crm_cs set
+		gmt_visit=now(),
+		gmt_next_visit_phone=#gmtNextVisitPhone#,
+		gmt_next_visit_email=#gmtNextVisitEmail#,
+		visit_target=#visitTarget#,
+		gmt_modified=now()
+		where
+		<!--  cs_account=#csAccount#
+		and -->
+		company_id=#companyId#
+	</update>
+
+	<select id="queryCsOfCompany" parameterClass="java.lang.Integer"
+		resultMap="simpleCsResult">
+		select cs.cs_account,
+		cs.gmt_next_visit_phone, cs.gmt_next_visit_email
+		from crm_cs cs
+		where
+		cs.company_id=#value#
+		limit 1
+	</select>
+
+	<sql id="dynamicCoreCompany">
+		left join crm_cs cs on c.company_id=cs.company_id
+		<dynamic prepend="where">
+			<isNotEqual property="search.csFlag" compareValue="Y">
+				<isNotEmpty property="search.csAccount" prepend="and">
+					cs.cs_account=#search.csAccount#
+				</isNotEmpty>
+			</isNotEqual>
+			<isEqual property="search.csFlag" compareValue="Y" prepend="and">
+				(cs.cs_account is null
+				<!-- 没有任何开通中的服务 
+				-->
+				or (
+					cs.cs_account is null
+					and
+					not exists(
+					select id from crm_company_service 
+					where company_id=c.company_id
+					and apply_status='1'
+					and gmt_end>now() and now()>=gmt_start
+					)
+				)
+				)
+				<!-- 生意不做 或者 号码为空 -->
+				<isNotEmpty property="search.outbusiness" prepend="and">
+					exists( 
+						select id from crm_company_profile 
+						where company_id = c.company_id 
+						and outbusiness = #search.outbusiness#
+					)
+				</isNotEmpty>
+				
+			</isEqual>
+
+
+			<isNotEmpty property="search.nextVisitPhoneFrom" prepend="and">
+				cs.gmt_next_visit_phone >= #search.nextVisitPhoneFrom#
+			</isNotEmpty>
+			<isNotEmpty property="search.nextVisitPhoneTo" prepend="and">
+				#search.nextVisitPhoneTo# > cs.gmt_next_visit_phone
+			</isNotEmpty>
+
+			<isNotEmpty property="search.visitTo" prepend="and">
+				#search.visitTo# >= cs.gmt_visit
+			</isNotEmpty>
+			<isEqual property="search.unvisitFlag" compareValue="0"
+				prepend="and">
+				cs.gmt_next_visit_phone is null
+			</isEqual>
+
+			<isNotEmpty property="search.contact" prepend="and">
+				c.contact=#search.contact#
+			</isNotEmpty>
+			<isNotEmpty property="search.email" prepend="and">
+				c.email=#search.email#
+			</isNotEmpty>
+			<isNotEmpty property="search.companyName" prepend="and">
+				c.name
+				like concat(#search.companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="search.mobile" prepend="and">
+				c.mobile
+				=#search.mobile#
+			</isNotEmpty>
+			<isNotEmpty property="search.industryCode" prepend="and">
+				c.industry_code =#search.industryCode#
+			</isNotEmpty>
+			<isNotEmpty property="search.areaCode" prepend="and">
+				c.area_code like concat(#search.areaCode#,'%')
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="search.oneMonthBS">
+				(
+				(c.gmt_visit > #search.oneMonthBS# and c.membership_code ='10051000')
+				or  
+				c.membership_code &lt;&gt; '10051000' 
+				)
+			</isNotEmpty>
+
+			<isNotEmpty property="search.logDayFrom" prepend="and">
+				exists(
+				select ccl.company_id from crm_cs_log ccl where
+				ccl.company_id=c.company_id
+				and ccl.gmt_created>=#search.logDayFrom#
+				and #search.logDayTo# >= ccl.gmt_created
+				)
+			</isNotEmpty>
+
+			<!-- 必杀期客户 -->
+			<isEqual property="search.killFlag" compareValue="1" prepend="and">
+				not exists
+				(select company_id from crm_company_service
+				where company_id=c.company_id and crm_service_code=#search.svrCode# and
+				apply_status='1'
+				<isNotEmpty property="search.svrEndTo" prepend="and">
+					gmt_end>=#search.svrEndTo#
+				</isNotEmpty>
+				order by gmt_end desc limit 1
+				)
+			</isEqual>
+			
+			<isNotEmpty property="search.svrCode" prepend="and">
+				exists
+				(select company_id from crm_company_service
+				where company_id=c.company_id and crm_service_code=#search.svrCode# and
+				apply_status='1'
+				<isNotEmpty property="search.svrEndFrom" prepend="and">
+					gmt_end>=#search.svrEndFrom#
+				</isNotEmpty>
+				<isNotEmpty property="search.svrEndTo" prepend="and">
+					#search.svrEndTo#>=gmt_end
+				</isNotEmpty>
+				)
+			</isNotEmpty>
+			
+			<!-- 未过期 -->
+			<isNotNull property="search.noExpired" prepend="and">
+				(select gmt_end from crm_company_service where c.company_id=company_id and crm_service_code='1000' and apply_status='1' order by gmt_end desc limit 1) >= now()
+			</isNotNull>
+			
+			<!-- 已过期 不存在任何一条过期时间 大于现在的 属于已经过期 -->
+			<isNotNull property="search.expired" prepend="and">
+				now() > (select gmt_end from crm_company_service where c.company_id=company_id and crm_service_code='1000' and apply_status='1' order by gmt_end desc limit 1)
+			</isNotNull>
+			
+			<isNotEmpty property="search.pptCode" prepend="and">
+				c.membership_code like concat(#search.pptCode#,'%') 
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+
+	<select id="queryCoreCompany" parameterClass="java.util.HashMap"
+		resultMap="crmCsDtoResult">
+		select
+		c.company_id, c.membership_code, c.service_code, c.classified_code, c.star_sys,
+		c.star, c.num_visit_month, c.name, c.area_code, c.gmt_visit, c.domain,
+		c.domain_zz91, c.is_block,
+		c.account, c.email, c.num_login, c.gmt_last_login, c.mobile, c.contact,
+		cs.cs_account, cs.gmt_next_visit_phone,
+		cs.gmt_next_visit_email,
+		(select gmt_end from crm_company_service 
+			where
+			c.company_id=company_id 
+			<isNotEmpty prepend="and" property="search.svrCode">
+				crm_service_code=#search.svrCode#
+			</isNotEmpty>
+			and apply_status='1' 
+			order by gmt_end desc limit 1
+		) as gmt_end
+		from crm_cs_profile c
+		<include refid="crmCs.dynamicCoreCompany" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCoreCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from crm_cs_profile c
+		<include refid="crmCs.dynamicCoreCompany" />
+	</select>
+	<sql id="dynamicLdbCoreCompany">
+		left join crm_cs cs on c.company_id=cs.company_id
+		<dynamic prepend="where">
+			<!--查询来电宝部门所有客户 -->
+			<isNotEmpty property="search.allCustomerFlag" prepend="and">
+				exists (select 0 from phone p where p.company_id=c.company_id)
+			</isNotEmpty>
+			<!--必杀期客户-->
+			<isNotEmpty property="search.phoneCsBsFlag" prepend="and">
+				exists (select 0 from phone_cs_bs pcb where pcb.company_id=c.company_id)
+			</isNotEmpty>
+			<!--来电宝部门跟丢客户-->
+			<isNotEmpty property="search.lostCustomerFlag" prepend="and">
+				exists (select 0 from phone_lost_customer plc where plc.company_id=c.company_id)
+			</isNotEmpty>
+			<isNotEqual property="search.csFlag" compareValue="Y">
+				<isNotEmpty property="search.csAccount" prepend="and">
+					cs.cs_account=#search.csAccount#
+				</isNotEmpty>
+			</isNotEqual>
+			<isEqual property="search.csFlag" compareValue="Y" prepend="and">
+				cs.cs_account is null
+			</isEqual>
+			<isNotEmpty property="search.nextVisitPhoneFrom" prepend="and">
+				cs.gmt_next_visit_phone >= #search.nextVisitPhoneFrom#
+			</isNotEmpty>
+			<isNotEmpty property="search.nextVisitPhoneTo" prepend="and">
+				#search.nextVisitPhoneTo# > cs.gmt_next_visit_phone
+			</isNotEmpty>
+
+			<isNotEmpty property="search.visitTo" prepend="and">
+				#search.visitTo# >= cs.gmt_visit
+			</isNotEmpty>
+			<isEqual property="search.unvisitFlag" compareValue="0"
+				prepend="and">
+				cs.gmt_next_visit_phone is null
+			</isEqual>
+
+			<isNotEmpty property="search.contact" prepend="and">
+				c.contact=#search.contact#
+			</isNotEmpty>
+			<isNotEmpty property="search.email" prepend="and">
+				c.email=#search.email#
+			</isNotEmpty>
+			<isNotEmpty property="search.companyName" prepend="and">
+				c.name
+				like concat(#search.companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="search.mobile" prepend="and">
+				c.mobile
+				=#search.mobile#
+			</isNotEmpty>
+			<isNotEmpty property="search.industryCode" prepend="and">
+				c.industry_code =#search.industryCode#
+			</isNotEmpty>
+			<isNotEmpty property="search.areaCode" prepend="and">
+				c.area_code like concat(#search.areaCode#,'%')
+			</isNotEmpty>
+			
+			<isNotEmpty prepend="and" property="search.oneMonthBS">
+				(
+				(c.gmt_visit > #search.oneMonthBS# and c.membership_code ='10051000')
+				or  
+				c.membership_code &lt;&gt; '10051000' 
+				)
+			</isNotEmpty>
+			<!--跟丢联系-->
+			<isNotEmpty property="search.logDayFrom" prepend="and">
+				#search.logDayFrom# > cs.gmt_next_visit_phone
+			</isNotEmpty>
+
+			<isNotEmpty property="search.svrCode" prepend="and">
+				exists
+				(select company_id from crm_company_service
+				where company_id=c.company_id and crm_service_code=#search.svrCode# and
+				apply_status='1'
+				<isNotEmpty property="search.svrEndFrom" prepend="and">
+					gmt_end>=#search.svrEndFrom#
+				</isNotEmpty>
+				<isNotEmpty property="search.svrEndTo" prepend="and">
+					#search.svrEndTo#>=gmt_end
+				</isNotEmpty>
+				)
+			</isNotEmpty>
+			<!-- 来电宝已过期客户-->
+			<isNotEmpty property="search.expiredFlag" prepend="and">
+				exists(select p.id from phone p where p.front_tel='信息已过期' and p.company_id=c.company_id)
+			</isNotEmpty>
+			<isNotEmpty property="search.pptCode" prepend="and">
+				c.membership_code like concat(#search.pptCode#,'%') 
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+	
+	<select id="queryLdbCoreCompany" parameterClass="java.util.HashMap"
+		resultMap="crmCsDtoResult">
+		select
+		c.company_id, c.membership_code, c.service_code, c.classified_code, c.star_sys,
+		c.star, c.num_visit_month, c.name, c.area_code, c.gmt_visit, c.domain,
+		c.domain_zz91, c.is_block,
+		c.account, c.email, c.num_login, c.gmt_last_login, c.mobile, c.contact,
+		cs.cs_account, cs.gmt_next_visit_phone,
+		cs.gmt_next_visit_email,
+		(select gmt_end from crm_company_service 
+			where
+			c.company_id=company_id 
+			<isNotEmpty prepend="and" property="search.svrCode">
+				crm_service_code=#search.svrCode#
+			</isNotEmpty>
+			and apply_status in('1','2') 
+			order by gmt_end desc limit 1
+		) as gmt_end
+		from crm_cs_profile c
+		<include refid="crmCs.dynamicLdbCoreCompany" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryLdbCoreCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(0)
+		from crm_cs_profile c
+		<include refid="crmCs.dynamicLdbCoreCompany" />
+	</select>
+	<select id="queryCsAccountByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select cs.cs_account from crm_cs cs where
+		cs.company_id=#value#
+	</select>
+	
+	<select id="queryEndTimeByCompanyId" parameterClass="java.lang.Integer" resultClass="java.util.Date">
+		select gmt_end from crm_company_service 
+		where company_id=#companyId# and crm_service_code=1000
+		order by gmt_end desc limit 1
+	</select>
+	<sql id="wheresearch">
+		<dynamic prepend="where">
+			<isNotEmpty property="csAccount" prepend="and">
+				cs_account=#csAccount#
+			</isNotEmpty>
+			<isNotEmpty property="start" prepend="and">
+				gmt_next_visit_phone >=#start#
+			</isNotEmpty>
+			<isNotEmpty property="end" prepend="and">
+				#end# >=gmt_next_visit_phone
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryCsList" parameterClass="java.util.HashMap" resultMap="simpleCsResult">
+		select cs_account,
+		gmt_next_visit_phone,gmt_next_visit_email
+		from crm_cs
+		<include refid="crmCs.wheresearch"/>
+	</select>
+	
+	<select id="queryGmtEndForLDB" parameterClass="java.lang.Integer" resultClass="java.util.Date">
+		select gmt_end from crm_company_service 
+		where
+		company_id=#value# and crm_service_code in ('1007','1008')
+		and apply_status in('1','2')
+		order by gmt_end desc limit 1
+	</select>
+	
+</sqlMap>

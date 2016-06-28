@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{seoTitle}</title>
+<meta name="keywords" content="$!{seoKeywords}" />
+<meta name="description" content="$!{seoDescription}" />
+      #parse("/common/import.vm")
+<script>
+//$(document).ready(function(){
+//	openoverlay('remind2.htm','入驻产业带',412,210,0);	
+//});
+
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".mob_item").mouseover(function(){
+		$(this).css("border-color","#02c3a3");						  
+	});
+	$(".mob_item").mouseout(function(){
+		$(this).css("border-color","#dddddd");
+	});
+	
+});
+var loginflag=-1;
+function openEnter(){
+    #if(!$!{sessionUser})
+	Asto.util.Callback.setSubmitCallback(function(success, data,mark){
+			mark=mark.toString();
+			loginflag=mark;
+			if(mark=="1"||mark=="3"){
+				openoverlay('#springUrl("/perfect.htm")','入驻产业带',412,170,0);
+			}else if(mark=="0"){
+				openoverlay('#springUrl("/enterMarket.htm")','入驻产业带',615,280,0);
+			}else if(mark=="4"){
+				openoverlay('#springUrl("/common/remind4.htm")','入驻产业带',540,200,0);
+			}else if(mark=="2"){
+				openoverlay('#springUrl("/common/remind5.htm")','入驻产业带',520,50,0);
+			}
+    });
+	if(loginflag=="1"||loginflag=="3"){
+		openoverlay('#springUrl("/perfect.htm")','入驻产业带',412,170,0);
+	}else if(loginflag=="0"){
+		openoverlay('#springUrl("/enterMarket.htm")','入驻产业带',615,280,0);
+	}else if(loginflag=="4"){
+		openoverlay('#springUrl("/common/remind4.htm")','入驻产业带',540,200,0);
+	}else if(loginflag=="2"){
+		openoverlay('#springUrl("/common/remind5.htm")','入驻产业带',520,50,0);
+	}
+	if (loginflag==-1){
+    	openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.market}/submitCallback.htm&regfrom=10031030','注册/登录',750,430,0);
+  	}
+	#elseif($!{flag}==1||$!{flag}==3)
+		openoverlay('#springUrl("/perfect.htm")','入驻产业带',412,170,0);
+	#elseif($!{flag}==0)
+		openoverlay('#springUrl("/enterMarket.htm")','入驻产业带',615,280,0);
+	#elseif($!{flag}==4)
+		openoverlay('#springUrl("/common/remind4.htm")','入驻产业带',540,200,0);
+	#elseif($!{flag}==2)
+		openoverlay('#springUrl("/common/remind5.htm")','入驻产业带',520,50,0);
+	#end
+};
+</script>
+</head>
+<body>
+#cacheFragment("$!{address.fragment}/china/topbar.htm?1","","","")
+	<div id="topBar">
+		<div id="topBarInfo">
+			<div id="topBarLogin">
+				<script src="$!{address.front}/webst.htm?$date" type="text/javascript" ></script>
+			</div>
+			$!{fragmentContext}
+		</div>
+	</div>
+ #end
+<div class="logosearch" id="logosearch">
+  <div class="logo"> <a href="http://www.zz91.com" target="_blank"> <img src="http://img0.zz91.com/zz91/images/logo.png" alt="ZZ91再生网" width="115" height="45" /> </a> <a href="http://y.zz91.com" target="_blank"> <img src="http://img0.zz91.com/zz91/industrial/images/logo.png" width="150" alt="产业带" /> </a> </div>
+  <!--end logo-->
+  <div class="market_search">
+    <form id="searchMarket" action="" method="post">
+      <div class="search_bar">
+        <div class="box left">
+          <input name="keywords" id="keywords" type="text" class="searchtext" placeholder="请输入市场关键字" value="$!{keyword}"/>
+        </div>
+        <div class="right"> <a href="javascript:void(0)" data="1" class="searchlink" id="searchlink"></a> </div>
+      </div>
+    </form>
+  </div>
+  <!--end market_search-->
+  <div class="cb"></div>
+</div>
+<script type="text/javascript">   
+  if( !('placeholder' in document.createElement('input')) ){   
+
+    $('input[placeholder],textarea[placeholder]').each(function(){    
+      var that = $(this),    
+      text= that.attr('placeholder');    
+      if(that.val()===""){    
+        that.val(text).addClass('placeholder');    
+      }    
+      that.focus(function(){    
+        if(that.val()===text){    
+          that.val("").removeClass('placeholder');    
+        }    
+      })    
+      .blur(function(){    
+        if(that.val()===""){    
+          that.val(text).addClass('placeholder');    
+        }    
+      })    
+      .closest('form').submit(function(){    
+        if(that.val() === text){    
+          that.val('');    
+        }    
+      });    
+    });    
+  }   
+</script>
+
+<script type="text/javascript">	
+					jQuery("#searchlink").click(function(){
+						jQuery("#searchMarket").submit();
+					});
+					jQuery("#searchMarket").submit(function(){
+						var key = jQuery("#keywords").val();
+						key = encodeURI(key);
+						var url = "#springUrl('/search')-"+key+"-s-i.htm";
+						if(key&&key!=""){
+							jQuery("#searchMarket").attr("action",url);
+						}else{
+							alert("请输入您要检索的关键字");
+						}
+					});
+				</script>
+<!--end logosearch-->
+<div class="cb"></div>
+<div class="market_nav">
+  <ul class="market_ul">
+    <li><a href="#springUrl('/')index.htm" #if($pageName=="index")class="on" #end>首页</a></li>
+    <li><a href="#springUrl('/market/')vi1000c.htm" #if($!{industry}=="1000")class="on" #end>废金属</a></li>
+    <li><a href="#springUrl('/market/')vi1001c.htm" #if($!{industry}=="1001")class="on" #end>废塑料</a></li>
+    <li><a href="#springUrl('/market/')vi1002c.htm" #if($!{industry}=="1002")class="on" #end>二手设备</a></li>
+    <li class="nav_up"><a href="#springUrl('/map/zsmap.htm')"#if($pageName=="zsmap") class="on"#end style="color:#ffff00">再生地图</a></li>
+  </ul>
+</div>
+<!--end market_nav-->
+<div class="cb"></div>
+<div class="cb"></div>
+	$screen_content
+	#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+			$!{fragmentContext}
+	#end
+	#parse("/seo/analysis_body.vm")
+</body>
+</html>
+	#parse("/seo/analysis_foot.vm")

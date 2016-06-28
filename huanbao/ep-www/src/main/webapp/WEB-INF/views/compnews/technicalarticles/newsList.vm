@@ -1,0 +1,142 @@
+#set($layout = "/layout/compnews/defaultS.vm")
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/tech/css/JiShuZhongXin.css"/>
+
+
+<div class="main">
+#parse("/common/compnews/menu.vm")
+	<div class="m-list">
+    	<ul>
+        	<li><a href="#springUrl('/compnews/technicalarticles/list').htm">公司技术文章</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041000.htm">环保百科</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041001.htm">技术参数</a></li>
+            <li><a href="#springUrl('/compnews/technicalarticles/newsList')100010041002.htm">前沿技术</a></li>
+        </ul>
+    </div>
+    <!--m-list-->
+	<div class="m-title">
+    	中国环保网 > 技术中心 > $!{category}
+    </div>
+    <div class="mainblock2">
+    	<div class="m2-left2">
+        	<div class="m2-left2-info">
+            	$!{category}|$!{titleName}
+            </div>
+        	<div class="list">
+              #foreach($list in $!{page.records})
+                <!--end LieBiaoYe list-->
+               <div class="list-item">
+                	<div class="list-item-title">
+                    	<span class="list-title-text">
+                        	<a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{list.id}.htm">$!{list.titleIndex}</a>
+                        </span>
+                        <span class="list-title-date">
+                        	#printFragmentDate("yyy-MM-dd" $!{list.gmtPublish})
+                        </span>
+                        
+                    </div>
+                    <!--end list_zi1-->
+                    <div class="list-item-content">
+                    	    <a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{list.id}.htm">#printTitle($!{list.details} 82 "")</a>
+                    </div>
+                    <!--end list_zi2-->
+                    <div class="list-item-text">
+                    	<span class="list-text-pages">
+                        	游览量：$!{list.viewCount} 
+                        </span>
+                        <span class="list-text-label">
+							#if($!{list.tags} && $!{list.tags}!="")
+							 标签：<a href="#">$!{list.tags}</a>
+							#end
+						</span>
+                    </div>
+                    <!--end list_zi3-->
+                    <div class="list-item-img">
+                   ##	<img src="http://img0.huanbao.com/huanbao/tech/images/img1.jpg" class="i2"/>
+                        
+                    </div>
+                    <!--end list_img-->
+                    <div style="clear:both"></div>
+                </div>
+				#end
+                <!--end LieBiaoYe list-->
+                <div class="list-page">
+                	#staticPageNavs(${page} "#springUrl('/compnews/technicalarticles/newsList')$!{categoryCode}" "" "")
+                </div>
+                <!--end page-->
+                <div style="clear:both"></div>
+            </div>
+            <!--end LieBiaoYe-->
+        </div>
+        <!--end mainblock2 left-->
+        <div class="m2-right2">
+        	<div class="m2-right2-technology">
+                <a href="#springUrl('/compnews/technicalarticles/publish.htm')"><img src="http://img0.huanbao.com/huanbao/tech/images/technology2.jpg" /></a>
+            </div>
+        	<div class="m2-right2-item">
+            	<div class="m2-right2-title">
+                	相关技术文章
+                </div>
+				#cacheFragment("$!{address.fragment}/fragment/company/queryNewsInTechnical.htm?size=7&iu","","","600")
+                <div class="m2-right2-content">
+                  <ul>
+					  #foreach($l  in $!newsDtoList) 
+						#if($velocityCount <=7)
+						<li >
+                    	   #if($!{l.type} !='1001')
+							  <a href="#springUrl('/compnews/technicalarticles/newsDetails')$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a>
+						    #else
+							  <a href="#springUrl('/compnews/technicalarticles/details')$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a>
+							#end
+					  #end
+					  </li>
+					  #end
+					</ul>
+                </div>
+				#end
+            </div>
+            <!--mainblock2 right item-->
+            <div class="m2-right2-item">
+            	<div class="m2-right2-title">
+                	<a href="$!{address.trade}/newb.htm">推荐求购信息</a>
+                </div>
+				#cacheFragment("$!{address.fragment}/fragment/trade/recommendBuy.htm?size=7&wwwIex","","","600")
+                <div class="m2-right2-content">
+                	<ul>
+						#foreach($l in $list)
+                        <li><a href="$!{address.trade}/buy/detail$!{l.id}.htm">·#printTitle($!{l.title} 15 "")</a></li>
+                       #end
+					</ul>
+                </div>
+				#end
+            </div>
+            <!--mainblock2 right item-->
+            <div class="m2-right2-item">
+            	<div class="m2-right2-title">
+                	<a href="$!{address.trade}/newg.htm">最新产品</a>
+                </div>
+                <div class="m2-right2-content">
+					#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?size=7&su","","","600")
+                	<ul>
+						#foreach($l in $!{list})
+                    	<li><a href="$!{address.trade2}/supply/detail$!{l.id}.htm">#printTitle($!{l.title} 15 "")</a></li>
+						#end
+                    </ul>
+					#end
+                </div>
+            </div>
+            <!--mainblock2 right item-->
+        </div>
+        <!--end mainblock2 right-->
+    </div>
+    <!--end mainblock2-->
+</div>
+<!--end main-->
+
+
+<div style="clear:both"></div>
+<!--end main-->
+<!--底部 start-->
+
+
+

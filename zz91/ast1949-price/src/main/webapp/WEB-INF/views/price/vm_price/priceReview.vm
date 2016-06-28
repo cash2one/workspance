@@ -1,0 +1,33 @@
+#if($code=="metal")
+	#set($codeLabel="废金属")
+#elseif($code=="plastic")
+	#set($codeLabel="废塑料")
+#else
+	#set($codeLabel="综合废料")
+#end
+<div class="price_block ml mt clear">
+	<div class="block_title">
+		<h3 class="title_text">$!{codeLabel}行情导读</h3>
+		<a href="#springUrl('/priceList')_t$!{priceTypeId}_$!{code}.htm" target="_blank" class="title_more">更多>></a>
+	</div>
+	<div class="block_content">
+	#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{priceTypeId}", "", "1", "")
+		#if($!{list.size()} >0)
+		#set($top = ${list.get(0)})
+            <h4><a href='#springUrl("/priceDetails")_$!{top.id}_$!{code}.htm' target="_blank" title='$!{top.title}'> #printTitle($!{top.title} 22 "") </a></h4> 
+        #end
+	#end
+		<ul class="list withDate">
+	#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{priceTypeId}", "", "1", "")
+        #foreach($b in $!list)
+            #if($velocityCount>1)
+            <li>
+				<a href='#springUrl("/priceDetails")_$!{b.id}_$!{code}.htm' target='_blank' title='$!{b.title}'> #printTitle($!{b.title} 26 "") </a>
+				<span>#printFragmentDate("yyyy-MM-dd" $!{b.gmtCreated})</span>
+            </li>
+			#end
+        #end   
+	#end	
+		</ul>	
+	</div>
+</div>

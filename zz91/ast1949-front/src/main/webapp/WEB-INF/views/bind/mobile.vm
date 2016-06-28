@@ -1,0 +1,91 @@
+#set($layout="/layout/blank.vm")
+
+<script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/business/css/index.css"/>
+
+<div class="mobile" style="width:auto; margin:20px; padding-top:20px;">
+	<!--<div class="mobile-text">
+    	手机绑定
+    </div>-->
+    <!--end business-text-->
+    <form id="mobileForm" #if($unbind==1) action="#springUrl('/bind/doUnMobile.htm')" #else action="#springUrl('/bind/doMobile.htm')" #end method="post">
+    <table class="mobile-table" style="font-size:12px" style="margin-top:20px;">
+		#if($result==1)
+        <tr><td class="w80" ></td>
+            <td class="mobile-red" style="line-height:25px;">验证失败请重试</td><td></td>
+        </tr>
+		#end
+    	<tr>
+        	<td class="w80" >手机号码：</td>
+            <td><input type="text" placeholder="请输入手机号码" class="mobile-table-text" id="mobile" name="mobile" /></td>
+            <td class="mobile-red" id="timeCountTxt">绑定后您就可以使用手机登陆生意管家了</td>
+        </tr>
+    </table>
+    <!--end mobile--->
+    <input type="button" class="mobile-verification" id="clickToSend"/> ##mobile-verification-null
+    <div class="mobile-verification-text">
+    	
+    </div>
+    <!--end mobile-verification-->
+    <table class="mobile-table" style="font-size:12px">
+    	<tr>
+        	<td class="w80">验证码：</td>
+            <td>
+				<input type="text" placeholder="请输入验证码" class="mobile-table-text" id="code" name="code" />
+			</td>
+            <td class="mobile-red" id="timeCountTxt1"></td>
+        </tr>
+    </table>
+    <!--end mobile--->
+    <input type="submit" #if($unbind==1) style="width: 125px;height: 27px;border: none;margin-top: 20px;margin-left: 80px;cursor: pointer;" value="确认解绑" #else class="mobile-activation" value="" #end />
+    <!--end mobile-activation-->
+	<input type="hidden" name="destUrl" value="$!{destUrl}" />
+	</form>
+</div>
+<!--end mobile-->
+<script type="text/javascript">
+var c=60
+var t
+function timedCount(){
+	c=c-1;
+	jQuery("#secondId").html(c);
+	if(c>0){
+		t=setTimeout("timedCount()",1000);
+	}
+	if(c==0){
+		jQuery("#timeCountTxt").html("绑定后您就可以使用手机登陆生意管家了");
+		jQuery("#clickToSend").removeClass("mobile-verification-null");
+		jQuery("#clickToSend").addClass("mobile-verification");
+		c=60;
+	}
+}
+
+jQuery("#clickToSend").click(function(){
+	if(c==60){
+		if (jQuery("#mobile").val()==""){
+			jQuery("#timeCountTxt").html("请输入手机号码！");
+			return false;
+		}
+    	jQuery("#timeCountTxt").html("验证码已发出，请注意查收，如果没有收到，您还可以在<span id='secondId'></span>秒后要求系统重新发送");
+    	jQuery("#clickToSend").removeClass("mobile-verification");
+    	jQuery("#clickToSend").addClass("mobile-verification-null");
+    	jQuery.ajax({
+    		url:"#springUrl('/bind/getMobileCode.htm?')a=$date",
+    		data:{"mobile":jQuery("#mobile").val()},
+    		dataType:"json"
+    	});
+		timedCount();
+	}
+});
+jQuery("#mobileForm").submit(function(){
+	if (jQuery("#mobile").val()==""){
+		jQuery("#timeCountTxt").html("请输入手机号码！");
+		return false;
+	}
+	if (jQuery("#code").val()==""){
+		jQuery("#timeCountTxt1").html("请输入验证码！");
+		return false;
+	}
+});
+</script>

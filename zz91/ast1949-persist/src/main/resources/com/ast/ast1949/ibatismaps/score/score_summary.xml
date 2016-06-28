@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+ "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="scoreSummary">
+	<typeAlias alias="scoreSummaryDo" type="com.ast.ast1949.domain.score.ScoreSummaryDo"/>
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company"/>
+	<typeAlias alias="scoreSummaryDto" type="com.ast.ast1949.dto.score.ScoreSummaryDto"/>
+	<typeAlias alias="companyAccount" type="com.ast.ast1949.domain.company.CompanyAccount"/>
+	
+	<resultMap id="fullSummaryResult" class="scoreSummaryDo">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="score" column="score" />
+		<result property="subCategory" column="sub_category" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap id="miniCompanyResult" class="company">
+		<result property="id" column="company_id" />
+		<result property="name" column="name" />
+		<!-- 
+		<result property="membershipCode" column="membership_code" />
+		 -->
+	</resultMap>
+	<resultMap id="miniCompanyContactsResult" class="companyAccount">
+		<result property="account" column="account" />
+		<result property="email" column="email" />
+		<result property="contact" column="contact" />
+	</resultMap>
+	
+	
+	<resultMap id="scoreSummaryDtoResult" class="scoreSummaryDto">
+		<result property="summary" resultMap="scoreSummary.fullSummaryResult" />
+		<result property="company" resultMap="scoreSummary.miniCompanyResult" />
+		<result property="contact" resultMap="scoreSummary.miniCompanyContactsResult" />
+	</resultMap>
+	
+	<update id="updateSummary" parameterClass="scoreSummaryDo">
+		UPDATE score_summary
+		SET
+		company_id = #companyId#,
+		score = #score#,
+		sub_category = #subCategory#,
+		gmt_modified = NOW()
+		WHERE id = #id#
+	</update>
+	
+	<select id="querySummaryByCompanyId" parameterClass="java.lang.Integer" resultMap="fullSummaryResult">
+		SELECT
+			id,
+			company_id,
+			score,
+			sub_category,
+			gmt_created,
+			gmt_modified
+		FROM score_summary
+		WHERE company_id = #value#
+	</select>
+	
+	<insert id="insertSummary" parameterClass="scoreSummaryDo">
+		INSERT INTO score_summary
+		(
+		company_id,
+		score,
+		sub_category,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#score#,
+		#subCategory#,
+		NOW(),
+		NOW()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryMostOfUserScore" parameterClass="java.lang.Integer" resultMap="scoreSummaryDtoResult">
+		SELECT
+			ss.id,
+			ss.company_id,
+			ss.score,
+			ss.sub_category,
+			ss.gmt_created,
+			ss.gmt_modified,
+			c.name,
+			cc.email,
+			cc.contact,
+			cc.account
+		FROM score_summary ss
+		LEFT JOIN company c ON c.id=ss.company_id
+		LEFT JOIN company_account cc ON cc.company_id=c.id
+		ORDER BY score DESC
+		LIMIT 0,#value#
+	</select>
+	
+	<select id="querySummaryByCondictions" parameterClass="java.util.HashMap" resultMap="scoreSummaryDtoResult">
+		SELECT
+			ss.id,
+			ss.company_id,
+			ss.score,
+			ss.sub_category,
+			ss.gmt_created,
+			ss.gmt_modified,
+			c.name,
+			cc.email,
+			cc.contact,
+			cc.account
+		FROM score_summary ss
+		LEFT JOIN company c ON c.id=ss.company_id
+		LEFT JOIN company_account cc ON cc.company_id=c.id
+		<dynamic prepend="where">
+			<isNotEmpty property="condictions.email" prepend="and">
+				cc.email LIKE CONCAT(#condictions.email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="condictions.company.name" prepend="and">
+				c.name LIKE CONCAT(#condictions.company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="condictions.company.membershipCode" prepend="and">
+				c.membership_code LIKE CONCAT(#condictions.company.membershipCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="querySummaryByCondictionsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM score_summary ss
+		LEFT JOIN company c ON c.id=ss.company_id
+		LEFT JOIN company_account cc ON cc.company_id=c.id
+		<dynamic prepend="where">
+			<isNotEmpty property="condictions.email" prepend="and">
+				cc.email LIKE CONCAT(#condictions.email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="condictions.company.name" prepend="and">
+				c.name LIKE CONCAT(#condictions.company.name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="condictions.company.membershipCode" prepend="and">
+				c.membership_code LIKE CONCAT(#condictions.company.membershipCode#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

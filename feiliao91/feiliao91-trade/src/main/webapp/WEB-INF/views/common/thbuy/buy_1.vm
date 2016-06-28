@@ -1,0 +1,311 @@
+  #parse("/common/returnOne.vm") 
+			  <div class="orderright fl clearfix">
+                    <div class="refund-type refund-type-ft">
+                        <span class="this-refunbd">我要退货</span>
+                        <span>我要退款（无需退货）</span>
+                    </div>
+                    <div class="ft-thmain-mo">
+						<form action="" method="post" id="form1">
+                        <ul class="ft-thmain">
+                            <li>
+                                退货原因：<select class="tk-why" id="select1" >
+									<option value="请选择退货原因">请选择退货原因</option>
+									<option value="7天无理由退货">7天无理由退货</option>
+									<option value="退运费">退运费</option>
+									<option value="收到商品破损">收到商品破损</option>
+									<option value="商品错发/漏发">商品错发/漏发</option>
+									<option value="商品需要维修">商品需要维修</option>
+									<option value="发票问题">发票问题</option>
+									<option value="收到商品与描述不符">收到商品与描述不符</option>
+									<option value="商品质量问题">商品质量问题</option>
+								      </select><span id="errret" style="color:red">
+                                       </span>
+									   <input type="hidden" value="" id="reason" name="reason"/>
+									   <input type="hidden" value="$!{order.id}" name="orderId"/>
+                            </li>
+                            <li>
+                               退款金额：
+                                <span class="tk-moery see-moery"><input class="tk-rmb" id="tkrmb" name="price"/></span><span id="outprice" style="color:red">
+                                       </span>
+                            </li>
+                            <li>
+                                <span>退款说明：</span>
+                                <textarea class="tk-whytxt j_stext j_stext1" id="stext" name="textarea"></textarea>
+                                <span class="txtwz">还可以输入<span class="j_number">200</span>字</span><span id="errtext" style="color:red">
+                                </span>
+                            </li>
+                            <li class="addimg">
+                                上传凭证：<span class="intoimg intoimg1">上传图片</span>
+                            </li>
+							<input type="hidden" value="0" name="type"/>
+                        </ul>
+						</form>
+                        <div class="tjtk-btn tjtk-submit1">提交退货申请</div>
+                    </div>
+                    <div class="ft-thmain-mo" style="display:none">
+						<form action="" method="post" id="form2">
+                        <ul class="ft-thmain">
+                            <li>
+                                退款原因：<select class="tk-why">
+									<option>请选择退款原因</option>
+									<option value="7天无理由退货">7天无理由退货</option>
+									<option value="退运费">退运费</option>
+									<option value="收到商品破损">收到商品破损</option>
+									<option value="商品错发/漏发">商品错发/漏发</option>
+									<option value="商品需要维修">商品需要维修</option>
+									<option value="发票问题">发票问题</option>
+									<option value="收到商品与描述不符">收到商品与描述不符</option>
+									<option value="商品质量问题">商品质量问题</option>
+								</select>
+								 <span id="errret2" style="color:red"></span>
+								 <input type="hidden" value="" id="reason1" name="reason"/>
+								 <input type="hidden" value="$!{order.id}" name="orderId"/>
+                            </li>
+                            <li>
+                                退款金额：
+                                <!-- <span class="tk-moery see-moery">151000.00元</span> -->
+                                <span class="tk-moery see-moery"><input class="tk-rmb" id="tkrmb1" name="price"/><span id="outprice1" style="color:red"></span>
+                            </li>
+                            <li>
+                                <span>退款说明：</span>
+                                <textarea class="tk-whytxt j_stext j_stext2" id="stext1" name="textarea"></textarea>
+                                <span class="color-66 vd-bt">还可以输入<span class="j_number">200</span>字<span id="errtext1" style="color:red"></span>
+                            </li>
+                            <li class="addimg2">
+                                上传凭证：<span class="intoimg intoimg2">上传图片</span>
+                            </li>
+							<input type="hidden" value="1" name="type"/>
+                        </ul>
+                        </form>
+						<form action="" method="post" enctype="multipart/form-data">
+					      <input type="file"  id="uploadfile" name="uploadfile" style="display:none;"/>
+					    </form>
+						<form action="" method="post" enctype="multipart/form-data">
+					      <input type="file"  id="uploadfile2" name="uploadfile" style="display:none;"/>
+					    </form>
+                        <div class="tjtk-btn tjtk-submit2">提交退款申请</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		 <script type="text/javascript">	
+   ##上传图片
+　　$(".intoimg1").click(function(){
+      $("#uploadfile").click();   
+	});
+	
+	 ##上传图片
+　　$(".intoimg2").click(function(){
+      $("#uploadfile2").click();   
+	});
+	
+	jQuery("#uploadfile").change(function(){
+	var formDate = new FormData(jQuery(this).parent()[0]);
+	formDate.append("targetType", 5);
+	    jQuery.ajax({
+        			url:"#springUrl('/upload/ieupload.htm')",
+        			data:formDate,
+        			type: "POST",
+        			cache: true,
+        			async: false,
+        			dataType:"json",
+        			contentType:false,
+        			processData:false,
+        			success: function(data) {
+					$(".ft-thmain .txtwz").append("<li><img src="+"$!{address.img}"+data.url+" class=\"firm-img\">"+"<input type=\"hidden\" name=\"picAddress\" value=\""+data.pid+"\"></li>");
+                	$(".addimg").css("display","none");
+					}
+        		});
+	})
+	
+	
+	jQuery("#uploadfile2").change(function(){
+	var formDate = new FormData(jQuery(this).parent()[0]);
+	formDate.append("targetType", 5);
+	    jQuery.ajax({
+        			url:"#springUrl('/upload/ieupload.htm')",
+        			data:formDate,
+        			type: "POST",
+        			cache: true,
+        			async: false,
+        			dataType:"json",
+        			contentType:false,
+        			processData:false,
+        			success: function(data) {
+					$(".ft-thmain .txtwz2").append("<li><img src="+"$!{address.img}"+data.url+" class=\"firm-img\">"+"<input type=\"hidden\" name=\"picAddress\" value=\""+data.pid+"\"></li>");
+                	$(".addimg2").css("display","none");
+					}
+        		});
+	})
+	
+	$(document).ready(function(){
+            var obj = document.getElementById("ull");
+            var lis = obj.getElementsByTagName("li");
+            for(var i = lis.length-1; i > -1; i--){
+                obj.appendChild(lis[i]);
+            }
+	})
+	
+    $(".refund-type span").bind("click",function(){
+        $(".this-refunbd").removeClass("this-refunbd")
+        $(this).addClass("this-refunbd")
+        var index = $(this).index();
+        $(".ft-thmain-mo").hide();
+        $(".ft-thmain-mo").eq(index).show()
+    })
+
+    $(".j_ndata li:last").addClass("this-data")
+    $(".j_seller").bind("hover",function(){
+        $(this).toggleClass("seller-tt2");
+        $(".hide-div").stop().slideToggle();
+    })
+
+    var lastNum = parseInt($(".j_number").html());
+    $(".j_stext").bind("keyup",function(){  
+        var allNumber = $(this).val().length;
+        allNumber = lastNum - allNumber;
+        $(".j_number").html(allNumber);
+        if(allNumber<=0){
+            allNumber = 0;
+            $(".j_number").html(0)
+            $(this).val($(this).val().substring(0,lastNum));
+            $(this).css("background","#f2f2f2")
+        }else{
+            $(this).css("background","#fff")
+        }
+    })
+	 
+	 var ret="";
+	 $(document).ready(function(){
+	  var price;
+	  var num;
+	  var sum;
+	  var freight;
+	  #if(!$!{cost})
+	      #if($!{order.buyPricePay})
+		  price=parseFloat($!{order.buyPricePay});
+		  #end
+          #if($!{order.buyQuantity})
+          num=parseFloat($!{order.buyQuantity});
+          #end
+          #if($!{order.buyPriceLogistics})
+          freight=parseFloat($!{order.buyPriceLogistics});
+          #end
+          if(price!=null&&num!=null){
+		    sum=price*num;
+		  }else{
+		    return false;
+		  }
+		  $("#freight").html(freight);
+		  $("#subtotal").html(sum);
+		  ##总计
+		  $("#sumprice").html(sum+freight);
+		  $("#yunfei").after($!{order.buyPriceLogistics});
+		 #else
+		  $("#subtotal").html($!{cost});
+		  $("#sumprice").html(parseFloat($!{cost})+parseFloat($!{orderFreightPay}));
+		  $("#yunfei").after($!{orderFreightPay});
+		 #end
+	  })
+	  
+	  ##提交申请
+	  $(".tjtk-submit1").click(function(){
+	  if(ret==""||ret=="请选择退货原因"){
+	     $("#errret").html("请选择退货原因");
+		 return false;
+	  }else{
+	      $("#errret").html("");
+	  }
+	  $("#reason").val(ret);
+	  var reset=$("#tkrmb").val();
+	  if(reset==null||reset==""){
+	     $("#outprice").html("请填写退款金额");
+		 return false;
+	  }else{
+	     $("#outprice").html("");
+	  }
+	  ##总计
+	  var zongji=$("#zongji").html();
+	  if(parseFloat(reset)>parseFloat(zongji)){
+	     $("#outprice").html("请填写正确的退款金额");
+	      return false;
+	  }else{ 
+	     $("#outprice").html("");
+	  }
+	  var tex=$("#stext").val();
+	  if(tex==""){
+	     $("#errtext").html("请填写退款说明");
+		  return false;
+	  }else{
+	     $("#errtext").html("");
+	  }
+	  var da=$("#form1").serialize();
+	  jQuery.ajax({
+	    url:"#springUrl('/ordersreturn/returnOrer.htm')",
+	    type:'post',
+		dateType:'json',
+		data:da,
+		success:function(data){
+		ajaxob=eval("("+data+")");
+		var id=ajaxob.data;
+			if(ajaxob.success){
+			 window.location.reload();
+		}
+		}
+	  })
+	  })
+	  ##--------------------------------------------------
+	     ##提交申请2
+	  $(".tjtk-submit2").click(function(){
+	  if(ret==""||ret=="请选择退款原因"){
+	     $("#errret2").html("请选择退款原因");
+		 return false;
+	  }else{
+	     $("#errret2").html("");
+	  }
+	  $("#reason1").val(ret);
+	  var reset=$("#tkrmb1").val();
+	  if(reset==null||reset==""){
+	     $("#outprice1").html("请填写退款金额");
+		 return false;
+	  }else{
+	     $("#outprice1").html("");
+	  }
+	  ##总计
+	  var zsum=$("#sumprice").html();
+	  if(parseFloat(reset)>parseFloat(zsum)){
+	     $("#outprice1").html("请填写正确的退款金额");
+	      return false;
+	  }else{ 
+	     $("#outprice1").html("");
+	  }
+	  var tex=$("#stext1").val();
+	  if(tex==""){
+	     $("#errtext1").html("请填写退款说明");
+		  return false;
+	  }else{
+	     $("#errtext1").html("");
+	  }
+	  var da=$("#form2").serialize();
+	  jQuery.ajax({
+	    url:"#springUrl('/ordersreturn/returnOrer.htm')",
+	    type:'post',
+		dateType:'json',
+		data:da,
+		success:function(data){
+		ajaxob=eval("("+data+")");
+		var id=ajaxob.data;
+			if(ajaxob.success){
+			  window.location.reload();
+		}
+		}
+	  })
+	  })
+	  
+	  
+	function　fntt(obj){
+		ret=obj.attr("value");
+	}
+	
+    selectJr(fntt);
+    </script>

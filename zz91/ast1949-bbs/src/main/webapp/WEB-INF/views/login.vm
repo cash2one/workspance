@@ -1,0 +1,88 @@
+#set($layout="/common/head_search.vm")
+#parse("/common/import.vm")
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	//var urlValue = jQuery('#url').val();
+	jQuery.validator.setDefaults({
+		submitHandler: function(form){
+			checklogin(jQuery("#username").val(),jQuery("#password").val(),"0",jQuery("#url").val(),"","","#springUrl('/user')",function(response){
+				if(response.success){
+					window.location.href=response.data;
+				}else{
+					alert(response.data);
+				}
+			});
+		}
+
+	});
+
+	//开始验证
+	jQuery('#loginForm').validate({
+		rules:{
+			username:{
+				required:true
+			},
+			password:{
+				required:true
+			}
+		},
+		messages:{
+			username:{
+				required:"请输入您的用户名！"
+			},
+			password:{
+				required:"请输入您的密码！"
+			}
+		},
+		focusInvalid: false,
+		onkeyup: false,
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+
+});
+
+</script>
+
+##parse("/bbs/bbs_top_login.vm")
+<div class="remind">
+	<div class="remind1">
+		社区用户登录
+	</div>
+	<div class="remind2">
+		<p class="remind2_textcolor1">
+			请登录后再进行操作！
+		</p>
+		#if($error=='1')
+		<p class="remind2_textcolor1">登录失败，原因：登录账户或密码不正确</p>
+		#end
+		<div class="remind2_1">
+			<form id="loginForm" name="loginForm" action="#springUrl('/doLogin.htm')" method="post">
+				<p class="remind2_1_items"><label class="remind2_text" for="username">用户名:</label>
+					<input type="text" name="username" id="username" class="remind2_input1"/> 
+				</p>
+				<p class="remind2_1_items">
+					<label class="remind2_text" for="password">密码:</label>
+					<input type="password" name="password" id="password" class="remind2_input1"/>
+				</p>
+				<p class="remind2_1_items">
+					<input type="checkbox" class="remind2_input2" /> 下次自动登陆 
+				</p>
+				<p class="remind2_1_items">
+					<input type="submit" class="remind2_input3" value="" onmouseover="this.className='remind2_input3over'"  onmouseout="this.className='remind2_input3'"/>
+					#if($!{url})
+						<input type="hidden" id="url" name="url" value="$!{url}" />
+					#end
+				</p>
+			</form>
+		</div>
+		<div class="remind3">
+			<span class="remind3_textcolor1">
+				<a href="$!{address.front}/register/register.htm">赶紧注册去</a>
+				|
+				<a href="$!{address.front}/user/passwordReminder.htm">找回登陆密码</a>
+			</span>
+		</div>
+	</div>
+</div>

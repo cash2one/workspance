@@ -1,0 +1,76 @@
+<footer class="container mt">
+	
+    <a href="$!{address.myesite}">后台首页</a>
+    |
+    <a href="$!{address.myesite}/message/index.htm">留言管理</a>
+    |
+    <a href="$!{address.myesite}/supply/index.htm">产品管理</a>
+    |
+    <a href="$!{address.myesite}/company/updateCompany.htm">公司信息</a>
+    |
+    <a href="#">商圈管理</a>
+    |
+    <a href="$!{address.myesite}/article/index.htm">公司动态</a>
+    |
+    <a href="$!{address.myesite}/article/index.htm">技术文章</a>
+    #if("$!{epAuthUser.memberCode}"=="10011001") |
+    <a href="$!{address.myesite}/company/credit.htm">荣誉证书</a>
+    |
+    <a href="$!{address.myesite}/company/updateMainProduct.htm">门市部装修</a>
+	#end
+	
+##    <div class="fr">
+##    	<a href="$!{address.www}/fudus/leaveMsg.htm" target="_blank" >
+##    		<img src="$!{address.img}/zz91/myrc/images/Suggestion.jpg" width="95" height="27" alt="我要提建议" />
+##    	</a>
+##    </div>
+
+</footer>
+	
+<link rel="stylesheet" href="$!{address.img}/lib/feedback/feedback.css?1"  type="text/css" media="screen" />
+<script type="text/javascript" src="$!{address.img}/lib/feedback/feedback.js?2" ></script>
+
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+	
+    		var adapter=new Feedback.Send();
+    		adapter.send=function(data,fn){
+    			var formData = new FormData();
+    			formData.append("details",data[0]["Issue"]);
+    			formData.append("screenBase64",data[1]);
+    			jQuery.ajax({
+        			cache:false,
+        			//contentType:"multipart/form-data",
+        			contentType:false,
+        			processData:false,
+        			url:"#springUrl('/common/feedback.htm')",
+        			type:"POST",
+        			dataType:"json",
+        			data:formData,
+        			success:function(output){
+    					fn(true);
+        			},
+        			error:function(jqXHR, textStatus, errorThrown){
+    					fn(false);
+        			}
+        		});
+    		}
+			
+    		Feedback({
+    			//url:"#springUrl('/common/feedback.htm')",
+    			url:"http://aaaa.huanbao.com/feedback.htm",
+    			label:"反馈问题",
+    			header:"反馈问题 - 把您的问题发给我们，我们将会在第一时间解决",
+    			nextLabel:"继续",
+    			reviewLabel:"检查",
+    			sendLabel:"发送",
+    			closeLabel:"关闭",
+    			messageSuccess:"您的反馈已经提交了",
+    			messageError:"发生错误，您的问题没有被提交，请再试一次",
+    			h2cPath:'$!{address.img}/lib/feedback/html2canvas.js',
+    			adapter:adapter,
+    			allowTaint:true
+    			//proxy:"http://www.zz91.com"
+    		});
+	});
+</script>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>提问</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: #00b8ff !important;
+	}
+	#select{
+		display: -webkit-box;
+		padding:15px 10px;
+	}
+	#select .left{
+		display: -webkit-box;
+		-webkit-box-flex: 1;
+		width: 100%;
+	}
+	#select .middle{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: end;
+		font-size: 14px;
+		color: #666666;
+	}
+	#select .right{
+		width: 25px;
+		display: -webkit-box;
+		background: url(../image/forward.png) no-repeat center;
+		-webkit-background-size: 10px 17px;
+	}
+	textarea{
+		width: 100%;
+		background-color: #FFFFFF;
+		border-bottom: 1px solid #D9D9D9;
+		border-top: 1px solid #D9D9D9;
+	}
+	.active{
+		background-color: #CCCCCC !important;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title">提问</strong>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="submitQuestion()">
+					提交
+				</a>
+			</nav>
+		</header>
+		<section id='content'>
+			<div id="select" tapmode="active" onclick="askQuestionTo();">
+				<div class="left">
+					提问至
+				</div>
+				<div class="middle" id="bname">
+					
+				</div>
+				<a class="right"></a>
+			</div>
+			<textarea placeholder="100字以内" id="question" onkeypress="validateWordNum(event)"></textarea>	
+		</section>
+	</div>
+</body>
+<script>
+	var bid = '';
+	var bname = '';
+	var buttons = [];
+	var bids = [];
+	apiready = function() {		
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		$api.byId('question').style.height = api.winHeight * 0.4 + 'px';
+		
+		if(!api.pageParam.list){
+			getBnameList();
+		}else{
+			var list = api.pageParam.list;
+			bname = list.bname;
+			bid = list._id;
+			$api.html($api.byId('bname'), bname);
+			$api.removeAttr($api.byId('select'), 'tapmode');
+			$api.removeAttr($api.byId('select'), 'onclick');			
+		}
+	};
+	
+	function getBnameList(){
+		api.ajax({
+	    	url: serverUrl + '/user/BBSSection?getAll=1',
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, function(ret,err){
+	    	if(ret && ret.status){	    		
+		    	var list = ret.body.list;
+				for(var i=0; i<list.length; i++){
+					buttons[i] = list[i].bname;
+					bids[i] = list[i]._id;
+				}
+				$api.html($api.byId('bname'), bname?bname:list[0].bname);
+				bid = bid?bid:list[0]._id;
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    	}
+	    });
+	}
+	
+	function askQuestionTo(){
+		api.actionSheet({
+			cancelTitle: '取消',
+			buttons: buttons,
+			style: {
+				layerColor: 'rgba(0, 0, 0, 0.3)',
+				itemNormalColor: '#F1F1F1',
+				itemPressColor: '#007AFF',
+				fontNormalColor: '#007AFF',
+				fontPressColor: '#F1F1F1',
+			}
+		}, function(ret, err){			
+			if(ret.buttonIndex <= buttons.length){//buttonIndex从1开始
+				bname = buttons[ret.buttonIndex-1];
+				$api.html($api.byId('bname'), bname);
+				bid = bids[ret.buttonIndex-1];
+			}
+		});
+	}
+	
+	function submitQuestion(){
+		var q = $api.val($api.byId('question'));
+		if(q.length <= 0){
+			api.toast({msg: '请输入问题', location: 'middle'});
+			return;
+		}
+		if(q.length > 100){
+			q = q.substr(0, 100);
+		}
+		var values = {
+			uid: $api.getStorage('usr').uid,
+			fid: $api.getStorage('usr').fid,
+			account: $api.getStorage('usr').account,
+			oqContent: q,
+			bid: bid
+		};
+		api.ajax({
+	    	url: serverUrl + '/user/SubmitOnlineExchange',
+		    method: 'post',
+		    cache: false,
+		    timeout: 15,
+		    dataType: 'json',
+		    data: {values: values}
+	    }, function(ret, err){
+	    	if(ret && ret.status){
+	    		api.toast({msg: '提交成功', location: 'middle'});
+				if(api.pageParam.list){//有参数说明是从版块详情进入提问页面的
+					api.execScript({name: 'communicationItem', frameName: 'communicationItem_frame', script: 'loadData(true)'});
+				}
+				setTimeout(function(){api.closeWin();}, 2000);
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    			if(ret.body.isLocked){//isLocked为false,包含铭感词汇,但未达到三次
+	    				logout();
+	    			}
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    	}
+	    });
+	}
+	
+	function logout(){		
+		$api.rmStorage('logined');
+		api.openWin({name:'login', url:'login.html'});
+		api.execScript({name: 'root', script: 'updateHeader()'});
+		api.ajax({
+	    	url: serverUrl + '/user/LoginOut?uid=' + $api.getStorage('usr').uid,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, function(ret, err){
+	    	setTimeout(function(){
+				api.closeWin({name:'communicationItem'});
+				api.closeWin({name:'communication'});
+				api.closeWin({name:'communicationQuestion'});
+	    	}, 1000);
+	    });
+	}
+	
+	function validateWordNum(event){
+		var value = $api.val($api.byId('question'));
+		if(value.length >= 100){
+			api.toast({msg: '您输入的内容已超过100字！', location: 'middle'});
+			event.preventDefault();
+		}
+	}
+</script>
+</html>

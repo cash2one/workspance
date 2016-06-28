@@ -1,0 +1,117 @@
+#parse("/common/import.vm")
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+#set($layout="/layout/blank.vm")
+ <script language="javascript">
+function Login(frm){
+var openStatus="$!{openStatus}";
+if(openStatus!="all") {
+    alert('本站为测试版，新的生意管家后期将开放。请您在老站点登录！');
+    parent.location.href="http://www.zz91.com/cn/login.asp";
+    return false;
+}
+var email= jQuery("#email").val();
+	if(email.length<=0) {
+		alert ("请输入用户名（email）！");
+		jQuery("#email").focus();
+		return false;
+	}
+
+	/*
+	if(!/^(.+)@(.+)\.(\w+)+$/ig.test(email)){
+		alert("电子邮箱格式错误!");
+		jQuery("#email").focus();
+		return  false;
+	}
+	*/
+
+	if (jQuery("#pwd").val()=="") {
+		alert ("请输入密码！");
+		jQuery("#pwd").focus();
+		return false;
+	}
+
+	checklogin(jQuery("#email").val(),jQuery("#pwd").val(),"","","","","$!{address.server}",
+		function(response){
+			if(response.success){
+				window.location.reload();
+			}else{
+				alert(response.data);
+			}
+		}
+	);
+
+	return false;
+}
+</script>
+<style type="text/css">
+<!--
+body {
+	background-color: #FCE8B7;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+
+.loginInput{
+	width:100px;
+	height:16px;
+	border:1px solid #FEA026;
+}
+body,td,th {
+	font-size: 12px;
+}
+form{
+	margin:0;
+	padding:0;
+}
+.welcome,.error{
+	padding:5px 0;
+	padding-left:50px;
+	background:url(zz91images/2007/welcome.gif) no-repeat left top;
+	color:#f60;
+	text-align:center;
+	font-size:14px;
+	font-weight:bold;
+	margin-left:5px;
+}
+.error{
+	background:url(zz91images/2007/error.gif) no-repeat left top;
+	padding:10px 0;
+	padding-left:50px;
+
+}
+-->
+</style>
+<body>
+	#if($!{myaccount})
+	<div class="welcome">
+		  欢迎您!
+		$!{myaccount.contact}<br />
+		<a href="$!{address.server}/myrc/index.htm">
+			<img src="$!{address.images}/root/myrc.gif" border="0" /></a>
+		<a href="$!{address.server}/myrc/myproducts/office_post1.htm">
+			<img src="$!{address.images}/root/postoffer.gif" border="0" /></a>
+		 </div>
+    #else
+		<form name="loginForm" action="" method="post" onsubmit="return Login(this); return false;">
+			<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+			<td width="73%" align="right">
+			用户名:
+			  <input type="text" name="email" id="email" class="loginInput"  tabindex="1" value="" /><br></td>
+			<td width="27%" rowspan="2" align="center" valign="middle">
+				<input type="image" src="$!{address.images}/root/loginBtn.gif" tabindex="3" />
+			</td>
+			</tr>
+			<tr>
+			  <td align="right">密　码:
+			  <input type="password" name="pwd" id="pwd" class="loginInput" tabindex="2" />
+			  </td>
+			  </tr>
+		  </table>
+		  <input name="url" type="hidden" id="url" value="/cn/guest_office_main.asp">
+		  <input name="fromHome" value="1" type="hidden" />
+		  </form>
+	#end
+</body>

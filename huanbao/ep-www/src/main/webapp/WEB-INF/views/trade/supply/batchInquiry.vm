@@ -1,0 +1,103 @@
+#set($layout='/layout/trade/detaillayout.vm')
+<!-------trade postoffer header end----------->
+<div class="hb_mainblock margintop8">
+     <div class="td_fp_block"> 
+           <h3 class="tit">批量询价</h3>
+            #if("$!{epAuthUser}"!="")
+				<input type="hidden" id="loginstatus" value="1" />
+			#else
+				<input type="hidden" id="loginstatus" value="0" />
+            #end
+           <div class="td_fp_elem">         
+              <div class="td_fp_lab">接收方：</div>
+              <div class="td_fp_ipt">
+                  <ul>
+    				<li>总共 $!{list.size()} 条信息</li>  ##(点此查看)
+    				#foreach($l in $list)
+    					<input name="targetId" type="hidden" value="$!{l.supply.id}"/>
+    					<input id="targetUid$!{l.supply.id}" type="hidden" value="$!{l.supply.uid}"/> 
+    					<input id="targetCid$!{l.supply.id}" type="hidden" value="$!{l.supply.cid}"/>
+    					<li >
+							<a href="$!{address.esite}/detail$!{l.supply.id}.htm" class="fontblue" target="_blank" >$!{l.supply.title}</a>
+						</li>
+    				#end
+                  </ul> 
+              </div>
+           </div>
+		   
+           <div class="td_fp_elem">         
+              <div class="td_fp_lab">
+					<label for="title">留言的标题：</label>
+			  </div>
+              <div class="td_fp_ipt">
+					<input id="title" type="text" class="td_fp_input" value="我对您在环保网发布的信息很感兴趣"/>
+			  </div>
+           </div>		   
+           <div class="td_fp_elem">
+				<div class="td_fp_lab">
+						<label for="details" class="">详细内容：</label>
+			    </div>
+				<div class="td_fp_ipt">
+						<textarea id="details" class="td_fp_textarea"></textarea>
+				</div>
+           </div>
+		   <div class="td_fp_sub"><a href="javascript:sendMessages()" class="td_fp_submit">发送询盘</a></div>
+     </div>      
+</div>
+<script language="javascript">
+    // 回复留言信息
+    function sendMessages(){
+        if(jQuery("#loginstatus").val()!="1" ){
+    		var loginbox=new Asto.util.PopupBox({
+    	  		url:"$!{address.myesite}/loginMini.htm",
+    		  	destUrl:"$!{address.myesite}/callback/login.htm",
+    			modal:true,
+    	  		callbackFn:function(success, data){
+    	  			loginbox.close();
+    	  			jQuery("#loginstatus").val("1");
+    				sendMessages();
+    	 		},
+    	  		width:510,
+    	  		height:400
+      		});
+	  		loginbox.show();
+		} else {
+			var el = document.getElementsByName("targetId");
+	        for(var i=0;i< el.length;i++) {
+	           sendMessage(el[i].value);
+	        }
+		}
+    }
+    
+    function sendMessage(sid){
+        jQuery.ajax({
+            url:'#springUrl('/trade/supply/sendInquiry.htm')',
+            data:{
+    		"targetUid":jQuery("#targetUid"+sid).val(),
+    		"targetCid":jQuery("#targetCid"+sid).val(),
+    		"targetId":sid,
+    		"targetType":0,
+    		"title":jQuery("#title").val(),
+    		"details":jQuery("#details").val()
+    		},
+            cache:false,
+            dataType:"json",
+            type:"post",
+            success:function(req){
+            	if(req.success){
+	                 hb.util.Message.show({
+						msg:"询盘成功！",
+						autoClose:10000
+					});
+            	}
+            },
+            failure:function(){
+	    	    hb.util.Message.show({
+					msg:"询盘失败！",
+					autoClose:10000
+				});
+            }
+        });
+    }
+
+</script>

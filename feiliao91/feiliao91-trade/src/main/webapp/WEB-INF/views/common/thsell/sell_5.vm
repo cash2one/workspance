@@ -1,0 +1,67 @@
+ <!--[if IE 6]> 
+            <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+            <script type="text/javascript">
+            DD_belatedPNG.fix('img');
+            DD_belatedPNG.fix('.th-step span');
+            </script>  
+        <![endif]-->
+                <div class="orderright fl">
+					#if($!{orderReturn.logisticsNo})
+                    <a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}" class="blue black-step">返回上一步</a>
+                    #else
+					 <a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}" class="blue black-step">返回上一步</a>	
+					#end
+					<div class="tkads-ts">
+                        <i class="icon-ads iconfont">&#xe60e;</i>确定后：$!{orderReturn.reurnPrice}元（退款 $!{orderReturn.reurnPrice}元）将立即退到卖家账户
+                    </div>
+                    <ul class="tkmain-list">
+						<form action="" method="post" id="form1">
+                        <li>
+                            <span class="tk-tkspan">结算宝支付密码：</span>
+                            <input class="tk-intosq" type="password"  name="pwd"/>
+                            <a href="#springUrl('/security/resetPayPwdStp_1.htm')" class="blue">忘记密码？</a><span id="erropwd" style="color:red"></span>
+                        </li>
+                        <li>
+                            <span class="tk-tkspan">手机号码：</span>
+                            $!{mobile}
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#springUrl('/security/security.htm')" class="blue">更换号码</a>
+                        </li>
+                        <li>
+                            <span class="tk-tkspan">效验码：</span>
+                            <input placeholder="切勿泄露" class="tk-intosq" name="vcode"/>
+                            <a href="#" class="blue">没有收到效验码？</a><span style="color:red" id="erro"></span>
+                            <div class="tk-shixiao">
+                                <i class="icon-tk iconfont">&#xe602;</i>效验码已发送，30分钟内输入有效，请勿泄露
+                            </div>
+                        </li>
+                        <input type="hidden" value="$!{orderReturn.id}" name="orderReturnId"></input>
+                        </form>
+                    </ul>
+                    <div class="qrtk-btn qrtk-btnn">确定</div>
+                </div>
+            </div>
+        </div>
+    <script type="text/javascript">
+	
+	 
+	 $(".qrtk-btnn").click(function(){
+	     
+	     var da=$("#form1").serialize();
+	 
+		 jQuery.ajax({
+		   url:"#springUrl('/ordersreturn/yzm.htm')",
+		   type:'post',
+		   dataType:'json',
+		   data:da,
+		   cache:false,
+		   success:function(data){
+		   if(data.success){
+		    window.location.href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}&flag=99";
+		   }else{
+             $("#erro").html(data.erro); 
+		   }
+		   }
+		 })
+	 })
+	
+    </script>

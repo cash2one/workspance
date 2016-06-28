@@ -1,0 +1,200 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{siteInfo.site_name} 会员登录 -- $!{address.server}/login.htm</title>
+<link rel="shortcut icon" href="$!{address.favicon}">
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.hack.css" />
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.comm.css" />
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.login.css" />
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js"></script>
+<script type="text/javascript" src="$!{address.js}/zz91.common.js"></script>
+##<script type="text/javascript" src="$!{address.js}/zz91.login.js"></script>
+#parse("/common/context.vm")
+#parse("/common/libary/validateInclude.vm")
+<script type="text/javascript">
+jQuery(document).ready(function(){
+
+/*
+	jQuery.validator.setDefaults({
+		submitHandler: function(form){
+			zz91Util.login({
+				username:jQuery("#username").val(),
+				password:jQuery("#password").val(),
+				url:jQuery("#url").val(),
+				contextpath:"#springUrl('')"
+			});
+		}
+	});
+*/
+	//开始验证
+	jQuery('#loginForm').validate({
+		rules:{
+			username:{
+				required:true
+			},
+			password:{
+				required:true
+			}
+		},
+		messages:{
+			username:{
+				required:"请输入账号！"
+			},
+			password:{
+				required:"请输入密码！"
+			}
+		},
+		focusInvalid: false,
+		onkeyup: false,
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+	
+    jQuery('.subbtn')
+    .mouseover(function(){
+    	$(this).css({"background-position":"left -28px"})
+    })
+    .mouseout(function(){
+    	$(this).css({"background-position":"left top"})
+    })
+    .click(function(){
+    	//$('#loginForm').submit();
+    })
+    
+    //jQuery("#cookieMaxAge").selectbox();
+});
+
+</script>
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="zz91LoginHeader">
+   <div class="headerLeft">
+        <a href="$!{address.www}" target="_blank" title="$!{address.name}" class="zz91logoUrl"></a>
+		<span class="zz91logoStatus">登录</span>
+   </div>
+
+  <div class="headerRight"> 
+      <span class="top_span4"><a href="$!{address.www}" target="_blank" title="点击返回ZZ91再生网首页">返回首页</a></span> | <span class="top_span4"><a href="http://www.zz91.com/about/contactUs.asp" target="_blank" title="点击进入ZZ91再生网客服中心">客服中心</a></span> | <span class="top_span4"><a href="http://trade.zz91.com/" target="_blank" title="点击进入交易中心">交易中心</a></span> | <span class="top_span4"><a href="http://news.zz91.com/" target="_blank" title="点击进入资讯中心">资讯中心</a></span><br />
+      <span class="top_span5">如果遇到注册问题，请拨打:<br /> $!{siteInfo.server_phone}</span>
+  </div>
+  <div style="clear:both"></div>
+</div>
+
+<div class="zz91LoginMain">
+	<div class="mainLeft">
+			<div class="zz91Tip">
+				<!--<div class="r1">
+					<span class="span2">超过</span>
+                    <div style="clear:both"></div>
+					<span class="span3">80万的会员数</span>
+				</div>
+				<div class="r2">
+					<span class="span2">突破</span>
+					<div style="clear:both"></div>
+					<span class="span3">910万的废料商机</span>
+				</div>
+				<div class="r3">
+					<span class="span2">百度谷歌</span>
+					<div style="clear:both"></div>
+					<span class="span3">收录3000余万</span>
+				</div>
+				<div class="r4">
+					<span class="span2">每天</span>
+					<div style="clear:both"></div>
+					<span class="span3">360余万信息查看量</span>
+				</div>-->
+                <div><script type="text/javascript" src="http://gg.zz91.com/show?p=446"></script></div>
+				<div style="clear:both"></div>
+		   </div>
+           
+            ##<h3 class="zz91CanTit">免费注册$!{address.name}：</h3>
+    		##<ul class="zz91CanList">
+    		##	<li class="canA">发布产品供求信息，让生意自动找上门 </li>
+    		##	<li class="canB">精准查找，捕获最新废料商机</li>                
+    		##	<li class="canC">交商友、看商情，时刻掌握行业最新行情动态 </li>
+    		##	<li class="canD">免费加入国内最大的废料公司黄页，提升企业知名度 </li>
+    		##</ul>
+			
+    </div>
+    <div class="mainRight">
+		<form id="loginForm" name="loginForm" action="#springUrl('/doLogin.htm')" method="post" >
+    		#if($!{error})
+			<div class="loginItems" style="line-height:20px;padding-left:30px;height:80px;">
+    			<label class="tipInfo" for="username"></label>
+				<span style='color:red'>登录失败，#if($!{error}!="账户已被冻结")原因：$!{error}#else $!{error}。如需帮助请拨打0571-56611111/56612345 #end</span>
+				#if($!{error}=="账户已被冻结"&&$!{remark}&&$!{remark}!="")<p style='color:red'>冻结原因：$!{remark}</p>#end
+    		</div>
+			#end
+    		<div class="loginItems">
+    			<label class="tipInfo" for="username" style="margin-left:30px;text-align:left;font-size:14px;font-weight:bold">用户名:</label>
+    			<input type="text" name="username" id="username" class="login-text" value="$!{username}" style="margin-left:30px" placeholder="用户名/邮箱/手机" />
+                <div style="clear:both"></div>
+    			<label></label>
+    		</div>
+            <div class="loginItems">
+            	<label class="tipInfo" for="password" style="margin-left:30px;text-align:left;font-size:14px;font-weight:bold">密码：</label>
+            	<input type="password" name="password" id="password" class="login-text" value="" style="margin-left:30px" />
+				<div style="clear:both"></div>
+            	<label></label>
+            </div>
+			<div class="loginItems" style="height:30px;padding-left:30px">
+				
+                <label class="tipInfo1" for="password" style="padding:0"><input type="checkbox" name="isRemember" value="1" checked="checked"/> 记住密码   <a href="$!{address.server}/user/passwordReminder.htm" target="_blank" title="点击找回密码" class="getbackKey" style="margin-left:50px">忘记密码了?</a></label>
+                
+				<div style="clear:both"></div>
+			</div>
+
+			<!--
+        	<div class="loginItems" style="position:relative">
+        		<label class="tipInfo" for="cookieMaxAge">记住密码：</label>
+        		<select id="cookieMaxAge" name="cookieMaxAge" >
+        			<option value="0">不保留</option>
+        			<option value="1">保留一天</option>
+        			<option value="7">保留一周</option>
+        			<option value="30">保留一月</option>
+        		</select>
+        		<a href="$!{address.server}/user/passwordReminder.htm" target="_blank" title="点击找回密码" class="getbackKey">找回密码</a>
+        	</div>
+			-->
+    		<div class="loginItemsSub" style="padding-left:30px;">
+    				<input type="hidden" name="url" value="$!{url}" id="url" />
+					<input type="submit" class="subbtn" value="登录"/>
+					<a class="regbtn" href="register/register_stp1.htm"/>注册</a>
+                    <div style="clear:both"></div>
+    		</div>
+			<div style="padding-left:26px">
+				<a href="$!{address.front}/accessToQQLogin.htm" target="_blank">
+					<img src="$!{address.img}/zz91/china/images/qq_login_myrc.gif" width="299" height="54" alt="使用QQ号码登录" />
+				</a>
+			</div>
+			
+            <div class="whyNotLogin">
+				<a href="http://help.zz91.com/detail-28/" target="_blank" title="点击查看详细原因">为什么登不上去？</a>
+				<a href="$!{address.front}/user/passwordReminder.htm" target="_blank" title="点击找回密码">忘记密码？</a>
+			</div>
+			<div style="clear:both"></div>
+			<input type="hidden" name="cookie" value="$!{saveCookie}" />
+		</form>
+
+		<div style="clear:both"></div>
+	</div>
+	<div style="clear:both"></div>
+</div>
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")
+## 百度商桥
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>

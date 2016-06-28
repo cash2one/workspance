@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsViewLog">
+	
+	<insert id="insertViewNum" parameterClass="java.util.HashMap">
+		insert into bbs_view_log(bbs_post_id, num, gmt_target, gmt_created, gmt_modified)
+		values(#postId#,1,#gmtTarget#, now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="countViewLog" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+			count(*) 
+		from `bbs_view_log` 
+		where bbs_post_id=#postId# and gmt_target=#gmtTarget#
+	</select>
+	
+	<update id="updateViewLogNum" parameterClass="java.util.HashMap">
+		update `bbs_view_log`
+		set
+			num=num+1,
+			gmt_modified=now()
+		where bbs_post_id=#postId# and gmt_target=#gmtTarget#
+	</update>
+	
+</sqlMap>

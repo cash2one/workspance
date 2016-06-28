@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>设置</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	section{
+		background-color: #FFFFFF;
+	}
+	.sec1{
+		border-top: 1px solid #e0e0e0;
+		border-bottom: 1px solid #e0e0e0;
+		margin-top: 10px;
+		display: -webkit-box;
+		height: 50px;
+	}
+	.sec2{
+		border-bottom: 1px solid #e0e0e0;
+		border-top: 1px solid #e0e0e0;
+		margin-top: 10px;
+	}
+	.left{
+		-webkit-box-flex: 1;
+		width: 100%;
+		display: -webkit-box;
+		-webkit-box-align: center;
+		padding-left: 10px;
+		font-size: 1.1em;
+	}
+	.middle{
+		font-size: 14px;
+		color: #CCCCCC;
+		line-height: 50px;
+	}
+	.right{
+		width: 25px;
+		display: -webkit-box;
+		background: url(../image/forward.png) no-repeat center;
+		-webkit-background-size: 10px 17px;
+	}
+	.sec2 .fixed{
+		display: -webkit-box;
+		
+		height: 50px;
+	}
+	.sec2 .wrap:nth-child(1) .fixed{
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.setupActive{
+		background-color: #CCCCCC;
+	}
+	.lastestV{
+		color: rgb(255,66,116);
+	}
+</style>
+</head>
+
+<body>
+	<div id="main">
+		<section class="sec1" tapmode="setupActive" onclick="clearCacheForApp()">
+			<div class="left">
+				清除缓存
+			</div>
+			<a class="right"></a>
+		</section>
+		<section class="sec2">
+			<div tapmode="setupActive" class="wrap" onclick="api.openWin({name:'help',url:'help.html'});">
+				<div class="fixed">
+					<div class="left">
+						帮助
+					</div>
+					<a class="right"></a>
+				</div>					
+			</div>
+			<div class="wrap" tapmode="setupActive" onclick="api.openWin({name:'feedback',url:'feedback.html'});">
+				<div class="fixed">
+					<div class="left">
+						反馈
+					</div>
+					<a class="right"></a>
+				</div>
+			</div>		
+		</section>
+		<section class="sec2">
+			<div class="wrap" id="lastestVwrap">
+				<div class="fixed">
+					<div class="left">
+						版本更新
+					</div>
+					<div class="middle" id="lastestV">已是最新版本</div>
+					<a class="right"></a>
+				</div>					
+			</div>
+			<div class="wrap" tapmode="setupActive" onclick="api.openWin({name:'contact',url:'contact.html'});">
+				<div class="fixed">
+					<div class="left">
+						想了解更多？
+					</div>
+					<a class="right"></a>
+				</div>				
+			</div>		
+		</section>
+	</div>
+</body>
+</script>
+<script>	
+	apiready = function() {
+		var lastestVersion = $api.getStorage('lastestVersion');
+		if(lastestVersion){
+			$api.html($api.byId('lastestV'), '有新版本:v' + lastestVersion.version);
+			hasNoClsAddIt($api.byId('lastestV'), 'lastestV');
+			$api.attr($api.byId('lastestVwrap'), 'tapmode', 'setupActive');
+			$api.attr($api.byId('lastestVwrap'), 'onclick', 'updateVersion()');
+		}
+	};
+	
+	function clearCacheForApp(){
+		api.confirm({
+			title: '删除确认',
+			msg: '确定要清除緩存吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){
+				api.clearCache();
+				api.toast({msg: '清除成功', location: 'middle'});
+				api.execScript({'name': 'root', 'script': 'updateHeader()'});
+			}
+		});
+	}
+	
+	function updateVersion(){
+		api.confirm({
+			title: '更新版本',
+			msg: '确定现在更新吗？',
+			buttons: ['确认','取消']
+		}, function(ret, err){
+			if(ret.buttonIndex == 1){
+				var lastestVersion = $api.getStorage('lastestVersion');
+				if(lastestVersion){
+					$api.rmStorage('lastestVersion');
+					api.execScript({name: 'root', script: 'checkUpdateBack(' + lastestVersion + ')'});
+				}
+			}
+		});
+		
+	}
+</script>
+</html>

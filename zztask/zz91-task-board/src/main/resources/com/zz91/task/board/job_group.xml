@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="jobGroup">
+
+	<typeAlias alias="jobGroup" type="com.zz91.task.board.domain.JobGroup"/>
+	
+	<resultMap id="jobGroupResultMap" class="jobGroup">
+		<result property="id" column="id"/>
+		<result property="groupName" column="group_name"/>
+		<result property="isDel" column="is_del"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<select id="selectAllGroup" resultMap="jobGroupResultMap">
+		select id,group_name,is_del,gmt_created,gmt_modified
+		from job_group
+		where is_del='0'
+		order by id desc
+	</select>
+	<select id="countAllGroup" resultClass="java.lang.Integer">
+		select count(0)
+		from job_group
+		where is_del='0'
+	</select>
+	<insert id="addGroupInfo" parameterClass="java.lang.String">
+		insert into job_group
+		(
+		`group_name`,
+		`is_del`,
+		`gmt_created`,
+		`gmt_modified`
+		)
+		values
+		(
+		#groupName#,
+		'0',
+		now(),
+		now()
+		)
+	</insert>
+	<!--删除分组（假删除）-->
+	<update id="deleteGroupById" parameterClass="java.util.HashMap">
+		update job_group
+		set is_del=#isDel#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--根据id获取分组信息-->
+	<select id="selectGroupById" parameterClass="java.lang.Integer" resultMap="jobGroupResultMap">
+		select id,group_name,is_del,gmt_created,gmt_modified
+		from job_group
+		where id=#id#
+	</select>
+	<!--修改分组-->
+	<update id="updateGroupById" parameterClass="java.util.HashMap">
+		update job_group
+		set group_name=#groupName#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!--根据分组名称获取分组信息-->
+	<select id="selectGroupByGroupName" parameterClass="java.lang.String" resultMap="jobGroupResultMap">
+		select id,group_name,is_del,gmt_created,gmt_modified
+		from job_group
+		where group_name=#groupName#
+	</select>
+	<!--根据关键字搜索分组信息-->
+	<select id="selectGroupByKeyword" parameterClass="java.lang.String" resultMap="jobGroupResultMap">
+		select id,group_name,is_del,gmt_created,gmt_modified
+		from job_group
+		where group_name like concat('%',#keywords#,'%')  
+	</select>
+	<!--根据关键字搜索分组数-->
+	<select id="countGroupByKeywords" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(0)
+		from job_group
+		where group_name like concat('%',#keywords#,'%')
+	</select>
+</sqlMap>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>下载文件查看页</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <style>
+        label{
+            display: inline-block;
+        }
+        html,body{
+            background-color: black;
+        }
+        #header{
+            background-color: black;
+            border-bottom: 1px solid #aaa;
+        }
+        .btn{
+            background-color: #aaa;
+        }
+        #main{
+            display: -webkit-box;
+            -webkit-box-pack:center;
+            -webkit-box-align:center;
+        }
+        video{
+            
+        }
+        audio{
+            
+        }
+        img{
+
+        }
+        #text{
+            width: 100%;
+            height: 100%;
+            color: white;
+            line-height: 1.3em;
+            padding: 1em;
+        }
+        .test{
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+<style>
+    #header {
+        background-color:#81a9c3;
+    }
+    #nav{
+        display:-webkit-box;
+        height:44px;
+    }
+    #left {
+        width:80px;
+        color:#fff;
+        background:url(../image/navbtn_back.png) no-repeat 14px 12px;
+        -webkit-background-size:12px 20px;
+    }
+    #left>span {
+        margin-top:13px;
+        margin-left:36px;
+        font-size:18px;
+        height:18px;
+        line-height:18px;
+        color: #fff;
+    }
+    #middle {
+        -webkit-box-flex:1;
+        width:100%;
+        display:-webkit-box;
+        -webkit-box-pack:center;
+        -webkit-box-align:center;
+    }
+    #title {
+        font-size:18px;
+        text-align:center;
+        color:#fff;
+    }
+    #right {
+        width:80px;
+    }
+    section {
+        -webkit-box-flex:1;
+    }
+    .leftBtnActive {
+        background:url(../image/navbtn_back_hov.png) no-repeat 14px 12px!important;
+        -webkit-background-size:12px 20px!important;
+        color:rgb(94,153,186)!important;
+    }
+    .rightBtnActive {
+    }
+</style>
+</head>
+<body>
+    <div id="wrap">
+        <div id="header">
+                <nav id="nav">
+                    <a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+                        <span>返回</span>
+                    </a>
+                    <div id="middle">
+                        <strong id="title">下载文件查看页</strong>
+                    </div>
+                    <a id="right">
+                    </a>
+                </nav>
+            </div>
+        <div id="main">
+          
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var regImg = /\.(png|jpg|gif)$/;
+    var regVideo = /\.mp4$/;
+    var regAudio = /\.mp3$/;
+    var regTxt = /\.txt$/;
+    var main = $api.byId('main');
+
+
+    apiready = function(){
+        var pageParam = api.pageParam||'';
+        if (pageParam) {
+            var url = pageParam.url;
+        }else{
+            api.alert({msg:'请输入路径'});
+        };
+        var header = $api.byId('header');
+        $api.fixIos7Bar(header);
+        if (url) {
+            if (regImg.test(url)) {
+                var html = '<img src="'+url+'" alt="图片" class="test">';
+                $api.html(main,html);
+            } else if (regVideo.test(url)) {
+                var html = '<video src="'+url+'" autobuffer controls class="test"></video>';
+                $api.html(main,html);
+            } else if (regAudio.test(url)) {
+				//var html = '<audio src="'+url+'" autobuffer controls autoplay class="test"></audio>';
+                //$api.html(main,html);
+				//audio标签在Android上有很严重的适配问题，
+				//在此处改为Audio对象，基本不会有适配问题
+				//edit by Moral.li 2014/4/21
+				var media = new Audio(url); 
+				media.play();
+            } else if (regTxt.test(url)) {
+                api.readFile({
+                    path: url
+                }, function(ret, err){
+                    var data = ret.data, status = ret.status;
+                    if(data){
+                        var html = '<textarea id="text" class="test" value="'+data+'"></textarea>';
+                        $api.html(main,html);
+                    }
+                });
+            }else{
+                api.alert({msg:'暂不支持此类文件'});
+            };
+        }else{
+            api.alert({msg:'无url信息'})
+        };
+    };
+</script>
+</html>

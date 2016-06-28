@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="industryChain">
+
+	<typeAlias alias="industryChain" type="com.zz91.ep.domain.comp.IndustryChain"/>
+
+	<resultMap class="industryChain" id="fullColumnResultMap">
+		<result property="id" column="id"/>
+		<result property="categoryCode" column="category_code"/>
+		<result property="categoryName" column="category_name"/>
+		<result property="areaCode" column="area_code"/>
+		<result property="areaName" column="area_name"/>
+		<result property="showIndex" column="show_index"/>
+		<result property="orderby" column="orderby"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="delStatus" column="del_status"/>
+	</resultMap>
+	
+	<resultMap class="industryChain" id="simpResultMap">
+		<result property="areaCode" column="area_code"/>
+		<result property="areaName" column="area_name"/>
+	</resultMap>
+	
+	<insert id="insertIndustryChain" parameterClass="industryChain">
+		insert into `industry_chain`
+		(
+		`category_code`,
+		`category_name`,
+		`area_code`,
+		`area_name`,
+		`show_index`,
+		`orderby`,
+		`gmt_created`,
+		`gmt_modified`,
+		`del_status`)
+		values
+		(
+		#categoryCode#,
+		#categoryName#,
+		#areaCode#,
+		#areaName#,
+		#showIndex#,
+		#orderby#,
+		now(),
+		now(),
+		#delStatus#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+	
+	<update id="updateDelStatusById" parameterClass="java.util.HashMap">
+		update industry_chain set 
+		del_status=#status#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	
+	<sql id="dynamicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty property="areaCode" prepend="and">
+	    		ic.area_code  like concat(#areaCode#, '%')
+	    	</isNotEmpty>
+	    	<isNotEmpty property="cid" prepend="and">
+	    		ic.id in (select chain_id from company_industry_chain where cid=#cid# and del_status=0)
+	    	</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryIndustryChains" parameterClass="java.util.HashMap" resultMap="fullColumnResultMap">
+		select
+		ic.id,
+		ic.category_code,
+		ic.category_name,
+		ic.area_code,
+		ic.area_name,
+		ic.show_index,
+		ic.orderby,
+		ic.gmt_created,
+		ic.gmt_modified,
+		ic.del_status
+		from industry_chain ic
+		<include refid="industryChain.dynamicWhere"/>
+		<include refid="common.pageOrderBy"/>
+        <include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryIndustryChainsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from industry_chain ic
+		<include refid="industryChain.dynamicWhere"/>
+	</select>
+	
+	<update id="updateIndustryChain" parameterClass="industryChain">
+		update `industry_chain` set
+		`category_name` = #categoryName#,
+		`area_code` = #areaCode#,
+		`area_name` = #areaName#,
+		`show_index` = #showIndex#,
+		`orderby` = #orderby#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<update id="updateShowIndexById" parameterClass="java.util.HashMap">
+		update `industry_chain`
+		set
+		`show_index` = #showIndex#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<select id="querySimpChain" resultMap="simpResultMap">
+		select area_code,area_name from industry_chain 
+		where del_status=0
+		group by area_name
+	</select>
+	
+	<resultMap class="industryChain" id="simplyChainResultMap">
+		<result property="id" column="id"/>
+		<result property="categoryName" column="category_name"/>
+		<result property="areaName" column="area_name"/>
+	</resultMap>
+	
+	<select id="querySimpChainByAreaCode" parameterClass="java.lang.String" resultMap="simplyChainResultMap">
+		select id,category_name,area_name from industry_chain 
+		where del_status=0 
+		<isNotEmpty prepend="and" property="value">
+			area_code=#areaCode#
+		</isNotEmpty>
+	</select>
+</sqlMap>

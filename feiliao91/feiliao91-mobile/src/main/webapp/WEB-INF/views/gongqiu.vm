@@ -1,0 +1,194 @@
+<header data-am-widget="header" class="am-header am-header-default">
+    <div class="am-header-left am-header-nav">
+        <a href="javascript:void(0)" class="" onClick="javascript :history.back(-1)">
+            <i class="am-header-icon am-icon-chevron-left"></i>
+        </a>
+    </div>
+    <h1 class="am-header-title">
+        我要供应
+    </h1>
+    <div class="am-header-right am-header-nav">
+        <a href="javascript:void(0)" class="" data-am-modal="{target: '#search-modal'}">
+            <i class="am-header-icon am-icon-search"></i>
+        </a>
+    </div>
+</header>
+<div data-am-widget="gotop" class="am-gotop am-gotop-fixed" >
+    <a href="#top" title="">
+        <img class="am-gotop-icon-custom" src="http://img0.zz91.com/trade/assets/images/goTop.gif" />
+    </a>
+</div>
+<div class="am-list-news-default am-list-news am-margin-0">
+    <div class="am-list-news-bd">
+        <ul class="am-list am-top-bordor-0" id="am-list">
+			#foreach($obj in $buyList)
+				#if($velocityCount==11)
+					#break;
+				#end
+                <li class="am-list-item-thumb-left am-padding-xs">
+                    <h3 class="am-list-item-hd am-margin-bottom-xs am-list-item-text am-margin-top-0">
+                        <a href="#" class="am-text-sm am-text-black">
+                            $!{obj.trustBuy.title}
+                        </a>
+                    </h3>
+                    <div class="am-g am-margin-top-xs">
+                        <div class="am-list-item-text am-text-black am-u-sm-5 am-padding-0">地区：$!{obj.area}</div>
+                        <div class="am-list-item-text am-text-black am-u-sm-7 am-padding-0">发布时间：$!{obj.cnDate}</div>
+                        <!-- （N小时前，N天前） -->
+                    </div>
+                    <div class="am-g am-margin-top-xs">
+                        <div class="am-list-item-text am-text-black am-u-sm-5 am-padding-0">
+							价格：
+							<span class="am-text-ftweright am-text-red">
+								#if($!{obj.trustBuy.price}&&$!{obj.trustBuy.price}!="")$!{obj.trustBuy.price}#else 电议#end
+							</span>
+                        </div>
+                        <div class="am-list-item-text am-text-black am-u-sm-7 am-padding-0">交易员：$!{obj.trustDealer.name}</div>
+                    </div>
+                    <div class="am-text-center am-padding-sm am-cf am-padding-bottom-0">
+						#if($!{obj.trustBuy.status}=="01")
+							<a href="#springUrl('/trust/cgDetail.htm?id=')$!{obj.trustBuy.id}" class="am-btn am-btn-primary am-radius am-fl">我要供货</a>
+						#else
+    						<button type="button" class="am-btn am-radius am-fl">
+        						#if($!{obj.trustBuy.status}=="00")
+        							未审核
+        						#elseif($!{obj.trustBuy.status}=="01")
+        							正在报价
+        						#elseif($!{obj.trustBuy.status}=="02")
+        							已有报价
+        						#elseif($!{obj.trustBuy.status}=="03")
+        							正在洽谈
+        						#elseif($!{obj.trustBuy.status}=="04")
+        							等待打款
+        						#elseif($!{obj.trustBuy.status}=="05")
+        							交易完成
+        						#elseif($!{obj.trustBuy.status}=="06")
+        							交易终止
+        						#elseif($!{obj.trustBuy.status}=="99")
+        							审核不通过
+        						#end
+    						</button>
+						#end
+						<button type="button" class="am-btn am-btn-primary am-radius am-fr"><a href="tel:$!{obj.trustDealer.tel}" style="color:white">电话联系</a></button>
+					</div>
+				</li>
+			#end
+        </ul>
+    </div>
+</div>
+<footer data-am-widget="navbar" class="am-navbar am-cf am-navbar-default  am-no-layout" >
+    <ul class="am-navbar-nav am-cf am-avg-sm-2">
+        <li>
+            <a href="fuwu-recharge.html">
+                <span class="am-navbar-label am-margin-top-xs">
+                    <i class="iconfont am-inline-block am-caigou-foot">&#xe605;</i>
+                    发布产品</span>
+            </a>
+        </li>
+        <li>
+            <a href="myhome.html" class="">
+                <span class="am-navbar-label am-margin-top-xs">
+                    <i class="am-icon-user am-inline-block"></i>
+                    我的交易管家</span>
+            </a>
+        </li>
+    </ul>
+</footer>
+#parse("/common/index/search.vm")
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://img0.zz91.com/trade/assets/js/jquery.min.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/comm.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.ie8polyfill.min.js"></script>
+<![endif]-->
+<script src="http://img0.zz91.com/trade/assets/js/amazeui.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        init()
+    })
+    function init(){
+        scrollBottomTest(grtMore);
+    }
+	var i = 2 ;
+    function grtMore(){ //页面到达底部100px执行
+		jQuery.ajax({
+			url:"#springUrl('/moreGongqiu.htm')",
+			data:{i:i},
+			dataType:"json",
+			async:false,
+			success:function(data){
+				//组装数据
+				if(data!=null){
+					buildHtml(data)
+				}else{
+					buildNoHtml();
+				}
+			}
+		});
+		i++;
+    }
+	
+	function buildHtml(list){
+		for(var i=0;i<list.length;i++){
+			var obj = list[i];
+			var priceContent = '';
+			if(obj.trustBuy.price!=""){
+				priceContent = ''+obj.trustBuy.price;
+			}else{
+				priceContent = '电议';
+			}
+			var statusContent = '';
+			if(obj.trustBuy.status=='01'){
+				statusContent = '<a href="'+'#springUrl("/trust/cgDetail.htm?id=")'+obj.trustBuy.id+'" class="am-btn am-btn-primary am-radius am-fl">我要供货</a>'
+			}else{
+				var text = '';
+					if(obj.trustBuy.status=="00"){
+        				text = '未审核';
+					}else if(obj.trustBuy.status=="01"){
+        				text = '正在报价';
+					}else if(obj.trustBuy.status=="02"){
+        				text = '已有报价';
+					}else if(obj.trustBuy.status=="03"){
+        				text = '正在洽谈';
+					}else if(obj.trustBuy.status=="04"){
+        				text = '等待打款';
+					}else if(obj.trustBuy.status=="05"){
+        				text = '交易完成';
+					}else if(obj.trustBuy.status=="06"){
+        				text = '交易终止';
+					}else if(obj.trustBuy.status=="99"){
+        				text = '审核不通过';
+					}
+				statusContent = '<button type="button" class="am-btn am-radius am-fl">'+text+'</button>'
+			}
+			var moreHtml = '<li class="am-list-item-thumb-left am-padding-xs">'
+                    +'<h3 class="am-list-item-hd am-margin-bottom-xs am-list-item-text am-margin-top-0">'
+                        +'<a href="#" class="am-text-sm am-text-black">'
+                            +obj.trustBuy.title
+                        +'</a>'
+                    +'</h3>'
+                    +'<div class="am-g am-margin-top-xs">'
+                        +'<div class="am-list-item-text am-text-black am-u-sm-5 am-padding-0">地区：'+obj.area+'</div>'
+                        +'<div class="am-list-item-text am-text-black am-u-sm-7 am-padding-0">发布时间：'+obj.cnDate+'</div>'
+                    +'</div>'
+                    +'<div class="am-g am-margin-top-xs">'
+                        +'<div class="am-list-item-text am-text-black am-u-sm-5 am-padding-0">价格：<span class="am-text-ftweright am-text-red">'+priceContent+'<span></div>'
+                        +'<div class="am-list-item-text am-text-black am-u-sm-7 am-padding-0">交易员：'+obj.trustDealer.name+'</div>'
+                    +'</div>'
+                    +'<div class="am-text-center am-padding-sm am-cf am-padding-bottom-0">'
+                        +statusContent
+                        +'<button type="button" class="am-btn am-btn-primary am-radius am-fr"><a href="tel:'+obj.trustDealer.tel+'" style="color:white">电话联系</a></button>'
+                    +'</div>'
+                +'</li>';
+        	$("#am-list").append(moreHtml)//添加更多元素
+		}
+	}
+	
+	function buildNoHtml(){
+    	$("#am-list").append("已经到底！没有找到需要的信息吗？")//添加更多元素
+	}
+</script>

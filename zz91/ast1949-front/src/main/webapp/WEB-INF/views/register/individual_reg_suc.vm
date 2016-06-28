@@ -1,0 +1,139 @@
+#set($layout="/layout/registerLayout.vm")
+
+<link rel="stylesheet" type="text/css" href="$!{address.img}/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/css/reg/index.css"/>
+
+<div class="nextTwo">
+   <div class="nt">
+	<div class="nt1">
+    	第二步，绑定微信
+    </div>
+    <!--end nt1-->
+    <div class="nt2">
+    	<div class="nt2-one">
+        	<div class="nt2-one-text">
+            	第一步：用微信扫描，并关注
+            </div>
+            <div class="nt2-one-weixin">
+            	<img src="$!{address.img}/zz91/quikreg/images/weixin.jpg" />
+            </div>
+            <div class="nt2-one-text">
+            	第二步：在微信中输入<font class="nt2-text">1</font>，获得验证码
+            </div>
+        </div>
+        <div class="nt2-line"></div>
+		
+		<form id="wxForm" method="post" >##action="http://pyapp.zz91.com/weixin/zz91weixin_yzsave.html"
+			<div class="nt2-one">
+				<div class="nt2-one-text">
+					第三步：微信验证
+				</div>
+				<div class="nt2-one-text2">
+					请输入微信验证码
+				</div>
+				<div class="nt2-one-text m10" id="hiddenText">
+					<input type="hidden" name="account" value="$!{account.account}" id="wxAccount" />
+					<input type="text" class="nt2-one-tst" name="yzm" id="yzm" />
+				</div>
+				<div class="nt2-one-button">
+					<a href="#" id="clickToCheck">确认验证</a>
+					<a id="clickSuccess" style="display:none">验证成功</a>
+				</div>
+			</div>
+		</form>
+		<script type="text/javascript">
+			jQuery("#clickToCheck").click(function(){
+				var yzm = jQuery("#yzm").val();
+				var account = jQuery("#wxAccount").val();
+				jQuery.ajax({
+					url:"#springUrl('/validate/validateWXCode.htm')",
+					data:{
+						"yzm":yzm,
+						"account":account
+					},
+					dataType:"json",
+					success:function(data){
+						if(data.success){
+							jQuery("#hiddenText").hide();
+							jQuery("#clickToCheck").hide();
+							jQuery("#clickSuccess").show();
+						}else{
+							alert("微信验证码错误或者已过期");
+						}
+					}
+				});
+				##jQuery("#wxForm").submit();
+			});
+		</script>
+		
+        <div class="nt2-line"></div>
+        <div class="nt2-one">
+        	<div class="nt2-one-text">
+            	绑定微信的好处？
+            </div>
+            <div class="nt2-one-text2">
+            	1、查看普通会员联系方式
+            </div>
+            <div class="nt2-one-text2">
+            	2、随时刷新您的供求，让您排名靠前
+            </div>
+            <div class="nt2-one-text2">
+            	3、专题推荐，免费推广您的产品
+            </div>
+            <div class="nt2-one-text2">
+            	4、可让您发布的供求信息排名靠前
+            </div>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end nt2-->
+    <div class="nt1">
+    	您目前只能查看信息！发布信息，全面展示您的产品，请继续<a href="$!{address.myrc}/mycompany/updateCompany.htm" target="_blank">完善公司信息</a>
+    </div>
+    <!--end nt1-->
+    <div class="nt2">
+    	<div class="nt2-two">
+        	<div class="nt2-two-title">
+            	即刻起，您可以
+            </div>
+            <!--end nt2-two-title-->
+            <div class="nt2-two-div1">
+            	<a href="$!{address.price}" target="_blank"><img src="$!{address.img}/zz91/quikreg/images/icon1.jpg" /></a>
+            </div>
+            <!--end nt2-two-div1-->
+            <div class="nt2-two-div1">
+            	<a href="$!{address.trade}" target="_blank"><img src="$!{address.img}/zz91/quikreg/images/icon2.jpg" /></a>
+            </div>
+            <!--end nt2-two-div1-->
+            <div class="nt2-two-div1">
+            	<a href="$!{address.company}" target="_blank"><img src="$!{address.img}/zz91/quikreg/images/icon3.jpg" /></a>
+            </div>
+            <!--end nt2-two-div1-->
+        </div>
+        <div class="nt2-line2"></div>
+        
+        <div class="nt2-two">
+        	<div class="nt2-two-title">
+            	请确认您的基本信息
+            </div>
+            <!--end nt2-two-title-->
+            <div class="nt2-two-div2 nt2-two-divImg1">
+            	手机号：$!{account.mobile}
+            </div>
+            <!--end nt2-two-div2-->
+            <div class="nt2-two-div2 nt2-two-divImg2">
+            	联系人：$!{account.contact} 先生
+            </div>
+            <!--end nt2-two-div2-->
+            <div class="nt2-two-div2 nt2-two-divImg3">
+            	信息有误？点此进入<a href="$!{address.myrc}/mycompany/updateCompany.htm" target="_blank">生意管家</a>修改
+            </div>
+            <!--end nt2-two-div2-->
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end nt2-->
+	</div>
+	<!--end nt-->
+</div>
+<!--end nextTwo-->

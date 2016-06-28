@@ -1,0 +1,205 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>分组管理编辑窗口</title>
+#parse("/common/import.vm")
+#parse("/common/context.vm")
+<link href="$!{address.css}/global/comm_hack.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/myrc/zz91_myrc.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+<script language="javascript">
+function timestamp(){
+    var timestamp = Date.parse(new Date());
+    return timestamp;
+}
+
+function onsubstr(frm){
+	if (jQuery('#name').val()==""){
+		alert ("请输入组名！");
+		jQuery('#name').focus();
+		return false;
+	}
+	frm.submit();
+}
+
+function onselectchek(pdtid){
+    var objtr=document.getElementById(pdtid)
+	objtr.style.background = "#D1FAB4";
+    var objname=document.getElementsByName("checkcom")
+    for(var i=0;i<objname.length;i++){
+		if(objname[i].checked==false){
+			var objtrp=objname[i].id.substr(5);
+			document.getElementById(objtrp).style.background = "#ffffff";
+		}
+	}
+	document.getElementById("companyCustomersGroupId").value=pdtid;
+}
+
+function onselectpdt(pdtid){
+	var obj=document.getElementById("check"+pdtid)
+	var objtr=document.getElementById(pdtid)
+	if (obj.checked==true){
+		obj.checked=false
+		objtr.style.background = "#ffffff";
+	}else{
+		obj.checked=true
+		objtr.style.background = "#D1FAB4";
+	}
+    var objname=document.getElementsByName("checkcom")
+    for(var i=0;i<objname.length;i++){
+		if(objname[i].checked==false){
+			var objtrp=objname[i].id.substr(5);
+			document.getElementById(objtrp).style.background = "#ffffff";
+		}
+	}
+	document.getElementById("companyCustomersGroupId").value=pdtid;
+}
+
+    function modgroup(groupid){
+    	var obj=document.getElementById("mod"+groupid);
+    	obj.style.display=""
+    }
+    
+    function modgroupno(groupid){
+    	var obj=document.getElementById("mod"+groupid);
+    	obj.style.display="none"
+    }
+    
+    function groupcom(frm){
+    	if (document.getElementById("companyCustomersGroupId").value==""){
+    		alert ("请选择您要归入的客户组!")
+    		return false;
+    	}
+		frm.submit();
+    }
+	jQuery(document).ready(function(){
+	$(".editSortsList").find(".editSortsListA").mouseover(function(){
+		$(this).css({"background-color":"#EFF6EF"})
+	});
+	$(".editSortsList").find(".editSortsListA").mouseout(function(){
+		$(this).css({"background-color":"#FFF"})
+	});
+});
+</script>
+</head>
+
+<body>
+<div class="editFloatFrame">
+	<form id="form1" name="form1" method="post" action="addGroup.htm">
+	<div class="editAddSorts">
+        <div class="editItemsTit"><label for="name">新添组：</label></div>
+		<div class="editItemsFill">
+		<input name="name" type="text" class="editSortsName" id="name" />
+		#if(!${ids})<input name="Submit" type="button" class="buttonMinGray" value="添加" onclick="onsubstr(this.form)" />#end
+		</div>
+    </div>
+	</form> 
+    <div style="clear:both"></div>
+	<div class="editSortsList">
+		<ul>
+			<li onClick="javascript:onselectpdt(1)" id="1"  class="editSortsListA"> 
+				#if($isShowRadio)
+					<span class="editSortsListSelect">
+						<input type="radio" id="check1" name="checkcom" value="1" #if($!{companyCustomers.companyCustomersGroupId}==1) checked #end onclick="onselectchek(1)"  class="radioPositionFix"/>
+					</span>
+				#end
+				<span class="editSortsListTit">
+					<img src="$!{address.images}/global/icon/open-folder2.gif"  /> 我的供应商
+				</span>
+			</li>
+			<li style="display:none" id="mod1"  class="editSortsListB">
+					<form id="form2" name="form2" method="post" action="">
+							<input name="modgoupname" type="text" class="editSortsName" id="modgoupname" value="我的供应商" />
+							<input name="gid" type="hidden" id="gid" value="1" />
+							<input name="cbb" type="hidden" id="cbb" value="158279"/>
+							<input name="Submit3" type="submit" class="buttonMinGray" value="确定" />
+							<input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno(1)" />
+					</form>
+			</li>
+			<li onClick="javascript:onselectpdt(2)" id="2"  class="editSortsListA">
+			#if($isShowRadio)
+				<span class="editSortsListSelect">
+					<input type="radio" id="check2" name="checkcom" value="2" #if($!{companyCustomers.companyCustomersGroupId}==2) checked #end onclick="onselectchek(2)" class="radioPositionFix"/>
+				</span>
+			#end
+				<span class="editSortsListTit">
+					<img src="$!{address.images}/global/icon/open-folder2.gif"/>我的采购商
+				</span>
+            </li>
+			<li style="display:none" id="mod2"  class="editSortsListB">
+					<form id="form2" name="form2" method="post" action="">
+							<input name="modgoupname" type="text" class="editSortsName" id="modgoupname" value="我的采购商" />
+							<input name="gid" type="hidden" id="gid" value="2" />
+							<input name="cbb" type="hidden" id="cbb" value="158279"/>
+							<input name="Submit3" type="submit" class="buttonMinGray" value="确定" />
+							<input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno(2)" /> 
+					</form>
+				</li>
+			<li id="3" onClick="javascript:onselectpdt(3)"  class="editSortsListA">
+			#if($isShowRadio)
+				<span class="editSortsListSelect">
+					<input type="radio" id="check3" name="checkcom" value="3" #if($!{companyCustomers.companyCustomersGroupId}==3) checked #end onclick="onselectchek(3)" class="radioPositionFix"/>
+				</span>
+			#end
+				<span class="editSortsListTit">
+					<img src="$!{address.images}/global/icon/open-folder2.gif"/> 商界好友
+				</span>
+			</li>
+			<li style="display:none" id="mod3"  class="editSortsListB">
+					<form id="form2" name="form2" method="post" action="">
+							<input name="modgoupname" type="text" class="editSortsName" id="modgoupname" value="商界好友" />
+							<input name="gid" type="hidden" id="gid" value="3" />
+							<input name="cbb" type="hidden" id="cbb" value="158279"/>
+							<input name="Submit3" type="submit" class="buttonMinGray" value="确定" />
+							<input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno(3)" />
+					</form>
+			</li>
+			
+		#foreach($group in $groupList)
+		<li id="$!{group.id}"  class="editSortsListA" onClick="javascript:onselectpdt($!{group.id})">
+			#if($isShowRadio)
+				<span class="editSortsListSelect" id="radioGroup$!{group.id}">
+					<input type="radio" id="check$!{group.id}" name="checkcom" value="$!{group.id}" #if($!{companyCustomers.companyCustomersGroupId}==$!{group.id}) checked #end onclick="onselectchek($!{group.id})" class="radioPositionFix"/>
+				</span>
+			#end
+			<span class="editSortsListTit">
+				<img src="$!{address.images}/global/icon/open-folder2.gif"/> $!{group.name}
+				<input type="hidden" name="id" value="$!{group.id}" />
+            </span>
+			
+			<span class="editSortsListMod">
+				<a href="#" onclick="modgroup($!{group.id})">修改</a>
+			</span>
+			<span class="editSortsListDel">
+				<a href="deleteGroup.htm?id=$!{group.id}" onclick="return confirm('确实要删除吗？')">删除</a>
+			</span>
+		</li>
+		<li style="display:none" id="mod$!{group.id}"  class="editSortsListB">
+			<form id="form2" name="form2" method="post" action="addGroup.htm">
+					<input name="name" type="text" class="editSortsName" id="name" value="$!{group.name}" />
+					<input name="id" type="hidden" id="id" value="$!{group.id}" />
+					<input name="cbb" type="hidden" id="cbb" value=""/>
+					<input name="Submit3" type="submit" class="buttonMinGray" value="确定" />
+					<input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno($!{group.id})" />
+			</form>
+		</li>
+		#end 
+	</ul>
+	</div>		  
+##if($isShowRadio)
+	<div style="clear:both"></div>
+	<div class="editSub">
+	<form id="form3" name="form3" method="post" action="updateGroup.htm">
+	   	<input name="ids" type="hidden" id="ids" name="ids" value="$!{ids}" />
+		<input name="companyCustomersGroupId" type="hidden" id="companyCustomersGroupId" value="" />
+	<!--<input name="Submit5" type="submit" class="buttonbg1" value="确定归入" />-->
+		<input name="Submit5" type="button" class="buttonMinGray" value="确定归入"" onclick="groupcom(this.form)" />
+		<input name="cbb" type="hidden" id="cbb" value="" />
+	</form>
+	</div>
+##end
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+#set($layout="/layout/default.vm")
+<!--main leader start-->
+<section class="hb_positionleader">
+	<a href="$!{address.www}">中国环保网</a> 
+	&gt; 
+	<a href="$!{address.news}">资讯中心</a>
+	#if(${category})
+	&gt;
+	<a href="$!{address.news}/list$!{categoryCode}.htm">${category}</a>
+	#end
+</section>
+<!-- main header end-->
+
+<!--news center list main block start-->
+<section class="hb_mainblock">
+		<!--主列表 start-->
+        <div class="contblock_698 floatleft nl_list html5radius" id="nl_list">
+            <h3 class="tit html5radius">$!{category}<font class="fontgrey">|News</font></h3>
+                <ul class="nl_liststyle">
+					#foreach($list in $!{page.records})
+					    #if($velocityCount==1)
+                            <div class="nl_list_topbg html5radius">
+						#end
+							<li #if($velocityCount%5==0) class="nl_list_block" #end>
+							<span class="nl_list_tit">
+							<a href="#springUrl('/list')$!{list.categoryCode}.htm"><font class="fontorange">[$!{list.categoryName}]</font></a> <a href="#springUrl('/details')${list.id}.htm" target="_blank" title="${list.title}">#printTitle(${list.titleIndex} 16 "")</a>
+							</span>
+							<span class="nl_list_date">#printFragmentDate("yyy-MM-dd" $!{list.gmtPublish})</span>
+							<span class="nl_list_clicknum">浏览人次:${list.viewCount}</span></li>
+						#if($velocityCount==5)
+							</div>
+						#end
+                    #end
+                    <div class="clear"></div>
+                </ul>
+				<!--<div class="pagesbar margintop8">
+				</div>-->
+					#staticPageNav(${page} "#springUrl('/list')$!{categoryCode}" "" "")
+        </div>
+        <!--主列表 end-->
+        
+        <!--右部信息板块 start-->
+        <div class="contblock_252 floatright">
+            <!--最新货源-->
+			#parse("/common/newestsupply.vm")
+            
+			<!--热门标签 现在标签暂时隐藏 改为推荐产品版块-->
+            #parse("/common/hottags.vm")
+        
+			<!--热门展会-->
+			#parse("/common/hotexhibit.vm")
+            
+			
+            <!--行业展会-->
+			#parse("/common/industryexhibit.vm")
+            
+            <!--图片广告-->
+            <article class="ni_newsblock_normal contblock_250 margintop8 html5radius adblock"><script type="text/javascript" src="http://gg.zz91.com/show?p=140"></script></article>
+			
+			<!--专家库-->
+			#parse("/common/libraryexpert.vm")
+        </div>
+        <!--右部信息板块 end-->
+    <div class="clear"></div>
+</section>
+<!--news center list main block end-->
+
+<!--百度联盟广告-->
+#parse('/common/baiduSpread.vm')
+
+<script>
+//li background color toggle
+var lsToggle = new hb.news.mouseBehavior();
+lsToggle.LiBgToggle({lsUl:'.nl_liststyle',});
+</script>

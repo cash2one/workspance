@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="weixin_prizelog" >
+  <resultMap id="WeixinPrizelogResult" class="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    <result column="id" property="id"/>
+    <result column="account" property="account"/>
+    <result column="prizeid" property="prizeid"/>
+    <result column="score" property="score"/>
+    <result column="ischeck" property="ischeck"/>
+    <result column="gmt_created" property="gmtCreated" />
+    <result column="type" property="type" />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="WeixinPrizelogResult" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    select id, account, prizeid, score, ischeck, gmt_created,type
+    from weixin_prizelog
+    where id = #id#
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    delete from weixin_prizelog
+    where id = #id#
+  </delete>
+  
+  <insert id="insert" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    insert into weixin_prizelog (id, account, prizeid, score, ischeck, gmt_created,type)
+    values (#id#, #account#, #prizeid#, #score#, #ischeck#, now() ,#type#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>  	
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    update weixin_prizelog
+    set account = #account#,
+      prizeid = #prizeid#,
+      score = #score#,
+      ischeck = #ischeck#,
+      type = #type#
+    where id = #id#
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" >
+    update weixin_prizelog
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="account" >
+        account = #account#
+      </isNotNull>
+      <isNotNull prepend="," property="prizeid" >
+        prizeid = #prizeid#
+      </isNotNull>
+      <isNotNull prepend="," property="score" >
+        score = #score#
+      </isNotNull>
+      <isNotNull prepend="," property="ischeck" >
+        ischeck = #ischeck#
+      </isNotNull>
+      <isNotNull prepend="," property="type" >
+        type = #type#
+      </isNotNull>
+    </dynamic>
+    where id = #id#
+  </update>
+  
+ 	<sql id="defaultColumn">
+  			id, account, prizeid, score, ischeck, gmt_created,type
+    </sql>
+     
+	<sql id="dynamicSearch">
+		<dynamic>
+		where 1 = 1
+			
+      <isNotEmpty prepend="and " property="account" >
+        s.account = #account#
+      </isNotEmpty>    
+			
+      <isNotEmpty prepend="and " property="from">
+       s.gmt_created >= #from#
+      </isNotEmpty>
+      
+      <isNotEmpty prepend="and " property="to">
+        #to# > s.gmt_created
+      </isNotEmpty>
+      
+      <isNotEmpty prepend="and " property="type">
+        #type# > s.type
+      </isNotEmpty>
+      
+	</dynamic>
+	</sql>  	  
+  
+  	<!-- queryListByFilter  start   -->
+  	<select id="queryListByFilter" parameterClass="java.util.Map" resultMap="WeixinPrizelogResult">
+		select 
+		<include refid="defaultColumn"/>
+		from weixin_prizelog s  
+    <include refid="dynamicSearch" />
+	<include refid="common.pageOrderBy"/>
+	<include refid="common.pageLimit"/>
+	</select>
+	
+  	<select id="queryListByFilterCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select  count(0) 
+		from weixin_prizelog  s  
+		<include refid="dynamicSearch" />
+	</select>
+	<!-- queryListByFilter  end   -->
+	
+
+  	<select id="totalConvertScore" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select sum(score)
+		from weixin_prizelog  s  
+		where  account = #account#
+	</select>	  
+
+  	<select id="totalConvertScoreByPrizeid" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" resultClass="java.lang.Integer">
+		select sum(score)
+		from weixin_prizelog  s  
+		where  account = #account#    and  prizeid = #prizeid#
+	</select>	  
+
+  	<select id="totalCountConvertScoreByPrizeid" parameterClass="com.ast.ast1949.domain.sample.WeixinPrizelog" resultClass="java.lang.Integer">
+		select  count(0) 
+		from weixin_prizelog  s  
+		where  account = #account#    and  prizeid = #prizeid#
+	</select>	  
+	  
+</sqlMap>

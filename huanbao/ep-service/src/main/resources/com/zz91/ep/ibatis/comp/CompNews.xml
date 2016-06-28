@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="compnews">
+
+	<typeAlias alias="compNews" type="com.zz91.ep.domain.comp.CompNews" />
+	
+	<typeAlias alias="compProfile" type="com.zz91.ep.domain.comp.CompProfile" />
+	
+	<typeAlias alias="compNewsDto" type="com.zz91.ep.dto.comp.CompNewsDto" />
+	
+	
+	<resultMap class="compProfile" id="compProfileResultMap">
+		<result property="id" column="id" />
+		<result property="memberCode" column="member_code" />
+	</resultMap>
+
+	<resultMap class="compNews" id="simpleResultMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="gmtPublish" column="gmt_publish" />
+	</resultMap>
+	<resultMap class="compNews" id="compNewsResyltMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+	</resultMap>
+    
+	<resultMap class="compNews" id="simpleColumnMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="categoryCode" column="category_code" />
+		<result property="checkStatus" column="check_status" />
+		<result property="pauseStatus" column="pause_status" />
+	    <result property="gmtPublish" column="gmt_publish" />
+	</resultMap>
+
+	<resultMap class="compNews" id="fullColumnMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="categoryCode" column="category_code" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="pauseStatus" column="pause_status" />
+		<result property="checkStatus" column="check_status" />
+		<result property="deleteStatus" column="delete_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtPublish" column="gmt_publish" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="viewCount" column="view_count"/>
+		<result property="tags" column="tags"/>
+	</resultMap>
+    
+    <resultMap class="compNewsDto" id="compNewsDtoMap">
+    	<result property="compNews" resultMap="compnews.fullColumnMap"/>
+    	<result property="compName" column="comp_name"/>
+    	<result property="memberCode" column="member_code"/>
+    </resultMap>
+	
+	
+    <sql id="newsDtoColumn">
+     	cn.id,
+        cn.cid,
+        cn.account,
+        cn.category_code,
+        cn.title,
+        cn.details,
+        cn.pause_status,
+        cn.check_status,
+        cn.delete_status,
+        cn.check_person,
+        cn.gmt_publish,
+        cn.gmt_created,
+        cn.gmt_modified,
+        cn.view_count,
+        cn.tags,
+        cp.name as comp_name,
+        cp.member_code
+     </sql>
+	
+	
+	
+	<sql id="simpleColumn">
+		id,
+		title,
+		category_code,
+		check_status,
+		pause_status,
+		gmt_publish
+	</sql>
+
+	<sql id="fullColumn">
+		id,
+		cid,
+		account,
+		category_code,
+		title,
+		details,
+		pause_status,
+		check_status,
+		delete_status,
+		check_person,
+		gmt_publish,
+		gmt_created,
+		gmt_modified,
+		view_count,
+		tags
+	</sql>
+
+
+	<sql id="dynamicPageCompNewsByCid">
+		<dynamic prepend="where">
+			<isNotEmpty property="cid" prepend="and">
+				cn.cid=#cid#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				cn.category_code =
+				#type#
+			</isNotEmpty>
+			<isNotEmpty property="pause" prepend="and">
+				cn.pause_status =
+				#pause#
+			</isNotEmpty>
+			<isNotEmpty property="check" prepend="and">
+				cn.check_status =
+				#check#
+			</isNotEmpty>
+			<isNotEmpty property="delete" prepend="and">
+				cn.delete_status =
+				#delete#
+			</isNotEmpty>
+			<isNotEmpty property="keywords" prepend="and">
+				cn.title like
+				concat(#keywords#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryNewestCompNews" resultMap="simpleResultMap"
+		parameterClass="java.util.Map">
+		select id,title,gmt_publish
+		from comp_news
+		where pause_status=1 and
+		check_status=1 and delete_status=1
+		<isNotEmpty property="code">
+			and category_code = #code#
+		</isNotEmpty>
+		<isNotEmpty property="cid">
+			and cid = #cid#
+		</isNotEmpty>
+		order by gmt_publish desc
+		limit #size#
+	</select>
+	
+	<sql id="frontClause">
+		cn.pause_status=1 and cn.check_status=1 and cn.delete_status=1
+	</sql>
+
+	<!-- 显示高会员 -->
+	<select id="queryNewestCompNewsTop" resultMap="compNewsResyltMap"
+		parameterClass="java.lang.Integer">         
+		select cn.id,cn.title from comp_news cn,ep.comp_profile cp
+		where 
+		<include refid="frontClause"/>
+		and cn.cid=cp.id
+		and cp.member_code='10011001'
+		order by cn.gmt_publish
+		desc limit #size#
+    </select>
+	<!-- 显示普通会员 -->
+	<select id="queryNewestCompNewsSize" resultMap="compNewsResyltMap"
+		parameterClass="java.lang.Integer">
+		select cn.id,cn.title from ep.comp_news cn,ep.comp_profile cp
+		where 
+		<include refid="frontClause"/>
+		and cn.cid=cp.id
+		and cp.member_code='10011000'
+		order by cn.gmt_publish
+		desc limit #size#
+	</select>
+      
+    
+	<select id="queryCount" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		SELECT count(*) FROM ep.comp_news where check_status=2 and
+		cid=#value# and delete_status=1
+	</select>
+	<select id="pageCompNewsByCid" resultMap="simpleColumnMap"
+		parameterClass="java.util.Map">
+		select
+		<include refid="simpleColumn" />
+		from comp_news cn
+		<include refid="dynamicPageCompNewsByCid" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="pageCompNewsByCidCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) from comp_news cn
+		<include refid="dynamicPageCompNewsByCid" />
+	</select>
+
+	<select id="queryCompNewsById" parameterClass="java.lang.Integer" resultMap="fullColumnMap">
+		select
+		<include refid="fullColumn" />
+		from comp_news
+		where id = #id#
+	</select>
+	<select id="countForCidAndTitle" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from comp_news
+		where cid = #companyId# 
+		and title = #title#
+	</select>
+
+	<insert id="insertArticle" parameterClass="compNews">
+		INSERT INTO comp_news (
+		cid,
+		category_code,
+		title,
+		details,
+		pause_status,
+		check_status,
+		delete_status,
+		gmt_publish,
+		gmt_created,
+		gmt_modified,
+		tags
+		)
+		VALUES
+		(
+		#cid#,
+		#categoryCode#,
+		#title#,
+		#details#,
+		#pauseStatus#,
+		#checkStatus#,
+		1,
+		now(),
+		now(),
+		now(),
+		#tags#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateArticle" parameterClass="compNews">
+		update comp_news
+		set
+		title = #title#,
+		details = #details#,
+        tags=#tags#,
+		check_status = 0,
+		gmt_modified =
+		now()
+		where id=#id# and cid=#cid#
+	</update>
+
+	<update id="updateDeleteStatusByCid" parameterClass="java.util.Map">
+		update
+		comp_news set delete_status = #status#
+		where id=#id# and cid=#cid#
+	</update>
+
+	<update id="updatePauseStatusByCid" parameterClass="java.util.Map">
+		update
+		comp_news set pause_status = #status#
+		where id=#id# and cid=#cid#
+	</update>
+	
+	<select id="queryPrevCompNewsById" parameterClass="java.util.HashMap" resultMap="compNewsResyltMap">
+		select id,title from comp_news
+        where 
+        gmt_publish > (select gmt_publish from comp_news where id = #id#)
+        <isNotEmpty  property="cid">
+          and cid=#cid#
+        </isNotEmpty>
+        and category_code=#categoryCode#
+        and check_status=1
+		and pause_status=1
+        order by gmt_publish asc limit 1;
+	</select>
+	
+	<select id="queryNextCompNewsById" parameterClass="java.util.HashMap" resultMap="compNewsResyltMap">
+		select id,title from comp_news
+        where 
+        (select gmt_publish from comp_news where id = #id#) > gmt_publish
+        <isNotEmpty  property="cid">
+          and cid=#cid#
+        </isNotEmpty>
+        and category_code=#categoryCode#
+        and check_status=1
+		and pause_status=1
+        order by gmt_publish desc limit 1;
+	</select>	
+	
+	<update id="updateViewCountById" parameterClass="java.lang.Integer">
+		update comp_news set view_count = view_count+1 where id=#value#
+	</update>
+	
+	<select id="queryCompNewsForArticle" parameterClass="java.util.HashMap" resultMap="compNewsDtoMap">
+	   select
+	   <include refid="newsDtoColumn" />
+	   from comp_news cn 
+	   inner join comp_profile cp on cn.cid=cp.id
+	   where 
+	   cn.check_status=1
+	   and category_code=1001
+	   and cn.pause_status=1
+	   and cn.delete_status=1
+	   order by date(cn.gmt_publish) desc,cp.member_code desc
+	   <include refid="common.pageLimit"/>
+	</select>  
+	
+	<select id="queryCompNewsForArticleCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+	   select  
+	   count(*)
+	   from comp_news cn 
+	   inner join comp_profile cp on cn.cid=cp.id
+	   where 
+	   cn.check_status=1
+	   and category_code=1001
+	   and cn.pause_status=1
+	   and cn.delete_status=1
+	</select>
+	
+	<select id="queryWeekForArticle" parameterClass="java.util.HashMap" resultMap="compNewsResyltMap">
+	  select id,title from  comp_news  
+	  where  
+	  category_code='1001'
+      and pause_status=1
+	  and delete_status=1
+	  and  date(gmt_publish) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
+	  order by view_count desc limit #size#;                              
+	</select>
+	    
+</sqlMap>

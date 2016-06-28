@@ -1,0 +1,100 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+		<script src="$!{address.img}/lib/jquery/jquery-1.6.2.min.js"></script>
+		<script src="$!{address.img}/zz91/quikreg/js/login.js" type=text/javascript></script>
+		<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+		<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/quikreg/css/base.css"/>
+		<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/quikreg/css/reg.css"/>
+		<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css"/>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>会员登录</title>
+    </head>
+    <body>
+        <div class="snav">
+            <ul>
+                <li class="nav1">
+					<a href="#springUrl('/mini/nylogin.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&sampleId=$!{sampleId}&nyType=$!{nyType}&vip=$!{vip}" style="color:#FFF">登&nbsp;录</a>	
+                </li>
+                <li id="nav1">
+					<a href="#springUrl('/mini/nyreg.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&sampleId=$!{sampleId}&nyType=$!{nyType}&vip=$!{vip}">注&nbsp;册</a>
+                </li>
+            </ul>
+        </div>
+        <div class="info2">
+            <span class="info2_zi">注意: 已有ZZ91账号？请填写您的登录信息，登录成功后继续操作！</span>
+        </div>
+        <div class="content">
+			<form id="loginForm" action="#springUrl('/mini/doNyLogin.htm')" method="post">
+				<div class="info">
+					#if($!{error}==1)
+						<div class="item" style="width:500px">
+							<span class="red">注意：登录账户或密码不正确</span>
+						</div>
+					#end
+					<div class="item" style="width:500px">
+						<span class="name">用户名：</span>
+						<input type="text" class="text" name="account" id="loginAccount" style="width:220px;"/>
+						<span class="post_error">&nbsp;</span>
+					</div>
+					<div class="item" style="width:500px">
+                        <span class="name">密码：</span>
+                        <input type="password" class="text" name="password" id="loginPassword" style="width:220px;"/>
+                        <span class="post_error">&nbsp;</span>
+                    </div>
+                    <div class="ok">
+                        <input class="login_ok" type="button"  value="" onclick=" nylogin();" />
+                        <input class="reg" type="button" value="" onclick="window.location='$!{address.yang}/mini/nyreg.htm?destUrl=$!{destUrl}&regfrom=$!{regfrom}&sampleId=$!{sampleId}'" />
+						##<a href="#springUrl('/mini/new_reg.htm?destUrl=')$!{destUrl}&regfrom=$!{regfrom}&loginType=1"><input class="reg" type="button" value=""/></a>
+                        <a href="$!{address.front}/user/passwordReminder.htm" target="_blank" class="wjmm">忘记密码？</a>
+                    </div>
+                    
+                </div>
+				<input type="hidden" value="$!{destUrl}" name="destUrl"/>
+				<input type="hidden" value="$!{regfrom}" name="regfrom"/>
+				<input id="nyType" type="hidden" value="$!{nyType}" name="nyType"/>
+				<input type="hidden" value="$!{sampleId}" name="sampleId"/>
+				<input id="vip" type="hidden" value="$!{vip}" name="vip"/>
+            </form>
+        </div>
+	<script type="text/javascript">
+	function nylogin(){
+			var t=0;
+			jQuery.ajax({
+				url: "#springUrl('/mini/doNyLogin.htm')",
+				data: jQuery("#loginForm").serialize(),
+				cache: false,
+				dataType: "json",
+				type: "post",
+				async:false,
+				success: function (req) {
+						if (req.success) {
+							//保存成功后给出提示 或 跳转到提示页面
+							//openoverlay.js中的更改弹框标题
+							parent.overtitle("在线拿样/电话拿样");
+							if(jQuery("#nyType").val()=="1"){
+								window.location= "#springUrl('/apply_zxny.htm?sampleId=')"+req.data;
+							}else{
+							    if(jQuery("#vip").val()=="1"){
+									 t=1;
+								}else{
+									window.location= "#springUrl('/apply_dhny.htm?sampleId=')"+req.data;
+								}
+							}
+						}else{
+							window.location= "#springUrl('/mini/nylogin.htm?error=')"+req.data.error+"&sampleId="+req.data.sampleId+"&nyTpye="+req.data.nyTpye+"&vip="+req.data.vip;
+							
+						}
+					},
+					failure: function () {}
+			});
+			if(t==1){
+				parent.closeoverlay();
+				window.open ("#springUrl('/mngr')/createOrderPro${sampleId}.htm");
+			}
+	}
+    </script>
+    </body>
+</html>

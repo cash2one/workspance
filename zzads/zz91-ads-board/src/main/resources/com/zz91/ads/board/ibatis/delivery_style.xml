@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="deliveryStyle">
+	<typeAlias alias="deliveryStyle" type="com.zz91.ads.board.domain.ad.DeliveryStyle"/>
+	
+	<resultMap id="miniDeliveryStyleResult" class="deliveryStyle">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+	</resultMap>
+	
+	<select id="queryDeliveryStyle" resultMap="miniDeliveryStyleResult" parameterClass="java.lang.Integer">
+		select id,name
+		from delivery_style
+		order by id desc
+		limit 0,300
+	</select>
+	
+	<delete id="deleteStyle" parameterClass="java.lang.Integer">
+		delete from delivery_style
+			where id=#id#
+	</delete>
+	
+	<insert id="insertStyle" parameterClass="deliveryStyle">
+		insert into delivery_style(
+		name,
+		js_function,
+		gmt_created,	
+		gmt_modified,
+		modifier)
+		values
+		(
+		#name#,
+		#jsFunction#
+		now(),
+		now(),
+		#modifier#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+		select last_insert_id()
+		</selectKey>	
+	</insert>
+	
+	<update id="updateStyle" parameterClass="deliveryStyle">
+		update delivery_style set
+ 			name=#name#,
+			js_function=#jsFunction#,
+			gmt_modified=now()
+		where id=#id#	 		
+	</update>
+</sqlMap>

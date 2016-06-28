@@ -1,0 +1,112 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+<script>		
+    $(document).ready(function(e) {
+    $(".item5 li").mouseover(function() {
+    $(this).css("background", "#f2f2f2");
+    });
+    $(".item5 li").mouseout(function() {
+    $(this).css("background", "#fff");
+    });
+    });
+</script>
+
+#set($headName="favorite")
+#parse("/common/myhuzhu/head.vm")
+
+<div class="huzhu">
+    <div class="hz-left fl">
+        <div class="mainblock">
+			<form action="#springUrl('/myhuzhu/list_favorite.htm')" method="get" id="favoriteForm" >
+            <div class="mb-dh lt2 pb15">
+                <div class="mdh-item fl">
+                    <span class="black f13">标题</span>
+					&nbsp;
+					<input type="text" class="form_fav" name="keywords" value="$!{keywords}" />
+                </div>
+                <!--end mdh-item fl-->
+                <div class="mdh-item fl">
+                    <input type="radio" name="fav" value="0" #if(!$type||$type==0) checked #end />
+                    <span class="black f14">全部</span>
+                    <input type="radio" name="fav" value="2" #if($type==2) checked #end />
+                    <span class="black f14">问答</span>
+                    <input type="radio" name="fav" value="1" #if($type==1) checked #end />
+                    <span class="black f14">帖子</span>
+                    <input type="radio" name="fav" value="3" #if($type==3) checked #end />
+                    <span class="black f14">学院</span>
+                </div>
+                <!--end mdh-item fl-->
+                <div class="mdh-btn fr">
+                    <a href="javascript:;" target="_blank" class="white f14" id="clickToSub">搜索</a>
+                </div>
+                <!--end mdh-btn fr-->
+                <div class="cb"></div>
+            </div>
+            </form>
+            <!--end mb-dh-->
+            <ul class="item5">
+				#foreach($obj in $!{list})
+                    <li>
+						<div class="m5-item">
+							<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="f14 blue" target="_blank">$!{obj.post.title}</a>
+						</div>
+						<!--end m5-item-->
+						<div class="m5-box">
+							<div class="m5b-lt fl">
+								<p>
+									#printTitle($!{obj.post.content} 100 "...")
+    								<a href="#springUrl('/detail/')$!{obj.post.id}.html" class="" target="_blank">[查看全文]</a>
+								</p>
+							</div>
+							<!--end m5b-info-->
+							<div class="m5b-gt fr">
+								<span>$!{obj.post.visitedCount}</span>
+							</div>
+							<!--end m5b-info-->
+							<div class="cb"></div>
+						</div>
+						<!--end m5-box-->
+                        <div class="m5-box">
+                            <div class="m5b-dire fl">
+                                <span>$!{obj.replyName}</span>
+                            </div>
+                            <!--end m5b-dire fl-->
+                            <div class="m5b-reply fl">
+                                <span>最后回复&nbsp;$date.format("yyyy-MM-dd HH:mm:ss",$!{obj.post.replyTime})</span>
+                            </div>
+                            <!--end m5b-reply fr-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end m5-box-->
+                    </li>
+				#end
+            </ul>
+
+			## 分页
+			#pageMyhuzhuNew($page "#springUrl('/myhuzhu/list_favorite.htm')" "type=$!{type}&keywords=$!{keywords}" "")
+
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+	
+</div>
+<!--end huzhu-->
+<script type="text/javascript">
+	jQuery("input[name='fav']").change(function(){
+		var type = 0;
+		jQuery("input[name='fav']").each(function(){
+			if(jQuery(this).attr("checked")=="checked"){
+				type = jQuery(this).val();
+			}
+		});
+		window.location.href = "#springUrl('/myhuzhu/list_favorite.htm?type=')"+type;
+	});
+	
+	jQuery("#clickToSub").click(function(){
+		jQuery("#favoriteForm").submit();
+	});
+	
+</script>

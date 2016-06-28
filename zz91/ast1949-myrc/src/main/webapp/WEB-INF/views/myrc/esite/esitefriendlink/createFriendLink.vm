@@ -1,0 +1,73 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1304","","00")
+<div class="myrcNormalFrame">
+	<div class="commTip">
+        <span class="subscribManageBack" >
+            <a href="#springUrl('/esite/esitefriendlink/index.htm')" class="commBack">返回列表</a>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+	
+            <form id="form2" name="form2" method="post" action="#springUrl('/esite/addEsiteLink.htm')" onsubmit="return false;">
+                <div class="officetitle">链接信息</div>
+                <div class="productskuang">
+					<div class="publishFormItems">
+                        <div class="products_title"><label for="name"><font color="RED">* </font>链接名称：</label></div>
+                        <div class="products_fill"><input name="linkName" type="text" id="linkName" style="width:380px;"/></div>
+                    </div>
+                    <div class="publishFormItems">
+                        <div class="products_title"><label for="linkAddress"><font color="RED">* </font>链接地址：</label></div>
+                        <div class="products_fill"><input name="linkAddress" type="text" id="linkAddress" style="width:380px;" value="http://" /></div>
+					</div>
+					<div style="clear:both"></div>
+					<div class="publishFormSub">
+                            <input name="submitsave" type="submit" class="buttonMax" id="submitsave" value="确认信息无误，提交" />
+                    </div>
+                </div>
+            </form>
+</div>
+<script language="javascript"> 
+jQuery(document).ready(function(){
+	jQuery("#form2").submit(function(){
+		if(!chkfrm()){
+			return false;
+		}
+		
+		jQuery.ajax({
+			url:'#springUrl('/esite/esitefriendlink/insertFriendLink.htm')',
+			data:jQuery("#form2").serialize(),
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					window.location.href="#springUrl('/esite/esitefriendlink/index.htm')";
+				}else{
+					msg.show(req.data);
+					if(req.data="sessionTimeOut"){
+						window.open("#springUrl('/login.htm')");
+					}
+				}
+			},
+			failure:function(){
+				msg.show("commonError");
+			}
+		});
+	});
+});
+
+function chkfrm(){
+	if(jQuery("#linkName").val().length<=0){
+		alert("请输入链接名称!");
+		jQuery("#linkName").focus();
+		return false;
+	}
+	
+	if(jQuery("#linkAddress").val().length<=0){
+		alert("请输入链接地址!");
+		jQuery("#linkAddress").focus();
+		return false;
+	}
+	return true;
+} 
+</script>

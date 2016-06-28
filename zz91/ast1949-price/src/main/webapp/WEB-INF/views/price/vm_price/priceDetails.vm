@@ -1,0 +1,97 @@
+#if($code=="metal")
+	#set($codeLabel="废金属")
+	#set($codeValue=17)
+#elseif($code=="plastic")
+	#set($codeLabel="废塑料")
+	#set($codeValue=11)
+#else
+	#set($codeLabel="综合废料")
+	#set($codeValue=30)
+#end
+<div class="clearfix">
+    <div class="price_block half fl">
+        <div class="block_title">
+            <h2 class="title_text">最新$!{codeLabel}报价</h2>
+			#if($code=="metal")
+				<a href="http://price.zz91.com/moreList_p17_metal.htm" class="title_more" target="_blank">更多>></a>
+			#elseif($code=="plastic")
+				<a href="http://price.zz91.com/priceList_p20_plastic.htm" class="title_more" target="_blank">更多>></a>
+			#else
+				<a href="http://price.zz91.com/moreList_p13_paper.htm" class="title_more" target="_blank">更多>></a>
+			#end
+        </div>
+        <div class="block_content">
+			#if($code=="metal" || $code=="plastic")
+    			#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?parentId=$!{codeValue}&size=6&12", "", "", "")
+					<ul class="list withDate">
+						#foreach($price in $list)
+							<li>
+								<a href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm" title="$!{price.title}">$!{price.title}</a>
+								<span>#printFragmentDate('yyyy-MM-dd',$!{price.gmtOrder})</span>
+							</li>
+						#end
+					</ul>
+				#end
+			#else
+				#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{codeValue}&size=6&1", "", "", "")
+					<ul class="list withDate">
+						#foreach($price in $list)
+							<li>
+								<a href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm" title="$!{price.title}">$!{price.title}</a>
+								<span>#printFragmentDate('yyyy-MM-dd',$!{price.gmtOrder})</span>
+							</li>
+						#end
+					</ul>
+				#end
+			#end
+        </div>
+    </div>
+    <div class="price_block half fr">
+        <div class="block_title">
+            <h2 class="title_text">相关$!{codeLabel}动态</h2>
+			#if($code=="metal")
+				<a href="http://price.zz91.com/moreList_p19_metal.htm" class="title_more" target="_blank">更多>></a>
+			#elseif($code=="plastic")
+				<a href="http://price.zz91.com/priceList_p22_plastic.htm" class="title_more" target="_blank">更多>></a>
+			#else
+				<a href="http://price.zz91.com/priceList_t23_paper.htm" class="title_more" target="_blank">更多>></a>
+			#end
+        </div>
+        <div class="block_content">
+			#if($code=="metal")
+    			#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?parentId=19&size=6&3", "", "", "")
+                <ul class="list withDate">
+    				#foreach($dt in $list)
+                        <li>
+                            <a href="#springUrl('/priceDetails_')$!{dt.id}_$!{code}.htm" title="$!{dt.title}">$!{dt.title}</a>
+                            <span>#printFragmentDate('yyyy-MM-dd',$!{dt.gmtOrder})</span>
+                        </li>
+    				#end
+                </ul>
+			#end
+			#elseif($code=="plastic")
+				#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?parentId=22&size=6&4", "", "", "")
+                <ul class="list withDate">
+    				#foreach($dt in $list)
+                        <li>
+                            <a href="#springUrl('/priceDetails_')$!{dt.id}_$!{code}.htm" title="$!{dt.title}">$!{dt.title}</a>
+                            <span>#printFragmentDate('yyyy-MM-dd',$!{dt.gmtOrder})</span>
+                        </li>
+    				#end
+                </ul>
+				#end
+			#else
+				#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=23&size=6&5", "", "", "")
+                <ul class="list withDate">
+    				#foreach($dt in $list)
+                        <li>
+                            <a href="#springUrl('/priceDetails_')$!{dt.id}_$!{code}.htm" title="$!{dt.title}">$!{dt.title}</a>
+                            <span>#printFragmentDate('yyyy-MM-dd',$!{dt.gmtOrder})</span>
+                        </li>
+    				#end
+                </ul>
+				#end
+			#end
+        </div>
+    </div>
+</div>

@@ -1,0 +1,390 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="zh-CN">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<link rel="shortcut icon" href="http://img0.zz91.com/front/images/logo/favicon.ico" />
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/theme.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/base.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/myrc/css/myrc_album.css" />
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script>
+<style type="text/css">
+	#uploadImg{width:80px; font-size:12px; overflow:hidden;}
+	#file{ position:absolute; z-index:100; margin-left:0px; font-size:60px;opacity:0;filter:alpha(opacity=0); margin-top:-5px;}
+</style>
+
+<style>
+/*file容器样式*/
+a.files {
+width:80px;
+height:80px;
+line-height:80px;
+text-align:center;
+display:block;
+border:1px solid #BEBEBE;
+text-decoration:none;
+position:relative;
+overflow:hidden;
+}
+##a.files:hover {
+##background-color:#FFFFEE;
+##background-position:0 -30px;
+##}
+/*file设为透明，并覆盖整个触发面*/
+a.files input {
+width:80px;
+height:84px;
+font-size:30px;
+cursor:pointer;
+filter:alpha(opacity=0);
+opacity:0;
+position:absolute;
+left:-4px;
+top:-2px;
+border:none;*border:#ffffff;
+outline:none;
+}
+</style>
+
+</head>
+<body style="padding:0px">
+
+    <div class="overlaylist" id="upload4" >
+      <div class="albtn mb20" > <span class="f14">选择您要上传图片的来源</span>&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok bold" font-weight:bold value="本地上传"  id="LocalUpload" />
+        &nbsp;&nbsp;
+        <input type="submit" class="XunJia_ok" value="相册上传" id="AlbumUpload" onclick="product1abum()"/>
+		<input type="hidden" id="uploadcount" value="0"/>
+      </div>
+      <!--end albtn-->
+	
+      <div class="alblock clearfix" min-width:0px; >
+		<form  id="uploadForm" action="#springUrl('/photoabum/ieupload.htm')" method="post" enctype="multipart/form-data" target="uploadActionForm" min-width:0px;>
+        <div class="alblock-box mt8">
+          <ul class="list_small" id="add">
+            <li id="after">
+			   <a href="javascript:void(0);" class="files">+添加图片<input type="file" name="uploadfile" id="file1" style="border:0"/></a>
+            </li>
+          </ul>
+		  <input type="hidden" id="albumId" name="albumId" value="$!{albumId}"/>
+        </div>
+		<iframe id="uploadActionForm" name="uploadActionForm" style="display: none;"></iframe>
+        </form>
+        <!--end alblock-box-->
+        <div class="page cb"> </div>
+      </div>
+      <!--end alblock-->
+      <div class="albtn mt15" ><a href="javascript:;" id="upload5" class="btn btn-small" style="padding:5px 22px;color:#ccc">上传</a></div>
+      <!--end albtn-->
+      <div class="alhint mt15">提示：支持.jpg,.jpeg,.gif,.bmp,.png格式的图片，图片大小不超过2M，建议使用jpg格式的图片，重复图片只能上传1次</div>
+     <!--end alhint--> 
+    </div>
+    <!--end overlaylist--> 
+  </div>
+
+  <div class="nbox" id="nbox1" style="display: none">
+    <div class="overlaylist">
+      <div class="suc_btn tc"> <span class="clearfix">您的图片已经成功上传!</span> <a href="javascript:;" onclick="refersh()" class="btn btn-small" style="padding:7px 23px">立即关闭</a> </div>
+      <!--end suc_btn--> 
+    </div>
+    <!--end overlaylist--> 
+  </div>
+  <!--end mbox--> 
+
+  <!--end nbox--> 
+<!--end overlaybox--> 
+  <script src="http://img0.zz91.com/zz91/myrc/js/album.js"></script> 
+<script type="text/javascript">
+
+	jQuery(document).ready(function(){
+		jQuery("#continueUploadBtn").click(function(){
+			jQuery("#uploadWell").show();
+		});
+	
+		jQuery("#yesBtn").click(function(){
+		
+			//parent.uploadCallback("$!{success}",uploadedFile);
+			window.parent.Asto.util.Callback.submit("true", uploadedFile);
+		});
+		
+		##jQuery("#upload5").click(function(){
+		##	var g=$("ul li:eq(0)").attr("id");
+		##	var t="after"
+		##	if(g!=t){
+		##	 jQuery("#upload4").hide();
+		##	 jQuery("#nbox1").show();
+		##	}
+			
+		##})
+	
+}); 
+
+var uploadedFile = {};
+var uploadedNum=0;
+	var idArray = new Array();
+//处理托拽上传
+(function(){
+
+	function fileSelectHandler(e){
+		fileDragHover(e);
+		var files=e.target.files || e.dataTransfer.files;
+		
+		if(files.length > 10){
+			alert("您一次最多只能上传10个文件，请不要一次选择过多文件！");
+			return ;
+		}
+		
+		//控制上传数量
+		var max=parseInt("$!{max}");
+		var uploadedSize=Object.keys(uploadedFile).length;
+		
+		if( (uploadedSize+files.length) > max ){
+			alert("您最多只能上传"+max+"个文件，已上传"+uploadedSize+"个，请重新选择！");
+			return ;
+		}
+		
+		for(var i=0, f; f=files[i]; i++){
+			parseFile(f);
+		}
+	}
+
+	function parseFile(file){
+		//alert(file.name + " " +file.type+ " "+ file.size);
+		//过滤大小
+		var formData = new FormData();
+		if(file.size > 2048000){
+			Asto.util.Message.show({ 
+			    msg:"请不要上传超过2M的文件",
+            	msgType:Asto.util.Message.INFO,
+             	autoClose:5000 
+            });
+			//alert("请不要上传超过2M的文件");
+			//页面提示不要超过2M的文件
+			return ;
+		}
+
+		formData.append("uploadfile",file);
+		formData.append("targetType", "$!{targetType}");
+		formData.append("targetId", "$!{targetId}");
+		formData.append("albumId", "$!{albumId}");
+
+		//初始化
+		var fileView = jQuery('<div class="mt"></div>');
+		var progress = jQuery('<div class="progress"  style="width:50%;float:left;" ></div>');
+		var bar=jQuery('<div class="bar" ></div>');
+		var info=jQuery('<div>&nbsp;&nbsp;'+file.name+'('+parseInt(file.size/1024)+'k)</div>');
+
+		progress.append(bar);
+		fileView.append(progress);
+		fileView.append(info);
+
+		jQuery.ajax({
+			cache:false,
+			contentType:false,
+			processData:false,
+			url:"#springUrl('/photoabum/insertPhotoAbum.htm')",
+			type:"POST",
+			dataType:"json",
+			data:formData,
+			async:false,
+			success:function(output){
+				//上传成功，显示删除按钮
+				//设置确定按钮要返回的数据 photoID, path
+				if(output.success){
+					idArray.push(output.data.id);
+					var t="<li  id=\" uy"+output.data.id+"\" onclick=\"delPhoto("+output.data.id+")\"><img src=\"http://img0.zz91.com/zz91/myrc/images/upload.gif\" width=\"80\" height=\"80\" id=\"previewImg"+output.data.id+"\" /></li>"
+					jQuery("#after").before(t);
+					var a=jQuery("#uploadcount").val();
+					if(a==0){
+						document.getElementById("upload5").style.color="#000000";
+					}
+					var num=Number(jQuery("#uploadcount").val())+Number(1);
+					jQuery("#uploadcount").val(num);
+					var url = "delayPicChange('" + output.data.id + "','" + output.data.path+ "')";
+					setTimeout(url, 2000);
+				}
+
+			}
+		});
+	}
+
+jQuery("#upload5").click(function(){
+	if(jQuery("#uploadcount").val()>0){
+		update();
+		parent.hidedown();
+		jQuery("#upload4").hide();
+		jQuery("#nbox1").show();
+		
+	}
+})
+
+
+
+function update(){
+	jQuery.ajax({
+		url:"#springUrl('/photoabum/updateComponyId.htm')",
+		type:"POST",
+		data:"ids="+idArray.toString()
+	});
+}
+	function fileDragHover(e){
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.className = (e.type == "dragover" ? "hover":"");
+	}
+
+	function init(){
+		
+		var filedrag=jQuery("#filedrag");
+		jQuery.event.props.push('dataTransfer');
+
+		filedrag.bind("dragover", fileDragHover);
+		filedrag.bind("dragleave", fileDragHover);
+		filedrag.bind("drop",fileSelectHandler);
+         //以上是拖图片
+		 
+		jQuery("#file1").bind("change",fileSelectHandler);
+
+		filedrag.show();
+	}
+
+	
+	if (window.File && window.FileList && window.FileReader) {
+		init();
+	}else{
+		jQuery("#file1").bind("change",function(){
+			jQuery("#uploadForm").submit();
+		});
+		
+		jQuery("#uploadForm").submit(function(e){
+		
+			var max=parseInt("$!{max}");
+    		
+    		if( (uploadedNum + 1 ) > max ){
+    			alert("您最多只能上传"+max+"个文件，已上传"+uploadedNum+"个，请重新选择！");
+    			return false;
+    		}
+		
+			//显示上传进度页面
+			var eid=Date.parse(new Date());
+			jQuery("#resultid").val(eid);
+			var fileView = jQuery('<div class="mt"></div>');
+    		var progress = jQuery('<div class="progress"  style="width:50%;float:left;" ></div>');
+    		var bar=jQuery('<div class="bar" id="bar'+eid+'">1%</div>');
+			
+    		var info=jQuery('<div id="info'+eid+'">&nbsp;&nbsp;'+jQuery("#uploadfile").val()+'</div>');
+    
+    		progress.append(bar);
+    		fileView.append(progress);
+    		fileView.append(info);
+    		
+			jQuery("#resultListWell").show();
+			jQuery("#uploadWell").hide();
+			
+			jQuery("#uploadedListContent").append(fileView);
+			
+			return true;
+		});
+	}
+})();
+
+function delayPicChange(id, address) {
+	jQuery("#previewImg" + id).attr("src", "$!{address.resource}/" + address);
+}
+
+
+
+function deleteUploadedPhoto(node,id){
+
+	jQuery(node).parent().parent().fadeOut();
+	
+	if(id!=null){
+		delete uploadedFile[id];
+		if(uploadedNum>0){
+			uploadedNum--;
+		}
+		jQuery.ajax({
+			url:"#springUrl('/photo/doAjaxRemove.htm')",
+			data:{"id":id},
+			dataType:"json",
+			success:function(output){
+			}
+		});
+	}
+
+}
+ function delPhotoAbum(id){
+ 	if(confirm("确定要删除吗？")){
+ 		jQuery.ajax({
+			url:'#springUrl('/photoabum/delPhotoAbum.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			async:false,
+			success:function(req){
+				if(req.success){
+					jQuery("#uu"+id).hidden();
+				}
+			}
+			
+		})
+	}
+ }
+ 
+ function product1abum(){
+ 	window.location="#springUrl('/photoabum/product1Abum.htm?albumId=')"+$!{albumId}+"&groupId=1";
+ }
+ function ieuploadresult(id, path){
+	if(id!="" && path!=""){
+		idArray.push(id);
+		var dfndf=idArray;
+		var t="<li  id=\" uy"+id+"\" onclick=\"delPhoto("+id+")\"><img src=\"http://img0.zz91.com/zz91/myrc/images/upload.gif\" width=\"80\" height=\"80\" id=\"previewImg"+id+"\" /></li>"
+		jQuery("#after").before(t);
+		var a=jQuery("#uploadcount").val();
+		if(a==0){
+			document.getElementById("upload5").style.color="#000000";
+		}
+		var num=Number(jQuery("#uploadcount").val())+Number(1);
+		jQuery("#uploadcount").val(num);
+		var url = "delayPicChange('" +id + "','" +path+ "')";
+		setTimeout(url, 2000);
+	}
+}
+ function delPhoto(id){
+ 		jQuery.ajax({
+			url:'#springUrl('/photoabum/delPhotoAbum.htm')',
+			data:{"id":id},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			async:false,
+			success:function(req){
+				if(req.success){
+					var num=Number(jQuery("#uploadcount").val())-Number(1);
+					if(num==0){
+						document.getElementById("upload5").style.color="#ccc";
+					}
+					jQuery("#uploadcount").val(num);
+					jQuery("#uy"+id).hide();
+					//改变file的值可以一张图片多次上传
+					jQuery("#file1").val("");
+				}
+			}
+			
+		})
+ }
+function refersh(){
+	window.parent.location="#springUrl('/photoabum/list.htm?albumId=')"+$!{albumId};
+ }
+jQuery(function(){
+	myrc.menu();
+})
+</script>
+	
+  <!--end yangContent-->
+</body>
+</html>

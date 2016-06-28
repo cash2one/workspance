@@ -1,0 +1,30 @@
+<div class="wrapper mt">
+	<dl class="navigation">
+		<dt>您当前的位置：</dt>
+		<dd>
+			<a href="#springUrl('/index.htm')" target="_blank">行业信息网</a>
+			#if($searchTag)
+				> <a href="#springUrl('/list')-$!{searchTagEncode}.htm" target="_blank">$!{searchTag}</a>
+			#elseif($keywords)
+				> <a href="#springUrl('/search')-a-$!{searchTagEncode}.htm" target="_blank">$!{searchTag}</a>
+			#end
+		</dd>
+	</dl>
+	<div class="type_list mt">
+		<ul class="list clearfix">
+			#foreach($obj in $page.records)
+				<li>
+					<a href="#springUrl('/details')$!{obj.productId}.htm" class="l" target="_blank">#printProductType($!{obj.productsTypeCode} "" "")#printTitle($!{obj.title} 13 "")</a>
+					<span class="date">$date.format("yyyy-MM-dd",$!{obj.refreshTime})</span>
+				</li>
+			#end
+		</ul>
+		#if($keywords)
+			#staticPageNav($page "#springUrl('/search')" "-a$!{ptype}-$!{keywordsEncode}" "")
+		#elseif($searchTag)
+			#staticPageNav($page "#springUrl('/list')" "-$!{searchTagEncode}" "")
+		#else
+			#staticPageNav($page "#springUrl('/list')" "" "")
+		#end
+	</div>
+</div>

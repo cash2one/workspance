@@ -1,0 +1,355 @@
+
+#set($layout='/layout/normLayout1.vm')
+
+
+
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/wei.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.huanbao.com/huanbao/mblog/css/jquery.alert.css"/>
+
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/wei.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.easydrag.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery.alert.js"></script>
+<script type="text/javascript" src="http://img0.huanbao.com/huanbao/mblog/js/jquery-position.js"></script>
+
+<div class="wei-main">
+	<div class="wei-nav">
+    	<div class="wei-nav-title fl">
+        	<img src="http://img0.huanbao.com/huanbao/mblog/images/title_img.jpg" />
+        </div>
+        
+        <div class="wei-nav-1 fl">
+        	<ul>
+            	<li><a href="#springUrl('/index').htm">首页</a></li>
+                <li><a href="#springUrl('/mblog').htm">个人主页</a></li>
+                <li><a href="#springUrl('/info').htm">账户设置</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-search fl">
+        	<input type="text" class="wei-nav-text" />
+            <a href="#springUrl('/searchFind').htm"></a>
+        </div>
+        
+        <div class="wei-nav-2 fl">
+        	<ul>
+            	<li><a href="$!{address.myesite}/index.htm">生意管家</a></li>
+                <li><a href="http://www.huanbao.com">环保网首页</a></li>
+            </ul>
+        </div>
+        
+        <div class="wei-nav-exit fr">
+        	<a href="#springUrl('/logout.htm')"></a>
+        </div>
+        <div class="cb"></div>
+    </div>
+    <!--end wei-nav-->
+    <div class="topic">
+    	<div class="t-left">
+        	<div class="t-left-theme">
+            	<div class="t-theme-title">
+                	<div class="t-title-left fl">
+                    	$!{topicMBlog.title}<input type="hidden"  id="topicTitle" value="$!{topicMBlog.title}"/>
+                    </div>
+                    <div class="t-title-right fr">
+                    	全部讨论：<span class="greed">$!{talkCount}</span>
+                    </div>
+                    <!--end t-title-right-->
+                    <div class="cb"></div>
+                </div>
+                <!--end t-theme-title-->
+                <div class="t-left-focus">
+                    <div class="t-focus-img fl">
+						#if($!{photoPath} && $!{photoPath}!="")
+                        <img src="$!{address.thumb}$!{address.resource}$!{photoPath}" width="125px;" height="120px;"/>
+						#end
+                    </div>
+                    <div class="t-focus-box fr">
+                       $!{topicMBlog.content}
+                    </div>
+                    <!--end t-focus-box-->
+                    <div class="cb"></div>
+                </div>
+                <!--end t-left-focus-->
+                <div class="t-left-bolck2">
+                	<div class="t-block2-left fl">
+							
+                    	<img src="http://img0.huanbao.com/huanbao/mblog/images/img7.jpg" />
+						
+                    </div>
+                    <div class="t-block2-right fr">
+                    	还可以输入<span class="greed">100</span>字
+                    </div>
+                    <!--end t-block2-right-->
+                    <div class="cb"></div>
+                </div>
+                <!--end t-left-block2-->
+                <div class="t-left-block3">
+                	<div class="t-block3-img">
+						#if($!{info.headPic} && $!{info.headPic}!="")
+						<img src="$!{address.thumb}$!{address.resource}$!{info.headPic}" style="width:50px;height:50px;"/>	
+						#else
+                    	<img src="http://img0.huanbao.com/huanbao/mblog/images/img6.jpg" />
+						#end
+                    </div>
+                    <div class="t-block3-box">
+                    	<div class="t-block3-session">
+                        	<textarea class="t-session-textarea" onClick="TextWeibo(this);"/>$!{topicMBlog.title}</textarea>
+                        </div>
+                        <!--end t-block3-session-->
+                         <div class="t-session-box1">
+                            <ul class="t-session-ul fl">
+                                <li class="t-icon4"><a  id="face">表情</a></li>
+                                <li class="t-icon5"><a  id="picture">图片</a></li>
+                                <div class="cb"></div>
+                            </ul>
+                            <div class="t-session-send fr" id="send_topic"></div>
+                            <div class="bc-picture" id="bc-picture">
+                                <div class="bc-picture-top">
+                                    <div class="bc-close2 fr" id="close"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                    <div class="cb"></div>
+                                </div>
+                                <div class="bc-picture-content">
+                                   <div class="bc-picture-title">
+                                        共<span id="show-count"></span>张，还能上传<span id="show-count2"></span>张
+                                   </div>
+                                    <!--end bc-picture-title-->
+            						<input type="text"  value="" id="photos" name="photos"/>
+                                    <ul class="bc-picture-img" id="showImg">
+                                    	<li><img src="http://img0.huanbao.com/huanbao/mblog/images/updata_add.jpg"  id="updateMblogPhoto"/></li>
+                                    </ul>
+                                    <div class="cb"></div>
+                                </div>
+                                <!--end bc-picture-content-->
+                            </div>
+                            <!--end bc-picture-->
+                            <div class="bc-face" id="bc-face">
+                                <div class="bc-face-top">
+                                    <div class="bc-close3 fr" id="close2"><img src="http://img0.huanbao.com/huanbao/mblog/images/close2.jpg" /></div>
+                                    <div class="cb"></div>
+                                </div>
+								#parse("/common/showface.vm")
+                                <!--end bc-face-box-->	
+                            </div>
+                            <!--end bc-face-->
+                            <div class="cb"></div>
+                        </div>
+                        <!--end bc-session-box1-->
+                    </div>
+                    <!--end t-block3-box-->
+                    <div class="cb"></div>
+                </div>
+                <!--end t-left-block3-->
+            </div>
+            <!--end t-left-theme-->
+            <div id="item"></div>
+			#foreach($l in $!{dtoList})
+            <!--end t-left-item-->
+            <div class="t-left-item">
+            	<div class="sm-item-img">
+                	<a href="#springUrl('/ublog')$!{l.info.id}.htm">
+						#if($!{l.info.headPic} && $!{l.info.headPic}!="") 
+						<img src="$!{address.thumb}$!{address.resource}$!{l.info.headPic}" style="width:50px;height:50px;"/>
+						#else
+						<img src="http://img0.huanbao.com/huanbao/mblog/images/img6.jpg" />	
+						#end
+					</a>
+                </div>
+                <div class="sm-item-box">
+                	<div class="sm-item-title">
+                    	<a class="sm-item-name" href="#springUrl('/ublog')$!{l.info.id}.htm">$!{l.info.name}:</a>
+						$!{l.mBlog.content}
+                    </div>
+                    <!--end sm-item-title-->
+                    <div class="sm-item-content">
+						
+						#if($!{l.mBlog.photoPath} && $!{l.mBlog.photoPath}!="")
+						 <div class="sm-item-images">
+    						<ul>
+    							#foreach(${l} in $!{l.mbList})
+                                   <li onclick="img_change(this);">
+								   <img src="$!{address.resource}$!{l.photoPath}"/>
+    						   </li>
+    						   #end
+    							</ul>
+    							<div class="cb"></div>
+    						</div>
+    						
+    						<div class="sm-item-images2" onclick="img_changeb(this);">
+    							<img src="">
+    					</div>
+						#end
+                    </div>
+                    <!--end sm-item-content-->
+                    <div class="sm-item-box2">
+                    	<div class="sm-item-date">
+                        	#printFragmentDate("yyyy-MM-dd HH:mm" $!{l.mBlog.gmtCreated})
+                        </div>
+                        <div class="sm-item-right">
+							#if($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} != 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}"style="color:#006633;"> 评论（$!{l.mBlog.discussCount}）</a>
+							#elseif($!{l.mBlog.sentCount} != 0 && $!{l.mBlog.discussCount} == 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发（$!{l.mBlog.sentCount}）</span>|<a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}"style="color:#006633;"> 评论</a>	
+							#elseif($!{l.mBlog.sentCount} == 0 && $!{l.mBlog.discussCount} != 0)
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>| <a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}"style="color:#006633;">评论（$!{l.mBlog.discussCount}）</a>
+							#else
+                            <span onclick="sentComments(this,$!{l.mBlog.id})">转发</span>| <a href="#springUrl('/originalMblog.htm?mblogId=')$!{l.mBlog.id}"style="color:#006633;">评论</a>	
+							#end
+                        </div>
+                    </div>
+                </div>
+                <div class="cb"></div>
+                <!--end sm-item-box-->
+            </div>
+            <!--end t-left-item-->
+            #end
+        </div>
+        <!--end t-left-->
+        <div class="t-right">
+        	<div class="t-right-originator">
+            	<div class="t-originator-title">
+                	<span class="f14 fb">话题</span>发起人
+                </div>
+                <!--end t-originator-title-->
+                <div class="t-originator-content">
+                	<div class="t-originator-img">
+						<a href="#springUrl('/ublog')$!{topicInfo.id}.htm">
+						 #if($!{topicInfo.headPic} && $!{topicInfo.headPic}!="")
+                    	   <img src="$!{address.thumb}$!{address.resource}$!{topicInfo.headPic}" style="width:80px;height:80px;"/>
+						 #else
+						   <img src="http://img0.huanbao.com/huanbao/mblog/images/img6.jpg" style="width:80px;height:80px;"/>		
+						 #end
+						 </a>
+                    </div>
+                    <div class="t-originator-box">
+                    	<div class="t-box-title">
+                        	<a href="#springUrl('/ublog')$!{topicInfo.id}.htm"><div class="t-box-Ltitle fl">$!{topicInfo.name}</div></a>
+                            <div class="t-box-Rtitle fl">
+								#if($!{follow})
+									#if($!{follow.type}=='1')
+										<img src="http://img0.huanbao.com/huanbao/mblog/images/focus3.jpg"/>
+									#elseif($!{follow.followStatus}=='1')
+										<img src="http://img0.huanbao.com/huanbao/mblog/images/focus2.jpg"/>
+									#end
+								#else	
+									#if($!{info.id} == $!{topicMBlog.infoId})
+								    #else
+								    <img src="http://img0.huanbao.com/huanbao/mblog/images/focus.jpg" onclick="AddFocus(this,$!{topicInfo.id});" />	
+								    #end	
+								#end
+															
+							</div>
+                            <div class="cb"></div>
+                        </div>
+                        <!--end t-box-title-->
+                        <div class="t-box-info">							      	
+                        	简介：#if($!{compProfile.detailsQuery}) #printTitle($!{compProfile.detailsQuery} 55 "") #end
+                        </div>
+                        <!--end t-box-title-->
+                        <div class="t-box-message">
+                        	话题为用户观点，不代表官方立场
+                        </div>
+                        <!--end t-box-title-->
+                    </div>
+                    <!--end t-originator-box-->
+                    <div class="cb"></div>
+                </div>
+                <!--end t-originator-content-->
+            </div>
+            <!--end t-right-originator-->
+            <div class="t-NewPart">
+            	<div class="t-NewPart-title">
+                	最新参与用户
+                </div>
+                <!--end t-NewPart-title-->
+                <div class="t-NewPart-block">
+					    #foreach($l in  $!{infoList})
+						#set($value=$velocityCount%4)
+					     #if($value==0)	
+						    <div class="t-NewPart-item" style="margin-right:0px">	
+                         #else
+							<div class="t-NewPart-item">
+						 #end	
+                        	<div class="t-block-img">
+                            	<a href="#springUrl('/ublog')$!{l.id}.htm" onmouseover="heada(this,$!{l.id});" onmouseout="headb(this);">
+									#if($!{l.headPic} && $!{l.headPic}!="")
+									<img src="$!{address.thumb}$!{address.resource}$!{l.headPic}" style="width:50px;height:50px;"  />
+									#else
+									<img src="http://img0.huanbao.com/huanbao/mblog/images/img6.jpg" />
+									#end
+								</a>
+                                <div class="heada"></div>
+        						<div class="cb"></div>
+                            </div>
+                            <div class="t-block-text"><a href="#springUrl('/ublog')$!{l.id}.htm">$!{l.name}</a></div>
+                        </div>
+						
+						#end
+						
+                        <div class="cb"></div>
+                    
+                </div>
+                <!--end t-NewPart-block-->
+            </div>
+            <!--end t-NewPart-->
+        </div>
+        <!--end t-right-->
+        <div class="cb"></div>
+    </div>
+    <!--end topic-->
+</div>
+</div>
+<!--end main-->
+<div id='textHide1'></div>
+<div id='tagBox1'>
+<div class="bc-tagBox-title">请选择最近@的人或者直接输入</div>
+    <li>5135351</li>
+    <li>5135351</li>
+</div>
+<input type="hidden" id="text_left">
+<input type="hidden" id="text_right">
+<input type="hidden" id="textInfo" value="" />
+
+<input type="hidden" value="" id="values"/>
+<input type="hidden" value="1" id="showPicId">
+<script >
+jQuery(document).ready(function(e) {
+   jQuery("#updateMblogPhoto").click(function(){
+    var showpicId= jQuery("#showPicId").val();
+       var photoBox=new Asto.util.Modal({
+    	   title:"上传公司形象照片",
+    	   url:"#springUrl('/photo/promptUpload.htm')?targetType=mblog&targetId=0&albumId=-1&max=1",
+		   width:500,
+    	   height:350,
+    	   modal:true
+        });
+    	Asto.util.Callback.setSubmitCallback(function(success, data){
+    		if(success=="true"){
+				var photos=new Array();
+			    if(jQuery("#photos").val()!=""){
+					photos.push(jQuery("#photos").val());
+				}
+			   //重新加载新上传的图片
+				alert("$!{address.thumb}$!{address.resource}"+data[key]+"&width=200&height=200");
+    			for(var key in data){
+				var i=jQuery("#showPicId").val();
+    				if(i==8){
+					    jQuery("#updateMblogPhoto").parent().css("display","none"); 
+    				}
+    				##jQuery("#updateMblogPhoto"+i).attr('src',"$!{address.thumb}$!{address.resource}"+data[key]+"&width=88&height=84");
+    				jQuery("#showImg").append("<li><img src='$!{address.thumb}$!{address.resource}"+data[key]+"&width=88&height=84' id='updateMblogPhoto"+i+"'/></li>");
+    				i++;
+    				jQuery("#showPicId").val(i);
+    				
+					photos.push(data[key]);
+					$("#show-count").html(parseInt(i)-1);
+					$("#show-count2").html(9-parseInt(i));
+    		    }
+				jQuery("#photos").val(photos.join(","));
+    		}
+    		photoBox.close();
+        });  
+     
+    })
+})	
+</script>
+

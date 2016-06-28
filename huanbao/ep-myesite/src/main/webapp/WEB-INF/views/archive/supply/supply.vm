@@ -1,0 +1,333 @@
+#set($layout="/layout/default.vm")
+<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="197" valign="top" bgcolor="#128fc4"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td><img src="$!{address.img}/huanbao/images/myesite/producttitle.jpg" width="197" height="75" /></td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td>
+          <div style="padding-left:20px;">
+           <ul>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/publish_StpOne.htm" target="_blank">发布供应信息</a></li>
+            <li class="hbnylefts"><a href="$!{address.myesite}/supply/supply.htm">管理供应信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/supply/tradeGroup.htm">管理供应信息类别</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/buy/publish_StpOne.htm" target="_blank">发布求购信息</a></li>
+            <li class="hbnyleft"><a href="$!{address.myesite}/buy/buy.htm">管理求购信息</a></li>
+           </ul>
+          </div>
+          </td>
+        </tr>
+    </table></td>
+    <td valign="top" class="hbnycon"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td class="hbnytit">管理供应信息</td>
+      </tr>
+    </table>
+      <table width="94%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnyly">
+        <tr align="center">
+          <td width="69" #if("$!checkStatus"=="" && "$!{pauseStatus}"=="" && "$!{overdueStatus}"=="" && "$!recommend"=="") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm")">全部</a></td>
+          <td width="69" #if(("$!checkStatus"=="1" && "$!{pauseStatus}"=="0") && "$!recommend"=="") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&pauseStatus=0&checkStatus=1")">已发布</a></td>
+          <td width="69" #if("$!checkStatus"=="0") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&checkStatus=0")">审核中</a></td>
+          <td width="69" #if("$!checkStatus"=="2") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&checkStatus=2")">审核未通过</a></td>
+          <td width="69" #if("$!pauseStatus"=="1" && "$!{pauseStatus}"!="0" ) class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&pauseStatus=1")">暂不发布</a></td>
+          <td width="69" #if("$!{overdueStatus}"=="0") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&overdueStatus=0")">已过期</a></td>
+          <td width="69" #if("$!recommend"!="") class="hbnycpfl" #end><a href="#springUrl("/supply/supply.htm?groupId=$!{groupId}&recommend=1")">推荐产品</a></td>
+          <td>&nbsp;</td>
+        </tr>
+    </table>
+      <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0" class="hbnylyhw"><form id="form3" name="form3" method="post" action="">
+        <tr>
+          <td width="30"><input id="selectAllCheckbox" type="checkbox" onclick="selectAll('supplyCheckbox')"/></td>
+          <td width="70">
+          <a href="javascript:deleteSupplys()">
+          	<img src="$!{address.img}/huanbao/images/myesite/hbmem_28.jpg" width="56" height="22" /></a>
+          </td>
+          <td width="150">
+	          <select class="hbnyconselect" id="group" onchange="selectGroup()" style= "width:120px">
+	          	<option value="">全部类别</option>
+	            #foreach($list in $!{groups})
+                    <option value="$!{list.id}" #if($!{groupId}==$!{list.id}) selected #end>
+                        $!{list.name}
+                    </option>
+                #end
+	          </select>
+          </td>
+          <td width="150">
+          <select class="hbnyconselect" id="changeGroup" onclick="moveGroup()" style= "width:120px">
+            <option>移动到</option>
+            #foreach($list in $!{groups})
+                <option value="$!{list.id}">$!{list.name}</option>
+            #end
+          </select></td>
+          <td>
+	      	#if("$!recommend"!="")
+	      	<a href="javascript:deleteRecommendSupplys()">取消推荐</a>
+	      	#else
+	      	<a href="javascript:recommendSupplys()">推荐</a>
+	      	#end
+          </td>
+          </tr>
+      </form>
+    </table>
+     #foreach($list in $!{page.records})
+      <table id="supplyDiv$!{list.id}" width="90%" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#98dcfb" class="hbnylylist">
+        <tr>
+          <td bgcolor="#FFFFFF">
+          <div class="hbnycpname">
+          <ul>
+          <li class="hbnycptit">
+          <input name="supplyCheckbox" type="checkbox" value="$!{list.id}" class="noborder"/> <font color="#FF0000">
+          <a href="$!{address.esite}/detail$!{list.id}.htm" target="_blank" class="ofm_title fontred">#printTitle($!{list.title} 16 "")</a>
+          </font>&nbsp;&nbsp;&nbsp;&nbsp;刷新时间：$!date.format('yyyy-MM-dd',$!{list.gmtRefresh})&nbsp;&nbsp;有效期：
+          <font color="#FF0000">#if("$!{list.validDays}" == "0")长期有效#else$!{list.validDays}天#end</font>&nbsp;&nbsp;评分：<font color="#FF0000">$!{list.integrity}</font></li>
+          <li class="hbnycpcon">#printTitle($!{list.detailsQuery} 200 "")</li>
+          </ul>
+          </div>
+          <div class="hbnycpan">
+          <ul>
+          <li><a href="#springUrl("/supply/update.htm?id=$!{list.id}")" target="_blank">修改信息</a><br />
+         	#if($!{list.pauseStatus} == 0)
+            <a id="pauseStatusDiv$!{list.id}" href="javascript:publish($!{list.id}, 1)" >暂不发布</a><br />
+            #else
+            <a id="pauseStatusDiv$!{list.id}" href="javascript:publish($!{list.id}, 0)" >发布</a><br />
+            #end
+            <a href="#springUrl("/supply/message.htm?id=$!{list.id}")" target="_blank">查看留言</a><br />
+            <a href="javascript:refresh($!{list.id})">刷新信息</a></li>
+          </ul>
+          </div>
+          <div style="width:117px; height:134px; float:right;">
+            #if($!{list.photoCover}=="")
+				<img src="$!{address.img}/huanbao/images/global/noimagebig.gif" width="117" height="134"/>
+			#else
+				<img src="$!{address.thumb}$!{address.resource}$!{list.photoCover}"&width=117&height=134" width="117" height="134"/>
+			#end
+          </div>
+          </td>
+        </tr>
+    </table>
+    #end
+    <table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="50">
+		  	#myrcPageNav(${page} "#springUrl('/supply/supply.htm')" "pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}&groupId=$!{groupId}" "")
+		  </td>
+        </tr>
+    </table></td>
+  </tr>
+</table>
+<script language="javascript">
+function moveGroup(){
+     var groupid = document.getElementById("changeGroup").value;
+     if (groupid != "") {
+             var el = document.getElementsByName("supplyCheckbox");
+             for(var i=0; i<el.length; i++) {
+                 if(el[i].checked){
+                    jQuery.ajax({
+                        url:'#springUrl("/supply/group.htm")',
+                        data:{"id":el[i].value,"gid":groupid},
+                        cache:false,
+                        dataType:"json",
+                        type:"post",
+                        success:function(req){
+                                if(req!=null && req.success){
+                                    hb.util.Message.show({
+									      msg:"分组成功！",
+									      autoClose:10000
+									});
+									if ("$!{groupId}" !="" && "$!{groupId}" != groupid) {
+									    jQuery("#supplyDiv"+req.data).remove();
+									}
+                                }
+                            },
+                        failure:function(){
+							hb.util.Message.show({
+							      msg:"操作失败！",
+							      autoClose:10000
+							});
+                        }
+                    });
+                 }
+             }
+     }
+}
+function selectGroup(){
+    var groupid = document.getElementById("group").value;
+    window.location = "#springUrl("/supply/supply.htm?groupId=")"+groupid;
+}
+function publish(id, status){
+    jQuery.ajax({
+        url:'#springUrl("/supply/doPause.htm")',
+        data:{"id":id,"status":status},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    if (status == 0) {
+                        jQuery("#pauseStatusDiv"+id).html("<a href='javascript:publish("+id+", 1)' class='fontblue'>暂不发布</a>");
+                    	hb.util.Message.show({
+					       msg:"发布成功！",
+					       autoClose:10000
+						});
+                    } else {
+                        jQuery("#pauseStatusDiv"+id).html("<a href='javascript:publish("+id+", 0)' class='fontblue'>发布</a>");
+                        hb.util.Message.show({
+					        msg:"暂不发布成功！",
+					        autoClose:10000
+						});
+                    }
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"操作失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+function refresh(id) {
+    jQuery.ajax({
+        url:'#springUrl("/supply/doRefresh.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+			        hb.util.Message.show({
+				        msg:"刷新成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"操作失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+function selectAll(name) {
+    var el = document.getElementsByName(name);
+    if (document.getElementById("selectAllCheckbox").checked) {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = true;
+        }
+    } else {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = false;
+        }
+    }
+}
+
+function deleteSupply(id) {
+        jQuery.ajax({
+        url:'#springUrl("/supply/doDelete.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#supplyDiv"+id).remove();
+                    hb.util.Message.show({
+				        msg:"删除成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"删除失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+function deleteSupplys() {
+    var el = document.getElementsByName("supplyCheckbox");
+    for(var i=0; i<el.length; i++) {
+        if(el[i].checked){
+          deleteSupply(el[i].value);
+        }
+    }
+}
+
+function recommendSupply(id) {
+        jQuery.ajax({
+        url:'#springUrl("/supply/doRecommend.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    hb.util.Message.show({
+				        msg:"推荐成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"推荐失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+function recommendSupplys(id) {
+    var el = document.getElementsByName("supplyCheckbox");
+    for(var i=0; i<el.length; i++) {
+        if(el[i].checked){
+          recommendSupply(el[i].value);
+        }
+    }
+}
+
+function deleteRecommendSupply(id) {
+        jQuery.ajax({
+        url:'#springUrl("/supply/doDeleteRecommend.htm")',
+        data:{"id":id},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+                if(req.success){
+                    jQuery("#supplyDiv"+id).remove();
+                    hb.util.Message.show({
+				        msg:"取消推荐成功！",
+				        autoClose:10000
+					});
+                }
+            },
+        failure:function(){
+	        hb.util.Message.show({
+		        msg:"取消推荐失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+function deleteRecommendSupplys(id) {
+    var el = document.getElementsByName("supplyCheckbox");
+    for(var i=0; i<el.length; i++) {
+        if(el[i].checked){
+          deleteRecommendSupply(el[i].value);
+        }
+    }
+}
+
+</script>

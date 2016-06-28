@@ -1,0 +1,60 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/appv2/util.js')" ></script>
+<script type="text/javascript" src="#springUrl('/appv2/ad/booking.js')" ></script>
+<script type="text/javascript" src="#springUrl('/appv2/ad/ad.js')" ></script>
+
+<script type="text/javascript">
+
+Ext.onReady(function() {
+
+	var adGrid=Ext.create("com.zz91.ads.board.ad.ad.SaleGrid",{
+		id:"mainadgrid",
+		region:"center"
+	});
+	
+	var bookingGrid=Ext.create("com.zz91.ads.board.ad.booking.BaseGrid",{
+		id:"bookinggrid",
+		split:true,
+		region:"south",
+		crmId:"$!{crmId}",
+		height:250
+	});
+	
+	var tree=Ext.create("com.zz91.util.Tree", {
+		id:"positiontree",
+		treeModel:"PositionTreeModel",
+		queryUrl:Context.ROOT+"/ad/position/child.htm",
+		nodeParam:"id",
+		rootCode:"0",
+		title:"广告位筛选",
+		collapsible:true,
+		split:true,
+		region:"west",
+		width:250,
+		listeners:{
+			"itemclick":function(view,model){
+				adGrid.getStore().setExtraParam("positionId",model.getId());
+				adGrid.getStore().load();
+				
+				bookingGrid.getStore().setExtraParam("positionId",model.getId());
+				bookingGrid.getStore().load();
+			}
+		}
+	});
+	
+	tree.getRootNode().expand();
+	
+	Ext.create("Ext.container.Viewport",{
+		layout:"border",
+		items:[tree,{
+			xtype:"container",
+			layout:"border",
+			region:"center",
+			items:[adGrid,bookingGrid]
+		}]
+	});
+	
+	Ext.get("loading").hide();
+});
+</script>
+#parse("/common/loading.vm")

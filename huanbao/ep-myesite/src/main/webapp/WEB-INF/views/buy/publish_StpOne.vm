@@ -1,0 +1,212 @@
+#set($layout="/layout/defaultS.vm")
+<link rel="stylesheet" type="text/css" href="http://subject.zz91.com/comm/css/jquery.alert.css"/>
+<script type="text/javascript" src="http://subject.zz91.com/comm/js/jquery.easydrag.js"></script>
+<script type="text/javascript" src="http://subject.zz91.com/comm/js/jquery.alert.js"></script>
+<div class="container mt clearfix">
+	<div class="grid_12">
+		
+		<div class="process-bar">
+			<ul class="clearfix">
+				<li class="active">第一步：填写详细信息<s class="l"></s><s class="r"></s></li>
+				<li>第二步：发布成功<s class="l"></s><s class="r"></s></li>
+			</ul>
+		</div>
+		
+		<form id="buyForm" name="buyForm" method="post" action="#springUrl('/buy/doStpOne.htm')">
+			<h3 class="divide">发布求购产品</h3>
+			<input type="hidden" id="categoryCode" name="categoryCode" value="1001" />
+			<input type="hidden" id="photoCover" name="photoCover" value="" />
+			<div class="control-group">
+				<label for="tags" class="control-label">
+					<span class="red">*</span>产品名称：
+				</label>
+				
+				<div class="controls">
+					<input name="title" type="text" id="title" class="field input-xlarge validate[required,maxSize[30]]" value="$!{tradeBuy.title}"/>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label for="quantity" class="control-label">
+					<span class="red">*</span>求购数量：
+				</label>
+				
+				<div class="controls">
+					<input name="quantity" type="number" id="quantity" value="$!{tradeBuy.quantity}" class="field input-small validate[required,custom[number]]" />
+						<select id="quantityUntis" name="quantityUntis" class="ptfe_ipt_select" value="$!{tradeBuy.quantityUntis}">
+							<option value="">--请选择数量单位--</option>
+							<option value="套" #if("$!{buy.quantityUntis}"=="套") selected #end>套</option>
+							<option value="台" #if("$!{buy.quantityUntis}"=="台") selected #end>台</option>
+							<option value="件" #if("$!{buy.quantityUntis}"=="件") selected #end>件</option>
+							<option value="吨" #if("$!{buy.quantityUntis}"=="吨") selected #end>吨</option>
+							<option value="个" #if("$!{buy.quantityUntis}"=="个") selected #end>个</option>
+							<option value="斤" #if("$!{buy.quantityUntis}"=="斤") selected #end>斤</option>
+							<option value="千克" #if("$!{buy.quantityUntis}"=="千克") selected #end>千克</option>
+							<option value="袋" #if("$!{buy.quantityUntis}"=="袋") selected #end>袋</option>
+							<option value="盒" #if("$!{buy.quantityUntis}"=="盒") selected #end>盒</option>
+						</select>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">
+					<span class="red">*</span>收货地区：
+				</label>
+				
+				<div class="controls">
+					<select id="provinceCode" name="provinceCode" >
+						<option value="">--请选择省份--</option>
+					</select>
+					<select id="areaCode" name="areaCode" class="ptfe_ipt_select validate[required] ">
+						<option value="">--请选择城市--</option>
+					</select>
+				</div>
+			</div>
+		
+			<div class="control-group">
+				<label class="control-label">
+					期望供应商所在地区：
+				</label>
+				<div class="controls">
+					<select id="supplyProvinceCode" name="supplyProvinceCode">
+						<option value="">--请选择省份--</option>
+					</select>
+					<select id="supplyAreaCode" name="supplyAreaCode" class="ptfe_ipt_select">
+						<option value="">--请选择城市--</option>
+					</select>
+				</div>
+			</div>
+		
+			<div class="control-group">
+				<label class="control-label">
+					有效期：
+				</label>
+				<div class="controls">
+					<label class="radio">
+						<input type="radio" value="3" name="validDays" checked />3天
+					</label>
+					<label class="radio">
+						<input type="radio" value="5" name="validDays" #if("$!{tradeBuy.validDays}"=="5") checked #end />5天
+					</label>
+					<label class="radio">
+						<input type="radio" value="7" name="validDays" #if("$!{tradeBuy.validDays}"=="7") checked #end/>7天
+					</label>
+					<label class="radio">
+						<input type="radio" value="10" name="validDays" #if("$!{tradeBuy.validDays}"=="10") checked #end/>十天
+					</label>
+					<label class="radio">
+						<input type="radio" value="0" name="validDays" #if("$!{tradeBuy.validDays}"=="0") checked #end/>长期有效
+					</label>
+				</div>
+			</div>
+				
+			<div class="control-group">
+				<label for="details" class="control-label"><span class="red">*</span>信息描述：</label>
+				<div class="controls">
+					<textarea name="details" cols="80" rows="5" id="details" class="validate[required,maxSize[500]]">$!{tradeBuy.details}</textarea>
+					<div><span class="fontblue" id="readTerms">填写详细具体采购要求的买家收到的报价数量是其他买家的</span></div>
+				</div>
+			</div>
+			
+			<div class="form-actions">
+					<input type="submit" id="submitBtn" class="btn btn-large btn-primary" value="发布信息">
+			</div>
+			
+		</form>
+	</div>
+</div>
+#if($!{epAuthUser})
+<input type="hidden" id="loginstatus" value="1" />
+#else
+<input type="hidden" id="loginstatus" value="0" />
+#end
+
+#parse("/common/importValidate.vm")
+<script>
+    jQuery("document").ready(function(){
+		
+		jQuery("input").click(function(){
+		//判断微信验证
+				var ajaxurl="http://pyapp.zz91.com/weixin/huanbaoweixin_yzfront.html?account=$!{epAuthUser.account}&flag=1";
+				jQuery.getScript(ajaxurl, function() {
+					var result = _suggest_result_.result;
+					if (result=="0"){
+						jIframe('http://pyapp.zz91.com/weixin/huanbaoweixin_yz.html?account=$!{epAuthUser.account}', '微信验证','550','300');
+						jQuery("#title").val("")
+						return false;
+					}
+				});
+		});
+		jQuery("#buyForm").validationEngine("attach");
+		
+		jQuery("#buyForm").submit(function(){
+			if(!$("#buyForm").validationEngine('validate')){
+				return false;
+			}
+			
+			//判断登录
+			if(jQuery("#loginstatus").val()=="1"){
+				return true;
+			}
+
+			//显示登录框
+			var loginBox=new Asto.util.Modal({
+				title:"请先登录后再操作",
+				url:"#springUrl('/common/loginMini.htm')?destUrl=/callback/login.htm",
+				width:400,
+				height:260,
+				modal:true
+			});
+
+			//设置 Callback 
+			Asto.util.Callback.setSubmitCallback(function(success,data){
+				loginBox.close();
+				jQuery("#loginstatus").val(1);
+				jQuery("#buyForm").submit();
+			});
+
+			return false;
+		});
+		
+		//初始化收货地区
+		//TODO area init
+		var selector = new Asto.util.Selector({
+			url:"#springUrl('/common/getAreaCode.htm')",
+			selects:["#provinceCode","#areaCode"],
+			field:{code:"code",label:"name"}
+		});
+
+		selector.init({
+			rootCode:"10011000",
+			#if($!{tradeBuy.areaCode} != "")
+			initCode:"$!{tradeBuy.areaCode}"
+			#end
+		});
+
+		//初始化供货地区
+		//TODO area init
+		var selector = new Asto.util.Selector({
+			url:"#springUrl('/common/getAreaCode.htm')",
+			selects:["#supplyProvinceCode","#supplyAreaCode"],
+			field:{code:"code",label:"name"}
+		});
+
+		selector.init({
+			rootCode:"10011000",
+			#if($!{tradeBuy.supplyAreaCode} != "")
+			initCode:"$!{tradeBuy.supplyAreaCode}"
+			#end
+		});
+		
+		
+	});
+</script>
+
+#if("$!{epAuthUser.account}"!="")
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(2, 4);
+	});
+</script>
+#end

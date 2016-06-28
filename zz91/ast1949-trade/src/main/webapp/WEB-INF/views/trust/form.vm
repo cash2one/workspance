@@ -1,0 +1,73 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>无标题文档</title>
+	<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css" />
+	<script type="text/javascript" src="http://img0.zz91.com/front/js/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+	<script type="text/javascript" src="http://img0.zz91.com/zz91/purchase/js/formChecked.js"></script>
+	<style type="text/css">
+		.p-form {width:430px;height:248px;padding:0 20px;}
+		.p-form h3 {font-size:16px;color:#3399ee;font-weight:bold;margin-bottom:6px;}
+		.p-form p {line-height:25px;color:#666666;font-size:12px;}
+		.p-form textarea {width:100%;height:96px;border:1px solid #3399ee;overflow:hidden; resize:none;margin:10px 0 12px;}
+		.p-form input {width:87px;height:30px;line-height:30px;border:0;background:#3399ee;color:#fff;text-align:center;}
+		.p-form .p-form-text {line-height:30px;font-size:12px;color:#999999;float:left;}
+		.p-form .p-form-btn {font-size:14px;float:right;}
+	</style>
+	<script>
+	jQuery(document).ready(function(){
+	    jQuery("#form_suc").click(function(){
+			//采购单id
+			#if($!{mid})
+				var mid=$!{mid};
+			#else
+				var mid=0;
+			#end
+			//供货内容
+			var content=encodeURI(jQuery("#content").val());
+			gonghuo(mid,content);
+		});
+		if($!{loginFlag}==0){
+			var url=parent.location.href;
+			parent.location.href="$!{address.www}/login.htm?url="+url
+		}
+	});
+	function gonghuo(a,b){
+		if(b==""){
+			jQuery("div").find("span").css("display","block");
+		}else{
+			jQuery.ajax({
+    			url:'$!{address.caigou}/doForm.htm?id='+a+"&content="+b,
+				type:"post",
+				dataType:"json",
+				success:function(reg){
+					if(reg.sw>0){ 
+						parent.closeoverlay();
+						parent.openoverlay('form2.htm','',470,182,0);
+					}
+				}
+			});
+		}
+	}
+	</script>
+</head>
+<body style="background:#fff;">
+	<div class="p-form">
+		<h3>我要供货</h3>
+        <p>请在下方填写您的真实报价（价格必填），并对您的货物描述清楚。</p>
+        <p>例如：HDPE再生颗粒，吹膜用，白色，优质，杭州，10吨/月，8000元/吨</p>
+        <form action="" method="post">
+        	<textarea name="content" id="content"></textarea><br />
+            <div class="p-form-box">
+                <div class="p-form-text">不合理报价会被系统自动屏蔽</div>
+				<span style="display:none;color:red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请填写您的供货详情</span>
+                <div class="p-form-btn"><input type="button" id="form_suc" value="提交报价" /></div>
+                <div class="cb"></div>
+            </div>
+        </form>
+	</div>
+	<!--end p-form-->
+</body>
+</html>

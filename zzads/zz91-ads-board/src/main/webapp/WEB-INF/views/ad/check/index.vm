@@ -1,0 +1,72 @@
+<script type="text/javascript" src="#springUrl('/js/extux/FileUploadField.js')" ></script>
+<script type="text/javascript" src="#springUrl('/js/extux/UploadWin.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/ad/position.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/ad/material.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/ad/ad.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/ad/check.js')" ></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		var tree = new com.zz91.ads.board.ad.position.TreePanel({
+			region:"west",
+			split:true,
+			collapsible:true,
+			width:200,
+			contextmenu:null
+		});
+		
+		var grid = new com.zz91.ads.board.ad.check.Grid({
+			id:"checkadgrid",
+			layout:"fit",
+			region:"center"
+		});
+		
+		var exactGrid = new com.zz91.ads.board.ad.ad.AdExactTypeGrid({
+			region:"center"
+    	});
+		
+		var materialGrid=new com.zz91.ads.board.ad.material.AdMaterialGrid({
+			split:true,
+			region:"east",
+			width:300
+    	});
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[{
+				region:"center",
+				layout:"border",
+				items:[grid,{
+					region:"south",
+					layout:"border",
+					collapsible:true,
+					collapsed:true,
+					height:250,
+					items:[exactGrid,materialGrid]
+				}]
+			},tree]
+		});
+		
+		tree.on('click',function(node,event){
+			var _id = node.attributes['data'];
+			if(_id!=""){
+				grid.getStore().baseParams["positionId"]=_id;
+			}else{
+				grid.getStore().baseParams["positionId"]=null;
+			}
+			grid.getStore().reload({params:{"start":0, "limit":Context.PAGE_SIZE}});
+		});
+		
+		grid.on("rowclick", function(g,rowIndex,e){
+			var row=g.getStore().getAt(rowIndex);
+			
+			exactGrid.aid=row.get("id");
+			exactGrid.getStore().baseParams["aid"]=row.get("id");
+			exactGrid.getStore().reload();
+			
+			materialGrid.aid=row.get("id");
+			materialGrid.getStore().baseParams["aid"]=row.get("id");
+			materialGrid.getStore().reload();
+			
+		});
+	});
+</script>

@@ -1,0 +1,59 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1502","","30")
+<div class="myrcNormalFrame">
+    #if($isNeverSubscribe)
+    	<div class="tishiWarn" style="margin-top:0">
+    		<img src="$!{address.images}/global/icon/caution2.gif"> 您还没有订阅您的行情，不能查看在线行情快递
+    	</div>
+    #end
+    <div class="commTip">
+        <h3 class="subscribManageTit">实时报价商机管理</h3>
+        <span class="subscribManageSub" ><a target="_blank" href="$!{address.server}/front/subscribe/subscribePrice.htm" class="commArrowNews">订阅新行情</a></span>
+        <div style="clear:both"></div>
+    </div>
+	
+   <div class="commList">
+    	<div class="commListTit">
+            <span class="subscibNewsTit">订阅内容</span>
+            <span class="subscibNewsType">提醒方式</span>
+            <span class="subscibNewsOperat">操作</span>
+            <div style="clear:both"></div>
+        </div>
+		<ul>
+              #foreach($price in $priceList)
+              <li>
+                <span class="subscibNewsTit">
+					<a href="#springUrl('/mysubscribe/priceList.htm?id=')$!{price.subscribe.id}&priceTypeId=$!{price.subscribe.priceTypeId}&priceAssistTypeId=$!{price.subscribe.priceAssistTypeId}" target="_blank">
+						$price.subscribeCategory
+					</a>
+				</span>
+				<span class="subscibNewsType">
+                    #if($price.subscribe.isSendByEmail)
+						信息发送到：$!{price.subscribe.email}
+                   	#else
+                        <font style="color:#AAA">无邮件提醒</font>
+                    #end
+				</span>
+                <span class="subscibNewsOperatMod"><a href="$!{address.server}/subscribe/subscribe.htm?id=${price.subscribe.id}" target="_blank" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">修改</a></span>
+                <span class="subscibNewsOperatDel"><a href="#springUrl('/mysubscribe/deleteSubscribe.htm?id=')${price.subscribe.id}" onClick="return confirm('确实要删除吗？')" class="commTrashFeed" style="padding-left:16px;background-position:left 2px;">删除</a></span>
+              </li>
+			  #end
+    	</ul>
+   </div>
+		#if($isNeverSubscribe)
+			<div class="tishiError">你还没有订阅实时行情</div>
+		#end
+        
+		<div style="clear:both"></div>  
+    	<div class="mailTip">
+                <b>邮件地址提醒</b><br> 
+    			<hr style="color:#CCC;height:1px;">	
+    				当前用于接收的电子邮箱为：<font color=#ff7300>$!{currentEmail} </font> 
+    			<a href="#springUrl('/mycompany/updateCompany.htm')" class="modMail" title="点击修改接收电子邮箱">修改</a>
+    	</div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	})
+</script>

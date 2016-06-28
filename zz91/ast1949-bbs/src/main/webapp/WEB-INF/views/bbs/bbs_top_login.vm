@@ -1,0 +1,83 @@
+<script type="text/javascript">
+function layout(){
+	var othersAccount=jQuery("#othersAccount").val();
+	logout(jQuery("#url").val(),"#springUrl('/user')",function(response){
+		if(response.success){
+			if(othersAccount==""){
+				window.location.href=response.data;
+			}else{
+    			window.location.href=response.data+"?account="+othersAccount;
+			}
+		}
+		else{
+			alert(response.data);
+		}
+	});
+}
+
+function greetings(){
+	now = new Date(),hour = now.getHours()
+	if(hour < 6){return "凌晨好！"}
+	else if (hour < 9){return "早上好！"}
+	else if (hour < 12){return "上午好！"}
+	else if (hour < 14){return "中午好！"}
+	else if (hour < 17){return "下午好！"}
+	else if (hour < 19){return "傍晚好！"}
+	else if (hour < 22){return "晚上好！"}
+	else {return "夜里好！"}
+}
+</script>
+<div class="bss_wrapper">
+    	<div class="header">
+          <div class="logo">
+			<a href="#springUrl('/index.htm')">
+				<img src="$!{address.img}/bbs/images/bbs/logo.jpg" alt=""/>
+			</a>
+		  </div>
+          #if($!{myaccount})
+			<div id="hadlogin" class="header_content" >
+			<div class="report_header3">
+    			#if($!{bbsUserProfilerDO.picturePath})
+    				<a href="#springUrl('/myalterimg.htm')"><img src="$!{address.resource}/$!{bbsUserProfilerDO.picturePath}"/></a>
+    			#else
+                    <a href="#springUrl('/myalterimg.htm')"><img src="$!{address.img}/bbs/images/50_no_avatar.gif"/></a>
+				#end
+			</div>
+             <div class="report_header1">
+                <span>#if($!{bbsUserProfilerDO.nickName})$!{bbsUserProfilerDO.nickName}#else $!{myaccount.account}#end</span>
+                <span>, <script type="text/javascript">document.write(greetings());</script></span>
+                <span><a href="#springUrl('/mymessage.htm')">[消息]</a></span>
+                <span><a href="javascript:layout()">[退出]</a></span>
+             </div>
+             <div class="report_header1">
+				#if($!{bbsUserProfilerDO})
+                    <span>[发帖数:$!{bbsUserProfilerDO.postNumber}]</span>
+                    <span>[积分:$!{bbsUserProfilerDO.integral}]</span>
+				#else
+					<span>[发帖数:0]</span>
+					<span>[积分:0]</span>
+				#end
+                <span><strong><a href="#springUrl('/myposted.htm')" title="实战社区" target="_blank">[实战社区]</a></strong></span>
+             </div>
+          </div>
+		  #end
+		  <input type="hidden" name="url" id="url" value="$!{url}" />
+		  <input type="hidden" name="othersAccount" id="othersAccount" value="$!{othersAccount}"/>
+          </div>
+          <!-- end-->
+
+      </div>
+	 <!--zz91bbs navigation area start-->	
+<div class="navigationArea">
+	<div class="zz91bbsNavigation">
+		<ul>
+			<li><a href="#springUrl('/')" #if(!${categoryId}) class="selected" #end >互助首页</a></li>
+			<li><a href="#springUrl('/bbsCategory1.htm')" #if($!{categoryId}==1) class="selected" #end >废料动态</a></li>
+			<li><a href="#springUrl('/bbsCategory2.htm')" #if($!{categoryId}==2) class="selected" #end >行业知识</a></li>
+			<li><a href="#springUrl('/bbsCategory3.htm')" #if($!{categoryId}==3) class="selected" #end >江湖风云</a></li>
+			<li><a href="#springUrl('/bbsCategory4.htm')" #if($!{categoryId}==4) class="selected" #end >ZZ91动态</a></li>
+		</ul>
+	</div>
+	#parse("/bbs/bbs_top_quick_nav.vm")
+</div>
+#parse("/bbs/bbs_top_search.vm")

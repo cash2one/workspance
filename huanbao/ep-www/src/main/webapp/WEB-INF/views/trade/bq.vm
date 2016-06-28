@@ -1,0 +1,261 @@
+#set($layout="/layout/trade/subnetlistdefault.vm")
+<header id="header" class="header">
+    <article class="hb_masthead">
+        <div class="hb_logo">
+            <script type="text/javascript" src="http://gg.zz91.com/show?p=200"></script>
+        </div>
+        <div class="hb_search">
+            <form action="$!{address.www}/search.htm" method="post">
+                <fieldset>
+                    <legend  class="displaynone">hb搜索</legend>
+                    <div class="hb_searchlist">
+                        <ul class="hb_serchlist_ul" id="hbSearchType">
+                            <li class="srhyes">产品</li>
+                            <li >资讯</li>
+                            <li >展会</li>
+                            <li >公司库</li>
+                            <li >求购</li>
+                        </ul>
+                        <span class="search_hot">
+                            <a href="http://www.huanbao.com/daohang.htm">环保设备导航</a>
+                        </span>
+                    </div>
+                    <div class="hb_searcharea">
+                        <label for="hbSearchKeyWords" class="hb_search_label" id="hbSearchKeyLabel">请输入您要的关键字</label>
+                        <input type="text" class="hb_search_text" name="searchKeyWords" id="hbSearchKeyWords"/>
+                        <input type="hidden" name="searchTypeValue" id="hbSearchTypeValue" value="0"/>
+                        <input type="submit" value="找一下" class="hb_search_sub" id="hb_search_sub"/>
+                    </div>
+                    <div class="hb_search_hotkey">
+                        <span class="hb_search_hotkey_t titnormal fontnormal">热门关键字：</span>
+                        #cacheFragment("$!{address.fragment}/fragment/common/subnetTopTags.htm", "", "", "43200")
+                        #foreach($key in $!{hotKeyWords.keySet()})
+                            <span>
+                                <a href="$!{address.www}/trade/supply/index----${hotKeyWords.get($key)}.htm" target="_blank">$key</a>
+                            </span>
+                        #end 
+						#end
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </article>
+    <script>
+        //search slide
+        hb.util.search.slideSearchType({
+        hbSearchType:"#hbSearchType",
+        hbsearchTypeValue:"#hbSearchTypeValue",
+        hbsearchKeyWords:"#hbSearchKeyWords",
+        hbSearchKeyLabel:"#hbSearchKeyLabel"
+        });
+        $('.isSelectTip').css("left",40);
+    </script>
+</header>
+<div class="header sonmenu_bj">
+    <div class="sonmenu_left"></div>
+    <div class="sonmenu_cen">
+        <ul>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}">首页</a>
+            </li>
+            <li class="sonmenu_centits">
+                <a href="$!{address.www}/ws">污水处理</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/ys">原水处理</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/kq">空气净化</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/yj">材料药剂</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/beng">泵</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/fa">阀</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/fj">风机</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/hw">环卫设备</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/yqyb">仪器仪表</a>
+            </li>
+            <li class="sonmenu_centit">
+                <a href="$!{address.www}/zh">综合设备</a>
+            </li>
+        </ul>
+    </div>
+    <div class="sonmenu_right"></div>
+    <div class="clear"></div>
+</div>
+<div class="sonbody">
+    <div class="sonlocation">
+        <span>本周新增客户：
+            #cacheFragment("$!{address.fragment}/fragment/common/todayMarket.htm", "", "", "43200")
+            <font color="#FF3300">$!{weekCompanyCount}</font>人
+			#end 
+		</span>
+		您目前所在的位置：<a href="$!{address.www}">中国环保网</a> > <a href="$!{address.trade}">交易中心</a> > $!{search.keywords}
+	</div>
+</div>
+<article class="hb_mainblock">
+    <section  class="hb_tradelist_l">
+        <div class="tdl_l_sorts margintop8 html5radius" id="hb_tdl">
+            <div class="tdl_l_sorts_s">
+                <h3 class="tdl_l_sorts_t">
+                    <span class="paddingright2em">相关类别：</span>
+                </h3>
+                <ul>
+                    #foreach($item in $!{tradecgs})
+                        <li>
+                            <a href="#springUrl('/trade')/bq$!{item.id}.htm">${item.name}</a>
+                        </li>
+                    #end
+                </ul>
+                <span class="showhidebtn" id="moreBtn">更多</span>
+            </div>
+            <div id="searchPropertyValueDiv" class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        <div class="tdl_ls">
+		#if($!{page.records.size()}<=0)
+		<div style="font-size:18px;color:red">此页已无内容</div>
+		#end
+            <ul>
+                #foreach($list in $!{page.records})   
+                    <li>
+                        <article class=" ts_ls_box ">
+                            <section class="ls_ifo">
+                                <header class="ls_ifo_img">
+                                    #if("$!{list.supply.photoCover}"=="")
+                                        <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}">
+                                            <img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" alt="$!{list.supply.title}"/>
+                                        </a>
+                                        #else
+                                        <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}" >
+                                            <img src="$!{address.thumb}$!{address.resource}$!{list.supply.photoCover}&width=100&height=100" alt="$!{list.supply.title}"/>
+                                        </a>
+                                    #end
+                                </header>
+                                <section class="ls_ifo_details">
+                                    <h3>
+                                        <a href="$!{address.esite}/detail$!{list.supply.id}.htm" target="_blank" title="$!{list.supply.title}">
+                                            <span class="fontorange comm_em_red p_ellipsis">$!{list.supply.title}</span>
+                                        </a>
+                                    </h3>
+                                    <p class="ls_ifo_content comm_em_red p_ellipsis">$!{list.supply.detailsQuery}</p>
+                                    <p class="ls_ifo_com">
+                                        <a href="$!{address.esite}/index$!{list.comp.cid}.htm" target="_blank">#printTitle($!{list.comp.name} 16 '')</a>
+                                        <span class="ls_ifo_remarksbtn"></span>
+                                    </p>
+                                    <aside class="ls_ifo_remarks">
+                                        <div id="compDetails$!{list.supply.id}" class="ls_ifo_rmkbase">
+                                            <p>注册时间：<span class="fontblue">#printFragmentDate("yyyy-MM-dd" $!{list.comp.gmtCreated})</span>
+                                            </p>
+                                        </div>
+                                        <div class="ls_ifo_rmkbook">
+                                            <p>荣誉证书：<span class="fontblue">0条</span>
+                                            </p>
+                                        </div>
+                                    </aside>
+                                </section>
+                            </section>
+                            <section class="ls_detal">
+                                <div class="ls_detal_area">
+                                    <span>$!{list.area.province}<br>$!{list.area.city}</span>
+                                </div>
+                                <div class="ls_detal_price">
+								#if ("$!{list.supply.priceNum}" != "" && "$!{list.supply.priceNum}" != "0" && "$!{list.supply.priceNum}" != "0.0")
+									<span class="fontbold fontorange">$!{list.supply.priceNum}</span>
+                                    #if("$!{list.supply.priceUnits}" == "")
+										元 
+									#else 
+										$!{list.supply.priceUnits} 
+									#end 
+								#else 
+									面议 
+								#end
+								</div>
+                                <div class="ls_detal_mem">
+                                    #if("$!{list.comp.memberCode}"=="10011001")
+                                        <img src="${address.img}/huanbao/images/company/zht.png" width="51" hight="23"/>
+                                        <a href="#" class="1001001">高级会员</a>
+                                    #else
+                                        <a href="#" class="1001003">普通会员</a>
+                                    #end
+                                </div>
+                                <div class="ls_detal_link">
+                                    <a href="$!{address.esite}/message$!{list.comp.cid}.htm" class="ls_detal_link01" target="_blank">给我留言</a>
+                                    <a href="$!{address.esite}/companyContact$!{list.comp.cid}.htm" class="ls_detal_link02" target="_blank">联系方式</a>
+                                    <a href="$!{address.esite}/index$!{list.comp.cid}.htm" class="ls_detal_link03" target="_blank">门市部</a>
+                                    <aside class="link_evalute_box">
+                                        <header class="link_eva_t">
+                                            <h4 class="link_eva_tit">评价信息</h4>
+                                            <span class="link_eva_close"></span>
+                                        </header>
+                                        <!-- this is iframe <iframe> start-->
+                                        <p class="link_eva_f">
+                                            <input type="radio" name="eva" value="0" id='isgood'/>
+                                            <label for="isgood" class="isgoodfor">好</label>
+                                            <input type="radio" name="eva" value="1" id='isbad'/>
+                                            <label for="isbad" class="isbadfor">不好</label>
+                                        </p>
+                                        <p class="link_eva_s">
+                                            <input type="submit" class="link_eva_sub" value="提交评价"//>
+                                        </p>
+                                        <!-- this is iframe <iframe> end-->
+                                    </aside>
+                                </div>
+                            </section>
+                        </article>
+                    </li>
+                #end
+                <div class="clear"></div>
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="pagesbar margintop8">
+            #staticPageNavp($!{page} "#springUrl('/trade/bq')" "$!{id}" "")
+        </div>
+    </div>
+</section>
+<section  class="hb_tradelist_r">
+	<figure class="hbl_r_ad margintop8 html5radius"><img src="$!{address.img}/huanbao/images/ads/trade/tradelist/trlst02.gif"/></figure>		
+    #cacheFragment("$!{address.fragment}/fragment/news/keywordNews.htm?keyword=$!{search.encodeKeywords}&size=10", "", "1", "600")
+    <div class="pg_mksrf_p">
+        <h3>相关资讯</h3>
+        <ul class="ul-28px">
+            #foreach($new in $!{list})
+                <li>
+                    <a href="$!{address.news}/details$!{new.id}.htm">#printTitle($!{new.title} 8 "...")</a>
+                </li>
+            #end
+        </ul>
+    </div>
+	#end
+	 <div class="pg_mksrf_p">
+            <h3><a href="#springUrl('/trade/newb.htm')" target="_blank">热门行业</a></h3>
+        	<ul class="ul-28px">
+					<li>·<a href="$!{address.trade2}/list-566.htm" target="_blank" title="污水处理设备">污水处理设备</a></li>
+					<li>·<a href="$!{address.trade2}/list-616.htm" target="_blank" title="原水处理设备">原水处理设备</a></li>
+					<li>·<a href="$!{address.trade2}/list-655.htm" target="_blank" title="空气净化设备">空气净化设备</a></li>
+					<li>·<a href="$!{address.trade2}/list-687.htm" target="_blank" title="环保材料药剂">环保材料药剂</a></li>
+					<li>·<a href="$!{address.trade2}/list-729.htm" target="_blank" title="泵/阀/风机">泵/阀/风机</a></li>
+					<li>·<a href="$!{address.trade2}/list-892.htm" target="_blank" title="环保仪器仪表">环保仪器仪表</a></li>
+					<li>·<a href="$!{address.trade2}/list-849.htm" target="_blank" title="环卫设备">环卫设备</a></li>
+					<li>·<a href="$!{address.trade2}/list-972.htm" target="_blank" title="综合设备">综合设备</a></li>
+        	</ul>
+    </div>
+</section>
+</article>
+<!----------ain list end----------->
+<div class="clear"></div>
+<script>
+    var lsbtn = new hb.tradelist.mouseHover();
+    lsbtn.SortsHover({sortsls:'#hb_tdl'})
+</script>

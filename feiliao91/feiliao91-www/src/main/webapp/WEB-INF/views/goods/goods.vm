@@ -1,0 +1,1113 @@
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/newprice/comm/comm-pop.css" />
+<script src="$!{address.css}/trade/comm/comm.js"></script>
+#set($layout="/layout/wwwLayout.vm")
+#set($modelName="list")
+#parse("/common/search.vm")
+<div class="content clearfix">
+	<div class="clearfix">
+		<div class="fl cpimglist">
+			<div class="medium-img j_bigimg">
+				<img  class="j_midimg" />
+				<span class="ks-imagezoom-lens j_lens"></span>
+				<div class="big-img j_bigdiv">
+					<img src="" />
+				</div>
+				<span class="getbigicon"><i class="icon-get iconfont">&#xe603;</i></span>
+			</div>
+			<div class="imgList-mo">
+				<ul class="imgList clearfix j_smImg">
+				</ul>
+			</div>
+		</div>
+		<div class="fl buy-cpinfo">
+			<h4 class="buy-cpinfo-title">$!{dto.goods.title}</h4>
+			<div class="clearfix price-buy">
+				<span class="fl cpinfo-title-name">价格</span>
+				<div class="fl anred i-fweight jige-my">
+					<span class="mybz">￥</span><span class="priceNum">$!{dto.goods.price}</span>
+				</div>
+			</div>
+			<div class="clearfix">
+				<ul class="clearfix info-btmbr">
+					<li class="fl clearfix">
+						<span class="cpinfo-title-name fl">运费</span>
+						#if($!{yunFei})
+							#if($!{yunFei}=="-1")
+								<span class="mlft-size">商议后调整</span>
+							#elseif($!{yunFei}=="0")
+								<span class="mlft-size" style="color:red">包邮</span>
+							#else
+								<span class="mlft-size">$!{yunFei}</span>
+							#end
+						#else
+								<span class="mlft-size">商议后调整</span>
+						#end
+					</li>
+					<li class="fl clearfix">
+						<span class="cpinfo-title-big fl">起订量</span>
+						<span class="mlft-size">≥ <span class="j_smdun">$!{dto.goods.number}</span> $!{dto.goods.unit}</span>
+					</li>
+					<li class="fl clearfix">
+						<span class="cpinfo-title-big fl">货物所在地</span>
+						<span>$!{dto.area}</span>
+					</li>
+				</ul>
+			</div>
+			<div class="clearfix">
+				<ul class="clearfix info-btmbr">
+					<li class="fl clearfix">
+						<span class="cpinfo-title-name fl">成交</span>
+						<span class="mlft-size anred">$!{dto.successNum}</span>
+					</li>
+					<li class="fl clearfix">
+						<span class="cpinfo-title-big fl">评&nbsp;&nbsp;&nbsp;价</span>
+						<span class="mlft-size anred">$!{dto.judgeNum}</span>
+					</li>
+					<li class="fl clearfix">
+						<span class="xyu-img clearfix fl">
+							<i></i>
+							<i></i>
+							<i></i>
+							<i></i>
+							<i></i>
+						</span>
+						<span class="wupfs"></span>
+					</li>
+				</ul>
+			</div>
+			<div class="clearfix cp-color attribute">
+				<span class="fl cpinfo-title-name">颜色</span>
+				<div class="fl color-name clearfix j_colorname">
+					<span class="thiscolor">$!{dto.goods.color}</span>
+					##<span>红色</span>
+					##<span>棕色</span>
+				</div>
+			</div>
+			<div class="clearfix cp-color">
+				<span class="fl cpinfo-title-name">数量</span>
+				<div class="fl clearfix">
+					<form action="$!{address.trade}/goods/buy_good.htm" method="post" id="subForm" class="fl" >
+						<input class="buyNum fl j_buyNum" name="number" maxlength="6" value="$!{dto.goods.number}"/>
+						<input type="hidden" name="id" />
+						<input type="hidden" name="attribute"/>
+					</form>
+					<span class="fl">
+						<i class="getnum j_upNum"></i>
+						<i class="getnum getdown j_upDown"></i>
+					</span>
+					$!{dto.goods.unit}
+				</div>
+				<span class="fl surplus">库存<span class="j_maxnum">$!{dto.goods.quantity}</span>$!{dto.goods.unit}</span>
+			</div>
+			<div class="clearfix turedo">
+				<span class="gotobuy">立即购买</span>
+				<span class="buycar"><i class="icon-car iconfont">&#xe600;</i>加入购物车</span>
+			</div>
+			<div class="clearfix cnuo">
+				<span class="fl cpinfo-title-name">服务承诺</span>
+				<div class="cnuo-list">
+					#if($!{dto.bzjFlag})
+					<span>交易保证金</span>
+					#end
+					#if($!{dto.sevenDayFlag})
+					<span>7天无理由退货</span>
+					#end
+					#if($!{dto.companyInfo.creditStatus}=='2')
+						#if($!{dto.companyInfo.creditType}=='1')
+							<span>企业认证</span> 
+						#else
+							<span>个人认证</span> 
+						#end
+					#end
+				</div>
+				<a href="#" class="fr color-66">举报</a>
+			</div>
+			
+		</div>
+		<div class="fr moright-img">
+			<div class="moright-img-tt">买家还在看</div>
+			<div class="moveList">
+				<ul class="clearfix moveList-ul">
+					<li class="fl">
+						#foreach($li in $nineList)
+							#if( $velocityCount > 4 )
+								<div class="moveList-ul-mo">
+									<a href="#springUrl('/goods')$!{li.goods.id}.htm" target="_blank">
+										<img src="$!{address.img}/$!{li.picAddress}" class="rightdo-img" />
+									</a>
+									<p class="moveList-ul-moery">￥$!{li.goods.price}</p>
+								</div>
+							#end
+						#end
+					</li>
+					<li class="fl">
+						#foreach($li in $nineList)
+							#if($velocityCount > 3 && 7 > $velocityCount)
+								<div class="moveList-ul-mo">
+									<a href="#springUrl('/goods')$!{li.goods.id}.htm" target="_blank">
+										<img src="$!{address.img}/$!{li.picAddress}" class="rightdo-img" />
+									</a>
+									<p class="moveList-ul-moery">￥$!{li.goods.price}</p>
+								</div>
+							#end
+						#end
+					</li>
+					<li class="fl">
+						#foreach($li in $nineList)
+							#if($velocityCount > 6 && 10 > $velocityCount )
+								<div class="moveList-ul-mo">
+									<a href="#springUrl('/goods')$!{li.goods.id}.htm" target="_blank">
+										<img src="$!{address.img}/$!{li.picAddress}" class="rightdo-img" />
+									</a>
+									<p class="moveList-ul-moery">￥$!{li.goods.price}</p>
+								</div>
+							#end
+						#end
+					</li>
+				</ul>
+			</div>
+			<div class="getmove clearfix">
+				<span class="getmove-left fl j_pre"></span>
+				<span class="getmove-index fl clearfix">
+					<i class="thisindex"></i>
+					<i></i>
+					<i></i>
+				</span>
+				<span class="getmove-right fl j_next"></span>
+			</div>
+		</div>
+	</div>
+	<div class="clearfix buy-history">
+		<div class="fl buyfirm-left">
+			<div class="buyfirm-info">
+				<div class="buyfirm-name">
+					<a href="#springUrl('/compInfo')$!{dto.companyInfo.id}.htm" target="_blank"><h2 class="buyfirm-name-tt">$!{dto.companyInfo.name}</h2></a>
+					<p class="j_cmNumimg">
+					</p>
+				</div>
+				<div class="firmxx">
+					<p><span class="color-66">主营业务：</span>$!{dto.companyInfo.business}</p>
+					<p><span class="color-66">所在地区：</span>$!{dto.location}</p>
+				</div>
+				<div class="clearfix seefirm">
+					<span class="fl j_seephone">查看联系方式</span>
+					<span class="fr">在线客服</span>
+				</div>
+				<div class="firmpj">
+					<span class="color-66">描述</span> $mapxy.get("good_star") &nbsp;
+					<span class="color-66">服务</span> $mapxy.get("serve_star") &nbsp;
+					<span class="color-66">物流</span> $mapxy.get("mail_star") &nbsp;
+				</div>
+			</div>
+			<div class="tel-phone">
+				<div class="tel-phone-tt">
+					<span class="fl">联系方式</span>
+					<a href="javascript:void(0)" class="fr close-tel">x</a>
+				</div>
+				<div class="tel-phone-wen">
+					#if($!{dto.account.mobile}&&$!{dto.account.mobile}!="")<p>手机：$!{dto.account.mobile}</p>#end
+				</div>
+			</div>
+		</div>
+		<div class="fr cp-all-details">
+			<div class="cp-details-xz j_qhtype clearfix">
+				<span class="nowtype">商品详情</span>
+				<span id="toplist">累计评价  <em class="blue">$!{dto.judgeNum}</em></span>
+				<span>成交记录  <em class="blue">$!{dto.successNum}</em></span>
+			</div>
+			<div class="cp-details-alltype">
+				<div class="cp-details-mo">
+					<div class="cpsm-mian">
+						<div class="clearfix cpsm-mo">
+							#if($!{dto.goods.color}&&$!{dto.goods.color}!="")
+								<p class="cpsm-mo-ps">
+									<span class="color-66">颜色：</span>
+									$!{dto.goods.color}
+								</p> 
+							#end
+							#if($!{dto.goods.level}&&$!{dto.goods.level}!="")
+								<p class="cpsm-mo-ps">
+									<span class="color-66">等级：</span>
+									$!{dto.goods.level}
+								</p> 
+							#end
+							#if($!{dto.useLabel}&&$!{dto.useLabel}!="")
+								<p class="cpsm-mo-ps">
+									<span class="color-66">用途级别：</span>
+									$!{dto.useLabel}
+								</p> 
+							#end
+							#if($!{dto.processLabel}&&$!{dto.processLabel}!="")
+								<p class="cpsm-mo-ps">
+									<span class="color-66">加工级别：</span>
+									$!{dto.processLabel}
+								</p> 
+							#end
+							#if($!{dto.charaLabel}&&$!{dto.charaLabel}!="")
+								<p class="cpsm-mo-ps">
+									<span class="color-66">特性级别：</span>
+									$!{dto.charaLabel}
+								</p> 
+							#end
+							#foreach($li in $map.keySet())
+								<p class="cpsm-mo-ps">
+									<span class="col">$li：</span>
+										$map.get($li)
+								</p>
+							#end
+						</div>
+					</div>
+					<div class="xqimg-list">
+						$!{dto.goods.detail}
+					</div>
+				</div>
+				<form  action="" method="post" enctype="multipart/form-data" id="form2">
+					<input type="file" id="uploadfile" name="uploadfile" style="display:none;"/>
+				</form>
+				<div class="cp-details-mo" style="display:none">
+					#if($!{bool})
+						<div class="user-pj clearfix">
+							<div class="fl user-cp-pj">
+								<form action="" method="post" id="form1">
+									<h2 class="pj_tole">其他买家，需要您的建议</h2>
+									<table cellpadding="0" cellspacing="0" class="user-table">
+										<tr>
+											<td valign="middle" width="78" bgcolor="f2f2f2" align="center">
+												评价商品
+											</td>
+											<td>
+												<textarea class="sp-textarea" name="text"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td width="78" bgcolor="f2f2f2" align="center" >评价服务</td>
+											<td><textarea class="pj-fuwu" name="service"></textarea></td>
+										</tr>
+										<input type="hidden" value="$!{orderId}" name="orderId" />
+                                        <input type="hidden" id="goodStar" name="goodStar" />
+										<input type="hidden" id="serveStar" name="serveStar" />
+										<input type="hidden" id="mailStar" name="mailStar" />
+										<tr>
+											<td width="78" bgcolor="f2f2f2" align="center">晒图片</td>
+											<td>
+												<div class="pjimgList fl">
+													<p></p>
+												</div>
+												<div class="fl baogao-img bgImg">
+													<span class="imginto fl j_upload">+</span>
+												</div>
+												<span class="pjimg-num">0/5</span>
+											</td>
+										</tr>
+									</table>
+								</form>
+							</div>
+							<div class="fr user-dp-alldiv clearfix">
+								<div class="user-dp-num">
+									<div class="pjleixing pjleixing-btm">
+										<span class="pjleixing-bt"><i>*</i> 描述相符</span>
+										<span class="pfimg" fsNum="first_fs">
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+										</span>
+										<span class="j_pjnum">5分 惊喜</span>  <!-- pjnum-my -->
+									</div>
+									<div class="pjleixing">
+										<span class="pjleixing-bt"><i>*</i> 卖家服务</span>
+										<span class="pfimg" fsNum="sced_fs">
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+										</span>
+										<span class="j_pjnum">5分 惊喜</span> <!-- pjnum-yb -->
+									</div>
+									<div class="pjleixing">
+										<span class="pjleixing-bt"><i>*</i> 物流服务</span>
+										<span class="pfimg" fsNum="thied_fs">
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+											<i></i>
+										</span>
+										<span class="j_pjnum">5分 惊喜</span> <!-- pjnum -->
+									</div>
+								</div>
+								<span class="pjbtn fr pjbtnn">提交评价</span>
+							</div>
+						</div>
+					#end
+					<div class="pingjia-xinxi">
+						<div class="pingjia-xl">
+							<label><input name="pjia" type="radio" value="0" checked/> 全部 </label> 
+							<label><input name="pjia" type="radio" value="1" /> 好评($mappj.get("goodNum")) </label> 
+							<label><input name="pjia" type="radio" value="2" /> 中评($mappj.get("ordinaryNum")) </label> 
+							<label><input name="pjia" type="radio" value="3" /> 差评($mappj.get("badNum")) </label> 
+							<label><input name="pjia" type="radio" value="4" /> 图片($mappj.get("picNum")) </label> 
+						</div>
+						<ul class="pingjia-all-ul">##评价列表
+						</ul>
+						<div class="page-num pj_page">##评价翻页
+						</div>
+					</div>
+				</div>
+				<div class="cp-details-mo" style="display:none">
+					<dl class="cj_jiru">
+						<dt class="clearfix">
+							<div class="fl cj_jiru1"><span class="i-fweight">交易成功：</span>$!{tnumber} 笔</div>
+							<div class="fl cj_jiru2"><span class="i-fweight">交易量：</span>$!{tquality} 吨</div>
+						</dt>
+						<dt class="clearfix">
+							<div class="fl cj_jiru1 i-fweight">买家</div>
+							<div class="fl cj_jiru2 i-fweight">规格</div>
+							<div class="fl cj_jiru3 i-fweight">成交单价</div>
+							<div class="fl cj_jiru4 i-fweight">数量</div>
+							<div class="fl cj_jiru5 i-fweight">成交时间</div>
+						</dt>
+					</dl>
+					<div class="page-num-final">
+						<div class="page-num trade_page">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="canbuy-more">
+				<div class="canbuy-more-top">
+					<span class="fl">买家还看了</span>
+					<a href="#" class="fr color-99">更多>></a>
+				</div>
+				<div class="canbuy-more-list">
+					<ul class="paycp-ul clearfix paycp-ul-more">
+						#foreach($li in $forList)
+							<li>
+								<div class="info-imgmo j_moimg">
+									<a href="#springUrl('/goods')$!{li.goods.id}.htm"><img src="$!{address.img}/$!{li.picAddress}" class="info-img" target="_blank"/></a>
+									<div class="xiyu-mai xiyu-zz"></div>
+								</div>
+								<p class="info-two"><a href="#springUrl('/goods')$!{li.goods.id}.htm" target="_blank">$!{li.goods.title}</a></p>
+								<p class="clearfix info-first">
+									<span class="anred fl">¥ <span class="cp-moery">$!{li.goods.price}</span></span>
+									<span class="color-99 fr">成交$!{li.successNum}笔</span>
+								</p>
+							</li>
+						#end
+					</ul>
+					<input type="hidden"  id="goodsId"/>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+
+    $(document).ready(function(){
+	  var da=parseFloat($(".j_maxnum").html());
+	   if(da<=0){
+	    $(".buycar").hide();
+	    $(".gotobuy").unbind("click");
+		$(".gotobuy").html("库存不足");
+		$(".gotobuy").attr("style","background:grey");
+	   }
+	})
+    var cpNum = "$!{xy}";//产品评分
+    var cpnum_html = "";
+    if(cpNum){
+   		 $(".wupfs").html(cpNum+"分")
+   	}
+    for(var i=0;i<=cpNum-1;i++){
+        $(".xyu-img i").eq(i).addClass("allman");
+    }
+    if(parseFloat(cpNum)!=cpNum){
+        $(".xyu-img i").eq(parseFloat(cpNum)).addClass("banstar");
+    }
+    //点击切换产品信息
+    $(".j_qhtype span").bind("click",function(){
+        var index = $(this).index();
+        showinfo(index)
+    })
+    //描述打分
+    var pjList=[{
+        className:"notmy",
+        productMs:"很不满意",
+        msBg:"pjnum"
+        },{
+        className:"notmy",
+        productMs:"不满意",
+        msBg:"pjnum"
+    },{
+        className:"yiban",
+        productMs:"一般",
+        msBg:"pjnum-yb"
+    },{
+        className:"yiban",
+        productMs:"满意",
+        msBg:"pjnum-yb"
+    },{
+        className:"mayi",
+        productMs:"惊喜",
+        msBg:"pjnum-my"
+    }]
+    var fsList ={
+        first_fs:0,
+        sced_fs:0,
+        thied_fs:0
+    }
+	
+    ##提交评价
+	$(".pjbtnn").click(function(){
+	   if(fsList.first_fs==0||fsList.sced_fs==0||fsList.thied_fs==0){
+	    alert("请为评价打分");
+		return false;
+	   }
+	   $("#goodStar").val(fsList.first_fs);
+	   $("#serveStar").val(fsList.sced_fs);
+	   $("#mailStar").val(fsList.thied_fs);
+	   var da = $("#form1").serialize();
+	   jQuery.ajax({
+		   url:"#springUrl('/goods/addJudge.htm')",
+		   data:da,
+		   type: "POST",
+		   dataType:"json",
+		   success:function(data){
+		   if(data.success){
+			   window.location.reload();
+		   }else{
+		    alert("评论失败");
+		   }
+		   }
+		  });
+	})
+	
+	jQuery("body").delegate(".j_upload","click",function(){
+        	jQuery("#uploadfile").click();
+    });
+	var num=0;
+	
+	jQuery("#uploadfile").change(function(){
+	    var formDate = new FormData(jQuery(this).parent()[0]);
+##	    var formDate = $("#form2").serialize();
+        if(num>=5){
+		alert("最多上传5张图片");
+		return false;
+		}
+        formDate.append("targetType", 3);
+	    jQuery.ajax({
+        			url:"#springUrl('/upload/judgeUpload.htm')",
+        			data:formDate,
+        			type: "POST",
+        			cache: true,
+        			async: false,
+        			dataType:"json",
+        			contentType:false,
+        			processData:false,
+        			success: function(data) {
+					num=num+1;
+					$(".pjimg-num").html(num+"/5");
+					   $(".pjimgList").find("p").after("<img src="+"$!{address.img}"+data.url+">"+"<input type=\"hidden\" name=\"picAddress\" value=\""+data.id+"\">");
+                	}
+        		});
+	})
+	
+    $(".pfimg i").bind("mouseover",function(){
+        var $this =$(this);
+        var index =$this.index();
+        getStar($this,index)
+    })
+    $(".pfimg i").bind("click",function(){
+        var $this =$(this)
+        var index =$this.index();
+        var fsnum =  $this.parent().attr("fsnum");
+        fsList[fsnum] = index+1;
+    })
+
+    $(".pfimg i").bind("mouseout",function(){
+        var $this = $(this);
+        var fsnum =  $this.parent().attr("fsnum");
+        var fsnum_number = fsList[fsnum];
+        if(fsnum_number!=0){
+            getStar($this,fsnum_number-1);
+            return;
+        }
+        var brothers_i = $this.parent().find("i");
+        brothers_i.attr("class","")
+        var j_pjnum = $this.parent().siblings(".j_pjnum");
+        j_pjnum.hide()
+    })
+
+    // 星星数
+    function getStar($this,index){
+        var brothers_i = $this.parent().find("i");
+        //显示的打分
+        var productMs_html = index+1+"分 " + pjList[index].productMs;
+        var j_pjnum = $this.parent().siblings(".j_pjnum");
+        j_pjnum.show().attr("class","j_pjnum "+pjList[index].msBg).html(productMs_html)
+        brothers_i.attr("class","")
+        for(var i=0;i<=index;i++){
+            brothers_i.eq(i).attr("class",pjList[index].className)
+        }
+    }
+
+    //查看联系方式
+    $(".j_seephone").bind("click",function(){
+        $(".tel-phone").show()
+    })
+    $(".close-tel").bind("click",function(){
+        $(".tel-phone").hide()
+    })
+
+    //放大镜效果
+    var medium_img = $('.medium-img');//展示图
+    var j_bigdiv = $('.j_bigdiv');  //大图模块
+    var j_bigimg = $('.j_bigdiv').find("img"); //大图图片
+    var j_smImg = $(".j_smImg"); //图片列表ul
+    var j_bigimg_height = $(".j_bigimg").height();
+    // console.log(j_bigimg_height);
+    j_bigdiv.height(j_bigimg_height)
+
+    var imgList={
+		#foreach($obj in $picList)
+			#set($xid= $velocityCount - 1 )
+			#if($velocityCount==$picList.size())
+				$!xid:["$!{address.img3}/68x68/$!{obj.picAddress}","$!{address.img3}/380x380/$!{obj.picAddress}","$!{address.img3}/760x760/$!{obj.picAddress}"]
+			#else
+				$!xid:["$!{address.img3}/68x68/$!{obj.picAddress}","$!{address.img3}/380x380/$!{obj.picAddress}","$!{address.img3}/760x760/$!{obj.picAddress}"],
+			#end
+		#end
+##        1:["http://img0.zz91.com/trade/buyer/images/black1.jpg","http://img0.zz91.com/trade/buyer/images/black2.jpg","http://img0.zz91.com/trade/buyer/images/black3.jpg"],
+##        2:["http://img0.zz91.com/trade/buyer/images/bai1.jpg","http://img0.zz91.com/trade/buyer/images/bai2.jpg","http://img0.zz91.com/trade/buyer/images/bai3.jpg"],
+##        3:["http://img0.zz91.com/trade/buyer/images/black1.jpg","http://img0.zz91.com/trade/buyer/images/black2.jpg","http://img0.zz91.com/trade/buyer/images/black3.jpg"],
+##        4:["http://img0.zz91.com/trade/buyer/images/bai1.jpg","http://img0.zz91.com/trade/buyer/images/bai2.jpg","http://img0.zz91.com/trade/buyer/images/bai3.jpg"]
+    };
+    var imgList_num = 0;
+
+    var smallimg_Html =""
+    $(function(){
+        jQuery.each(imgList,function(i,item){
+            smallimg_Html += '<li><img src="'+ item[0] +'"></li>'
+        })
+        j_smImg.html(smallimg_Html);
+        j_smImg.find("li").eq(0).addClass("thisimg")
+        imgChange(imgList_num);
+    })
+
+    j_smImg.on("click","li",function(){
+        $(".thisimg").removeClass("thisimg")
+        $(this).addClass("thisimg");
+        imgList_num = $(this).index();
+        imgChange(imgList_num)
+    })
+
+    function imgChange(imgList_num){
+    	if(imgList[imgList_num]){
+	        $(".j_midimg").attr("src",imgList[imgList_num][1]);
+	        j_bigimg.attr("src",imgList[imgList_num][2]);
+        }
+    }
+    
+
+    var imgzoom = 190;//ks-imagezoom-lens的宽和高;
+    var mdimg_top = medium_img.offset().top; //展示图离顶部距离
+    var mdimg_left = medium_img.offset().left;//展示图离左边距离
+    var mdimg_w = medium_img.width(); //展示图宽度
+    var mdimg_h = medium_img.height(); //展示图高度
+
+    $(".j_bigimg").on("mouseenter",function(e){
+        $(".getbigicon").hide();
+        lensMove(e);
+        j_bigdiv.show()
+    });
+    $(".j_bigimg").on("mousemove",function(e){
+        lensMove(e)
+    })
+    $(".j_bigimg").on("mouseleave",function(){
+        $(".getbigicon").show();
+        j_bigdiv.hide();
+        $(".j_lens").hide();
+    })
+    function lensMove(e){
+        var page_x = e.pageX;
+        var page_y = e.pageY;
+
+        var imgzoom_top = page_y - mdimg_top-imgzoom/2;
+        var imgzoom_left = page_x - mdimg_left-imgzoom/2;
+
+        if(imgzoom_top+imgzoom > mdimg_h){
+            imgzoom_top = mdimg_h - imgzoom
+        }else if(imgzoom_top<0){
+            imgzoom_top=0
+        }
+
+        if(imgzoom_left + imgzoom > mdimg_w){
+            imgzoom_left = mdimg_w - imgzoom;
+        }else if(imgzoom_left<0){
+            imgzoom_left=0
+        }
+
+        $(".j_lens").css({
+                            'top':imgzoom_top+"px",
+                            'left':imgzoom_left+"px",
+                            'width':imgzoom+"px",
+                            'height':imgzoom+"px",
+                            "display":"block"
+                        });
+        j_bigimg.css({
+            "margin-top":-imgzoom_top*2+"px",
+            "margin-left":-imgzoom_left*2+"px"
+        })
+
+    }
+
+    //选择颜色
+    $(".j_colorname span").bind("click",function(){
+        $(".thiscolor").removeClass("thiscolor");
+        $(this).addClass("thiscolor")
+    })
+    
+    //点击增加购买量
+    var j_buyNum = $(".j_buyNum");
+	var num =1;
+    var samll_zl =parseFloat($(".j_smdun").html())
+    j_buyNum.attr("placeholder",samll_zl)
+    $(".j_upNum").bind("click",function(){
+        var maxNum = parseFloat($(".j_maxnum").html())
+        var buy_number = parseFloat(j_buyNum.val()); 
+        if(buy_number>=maxNum){
+            return;
+        }
+        if(buy_number){
+            buy_number +=num;
+        }else{
+            buy_number =parseFloat(samll_zl)+num;
+        }
+        j_buyNum.val(buy_number)
+    })
+    //点击减掉购买量
+    $(".j_upDown").bind("click",function(){
+        var buy_number = parseFloat(j_buyNum.val());
+        if(buy_number&&buy_number>samll_zl){
+            buy_number -=num;
+        }else{
+            buy_number =samll_zl;
+        }
+        j_buyNum.val(buy_number)
+    })
+    j_buyNum.bind("focus",function(){
+        $(this).attr("placeholder","")
+    })
+    j_buyNum.bind("keyup",function(){
+        var buy_number = j_buyNum.val(); 
+        var maxNum = parseFloat($(".j_maxnum").html())
+        if(isNaN(buy_number)){
+            j_buyNum.val(samll_zl)
+        } 
+        if(parseFloat(buy_number)>maxNum){
+            j_buyNum.val(maxNum)
+        }
+    })
+
+
+   //广告滚动图片组
+    var range_ul = $(".moveList").width(); //点击滚动的距离
+
+    var moveList_ul = $(".moveList-ul");
+    var liList_Html = $(".moveList-ul").html();
+    $(".moveList-ul").append(liList_Html);
+    //给滚动的ul赋值宽度
+    moveList_ul.width(moveList_ul.find("li").width()*moveList_ul.find("li").length);
+    //开始先给定初始距离
+    var array_img = moveList_ul.find("li").length/2 //显示图片组数
+    moveList_ul.css("margin-left",-array_img*range_ul+"px")
+
+    var timer;
+    function bindClick(){
+        clearInterval(timer)
+        //点击上一组图片
+        $(".j_pre").unbind().bind("click",function(){
+            clearInterval(timer)
+            $(this).unbind("click")
+            array_img -=1;
+            moveUl()
+        })
+        //点击下一组图片
+        $(".j_next").unbind().bind("click",function(){
+            $(this).unbind("click");
+            array_img +=1;
+            moveUl()
+        })
+        //点击小圆点图片组
+        $(".getmove-index i").unbind().bind("click",function(){
+            $(".thisindex").removeClass("thisindex");
+            $(this).addClass("thisindex");
+            array_img =$(this).index();
+            moveUl()
+        })
+        timer = setInterval(function(){
+            $(".j_next").click();
+            },3000)
+        }    
+    bindClick();
+    
+
+    function moveUl(){
+        var thisindex = array_img;
+        if(thisindex==4){
+            thisindex=1
+        }
+        if(thisindex==3){
+            thisindex=0
+        }
+        $(".thisindex").removeClass("thisindex");
+        $(".getmove-index i").eq(thisindex).addClass("thisindex");
+
+        moveList_ul.stop().delay(200).animate({"margin-left":-array_img*range_ul+"px"},500,function(){
+            if(array_img==4){
+                array_img = 1;
+                moveList_ul.css("margin-left",-array_img*range_ul+"px")
+            }else if(array_img==0){
+                array_img = 3;
+                moveList_ul.css("margin-left",-array_img*range_ul+"px")
+            }
+            
+            bindClick();
+        })
+    }
+
+
+
+    //查看产品展示大图
+    var bigimg_sum,  //点击的小图组一共有几张图片
+        bigimg_index,//点击小图是第几张
+        imgsrc_list; 
+    $(".j_seepick span").bind("click",function(){
+        imgsrc_list =[];
+        var $this = $(this);
+        bigimg_index = $(this).index();
+        bigimg_sum = $(this).parent().find("span").length;
+
+        for(var i=0;i<bigimg_sum;i++){
+
+          imgsrc_list.push($(this).parent().find("span").eq(i).attr("bigimgSrc"))  
+        }
+
+        if($this.hasClass("thispic")){
+            $this.removeClass("thispic");
+            $this.parent().siblings(".big_picture").hide(500);
+            return;
+        }
+        $(".thispic").removeClass("thispic");
+        $(this).addClass("thispic");
+        if(!$this.parent().hasClass("openBig")){
+            $(".openBig").removeClass("openBig")
+            $(".big_picture:visible").hide(500);
+        }
+        $(this).parent().addClass("openBig")
+        $(this).parent().siblings(".big_picture").find(".bigimg-pic").attr("src",imgsrc_list[bigimg_index])
+        $(this).parent().siblings(".big_picture").show(500)
+    })
+    //当鼠标指针进入（穿过）元素时
+    $(".big_picture").bind("mouseenter",function(){
+        var $this = $(this);
+        if(bigimg_index!=0){
+            $this.find(".pre_pic").show()
+        }
+        if(bigimg_index!=(bigimg_sum-1)){
+            $this.find(".next_pic").show()
+        }
+    })
+    //当鼠标指针离开元素时
+    $(".big_picture").bind("mouseleave",function(){
+        var $this = $(this);
+        $this.find(".pre_pic").hide()
+        $this.find(".next_pic").hide()
+    })
+
+    $(".pre_pic").bind("click",function(){
+        var $this = $(this);
+        bigimg_index -=1;
+        tuBh($this,bigimg_index);
+
+    })
+    $(".next_pic").bind("click",function(){
+        var $this = $(this);
+        bigimg_index +=1;
+        tuBh($this,bigimg_index)
+    })
+    function tuBh(a,bigimg_index){
+        $(".thispic").removeClass("thispic");
+        a.parent().siblings(".j_seepick").find("span").eq(bigimg_index).addClass("thispic")
+        a.siblings(".bigimg-pic").attr("src",imgsrc_list[bigimg_index]);
+        a.parent().find(".pre_pic,.next_pic").hide();
+        $(".big_picture").mouseenter();
+    }
+    
+    
+    var cm_All = $!{dto.tradeNum};//卖家信誉
+    var cmName = ["djimg1","djimg2","djimg3","djimg4"]
+    function getCm(cmAll){   
+        var first = start = 10;
+        var cmIimg = ""
+        for(var i=0;i<=3;i++){
+            if(i>0){
+               start = start*5; 
+            }
+            if(start<=cmAll&&cmAll<start*5){   //判断在什么阶段
+                for(var j=0;i<5;j++){
+                    cmAll = cmAll - start;
+                    cmIimg += "<i  class="+ cmName[i] +"></i>";
+                    if(cmAll<start){ 
+                        if(!(cmAll<first)){   //如果还没高于最小的信誉等级重新回调
+                            getCm(cmAll)
+                        }
+                        $(".j_cmNumimg").prepend(cmIimg)
+                        return true;
+                    }
+                }
+                
+                return;
+            }else if(cmAll>=625*first){
+                for(var j=0;i<5;j++){
+                    start = 125*first;
+                    cmAll = cmAll - start;
+                    cmIimg += "<i  class="+ cmName[3] +"></i>";
+                    if(cmAll<start){ 
+                        if(!(cmAll<first)){   //如果还没高于最小的信誉等级重新回调
+                            getCm(cmAll)
+                        }
+                        $(".j_cmNumimg").prepend(cmIimg)
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    getCm(cm_All);//卖家信誉函数
+    //评论
+    function judge(a,b,c){
+    	//评价信息
+    	var judge_info = "";
+    	var pageinfo = "";
+    	jQuery.ajax({
+    		url:"#springUrl('/goods/listJudge.htm')",
+    		data:{"type":a,"index":b,"id":c},
+			type:"post",
+			async:false,
+			dataType:"json",
+			success:function(reg){
+			    var juda="";
+				for(var i=0;i<reg.list.length;i++){
+					var a = reg.list[i];
+					##图片信息
+					var picinfo = "";
+					if(a.picAddress.length>0){
+						picinfo = "<div class=\"btmma btmma-img clearfix j_seepick\">";
+						for(var j=0;j<a.picAddress.length;j++){
+							picinfo = picinfo + "<span  bigimgSrc=\"http://img0.zz91.com"+"/trade/buyer/images/black1.jpg"+"\">" +
+											"<img src=\"http://img0.zz91.com"+"/trade/buyer/images/cpimg.jpg"+"\" width=\"60\" height=\"60\"></span>";
+						}
+						picinfo = picinfo + "</div><div class=\"btmma clearfix big_picture\"><span class=\"pre_pic qhpic\"></span><span class=\"next_pic\"></span>"+
+										"<img src=\"\" class=\"bigimg-pic\"></div>";
+					}
+					var goodJudge=a.judge.goodJudge;
+					if(goodJudge.length){
+					juda=a.judge.goodJudge;
+					}else{
+						if(a.judge.goodStar<3){
+							juda="货物很差,我很不满意。";
+						}else if(a.judge.goodStar==3){
+							juda="货物一般,在我接受范围内。";
+						}else if(a.judge.goodStar>3){
+							juda="货物很好,我很满意。";
+						}
+					}
+					judge_info = judge_info + "<li class=\"clearfix pingjia-all-li\"><div class=\"fl pijia-wb\"><div class=\"pjmiao\">"+juda+""+a.judge.serveJudge+"</div>" + picinfo +
+					"<div class=\"btmma color-66\">"+a.postTime+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;颜色：红色&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数量：80吨"+"</div></div><div class=\"fr\">"+
+					a.info.name+"</div></li>"; 
+				}
+				pageinfo = reg.pageStr;
+			}
+    	});
+    	jQuery(".pingjia-all-ul").html(judge_info);
+    	jQuery(".pj_page").html(pageinfo);
+    }
+    $("body").delegate(".pj_page .page-do","click",function(){
+    	var p = jQuery(this).text();
+    	var index = Number(jQuery(".pj_page .this-page").text());
+		
+		var kk = $(".pj_page span").length-2;
+		var kkText = $(".pj_page span").eq(kk).text()
+    	if(p=="<"){   //前一页
+    		if(index >1){
+    			index = index - 1;
+    		}
+    	}else if(p==">"){  //下一页
+    		if(index<kkText){
+    			index = index + 1;
+    		}
+    	}else{
+    		index = p;
+    	}
+        judge(jQuery(":radio:checked").val(),index,$!{dto.goods.id});
+    });
+    ##评论类型选择
+    jQuery(".pingjia-xl").click(function(){
+    	var index=jQuery(":radio:checked").val();
+    	judge(index,1,$!{dto.goods.id})
+    });
+    ##成交记录 产品编号a 页码b
+    function trade(a,b){
+    	var tradeString="";
+    	var pageStr = "";
+    	jQuery.ajax({
+    		url:"#springUrl('/goods/listTrade.htm')",
+    		data:{"index":b,"id":a},
+			type:"post",
+			async:false,
+			dataType:"json",
+			success:function(reg){
+				for(var i=0;i<reg.list.length;i++){
+					var a = reg.list[i];
+					var str = isAddHref(a.info.isAdmin,a.accountWithAsterisk,a.info.id);
+					tradeString = tradeString + "<dd class=\"clearfix\"><div class=\"fl cj_jiru1\">"+str
+					+
+					"</div><div class=\"fl cj_jiru2\">"+a.format+"</div><div class=\"fl cj_jiru3 anred\">"+a.orders.buyPricePay
+					+"<span style='color:black'>"+"元/"+a.goods.unit+"</span></div><div class=\"fl cj_jiru4\">"+a.orders.buyQuantity+"吨</div><div class=\"fl cj_jiru5 color-66\">"+a.tradeTime+"</div></dd>";
+				}
+				pageStr = reg.pageStr;
+			}
+    	});
+    	jQuery(".cj_jiru").find("dd").remove();
+    	jQuery(".cj_jiru").find("dt:last").after(tradeString);
+    	jQuery(".trade_page").html(pageStr);
+    }
+	//判断是否为admin（是admin添加的账户则不能有链接）
+	function isAddHref(isAdmin,accountWithAsterisk,id){
+		if(isAdmin==1){
+			return accountWithAsterisk;
+		}
+		if(isAdmin==0){
+			var str ="<a href=\"compinfo"+id+".htm\" style='color:red'>"+accountWithAsterisk+"</a>";
+			return str;
+		}
+	}
+    ##成交记录翻页 
+   	$("body").delegate(".trade_page .page-do","click",function(){
+   		var p = jQuery(this).text();
+    	var index = Number(jQuery(".trade_page .this-page").text());
+		
+		var kk = $(".trade_page span").length-2;
+		var kkText = $(".trade_page span").eq(kk).text()
+    	if(p=="<"){   //前一页
+    		if(index >1){
+    			index = index - 1;
+    		}
+    	}else if(p==">"){  //下一页
+    		if(index<kkText){
+    			index = index + 1;
+    		}
+    	}else{
+    		index = p;
+    	}
+    	trade($!{dto.goods.id},index);
+   	});
+   	
+   	##加入购物车
+   	jQuery(".buycar").click(function(){
+		var da=parseFloat($(".j_smdun").html());
+		var da1=parseFloat($(".j_buyNum").val());
+		if(da1<da){
+		alert("添加失败,低于最小起订量");
+		return false;
+		}
+   		var array = jQuery(".attribute");
+   		var attr = "";
+   		for(var i = 0; i < array.length; i++){
+   			attr = attr + array.eq(i).find(".cpinfo-title-name").text() + "："  + array.eq(i).find(".thiscolor").text() +"  ";
+   		}
+   		var num = jQuery(".j_buyNum").val();
+		jQuery("#goodsId").val($!{dto.goods.id});
+		#if(!$!{sessionUser})
+##			alert("请先登录，再添加购物车");
+##			window.location.href="$!{address.www}/login.htm?url="+window.location;
+ 			var loginpop = '<div class="login-pop" style="width:350px"><iframe frameborder="0" height="390" marginheight="0px" marginwidth="0px"  width="350" src="#springUrl('/goods/loginpop.htm')?type=2"></iframe></div>';
+   			popHtml(loginpop);
+			return false;
+		#else
+       		jQuery.ajax({
+       			url:"#springUrl('/goods/addShopping.htm')",
+       			data:{"attribute":attr,"id":$!{dto.goods.id},"number":num},
+       			type:"post",
+       			async:false,
+    			dataType:"json",
+    			success:function(reg){
+    				if(reg.success){
+    					alert("添加成功");
+    				}
+    			}
+       		});
+		#end
+   	});
+	
+	function carbuySend(){
+	
+	
+	
+	}
+	
+   	##立即购买
+   	jQuery(".gotobuy").click(function(){
+		var da=parseFloat($(".j_smdun").html());
+		var da1=parseFloat($(".j_buyNum").val());
+		if(da1<da){
+		alert("低于最小起订量");
+		return false;
+		}
+   		var array = jQuery(".attribute");
+   		var attr = "";
+   		for(var i = 0; i < array.length; i++){
+   			attr = attr + array.eq(i).find(".cpinfo-title-name").text() + "："  + array.eq(i).find(".thiscolor").text() +"  ";
+   		}
+   		jQuery("input[name=attribute]").val(attr);
+		jQuery("input[name=id]").val($!{dto.goods.id});
+   		#if(!$!{ssoUser})
+##   			window.location.href="$!{address.www}/login.htm?url="+window.location+"&flag=1";
+            var loginpop = '<div class="login-pop" style="width:350px"><iframe frameborder="0" height="390" marginheight="0px" marginwidth="0px"  width="350" src="#springUrl('/goods/loginpop.htm')?type=1"></iframe></div>';
+   			popHtml(loginpop);
+			return false;
+   		#end
+		jQuery("#subForm").submit()
+   	});
+	$(document).ready(function(){
+	   #if($!{flag}==1)
+	   $("html,body").animate({scrollTop:jQuery("#toplist").offset().top-100});
+	   showinfo(1);
+	   #end
+	})
+
+	function showinfo(index){
+        $(".nowtype").removeClass("nowtype");
+        $(".j_qhtype span").eq(index).addClass("nowtype");
+        $(".cp-details-mo").hide();
+        $(".cp-details-mo").eq(index).show()
+        if(index==1){
+        	judge('0',1,$!{dto.goods.id});
+        }
+        if(index==2){
+        	trade($!{dto.goods.id},1);
+        }
+	}
+	function relod(){
+	 window.location.reload();
+	}
+	
+	
+	function submi(){
+	jQuery("#subForm").submit();
+	}
+	
+</script>

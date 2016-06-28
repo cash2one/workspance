@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsHide">
+	<typeAlias alias="productsHideDo" type="com.ast.ast1949.domain.products.ProductsHide" />
+	<resultMap class="productsHideDo" id="productsHideResult">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="companyId" column="company_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		product_id,
+		company_id,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="productsHideDo">
+		INSERT INTO products_hide
+		(
+		company_id,
+		product_id,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#productId#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByProductId" parameterClass="java.lang.Integer" resultMap="productsHideResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		from products_hide
+		where product_id= #productId# order by id desc limit 1
+	</select>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from products_hide where product_id=#productId#
+	</delete>
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0) from  products_hide where company_id=#companyId#
+	</select>
+</sqlMap>

@@ -1,0 +1,90 @@
+#set($layout="/layout/blank.vm")
+<link href="${address.css}/global/comm_hack.css" rel="stylesheet" type="text/css">
+<link href="${address.img}/zz91/css/zz91.common.css" rel="stylesheet" type="text/css">
+#parse("/common/import.vm")
+<style>
+ *{background-color:transparent;}
+ .welcomeLogin{line-height:22px; padding-left:10px;}
+ .top-caption{float:left;display:inline}
+ .top-box{margin-right:10px;float:left;display:inline}
+ .top-box1{_margin-top:7px;float:left;display:inline}
+ .top-box-text{width:80px;hegiht:20px;padding:2px;background:#fff}
+ .top-box-button{width:40px;height:20px;background:#98ad2e;border:none;color:#fff;cursor:pointer;_margin-top:5px;}
+</style>
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="Cache-Control" content="no-cache" max-age="0" />
+
+#if($isLogin)
+	<script type="text/javascript">
+		parent.callTop(1);
+	</script>
+#else
+	<script type="text/javascript">
+		parent.callTop(0);
+	</script>
+#end
+
+<div class="welcomeLogin">
+#if(${sessionUser})
+	<span class="barWelcome">您好! #printTitle($!{sessionUser.account} 24 ".")! 欢迎来到ZZ91再生网!</span>
+	<span class="barGetLogin">
+        <a href="$!{address.myrc}" target="_parent">[生意管家]</a>
+    </span>
+	<span class="barGetLogin">
+        <a  href="#springUrl('/logout_if.htm')" >[退出]</a>
+    </span>
+#else
+	<form id="loginForm" action="$!{address.front}/status.htm" method="post" >
+		<div class="top-caption">用户名</div>
+		<div class="top-box"><input type="text" class="top-box-text" name="username" id="loginFormUsername" /></div>
+		<div class="top-caption">密码</div>
+		<div class="top-box"><input type="password" class="top-box-text" name="password" id="loginFormPassword" /></div>
+		<div class="top-box"><input type="submit" class="top-box-button" value="登录" /></div>
+		<div class="top-box">
+			<a href="$!{address.china}/register/register_stp1.htm" target="_parent">
+				<input type="button" class="top-box-button" value="注册" />
+			</a>
+		</div>
+		<div class="top-box1">
+			<a href="$!{address.china}/user/passwordReminder.htm" target=_blank>忘记密码</a>
+			<a href="$!{address.china}/accessToQQLogin.htm" target="_blank">
+				<img src="$!{address.img}/zz91/china/images/qq_login.png" width="105" height="16" alt="使用QQ号码登录" />
+			</a>
+		</div>
+	</form>
+	<script type="text/javascript">
+		jQuery("#loginForm").submit(function(){
+		var emptyFlag = 0;
+		var username = jQuery("#loginFormUsername").val();
+		if(username.length<=0){
+			jQuery("#loginFormUsername").attr("style","border-color:#f00")
+			return false;
+		}
+		var password = jQuery("#loginFormPassword").val();
+		if(password.length<=0){
+			jQuery("#loginFormPassword").attr("style","border-color:#f00")
+			return false;
+		}
+		
+		jQuery.ajax({
+			url:"#springUrl('/doStatusLogin.htm')",
+			dataType:"json",
+			data:{
+				"username":username,
+				"password":password
+				},
+			async:false,
+			success:function(data){
+				if(data.success){
+					parent.callTop(1);
+				}else{
+					parent.location.href = "#springUrl('/login.htm?')"+ "username= " + username + "&error=" + data.data;
+					return false;
+				}
+			}
+		});
+		return true;
+	});
+    </script>
+#end
+</div>

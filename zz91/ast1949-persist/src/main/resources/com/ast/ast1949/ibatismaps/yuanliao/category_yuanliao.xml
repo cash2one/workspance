@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="categoryYuanliao">
+	<typeAlias alias="categoryYuanliao" type="com.ast.ast1949.domain.yuanliao.CategoryYuanliao" />
+	<resultMap id="categoryYuanliaoResult" class="categoryYuanliao">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="parentCode" column="parent_code" />
+		<result property="label" column="label" />
+		<result property="isDel" column="is_del" />
+		<result property="pinyin" column="pinyin" />
+        <result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="allColumn">
+		id,
+		code,
+		parent_code,
+		label,
+		is_del,
+		pinyin,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<!--为原料添加一个类别-->
+	<insert id="insertCategoryYuanliao" parameterClass="categoryYuanliao">
+		insert into category_yuanliao
+		(
+			code,
+			parent_code,
+			label,
+			pinyin,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#code#,
+			#parentCode#,
+			#label#,
+			#pinyin#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!--根据类别code检索类别信息-->
+	<select id="queryCategoryYuanliaoByCode" parameterClass="java.lang.String" resultMap="categoryYuanliaoResult">
+		select 
+		<include refid="categoryYuanliao.allColumn"/>
+		from category_yuanliao
+		where is_del = '0' and code = #code#
+	</select>
+	
+	<!--根据父类别检索子类别信息-->
+	<select id="queryCategoryYuanliaoByParentCode" parameterClass="java.lang.String" resultMap="categoryYuanliaoResult">
+		select
+		<include refid="categoryYuanliao.allColumn"/>
+		from category_yuanliao
+		where is_del = '0' and parent_code = #parentCode#
+		order by id asc
+	</select>
+	
+	<!--删除或更新类别信息-->
+	<update id="updateCategoryYuanliao" parameterClass="categoryYuanliao">
+		update category_yuanliao
+		set gmt_modified=now()
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="label">
+			label = #label#
+		</isNotEmpty>
+		where code = #code#
+	</update>
+	
+	<!--获取所有的类别-->
+	<select id="queryAllCategoryYuanliao" resultMap="categoryYuanliaoResult">
+		select 
+		<include refid="categoryYuanliao.allColumn"/>
+		from category_yuanliao
+		where is_del = '0'
+	</select>
+	
+	<!--检索类别-->
+	<select id="queryCategoryYuanliaoByKeyword" parameterClass="java.lang.String" resultMap="categoryYuanliaoResult">
+		select 
+		<include refid="categoryYuanliao.allColumn"/>
+		from category_yuanliao
+		where is_del = '0' and label like concat("%",#keyword#,"%")
+		order by id asc
+		limit 5
+	</select>
+	<!--检索子类别中最大类别-->
+	<select id="queryMaxCategoryYuanLiao" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code)
+		from category_yuanliao
+		where parent_code=#parentCode#
+	</select>
+	<!--检索类别拼音-->
+	<select id="queryPinyin" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id
+		from category_yuanliao
+		where pinyin=#pinyin#
+	</select>
+	<!--模糊搜索三级类别-->
+	<select id="querySimilarCategory" parameterClass="java.lang.String" resultMap="categoryYuanliaoResult">
+		select 
+		<include refid="categoryYuanliao.allColumn"/>
+		from category_yuanliao
+		where is_del='0' and label like concat("%",#keyword#,"%") and length(code)='16'
+	</select>
+</sqlMap>

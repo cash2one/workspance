@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="newsRelateModule">
+
+	<typeAlias alias="newsRelateModuleDO" type="com.ast.ast1949.domain.news.NewsRelateModuleDO" />
+	
+	<resultMap class="newsRelateModuleDO" id="resultNewsRelateModuleDO">
+		<result property="id" column="id" />
+		<result property="newsId" column="news_id" />
+		<result property="moduleId" column="module_id" />
+		<result property="tradeId" column="trade_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insertNewsRelateModule" parameterClass="newsRelateModuleDO">
+		INSERT INTO news_relate_module
+            (news_id,
+             module_id,
+             trade_id,
+             gmt_created,
+             gmt_modified)
+		VALUES (#newsId#,
+		        #moduleId#,
+		        #tradeId#,
+		        now(),
+		        now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteNewsRelateModuleByMap" parameterClass="java.util.Map">
+		DELETE
+		FROM news_relate_module
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="newsId" prepend="and">
+				news_id = #newsId#
+			</isNotEmpty>
+			<isNotEmpty property="moduleId" prepend="and">
+				module_id = #moduleId#
+			</isNotEmpty>
+			<isNotEmpty property="tradeId" prepend="and">
+				trade_id = #tradeId#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+	<!-- 
+	<select id="queryNewsRelateModuleByMap" parameterClass="java.util.Map" resultMap="resultNewsRelateModuleDO">
+		SELECT
+		  id,
+		  news_id,
+		  module_id,
+		  trade_id,
+		  gmt_created,
+		  gmt_modified
+		FROM news_relate_module
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="newsId" prepend="and">
+				news_id = #newsId#
+			</isNotEmpty>
+			<isNotEmpty property="moduleId" prepend="and">
+				module_id = #moduleId#
+			</isNotEmpty>
+			<isNotEmpty property="tradeId" prepend="and">
+				trade_id = #tradeId#
+			</isNotEmpty>
+		</dynamic>
+		LIMIT 0, 1
+	</select>
+	 -->
+	
+	<select id="queryNewsRelateModule" parameterClass="newsRelateModuleDO" resultMap="resultNewsRelateModuleDO">
+		SELECT
+		  id,
+		  news_id,
+		  module_id,
+		  trade_id,
+		  gmt_created,
+		  gmt_modified
+		FROM news_relate_module
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="newsId" prepend="and">
+				news_id = #newsId#
+			</isNotEmpty>
+			<isNotEmpty property="moduleId" prepend="and">
+				module_id = #moduleId#
+			</isNotEmpty>
+			<isNotEmpty property="tradeId" prepend="and">
+				trade_id = #tradeId#
+			</isNotEmpty>
+		</dynamic>
+		LIMIT 0, 1
+	</select>
+	
+	
+	<update id="updateNewsRelateModule" parameterClass="newsRelateModuleDO">
+		UPDATE news_relate_module
+		SET news_id = #newsId#,
+		  module_id = #moduleId#,
+		  trade_id = #tradeId#,
+		  gmt_modified = now()
+		WHERE id = #id#
+	</update>
+
+</sqlMap>

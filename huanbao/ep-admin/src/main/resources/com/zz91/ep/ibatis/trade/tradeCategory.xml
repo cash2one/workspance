@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="tradeCategory">
+
+    <typeAlias alias="tradeCategory" type="com.zz91.ep.domain.trade.TradeCategory"/>
+
+    <resultMap class="tradeCategory" id="fullColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="leaf" column="leaf"/>
+        <result property="tags" column="tags"/>
+        <result property="showIndex" column="show_index"/>
+        <result property="gmtCreated" column="gmt_created"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+
+    <sql id="fullColumn">
+        id,
+        code,
+        name,
+        leaf,
+        tags,
+        show_index,
+        gmt_created,
+        gmt_modified,
+        sort
+    </sql>
+
+    <select id="queryTradeSupplyAll" resultMap="fullColumnResultMap">
+        select 
+        <include refid="fullColumn"/>
+        from trade_category
+        order by sort
+    </select>
+
+    
+
+<!-- 
+    <sql id="simpleColumn">
+        id,
+        code,
+        name,
+        leaf,
+        tags
+    </sql>
+    
+    <resultMap class="tradeCategory" id="simpleColumnResultMap">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="leaf" column="leaf"/>
+        <result property="tags" column="tags"/>
+    </resultMap>
+    
+    <select id="queryCategoryByTags" resultMap="simpleColumnResultMap" parameterClass="java.util.HashMap">
+        select 
+        <include refid="simpleColumn"/>
+        from trade_category
+        where tags like concat('%',#tags#,'%')
+              and code like concat(#parentCode#, '%')
+        <isEqual property="deep" prepend="and" compareValue="0">
+            leaf = 1
+        </isEqual>
+        <isNotEqual property="count" compareValue="0">
+            limit #count#
+        </isNotEqual>
+    </select>
+    
+    <select id="queryCategoryByParent" resultMap="simpleColumnResultMap" parameterClass="java.util.HashMap">
+        select 
+        <include refid="simpleColumn"/>
+        from trade_category
+        <dynamic prepend="where">
+            <isEqual prepend="and" property="deep" compareValue="0">
+                code like concat(#parentCode#, '____')
+            </isEqual>
+            <isEqual prepend="and" property="deep" compareValue="1">
+                code like concat(#parentCode#, '____%') and leaf = 1
+            </isEqual>
+            <isEqual prepend="and" property="deep" compareValue="2">
+                code like concat(#parentCode#, '____%')
+            </isEqual>
+        </dynamic>
+        <isNotEqual property="count" compareValue="0">
+            limit #count#
+        </isNotEqual>
+    </select>
+    
+    <select id="queryCategoryByName" resultMap="simpleColumnResultMap" parameterClass="java.util.HashMap">
+        select 
+        <include refid="simpleColumn"/>
+        from trade_category
+        where name like concat(#name#,'%')
+        <isEqual property="deep" prepend="and" compareValue="0">
+                leaf = 1
+        </isEqual>
+        limit #count#
+    </select>
+    
+   	<select id="queryIsLeafByCode" resultClass="java.lang.Integer" parameterClass="java.lang.String">
+        select leaf from trade_category
+        where code = #code#
+    </select>
+ -->
+    
+    <select id="queryCategoryCodeByCategoryName" resultClass="java.lang.String" parameterClass="java.lang.String">
+        select 
+        code
+        from trade_category
+        where name=#name# limit 1
+    </select>
+    
+     <select id="queryBuyCategoryCodeByCategoryName" resultClass="java.lang.String" parameterClass="java.lang.String">
+        select 
+        code
+        from trade_category
+        where name=#name# and code like concat('1001','%') limit 1
+    </select>
+    
+     <select id="querySupplyCategoryCodeByCategoryName" resultClass="java.lang.String" parameterClass="java.lang.String">
+        select 
+        code
+        from trade_category
+        where name=#name# and code like concat('1000','%') limit 1
+    </select>
+   
+    <select id="queryMaxCodeOfChild" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code) from trade_category
+		where code like concat(#value#,'____')
+	</select>
+	<insert id="insertTradeCategory" parameterClass="tradeCategory">
+		insert into trade_category (
+			<include refid="tradeCategory.fullColumn" />
+		)
+		values (
+        	#id#,
+			#code#,
+			#name#,
+			#leaf#,
+			#tags#,
+			#showIndex#,
+			now(),
+			now(),
+			#sort#
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<delete id="deleteTradeCategory" parameterClass="java.lang.String">
+		delete from trade_category
+		where code like concat(#code#,'%')
+	</delete>
+	<select id="queryCategoryByCode" parameterClass="java.lang.String" resultMap="fullColumnResultMap">
+		select
+		<include refid="tradeCategory.fullColumn" />
+		from trade_category
+		where code=#value#
+		limit 1
+	</select>
+	<select id="queryChild" parameterClass="java.lang.String" resultMap="fullColumnResultMap">
+		select
+		<include refid="tradeCategory.fullColumn" />
+		from trade_category  where code like concat(#value#,'____')
+	</select>
+	<select id="countChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from trade_category where code like concat(#value#, '____') 
+	</select>
+	<select id="querySupplyChild" parameterClass="java.lang.String" resultMap="fullColumnResultMap">
+		select
+		<include refid="tradeCategory.fullColumn" />
+		from trade_category  where code like concat(#value#,'____') and code like concat('1000%')
+	</select>
+	<select id="countSupplyChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from trade_category where code like concat(#value#, '____') and code like concat('1000%')
+	</select>
+	<select id="queryBuyChild" parameterClass="java.lang.String" resultMap="fullColumnResultMap">
+		select
+		<include refid="tradeCategory.fullColumn" />
+		from trade_category  where code like concat(#value#,'____') and code like concat('1001%')
+	</select>
+	<select id="countBuyChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from trade_category where code like concat(#value#, '____') and code like concat('1001%')
+	</select>
+	<update id="updateTradeCategory" parameterClass="tradeCategory">
+		update trade_category set
+			name=#name#,
+			tags=#tags#,
+			show_index=#showIndex#,
+			sort=#sort#,
+			gmt_modified=now()
+		where code=#code#
+	</update>
+	<update id="updateParentLeafByParentCode" parameterClass="java.lang.String">
+	update trade_category set
+		leaf=0
+	where code=#value#
+	</update>
+	
+	<select id="queryCountByNameOrTags" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(*) from trade_category
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="tags">
+				tags=#tags#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

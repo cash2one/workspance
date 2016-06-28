@@ -1,0 +1,115 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+
+#set($headName="message")
+#parse("/common/myhuzhu/head.vm")
+<div class="huzhu">
+    <div class="hz-left fl">
+		#set($urlName="out")
+		#parse("/common/myhuzhu/message_head.vm")
+		
+        <div class="mainblock m5-block">
+            <ul class="m2-mail">
+                <li>
+                    <a href="javascript:;" onclick="deleteMessage();" target="_blank">删除</a>
+                </li>
+            </ul>
+            <div class="m2-tab">
+                <table class="tab-mail" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="bb">
+							<input type="checkbox" name="" value="" class="PrivateLetter-email-checkbox" id="email" />&nbsp;&nbsp;
+                        </td>
+                        <td class="bold bb" style="width:150px;">收信人</td>
+                        <td class="bold bb" style="width:320px">主题</td>
+						<td class="bold bb tc">收信时间</td>
+					</tr>
+					#foreach($!{inquiry} in $!{page.records})
+						<tr>
+							<td>
+								<input type="checkbox" class="PrivateLetter-email-checkbox" id="email$!{velocityCount}" name="select" value="$!{inquiry.inquiry.id}"/>&nbsp;&nbsp;
+							</td>
+							<td>#if($!{inquiry.inquiry.receiverAccount}!=0)$!{inquiry.inquiry.receiverAccount}#else 互助社区 #end</td>
+							<td>
+								<a href="#springUrl('/myhuzhu/showmessage')$!{inquiry.inquiry.id}-2.htm" title="$!{inquiry.inquiry.title}">$!{inquiry.inquiry.title}</a>
+							</td>
+							<td class="tr">
+								$!date.format('yyyy-MM-dd HH:mm:ss', $!{inquiry.inquiry.sendTime})
+							</td>
+						</tr>
+					#end
+                </table>
+            </div>
+            <!--end m2-tab-->
+			
+			## 分页
+			#pageViewQA($page "#springUrl('/myhuzhu/sixin/gmail')" "" "")
+			
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	
+	## 右边个人信息
+	#parse("/common/myhuzhu/right.vm")
+</div>
+<!--end huzhu-->
+<script >
+
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name='select']"), function(index, obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+
+	//删除信息
+	function deleteMessage(){
+		var inquiryIds = getAllInquiryIds();
+		if(inquiryIds.length == 0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中" + inquiryIds.length + "条私信,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/removeSentInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+//邮箱全选
+	$("#email").click(function(){
+		var len=$("tr").length;
+		if($("#email").is(":checked")){
+			for(var i=0;i<len;i++){
+				if ($("#email"+(i+1)).is(":checked")) {
+					
+				}else{
+					$("#email"+(i+1)).attr("checked",true);
+				}
+			}
+		}else{
+			for(var i=0;i<len;i++){
+				if ($("#email"+(i+1)).is(":checked")) {
+					$("#email"+(i+1)).attr("checked",false);
+				}
+			}
+		}
+	});
+</script>

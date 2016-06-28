@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="gateway">
+
+	<typeAlias alias="gateway" type="com.zz91.sms.domain.Gateway"/>
+	
+	<insert id="insert" parameterClass="gateway">
+		INSERT INTO 
+			gateway(code,titles,enabled,serial_no,serial_pas,api_jar,api_classpath,docs,gmt_created,gmt_modified)
+		VALUES
+			(#code#,#titles#,#enabled#,#serialNo#,#serialPas#,#apiJar#,#apiClasspath#,#docs#,now(),now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from gateway where id=#value#
+	</delete>
+	
+	<update id="update" parameterClass="gateway">
+		UPDATE gateway SET gmt_modified = now()
+		<isNotNull prepend="," property="code">
+			code = #code#
+		</isNotNull>
+		<isNotNull prepend="," property="titles">
+			titles = #titles#
+		</isNotNull>
+		<isNotNull prepend="," property="enabled">
+			enabled = #enabled#
+		</isNotNull>
+		<isNotNull prepend="," property="serialNo">
+			serial_no = #serialNo#
+		</isNotNull>
+		<isNotNull prepend="," property="serialPas">
+			serial_pas = #serialPas#
+		</isNotNull>
+		<isNotNull prepend="," property="apiJar">
+			api_jar = #apiJar#
+		</isNotNull>
+		<isNotNull prepend="," property="apiJar">
+			api_jar = #apiJar#
+		</isNotNull>
+		<isNotNull prepend="," property="apiClasspath">
+			api_classpath = #apiClasspath#
+		</isNotNull>
+		<isNotNull prepend="," property="docs">
+			docs=#docs#
+		</isNotNull>
+		WHERE id = #id#
+	</update>
+	
+	<update id="updateEnabled" parameterClass="java.util.HashMap">
+		UPDATE gateway
+		SET
+			enabled = #status#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<resultMap class="gateway" id="gatewayResult">
+		<result property="id" column="id"/>
+		<result property="apiClasspath" column="api_classpath"/>
+		<result property="code" column="code"/>
+		<result property="titles" column="titles"/>
+		<result property="enabled" column="enabled"/>
+		<result property="serialNo" column="serial_no"/>
+		<result property="serialPas" column="serial_pas"/>
+		<result property="apiJar" column="api_jar"/>
+		<result property="apiClasspath" column="api_classpath"/>
+		<result property="docs" column="docs"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="ALL_COLUMN">
+		g.id,
+		g.code,
+		g.titles,
+		g.enabled,
+		g.serial_no,
+		g.serial_pas,
+		g.api_jar,
+		g.api_classpath,
+		g.docs,
+		g.gmt_created,
+		g.gmt_modified
+	</sql>
+	
+	<select id="query" parameterClass="java.util.Map" resultMap="gatewayResult">
+		SELECT 
+		<include refid="ALL_COLUMN"/>
+		FROM gateway g
+		<dynamic prepend="where ">
+			<isNotEmpty prepend="and" property="enabled">
+				g.enabled = #enabled#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryOne" parameterClass="java.util.Map" resultMap="gatewayResult">
+		SELECT 
+		<include refid="ALL_COLUMN"/>
+		FROM gateway g
+		WHERE g.id = #id#
+	</select>
+	
+</sqlMap>

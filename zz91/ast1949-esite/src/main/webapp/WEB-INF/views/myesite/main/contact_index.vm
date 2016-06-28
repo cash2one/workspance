@@ -1,0 +1,98 @@
+<div id="company_index" class="bodyCont moveChild mb">
+    <div class="bodyContTitle">
+        #set($navTitle="联系方式")
+		#foreach($!{obj} in $!{navColumnConfig})
+			#if($!{obj.id}=="lxfs")
+				#set($navTitle=$!{obj.t})
+			#end
+		#end
+##        #foreach($main in $!{mainConfig})
+##            #if(${main.id} == "contact_index")
+##                #set($navTitle=${main.title})
+##            #end
+##        #end
+        <span class="titleLinkColor titleName t" onclick="Move.editTitle(this.parentNode.parentNode);">$!{navTitle}</span>
+        <a href="#springUrl('/lxfs.htm')" class="titleLinkColor more">更多 >></a>
+    </div>
+    <div class="bodyContContent rightConteWidth">
+        <div class="bodyContContentRightCont mainTextColor">
+			#cacheFragment("$!{address.esiteFragment}/esite/companyInfo.htm?cid=$!{cid}&main","","1","")
+            <ul>
+                <li><b>公 司 名：</b> $!{company.name}#if($!{isAttest})<span style="color:red">[已认证]</span>#end</li>
+                <li><b>联 系 人：</b> $!{account.contact}#if($!{account.sex}==0)&nbsp;&nbsp;先生#elseif($!{account.sex}==1)&nbsp;&nbsp;女士#end</li>
+                #if($isOut==0&&(!$!{sessionUser}||$!{sessionUser.membershipCode}=="10051000"))##// 高会过期 （未登录||普会）
+					<li>电&nbsp;&nbsp;&nbsp; 话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li>移动电话：<a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>邮箱：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>QQ：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>msn：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>传&nbsp;&nbsp;&nbsp;&nbsp;真：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>地&nbsp;&nbsp;&nbsp;&nbsp;址：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>公司主页：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+					<li><b>企业网站：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+				#elseif($isOut!=0||($!{sessionUser}&&$!{sessionUser.membershipCode}!="10051000")) ##//高会未过期 || 高会登录
+					#if($!{account.tel}!="" && $!{account.tel})
+						<li><b>电&nbsp;&nbsp;&nbsp; 话：</b> <img src='#springUrl('/viewContactInfo.htm')?type=telKey&key=$!{account.companyId}' /></li>
+					#end
+					<li><b>移动电话：</b> <img src='#springUrl('/viewContactInfo.htm')?type=mobileKey&key=$!{account.companyId}' /></li>
+					<li><b>邮箱：</b> #if('1'==$!{account.isUseBackEmail})$!{account.backEmail}#else $!{account.email}#end</li>
+					#if($!{account.qq} && $!{account.qq}!="")
+					<li><b>QQ：</b> $!{account.qq}</li>
+						#end
+					#if($!{account.msn} && $!{account.msn}!="")
+						<li><b>msn：</b> $!{account.msn}</li>
+					#end
+					#if($!{account.weixin} && $!{account.weixin}!="")
+						<li><b>微信ID：</b> $!{account.weixin}</li>
+					#end
+					#if($!{account.fax} && $!{account.fax}!="")	
+						<li><b>传&nbsp;&nbsp;&nbsp;&nbsp;真：</b> $!{account.faxCountryCode} $!{account.faxAreaCode} $!{account.fax}</li>
+					#end
+					#if($!{company.address} && $!{company.address}!="")
+						<li><b>地&nbsp;&nbsp;&nbsp;&nbsp;址：</b> $!{company.address}</li>
+					#end
+                    <li><b>公司主页：</b>
+						<a href="http://$!{company.domainZz91}.zz91.com">$!{company.domainZz91}.zz91.com</a>
+                    </li>
+                    #if($!{company.website} && $!{company.website}!="")
+						<li><b>企业网站：</b>
+							#set($website = "#printTitle($!{company.website} 7 '')")
+							#if($website!="http://")
+								#set($website ="http://"+$!{company.website})
+							#else
+								#set($website =$!{company.website})
+							#end
+							<a class="draft_no_link" href="$website" target="_blank">$!{company.website}</a>
+						</li>
+                    #end
+				#end
+            </ul>
+			<hr />
+			<h3>其他联系人</h3>
+			#foreach($contactList in ${page.records})
+                <ul class="line">
+                    <li><b>联 系 人：</b>
+        			$!{contactList.name}
+        			#if($!{contactList.sex}==0)
+        				先生
+        			#elseif($!{contactList.sex}==1)
+        				女士
+        			#end
+        			</li>
+					#if($isOut==0&&(!$!{sessionUser}||$!{sessionUser.membershipCode}=="10051000"))
+						<li><b>电&nbsp;&nbsp;&nbsp; 话：</b><a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+						<li><b>移动电话：</b> <a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+						<li><b>QQ：</b> <a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+						<li><b>邮 箱：</b> <a href="http://www.zz91.com/service/newzst/" target="_blank" >登录可见</a></li>
+    				#elseif($isOut!=0||($!{sessionUser}&&$!{sessionUser.membershipCode}!="10051000"))
+						<li><b>电&nbsp;&nbsp;&nbsp; 话：</b> $!{contactList.tel}</li>
+						<li><b>移动电话：</b> $!{contactList.mobile}</li>
+						<li><b>QQ：</b> $!{contactList.qq}</li>
+						<li><b>邮 箱：</b> $!{contactList.email}</li>
+					#end
+                </ul>
+		    	#end
+		#end	
+        </div>
+    </div>
+</div>

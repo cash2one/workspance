@@ -1,0 +1,207 @@
+<div class="orderright fl">
+       <div class="state-main">
+             <div class="state-now">
+                    <i class="icon-big-ts iconfont">&#xe60d;</i>订单状态：买家已付款，卖家待发货
+              </div>
+              <div class="state-ts">请尽早发货，以免买家申请退款</div>
+              <div class="state-cando">您可以<a href="javascript:void(0)" class="blue j_out">发货</a></div>
+         </div>
+</div>
+<div class="pop-main">
+    <div class="pop-page-sell clearfix">
+        <div class="page-sell-head">
+            <h3>填写物流信息</h3>
+            <a href="javascript:void(0)" class="sell-close j_close">x</a>
+        </div>
+        <ul class="sell-rmul">
+            <li>
+                物流公司：<select class="sell-set" id="wl_company">
+						<option value="">请选择物流公司</option>
+						#foreach($!{list} in $!{wuliuList})
+								<option value="$!{list.key}">$!{list.value}</option>
+						#end
+				</select>
+				<span id="errocompany" style="color:red"></span>
+            </li>
+            <li>
+                物流单号：<input class="sell-input" id="wuliu" /> <span id="errowuliu"style="color:red"></span>
+            </li>
+            <li>
+                联系电话：<input class="sell-input sell-input-phone" id="phone"/>
+                <span class="color-66">为确保您的货物顺利送达，物流信息真实有效，请保持您的联系电话畅通。</span><span id="errophone" style="color:red"></span>
+            </li>
+            <li class="imgpic">
+                发货说明：<textarea class="sell-text j_stext" id="description"></textarea>
+                <span class="color-66 bottom-txt">还可以输入<span class="j_number">200</span>字</span>
+            </li>
+            <li class="addimg">
+				上传凭证：<span class="infoimg intoimg1" style="cursor:pointer">上传图片</span>
+				<span class="color-66 sc-left">还可以上传<span class="p_number">3</span>张</span>
+			</li>
+            <li>
+                <span class="sell-btn sell-btnn">确认发货</span>
+                <a class="qx-a blue j_close" href="javascript:void(0)">取消</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+	$(window).load(function() {
+		var ie6=!-[1,];
+		var html="";
+		if(ie6){
+			//如果为IE浏览器则	,则添加submitForm
+			$(".intoimg1").hide();
+			html="<form action='' method='post' enctype='multipart/form-data' id='form3'>"+
+					"<input type='file' id='uploadfile' name='uploadfile'/>"+
+					"<input type='hidden' value='6' name='targetType'></form>"
+			$(".sc-left").before(html);
+		}else{
+			//否则则为普通浏览器提交
+			html="<form action='' method='post' enctype='multipart/form-data'>"
+					+"<input type='file'  id='uploadfile' name='uploadfile' style='display:none;'/>"
+					+"</form>";
+			$(".sell-rmul").after(html);
+		}
+    });
+
+
+
+	$(".j_out").bind("click",function(){
+        var wHight = $(document).height();
+        var wWidth = $(document).width();
+        var scrollTop = $(document).scrollTop();
+        $(".estopDiv").height(wHight).width(wWidth).show();
+        var left_pop = (wWidth - $(".pop-main").width())/2
+        var top_pop = ($(window).height() - $(".pop-main").height())/2+scrollTop;
+        $(".pop-main").css({"top":top_pop+"px","left":left_pop+"px"}).show();
+    })
+    $(".j_close").bind("click",function(){
+        $(".estopDiv").hide();
+        $(".pop-main").hide();
+    })
+	var ret = "";
+	
+	$(document).ready(function(){
+		$(".sell-btnn").click(function(){
+			if(ret==""||ret=="请选择物流公司"){
+                $("#errocompany").html("请填写物流公司");
+                return false;
+			}else{
+				$("#errocompany").html("");
+			}
+			if($("#wuliu").val()==""){
+                $("#errowuliu").html("请填写物流单号");
+    			return false;
+          	}else{
+    	    	$("#errowuliu").html("");
+    	  	}
+			if($("#phone").val()==""){
+				$("#errophone").html("请填写联系方式");
+				return false;
+			}else{
+				$("#errophone").html("");
+			}
+			var orderNo=$!{orderNo};
+			var logisticsNo=$("#wuliu").val();
+			var sell_phone=$("#phone").val();
+			var description=$("#description").val();
+			//发货提交
+			jQuery.ajax({
+				url:'#springUrl('/orders/sellPostGoodsLogistics.htm')',
+                type:'post',
+                dataType:'json',
+                data:{
+    					orderNo:orderNo,
+    					logisticsCompany:ret,
+    					logisticsNo:logisticsNo,
+    					sell_phone:sell_phone,
+    					description:description,
+    					pic_str:p_str,
+					},
+				success:function(data){
+					window.location.href=window.location.href;
+				}
+			});
+		});
+	});
+	
+	
+	function　fntt(obj){
+		ret=obj.attr("value");
+	}
+    selectJr(fntt);
+	
+	//图片上传
+	$(".intoimg1").click(function(){
+      $("#uploadfile").click();   
+	})
+	
+	var img_num=0;//图片上传
+	var p_str="";
+	
+	jQuery(".pop-page-sell").delegate("#uploadfile","change",function(){
+		var ie6=!-[1,];
+		if(!ie6){
+    		var formDate = new FormData(jQuery(this).parent()[0]);
+    		formDate.append("targetType", 6);
+    		jQuery.ajax({
+            			url:"#springUrl('/upload/ieupload.htm')",
+            			data:formDate,
+            			type: "POST",
+            			cache: true,
+            			async: false,
+            			dataType:"json",
+            			contentType:false,
+            			processData:false,
+            			success: function(data) {
+        					$(".sell-rmul .imgpic").after("<img src="+"$!{address.img}"+data.url+" class=\"firm-img\">");
+    						p_str=p_str+data.pid+",";
+    						img_num=img_num+1;
+    						if(img_num==3){
+    							$(".addimg").css("display","none");
+    						}else{
+    							var left=3-parseInt(img_num);
+    							$(".p_number").html(left);
+    						}
+    					}
+            		});
+		}
+	});
+	
+	
+	jQuery(".sell-rmul").delegate("#uploadfile","change",function(){
+		ajaxSubmitForm();//IE插件提交
+	});
+	
+	function ajaxSubmitForm(){
+		var value = $("#uploadfile").val();
+		if(value==""){
+			alert("请先选择文件");
+			return false;
+		}
+		if(!value.match(/.jpg|.jpeg|.gif|.png|.bmp/i)) {
+			alert("文件格式错误");
+			return false;
+ 		}
+		var option = {
+			url : '#springUrl('/upload/ieupload.htm')',
+			type : 'POST',
+			dataType : 'json',
+			headers : {"ClientCallMode" :"ajax"}, //添加请求头部
+			success : function(data){
+				p_str=p_str+data.pid+",";
+				img_num=img_num+1;
+    			if(img_num==3){
+    				$(".addimg").css("display","none");
+    			}else{
+    				var left=3-parseInt(img_num);
+    				$(".p_number").html(left);
+    			}
+			}
+		};
+		jQuery("#form3").ajaxSubmit(option);
+		return false; 
+	}
+</script>

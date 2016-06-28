@@ -1,0 +1,898 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="price">
+	<typeAlias alias="price" type="com.ast.ast1949.domain.price.PriceDO" />
+	<!-- 分页参数 -->
+	<typeAlias alias="priceDto" type="com.ast.ast1949.dto.price.PriceDTO" />
+	<typeAlias alias="priceForPriceDTO" type="com.ast.ast1949.dto.price.ForPriceDTO" />
+
+	<resultMap class="priceForPriceDTO" id="priceForPriceDTOResult">
+		<result property="id" column="id" />
+		<result property="parentId" column="parentId" />
+		<result property="typeId" column="typeId" />
+		<result property="typeName" column="typeName" />
+		<result property="title" column="title" />
+		<result property="gmtOrder" column="gmtOrder" />
+	</resultMap>
+
+	<!-- 完整DTO结果集 -->
+	<resultMap class="priceDto" id="fullPriceDto">
+		<result property="price" resultMap="price.fullPrice" />
+		<result property="baseTypeName" column="base_type_name" />
+		<result property="typeName" column="type_name" />
+		<result property="assistTypeName" column="assist_type_name" />
+	</resultMap>
+	<!-- 完整结果集 -->
+	<resultMap class="price" id="fullPrice">
+		<result property="id" column="id" jdbcType="INTEGER" />
+		<result property="title" column="title" jdbcType="VARCHAR" />
+		<result property="indexTitle" column="index_title" jdbcType="VARCHAR" />
+		<result property="baseTypeId" column="base_type_id" jdbcType="INTEGER" />
+		<result property="typeId" column="type_id" jdbcType="INTEGER" />
+		<result property="assistTypeId" column="assist_type_id"
+			jdbcType="INTEGER" />
+		<result property="goUrl" column="go_url" jdbcType="VARCHAR" />
+		<result property="content" column="content" jdbcType="VARCHAR" />
+		<result property="seoDetails" column="seo_details" jdbcType="VARCHAR" />
+		<result property="gmtOrder" column="gmt_order" jdbcType="TIMESTAMP" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="TIMESTAMP" />
+		<result property="isChecked" column="is_checked" jdbcType="CHAR" />
+		<result property="isIssue" column="is_issue" jdbcType="CHAR" />
+		<result property="tags" column="tags" jdbcType="VARCHAR" />
+		<result property="fontColor" column="font_color" jdbcType="VARCHAR" />
+		<result property="fontSize" column="font_color" jdbcType="VARCHAR" />
+		<result property="isBlod" column="is_blod" jdbcType="CHAR" />
+		<result property="clickNumber" column="click_number" jdbcType="INTEGER" />
+		<result property="realClickNumber" column="real_click_number"
+			jdbcType="INTEGER" />
+		<result property="isTodayReview" column="is_today_review"
+			jdbcType="CHAR" />
+		<result property="contentQuery" column="content_query" />
+	</resultMap>
+
+	<!-- 非完整结果集 用于类表 -->
+	<resultMap class="price" id="miniPrice">
+		<result property="id" column="id" jdbcType="INTEGER" />
+		<result property="title" column="title" jdbcType="VARCHAR" />
+		<result property="indexTitle" column="index_title" jdbcType="VARCHAR" />
+		<result property="baseTypeId" column="base_type_id" jdbcType="INTEGER" />
+		<result property="typeId" column="type_id" jdbcType="INTEGER" />
+		<result property="assistTypeId" column="assist_type_id"
+			jdbcType="INTEGER" />
+		<result property="goUrl" column="go_url" jdbcType="VARCHAR" />
+		<result property="seoDetails" column="seo_details" jdbcType="VARCHAR" />
+		<result property="gmtOrder" column="gmt_order" jdbcType="TIMESTAMP" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="TIMESTAMP" />
+		<result property="isChecked" column="is_checked" jdbcType="CHAR" />
+		<result property="isIssue" column="is_issue" jdbcType="CHAR" />
+		<result property="tags" column="tags" jdbcType="VARCHAR" />
+		<result property="fontColor" column="font_color" jdbcType="VARCHAR" />
+		<result property="fontSize" column="font_color" jdbcType="VARCHAR" />
+		<result property="isBlod" column="is_blod" jdbcType="CHAR" />
+		<result property="clickNumber" column="click_number" jdbcType="INTEGER" />
+		<result property="realClickNumber" column="real_click_number"
+			jdbcType="INTEGER" />
+		<result property="isTodayReview" column="is_today_review"
+			jdbcType="CHAR" />
+	</resultMap>
+
+	<!-- 非完整结果集 用于类表 -->
+	<resultMap class="priceDto" id="miniPriceDto">
+		<result property="price" resultMap="price.miniPrice" />
+		<result property="baseTypeName" column="base_type_name" />
+		<result property="typeName" column="type_name" />
+		<result property="assistTypeName" column="assist_type_name" />
+	</resultMap>
+
+	<resultMap class="price" id="miniPriceForSubscribe">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+	</resultMap>
+	<resultMap class="price" id="newpriceResult">
+		<result property="id" column="id" />
+		<result property="typeId" column="type_id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="gmtOrder" column="gmt_order" />
+	</resultMap>
+
+	<sql id="newpriceColumn">
+		id,type_id,title,content,gmt_order
+	</sql>
+
+	<resultMap class="priceDto" id="newPriceDtoResult">
+		<result property="price" resultMap="price.newpriceResult" />
+		<result property="typeName" column="typeName" />
+	</resultMap>
+
+	<resultMap class="price" id="exportDateResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="typeId" column="type_id" />
+		<result property="realClickNumber" column="real_click_number" />
+		<result property="content" column="content" />
+		<result property="ip" column="ip" />
+		<result property="isChecked" column="is_checked" />
+		<result property="isIssue" column="is_issue" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="assistTypeId" column="assist_type_id" />
+	</resultMap>
+
+	<sql id="exportColumn">
+		id,title,content,type_id,real_click_number,ip,is_checked,is_issue,gmt_created,assist_type_id
+	</sql>
+
+	<!-- 添加一条资讯 -->
+	<insert id="insertPrice" parameterClass="price">
+		insert into price
+		(title,index_title,base_type_id,type_id,assist_type_id,go_url,
+		content,seo_details,gmt_order,gmt_created,gmt_modified,is_checked,is_issue,
+		tags,font_color,font_size,is_blod,click_number,is_today_review,content_query)
+		values
+		(#title#,#indexTitle#,#baseTypeId#,#typeId#,#assistTypeId#,#goUrl#,#content#,
+		#seoDetails#,#gmtOrder#,#gmtCreated#,now(),#isChecked#,
+		#isIssue#,#tags#,#fontColor#,#fontSize#,#isBlod#,#clickNumber#,#isTodayReview#,#contentQuery#);
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<!-- 删除一条资讯 -->
+	<delete id="deletePriceById" parameterClass="java.lang.Integer">
+		delete from price
+		where id=#value#
+	</delete>
+	<!-- 更新一条资讯 -->
+	<update id="updatePriceById" parameterClass="price">
+		update price
+		set
+		title = #title#,
+		index_title = #indexTitle#,
+		base_type_id =
+		#baseTypeId#,
+		type_id = #typeId#,
+		assist_type_id=#assistTypeId#,
+		go_url =
+		#goUrl#,
+		content = #content#,
+		seo_details = #seoDetails#,
+		gmt_order =
+		#gmtOrder#,
+		gmt_created = #gmtCreated#,
+		gmt_modified = now(),
+		is_checked
+		= #isChecked#,
+		is_issue = #isIssue#,
+		tags = #tags#,
+		font_color =
+		#fontColor#,
+		font_size = #fontSize#,
+		is_blod = #isBlod#,
+		click_number =
+		#clickNumber#,
+		is_today_review = #isTodayReview#
+		where id = #id#;
+	</update>
+
+
+	<!-- 流量 变化 -->
+	<update id="updateRealClickNumberById" parameterClass="java.util.HashMap">
+		update
+		price
+		set
+		real_click_number=#realClickNumber#
+		where id = #id#;
+	</update>
+
+
+	<!-- 读取一条资讯 <select id="queryPriceById" parameterClass="java.lang.Integer" 
+		resultMap="fullPrice"> select ns.id, ns.title, ns.index_title, ns.base_type_id, 
+		ns.type_id, ns.assist_type_id, ns.go_url, ns.content, ns.seo_details, ns.gmt_order, 
+		ns.gmt_created, ns.gmt_modified, ns.is_checked, ns.is_issue, ns.tags, ns.font_color, 
+		ns.font_size, ns.is_blod, ns.click_number, ns.real_click_number, ns.is_today_review 
+		from price ns where ns.id=#value# </select> -->
+
+	<!-- 报价搜索 标题 未使用 -->
+	<select id="queryPricePaginationListByTitle" parameterClass="map"
+		resultClass="price">
+		select
+		id,
+		title,
+		gmt_order as gmtOrder
+		from price
+		where is_checked = 1
+		<isNotEmpty property="queryParam.title" prepend="and">
+			title like
+			concat('%',#queryParam.title#,'%')
+		</isNotEmpty>
+		order by gmt_order desc
+		limit #firstResult#,#maxResult#
+	</select>
+
+	<select id="queryPricePaginationListByTitleCount"
+		parameterClass="price" resultClass="int">
+		select count(1)
+		from price
+		where is_checked = 1
+		<isNotEmpty property="title" prepend="and">
+			title like
+			concat('%',#title#,'%')
+		</isNotEmpty>
+	</select>
+
+	<select id="queryOnPriceById" parameterClass="java.lang.Integer"
+		resultMap="miniPrice">
+		select ns.id,
+		ns.title,
+		ns.index_title,
+		ns.base_type_id,
+		ns.type_id,
+		ns.assist_type_id,
+		ns.go_url,
+		ns.seo_details,
+		ns.gmt_order,
+		ns.gmt_created,
+		ns.gmt_modified,
+		ns.is_checked,
+		ns.is_issue,
+		ns.tags,
+		ns.font_color,
+		ns.font_size,
+		ns.is_blod,
+		ns.click_number,
+		ns.real_click_number,
+		ns.is_today_review
+		from price ns
+		<dynamic prepend="where">
+		<![CDATA[ ns.id>#id# ]]>
+		</dynamic>
+
+		<!-- and ns.is_checked = 1 -->
+
+		and ns.type_id in (select type_id from price
+		where id=#id#)
+		order by id
+		asc
+		limit 0,1
+	</select>
+	<select id="queryDownPriceById" parameterClass="java.lang.Integer"
+		resultMap="miniPrice">
+		select ns.id,
+		ns.title,
+		ns.index_title,
+		ns.base_type_id,
+		ns.type_id,
+		ns.assist_type_id,
+		ns.go_url,
+		ns.seo_details,
+		ns.gmt_order,
+		ns.gmt_created,
+		ns.gmt_modified,
+		ns.is_checked,
+		ns.is_issue,
+		ns.tags,
+		ns.font_color,
+		ns.font_size,
+		ns.is_blod,
+		ns.click_number,
+		ns.real_click_number,
+		ns.is_today_review
+		from price ns
+		<dynamic prepend="where">
+		<![CDATA[ ns.id<#id# ]]>
+		</dynamic>
+
+		<!-- and ns.is_checked = 1 -->
+
+		and ns.type_id in (select type_id from price
+		where id=#id#)
+		order by id
+		desc
+		limit 0,1
+	</select>
+
+	<!-- 用于编辑时 -->
+	<select id="queryPriceByIdForEdit" parameterClass="java.lang.Integer"
+		resultMap="fullPriceDto">
+		select
+		n.id,
+		n.title,
+		n.index_title,
+		n.base_type_id,
+		n.type_id,
+		n.assist_type_id,
+		n.go_url,
+		n.content,
+		n.seo_details,
+		n.gmt_order,
+		n.gmt_created,
+		n.gmt_modified,
+		n.is_checked,
+		n.is_issue,
+		n.tags,
+		n.font_color,
+		n.font_size,
+		n.is_blod,
+		n.click_number,
+		n.real_click_number,
+		n.is_today_review,
+		n.content_query,
+		a.name
+		base_type_name,
+		b.name
+		type_name,
+		c.name assist_type_name
+		from price n
+		left join price_category
+		a on a.id=n.base_type_id
+		left join
+		price_category b on b.id=n.type_id
+		left join price_category c on
+		c.id=n.assist_type_id
+		where n.id =
+		#value#
+	</select>
+
+	<!-- 查询资讯: 非完整结果集,去除了text类型字段 -->
+	<select id="queryMiniPriceByCondition" parameterClass="priceDto"
+		resultMap="miniPriceDto">
+		select ns.id,
+		ns.title,
+		ns.index_title,
+		ns.base_type_id,
+		ns.type_id,
+		ns.assist_type_id,
+		ns.go_url,
+		ns.seo_details,
+		ns.gmt_order,
+		ns.gmt_created,
+		ns.gmt_modified,
+		ns.is_checked,
+		ns.is_issue,
+		ns.tags,
+		ns.font_color,
+		ns.font_size,
+		ns.is_blod,
+		ns.click_number,
+		ns.real_click_number,
+		ns.is_today_review,
+		a.name base_type_name,
+		b.name
+		type_name,
+		c.name assist_type_name
+		from price ns
+		left join price_category
+		a
+		on a.id=ns.base_type_id
+		left join price_category b
+		on b.id=ns.type_id
+		left join price_category c
+		on c.id=ns.assist_type_id
+		<dynamic prepend="where">
+			<isNotEmpty property="searchTitle" prepend="and">
+			<![CDATA[ ns.title like concat('%',#searchTitle#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="price.baseTypeId" prepend="and">
+				ns.base_type_id=#price.baseTypeId#
+			</isNotEmpty>
+			<isNotEmpty property="price.typeId" prepend="and">
+				ns.type_id =
+				#price.typeId#
+			</isNotEmpty>
+			<isNotEmpty property="price.assistTypeId" prepend="and">
+				ns.assist_type_id = #price.assistTypeId#
+			</isNotEmpty>
+			<isNotEmpty property="price.isChecked" prepend="and">
+				ns.is_checked = #price.isChecked#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<!-- 分页取记录总数 -->
+	<select id="getPriceRecordConutByCondition" parameterClass="priceDto"
+		resultClass="java.lang.Integer">
+		SELECT
+		COUNT(ns.id)
+		FROM price ns
+		LEFT JOIN price_category a
+		ON a.id =
+		ns.base_type_id
+		LEFT JOIN price_category b
+		ON b.id = ns.type_id
+		LEFT JOIN
+		price_category c
+		ON c.id = ns.assist_type_id
+		<dynamic prepend="where">
+			<isNotEmpty property="searchTitle" prepend="and">
+			<![CDATA[ ns.title like concat('%',#searchTitle#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="price.baseTypeId" prepend="and">
+			<![CDATA[ ns.base_type_id like concat(#price.baseTypeId#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="price.typeId" prepend="and">
+			<![CDATA[ ns.type_id like concat(#price.typeId#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="price.assistTypeId" prepend="and">
+			<![CDATA[ ns.assist_type_id like concat(#price.assistTypeId#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="price.isChecked" prepend="and">
+				ns.is_checked = #price.isChecked#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+
+	<update id="updateIsCheckedById" parameterClass="java.util.Map">
+		update price
+		set
+		is_checked=#isChecked#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+
+	<!-- <select id="queryPriceByClickNumber" resultClass="price"> select id,title 
+		from price order by click_number desc limit 0,12 </select> -->
+
+
+
+	<select id="queryPriceCountByTypeId" parameterClass="priceDto"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from price n
+
+
+		<!-- is_checked = 1 -->
+
+		<dynamic prepend="where">
+			<isNotEmpty property="assistTypeId" prepend="and">
+				n.assist_type_id = #assistTypeId#
+			</isNotEmpty>
+			<isNotEmpty property="typeId" prepend="and">
+				n.type_id=#typeId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 根据辅助类别查询 <select id="queryPriceByAssistTypeId" parameterClass="priceDto" 
+		resultClass="price"> select n.title,n.index_title as indexTitle,n.type_id 
+		as typeId FROM price n,price_category nc where n.assist_type_id=nc.id and 
+		n.is_checked = 1 and nc.id=#assistTypeId# order by gmt_order desc limit 0,#limitSize# 
+		</select> -->
+
+	<sql id="priceForPriceDTOColumn">
+		n.id as id ,nc.id as typeId,nc.parent_id as parentId
+		,nc.name
+		as typeName ,n.title as title ,n.gmt_order as gmtOrder
+	</sql>
+
+	<!-- 根据 父节点查询 该资讯下的行情价格 -->
+	<select id="queryPriceByParentId" parameterClass="java.util.HashMap"
+		resultMap="priceForPriceDTOResult">
+		select
+		<include refid="priceForPriceDTOColumn" />
+		from price_category nc,price n
+		where
+		n.type_id=nc.id
+		<!-- and n.is_checked = '1' -->
+		<isNotEmpty property="parentId" prepend="and">
+			nc.parent_id =
+			#parentId#
+		</isNotEmpty>
+		order by gmt_order desc
+		limit 0,#max#
+	</select>
+
+	<select id="queryPriceAndCategoryByTypeId" parameterClass="java.util.HashMap"
+		resultMap="priceForPriceDTOResult">
+		select
+		<include refid="priceForPriceDTOColumn" />
+		from price_category nc,price n
+		where
+		n.type_id=nc.id
+		<!-- and n.is_checked = 1 -->
+		<isNotEmpty property="typeId" prepend="and">
+			n.type_id = #typeId#
+		</isNotEmpty>
+		order by gmt_order DESC
+		limit 0,#max#
+
+	</select>
+
+	<select id="queryTopGmtOrderByParentId" parameterClass="java.lang.Integer"
+		resultClass="price">
+		SELECT
+		n.gmt_order as gmtOrder
+		FROM price_category nc,price
+		n
+		WHERE
+		n.type_id=nc.id
+		<!-- and n.is_checked = 1 -->
+		and nc.parent_id = #parentId#
+		ORDER BY gmt_order DESC
+		LIMIT 0,1
+	</select>
+
+	<select id="queryEachPriceByParentId" parameterClass="java.lang.Integer"
+		resultMap="priceForPriceDTOResult">
+		SELECT t.id, t.typeId, t.parentId,t.typeName, t.title , "" as gmtOrder
+		FROM
+		(select zn.id as id, znc.id as typeId, znc.parent_id as parentId,
+		znc.name as typeName, zn.title as title
+		from price_category znc inner
+		join price zn on znc.id=zn.type_id
+		where
+		<!-- zn.is_checked=1 and -->
+		parent_id=#parentId#
+		order by gmt_order desc) t
+		group by t.typeId
+	</select>
+
+
+
+	<!-- <select id="queryPriceByTypeIdAndAssistTypeId" parameterClass="java.util.Map" 
+		resultClass="price"> select p.content from price p where p.is_checked=1 <isNotEmpty 
+		property="typeId" prepend="and"> p.type_id = #typeId# </isNotEmpty> <isNotEmpty 
+		property="assistTypeId" prepend="and"> p.assist_type_id = #assistTypeId# 
+		</isNotEmpty> </select> -->
+
+	<!-- 未使用 -->
+	<select id="queryPriceByTitleAndTypeId" parameterClass="java.util.Map"
+		resultClass="price">
+		select
+		n.id, n.title, n.gmt_order AS gmtOrder
+		from price n
+		<!-- n.is_checked = 1 -->
+		<dynamic prepend="where">
+			<isNotEmpty property="typeId" prepend="and">
+				n.type_id = #typeId#
+			</isNotEmpty>
+			<isNotEmpty property="title" prepend="and">
+				n.title like
+				concat(#title#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by n.gmt_order desc
+		limit 0, #limitSize#
+	</select>
+
+	<!-- 报价Count搜索 <select id="queryPriceCountByCondition" parameterClass="priceDto" 
+		resultClass="java.lang.Integer"> select count(id) from price where is_checked 
+		= 1 <isNotEmpty property="searchTitle" prepend="and"> title like concat('%',#searchTitle#,'%') 
+		</isNotEmpty> </select> -->
+
+	<select id="queryLatestPriceByTypeId" parameterClass="java.lang.Integer"
+		resultClass="price">
+		SELECT
+		p.id, p.title, p.gmt_order as gmtOrder
+		FROM price p
+		JOIN
+		price_category pc ON pc.id = p.type_id
+		WHERE
+		<!-- p.is_checked = 1 AND -->
+		p.type_id = #value#
+		ORDER BY p.gmt_order DESC
+		LIMIT 0,10
+	</select>
+
+	<select id="queryPriceForSubscribe" parameterClass="java.util.HashMap"
+		resultMap="miniPriceForSubscribe">
+		SELECT
+		p.id,
+		p.title,
+		p.content
+		FROM price p
+		<!-- p.is_checked = 1 -->
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="typeId" prepend="and">
+				p.type_id=#typeId#
+			</isNotEmpty>
+			<isNotEmpty property="assistTypeId" prepend="and">
+				p.assist_type_id=#assistTypeId#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY p.gmt_order DESC
+		LIMIT 0,1;
+	</select>
+	<select id="queryNewPriceOnWeek" parameterClass="java.util.HashMap"
+		resultMap="newPriceDtoResult">
+		select p.id,p.type_id,p.title,pc.name as typeName
+		from price p
+		left join
+		price_category pc
+		on p.type_id=pc.id
+		where <![CDATA[p.gmt_created>=#firstDate#]]>
+		and <![CDATA[p.gmt_created<=#lastDate#]]>
+		<!-- and p.is_checked = 1 -->
+		order by p.gmt_created desc
+		limit 0,#size#
+	</select>
+
+	<sql id="priceColumnByType">
+		n.id, n.title,n.index_title as indexTitle,n.gmt_order as
+		gmtOrder,n.type_id as typeId
+		,n.assist_type_id as assistTypeId,
+		n.gmt_created as gmtCreated
+	</sql>
+
+	<sql id="dynamicByType">
+		<dynamic prepend="where">
+			<isNotEmpty property="assistTypeId" prepend="and">
+				n.assist_type_id = #assistTypeId#
+			</isNotEmpty>
+			<isNotEmpty property="typeId" prepend="and">
+				n.type_id=#typeId#
+			</isNotEmpty>
+			<isNotEmpty property="parentId" prepend="and">
+				pc.parent_id=#parentId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryPriceByTypeId" parameterClass="java.util.HashMap"
+		resultClass="price">
+		select
+		<include refid="price.priceColumnByType" />
+		FROM price n
+		inner join price_category pc on pc.id=n.type_id
+		<!-- n.is_checked = 1 -->
+		<include refid="price.dynamicByType" />
+		order by gmt_order desc
+		limit #max#
+	</select>
+
+	<select id="queryPriceByType" parameterClass="java.util.HashMap"
+		resultClass="price">
+		select
+		<include refid="price.priceColumnByType" />
+		FROM price n
+		inner join price_category pc on pc.id=n.type_id
+		<!-- where n.is_checked = 1 -->
+		<include refid="price.dynamicByType" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPriceByTypeCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		FROM price n
+		inner join price_category pc on
+		pc.id=n.type_id
+		<!-- where n.is_checked = 1 -->
+		<include refid="price.dynamicByType" />
+	</select>
+
+	<select id="queryPriceByTypeIdOrParentId" parameterClass="java.util.HashMap"
+		resultClass="price">
+		select
+		p.id, p.title, p.type_id as typeId,p.gmt_order as gmtOrder
+		FROM
+		price p
+		inner join price_category pc on pc.id=p.type_id
+		where
+		<!-- p.is_checked = 1 and -->
+		(p.type_id=#id# or pc.parent_id=#id#)
+		order by p.gmt_order desc
+		limit
+		#max#
+	</select>
+
+	<select id="queryPriceByIndex" parameterClass="java.util.HashMap"
+		resultClass="priceForPriceDTO">
+		select p.id,p.title,p.type_id as
+		typeId, pc.name as
+		typeName,p.gmt_order as gmtOrder
+		from price p
+		inner
+		join price_index pi
+		on p.type_id=pi.type_id
+		inner join price_category
+		pc on p.type_id=pc.id
+		where pi.code=#code#
+		order by p.gmt_order desc
+		limit #max#
+	</select>
+
+	<select id="queryLatestPrice" parameterClass="java.util.HashMap"
+		resultClass="priceForPriceDTO">
+		select p.id,p.title,p.type_id as typeId, pc.name as
+		typeName,p.gmt_order as gmtOrder
+		from price p
+		inner join price_index pi
+		on p.type_id=pi.type_id
+		inner join price_category pc on p.type_id=pc.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="code">
+				pi.code=#code#
+			</isNotEmpty>
+		</dynamic>
+		order by p.gmt_order desc
+		limit #max#
+	</select>
+
+	<select id="queryLatestPrice2" parameterClass="java.util.HashMap"
+		resultClass="priceForPriceDTO">
+		select
+		id,
+		'' as parentId,
+		type_id,
+		'' as typeName,
+		title,
+		gmt_order as gmtOrder
+		from
+		price
+		order by id desc
+		limit 0,#max#
+	</select>
+
+	<select id="queryPriceCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*) FROM price where gmt_order >= #from#
+	</select>
+
+	<select id="queryPriByTypeId" resultClass="price">
+		select
+		<include refid="price.priceColumnByType" />
+		FROM price n where n.type_id=70 order by n.gmt_order desc limit 0,2
+	</select>
+
+	<select id="getTypeidById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select type_id from price where id=#id#
+	</select>
+
+	<select id="queryTagsById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.String">
+		select tags from price where id=#id#
+	</select>
+
+	<select id="queryUVById" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select ip from price where id = #id#
+	</select>
+
+	<select id="queryIdByTitle" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select id from price
+		where
+		title = #title# and gmt_created >
+		#date#
+	</select>
+
+	<select id="queryListByFromTo" parameterClass="java.util.Map"
+		resultMap="exportDateResult">
+		select
+		<include refid="exportColumn" />
+		FROM price
+		where gmt_created &gt; #from# and #to# &gt; gmt_created
+	</select>
+
+	<select id="queryListByTypeId" parameterClass="java.util.Map"
+		resultMap="newpriceResult">
+		select
+		<include refid="newpriceColumn" />
+		from price
+		where type_id = #typeId# and is_checked='1'
+		order by id desc
+		limit #size#
+	</select>
+	<select id="queryListByAllTypeId" parameterClass="java.util.Map"
+		resultMap="newpriceResult">
+		select
+		<include refid="newpriceColumn" />
+		from price
+		where
+		<isEqual property="typeId" compareValue="5">
+			type_id in
+			(40,279,308,41,42,45,43,44,46,47,49,50,51,88,89,90,92,
+			93,94,95,96,72,71,70,69,206,209,66,79,65,80,81,210,83,84,86,207,208)
+		</isEqual>
+		<isEqual property="typeId" compareValue="6">
+			type_id in
+			(20,110,121,120,119,118,115,114,113,112,111,126,61,127,141,140,139,
+			138,137,136,134,132,131,130,129,128,142,62,63,98,233)
+		</isEqual>
+		<isEqual property="typeId" compareValue="7">
+			type_id in
+			(231,23,25,26,27,28,29,24)
+		</isEqual>
+		<isEqual property="typeId" compareValue="8">
+			type_id in (30,31)
+		</isEqual>
+		order by id desc
+		limit #size#
+	</select>
+	<!-- <select id="queryEachPriceById" parameterClass="java.lang.Integer" 
+		resultMap="priceForPriceDTOResult"> SELECT zn.id as id, znc.id as typeId, 
+		znc.parent_id as parentId, znc.name as typeName, zn.title as title FROM price_category 
+		znc inner join price zn on znc.id=zn.type_id where zn.is_checked=1 and znc.id=#id# 
+		order by gmt_order desc </select> -->
+
+	<update id="updateContentQueryById" parameterClass="java.util.Map">
+		update price
+		set
+		content_query = #content# ,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+
+	<select id="queryNewPrice" resultMap="exportDateResult">
+		select
+		<include refid="exportColumn" />
+		from price
+		where type_id=#typeId# order by gmt_created desc limit 0,100
+		<!-- and CURDATE() = DATE(gmt_created) -->
+	</select>
+
+	<select id="queryNewPrice2" resultMap="exportDateResult">
+		select
+		<include refid="exportColumn" />
+		from price
+		where type_id=#typeId# and (CURDATE()-INTERVAL 1 DAY) =
+		DATE(gmt_created) order by gmt_created desc limit 0,100
+	</select>
+
+	<select id="queryListByTypeIdHalfYear" parameterClass="java.util.Map"
+		resultMap="exportDateResult">
+		select
+		<include refid="exportColumn" />
+		from price
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				type_id=#type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="month">
+				(NOW()-INTERVAL #month#
+				MONTH) &lt; gmt_created
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+
+	<select id="queryPriceByTypeTwo" parameterClass="java.util.HashMap"
+		resultClass="price">
+		select
+		<include refid="price.priceColumnByType" />
+		FROM price n
+		inner join price_category pc on pc.id=n.type_id
+		<!-- where n.is_checked = 1 -->
+		<include refid="price.dynamicByType" />
+		and '2016-05-01' &lt; n.gmt_created 
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryPriceByTypeCountTwo" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		FROM price n
+		inner join price_category pc on
+		pc.id=n.type_id
+		<!-- where n.is_checked = 1 -->
+		<include refid="price.dynamicByType" />
+		and  '2016-05-01'  &lt; n.gmt_created 
+	</select>
+</sqlMap>

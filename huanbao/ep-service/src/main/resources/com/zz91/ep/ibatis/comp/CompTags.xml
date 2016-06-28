@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="compTags">
+	<typeAlias alias="compTags" type="com.zz91.ep.domain.comp.CompTags" />
+	<resultMap class="compTags" id="simpleColumnMap">
+		<result property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="keyword" column="keyword" />
+	</resultMap>
+	
+	<sql id="simpleColumn">
+		`id`,
+		`parent_id`,
+		`code`,
+		`name`,
+		`keyword`
+	</sql>
+	
+	<select id="queryCompTags" resultMap="simpleColumnMap" parameterClass="java.util.Map">
+		select 
+		<include refid="simpleColumn"/>
+		from comp_tags
+		<dynamic prepend="where">
+			<isEqual prepend="and" property="flag" compareValue="0">
+				parent_id = #id#
+			</isEqual>
+			<isEqual prepend="and" property="flag" compareValue="1">
+				parent_id in (select id from comp_tags where parent_id =#id#)
+			</isEqual>
+			<isEqual prepend="and" property="flag" compareValue="2">
+				parent_id in (select id from comp_tags where parent_id in (select parent_id from comp_tags where id=(select parent_id from comp_tags where id=#id#)))
+			</isEqual>
+		</dynamic>
+	</select>
+	
+	
+	<select id="queryCompKewordsById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select keyword from comp_tags where id =#value#
+	</select>
+	</sqlMap>

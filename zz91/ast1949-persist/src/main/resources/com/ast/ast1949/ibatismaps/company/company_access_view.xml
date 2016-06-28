@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAccessView">
+
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="companyAccessViewDO"
+		type="com.ast.ast1949.domain.company.CompanyAccessView" />
+	<resultMap class="companyAccessViewDO" id="companyAccessViewResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="companyAccount" column="company_account" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,company_id,
+		target_id,
+		company_account,
+		gmt_target,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<sql id="whereCaulse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="account">
+				company_account =
+				#account#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="companyId">
+				company_id = #companyId#
+			</isNotNull>
+			<isNotNull prepend="and" property="targetId">
+				target_id = #targetId#
+			</isNotNull>
+			<isNotNull prepend="and" property="gmtTarget">
+				gmt_target = #gmtTarget#
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="companyAccessViewResult">
+		select
+		<include refid="defaultColumn" />
+		from company_access_view
+		<include refid="whereCaulse" />
+		limit #size#
+	</select>
+
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_access_view
+		<include refid="whereCaulse" />
+	</select>
+
+	<insert id="insert" parameterClass="companyAccessViewDO">
+		INSERT INTO `ast`.`company_access_view`
+		(
+		`company_id`,
+		`target_id`,
+		`company_account`,
+		`gmt_target`,
+		`gmt_created`,`gmt_modified`)
+		VALUES
+		(
+		#companyId#,
+		#targetId#,
+		#companyAccount#,
+		#gmtTarget#,
+		now(),now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</sqlMap>

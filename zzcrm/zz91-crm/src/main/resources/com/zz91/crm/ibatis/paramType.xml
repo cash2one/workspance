@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="paramType">
+
+	<typeAlias alias="paramType" type="com.zz91.crm.domain.ParamType"/>
+	
+	<resultMap class="paramType" id="fullcolumnResult">
+		<result property="id" column="id"/>
+		<result property="key" column="key"/>
+		<result property="name" column="name"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<select id="queryAllParamType" resultMap="fullcolumnResult">
+		select
+		`id`,
+		`key`,
+		`name`,
+		`gmt_created`,
+		`gmt_modified`
+		from `param_type`
+	</select>
+	
+	<insert id="createParamType" parameterClass="paramType">
+		insert into `param_type`
+		(
+		`key`,
+		`name`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#key#,
+		#name#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<delete id="deleteParamTypeByKey" parameterClass="java.lang.String">
+		delete from param_type
+		where `key`=#key#
+	</delete>
+	
+	<update id="updateParamType" parameterClass="paramType">
+		update `param_type`
+		set
+		<isNotEmpty property="key">
+		`key` = #key#,
+		</isNotEmpty>
+		`name` = #name#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+	<select id="queryCountByKey" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select count(*) 
+		from param_type
+		where `key`=#key#
+	</select>
+	
+	<select id="queryKeyById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select `key` 
+		from param_type
+		where id=#id#
+	</select>
+</sqlMap>

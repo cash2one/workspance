@@ -1,0 +1,1200 @@
+##设置head标签里，添加属性
+#set($pageHeadFlag=1)
+#set($layout="/layout/defaultDetail.vm")
+##交易中心改版，未改最终页导致部分引用不一至
+<link rel="stylesheet" style="text/css" href="$!{address.img}/lib/asto/asto.hack-1.0.0.css" />
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.trade.css" />
+<link rel="stylesheet" href="$!{address.img}/zz91/myrc/css/myproducts.css" />
+
+##交易中心最新改版，未改最终页导致部分引用不一至
+<link rel="stylesheet" type="text/css" href="$!{address.img}/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/zz91/tradedetails/css/details_style.css"/>
+<script src="$!{address.img}/zz91/tradedetails/js/Png.js"></script>
+##<script type="text/javascript" src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{address.img}/zz91/tradedetails/js/details_style.js"></script>
+<script type="text/javascript" src="$!{address.img}/zz91/tradedetails/js/jquery.carouFredSel-6.0.4-packed.js"></script>
+<script type="text/javascript">
+            $(function() {
+
+                $('#carousel').carouFredSel({
+                    responsive: true,
+                    circular: false,
+                    auto: false,
+                    items: {
+                        visible: 1,
+                        width: 120,
+                        height: '66%'
+                    },
+                    scroll: {
+                        fx: 'directscroll'
+                    }
+                });
+
+                $('#thumbs').carouFredSel({
+                    responsive: true,
+                    circular: false,
+                    infinite: false,
+                    auto: false,
+                    prev: '#prev',
+                    next: '#next',
+                    items: {
+                        visible: {
+                            min: 2,
+                            max: 6
+                        },
+                        width: 80,
+                        height: '64%'
+                    }
+                });
+
+                $('#thumbs a').click(function() {
+                    $('#carousel').trigger('slideTo', '#' + this.href.split('#').pop() );
+                    $('#thumbs a').removeClass('selected');
+                    $(this).addClass('selected');
+                    return false;
+                });
+
+            });
+        </script>
+#parse("/common/importSlider.vm")
+###parse("/common/importJqueryui.vm")
+## inquiry import
+#parse("/common/importInquiry.vm")
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+<div class="main_box">
+    <div class="zz91leader">
+        当前位置:
+        <a href="#springUrl('/')">交易中心</a>
+        #foreach($navkey in $!{navigationCategoryMap.keySet()})
+            #set($count = $velocityCount)
+        #end
+        #foreach($navkey in $!{navigationCategoryMap.keySet()})
+           
+            #if($!{navigationCategoryMap.get($navkey)})
+                &gt;
+                <a href="#springUrl('/offerlist--mc')$!{navkey}.htm" target="_blank">$!{navigationCategoryMap.get($navkey)}</a>
+            #end
+        #end
+        &gt; <a href="#springUrl('/productdetails')$!{productDetails.products.id}.htm" >#printTitle($!{productDetails.products.title} 45 "")</a>
+    </div>
+   
+    <div class="MainBlock">
+        <div class="mb-details fl">
+            #if($!{productDetails.productsTypeLabel} != "合作")
+                #if($!{productDetails.productsTypeLabel} == "供应")
+                    #set($typeLabel = "采购")
+                #else
+                    #set($typeLabel = "供应")
+                #end
+                <div class="mb1">
+                    <div class="fl">
+                        您是要$!{typeLabel}吗？点击这里发布一条$!{typeLabel}信息，让客户主动找您！
+                    </div>
+                    <div class="fr mt2">
+                        <a href="http://trade.zz91.com/postoffer_step1.htm" target="_blank">
+                            #if($typeLabel == "供应")
+                                <img src="$!{address.img}/zz91/tradedetails/images/sendSupply.jpg" />
+                            #elseif($typeLabel == "采购")
+                                <img src="$!{address.img}/zz91/tradedetails/images/sendBuy.jpg" />
+                            #end
+                        </a>
+                    </div>
+                    <div class="cb"></div>
+                </div>
+            #end
+            <!--end mb1-->
+            #foreach($navkey in $!{navigationCategoryMap.keySet()})
+                #if($!{navigationCategoryMap.get($navkey)} && $velocityCount==$count)
+                    #set($thewords=$!{navigationCategoryMap.get($navkey)})
+                    #set($theCode =$!{navkey} )
+                #end
+            #end
+            <div class="mb2">
+                <div class="mb2-title fb">
+                    <h1><b>$!{productDetails.productsTypeLabel}#printTitle($!{productDetails.products.title} 45 "")</b></h1>
+                </div>
+            </div>
+            <!--end mb2-->
+            <div class="m3">
+                <div class="m3-left fl">
+                    <div class="ban" id="demo1">
+                        <div class="ban2" id="ban_pic1">
+                            <ul>
+                            #if($picList.size()>0)
+                                #foreach($pic in $picList)
+                                <a href="http://trade.zz91.com/pic/$!{pic.productId}.html" target="_blank"><li><img src="$!{address.img3}/275x187/$!{pic.picAddress}"/></li></a>
+                                #end
+                            #else
+                                <li class="fl"><img src="$!{address.img}/front/images/global/noimage.gif" width="330" height="230" /></li>
+                            #end
+                            </ul>
+                        </div>
+                        #if($picList.size()>0)
+                        <div class="min_pic">
+                            <div class="prev_btn1" id="prev_btn1"><img src="$!{address.img}/zz91/tradedetails/images/feel3.png" width="9" height="18"/></div>
+                                <div class="num clearfix" id="ban_num1">
+                                    <ul>
+                                    #foreach($pic in $picList)
+                                        <li><a href="javascript:;"><img src="$!{address.img3}/275x187/$!{pic.picAddress}" width="70" height="50" /></a></li>
+                                    #end
+                                    </ul>
+                                </div>
+                                <div class="next_btn1" id="next_btn1"><img src="$!{address.img}/zz91/tradedetails/images/feel4.png" width="9" height="18"/></div>
+                            </div>
+                        #end
+                        </div>
+                        <script type="text/javascript" src="$!{address.img}/zz91/tradedetails/js/pic_tab.js"></script>
+                        <script type="text/javascript">
+                            jQuery('#demo1').banqh({
+                                box:"#demo1",//总框架
+                                pic:"#ban_pic1",//大图框架
+                                pnum:"#ban_num1",//小图框架
+                                prev_btn:"#prev_btn1",//小图左箭头
+                                next_btn:"#next_btn1",//小图右箭头
+                                autoplay:false,//是否自动播放
+                                interTime:5000,//图片自动切换间隔
+                                delayTime:400,//切换一张图片时间
+                                pop_delayTime:400,//弹出框切换一张图片时间
+                                order:0,//当前显示的图片（从0开始）
+                                picdire:true,//大图滚动方向（true为水平方向滚动）
+                                mindire:true,//小图滚动方向（true为水平方向滚动）
+                                min_picnum:4,//小图显示数量
+                                pop_up:true//大图是否有弹出框
+                            })
+                        </script>   
+                    </div>
+                    <div class="m3-right fl">                   
+                    #if($!{productDetails.sample}&&$!{productDetails.products.productsTypeCode}=="10331000")
+                    <p class="" style="line-height: 30px;border-bottom: dashed 1px grey;font-size:20px">##m3-right-box
+                        <span style="vertical-align: sub">
+                            <img src="$!{address.img}/zz91/tradelist/images/yang.jpg" />
+                        </span>
+                        拿样价格：
+                        #if($!{productDetails.sample.takePrice}&&$!{productDetails.sample.takePrice}>0)
+                            <b class="red">
+                                $!{productDetails.sample.takePrice}
+                            </b>
+                            元
+                        #else
+                            <b class="red">
+                                免费
+                            </b>
+                        #end
+                    </p>
+                    #end
+                   
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon1.jpg" />
+                        $!{productDetails.productsTypeLabel}价格：
+                        <span class="red">
+                            #if($!{productDetails.products.minPrice}&&$!{productDetails.products.minPrice}!="0.0")
+                                $!{productDetails.products.minPrice}#if($!{productDetails.products.maxPrice}&&$!{productDetails.products.maxPrice}!="0.0")至 $!{productDetails.products.maxPrice}#end
+                                $!{productDetails.products.priceUnit}#if($!{productDetails.products.quantityUnit}&&$!{productDetails.products.quantityUnit}!="")/$!{productDetails.products.quantityUnit}#end
+                            #else
+                                面议或电议
+                            #end
+                            ##$!{productDetails.products.minPrice} 至 $!{productDetails.products.maxPrice} $!{productDetails.products.priceUnit}/$!{productDetails.products.quantityUnit}
+                        </span>  
+                    </div>
+                    <!--end box-->
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon2.jpg" />
+                        $!{productDetails.productsTypeLabel}数量：
+                        #if($!{productDetails.products.quantity} && $!{productDetails.products.quantity} != "")
+                            $!{productDetails.products.quantity} $!{productDetails.products.quantityUnit}
+                        #else
+                            不限
+                        #end
+                    </div>
+                    <!--end box-->
+                    #if($!{productDetails.products.goodsTypeCode} && $!{productDetails.products.goodsTypeCode}!="")
+                        <div class="m3-right-box">
+                            <img src="$!{address.img}/zz91/tradedetails/images/icon3.jpg" />
+                            $!{productDetails.productsTypeLabel}类型：
+                            #if($!{productDetails.products.goodsTypeCode} == '10361001' ) 现货 #end
+                            #if($!{productDetails.products.goodsTypeCode} == '10361000' ) 期货 #end
+                            #if($!{productDetails.products.goodsTypeCode} == '10361002' ) 其他 #end
+                        </div>
+                    #end
+                    <!--end box-->
+                    ##当该产品不是现货时，取通用固定属性
+                    #if($!{productDetails.addTransaction} && $!{productDetails.addTransaction}!="")
+                        <div class="m3-right-box">
+                            <img src="$!{address.img}/zz91/tradedetails/images/TradeShow.png" />交易说明： $!{productDetails.addTransaction}  
+                        </div>
+                    #end
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon4.jpg" />
+                        $!{productDetails.productsTypeLabel}情况：
+                        #if($!{productDetails.products.provideStatus}==0)
+                            长期$!{productDetails.productsTypeLabel}
+                        #else
+                            不定期$!{productDetails.productsTypeLabel}
+                        #end
+                    </div>
+                   
+                    <!--end box-->
+                    #if($!{productDetails.products.location} && $!{productDetails.products.location}!="")
+                        <div class="m3-right-box">
+                            <img src="$!{address.img}/zz91/tradedetails/images/icon5.jpg" />现货所在地： $!{productDetails.products.location}  
+                        </div>
+                    #end
+                    <!--end box-->
+                    #if($!{productDetails.products.shipDay} && $!{productDetails.products.shipDay}!="" && $!{productDetails.products.shipDay}!="0")
+                        <div class="m3-right-box">
+                            <img src="$!{address.img}/zz91/tradedetails/images/deliveryDays.png" />发货时间： $!{productDetails.products.shipDay}天内可以发货  
+                        </div>
+                    #end
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon6.jpg" />发布日期： $!date.format("yyyy-MM-dd",$!{productDetails.products.refreshTime})  
+                    </div>
+                    <!--end box-->
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon7.jpg" />信息有效期：
+                         #if($!{expiredFlag}=="1")
+                          <span class="red">信息已过期</span>
+                        #else
+                            #if($date.format("yyyy-MM-dd",$!{productDetails.products.expireTime}).substring(0,4) != "9999")
+                                截止 $!date.format("yyyy-MM-dd",$!{productDetails.products.expireTime})
+                            #else
+                                长期有效
+                            #end
+                        #end
+                    </div>
+                    <!--end box-->
+                    <div class="m3-right-box">
+                        <img src="$!{address.img}/zz91/tradedetails/images/icon8.jpg" />产品标签：
+                        #foreach($!{tag} in $!{tagsInfoList.keySet()})
+                            #set($keytag=$!{tag})
+                            <a href="$!{address.tags}/s/${tagsInfoList.get($!{tag})}/" target="_blank" title="$!{tag}">$!{tag}</a>
+                        #end
+                    </div>
+                    <!--end box-->
+					#if($market)
+					<div class="m3-right-box">
+						<img src="$!{address.img}/zz91/tradedetails/images/icon9.png" />所在市场：
+						<a href="$!{address.market}/$!{market.words}/" target="_blank" title="$!{market.name}">$!{market.name}</a>
+					</div>
+					<!--end box-->
+					#end
+					<div class="m3-right-box2">
+						<div class="fl">
+							<div class="mr8">
+								#if($!{sessionUser})
+									#if($!{expiredFlag}=="1")
+										<img src="$!{address.img}/zz91/tradedetails/images/online0.jpg" />
+									#else
+										<a href="javascript:openoverlay('$!{address.front}/inquiry/questionProduct.htm?productId=$!{productDetails.products.id}&destUrl=$!{address.trade}','在线询价',800,500,0);"><img src="$!{address.img}/zz91/tradedetails/images/online.jpg" /></a>
+									#end
+								#else
+									#if($!{expiredFlag}=="1")
+										<img src="$!{address.img}/zz91/tradedetails/images/online0.jpg" />
+                                    #else
+                                    <a href="javascript:openoverlay('$!{address.front}/inquiry/questionProduct.htm?productId=$!{productDetails.products.id}&destUrl=$!{address.trade}','询价/注册/登入',800,500,0);"><img src="$!{address.img}/zz91/tradedetails/images/online.jpg" /></a>
+                                    #end
+                                #end
+                            </div>
+                            <div class="fl">
+                                <a href="javascript:void(0)" class="collectBtn" title="点此收藏"><img src="$!{address.img}/zz91/tradedetails/images/join.jpg" /></a>
+                            </div>
+                            #if($!{qq} && $!{qq} != "")
+                                <div class="fl ml8">
+                                    <a href='http://wpa.qq.com/msgrd?v=3&uin=$!{qq}&site=qq&menu=yes' target="_blank" title="QQ交谈"><img src="$!{address.img}/zz91/tradedetails/images/qq.jpg" /></a>
+                                </div>
+                            #end
+                            <div class="cb"></div>
+                        </div>
+                        <div class="m3-box2Button fl" >
+                            <div class="m3-box2Button-img">
+                                <a href="$!{address.trade}/postoffer_step1.htm" target="_blank"><img src="$!{address.img}/zz91/tradedetails/images/onsupply.jpg" /></a>
+                            </div>
+                            <!--end aaa-img-->
+                            <div class="m3-box2Button-text">
+                                让客户主动找到您
+                            </div>
+                            <!--end aaa-text-->
+                        </div>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end -right-box2-->
+                </div>
+                <!--end m3-right-->
+                <div class="cb"></div>
+            </div>
+            <!--end m3-->
+            #set($totalPage=$!{pageList.size()})
+            #foreach($products in $!pageList)
+                #if($!{productDetails.products.id} == $!{products.id})
+                    #set($currentPage = $!{velocityCount} - 1)
+                #end
+            #end
+            <div class="mb-page">
+                <ul>
+                    <li>
+                        #if(${currentPage} != 0)
+                            #set($pageUp = ${currentPage} - 1)
+                        #else
+                            #set($pageUp = $!{pageList.size()} - 1)
+                        #end
+                        <a href='#springUrl('/productdetails')$!{pageList.get($pageUp).id}.htm' ><img src="$!{address.img}/zz91/tradedetails/images/up.jpg" /></a>
+                    </li>
+                    <li>
+                        #if(${currentPage} < ($!{pageList.size()} - 1))
+                            #set($pageNext = ${currentPage} + 1)
+                        #else
+                            #set($pageNext = 0)
+                        #end
+                        <a href='#springUrl('/productdetails')$!{pageList.get($pageNext).id}.htm' ><img src="$!{address.img}/zz91/tradedetails/images/next.jpg" /></a>
+                    </li>
+                </ul>
+            </div>
+            <!--end mb-page-->
+           
+            #if($!{productDetails.sample}&&$!{productDetails.products.productsTypeCode}=="10331000")
+            <!--start 增加样品息栏 2014-08-01-->
+            <div class="mb-10">
+                <div class="mb10-tle">样品交易信息</div>
+                <!--end mb10-tle-->
+                <div class="mb10-box">
+                    <div class="mb10-box-lt">
+                        <img src="$!{address.img}/zz91/tradedetails/images/ny.jpg" />
+                    </div>
+                    <!--end mb10-box-lt-->
+                    <div class="mb10-box-gt">
+                        <ul>
+                            <li>拿样价格：#if($!{productDetails.sample.takePrice}&&$!{productDetails.sample.takePrice}>0)$!{productDetails.sample.takePrice}元#else 免费#end</li>
+                            <li>运费：#if($!{productDetails.sample.sendPrice}&&$!{productDetails.sample.sendPrice}>0)$!{productDetails.sample.sendPrice}元  #if($!{productDetails.sample.isCashDelivery} == 1 ) （支持货到付款） #end  #else 免费#end</li>
+                            <li>样品数量：$!{productDetails.sample.amount}件</li>
+                            <li>发货地址：$!{sampleAreaLabel}</li>
+                            <li>单位重量：$!{productDetails.sample.weight}千克/件</li>
+                            <li>支付类型：支持支付宝交易</li>
+                        </ul>
+                        <div class="mb10-box-gt-btn"><a href=#if($!{productDetails.products.productsTypeCode}=="10331000")"$!{address.yang}/sale/$!{productDetails.products.id}.htm" #else "$!{address.trade}/productdetails$!{productDetails.products.id}.htm" #end target="_blank">申请拿样</a></div>
+								
+##                        <div class="mb10-box-gt-points">
+##                            <img src="http://img0.zz91.com/zz91/tradedetails/images/bell.jpg" />
+##                            奖励：拿样付款后，可获得<span class="mb10-credit">5个积分</span>,一分=一块钱。<a href="$!{address.yang}/score.htm" target="_blank">查看详情</a>
+##                        </div>
+						
+                    </div>
+                    <!--end mb10-box-gt-->
+                    <div class="cb"></div>
+                </div>
+                <!--end mb10-box-->   
+            </div>
+            #end
+            <!--end mb-10-->
+            <!--end 增加样品交易信息栏 2014-08-01-->
+           
+           
+            <!--增加样品交易信息栏 2014-04-25-->
+            <div class="mb-9">
+              <div class="mb9-title f14"><h2>供求详情</h2></div>
+              <!--end m9-title-->
+            </div>
+            <!--end -->
+            <div class="mb4" id="propFlag">
+                <div class="mb4-content">
+                    #if($!{productDetails.products.source} != "" && $!{productDetails.products.source})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">货源地：</div><div class="mb4-content-value fl">$!{productDetails.products.source}</div>
+                            <div class="cb"></div>
+                        </div>
+                       
+                    #end
+                    #if($!{productDetails.products.origin} != "" && $!{productDetails.products.origin})
+                        <div class="mb4-content-text">
+                             <div class="mb4-content-name fl">来源产品：</div><div class="mb4-content-value fl">$!{productDetails.products.origin}</div>
+                             <div class="cb"></div>
+                        </div> 
+                    #end
+                    #if($!{productDetails.products.useful} != "" && $!{productDetails.products.useful})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">此废料可用于：</div><div class="mb4-content-value fl">$!{productDetails.products.useful}</div>
+                            <div class="cb"></div>
+                        </div> 
+                    #end
+                    #if($!{productDetails.products.specification} != "" && $!{productDetails.products.specification})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">产品规格：</div><div class="mb4-content-value fl">$!{productDetails.products.specification}</div>
+                            <div class="cb"></div>
+                        </div> 
+                    #end
+                    #if($!{productDetails.products.color} != "" && $!{productDetails.products.color})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">颜色：</div><div class="mb4-content-value fl">$!{productDetails.products.color}</div>
+                            <div class="cb"></div>
+                        </div>  
+                    #end
+                    #if($!{productDetails.products.appearance} != "" && $!{productDetails.products.appearance})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">外观：</div><div class="mb4-content-value fl">$!{productDetails.products.appearance}</div>
+                            <div class="cb"></div>
+                        </div> 
+                    #end
+                    #foreach($pap in $!productAddProperties)
+                        #if($!{pap.property} != "交易说明" && $!{pap.content} != "" && $!{pap.content})
+                            <div class="mb4-content-text">
+                                <div class="mb4-content-name fl">$!{pap.property}：</div><div class="mb4-content-value fl">$!{pap.content}</div>
+                                <div class="cb"></div>
+                            </div> 
+                        #end
+                    #end
+                     #if($!{productDetails.products.impurity} != "" && $!{productDetails.products.impurity})
+                        <div class="mb4-content-text">
+                            <div class="mb4-content-name fl">杂质（杂物）含量：</div><div class="mb4-content-value fl">$!{productDetails.products.impurity}</div>
+                            <div class="cb"></div>
+                        </div> 
+                     #end
+                     #if($!{productDetails.products.manufacture} != "" && $!{productDetails.products.manufacture})
+                    <div class="mb4-content-text">
+                        <div class="mb4-content-name fl">加工说明：
+                        </div>
+                        <div class="mb4-content-value fl">
+                            #foreach($manu in $!manufactureList)
+                                #if($!{productDetails.products.manufacture} == $!{manu.code})
+                                    $!{manu.label}
+                                #end
+                            #end
+                        </div>
+                        <div class="cb"></div>
+                    </div>   
+                    #end
+                    <p class = "mt8">
+                        ##set($details = ${productDetails.products.details.replaceAll("\n", "<br />")})
+                        $!{productDetails.products.details}
+##                        ${productDetails.products.details}
+                    </p>
+                   
+                    <div class="chk-bottom-addr">
+                        <a id="showphone" class="mb-box-img" title="点击查看" onclick="gotoT2();">
+                            <img src="http://img0.zz91.com/zz91/tradedetails/images/contact.jpg" alt="查看联系方式" />
+                        </a>
+                    </div>
+                </div>
+                <!--end mb4-content-->
+            </div>
+            <!--end mb4-->
+            <div class="mb6">
+                <div class="mb6-title fl fb f14">
+                    你还想找其他供求信息吗？
+                </div>
+                <form method="post" action = "#" id="search" onsubmit="return zz91searchindex(this,0);">
+                    <div class="mb6-search fl">
+                        <input class="mb6-search-text fl" name = "keywords" id = "keywords" type="text">
+                        <input type="submit" id = "sbmit" class="mb6-search-ok fr" value="" >
+                        <div class="cb"></div>
+                    </div>
+                </form>
+               
+                <div class="mb6-ok fr fb f14">
+                    <a href="http://trade.zz91.com/postoffer_step1.htm" target="_blank">点此发布供求信息</a>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end mb6-->
+                #if($!{infoList.size()}>0)
+                    <div class="mb8-title fb f14">
+                        <h2>其他$!{thewords}$!{productDetails.productsTypeLabel}信息</h2>
+                    </div>
+                    <!--end mb2-content-title-->
+                    <div class="mb2-content-ul">
+                        <ul>
+                            #foreach($dto in $infoList)
+                            <li>
+                                <div class="mb2-ul-left">
+                                    <a href="$!{address.trade}/productdetails$!{dto.products.id}.htm" title="$!{dto.products.title}" target="_blank">#printTitle($!{dto.products.title} 18 "")</a>
+                                </div>
+                                <div class="mb2-ul-right">
+                                    #if($!{dto.products.minPrice}&&$!{dto.products.minPrice}!="0.0")
+                                        $!{dto.products.minPrice}#if($!{dto.products.maxPrice}&&$!{dto.products.maxPrice}!="0.0")至 $!{dto.products.maxPrice}#end
+                                        $!{dto.products.priceUnit}#if($!{dto.products.quantityUnit}&&$!{dto.products.quantityUnit}!="")/$!{dto.products.quantityUnit}#end
+                                    #else
+                                        面议或电议
+                                    #end
+                                </div>
+                                <div class="cb"></div>
+                            </li>
+                            #end
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end mb2-content-ul-->
+                #end
+            <div class="mb8" style="margin-bottom:0px;">
+                <div class="mb8-title fb f14">
+                    <h2>相关报价</h2>
+                </div>
+                <!--end mb8-title-->
+                <!--2015 新报价 start-->
+                <div class="newmb8-list">
+                    <div class="newmlbox">
+                        <div class="newm8-tle f14">企业报价</div>
+                        <!--end newm8-tle-->
+                        <div class="newm8-info">
+                            <ul>
+								#foreach($!{li} in $!{categoryList})
+									<li><a href="http://jiage.zz91.com/cprice-${li.code}/" target="_blank">${li.label}</a></li>
+								#end
+                            </ul>
+                        </div>
+                        <!--end newm8-info-->
+                    </div>
+                    <!--end newmlbox-->
+                    <div class="newmlbox mt8">
+                        <div class="newm8-tle f14">行情报价</div>
+                        <!--end newm8-tle-->
+                        <div class="newm8-info">
+                            <ul>
+								#if($!{code}=="1000"||$!{code}=="1005"||$!{code}=="1007")
+									<li><a href="http://jiage.zz91.com/feitong/" target="_blank">废铜</a></li>
+									<li><a href="http://jiage.zz91.com/feitie/" target="_blank">废铁</a></li>
+									<li><a href="http://jiage.zz91.com/feigang1/" target="_blank">废钢</a></li>
+									<li><a href="http://jiage.zz91.com/feilv/" target="_blank">废铝</a></li>
+									<li><a href="http://jiage.zz91.com/feinie/" target="_blank">废镍</a></li>
+									<li><a href="http://jiage.zz91.com/feibuxiugang/" target="_blank">废不锈钢</a></li>
+									<li><a href="http://jiage.zz91.com/feimutai/" target="_blank">废钼钛</a></li>
+									<li><a href="http://jiage.zz91.com/guowaifeijinshu/" target="_blank">国外废金属</a></li>
+									<li><a href="http://jiage.zz91.com/jiangzhehu/" target="_blank">江浙沪</a></li>
+									<li><a href="http://jiage.zz91.com/shandong/" target="_blank">山东</a></li>
+									<li><a href="http://jiage.zz91.com/guangdong/" target="_blank">广东</a></li>
+									<li><a href="http://jiage.zz91.com/linyi1/" target="_blank">临沂</a></li>
+									<li><a href="http://jiage.zz91.com/qingyuan/" target="_blank">清远</a></li>
+								#elseif($!{code}=="1001"||$!{code}=="1003"||$!{code}=="1006"||$!{code}=="1010"||$!{code}=="1011")
+									 <li><a href="http://jiage.zz91.com/pp/" target="_blank">PP</a></li>
+									 <li><a href="http://jiage.zz91.com/pvc/" target="_blank">PVC</a></li>
+									 <li><a href="http://jiage.zz91.com/PMMA/" target="_blank">PMMA</a></li>
+									 <li><a href="http://jiage.zz91.com/EVA/" target="_blank">EVA</a></li>
+									 <li><a href="http://jiage.zz91.com/HDPE/" target="_blank">HDPE</a></li>
+									 <li><a href="http://jiage.zz91.com/LDPE/" target="_blank">LDPE</a></li>
+									 <li><a href="http://jiage.zz91.com/TPU/" target="_blank">TPU</a></li>
+									 <li><a href="http://jiage.zz91.com/PET/" target="_blank">PET</a></li>
+									 <li><a href="http://jiage.zz91.com/ABS/" target="_blank">ABS</a></li>
+									 <li><a href="http://jiage.zz91.com/PC/" target="_blank">PC</a></li>
+									 <li><a href="http://jiage.zz91.com/GPPS/" target="_blank">GPPS</a></li>
+									 <li><a href="http://jiage.zz91.com/yuyao/" target="_blank">余姚</a></li>
+									 <li><a href="http://jiage.zz91.com/suliaozaishengliaojiagehangqing/" target="_blank">再生料</a></li>
+									 <li><a href="http://jiage.zz91.com/chuchangjia/" target="_blank">新料出厂</a></li>
+									 <li><a href="http://jiage.zz91.com/shichangjia/" target="_blank">新料市场</a></li>
+								#elseif($!{code}=="1002"||$!{code}=="1004"||$!{code}=="1008"||$!{code}=="1009")
+									 <li><a href="http://jiage.zz91.com/youjia/" target="_blank">油价快报</a></li>
+									 <li><a href="http://jiage.zz91.com/feizhigedijiage/" target="_blank">废纸价格</a></li>
+									 <li><a href="http://jiage.zz91.com/guoneixiangjiao/" target="_blank">废橡胶价格</a></li>
+									 <li><a href="http://jiage.zz91.com/hangqingzongshu/" target="_blank">综合废料</a></li>
+								#end
+                            </ul>
+                        </div>
+                        <!--end newm8-info-->
+                    </div>
+                    <!--end newmlbox-->
+                </div>
+                <!--2015 新报价 end-->
+                <!--<div class="mb8-list">
+                    <ul>
+                        #foreach($list in $companyPriceList)
+                        <li>
+                            <div class="fl w160 oow">
+                                <a href="$!{address.jiage}/cdetail/$!{list.companyPriceDO.id}.html" title="$!{list.companyPriceDO.title}" target="_blank">$!{list.companyPriceDO.title}</a>
+                            </div>
+                            <div class="fr">
+                                #if($!{list.companyPriceDO.minPrice} && $!{list.companyPriceDO.minPrice} != ""
+                                    &&$!{list.companyPriceDO.minPrice} !="None" &&$!{list.companyPriceDO.minPrice} !="null")
+                                    $!{list.companyPriceDO.minPrice}
+                                    #if($!{list.companyPriceDO.maxPrice}&&$!{list.companyPriceDO.maxPrice}!=""&&$!{list.companyPriceDO.maxPrice}!="0.0")
+                                        至$!{list.companyPriceDO.maxPrice}
+                                    #end
+                                    $!{list.companyPriceDO.priceUnit}
+                                #elseif($!{list.companyPriceDO.price} && $!{list.companyPriceDO.price} != ""
+                                    && $!{list.companyPriceDO.price} != "None" && $!{list.companyPriceDO.price} != "null")
+                                    $!{list.companyPriceDO.price}
+                                #end
+                            </div>
+                            <div class="cb"></div>
+                        </li>
+                        #end
+                        <div class="cb"></div>
+                    </ul>
+                </div>-->
+                <!--end mb8-list-->
+                <div class="cb"></div>
+                <!--<div>
+                    <a href="$!{address.myrc}/mycompanyprice/createPrice.htm" target="_blank" title="发布报价信息">
+                        <div class="mb4-send"></div>
+                    </a>
+                </div>-->
+            </div>
+            <!--end mb8-->
+            ## 相关资讯报价
+            <div class="mb7">
+                <div class="mb7-title fb f14">
+                    <h2>相关资讯</h2>
+                </div>
+                <!--end mb7-title-->
+                <div  class="mb7-list">
+                    <div  class="mb7-list-left">
+                        <ul>
+                            #foreach($obj in $ja)
+                                <li>
+                                    <div class="fl w250 oow">
+                                        <a href="$!{obj.weburl}" target="_blank" title="$!{obj.title}">#printTitle($!{obj.title} 22 "")</a>
+                                    </div>
+                                    <div class="fr">$!{obj.pubdate}</div>
+                                    <div class="cb"></div>
+                                </li>
+                            #end
+                            <div  class="cb"></div>
+                        </ul>
+                    </div>
+                    ## 资讯中心
+                    <div  class="mb7-list-right">
+                        <ul>
+                            #foreach($obj in $!{postList})
+                                <li>
+                                    <div class="fl w250 oow">
+                                        <a href="$!{address.huzhu}/viewReply$!{obj.id}.htm" target="_blank" title="$!{obj.title}">[#if($!{obj.bbsPostCategoryId}==2) 帖子 #elseif($!{obj.bbsPostCategoryId}==3) 废料学院 #else 问答#end] #printTitle($!{obj.title} 20 "")</a>
+                                    </div>
+                                    <div class="fr">$!date.format('MM-dd',$!{obj.postTime})</div>
+                                    <div class="cb"></div>
+                                </li>
+                            #end
+                            <div  class="cb"></div>
+                        </ul>
+                    </div>
+                </div>
+                <div  class="cb"></div>
+            </div>
+            <!--end mb7-->
+            <div class="mb5">
+                <div class="mb5-title fb f14">
+                    浏览记录
+                </div>
+                <!--end mb5-title-->
+                <div class="mb5-content">
+                    <div class="mb5-content-demo">
+                        <ul id="mb5-demo-ul">
+                            #foreach($obj in $historyList)
+                                <li>
+                                    <div class="mb5-item-img">
+                                        <a href="$!{address.trade}/productdetails$!{obj.productId}.htm" target="_blank">
+                                            <img #if($!{obj.productPicUrl}&&$!{obj.productPicUrl}!="") src="$!{address.thumb}$!{address.resource}/$!{obj.productPicUrl}" #else src="$!{address.img}/front/images/global/noimage.gif" #end alt="$!{obj.productName}" " />
+                                        </a>
+                                    </div>
+                                    <!--end mb5-item-img-->
+                                    <div class="mb5-item-text">
+                                        <a href="$!{address.trade}/productdetails$!{obj.productId}.htm" target="_blank">
+                                            #printTitle($!{obj.productName} 8 "")<br/>
+                                            ##5000元/吨
+                                        </a>
+                                    </div>
+                                    <!--end mb5-item-text-->
+                                </li>
+                            #end
+                        </ul>
+                        <div class="cb"></div>
+                    </div>
+                    <!--end mb5-content-demo-->
+                </div>
+                <!--end mb5-content-->
+            </div>
+            <!--end mb5-->
+        </div>
+        <!--end mb-details-->
+        <div class="mb-right fr">
+            <div class="mb-right-banner">
+                <script type="text/javascript" src="http://gg.zz91.com/show?p=584"></script>
+            </div>
+            <div class="bg">
+            <!--end mb-right-banner-->
+            #if($!{sessionUser})
+                <input type="hidden" id="loginFlag" value="1" />
+            #else
+                <input type="hidden" id="loginFlag" value="0" />
+            #end
+            #if($!{companyAccount})
+                #set($compurl="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+                #set($urlMsg="$!{address.company}/compinfo$!{companyInfo.id}.htm#messages")
+                #set($urlProduct="$!{address.company}/compinfo$!{companyInfo.id}.htm#supply")
+                #set($urlCredit="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+                ##set($urlIntro="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+                #set($urlContact="$!{address.company}/compinfo$!{companyInfo.id}.htm")
+                #if($!{companyInfo.membershipCode}!="10051000" && $!{companyInfo.membershipCode}!="")
+                    #if($!{companyInfo.domainZz91}&&$!{companyInfo.domainZz91}!="")
+                        #set($compurl="http://$!{companyInfo.domainZz91}.zz91.com")
+                        #set($urlMsg="http://$!{companyInfo.domainZz91}.zz91.com/zxly.htm")
+                        #set($urlProduct="http://$!{companyInfo.domainZz91}.zz91.com/zxgq.htm")
+                        #set($urlContact="http://$!{companyInfo.domainZz91}.zz91.com/lxfs.htm")
+                        #set($urlCredit="http://$!{companyInfo.domainZz91}.zz91.com/cxda.htm")
+                    #end
+                #end
+                #if($!{companyInfo.membershipCode}=="10051003")
+                    #set($compurl="$!{address.www}/ppc/index$!{companyInfo.id}.htm")
+                #end
+                <!--end mb-right-companyJoin-->
+                    #if($!{companyInfo.membershipCode}!="10051000")
+                        <div>
+                            <a href="$!{compurl}" target="_blank" class="blue">$!{companyInfo.name}#if($!{isAttest})<span style="color:red">[已认证]</span>#end</a>
+                        </div>
+                        <div class="mb-right-companyJoin">
+                            <ul>
+                                <li><a href="$!{compurl}" target="_blank">进入企业网站 </a></li>
+                                <li>|</li>
+                                <li>诚信指数($!{creditIntegral})</li>
+    ##                            <li>|</li>
+    ##                            <li><a href='http://wpa.qq.com/msgrd?v=3&uin=529125088&site=qq&menu=yes' target="_blank">QQ交谈</a></li>
+                                <div class="cb"></div>
+                            </ul>
+                        </div>
+                        <div class="mb-right-block img$!{companyInfo.membershipCode}">
+                            #if(!$!{lifeFlag})
+                                第
+                                #if($!{companyInfo.zstYear} && $!{companyInfo.zstYear}!="")
+                                    <span class="red">$!{companyInfo.zstYear}</span>
+                                #else
+                                    <span class="red">1</span>
+                                #end
+                                年
+                            #else
+                                <img src="$!{address.img}/zz91/images/zs2.png" />
+                            #end
+                        </div>
+                    #else
+                         <div class="mb-member-top">
+                            <span class="mb-member-title" title="$!{companyInfo.name}"><a href="$!{compurl}" target="_blank" class="blue">$!{companyInfo.name}#if($!{isAttest})<span style="color:red">[已认证]</span>#end</a></span>
+                            <span class="OrdinaryMember">普通会员</span>
+                        </div>
+                    #end
+                  
+                    <!--end block-->
+            #else
+
+                <div class="mb-member-top">
+                    <span class="mb-member-title" title="$!{companyInfo.name}">
+                        <a href="$!{address.company}/compinfo$!{companyInfo.id}.htm" target="_blank" class="blue">$!{companyInfo.name}#if($!{isAttest})<span style="color:red">[已认证]</span>#end</a>
+                    </span>
+                    <span class="OrdinaryMember">普通会员</span>
+                </div>
+            #end
+               
+                <div>
+                    #if($!{sessionUser})
+                        #if($!{companyAccount}||$!{ldbFlag})
+                            <a id="showme" class="mb-box-img" title="点击查看">
+                                <img src="$!{address.img}/zz91/tradedetails/images/contact.jpg" alt="查看联系方式"/>
+                            </a>
+                        #else
+                            #if($wxResult==4)
+                            ## 未绑定微信帐号
+                            <div class="w-title">您还不能查看该会员的联系方式</div>
+                            <div class="w-title1">两步即可查看</div>
+                            <div class="w-step">
+                                步骤一：扫描微信公众号<br />
+                                <img src="$!{address.img}/zz91/weixin/images/weixin.jpg" /><br />
+                                步骤二：用微信绑定ZZ91帐号 <br />
+                                <a id="showme" href="javascript:void()" class="w-botton">绑定后立即查看</a>
+                            </div>
+                            #elseif($wxResult==5)
+                                ## 试用过期
+                                <div class="w-title">查看联系方式上限</div>
+                                <div class="w-sx">VIP使用7天权限已经到期</div>
+                                <div class="w-title1">还想继续查看?</div>
+                                <div class="w-line"></div>
+                                <div class="w-joinzst"><a href="http://www.zz91.com/zst/" target="_blank">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+                                <div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+                            #elseif($wxResult==3)
+                                ## 超过 15条
+                                <div class="w-title">当天查看联系方式上限</div>
+                                <div class="w-sx">您已经达到当天查看的上限</div>
+                                <div class="w-title1">还想继续查看</div>
+                                <div class="w-line"></div>
+                                <div class="w-joinzst"><a href="http://www.zz91.com/zst/" target="_blank">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+                                <div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+                            #elseif($wxResult==2)
+                                ## 超过10条 未超过15条
+                                <div class="w-title">当天查看联系方式上限</div>
+                                <div class="w-sx">今天您已经查看了10家客户的联系方式</div>
+                                <div class="w-title1">还想继续查看</div>
+                                <div class="w-step">
+                                    （1）给相关客户发10条询价信息<br />
+                                    或 （2）每天发5条供求信息
+                                    <a href="javascript:void()" id="showme" class="w-botton">发布好了立即查看</a>
+                                </div>
+                                <div class="w-line"></div>
+                                <div class="w-joinzst"><a href="http://www.zz91.com/zst/" target="_blank">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+                                <div class="w-joincontact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+                            #elseif($wxResult==1)
+                                <a id="showme" class="mb-box-img" title="点击查看">
+                                    <img src="$!{address.img}/zz91/tradedetails/images/contact.jpg" alt="查看联系方式" />
+                                </a>
+                            #else
+                                ## 默认
+                                <div class="w-title">查看联系方式</div>
+                                <div class="w-line"></div>
+                                <div class="w-joinzst"><a href="http://www.zz91.com/zst/" target="_blank">马上申请再生通<br />即可查看本站所有会员联系方式</a></div>
+                                <div class="w-joincokntact">服务热线 <font color=#ff0000>0571-56612345</font></div>
+                            #end
+                        #end
+                    #else
+                        #if($!{companyAccount})
+                            <a id="showme" class="mb-box-img" title="点击查看">
+                                <img src="$!{address.img}/zz91/tradedetails/images/contact.jpg" alt="查看联系方式" />
+                            </a>
+                        #else
+                            <a id="showme1" class="mb-box-img" title="点击查看">
+								<img src="$!{address.img}/zz91/tradedetails/images/contact.jpg" alt="查看联系方式" />
+                            </a>
+                            <div id="showwxid" style="display:none">
+                                ## 未绑定微信帐号
+                                <div class="w-title">您还不能查看该会员的联系方式</div>
+                                <div class="w-title1">两步即可查看</div>
+                                <div class="w-step" style="text-align:center">
+                                    步骤一：扫描微信公众号<br />
+                                    <img src="$!{address.img}/zz91/weixin/images/weixin.jpg" /><br />
+                                    步骤二：用微信绑定ZZ91帐号 <br />
+                                    <a id="loginBtn" href="javascript:void()" class="w-botton">立即登录查看</a>
+                                </div>
+                            </div>
+                            <!--end showwxid-->
+                        #end
+                    #end
+                </div>
+               
+                <!--end block2-->
+
+                <div class="mb-right-box">
+                    <div id="contactInfoDiv" class="mb-right-boxText">
+                        <ul>
+                            <li>联系人:<span id="showcontact"></span>
+                            </li>
+                            <li id="showtel">电话:<span ></span>
+                            </li>
+                            <li id="showmobile">移动电话:<span ></span>
+                            </li>
+                            <li id="showemail">电子邮箱:<span ></span>
+                            </li>   
+                            <li>地址:<span id="showaddress"></span>
+                            </li>
+                            ##<li>邮编:<span id="showzip"></span>
+                            ##</li>
+                            #if($!{companyInfo.membershipCode}!="10051000")
+                                <li>公司商铺:<span id="showwebsite"></span></li>
+                            #end
+                        </ul>
+                    </div>
+                    <!--end mb-right-boxText-->
+                </div>
+                <!--end mb-right-box-->
+            </div>
+            <script src="http://pyapp.zz91.com/app/yangad.html?keywords=$!{thewords}&amp;w=237&amp;l=8&adposition=642"></script>
+            <!--end mb-right-otherMes-->
+            <div class="mb-right-content">
+                <div class="mb-right-item2" style="margin-left:5px;">
+                <script type="text/javascript" src="http://gg.zz91.com/show?p=595"></script>
+                <script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=$!{thewords}&amp;showposition=&amp;m=5&amp;w=237&amp;showborder=1&adposition=637"></script>
+                </div>
+                <!--end mb-right-item2-->
+            </div>
+            #if($!{similarProducts.size()}!=0)
+            <div class="mb-right-otherMes">
+                <div class="mb-otherMes-title f14 fb">
+                   <h2> 该商家其他供求信息</h2>
+                </div>
+                <!--end mb-otherMes-title-->
+                <div class="mb-otherMes-box">
+                <ul id="otherMes_box">
+                    #foreach($list in $!{similarProducts})
+                        <li>
+                            <div class="mb-otherMes-item">
+                                <div class="mb-otherMes-img">
+                                    <a href="#springUrl('/productdetails')$!{list.products.id}.htm" target="_blank">
+                                        #if($!{list.coverPicUrl} && $!{list.coverPicUrl}!="")
+                                            <img src="$!{address.thumb}$!{address.resource}/$!{list.coverPicUrl}&width=98&height=98" alt="$!{list.products.title}"/>
+                                        #else
+                                            <img src="$!{address.img}/front/images/global/noimage.gif" width = "98px" height = "98px" alt="$!{list.products.title}"/>
+                                        #end
+                                    </a>
+                                </div>
+                                <!--end mb-otherMes-img-->
+                                <div class="mb-otherMes-text">
+                                    <a href="#springUrl('/productdetails')$!{list.products.id}.htm" target="_blank" title="$!{list.products.title}">
+                                        #printTitle($!{list.products.title} 18 "")
+                                    </a>
+                                </div>
+                                <!--end mb-otherMes-text-->
+                            </div>
+                            <!--end mb-otherMes-item-->
+                        </li>
+                    #end
+                </ul>
+            </div>
+            <!--end mb-otherMes-box-->
+            <script>
+                var num2=$("#otherMes_box li").length;
+                if(num2>4){
+                    var c,_=Function;
+                    with(o=document.getElementById("otherMes_box")){ innerHTML+=innerHTML; onmouseover=_("c=1"); onmouseout=_("c=0");}
+                    (F=_("if(#%136||!c)#++,#%=o.scrollHeight>>1;setTimeout(F,#%136?5:1500);".replace(/#/g,"o.scrollTop")))();
+                }
+               
+            </script>
+            </div>
+            #end
+           
+            <!--end mb-right-content-->
+        </div>
+        <!--end mb-right-->
+        <div class="cb"></div>
+    </div>
+    <script type="text/javascript">
+    /*新版供求详细页 960*90，创建于2013-12-18*/
+    var cpro_id = "u1436753";
+    </script>
+    <script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+    </div>
+   
+    </div>
+</div>
+
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://tongji.zz91.com/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "3"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+
+        $("#sbmit").click(function(){
+            var keyword = jQuery("#keywords").val();
+            jQuery("#TopKeywords").val(keyword);
+            jQuery("#TopSeaType").val("1");
+        });
+       
+        var messageBox= new Asto.util.PopupBox({
+            url:"$!{address.front}/inquiry/product.htm?productId=$!{productDetails.products.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}",
+            destUrl:"$!{address.trade}/submitCallback.htm",
+            modal:true,
+            height:370,
+            width:660
+        });
+
+        jQuery.ajax({
+            url:"#springUrl('/viewHistory.htm')",
+            data:{productId : $!{productDetails.products.id}},
+            cache:true,
+            dataType:"json",
+            success:function(data,textStatus){
+            }
+        });
+       
+        ## 登录弹出框
+        var loginBox=new Asto.util.PopupBox({
+            url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+            destUrl:"$!{address.trade}/submitCallback.htm",
+            modal:true,
+            height:450,
+            width:631
+        });
+       
+        jQuery(".messageBtn").click(function(){
+            if(jQuery("#loginFlag").val()==0){
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    jQuery("#loginFlag").val(1);
+                    Asto.util.Callback.setSubmitCallback(function(success, data){
+                        messageBox.close();
+                    });
+                    loginBox.close();
+                    messageBox.show("$!{address.front}/inquiry/product.htm?productId=$!{productDetails.products.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{address.trade}/submitCallback.htm");
+                });
+               
+                loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.trade}/submitCallback.htm");
+            }else{
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    messageBox.close();
+                    if(success=="false"){
+                        jQuery("#loginFlag").val(0);
+                    }
+                });
+                messageBox.show("$!{address.front}/inquiry/product.htm?productId=$!{productDetails.products.id}&mainCode=$!{productDetails.products.categoryProductsMainCode}&destUrl=$!{address.trade}/submitCallback.htm");
+            }
+         });
+       
+        ## 收藏按钮 点击弹出 收藏页面
+        var collectBox= new Asto.util.PopupBox({
+            url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{productDetails.products.id}&favoriteTypeCode=10091006&title=$!{productDetails.productsTypeLabel}$!{productDetails.products.title}",
+            destUrl:"$!{address.trade}/submitCallback.htm",
+            modal:true,
+            height:370,
+            width:660
+        });
+       
+        jQuery(".collectBtn").click(function(){
+            var id = ${productDetails.products.id};
+            var title = "$!{productDetails.productsTypeLabel}$!{productDetails.products.title}";
+            title = encodeURI(title);
+            if(jQuery("#loginFlag").val()==0){
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    jQuery("#loginFlag").val(1);
+                    Asto.util.Callback.setSubmitCallback(function(success, data){
+                        collectBox.close();
+                    });
+                    loginBox.close();
+                    collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091006&title="+title+"&destUrl=$!{address.trade}/submitCallback.htm");
+                });                                                                                                                        
+                openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.trade}/submitCallback.htm&regfrom=10031003&loginType=1','注册/登录',750,400,0);
+            ##    loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.trade}/submitCallback.htm");
+            }else{
+                Asto.util.Callback.setSubmitCallback(function(success, data){
+                    collectBox.close();
+                    if(success=="false"){
+                        jQuery("#loginFlag").val(0);
+                    }
+                });
+                collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091006&title="+title+"&destUrl=$!{address.trade}/submitCallback.htm");
+            }
+        });
+       
+        jQuery("#loginBtn").click(function(){
+            Asto.util.Callback.setSubmitCallback(function(success, data){
+                loginBox.close();
+                window.parent.location = window.parent.location+"?$!{date.getSystemTime()}";
+            });
+            openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.trade}/submitCallback.htm&regfrom=10031019&loginType=1','注册/登录',750,430,0);
+        });
+       
+    });
+   
+
+    var hpimg = "a";
+function showdefaultPic(id, pcount) {
+    var pdefautl = document.getElementById("pdefault");
+    var pp = document.getElementById("p" + id.toString());
+    if (pp) {
+        pdefautl.src = pp.src;
+        pdefautl.parentNode.href = "#springUrl('/picshow.htm?pid=')$!{productDetails.products.id}#" + pcount.toString();
+    }
+
+    var imghidden = document.getElementById(hpimg);
+
+    if (imghidden) {
+        imghidden.className = "";
+    }
+    var imgobj = document.getElementById("a" + id.toString());
+    if (imgobj) {
+        imgobj.className = "p_select";
+    }
+    if (pdefautl.height > 220) {
+        pdefautl.height = 220
+    }
+    hpimg = "a" + id.toString()
+}
+jQuery("#showme1").click(function(){
+    var showwxid = document.getElementById("showwxid");
+    if (showwxid){
+        showwxid.style.display="";
+        this.style.display="none";
+    }
+});
+jQuery("#showphone").click(function(){
+        var showwxid = document.getElementById("showme");
+        if (showwxid){
+            showwxid.style.display="";
+			#if(!$!{ldbFlag})
+			   #if($wxResult&&$wxResult==4)
+			   #else
+			   		jQuery('#showme').css('display','none');
+			   #end
+			#end
+            jQuery("#showme").click();
+        }else{
+            jQuery("#showme1").click();
+        }
+        jQuery('.bg').css('border','2px solid #ff3300');
+        gotoT2();
+});
+function gotoT2(){
+    var top = $(".mb-right-banner").offset().top;
+    $('body').animate({
+            scrollTop: (top-20)
+        },
+        500);
+    return false;
+}
+jQuery("#showme").click(function(){
+
+    #if($!{ldbFlag}=="1")
+        if(confirm("查看客户联系方式，将会扣除“来电宝”信息点击费（金额为 $!{clickFee}元），确定要查看吗？")){
+            jQuery.ajax({
+                url:'#springUrl("/markToClick.htm")',
+                data:{"targetId":$!{productDetails.products.companyId}}
+            });
+        }else{
+            return false;
+        }
+    #elseif($!{ldbFlag}=="0")
+        alert("“来电宝”信息费余额不足！请您充值后再试。");
+        return false;
+    #end
+   
+   
+    jQuery.ajax({
+        url:"#springUrl('/company/createImageContactInfo.htm')",
+        data:{"cid":"$!{productDetails.products.companyId}"},
+        dataType:"json",
+        type:"post",
+        success:function(req){
+            if(req.success){
+                jQuery("#showme").hide();
+                jQuery("#contactInfoDiv").show();
+                if(req.data.isLDB){
+                    jQuery("#showwebsite").html("<a href='http://www.zz91.com/ppc/index"+req.data.company.id+".htm' target='_blank'><img src='$!{address.img}/zz91/trade/images/trade_ppc_logo.jpg' /></a>");
+                }else if(req.data.company.domainZz91 !="" ){
+                    jQuery("#showwebsite").html("<a href='http://"+req.data.company.domainZz91+".zz91.com' target='_blank'>"+req.data.company.domainZz91+".zz91.com</a>");
+                }
+                jQuery("#showaddress").html(req.data.company.address);
+                jQuery("#showcontact").html(req.data.account.contact);
+                if(req.data.account.tel!=null&&req.data.account.tel.length>0){
+                    var affix = "";
+                    if(req.data.isLDB){
+                        affix = "red";
+                        jQuery("#showmobile").hide();
+                    }
+                    jQuery("#showtel").html("电话:<span "+ affix +"><img src='#springUrl("/company")/viewContactInfo.htm?key="+req.data.account.tel+"&color="+affix+"' /></span>");
+                }else{
+                    jQuery("#showtel").empty();
+                }
+                if(req.data.account.mobile!=null&&req.data.account.mobile.length>0){
+                    jQuery("#showmobile").html("移动电话:<span><img src='#springUrl("/company")/viewContactInfo.htm?key="+req.data.account.mobile+"' /></span>");
+                }else{
+                    jQuery("#showmobile").empty();
+                }
+                if(req.data.account.email!=null&&req.data.account.email.length>0){
+                    jQuery("#showemail").html("电子邮箱:<span><img src='#springUrl("/company")/viewContactInfo.htm?key="+req.data.account.email+"' /></span>");
+                }else{
+                    jQuery("#showemail").empty();
+                }
+            }else{
+                zz91Util.showmsg(req.data);
+            }
+        },
+        error : function() {
+            zz91Util.showmsg("错误");
+        }
+    });
+});
+</script>
+<script src="http://pyapp.zz91.com/calllogin/"></script>
+

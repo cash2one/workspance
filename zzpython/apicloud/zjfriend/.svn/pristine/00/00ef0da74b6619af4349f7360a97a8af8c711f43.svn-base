@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    	<meta charset="utf-8">
+    	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <link rel='stylesheet' type='text/css' href='../css/bootstrap.min.css' />
+		</head>
+	<body>
+    <div class="container-fluid">
+        <div class="page-header"><h2>芒果广告平台</h2><small>请到网站控制台云编译体验</small></div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="initinterstitial()" class="btn btn-primary">
+                            初始化插屏广告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="showinterstitial()" class="btn btn-primary">
+                            展示插屏广告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="cancelinterstitial()" class="btn btn-primary">
+                            取消插屏广告
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button tapmode="" type="button" onclick="setlistener()" class="btn btn-primary">
+                            设置监听
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12 btn-group btn-group-justified diy-btn-group-test">
+                    <div class="btn-group">
+                        <button  tapmode="" type="button" onclick="setlog()" class="btn btn-primary">
+                            设置日志
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div id="main">
+            <label id='interstitialstatuslab'></label>
+        </div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    
+    function initinterstitial(){
+        var plugin  = api.require('adsMogoInterstitial');
+        var param = {
+            mogoId:"f6a60b7be69b4cd69c785d06d1bca6c3"
+        };
+        plugin.initInterstitial(param,function(ret, err){
+                                var interstitialstatuslab = $api.byId('interstitialstatuslab');
+                                if(ret){
+                                interstitialstatuslab.innerText = 'init success';
+                                }
+                                
+                                if(err){
+                                interstitialstatuslab.innerText = 'init error'+err.msg;
+                                }
+                                
+                                });
+        
+	}
+
+    function showinterstitial(){
+        var plugin  = api.require('adsMogoInterstitial');
+        var param = {
+            isWait:"true"
+        };
+        plugin.showInterstitial(param,callBack);
+    }
+
+    function cancelinterstitial(){
+        var plugin  = api.require('adsMogoInterstitial');
+        plugin.cancelWaitShow(callBack);
+    }
+
+    function setlog(){
+        var plugin  = api.require('adsMogoInterstitial');
+        plugin.setLog(callBack);
+    }
+
+    function setlistener(){
+        var plugin = api.require('adsMogoInterstitial');
+        plugin.setListener(function(ret, err){
+                           var interstitialstatuslab = $api.byId('interstitialstatuslab');
+                           interstitialstatuslab.innerText = ret.name;
+                           });
+    }
+
+	function returntolast(){
+        api.closeWin();
+	}
+
+    function callBack(ret, err){
+        var interstitialstatuslab = $api.byId('interstitialstatuslab');
+        interstitialstatuslab.innerText = ret.status;
+
+        if( ! ret.status){
+            interstitialstatuslab.innerText += err.msg;
+        }
+    }
+
+</script>
+</html>

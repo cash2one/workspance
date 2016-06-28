@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="newsCategory">
+
+	<typeAlias alias="newsCategory" type="com.zz91.ep.domain.news.NewsCategory" />
+
+
+	<resultMap class="newsCategory" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="sort" column="sort" />
+		<result property="showIndex" column="show_index" />
+		<result property="tags" column="tags" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	
+	<select id="querySubNewsCategoryByCode" resultMap="fullResultMap" parameterClass="java.util.Map">
+		select
+			n.id,n.code,n.name,n.sort,n.show_index,n.tags,n.gmt_created,n.gmt_modified
+		from news_category n
+		where n.code like concat(#code#,'____') and n.show_index=1 limit #size#
+	</select>
+</sqlMap>

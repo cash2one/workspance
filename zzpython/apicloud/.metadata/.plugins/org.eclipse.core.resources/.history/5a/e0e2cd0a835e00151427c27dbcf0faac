@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+        <title>sideMenu</title>
+        <link rel="stylesheet" type="text/css" href="../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../css/common.css" />
+        <style type="text/css">
+            h2{
+                margin-top: 10px
+            }
+            textarea{
+                width: 90%;
+            }
+            #dbInfo{
+                margin-top: 10px;
+                border: 1px solid #ccc;
+                padding: 6px
+            }
+        </style>
+    </head>
+    <body>
+        <div id="wrap">
+            <div id="main">
+                <br>
+                <dl>
+                    <dt><h2>配置边框菜单参数</h2></dt>
+                    <dd>
+                        <label>菜单类型（0-从左往右弹出；非0-从右往左弹出，默认0）：</label><br>
+                        <textarea id="buttonType"></textarea><br>
+                        <label>第一个按钮起始位置(从上往下依次排列。默认紧贴导航条位置)：</label><br>
+                        <textarea id="buttonfromHeight"></textarea><br>
+                        <label>两个按钮间隙（默认为10px）：</label><br>
+                        <textarea id="buttoninterval"></textarea><br>
+                        <label>按钮大小(高，默认60px)：</label><br>
+                        <textarea id="buttonHeight"></textarea><br>
+                        <label>按钮弹道背景色(若不传此参数则表示不显示弹道)：</label><br>
+                        <textarea id="menuBackGroundColor">#2b4cde</textarea><br>
+                        <label>第一个按钮图片：</label><br>
+                        <textarea id="button1Img" >widget://res/sideMenu_icon.png</textarea><br>
+                        <label>第一个按钮背景图片：</label><br>
+                        <textarea id="button1SelectedImg" >widget://res/sideMenu_bg.png</textarea><br>
+                        <label>第二个按钮图片：</label><br>
+                        <textarea id="button2Img" >widget://res/sideMenu_icon.png</textarea><br>
+                        <label>第二个按钮背景图片：</label><br>
+                        <textarea id="button2SelectedImg" >widget://res/sideMenu_bg1.png</textarea><br>
+                        <label>第三个按钮图片：</label><br>
+                        <textarea id="button3Img" >widget://res/sideMenu_icon.png</textarea><br>
+                        <label>第三个按钮选中图片：</label><br>
+                        <textarea id="button3SelectedImg" >widget://res/sideMenu_bg.png</textarea><br>
+                        <label>第四个按钮图片：</label><br>
+                        <textarea id="button4Img" >widget://res/sideMenu_icon.png</textarea><br>
+                        <label>第四个按钮选中图片：</label><br>
+                        <textarea id="button4SelectedImg" >widget://res/sideMenu_bg1.png</textarea><br>
+                        
+                        <label>篇幅限制这里只写出四个</label><br>
+                        <p>
+                        <button tapmode="active" onclick="objOpenGraph()"class="btn" id="openTimeSelector">打开</button>
+                        </p>
+                        <label>打开的菜单id是：</label><br>
+                        <textarea id="sideMenuID" ></textarea><br>
+                        <p>
+                        <label>操作的菜单id：</label><br>
+                        <textarea id="handlesideMenuID" ></textarea><br>
+                        <button tapmode="active" onclick="objShowGraph()"class="btn" id="openTimeSelector">显示</button>
+                        </p>
+                        <p>
+                        <label>操作的菜单id：</label><br>
+                        <textarea id="hiddensideMenuID" ></textarea><br>
+                        <button tapmode="active" onclick="objHiddenGraph()"class="btn" id="openTimeSelector">隐藏</button>
+                        </p>
+                        <p>
+                        <label>操作的菜单id：</label><br>
+                        <textarea id="closesideMenuID" ></textarea><br>
+                        <button tapmode="active" onclick="objCloseGraph()"class="btn" id="objCloseGraph">关闭</button>
+                        </p>
+                    </dd>
+                </dl>
+                <br><br><br><br>
+            </div>
+            
+        </div>
+    </body>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript">
+        
+function objOpenGraph(){
+    var obj = api.require('sideMenu');
+    var arrayPath = new Array();
+    arrayPath[0]={icon:document.getElementById("button1Img").value,bgImg:document.getElementById("button1SelectedImg").value};
+    arrayPath[1]={icon:document.getElementById("button2Img").value,bgImg:document.getElementById("button2SelectedImg").value};
+    arrayPath[2]={icon:document.getElementById("button3Img").value,bgImg:document.getElementById("button3SelectedImg").value};
+    arrayPath[3]={icon:document.getElementById("button4Img").value,bgImg:document.getElementById("button4SelectedImg").value};
+    
+    obj.open({
+             type:document.getElementById("buttonType").value,
+             startPosition:document.getElementById("buttonfromHeight").value,
+             interval:document.getElementById("buttoninterval").value,
+             btnHeight:document.getElementById("buttonHeight").value,
+             trajectoryColor:document.getElementById("menuBackGroundColor").value,
+             btnArray:arrayPath
+     },function(ret,err){
+             document.getElementById("sideMenuID").value = ret.id;
+             document.getElementById("handlesideMenuID").value = ret.id;
+             document.getElementById("hiddensideMenuID").value = ret.id;
+             document.getElementById("closesideMenuID").value =ret.id;
+             api.alert({msg:'点击了菜单id为'+ret.id+'的第'+ret.index+'个按钮'});
+     });
+};
+    function objShowGraph(){
+        var obj = api.require('sideMenu');
+        obj.show({
+               id:document.getElementById("handlesideMenuID").value
+        });
+    };
+    function objHiddenGraph(){
+        var obj = api.require('sideMenu');
+        obj.hidden({
+               id:document.getElementById("hiddensideMenuID").value
+        });
+    };
+    function objCloseGraph(){
+        var obj = api.require('sideMenu');
+        obj.close({
+               id:document.getElementById("closesideMenuID").value
+        });
+    };
+    </script>
+</html>

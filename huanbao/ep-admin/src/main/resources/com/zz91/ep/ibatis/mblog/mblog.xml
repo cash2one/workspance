@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblog">
+	<typeAlias alias="mblog" type="com.zz91.ep.domain.mblog.MBlog" />	
+	<typeAlias alias="mblogDto" type="com.zz91.ep.dto.mblog.MBlogDto" />
+	<typeAlias alias="mblogInfo" type="com.zz91.ep.domain.mblog.MBlogInfo"/>
+	
+    <resultMap class="mblog" id="mblogMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="title" column="title"/>
+    	<result property="content" column="content"/>
+    	<result property="type" column="type"/>
+    	<result property="isDelete" column="is_delete"/>
+    	<result property="discussCount" column="discuss_count"/>
+    	<result property="sentCount" column="sent_count"/>
+    	<result property="photoPath" column="photo_path"/>
+    	<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+    </resultMap>
+    <resultMap class="mblogInfo" id="mblogInfoMap">
+    	<result property="name" column="name"/>
+    </resultMap>
+    
+    <resultMap class="mblogDto" id="mblogDtoMap">
+    	<result property="mBlog" resultMap="mblog.mblogMap"/>
+    	<result property="info" resultMap="mblog.mblogInfoMap"/>
+    </resultMap>
+    <resultMap class="mblog" id="simpleMblogMap">
+    	<result property="infoId" column="info_id"/>
+    </resultMap>
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	title,
+    	content,
+    	type,
+    	is_delete,
+    	discuss_count,
+    	sent_count,
+    	photo_path,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+    <sql id="followMblogColumn">
+    	m.id,
+    	m.info_id,
+    	m.title,
+    	m.content,
+    	m.type,
+    	m.is_delete,
+    	m.discuss_count,
+    	m.sent_count,
+    	m.photo_path,
+    	m.gmt_created,
+    	m.gmt_modified,
+    </sql>
+    
+    <sql id="dymicWhere">
+		<dynamic prepend="where">
+		    <isNotEmpty property="mBlog.content" prepend="and">
+    			m.content like concat(#mBlog.content#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="info.name" prepend="and">
+    			mi.name like concat(#info.name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="mBlog.isDelete" prepend="and">
+    			m.is_delete = #mBlog.isDelete#
+    		</isNotEmpty>
+		</dynamic>
+	</sql>
+    
+    
+    <select id="queryAllMBlog" parameterClass="java.util.Map" resultMap="mblogDtoMap">
+    	select
+    	<include refid="followMblogColumn"/>
+    	mi.name
+    	from
+    	mblog m
+    	inner join mblog_info mi on mi.id=m.info_id
+    	<include refid="mblog.dymicWhere"/>
+    	and type=1
+    	order by m.gmt_created desc
+    	<include refid="common.pageLimit"/>
+    </select>
+    
+    <select id="queryOneMBlogById" parameterClass="java.util.Map" resultMap="mblogMap">
+    	select
+    	<include refid="defaultColumn"/>
+    	from
+    	mblog 
+    	where
+    	id=#id#
+    	limit 1
+    </select>
+	
+	<select id="queryMBlogCount" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from mblog m
+		inner join mblog_info mi on mi.id=m.info_id
+		where
+		m.type=1
+	</select>
+    
+    <update id="updateMBlog" parameterClass="java.util.Map">
+    	update
+    	mblog
+    	set
+    	content=#mBlog.content#
+    	where id=#mBlog.id#
+    </update>
+    
+    <select id="queryoneMblog" parameterClass="java.util.Map" resultMap="mblogMap">
+    	select
+    	<include refid="defaultColumn"/>
+    	from mblog
+    	where 
+    	type=1
+    	limit 1 
+    </select>
+   
+     <update id="delete" parameterClass="java.util.Map">
+    	update
+    	mblog
+    	set
+    	is_delete=1
+    	where id=#id#
+    </update>
+  	
+  	<update id="updateDelete" parameterClass="java.util.Map">
+    	update
+    	mblog
+    	set
+    	is_delete=0
+    	where id=#id#
+    </update>
+    <sql id="topicWhere">
+		<dynamic prepend="where">
+		    <isNotEmpty property="mBlog.title" prepend="and">
+    			m.title like concat(#mBlog.title#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="info.name" prepend="and">
+    			mi.name like concat(#info.name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="mBlog.isDelete" prepend="and">
+    			m.is_delete = #mBlog.isDelete# 
+    		</isNotEmpty>
+		</dynamic>
+	</sql>
+    
+    
+     <select id="queryAllTopic" parameterClass="java.util.Map" resultMap="mblogDtoMap">
+    	select
+    	<include refid="followMblogColumn"/>
+    	mi.name
+    	from
+    	mblog m
+    	inner join mblog_info mi on mi.id=m.info_id
+    	<include refid="mblog.topicWhere"/>
+    	and type=2
+    	order by m.gmt_created desc
+    	<include refid="common.pageLimit"/>
+    </select>
+
+     <select id="queryAllTopicCount" resultClass="java.lang.Integer">
+    	select
+    	count(0)
+    	from
+    	mblog m
+    	inner join mblog_info mi on mi.id=m.info_id
+    	where
+        type=2
+    </select>
+
+    
+    <select id="queryTopicByTitle" parameterClass="java.util.Map" resultMap="mblogDtoMap">
+    	select
+    	<include refid="followMblogColumn"/>
+    	mi.name
+    	from
+    	mblog m
+    	inner join mblog_info mi on mi.id=m.info_id
+    	where
+    	 type=2
+    	and m.title=#title#
+    	order by m.gmt_created desc
+    </select>
+    
+    
+</sqlMap>

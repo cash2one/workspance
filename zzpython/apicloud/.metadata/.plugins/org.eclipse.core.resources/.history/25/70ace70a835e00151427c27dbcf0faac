@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="chs">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>微信测试</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/common.css" />
+    <style>
+    .pageTitle {
+        text-align: center;
+        color: #81C395;
+        font-weight: 700;
+    }
+    #main div:nth-child(1) {
+        font-weight: 700;
+        padding: 0px 0px
+    }
+    #main div {
+        margin: 0px 5%;
+        width: 90%;
+    }
+    #main p {
+        margin-top: 10px;
+    }
+    #main button {
+        width: 90%;
+        background: #81C395;
+        color: #fff;
+        margin: 10px 5%;
+        height: 38px
+    }
+    #main button:nth-child(1) {
+        margin-top: 0px;
+        width: 100px;
+    }
+    #thumbUrlDiv label {
+        display: block;
+    }
+    #thumbUrlDiv label:nth-child(1) {
+        font-weight: 700
+    }
+    #thumbUrl {
+        width: 95%;
+        margin-left: 0px;
+    }
+    #contentUrlI,
+    #contentUrlM,
+    #contentUrlV,
+    #contentUrl {
+        width: 70%
+    }
+    </style>
+</head>
+
+<body>
+    <div id="wrap">
+        <div id="main">
+            <div class="pageTitle" style="padding:20px 0px">
+                一、分享类接口
+            </div>
+            <div>
+                <button tapmode="active" onclick="reg()" class="btn btn-default">注册应用</button>
+                <label id="registStatus"></label>
+            </div>
+            <hr class="dottedLine">
+            <div id="thumbUrlDiv">
+                <label>缩略图</label>
+                <label class="grayFont">本地url地址</label>
+                <textarea id="thumbUrl">widget://image/play2.png</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div>
+                <div>Text</div>
+                <label class="grayFont">标题</label>
+                <input type="text" id="title" value="测试标题">
+                <label class="grayFont">内容</label>
+                <textarea id="description">这里是测试的内容，这里是测试的内容</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div>
+                <div>Image</div>
+                <label class="grayFont">url地址</label>
+                <textarea id="contentUrlI">widget://image/play2.png</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div>
+                <div>Music</div>
+                <label class="grayFont">url地址</label>
+                <textarea id="contentUrlM">http://117.78.5.26/files/shijian.mp3</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div>
+                <div>Vedio</div>
+                <label class="grayFont">url地址</label>
+                <textarea id="contentUrlV">http://117.78.5.26/files/wangfei.mp4</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div>
+                <div>Webpage</div>
+                <label class="grayFont">url地址</label>
+                <textarea id="contentUrl">http://www.baidu.com/img/bdlogo.gif</textarea>
+            </div>
+            <hr class="dottedLine">
+            <div id="sceneDiv">
+                <label>在场景</label>
+                <select id="scene">
+                    <option value="timeline">timeline</option>
+                    <option value="session">session</option>
+                    <option value="favorite">favorite</option>
+                </select>
+                <label>发表</label>
+                <select id="contentType">
+                    <option value="text">text</option>
+                    <option value="image">image</option>
+                    <option value="music">music</option>
+                    <option value="video">video</option>
+                    <option value="web_page">web_page</option>
+                </select>
+            </div>
+            <button tapmode="active" onclick="sendReq()" id="sendRequest" class="btn btn-default">发表内容</button>
+            <br>
+            <br>
+            <div class="pageTitle">
+                二、微信支付接口
+            </div>
+            <br>
+            <button tapmode="active" onclick="getPayToken()" id="getPayToken" class="btn btn-default">获取accessToken</button>
+            <br>
+            <div class="blackBgDiv">
+                <label>获取的accessToken是：</label>
+                <label id="paytokenis"></label>
+                <label>token过期时间是：</label>
+                <label id="exipires"></label>
+            </div>
+            <button tapmode="active" onclick="getPayOrder()" id="getPayToken" class="btn btn-default">生成预支付订单</button>
+            <br>
+            <div class="blackBgDiv2">
+                <label>获取的订单编号是：</label>
+                <br>
+                <label id="payorderidis"></label>
+                <br>
+            </div>
+            <button tapmode="active" onclick="gotoPayOrder()" id="gotoPayOrder" class="btn btn-default">支付订单</button>
+            <br>
+            <div class="blackBgDiv2">
+                <label>支付结果是：</label>
+                <br>
+                <label id="payResult"></label>
+                <br>
+            </div>
+            <div class="jsCodeArea" style="width:100%;margin:10px 0;">
+                <label>JS代码</label>
+                <p>
+                    //内容类型为music或video时，内容地址应为流媒体地址; var weiXin = api.require('weiXin'); weiXin.sendRequest({ scene: 'timeline', contentType:'music', title:'测试用标题', description: '测试用内容', thumbUrl: 'fs://a.png', contentUrl: 'http://117.78.5.26/files/shijian.mp3' },function(ret,err){ if(ret.status){ api.alert({title:'发表微信', msg: '发表成功', buttons: ['确定']}); }else{ api.alert({title: '发表失败', msg: err.msg, buttons: ['确定'] }); } }); //内容类型为web_page时，内容地址为常规网址; var weiXin = api.require('weiXin'); weiXin.sendRequest({ scene:'timeline', contentType:'webPage', title:'测试用标题', description:'测试用内容', thumbUrl:'fs://a.png', contentUrl: 'http://www.baidu.com/' },function(ret,err){ if(ret.status){ api.alert({title: '发表微信', msg: '发表成功', buttons: ['确定'] }); }else{ api.alert({title: '发表失败', msg: err.msg,buttons: ['确定'] }); }; });
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+function getPayToken() {
+    var weiXin = api.require('weiXin');
+    weiXin.getToken({
+        appId: 'wx652070b3a10fcd45',
+        secret: '00f373c57777e46ba86d461cbcc2fbe8'
+    }, function(ret, err) {
+        if (ret.status) {
+            document.getElementById("paytokenis").innerHTML = ret.token;
+            document.getElementById("exipires").innerHTML = ret.expires;
+        } else {
+            api.alert({
+                msg: err.msg
+            });
+        }
+    })
+};
+
+function getPayOrder() {
+    var weiXin = api.require('weiXin');
+    weiXin.getOrder({
+        token: document.getElementById("paytokenis").innerHTML,
+        orderInfo: ''
+    }, function(ret, err) {
+        if (ret.status) {
+            document.getElementById("payorderidis").innerHTML = ret.orderId;
+        } else {
+            api.alert({
+                msg: err.msg
+            });
+        }
+    })
+};
+
+function gotoPayOrder() {
+    var weiXin = api.require('weiXin');
+    weiXin.payOrder({
+        orderId: document.getElementById("payorderidis").innerHTML,
+        partnerId: '',
+        nonceStr: '',
+        timeStamp: '',
+        package: '',
+        sign: ''
+    }, function(ret, err) {
+        if (ret.status) {
+            document.getElementById("payResult").innerHTML = ret.result;
+        } else {
+            api.alert({
+                msg: err.msg
+            });
+        }
+    })
+};
+
+
+function reg() {
+    var weiXin = api.require('weiXin');
+    weiXin.registerApp({
+        appId: 'wxd0d84bbf23b4a0e4'
+    }, function(ret, err) {
+        if (ret.status) {
+            document.getElementById("registStatus").innerText = '注册成功！';
+            api.alert({
+                msg: '' + ret.status
+            });
+        } else {
+            document.getElementById("registStatus").innerText = '注册失败！';
+            api.alert({
+                msg: '注册失败'
+            });
+        }
+    })
+};
+
+function sendReq() {
+    var weiXin = api.require('weiXin');
+    var scene = $api.byId('scene');
+    var contentType = $api.byId('contentType');
+    var title = $api.byId('title');
+    var description = $api.byId('description');
+    var thumbUrl = $api.byId('thumbUrl');
+    var contentUrl = $api.byId('contentUrl');
+    var contentUrlI = $api.byId('contentUrlI');
+    var contentUrlV = $api.byId('contentUrlV');
+    var URL = null;
+    scene = scene.options[scene.selectedIndex].value
+    contentType = contentType.options[contentType.selectedIndex].value
+    title = title.value;
+    if (contentType == 'image') {
+        URL = contentUrlI.value;
+    } else if (contentType == 'video') {
+        URL = contentUrlV.value;
+    } else if (contentType == 'music') {
+        URL = contentUrlM.value;
+    } else {
+        URL = contentUrl.value;
+    };
+    description = description.value;
+    thumbUrl = thumbUrl.value;
+    weiXin.sendRequest({
+        scene: scene,
+        contentType: contentType,
+        title: title,
+        description: description,
+        thumbUrl: thumbUrl,
+        contentUrl: URL
+
+    }, function(ret, err) {
+        if (ret.status) {
+            api.alert({
+                title: '发表微信',
+                msg: '发表成功',
+                buttons: ['确定']
+            });
+        } else {
+            api.alert({
+                title: '发表微信',
+                msg: '发布失败',
+                buttons: ['确定']
+            });
+        };
+    });
+};
+</script>
+
+</html>

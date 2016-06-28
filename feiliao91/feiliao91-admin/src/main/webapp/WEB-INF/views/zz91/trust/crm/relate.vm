@@ -1,0 +1,36 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="$!{address.js}/trust/crm/company.js"></script>
+<script type="text/javascript" src="$!{address.js}/trust/crm/relate.js" ></script>
+##<script type="text/javascript" src="/web/js/crm/company.js" ></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		var grid=Ext.create("ast.ast1949.admin.company.MainGrid",{
+			id:"relateGrid",
+			title:"预录入查询",
+			#if($!{trustBuy} && $!{trustBuy.id} >0 )
+				trustId:${trustBuy.id},
+			#end
+			height:300,
+			region:"north"
+		});
+
+		var form=Ext.create("ast.ast1949.admin.company.AdminRegistForm",{
+			iconCls:"add16",
+			title:"注册新用户",
+			region:"center"
+		});
+
+		#if($!{trustBuy})
+			grid.initByTrustId('$!{trustBuy.mobile}','$!{trustBuy.companyName}');
+			form.setTrustId($!{trustBuy.id});
+		#end
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[grid,form]
+		});
+		
+	});
+</script>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCsProfile">
+
+	<typeAlias alias="csprofile" type="com.ast.ast1949.domain.company.CrmCsProfile"/>
+
+	<insert id="insertProfile" parameterClass="csprofile" >
+		INSERT INTO `crm_cs_profile`
+		(
+		`company_id`,
+		`account`,
+		`email`,
+		`membership_code`,
+		`industry_code`,
+		`service_code`,
+		`classified_code`,
+		`star_sys`,
+		`star`,
+		`num_visit_month`,
+		`name`,
+		`area_code`,
+		`gmt_visit`,
+		`domain`,
+		`domain_zz91`,
+		`is_block`,
+		`num_login`,
+		`gmt_last_login`,
+		`mobile`,
+		`contact`,
+		`tel_country_code`,
+		`tel_area_code`,
+		`tel`,
+		`fax_country_code`,
+		`fax_area_code`,
+		`fax`,
+		`gmt_created`,
+		`gmt_modified`)
+		VALUES
+		(
+		#companyId#,
+		#account#,
+		#email#,
+		#membershipCode#,
+		#industryCode#,
+		#serviceCode#,
+		#classifiedCode#,
+		#starSys#,
+		#star#,
+		#numVisitMonth#,
+		#name#,
+		#areaCode#,
+		#gmtVisit#,
+		#domain#,
+		#domainZz91#,
+		#isBlock#,
+		#numLogin#,
+		#gmtLastLogin#,
+		#mobile#,
+		#contact#,
+		#telCountryCode#,
+		#telAreaCode#,
+		#tel#,
+		#faxCountryCode#,
+		#faxAreaCode#,
+		#fax#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="countProfile" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+		select count(*) from crm_cs_profile
+		where company_id=#value#
+	</select>
+	
+	<!-- 更新最新联系时间 -->
+	<update id="updateLastVisit" parameterClass="java.lang.Integer">
+		update crm_cs_profile 
+		set gmt_modified = now(),
+		gmt_visit = now()
+		where company_id = #value#
+	</update>
+	
+	<update id="updateMemberShipCode" parameterClass="java.util.Map">
+		update crm_cs_profile 
+		set gmt_modified = now(),
+		membership_code = #membershipCode#
+		where company_id = #companyId#
+	</update>
+	<resultMap id="crmCsProfile" class="csprofile">
+		<result property="numLogin" column="num_login" />
+		<result property="gmtLastLogin" column="gmt_last_login" />
+	</resultMap>
+	<select id="queryCrmCsProfileByCompanyId" parameterClass="java.lang.Integer" resultMap="crmCsProfile">
+		select num_login,gmt_last_login
+		from crm_cs_profile
+		where company_id=#companyId#
+	</select>
+	
+</sqlMap>

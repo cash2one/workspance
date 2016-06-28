@@ -1,0 +1,26 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.2.10:3306/ep"
+                user="root" password="zj88friend" batchSize="-1"/>
+    <document name="news">
+    <!--query是获取全部数据的SQL
+        deltaImportQuery是获取增量数据时使用的SQL（动态增加时必须配置deltaQuery，两个配置->效果）
+        deltaQuery是获取pk的SQL
+        parentDeltaQuery是获取父Entity的pk的SQL
+        -->
+        <entity name="news" pk="id" query="SELECT id,title,title_index,category_code,description,details,tags,news_source,view_count,pause_status,gmt_publish FROM news" 
+            deltaQuery="select id from news where gmt_modified > '${dataimporter.last_index_time}'"
+            deltaImportQuery="SELECT id,title,title_index,category_code,description,details,tags,news_source,view_count,pause_status,gmt_publish FROM news where gmt_modified > '${dataimporter.last_index_time}'">
+	    <field column="id" name="id" />
+	    <field column="title" name="title" />
+	    <field column="title_index" name="titleIndex" />
+	    <field column="category_code" name="categoryCode" />
+	    <field column="description" name="description" />
+            <field column="details" name="details" />
+            <field column="tags" name="tags" />
+	    <field column="news_source" name="newsSource" />
+	    <field column="view_count" name="viewCount" />
+	    <field column="pause_status" name="pauseStatus" />
+	    <field column="gmt_publish" name="gmtPublish" />
+        </entity>
+    </document>
+</dataConfig>

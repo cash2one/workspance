@@ -1,0 +1,145 @@
+#set($headname=$!{shequPath})
+#set($layout="/layout/shequLayout.vm")
+<script>	
+$(document).ready(function(e) {
+    $(".item5 li").mouseover(function() {
+        $(this).css("background", "#f2f2f2");
+    });
+	$(".item5 li").mouseout(function() {
+        $(this).css("background", "#fff");
+    });
+});
+</script>
+  <div class="huzhu">
+  	<div class="hz-left fl">
+    	<div class="mainblock">
+        	<div class="m5-tab f16">
+            	<div class="m5t-item fl" id="m51"><a href="#springUrl('/shequ/')$!{shequP}/" #if($!{flag}==1)class="on"#end id="mt1">全部</a></div>
+                <div class="m5t-item fl" id="m52"><a href="#springUrl('/shequ/remen')$!{shequP}/" #if($!{flag}==2)class="on"#end id="mt2">热门</a></div>
+                <div class="m5t-item fl" id="m53"><a href="#springUrl('/shequ/jinghua')$!{shequP}/" #if($!{flag}==3)class="on"#end id="mt3">精华</a></div>
+                <!--end m56-item-->
+                <div class="cb"></div>
+            </div>
+            <!--end m5-tab-->
+        </div>
+        <!--end mainblock-->
+    	<div class="mainblock" id="mb1">
+        	<ul class="item5">
+			#foreach($li in $!{page.records})	
+				<li>
+                	<div class="m5-item">
+                    	<a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="blue" target="_blank" title="$!{li.title}">$!{li.title}</a>
+                    </div>
+                    <!--end m5-item-->
+                    <div class="m5-box">
+                    	<div class="m5b-lt fl">
+							#if($!{li.content}) #printTitle($!{li.content} 79 "...") #end
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end class="" target="_blank">[查看全文]</a></p>
+                        </div>
+                        <!--end m5b-info-->
+                        <div class="m5b-gt fr">
+                        	<span>$!{li.replyCount}</span>
+                        </div>
+                        <!--end m5b-info-->
+                        <div class="cb"></div>
+                    </div>
+                    <!--end m5-box-->
+                    <div class="m5-box">
+						<!--此处的checkPerson并不是审核人而是提问者-->
+                    	<div class="m5b-dire fl"><span>$!{li.account}</span></div>
+                        <!--end m5b-dire fl-->
+                        <div class="m5b-reply fl"><span>更新时间&nbsp;$!date.format('yyyy-MM-dd HH:mm:ss', $!{li.gmtModified})</span></div>
+                        <!--end m5b-reply fr-->
+                        <div class="cb"></div>
+                    </div>
+				</li>
+			#end
+            </ul>
+            <div class="page">
+				#pageViewQA($page "#springUrl('/shequ/')" "$!{shequPath}" "" "")
+    		 </div>
+            <!--end page-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+    <div class="hz-right fr">
+        <div class="sublock">
+            <div class="sub-dh f16 gclear">24小时热帖</div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item3">
+                     #cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=10&1s" "" "" "")
+                            #foreach($postlist in $!{postDailylist})
+                            #if(4>$velocityCount)
+                                  <li>
+                                    <b class="prefix-gdot">${velocityCount}</b>
+                                    <a #if($!{postlist.url}&&$!{postlist.url}!="")href="$!{postlist.url}" #else href="#springUrl('/detail/')$!{postlist.id}.html"#end target="_blank" title="$!{postlist.title}">
+                                        $!{postlist.title}
+                                    </a>
+                                  </li>
+                            #else
+                                <li>
+                                    <b class="prefix-dot1"></b>
+                                    <a #if($!{postlist.url}&&$!{postlist.url}!="")href="$!{postlist.url}" #else href="#springUrl('/detail/')$!{postlist.id}.html"#end target="_blank" title="$!{postlist.title}">
+                                        $!{postlist.title}
+                                    </a>
+                                </li>
+                            #end
+                            #end    
+                        #end
+               </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+        <div class="sublock">
+            <div class="sub-dh gclear">
+                <div class="sub-dh-tle f16 fl">最新商机</div>
+                <!--end -->
+                <div class="sub-dh-more fr"><a href="http://trade.zz91.com" target="_blank" class="blue">[更多]</a></div>
+                <!--end sub-dh-more-->
+                <div class="cb"></div>
+            </div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item3">
+                    #cacheFragment("$!{address.fragment}/huzhu/NewProduct.htm" "" "" "")
+                    #foreach(${li} in ${gongying})
+                        <li><a href="http://trade.zz91.com/productdetails$!{li.id}.htm" target="_blank" title="${li.title}">【供应】${li.title}</a></li>
+                    #end
+                    #end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+        <div class="sublock">
+            <div class="sub-dh gclear">
+                <div class="sub-dh-tle f16 fl">站务管理</div>
+                <!--end -->
+                <div class="sub-dh-more fr"><a href="#springUrl('/shequ/zhanwu/')" target="_blank" class="blue">[更多]</a></div>
+                <!--end sub-dh-more-->
+                <div class="cb"></div>
+            </div>
+            <!--end sub-dh-->
+            <div class="sub-post gclear mb">
+                <ul class="item3">
+                    #cacheFragment("$!{address.fragment}/huzhu/bbsPost.htm?assistId=10&size=5&1" "" "" "")
+                    #foreach(${li} in ${list})
+                        <li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="${li.title}">&middot;${li.title}</a></li>
+                    #end
+                    #end
+                </ul>
+            </div>
+           <!--end sub-post-->
+        </div>
+        <!--end sublock-->
+    </div>
+    <!--end hz-right-->
+    <div class="cb"></div>
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

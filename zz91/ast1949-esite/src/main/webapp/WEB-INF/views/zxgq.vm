@@ -1,0 +1,242 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+ <script>
+$(document).ready(function() {
+     $(".title-qh span").live("click",function(){
+         var index =$(this).attr("index");
+         $(".title-qh-now").removeClass("title-qh-now");
+         $(this).addClass("title-qh-now");
+         $(".product-list").hide().eq(index).show();
+		 if(index==1){
+		 	jQuery(".seriesList").hide();
+		 }else{
+		 	jQuery(".seriesList").show();
+		 }
+      });
+	  if("$!{mark}"){
+	  	  jQuery(".title-qh span").eq(1).click();
+	  }
+});
+ </script>
+<div id="content2" class="bodyRight filterDom">
+	#foreach($!{obj} in $!{navColumnConfig})
+		#if($!{obj.id}==$!{myposition.code})
+			#set($label=$!{obj.t})
+		#end
+	#end
+    <div id="company_index" class="bodyCont moveChild mb">
+        <div class="bodyContTitle"> 
+            <span class="titleLinkColor titleName t">
+				##最新供求
+				您所在的位置： <a href="#springUrl('index.htm')" target="_blank" class="titleLinkColor">首页</a> &gt; 
+				<a href="#springUrl('zxgq.htm')" target="_blank" class="titleLinkColor">$label</a>
+				#if($!{productCategory})
+					&gt; $!{productCategory.name}
+				#end
+			</span>
+        </div>
+		<h3 class="title-h3">产品分类</h3>
+		<div class="title-qh">
+			<span #if(!$!{mark}) class="title-qh-now" #end index="0">废料供求信息</span>
+			<span #if($!{mark})class="title-qh-now"#end index="1">原料供求信息</span>
+		</div>
+        <div class="bodyContContent rightConteWidth">
+			<div class="seriesList">
+				#cacheFragment("$!{address.esiteFragment}/esite/productCategory.htm?cid=$!{cid}","","","")
+				<ul class="clearfix">
+					#foreach($!{mostseriesList} in $!{list})
+						<li title="$!{mostseriesList.name}">
+							<a href="#springUrl('/zxgq-sid')$!{mostseriesList.id}.htm" class="topicLink draft_no_link">$!{mostseriesList.name}</a>
+						</li>
+					#end
+					<li>
+						<a href="#springUrl('/zxgq.htm')" class="topicLink draft_no_link">未分类类别</a>
+					</li>
+				</ul>
+				#end
+			</div>
+			## 搜索
+			<div class="seriesSearch">
+				<input type="text" class="field" name="keywords_text_1" id="keywords_text_1" onFocus="javascript:funcFocus(this)" placeholder="请输入产品名称"  />
+				<input class="submit" type="button" value="搜索" onclick="javascript:funcSearch('$!{companyDO.id}')" />
+			</div>
+            <div class="bodyContContentRightCont mainTextColor"> 
+			<!--start 2014/08/02-->
+			<div class="product-list" >
+				#foreach($!{obj} in $!{page.records})
+					<div #if($velocityCount==1) style="border:1px solid #dddddd;padding:10px" #end #if($velocityCount>1) style="margin-top:8px;border:1px solid #dddddd;padding:10px" #end>
+				  	<div class="product-list-img pl">
+						<a href="/products$!{obj.products.id}.htm" target="_blank">
+							#if(${obj.coverPicUrl})
+								<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=122&height=93" width="122" height="93" alt="#if($!{obj.products.productsTypeCode}=="10331001")求购#else供应#end$!{obj.products.title}" />
+							#else
+								<img src="$!{address.images}/global/noimage.gif" width="104" height="93" />
+							#end
+						</a>
+					</div>
+					<!--end product-list-img pl-->
+					<div class="product-list-yang" style="float:left;width:24px">
+						#if($!{obj.sample} && $!{obj.sample.id})	
+							<img src="http://img0.zz91.com/zz91/tradelist/images/yang.jpg" />
+						#else
+							&nbsp;
+						#end
+					</div>
+					<!--end porduct-list-yang-->
+					<div class="product-list-box pm">
+						<ul>
+							<li>
+								<a href="/products$!{obj.products.id}.htm" target="_blank">
+									#if($!{obj.products.productsTypeCode}=="10331001")求购#else 供应#end$!{obj.products.title}
+								</a>
+								<span class="time">$!date.format("yyyy-MM-dd",$!{obj.products.refreshTime})</span>
+							</li>
+							<li class="box-pm">
+								#if($!{obj.products.quantity} && $!{obj.products.quantity}!="")
+									#if($!{obj.products.productsTypeCode}=="10331001")求购#else 供应#end量:<span class="pm7">$!{obj.products.quantity}$!{obj.products.quantityUnit}</span>
+								#end
+								#if($!{obj.products.productsTypeCode}=="10331000")
+									#if($!{obj.sample} && $!{obj.sample.takePrice})
+										拿样价：<span class="pm7">#if($!{obj.sample.takePrice}>0)$!{obj.sample.takePrice}元/件#else 免费 #end</span>
+									#end
+								#end
+								<br/>
+								#if($!{obj.products.source} && $!{obj.products.source} !=''  && ( $!{obj.products.source.length()}>1) )
+									货源地:<span>$!{obj.products.source} </span> <i class="pm12"> | </i> 
+								#end
+								#if($!{obj.products.manufacture} && $!{obj.products.manufacture} != '')
+									加工说明:<span>$!{obj.products.manufacture}</span> <i class="pm12"> | </i>
+								#end
+								#if($!{obj.products.color} && $!{obj.products.color} != '')
+									颜色:<span>$!{obj.products.color}</span> <i class="pm12"> | </i>
+								#end
+								#if($!{obj.products.useful} && $!{obj.products.useful} != '')
+									用途:<span>$!{obj.products.useful}</span> <i class="pm12"> | </i>
+								#end
+								#if($!{obj.products.appearance} && $!{obj.products.appearance} != '')
+									外观:<span>$!{obj.products.appearance}</span> <i class="pm12"> | </i>
+								#end
+								#if($!{obj.products.specification} && $!{obj.products.specification} != '')
+									产品规格:<span>$!{obj.products.specification}</span> <i class="pm12"> | </i>
+								#end
+							</li>
+							#if($!{obj.products.details} && $!{obj.products.details} != '')
+								<li class="box-pm_">#printTitle($!{obj.products.details} 30 "")  <b>
+							#end
+							<a href="/products$!{obj.products.id}.htm" target="_blank"> >>更多</a></b></li>
+						</ul>
+					</div>
+					<!--end product-list-box pm-->
+					<div class="product-list-btn pr">
+						<div class="btn-pr-chk"><a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{obj.products.id}" target="_blank" >在线询价</a></div>
+						#if($!{obj.sample} && $!{obj.sample.id} && $!{obj.products.productsTypeCode}=="10331000")
+							<div class="btn-pr-yang"><a href="$!{address.yang}/sale/$!{obj.products.id}.htm" target="_blank">申请拿样</a></div>
+						#end
+					</div>
+					<!--end product-list-btn pr-->
+					<div class="cb"></div>
+					</div>
+			#end
+			#myrcPageNav($page "#springUrl('/zxgq.htm')" "kw=$!{kw}&sid=$!{sid}" "")
+			</div>
+			<!--end product-list-->
+			<!--end 2014/08/02-->
+			<div class="product-list" style="display:none;">
+				#foreach($!{li} in $!{ylpage.records})
+				<div style="border:1px solid #dddddd;padding:10px;margin-top:8px;">
+					<div class="product-list-img pl">
+						<a href="/yuanliao$!{li.yuanliao.id}.htm" target="_blank"> 
+							#if($!{li.picAddress})
+								<img src="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=122&height=93" alt="$!{li.yuanliao.title}" data-bd-imgshare-binded="1"/>
+							#else
+								<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="122" height="93" alt="$!{li.yuanliao.title}" data-bd-imgshare-binded="1"/>
+							#end
+						</a>
+					</div>
+					<!--end product-list-img pl-->
+					<div class="product-list-yang" style="float:left;width:24px">
+						&nbsp;
+					</div>
+					<!--end porduct-list-yang-->
+					<div class="product-list-box pm">
+						<ul>
+							<li>
+								<a href="/yuanliao$!{li.yuanliao.id}.htm" target="_blank">#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" "")#printTitle($!{li.yuanliao.title} 15 "...") </a>
+								<span class="time">$!date.format('yyyy-MM-dd',$!{li.yuanliao.refreshTime})</span>
+							</li>
+							<li class="box-pm">
+								供应量:<span class="pm7">#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.quantity}#else 不限#end#if($!{li.yuanliao.quantity}&&$!{li.yuanliao.quantity}!='0')$!{li.yuanliao.unit}#end</span>
+								价格:<span class="pm7">
+									#if($!{li.yuanliao.minPrice})
+										$!{li.yuanliao.minPrice}-$!{li.yuanliao.maxPrice}
+									#else
+										#if($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')
+											$!{li.yuanliao.price}
+										#else
+											面议
+										#end
+									#end
+									#if(($!{li.yuanliao.price}&&$!{li.yuanliao.price}!='0')||$!{li.yuanliao.minPrice}) $!{li.yuanliao.priceUnit}/$!{li.yuanliao.unit}#end
+								</span>
+								<br />
+								#if($!{li.categoryMainLabel})厂家（产地）：<span class="pm8">$!{li.categoryMainLabel}</span> /#end
+								牌号：<span class="pm8">$!{li.yuanliao.tradeMark}</span>  
+								#if($!{li.typeLabel})/ 类型：<span class="pm8">$!{li.typeLabel}</span>#end   
+							</li>
+							<li class="box-pm_">
+								#printTitle($!{li.yuanliao.description} 70 "...")<!--  <b> <a href="#" target="_blank"> &gt;&gt;更多</a></b> -->
+							</li>
+						</ul>
+					</div>
+					<!--end product-list-box pm-->
+					<div class="product-list-btn pr">
+						<div class="btn-pr-chk">
+							<a href="http://www.zz91.com/inquiry/inquiryApi.htm?yuanliaoId=$!{li.yuanliao.id}#messeges" target="_blank">在线询价</a>
+						</div>
+					</div>
+					<!--end product-list-btn pr-->
+					<div class="cb"></div>
+				</div>
+				#end
+				#myrcPageNav($ylpage "#springUrl('/zxgq.htm')" "kw=$!{kw}&sid=$!{sid}&mark=1" "")
+			</div>
+			<!--end product-list-->
+            </div>
+			#if($!{cid}=="760523")
+				<div style='text-align:center'><iframe border="0" name="aaaa"  marginWidth="0" frameSpacing="0" marginHeight="0" src='http://ajlong.zz91.com/vedio/flash1.html'   frameBorder="0" noResize width="320" scrolling="no"  height="240" vspale="0"></iframe><p>安晶龙色选机选料视频</p></div>
+			#end
+		</div>
+    </div>
+</div>
+
+<script>
+function funcSearch(cd,mark) {
+    var keywords = document.getElementById("keywords_text_1").value;
+	var mark = jQuery(".title-qh-now").attr("index");
+    if (keywords == null || Trim(keywords) == "" || keywords == "输入产品关键字") {
+        alert("请输入要查找信息的关键字！");
+        document.getElementById("keywords_text_1").focus();
+        return false;
+    } else {
+		if(mark == 0){
+        	parent.window.location.href="#springUrl('/zxgq.htm?kw=')"+keywords;
+		}else{
+			parent.window.location.href="#springUrl('/zxgq.htm?mark=1&kw=')"+keywords;
+		}
+    }
+}
+
+function funcFocus(text) {
+    if (text.value=="输入产品关键字" || Trim(text.value)=="") {
+        text.value="";
+    }
+}
+
+function Trim(str) {
+    if(str.charAt(0) == " "){
+        str = str.slice(1);
+        str = Trim(str);
+    }
+    return str;
+}
+
+</script>

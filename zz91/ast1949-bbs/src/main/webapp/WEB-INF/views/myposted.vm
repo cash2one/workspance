@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>$!{bbsUserProfilerDO.nickname}_再生互助_$!{siteInfo.site_name}</title>
+<meta name="keywords" content="再生互助,$!{bbsUserProfilerDO.nickname}" />
+<meta name="description" content="欢迎来到$!{bbsUserProfilerDO.nickname}在$!{siteInfo.site_name}-互助社区安的新家" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/front/css/zz91.base.css"/>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/huzhu/css/huzhu.css"/>
+<script type="text/javascript" src="http://img0.zz91.com/lib/jquery/jquery-1.8.0.min.js"></script>
+<script src="http://img0.zz91.com/zz91/huzhu/js/huzhu.js"></script>
+<link rel="stylesheet" type="text/css" href="$!{address.img}/bbs/css/zz91.bbs.general.css" />
+<link href="http://img0.zz91.com/bbs/css/zz91.bbs.dialog.css" rel="stylesheet" type="text/css">
+<script src="http://img0.zz91.com/bbs/js/zz91.bbs.dialog.js" type="text/javascript"></script>
+
+<!--[if IE 6]>
+<script type="text/javascript" src="js/Png.js"></script>
+<script type="text/javascript">
+EvPNG.fix('div, ul, img, li, input, a');
+</script>
+<![endif]-->
+<script type="text/javascript">
+	function showme(id){
+		var url="#springUrl('/postEdit.htm?postId=')"+id;
+		dialog("修改帖子", "iframe:"+url+"", "800px", "500px", "iframe");
+	}
+</script>
+
+#parse("/seo/analysis_head.vm")
+</head>
+
+<body>
+<div class="huzhu">
+	
+	##set($layout="/layout/personalLayout.vm")   
+    <div class="huzhu_geren">
+		#parse("/common/bbs_info_center.vm")
+        <div class="hg-div3">
+        	<div class="hg-Answer-left">
+            	<div class="myCollection">
+                	<div class="myCollection-title">
+                    	我的帖子
+                    </div>
+
+                    <div class="cb"></div>
+                </div>
+                <!--end myCollection-->
+                <div class="hg-div3-box">
+                	<div class="hg-div2-nav">
+                        <ul>
+                            <li class="fb"><a href="myposted.htm">发起的帖子</a></li>
+                            <li>|</li>
+                            <li><a href="myreply.htm">回复的帖子</a></li>
+                            <div class="cb"></div>
+                        </ul>
+                    </div>
+                    <!--end hg-div2-nav-->
+					<div class="bbs_content2_1_1 bbs_content2_1_1_b">
+                        <span class="bbs_content2_color1">标题</span>
+                        <span class="bbs_content2_text2">所属类别</span>
+                        <span class="bbs_content2_text3">发表时间</span>
+                        <span class="bbs_content2_text4">状态</span>
+                    </div>
+                    <div class="hg-div3-ul">
+                    	<ul>
+							#foreach($!{bbsPostDTOList} in $!{page.records})
+                        	<li>
+                            	<div class="hg-ul-title2"><a href="#springUrl('/viewReply')$!{bbsPostDTOList.id}.htm" target="_blank" title="$!{bbsPostDTOList.title} (点击量/回复数：$!{bbsPostDTOList.visitedCount}/$!{bbsPostDTOList.replyCount})">#printTitle($!{bbsPostDTOList.title} 18 "")</a>
+									（$!{bbsPostDTOList.visitedCount}/$!{bbsPostDTOList.replyCount}）
+								</div>
+                                <div class="hg-ul-text2"><a href="#springUrl('/bbsCategory')$!{bbsPostDTOList.bbsPostCategoryId}.htm" target="_blank">[$!CategoryMap.get($!{bbsPostDTOList.bbsPostCategoryId})]</a></div>
+                                <div class="hg-ul-date2">$!{date.format('yyyy-MM-dd', ${bbsPostDTOList.postTime})}</div>
+                                <div class="hg-ul-edit">
+									#if($!{bbsPostDTOList.checkStatus}==0)未审核 #elseif($!{bbsPostDTOList.checkStatus}==1)已审核 #elseif($!{bbsPostDTOList.checkStatus}==3)退回#end
+									<a href="#" onclick="javascript:showme('$!{bbsPostDTOList.id}')">编辑</a>
+									<a href="#springUrl('/postDel')_p$!{bbsPostDTOList.id}.htm" onclick="return confirm('确实要删除吗？')" >删除</a>
+								</div>
+                                <div class="cb"></div>
+                            </li>
+							#end
+                        </ul>
+                    </div>
+                    <!--ed hg-div3-ul-->
+                   
+					#bbsPageNav($page "#springUrl('/myposted.htm')" "" "")
+                   
+                    <!--end hg-page-->
+                </div>
+                <!--end hg-div3-box-->
+            </div>
+            <div class="hg-Answer-right">
+            	<div class="hg-ranking">
+                    <div class="hg-ranking-title">
+                        <span>最新动态</span>
+                    </div>
+                    <!--end hg-ranking-title-->
+                    <div class="hg-news">
+                    	<ul>
+						#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=11&rsd" "" "" "")
+    						#if($!{frontBbsPostListSize}==0)
+    							<li> 无最新动态</li>
+    						#else	
+								#foreach($!{frontBbsPostList} in $!{frontBbsPostList})
+                            	<li><a href="#springUrl('/viewReply')$!{frontBbsPostList.id}.htm" target="_blank" title="$!{frontBbsPostList.title}">#printTitle($!{frontBbsPostList.title} 12 "")</a></li>
+								#end
+    						#end
+						#end	
+                        </ul>
+                    </div>
+                    <!--end hg-news-->
+                    
+                </div>
+                <!--end hg-ranking-->
+                <div class="hg-div2-Opinion">
+                	<div class="hg-Opinion-title">
+                    	<a href="http://myrc.zz91.com/myfeedback/member.htm">意见反馈</a>
+                    </div>
+                    <!--end hg-Opinion-title-->
+                </div>
+                <!--end hg-div2-Opinion-->
+            </div>
+            <!--end hg-div3-right-->
+            <div class="cb"></div>
+        </div>
+        <!--end hg-div3-->
+        <!--end columnNav-->
+    </div>
+    <!--end huzhu_geren-->
+    
+</div>
+<!--end huzhu-->
+
+#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+	$!{fragmentContext}
+#end
+#parse("/seo/analysis_body.vm")
+</body>
+</html>
+#parse("/seo/analysis_foot.vm")

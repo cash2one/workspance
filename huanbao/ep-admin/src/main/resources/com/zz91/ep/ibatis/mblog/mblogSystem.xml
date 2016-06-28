@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogSystem">
+	<typeAlias alias="mblogSystem" type="com.zz91.ep.domain.mblog.MBlogSystem" />
+	<typeAlias alias="mblogSystemDto" type="com.zz91.ep.dto.mblog.MBlogSystemDto" />	
+    <resultMap class="mblogSystem" id="mblogSystemMap">
+    	<result property="id" column="id"/>
+    	<result property="fromId" column="from_id"/>
+    	<result property="toId" column="to_id"/>
+    	<result property="type" column="type"/>
+    	<result property="isRead" column="is_read"/>
+    	<result property="content" column="content"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <resultMap class="mblogSystemDto" id="mblogSystemDtoMap">
+    	<result property="mBlogSystem" resultMap="mblogSystem.mblogSystemMap"/>
+    </resultMap>
+    
+    <resultMap class="mblogSystem" id="simpleMblogSystemMap">
+    	<result property="toId" column="to_id"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	from_id,
+    	to_id,
+    	type,
+    	is_read,
+    	content,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+     <insert id="insert" parameterClass="mblogSystem">
+		insert into mblog_system
+		(
+		from_id,
+		to_id,
+		type,
+		content,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#fromId#,
+		#toId#,
+		#type#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+    
+</sqlMap>

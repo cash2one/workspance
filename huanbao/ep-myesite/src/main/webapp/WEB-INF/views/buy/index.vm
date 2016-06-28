@@ -1,0 +1,289 @@
+#set($layout="/layout/defaultS.vm")
+
+## naviation
+<section class="container mt ">
+	<ul class="breadcrumb">
+		<li><a href="#springUrl('/supply/index.htm')">求购信息管理</a></li>
+	</ul>
+</section>
+
+## main body,contain toolbar and table
+<section class="container mt clearfix">
+	
+	## filter bar of table
+	<div class="table-select mt clearfix">
+		<div class="btn-toolbar">
+			<a href="#springUrl("/buy/index.htm")" class="btn btn-small #if(!$!{pauseStatus} && !$!{checkStatus} && !$!{overdueStatus}) btn_active #end">全部($!{productsCount.get("all")})</a>
+			<div class="btn-group">
+				<a href="#springUrl("/buy/index.htm")?checkStatus=1&pauseStatus=0&overdueStatus=1" class="btn btn-small #if( $!{checkStatus}==1) btn_active #end">已审核($!{productsCount.get("checkStatus1")})</a>
+				<a href="#springUrl("/buy/index.htm")?checkStatus=0&pauseStatus=0&overdueStatus=1" class="btn btn-small #if( $!{checkStatus}==0) btn_active #end">未审核($!{productsCount.get("checkStatus0")})</a>
+				<a href="#springUrl("/buy/index.htm")?checkStatus=2&pauseStatus=0&overdueStatus=1" class="btn btn-small #if( $!{checkStatus}==2) btn_active #end">审核未通过($!{productsCount.get("checkStatus2")})</a>
+				##<a href="#springUrl("/buy/index.htm")?checkStatus=$!{checkStatus}&pauseStatus=0&overdueStatus=$!{overdueStatus}" class="btn btn-small #if( $!{pauseStatus}==0) btn_active #end">已发布</a>
+				<a href="#springUrl("/buy/index.htm")?pauseStatus=1" class="btn btn-small #if( $!{pauseStatus}==1) btn_active #end">暂不发布($!{productsCount.get("pauseStatus1")})</a>
+				##<a href="#springUrl("/buy/index.htm")?checkStatus=$!{checkStatus}&pauseStatus=$!{pauseStatus}&overdueStatus=1" class="btn btn-small #if( $!{overdueStatus}==1) btn_active #end">未过期</a>
+				<a href="#springUrl("/buy/index.htm")?overdueStatus=0" class="btn btn-small #if( $!{overdueStatus}==0) btn_active #end">已过期($!{productsCount.get("overdueStatus0")})</a>
+			</div>
+		</div>
+	</div>
+	
+	## data table
+	<table class="table table-bordered table-condensed">
+			<tr>
+				<th width="20" class="tac"><input type="checkbox" class="Js_checkAll" name="allselect" id="checkselect" onclick="checkselect('select')" /></th>
+				<th >标题名称</th>
+				<th width="120" class="tac">刷新时间</th>
+				<th width="50" class="tac">有效期</th>
+				<th width="130" class="tac"></th>
+				<th width="180" class="tac">操作</th>
+			</tr>
+		<tbody>
+			#if(!$!{page.records} || $!{page.records.size()}==0)
+				<tr >
+					<td colspan="6">
+    					<div class="alert alert-error center" >
+    						<strong>注意：</strong>
+    						您还没有任何求购信息，马上<a href="#springUrl('/buy/publish_StpOne.htm')" >发布求购信息</a>，让更多商家找到您！
+    					</div>
+					</td>
+                </tr>
+			#end
+			#foreach($buy in $!{page.records})
+			<tr id="buy$!{buy.tradeBuy.id}">
+				<td class="tac va">
+					<input name="select" type="checkbox" value="$!{buy.tradeBuy.id}"/>
+				</td>
+				<td class="va">
+					<a target="_blank" href="$!{address.trade}/buy/detail$!{buy.tradeBuy.id}.htm" title="点击我查看求购信息" #if($!{buy.tradeBuy.checkStatus} == 0 || $!{buy.tradeBuy.checkStatus} == 2 || $!{buy.tradeBuy.pauseStatus} == 1) onclick="return false;" #end>
+					<strong>$!{buy.tradeBuy.title}</strong>
+					</a>
+					 #if($!{buy.tradeBuy.checkStatus}==2)
+						  <p class="red">$!{buy.tradeBuy.checkRefuse}</p>
+					 #end	
+				</td>
+				<td class="tac va">$!date.format('yyyy-MM-dd HH:mm:ss',$!{buy.tradeBuy.gmtRefresh})</td>
+				<td class="tac va">
+					#if($!{buy.tradeBuy.validDays}=="0")
+						长期有效
+					#else
+					$!{buy.tradeBuy.validDays} 天
+					#end
+				</td>
+				<td class="tac va">
+					
+					#if($!{buy.tradeBuy.checkStatus} == 0)
+						<span class="label">未审核</span>
+					#elseif($!{buy.tradeBuy.checkStatus} == 1)
+						<span class="label label-success">已审核</span>
+					#elseif($!{buy.tradeBuy.checkStatus} == 2)
+						<span class="label label-warning">未通过</span>
+					#end
+					#if($!{buy.tradeBuy.pauseStatus} == 1)
+						<span class="label label-warning">未发布</span>
+					#end
+					
+					
+##					#if(${Integer.parseInt($sys)} > ${Integer.parseInt($item)})
+##						<span class="label label-important">过期</span>
+##					#end
+				</td>
+				<td class="tac va"> 
+					##<a href="javascript:doRefresh($!{buy.id})">刷新</a>
+##					#if($!{buy.pauseStatus} == 0)
+##					<a href="javascript:doPublish($!{buy.id}, 1)" id="pauseStatusDiv$!{buy.id}">暂不发布</a> 
+##					#else
+##					<a href="javascript:doPublish($!{buy.id}, 0)" id="pauseStatusDiv$!{buy.id}">发布</a> 
+##					#end
+					<a href="#springUrl('/buy/update.htm')?id=$!{buy.tradeBuy.id}">编辑</a>
+					<a href="#springUrl('/buy/message.htm')?id=$!{buy.tradeBuy.id}">查看留言 <lable style="color:red">($!{buy.count})</lable></a>
+				</td>
+			</tr>
+			#end
+		</tbody>
+	</table>
+	
+    	<div class="btn-toolbar">
+    		<div class="btn-group">
+    			<a href="javascript:refresh()" class="btn btn-small">刷新</a>
+				#if($!{pauseStatus} == 1)
+				<input type="button" class="btn btn-small" value="重新发布信息" onclick="publish(0)" />
+				#elseif($!{pauseStatus} == 0)
+				<input type="button" class="btn btn-small" value="暂不发布信息" onclick="publish(1)" />
+				#else
+					<input type="button" class="btn btn-small" value="重新发布信息" onclick="publish(0)" />
+					<input type="button" class="btn btn-small" value="暂不发布信息" onclick="publish(1)" />
+				#end
+    			<input type="button" onclick="deleteBuy()" class="btn btn-small" value="删除" />
+    		</div>
+    	</div>
+	
+	#myrcPageNav($!{page} "#springUrl('/buy/index.htm')" "checkStatus=$!{checkStatus}&pauseStatus=$!{pauseStatus}&overdueStatus=$!{overdueStatus}" "")
+</section>
+
+<script langue="text/javascript">
+
+	jQuery(document).ready(function(){
+		myrc.select("Js_select");
+		myrc.menu(2, 5);
+	});
+	//全选
+function checkselect(name) {
+    var el = document.getElementsByName(name);
+    if (document.getElementById("checkselect").checked) {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = true;
+        }
+    } else {
+        for(var i=0; i<el.length; i++) {
+          el[i].checked = false;
+        }
+    }
+}
+
+//删除信息
+function deleteBuy() {
+
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要操作的求购信息！");
+		return ;
+	}
+	
+	if(!confirm("信息被删除后将无法被搜索到，您确定要这么做吗？")){
+		return ;
+	}
+	
+	for(var i=0;i<ids.length;i++){
+		doDelete(ids[i]);
+	}
+	
+}
+
+function doDelete(id){
+	jQuery.ajax({
+		url:'#springUrl("/buy/doDelete.htm")',
+		data:{"id":id},
+		cache:false,
+		dataType:"json",
+		type:"post",
+		success:function(req){
+			if(req.success){
+				jQuery("#buy"+id).hide();
+			}else{
+    			Asto.util.Message.show({
+        			msg:"删除失败！",
+        			autoClose:10000
+    			});
+			}
+		},
+		failure:function(){
+			Asto.util.Message.show({
+			msg:"删除失败！",
+			autoClose:10000
+			});
+		}
+	});
+}
+
+//刷新信息
+function refresh(){
+
+	var ids=getAllProductIds();
+	if(ids.length<=0){
+		alert("请选择要刷新的求购信息！");
+		return ;
+	}
+	
+	for(var i=0;i<ids.length;i++){
+		//alert(i+" "+ids[i])
+		doRefresh(ids[i]); 
+	}
+	
+}
+
+function doRefresh(id) {
+	jQuery.ajax({
+		url:'#springUrl("/buy/doRefresh.htm")',
+		data:{"id":id},
+		cache:false,
+		dataType:"json",
+		type:"post",
+		success:function(req){
+			if(req.success){
+				window.location.href="#springUrl('/buy/index.htm')?pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}";	
+			}
+		},
+		failure:function(){
+			Asto.util.Message.show({
+    			msg:"刷新失败！",
+    			autoClose:10000
+			});
+		}
+	});
+}
+
+//暂不发布
+function publish(status){
+	var ids=getAllProductIds();
+	
+	if(ids.length<=0){
+		alert("请选择要操作的求购信息！");
+		return ;
+	}
+	
+	for(var i=0;i<ids.length;i++){
+    	doPublish(ids[i], status);
+	}
+	
+}
+
+
+function doPublish(id, status){
+    jQuery.ajax({
+        url:'#springUrl("/buy/doPause.htm")',
+        data:{"id":id,"status":status},
+        cache:false,
+        dataType:"json",
+        type:"post",
+        success:function(req){
+		
+			#if(!$!{pauseStatus})
+				window.location.href="#springUrl('/buy/index.htm')?pauseStatus=$!{pauseStatus}&checkStatus=$!{checkStatus}&overdueStatus=$!{overdueStatus}";
+			#else
+				jQuery("#buy"+id).hide();
+			#end
+			
+##            if(req.success){
+##                if (status == 0) {
+##                    jQuery("#pauseStatusDiv"+id).html("<a href='javascript:doPublish("+id+", 1)' id='pauseStatusDiv"+id+"'  >暂不发布</a>");
+##                	Asto.util.Message.show({
+##				       msg:"发布成功！",
+##				       autoClose:3000
+##					});
+##                } else {
+##                    jQuery("#pauseStatusDiv"+id).html("<a href='javascript:doPublish("+id+", 0)' id='pauseStatusDiv"+id+"' >发布</a>");
+##                    Asto.util.Message.show({
+##				        msg:"取消发布成功！",
+##				        autoClose:3000
+##					});
+##                }
+##            }
+        },
+        failure:function(){
+	        Asto.util.Message.show({
+		        msg:"操作失败！",
+		        autoClose:10000
+			});
+        }
+    });
+}
+
+//获取所有选中值
+function getAllProductIds(){
+	var productIds = new Array();
+	jQuery("input[name='select']:checked").each(function(){
+		productIds.push(jQuery(this).val());
+	});
+	
+	return productIds;
+}
+</script>

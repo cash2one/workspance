@@ -1,0 +1,120 @@
+<div class="wrapper filter_wrap mt clearfix">
+	<form id="searchCmpForm" onsubmit="return false;" >
+		<dl class="clearfix">
+			<dt>主营业务：</dt>
+			<dd id="js_type">
+                <a #if(!$!{company.industryCode} || $!{company.industryCode}=="") class="on"#end href="#springUrl('/')index-b-c-p.htm">所有业务</a>
+    			#foreach($obj in $!{industryCodeList.keySet()})
+				<a #if($!{company.industryCode}==$!{obj}) class="on"#end href="#springUrl('/')index-b$!{obj}-c-p.htm">$!{industryCodeList.get($obj)}</a>
+    			#end
+            </dd>
+		</dl>
+		<dl class="clearfix">
+			<dt>省份：</dt>
+			<dd>
+				<a #if(!$!{provinceCode} || $!{provinceCode}=="") class="js_province on" #end href="#springUrl('/')index-b$!{company.industryCode}-c-p.htm">所有地区</a>
+				#foreach($obj in $!{areaCodeList.keySet()})
+					<a href="#springUrl('/')index-b$!{company.industryCode}-c$!{obj}-p$!{key}.htm" #if($!{provinceCode}==$!{obj}) class="js_province on" #end class="js_province"  name="$obj">$!{areaCodeList.get($obj)}</a>
+				#end
+			</dd>
+		</dl>
+		#if($!{cityList}&&$!{cityList}!="")
+			<dl  class="clearfix">
+				<dt>城市：</dt>
+				<dd id="js_area_data">
+					#foreach($obj in $!{cityList.keySet()})
+						<a href="#springUrl('/')index-b$!{company.industryCode}-c$!{obj}-p$!{key}.htm" #if($!{company.areaCode}==$!{obj}) class="js_province on" #end class="js_province"  name="$obj">$!{cityList.get($obj)}</a>
+					#end
+				</dd>
+			</dl>
+		#end
+		<div class="search_area">
+			<label for="searchName">公司搜索：</label>
+			<input type="text" id="searchName" name="searchName" value="#if($!{keywords} && $!{keywords}!='')$!{keywords}#else请输入公司名称#end" size="25">##
+##			<select id='s1' name='s1'>##selected='selected'
+##                <option value='' >--省份--</option>
+##            </select>
+##            <select id='s2' name='s2'>
+##                <option value='' selected='selected'>--城市--</option>
+##            </select>
+            <input type="submit" id="accurateFind" value="精确筛选" class="btnMinGray">##onclick="doSearch()" 
+##            <input type="hidden" id="hidden-s1" name="hidden-s1" value="$!{hidden-s1}"/>
+##            <input type="hidden" id="hidden-s2" name="hidden-s2" value="$!{hidden-s2}"/>
+            <input type="hidden" id="hidden-s3" name="hidden-s3" value="$!{hidden-s3}"/>
+            <input type="hidden" id="hiddenGardenCode" name="hiddenGardenCode" value="$!{hiddenGardenCode}"/>
+        </div>
+    </form>
+</div>
+<script>
+    jQuery(document).ready(function(){
+		jQuery("#accurateFind").click(function(){
+			jQuery("#searchCmpForm").submit();
+		});
+		jQuery("#searchName").click(function(){
+			if(jQuery("#searchName").val()=="请输入公司名称"){
+				jQuery("#searchName").val("");
+			}
+		});
+		jQuery("#searchCmpForm").submit(function(){
+			var keywords = jQuery("#searchName").val();
+			var areaCode = jQuery("#s1").val();
+			if (keywords == "请输入公司名称"){
+    			keywords = "";
+    		}
+    		if (jQuery("#s2").val()!=""){
+    			areaCode = jQuery("#s2").val();
+    		}
+    		if(typeof(areaCode) == "undefined"||areaCode==null){
+    			areaCode = "";
+    		}
+			if(areaCode=="" && keywords==""){
+				return false;
+			}
+    		//搜索
+    		var url="#springUrl('/index')";
+    		if("$!{company.industryCode}" !="" || areaCode!=""){
+    				url = url +"-b$!{company.industryCode}"+"-c$!{company.areaCode}";
+    		}
+    		if(keywords!=""){
+    			url =url+ "-p-"+encodeURI(keywords);
+    		}else{
+    			url = url+"-p";
+    		}
+    		url = url+".htm";
+        	window.location.href=url;
+    		return false;
+		});
+
+        var areaSelector = new Asto.util.Selector({
+            url:"#springUrl('/category/areaChild.htm')",
+            selects:["#s1","#s2"]
+        });
+		
+        areaSelector.init({
+            rootCode:"10011000",
+            initCode:"$!{company.areaCode}"
+        });  
+
+##		var industry = new Asto.util.Selector({
+##			url:"#springUrl('/category/categoryChild.htm')",
+##			selects:["#industryCode"]
+##		});
+##		
+##		industry.init({
+##			rootCode:"1000",
+##			initCode:"$!{company.industryCode}"
+##		});
+##		var areaSelector = new Asto.util.Selector({
+##			url:"#springUrl('/category/areaChild.htm')",
+##			selects:["#province"
+##		});
+##		
+##		areaSelector.init({
+##			rootCode:"10011000",
+##			initCode:"$!{province}"
+##		});
+    		
+		##Asto.util.placeholder("searchName");
+	});
+	
+</script>

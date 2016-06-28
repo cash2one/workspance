@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/inquiry/inquiry.js" ></script>
+	
+    <script type="text/javascript">
+
+		Ext.onReady(function(){
+        	var grid = new ast.ast1949.admin.inquiry.ResultGrid({
+        		listUrl:Context.ROOT + Context.PATH + "/admin/inquiry/queryInquiry.htm",
+        		region:"center",
+				layout:"fit",
+				toolbar:[{
+					text:"留言详情",
+					handler:function(){
+						grid.showdetail(grid.getSelectionModel().getSelected().get("content"));
+					}
+				},"->",{
+        			xtype:"combo",
+        			mode:"local",
+        			width:100,
+					value:"1",
+        			triggerAction:"all",
+        			store:[
+        				["0","收到的留言"],
+        				["1","发出的留言"]
+        			],
+        			listeners:{
+            			"change":function(field,newvalue,oldvalule){
+            				if(newvalue=="0"){
+            					grid.loadByReceiver("$!{account}");
+            				}else if(newvalue=="1"){
+    							grid.loadBySender("$!{account}");
+            				}
+            			}
+					}
+    			}],
+				listeners:{
+					"rowdblclick":function(g, rowIdx, e){
+						g.showdetail(g.getStore().getAt(rowIdx).get("content"));
+					}
+				}
+        	});
+			
+        	var viewport = new Ext.Viewport({
+        		layout:"border",
+        		items:[grid]
+        	});
+			
+			grid.loadBySender("$!{account}");
+        })
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

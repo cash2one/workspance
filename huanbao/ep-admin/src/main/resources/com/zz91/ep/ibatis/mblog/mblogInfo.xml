@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogInfo">
+	<typeAlias alias="mblogInfo" type="com.zz91.ep.domain.mblog.MBlogInfo" />
+	<typeAlias alias="mblogInfoDto" type="com.zz91.ep.dto.mblog.MBlogInfoDto" />
+	<typeAlias alias="compProfile" type="com.zz91.ep.domain.comp.CompProfile" />
+		
+    <resultMap class="mblogInfo" id="mblogInfoMap">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="account" column="account" />
+		<result property="realName" column="real_name"/>
+		<result property="headPic" column="head_pic"/>
+		<result property="name" column="name" />
+		<result property="provinceCode" column="province_code" />
+		<result property="areaCode" column="area_code"/>
+		<result property="isDelete" column="is_delete" />
+		<result property="sex" column="sex"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="compProfile" id="compProfileMap">
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<resultMap class="mblogInfoDto" id="mblogInfoDtoMap">
+		<result property="mBlogInfo" resultMap="mblogInfo.mblogInfoMap"/>
+		<result property="gmtLogin" column="gmt_login"/>
+		<result property="compProfile" resultMap="mblogInfo.compProfileMap"/>
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		cid,
+		account,
+		real_name,
+		head_pic,
+		name,
+		province_code,
+		area_code,
+		is_delete,
+		sex,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<sql id="simpleWithColumn">
+		mi.id,
+		mi.cid,
+		mi.account,
+		mi.real_name,
+		mi.head_pic,
+		mi.name,
+		mi.province_code,
+		mi.area_code,
+		mi.is_delete,
+		mi.sex,
+		mi.gmt_created,
+		mi.gmt_modified,
+	</sql>
+	
+	
+	<sql id="dymicWhere">
+		<dynamic prepend="where">
+		    <isNotEmpty property="mBlogInfo.name" prepend="and">
+    			mi.name like concat(#mBlogInfo.name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="mBlogInfo.account" prepend="and">
+    			mi.account like concat(#mBlogInfo.account#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="compProfile.name" prepend="and">
+    			cp.name like concat(#compProfile.name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="mBlogInfo.provinceCode" prepend="and">
+    			mi.province_code like concat(#mBlogInfo.provinceCode#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="mBlogInfo.areaCode" prepend="and">
+    			mi.area_code like concat(#mBlogInfo.areaCode#,'%')
+    		</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryAllMblogInfo" parameterClass="java.util.Map" resultMap="mblogInfoDtoMap">
+		select 
+		 <include refid="simpleWithColumn"/>
+		ca.gmt_login,cp.name
+		from
+		mblog_info mi 
+		inner join comp_account ca on ca.cid=mi.cid
+		inner join comp_profile cp on cp.id=mi.cid	
+		<include refid="mblogInfo.dymicWhere"/>	
+		order by mi.gmt_modified desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryAllMblogCountInfo" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select 
+		 count(0)
+		from
+		mblog_info mi 
+		inner join comp_account ca on ca.cid=mi.cid
+		inner join comp_profile cp on cp.id=mi.cid	
+		<include refid="mblogInfo.dymicWhere"/>		
+	</select>
+	
+	<update id="updateIsDeleteStatus" parameterClass="java.util.Map">
+	    update mblog_info
+	    set
+	    is_delete = #isDelete#
+	    where 
+	    id = #id#
+	</update>
+	
+
+</sqlMap>

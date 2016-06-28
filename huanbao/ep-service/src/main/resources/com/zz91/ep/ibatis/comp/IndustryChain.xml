@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+    <sqlMap namespace="industryChain">
+    	
+		<typeAlias alias="industryChain" type="com.zz91.ep.domain.comp.IndustryChain" />
+    
+    	<resultMap class="industryChain" id="industryChainSimple">
+    		<result property="id" column="id"/>
+    		<result property="areaCode" column="area_code"/>
+    		<result property="categoryName" column="category_name"/>
+    		<result property="areaName" column="area_name"/>
+    	</resultMap>
+    
+    	<select id="queryIndustryChains" parameterClass="java.util.HashMap" resultMap="industryChainSimple">
+    	
+    		select id, area_code, category_name ,area_name from industry_chain where show_index = 1 and del_status=0 
+    		
+    		<isNotEmpty property="areaCode" prepend="and">
+    			area_code  like concat(#areaCode#, '%')
+    		</isNotEmpty>
+    		
+    		order by  orderby
+    		
+    		<isNotEmpty property="size">
+    			limit #size#  
+    		</isNotEmpty>
+    		
+    	</select>
+    	
+    	<select id="queryIndustryChainById" parameterClass="java.lang.Integer" resultMap="industryChainSimple">
+    			select id,area_code, category_name ,area_name from industry_chain where id = #value# 
+    	 </select>
+    </sqlMap>

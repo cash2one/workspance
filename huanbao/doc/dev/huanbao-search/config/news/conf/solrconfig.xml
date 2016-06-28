@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+
+  <luceneMatchVersion>LUCENE_35</luceneMatchVersion>
+
+  <abortOnConfigurationError>${solr.abortOnConfigurationError:false}</abortOnConfigurationError>
+  
+  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
+  
+  <!--  
+  1、索引配置
+    mainIndex 标记段定义了控制Solr索引处理的一些因素.
+    useCompoundFile：通过将很多 Lucene 内部文件整合到单一一个文件来减少使用中的文件的数量。这可有助于减少 Solr 使用的文件句柄数目，
+                     代价是降低了性能。除非是应用程序用完了文件句柄，否则 false 的默认值应该就已经足够。
+    mergeFacor：决定Lucene段被合并的频率。较小的值（最小为2）使用的内存较少但导致的索引时间也更慢。较大的值可使索引时间变快但会牺牲较
+                多的内存。（典型的 时间与空间 的平衡配置）
+    maxBufferedDocs：在合并内存中文档和创建新段之前，定义所需索引的最小文档数。段 是用来存储索引信息的Lucene文件。较大的值可使索引时间
+                     变快但会牺牲较多内存。（不推荐）
+    maxMergeDocs：控制可由Solr合并的 Document 的最大数。较小的值（<10,000）最适合于具有大量更新的应用程序。
+    maxFieldLength：对于给定的Document，控制可添加到Field的最大条目数，进而阶段该文档。如果文档可能会很大，就需要增加这个数值。然后，若
+                    将这个值设置得过高会导致内存不足错误。
+    unlockOnStartup：告知Solr忽略在多线程环境中用来保护索引的锁定机制。在某些情况下，索引可能会由于不正确的关机或其他错误而一直处于锁定，
+                     这就妨碍了添加和更新。将其设置为true可以禁用启动索引，进而允许进行添加和更新。（锁机制
+   
+    -->
+  <mainIndex>
+    <useCompoundFile>false</useCompoundFile>
+    <ramBufferSizeMB>32</ramBufferSizeMB>
+    <mergeFactor>10</mergeFactor>
+    <!--<maxBufferedDocs>1000</maxBufferedDocs>-->
+    <maxMergeDocs>2147483647</maxMergeDocs>
+    <maxFieldLength>10000</maxFieldLength>
+    <unlockOnStartup>false</unlockOnStartup>
+  </mainIndex>
+
+  <updateHandler class="solr.DirectUpdateHandler2">
+     <autoCommit>  
+        <maxDocs>10000</maxDocs> <!-- 触发自动提交的文档数-->  
+        <maxTime>86000</maxTime> <!-- 发送一个文档后触发自动提交的最长等待时间 (单位 毫秒)  -->  
+     </autoCommit>
+  </updateHandler>
+
+  <!--
+    2、查询处理配置
+        maxBooleanClauses：定义可组合在一起形成以个查询的字句数量的上限。正常情况1024已经足够。如果应用程序大量使用了通配符或范围查询，
+                           增加这个限制将能避免当值超出时，抛出TooMangClausesException。
+        enableLazyFieldLoading：如果应用程序只会检索Document上少数几个Field，那么可以将这个属性设置为true。懒散加载的一个常见场景大都发生
+                                在应用程序返回一些列搜索结果的时候，用户常常会单击其中的一个来查看存储在此索引中的原始文档。初始的现实常常
+                                只需要现实很短的一段信息。若是检索大型的Document，除非必需，否则就应该避免加载整个文档。
+        filterCache：通过存储一个匹配给定查询的文档 id 的无序集，过滤器让 Solr 能够有效提高查询的性能。缓存这些过滤器意味着对Solr的重复调用
+                     可以导致结果集的快速查找。更常见的场景是缓存一个过滤器，然后再发起后续的精炼查询，这种查询能使用过滤器来限制要搜索的文
+        queryResultCache：为查询、排序条件和所请求文档的数量缓存文档 id 的有序集合。
+        documentCache：缓存Lucene Document，使用内部Lucene文档id（以便不与Solr唯一id相混淆）。由于Lucene的内部Document id 可以因索引操作
+                      而更改，这种缓存不能自热。
+        Named caches：命名缓存是用户定义的缓存，可被 Solr定制插件 所使用。
+    其中filterCache、queryResultCache、Named caches（如果实现了org.apache.solr.search.CacheRegenerator）可以自热。 
+    每个缓存声明都接受最多四个属性：
+        class：是缓存实现的Java名
+        size：是最大的条目数
+        initialSize：是缓存的初始大小
+        autoWarmCount：是取自旧缓存以预热新缓存的条目数。如果条目很多，就意味着缓存的hit会更多，只不过需要花更长的预热时间。 -->
+
+  <query>
+    <maxBooleanClauses>1024</maxBooleanClauses>
+    <!--设置lru缓存-->
+    <filterCache
+      class="solr.LRUCache"
+      size="16384"
+      initialSize="4096"
+      autowarmCount="4096"/>
+    <!--设置查询结果缓存-->
+    <queryResultCache
+      class="solr.LRUCache"
+      size="16384"
+      initialSize="4096"
+      autowarmCount="1024"/>
+    <!--设置文档缓存--> 
+    <documentCache
+      class="solr.LRUCache"
+      size="16384"
+      initialSize="16384"
+      autowarmCount="0"/>
+    <!--是否延迟加载索引域-->
+    <enableLazyFieldLoading>true</enableLazyFieldLoading>
+    <!--设置查询的最大doc数-->
+    <queryResultWindowSize>80</queryResultWindowSize>
+    <queryResultMaxDocsCached>500</queryResultMaxDocsCached>
+    <HashDocSet maxSize="3000" loadFactor="0.75"/>
+    <useColdSearcher>false</useColdSearcher>
+    <maxWarmingSearchers>4</maxWarmingSearchers>
+  </query>
+  
+  <!-- 配置搜索 /select?qt=XXX -->
+  <requestDispatcher handleSelect="true" >
+    <requestParsers enableRemoteStreaming="false" multipartUploadLimitInKB="2048" />
+  </requestDispatcher>
+  <requestHandler name="standard" class="solr.StandardRequestHandler" default="true">
+   <lst name="defaults">  
+     <str name="fl">*</str>  
+     <str name="version">2.2</str>  
+   </lst> 
+  </requestHandler>
+  <requestHandler name="/update" class="solr.XmlUpdateRequestHandler" />
+  <requestHandler name="/admin/" class="org.apache.solr.handler.admin.AdminHandlers" />
+   <requestHandler name="/dataimport" class="org.apache.solr.handler.dataimport.DataImportHandler">
+    <lst name="defaults">
+    	<str name="config">db-data-config.xml</str>
+    </lst>
+  </requestHandler>
+
+  <admin>
+    <defaultQuery>*:*</defaultQuery>
+  </admin>
+  
+</config>
+

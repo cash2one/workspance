@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>来电宝管理</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="#springUrl('/app/lib/FileUploadField.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/app/lib/UploadWin.js')" ></script>
+	<script type="text/javascript" src="$!{address.js}/phone/phoneLibrary.js" ></script>
+	
+<script type="text/javascript">
+	Ext.onReady(function() {
+		var grid = new ast.ast1949.phone.libraryGrid({
+			id:"libraryGrid",
+			region:"center",
+			layout:"fit"
+		});
+		
+		var phoneLibraryGrid = new ast.ast1949.phone.phoneLibraryGrid({
+			id:"phoneLibraryGrid",
+			region:"south",
+			title:"绑定用户",
+			height:180,
+			split:true
+		});
+		
+		phoneLibraryGrid.loadByCompany("");
+		
+		##点击号码,弹出该号码绑定过的所有公司
+		grid.on("rowclick",function(g,rowIndex,e){
+			var B=phoneLibraryGrid.getStore().baseParams;
+			B=B||{};
+    		B["tel"]=g.getStore().getAt(rowIndex).get("tel");
+    		phoneLibraryGrid.getStore().baseParams=B;
+    		phoneLibraryGrid.getStore().reload({});
+		});
+		
+    	var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid,phoneLibraryGrid]
+    	});
+
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<dataConfig>
+    <dataSource type="JdbcDataSource" driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.2.10:3306/ep"
+                user="root" password="zj88friend" batchSize="-1"/>
+    <document  name="comp_profile">
+    <!--query是获取全部数据的SQL
+        deltaImportQuery是获取增量数据时使用的SQL（动态增加时必须配置deltaQuery，两个配置->效果）
+        deltaQuery是获取pk的SQL
+        parentDeltaQuery是获取父Entity的pk的SQL
+        -->
+        <entity name="comp_profile" pk="id" query="select id,
+						    name,
+						    details_query,
+						    member_code,
+						    main_buy,
+						    main_product_buy,
+						    main_supply,
+						    main_product_supply,
+						    address,
+						    industry_code,
+						    business_code,
+						    province_code,
+						    area_code,
+						    del_status
+						from
+						    comp_profile" 
+            deltaQuery="select id from comp_profile where gmt_modified > '${dataimporter.last_index_time}'"
+            deltaImportQuery="select id,
+				    name,
+				    details_query,
+				    member_code,
+				    main_buy,
+				    main_product_buy,
+				    main_supply,
+				    main_product_supply,
+				    address,
+				    industry_code,
+				    business_code,
+				    province_code,
+				    area_code,
+				    del_status
+				from
+				    comp_profile
+				where
+				    gmt_modified > '${dataimporter.last_index_time}'">
+	    <field column="id" name="id" />
+	    <field column="name" name="name" />
+	    <field column="member_code" name="memberCode" />
+	    <field column="details_query" name="detailsQuery" />
+            <field column="industry_code" name="industryCode" />
+	    <field column="business_code" name="businessCode" />
+	    <field column="main_buy" name="mainBuy" />
+	    <field column="main_product_buy" name="mainProductBuy" />
+	    <field column="main_supply" name="mainSupply" />
+	    <field column="main_product_supply" name="mainProductSupply" />
+	    <field column="address" name="address" />
+	    <field column="province_code" name="provinceCode"/>
+            <field column="area_code" name="areaCode" />
+	    <field column="del_status" name="delStatus" />
+        </entity>
+    </document>
+</dataConfig>

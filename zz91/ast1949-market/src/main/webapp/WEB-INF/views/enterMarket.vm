@@ -1,0 +1,128 @@
+#set($layout="/layout/blank.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>入驻市场申请</title>
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/industrial/css/IndustrialBelt.css" />
+<script type="text/javascript" src="http://img0.zz91.com/front/js/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/industrial/js/openoverlay.js"></script>
+</head>
+<body>
+<div class="thint">
+	<h3>根据您的公司地址为您匹配到以下实体市场，您可以选择多个市场同时入驻，获取更多的商机</h3>
+	<div class="thitem"><strong>主营行业：</strong>$!{industry}</div>
+	<div class="thitem"><strong>公司地址：</strong>$!{area}</div>
+	<form method="post" action="#springUrl('/doEnterMarket.htm')" id="tijiao">
+	<table class="checkbox_tab" cellpadding="0" cellspacing="0">
+		<tr>
+			<td cols="3"><strong>市场：</strong></td>
+			#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?industry=$!{industryCode}&area=$!{areaCode}&size=9&0" "" "" "")
+			#foreach($li in $!{list})
+				#if($velocityCount<4)
+					<td><input type="checkbox" name="marketList" value="${li.id}" title="$!{li.name}"/>&nbsp;<label><a #set($liname=$!{li.name})#if($liname.length()>10)title="$!{li.name}"#end>#printTitle($!{li.name} 10 "...")</a></label></td>
+				#end
+			#end
+			#end
+		</tr>
+		<tr>
+			<td></td>
+			#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?industry=$!{industryCode}&area=$!{areaCode}&size=9&3" "" "" "")
+			#foreach($li in $!{list})
+				#if($velocityCount>3&&$velocityCount<7)
+					<td><input type="checkbox" name="marketList" value="${li.id}" title="$!{li.name}"/>&nbsp;<label><a #set($liname=$!{li.name})#if($liname.length()>10)title="$!{li.name}"#end>#printTitle($!{li.name} 10 "...")</a></label></td>
+				#end
+			#end
+			#end
+		</tr>
+		<tr>
+			<td></td>
+			#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?industry=$!{industryCode}&area=$!{areaCode}&size=9&1" "" "" "")
+			#foreach($li in $!{list})
+				#if($velocityCount>6&&$velocityCount<10)
+					<td><input type="checkbox" name="marketList" value="${li.id}" title="$!{li.name}"/>&nbsp;<label><a #set($liname=$!{li.name})#if($liname.length()>10)title="$!{li.name}"#end>#printTitle($!{li.name} 10 "...")</a></label></td>
+				#end
+			#end
+			#end
+		</tr>
+	</table>
+##	<div class="thitem">
+##		<strong>同行业市场推荐：</strong>
+##		#cacheFragment("$!{address.fragment}/market/queryMarketByCondition.htm?industry=$!{industryCode}&size=3&4" "" "" "")
+##		#foreach($li in $!{list})
+##			<input type="checkbox" name="marketList" value="${li.id}" title="$!{li.name}"/>&nbsp;<label><a href="" #set($liname=$!{li.name})#if($liname.length()>10)title="$!{li.name}"#end>#printTitle($!{li.name} 10 "...")</a></label>
+##		#end
+##		#end
+##	</div>
+	#if($!{marketList}!="")
+		<div class="thitem"><strong>您已选择入驻：</strong><span>#printTitle($!{marketList} 75 "...")</span></div>
+	#end
+	<div class="tbtn">
+		<input type="submit" value="保存" class="save" />
+		<input type="reset" id="reset" value="取消" class="cancel"/>
+		<div class="cb"></div>
+	</div>
+	</form>
+	<h3 class="tips"><span>提示：</span>没有找到所在的市场？点击马上<a href="http://y.zz91.com/createMarket.htm" target="_blank">创建市场</a></h3>
+</div>
+<script>
+$(document).ready(function(){
+	var  array=jQuery("input");
+	if(array.length==2){
+		jQuery(".save").css("background","#dadada");
+		jQuery(".save").css("color","#999");
+	}else{
+		jQuery(".save").css("background","#02C3A3");
+	}
+	$("#selected span").hover(function(){
+  		$(this).parent().parent().find("em").css("display","block");
+ 	},function(){
+  		$(this).parent().parent().find("em").css("display","none");
+ 	});
+	$(".zs-market2").hover(function(){
+  		$(this).find("span").show();
+ 	},function(){
+  		$(this).find("span").hide();
+ 	});	 
+	$("#add").click(function () {
+    	popSuccess();
+    });
+	$("#reset").click(function(){
+		 parent.$(".overlaybox").hide();
+	});
+});
+
+$("#selected span").live("click",function(){
+	$(this).parent().parent().remove();
+});
+ 
+$(function() {
+    $("input[type=checkbox]").on("click", function () {
+ 		var vIds = "";
+ 		$("input:checked").each(function() {
+     		vIds += $(this).attr('value') + " ";
+ 		});
+ 		if (vIds.length > 0) {
+     		vIds = vIds.substring(0, vIds.length - 1);
+ 		}
+ 		$('#result').text(vIds);
+    });
+});
+</script>
+<script>
+jQuery("#tijiao").click(function(){
+	var  array=jQuery("input");
+	if(array.length==2){
+		jQuery("#tijiao").attr("action","javascript:;");
+	}
+	var array1=jQuery("input:checked");
+	if(array1.length==0){
+		return false;
+	}
+});
+jQuery(".save").submit(function(){
+	jQuery("#tijiao").click();
+});
+</script>
+</body>
+</html>

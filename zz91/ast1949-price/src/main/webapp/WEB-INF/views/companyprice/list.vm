@@ -1,0 +1,305 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript">
+    function changeSubCate(id){
+	for(var i=1;i<=4;i++){
+		var a=document.getElementById("a"+i);
+		if(i==id){
+			a.className="active";
+		}
+		else{
+			a.className="";
+		}
+	}
+	}
+
+    function displaySubMenu(li) {
+    	var subMenu = li.getElementsByTagName("ul")[0];
+    	subMenu.style.display = "block";
+    	var subMenu1 = li.getElementsByTagName("div")[0];
+    	subMenu1.className="droptxt_on"
+    }
+    function hideSubMenu(li) {
+    	var subMenu = li.getElementsByTagName("ul")[0];
+    	subMenu.style.display = "none";
+    	var subMenu1 = li.getElementsByTagName("div")[0];
+    	subMenu1.className="droptxt_off"
+    }
+</script>
+
+## 顶部广告
+<div class="main_box">
+    <script type="text/javascript" src="http://gg.zz91.com/show?p=441"></script>
+</div>
+
+<div class="main_box">
+	<div class="zz91leader">当前位置:
+			<a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a> &gt;
+			<a href="#springUrl('/companyprice/index.htm')">企业报价</a>
+			#if($!{categoryCompanyPrice.label})&gt;$!{categoryCompanyPrice.label}#end
+	</div>
+</div>
+#if(${result}==1)
+<div class="main_box" style="padding-left: 30%;">
+  <b style='color:black;font-size:18px;'id="error">对不起，您查看的企业报价已经被删除！以下是否有您需要的信息</b>
+</div>
+#end
+#parse("/companyprice/top.vm")
+<div style="clear:both"></div>
+<div class="main_box" id="companyPrice">
+	<div class="left">
+		<div class="subDiv">
+
+			<script type="text/javascript" src="http://gg.zz91.com/show?p=74&keywords=$!{adkeywords}"></script>
+
+			<div class="title">
+				<div class="nav3_l"></div>
+				<h3>相关类别</h3>
+				<div class="nav3_r"></div>
+				<div style="clear:both"></div>
+			</div>
+			<div class="relative_list">
+				<ul>
+					#set($fontweight="")
+					#foreach($category in $categoryListNav)
+						#if($!{category.code}=="#printTitle($!{categoryCompanyPriceCode} 4 '')")
+							#set($fontweight="bold")
+							#if($!{category.code}=='1000')
+								#set($theCode='1001')
+							#elseif($!{category.code}=='1001')
+								#set($theCode='1000')
+							#elseif($!{category.code}=='1002')
+								#set($theCode='1004')
+							#else
+								#set($theCode='1002')
+							#end
+						#else
+							##set($theCode=$!{categoryCompanyPriceCode})
+							#set($fontweight="")
+						#end
+						<a style="font-weight:$!{fontweight};font-size:15px;" href="#springUrl('/companyprice/list.htm')?categoryCompanyPriceCode=$!{category.code}">$!{category.label}</a>
+					#end
+					<div style="clear:both"></div>
+				</ul>
+				
+				<ul>
+					#foreach($category in $categoryList)
+                        <a href="#springUrl('/companyprice/list.htm?categoryCompanyPriceCode=')$!{category.code}">$!{category.label}</a>
+					#end
+					<div style="clear:both"></div>
+				</ul>
+				
+			</div>
+			
+		</div>
+		
+		<div class="prodlist subDiv">
+			<div class="title">
+				<div class="nav3_l"></div>
+				<h3>企业报价</h3>
+				<div class="nav3_r"></div>
+                <div style="clear:both"></div>
+			</div>
+			
+			<div class="prodlistCont">
+                <div class="prodlistTit">
+                    <span class="prodname">产品名称</span>
+                    <span class="prodprice">产品价格</span>
+                    <span class="prodwhere">所在地区</span>
+                    <span class="proddate">发布日期</span>
+                    <span class="prodcomp">企业名称</span>
+                    <div style="clear:both"></div>
+    			</div>
+				
+                <ul id="companypriceList">
+    				#foreach($companyPrice in ${pager.records})
+                        <li>
+                                <span class="prodname">
+                                    <a target="_blank" href="#springUrl('/companyprice/priceDetails')$!{companyPrice.id}.htm" title="$!{companyPrice.title}">
+    									#printTitle($!{companyPrice.title} 11 "")
+    								</a>
+    							</span>	
+                                <span class="prodprice" title="$!{companyPrice.price}">
+    								#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice} != ""
+    									&&$!{companyPrice.minPrice} !="None")
+        								$!{companyPrice.minPrice}
+    									#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="" && $!{companyPrice.maxPrice} != "0.0")
+    										至$!{companyPrice.maxPrice}
+    									#end
+    									$!{companyPrice.priceUnit}
+									#elseif($!{companyPrice.price} && $!{companyPrice.price} != ""
+    									&& $!{companyPrice.price} != "None")
+    									$!{companyPrice.price}
+    								#end
+##								#if($!{companyPrice.minPrice}=="" || $!{companyPrice.maxPrice}=="")
+##    								$!{companyPrice.price}$!{companyPrice.priceUnit}
+##								#else
+##								$!{companyPrice.minPrice}
+##								#if($!{companyPrice.maxPrice}&&$!{companyPrice.maxPrice}!="")
+##									至$!{companyPrice.maxPrice}
+##								#end$!{companyPrice.priceUnit}
+##								#end
+    							</span>
+								<span class="prodwhere">
+									#if(${companyPrice.province}&&$!{companyPrice.province}!="")$!{companyPrice.province} $!{companyPrice.city}#else$!{companyPrice.countryName}#end&nbsp;
+								</span>
+								<span class="proddate">
+    								$!date.format('yyyy-MM-dd ',$!{companyPrice.refreshTime})&nbsp;
+    							</span>
+                                <span class="prodcomp">
+    								<a href='$!{address.company}/compinfo$!{companyPrice.companyId}.htm' title="$!{companyPrice.companyName}" target="_blank">#printTitle($!{companyPrice.companyName} 12 "")</a>
+    							</span>
+    					</li>
+    				#end
+					<div style="clear:both"></div>
+    			</ul>
+				#if($!{clickTime})
+				  #staticPageNav($!{pager} "#springUrl('/companyprice/list')" "--$!{keywordsEncode}--pc$!{categoryCompanyPriceCode}--area$!{areaCode}--t$!{clickTime}--pr$!{priceRange}" "")	
+				#else
+				  #staticPageNav($!{pager} "#springUrl('/companyprice/list')" "--$!{keywordsEncode}--pc$!{categoryCompanyPriceCode}--area$!{areaCode}--int$!{postInDays}--pr$!{priceRange}" "")
+				#end
+				
+            </div>
+        </div>
+		
+        <div class="zz91tips">
+         ZZ91提示:企业报价频道所有报价均为本网注册会员自发提供,仅供参考.建议您在发布供求信息时,准确填写您的产品价格,这样您的供求信息将在企业报价频道出现,获得更多客户的查询.如果还不是会员,立即注册.
+        </div>
+		<script type="text/javascript">
+        /*企业报价列表页 下 640*60，创建于2013-3-13*/
+        var cpro_id = "u1233044";
+        </script>
+        <script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+	</div>
+        
+         <div class="right">
+            <div style="clear:both"></div>
+            <div class="infobox subDiv" style="margin-top:0;">
+            	<div class="title">
+					<div class="nav3_l"></div>
+					<h3>行情综述</h3>
+					<div class="nav3_r"></div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="content">
+					#cacheFragment("$!{address.fragment}/price/paparPriceReview.htm?typeId=$!{typeId}&size=10", "", "", "")
+					<ul>
+						#foreach($b in $!list)
+							<li>
+								<a href='#springUrl("/priceDetails_")$!{b.id}_$!{code}.htm' target='_blank' title='$!{b.title}'>
+									#printTitle($!{b.title} 20 "")
+								</a>
+							</li>
+						#end
+					</ul>
+					#end
+				</div>
+			</div>
+			<div style="clear:both"></div>
+			<div class="infobox">
+				<div class="title">
+					<div class="nav3_l"></div>
+					<h3>省物流、看货近一键寻找最匹配商机</h3>
+					<div class="nav3_r"></div>
+					<div style="clear:both"></div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="content">
+					<ul class="inf_ul">
+						<li><a href="http://map.zz91.com/guangdong.htm" target="_blank" title="广东废料网">广东废料网</a></li>
+						<li><a href="http://map.zz91.com/zhejiang.htm" target="_blank" title="浙江废料网">浙江废料网</a></li>
+						<li><a href="http://map.zz91.com/shandong.htm" target="_blank" title="山东废料网">山东废料网</a></li>
+						<li><a href="http://map.zz91.com/jiangsu.htm" target="_blank" title="江苏废料网">江苏废料网</a></li>
+						<li><a href="http://map.zz91.com/beijing.htm" target="_blank" title="北京废料网">北京废料网</a></li>
+						<li><a href="http://map.zz91.com/shanghai.htm" target="_blank" title="上海废料网">上海废料网</a></li>
+						<li><a href="http://map.zz91.com/tianjin.htm" target="_blank" title="天津废料网">天津废料网</a></li>
+						<li><a href="http://map.zz91.com/hebei.htm" target="_blank" title="河北废料网">河北废料网</a></li>
+						<li><a href="http://map.zz91.com/henan.htm" target="_blank" title="河南废料网">河南废料网</a></li>
+						<li><a href="http://map.zz91.com/hunan.htm" target="_blank" title="湖南废料网">湖南废料网</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="infobox">
+			</div>
+			<div style="clear:both"></div>
+			<div class="infobox">
+				<div class="title">
+					<div class="nav3_l"></div>
+					<h3>企业报价排名</h3>
+					<div class="nav3_r"></div>
+					<div style="clear:both"></div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="content">
+					<ul>
+						#foreach($c in $cList)
+							<li><a href="$!{address.company}/compinfo$!{c.companyId}.htm" target="_blank" title="$!{c.companyName}">#printTitle($!{c.companyName} 17 "")</a></li>
+						#end
+					</ul>
+				</div>
+			</div>
+			
+			<div class="infobox">
+				<div class="title">
+					<div class="nav3_l"></div>
+					<h3>最新$!{categoryCompanyPrice.label}供应信息</h3>
+					<div class="nav3_r"></div>
+					<a href="http://trade.zz91.com/offerlist--mc$!{theCode}.htm" class="more">查看更多</a>
+					<div style="clear:both"></div>
+				</div>
+				<div style="clear:both"></div>
+				<div class="content">
+					<ul class="pr_list wa">
+						#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{theCode}&keywords=$!{keywordsUrl}&typeCode=10331000&size=6&1priced182100", "", "", "")
+							#foreach($products in $list)
+								<li>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.products.title}">
+									<font color='#CC6600'>供应</font>#printTitle($!{products.products.title} 15 "")
+								</a>
+								<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+								</li>
+							#end
+						#end
+                	</ul>
+            	</div>
+            </div>
+            <div class="infobox">
+            	<div class="title">
+					<div class="nav3_l"></div>
+					<h3>最新$!{categoryCompanyPrice.label}求购信息</h3>
+					<div class="nav3_r"></div>
+					<a href="http://trade.zz91.com/offerlist--mc$!{theCode}.htm" class="more">查看更多</a>
+					<div style="clear:both"></div>
+				</div>
+				<div style="clear:both"></div>
+            	<div class="content">
+                	<ul class="pr_list wa">
+						#cacheFragment("$!{address.fragment}/trade/trade.htm?mainCode=$!{theCode}&keywords=$!{keywordsUrl}&typeCode=10331001&size=6&p1riced259", "", "", "")
+						#foreach($products in $list)
+							<li>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.products.title}">
+                                <font color='#CC6600'>求购</font>#printTitle($!{products.products.title} 15 "")
+								</a>
+								<span>#printFragmentDate('MM-dd' $!{products.products.refreshTime})</span>
+							</li>
+							#end
+						#end
+               	</ul>
+            	</div>
+            </div>
+        </div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	$("#companypriceList li").mouseover(function(){
+		$(this).css({"background-color":"#F5FAF8"});
+	});
+	$("#companypriceList li").mouseout(function(){
+		$(this).css({"background-color":"#FFF"})
+	});
+})
+
+jQuery(document).ready(function(){
+   setTimeout(function(){jQuery('#error').hide();}, 3000);
+  
+})
+</script>

@@ -1,0 +1,172 @@
+#set($layout="/layout/registerLayout.vm")
+<script src="$!{address.img}/zz91/js/2013reg2.js"></script>
+<div class="bg">
+    <div id="center">
+        <div class="registered">
+		
+	<!--2014.04.15 修改class="regsu"-->
+        <div class="nt2">
+    	<div class="nt2-one">
+        	<div class="nt2-one-text">
+            	第一步：用微信扫描，并关注
+            </div>
+            <div class="nt2-one-weixin">
+            	<img src="http://img0.zz91.com/zz91/quikreg/images/weixin.jpg">
+            </div>
+            <div class="nt2-one-text">
+            	第二步：在微信中输入<font class="nt2-text">1</font>，获得验证码
+            </div>
+        </div>
+        <div class="nt2-line"></div>		
+		<form id="wxForm" method="post">			
+		<div class="nt2-one">
+				<div class="nt2-one-text">
+					第三步：微信验证
+				</div>
+				<div class="nt2-one-text2">
+					请输入微信验证码
+				</div>
+				<div class="nt2-one-text m10" id="hiddenText">
+					<input type="hidden" name="account" value="$!{account.account}" id="wxAccount">
+					<input type="text" class="nt2-one-tst" name="yzm" id="yzm">
+				</div>
+				<div class="nt2-one-button">
+					<a href="#" id="clickToCheck">确认验证</a>
+					<a id="clickSuccess" style="display:none">验证成功</a>
+				</div>
+			</div>
+		</form>	
+		<script type="text/javascript">
+			jQuery("#clickToCheck").click(function(){
+				var yzm = jQuery("#yzm").val();
+				var account = jQuery("#wxAccount").val();
+				jQuery.ajax({
+					url:"#springUrl('/validate/validateWXCode.htm')",
+					data:{
+						"yzm":yzm,
+						"account":account
+					},
+					dataType:"json",
+					success:function(data){
+						if(data.success){
+							jQuery("#hiddenText").hide();
+							jQuery("#clickToCheck").hide();
+							jQuery("#clickSuccess").show();
+						}else{
+							alert("微信验证码错误或者已过期");
+						}
+					}
+				});
+				##jQuery("#wxForm").submit();
+			});
+		</script>
+        <div class="nt2-line"></div>
+        <div class="nt2-one">
+        	<div class="nt2-one-text">
+            	绑定微信的好处？
+            </div>
+            <div class="nt2-one-text2">
+            	1、查看普通会员联系方式
+            </div>
+            <div class="nt2-one-text2">
+            	2、随时刷新您的供求，让您排名靠前
+            </div>
+            <div class="nt2-one-text2">
+            	3、专题推荐，免费推广您的产品
+            </div>
+            <div class="nt2-one-text2">
+            	4、可让您发布的供求信息排名靠前
+            </div>
+        </div>
+        <div class="cb"></div>
+    </div>
+	 <!--h2 class="bg">继续完善信息，让客户了解您的公司，生意自动找上门</h2-->
+	 <!--end 2014.04.15-->
+            <div id="left">
+                <form action="#springUrl('/register/register_suc.htm')" method="post" id="form_register" onsubmit="return frmsubmit(this)">
+                    <div class="item">
+                        <span class="label">
+                            <span class="red" >*</span>
+                            主营行业：</span>
+                            <div class="fl">
+                                <select name="industryCode" id="industryCode" class="change">
+                                    <option value="">请选择主营业务</option>
+									<option value="10001010">塑料原料</option>
+									<option value="10001003">废旧轮胎与废橡胶</option>
+                                    <option value="10001003">废旧轮胎与废橡胶</option>
+                                    <option value="10001004">废纺织品与废皮革</option>
+                                    <option value="10001005">废电子电器</option>
+                                    <option value="10001006">废玻璃</option>
+                                    <option value="10001007">废旧二手设备</option>
+                                    <option value="10001008">其他废料</option>
+                                    <option value="10001009">服务</option>
+                                    <option value="10001000">废塑料</option>
+                                    <option value="10001001">废金属</option>
+                                    <option value="10001002">废纸</option>
+                                </select>
+                                <span class=post_error>&nbsp;</span>
+                            </div>
+                    </div>
+                    <div class="item">
+                        <span class="label">
+                            <span class="red" >*</span>
+                            公司类型：</span>
+                            <div class="fl">
+                                <select name="serviceCode" id="serviceCode" class="change">
+                                    <option value="">请选择公司类型</option>
+                                    <option value="10201001">国外供货商</option>
+                                    <option value="10201002">国外回收贸易商</option>
+                                    <option value="10201003">码头，仓库储存商</option>
+                                    <option value="10201004">国内供应商</option>
+                                    <option value="10201005">国内回收贸易商</option>
+                                    <option value="10201006">国内加工，拆解商</option>
+                                    <option value="10201007">利废企业</option>
+                                    <option value="10201008">设备，技术，服务提供商</option>
+                                    <option value="10201009">冶炼厂</option>
+                                    <option value="10201010">电子厂</option>
+                                    <option value="10201011">造粒厂</option>
+                                </select>
+                                <span class=post_error>&nbsp;</span>
+                            </div>
+                    </div>
+                    <div class="item">
+                        <span class="label">地址：</span>
+                        <div class="fl">
+                            $!{addressLabel}<input type="text" id="js_register_address" name="address" class="text" style="width:350px;" tabindex="1" />
+                            <span class=post_error>&nbsp;</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <span class="label">
+                            <span class="red">*</span>
+                            公司简介：</span>
+                            <div class="fl">
+                                <textarea name="introduction" cols="" id="introduction" rows="" style="width:455px;height:150px"></textarea>
+                                <span class=post_error>&nbsp;</span>
+                            </div>
+                    </div>
+                    <input class="submit_ok" type="submit"  value="" />
+					<input type="hidden" value="$!{addressLabel}" name="addressFix" />
+                </form>
+                <iframe name="regsuc" src="" frameborder='0' width="0" height="0" scrolling="no" ></iframe>
+            </div>
+            <div id="right">
+                <img src="$!{address.img}/zz91/css/image/icon.png" />
+                <p class="f14">
+                    <b>请确认您的基本信息：	</b>
+                    <br />
+                    姓名：$!{account.contact}<br />
+                    邮箱：$!{account.email}<br />
+                    手机：<span class="red">$!{account.mobile}</span>
+                    <br />
+                    继续完善信息，让客户了解您的公司，<br />
+                    生意自动找上门 <br />
+                    信息有误？点此进入<span class="blue">
+                        <a href="$!{address.myrc}/mycompany/updateCompany.htm?lmcode=1201" target="_blank">生意管家</a>
+                    </span>
+                    修改
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

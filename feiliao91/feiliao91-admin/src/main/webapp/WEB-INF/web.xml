@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>server</display-name>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>webApp.root</param-value>
+	</context-param>
+	
+	<!-- authorize filter -->
+	<filter>
+		<filter-name>authorizeFilter</filter-name>
+		<filter-class>com.zz91.util.auth.AuthorizeFilter</filter-class>
+		<init-param>
+			<param-name>deniedURL</param-name>
+			<param-value>/admin/noauth.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>loginURL</param-name>
+			<param-value>/admin/login.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>noAuthPage</param-name>
+			<param-value>/|/admin/index.htm|/admin/welcome.htm|/admin/mymenu.htm|/admin/changePassword.htm</param-value>
+		</init-param>
+		<init-param>
+			<param-name>noLoginPage</param-name>
+			<param-value>/crm/open/apply*|/admin/login.htm|/admin/logout.htm|/admin/noauth.htm|/admin/checkuser.htm|/salecrm/*|/zz91/phone/getBill.htm|/zz91/bbs/post/import*</param-value>
+		</init-param>
+		<init-param>
+			<param-name>projectCode</param-name>
+			<param-value>beaa05ca-1732-4e81-90e0-572a0ae2c137</param-value>
+		</init-param>
+		<init-param>
+			<param-name>projectPassword</param-name>
+			<param-value>4a0lwkxt4ul104v8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>authorizeFilter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+	<servlet>
+		<servlet-name>SpringMVC</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				classpath:/spring-admin.xml,
+				classpath:/spring-persist.xml,
+				classpath:/spring-service.xml
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+
+<!-- 文件上传 -->
+	<servlet>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>com.ast.ast1949.web.servlet.UploadServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/zz91/admin/upload</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>login.htm</welcome-file>
+	</welcome-file-list>
+
+</web-app>

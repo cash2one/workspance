@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="companyIndustryChain" >
+	<typeAlias alias="companyIndustryChain" type="com.zz91.ep.domain.comp.CompanyIndustryChain"/>
+	
+	<insert id="insertCompIndustryChain" parameterClass="companyIndustryChain">
+		insert into `company_industry_chain`
+		(
+		`cid`,
+		`chain_id`,
+		`gmt_created`,
+		`gmt_modified`,
+		`del_status`)
+		values
+		(
+		#cid#,
+		#chainId#,
+		now(),
+		now(),
+		#delStatus#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+	
+	<update id="updateCompIndustryChain" parameterClass="companyIndustryChain">
+		update `company_industry_chain`
+		set
+		`chain_id` = #chainId#,
+		`gmt_modified` = now()
+		where cid=#cid# and chain_id=#id#
+	</update>
+	
+	<update id="updateDelStatusByCidAndChainId" parameterClass="java.util.HashMap">
+		update `company_industry_chain` 
+		set
+		`del_status` = #delStatus#,
+		`gmt_modified` = now()
+		where `cid` = #cid# and `chain_id` = #chainId#
+	</update>
+	
+	<select id="queryCountByCidAndChainId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from company_industry_chain where cid=#cid# and chain_id=#chainId# and del_status=0
+	</select>
+</sqlMap>

@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.open</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/api/api.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+
+    <script type="text/javascript">
+    	Ext.onReady(function() {
+			
+			var applySvrGrid=new ast.ast1949.crm.open.CompanySvrGrid({
+				id:OPEN.APPLYSVRGRID,
+				title:"申请开通的服务",
+				region:"center"
+			});
+			
+			applySvrGrid.loadApply("$!{applyGroup}");
+			
+			/*
+			var svrDetail=new ast.ast1949.crm.open.SvrApplyDetailForm({
+				title:"待开通服务详细信息",
+				region:"east",
+				width:500,
+				split:true
+			});
+			*/
+			
+			var historyGrid=new ast.ast1949.crm.open.CompanySvrHistoryGrid({
+				title:"服务开通历史",	
+				region:"center"
+			});
+			
+			var applyForm=new ast.ast1949.crm.open.SvrApplyForm({
+				title:"开通单",
+				region:"east",
+				width:500,
+				split:true
+			});
+			
+			applyForm.loadApply("$!{applyGroup}");
+			
+			applySvrGrid.on("rowclick",function(g,rowIndex,e){
+				var row=g.getStore().getAt(rowIndex);
+				var companyId=row.get("companyId");
+				var svrCode=row.get("crmServiceCode");
+				historyGrid.loadHistory(companyId, svrCode);
+				//svrDetail.loadSvrDetail(row.get("id"));
+			});
+			
+			#if($!{openedFlag}=="1")
+				var btns=[{
+					text:"服务已经开通",
+					disabled:true
+				},{
+					text:"关闭窗口",
+					iconCls:"item-false",
+					handler:function(){
+						window.close();
+					}
+				}];
+			#else
+				var btns=[
+				/*
+				{
+					text:"开通服务",
+					iconCls:"item-true",
+					handler:function(){
+						Ext.MessageBox.confirm(Context.MSG_TITLE, "开通服务信息是否已全部保存，并确定开通该客户的服务吗？", function(btn){
+							if(btn != "yes"){
+								return false;
+							}
+							applyForm.openApply("$!{applyGroup}","$!{companyId}");
+						});
+					}
+				},
+				*/
+				{
+					text:"拒绝开通全部服务",
+					iconCls:"item-false",
+					handler:function(){
+						Ext.MessageBox.confirm(Context.MSG_TITLE, "你确定要拒绝开通该用户的这些服务吗？", function(btn){
+							if(btn != "yes"){
+								return false;
+							}
+							applyForm.refusedApply("$!{applyGroup}");
+						});
+					}
+				}];
+			#end
+			
+			var viewport=new Ext.Viewport({
+    			layout:"border",
+    			items:[{
+					layout:"column",
+					region:"center",
+					autoScroll:true,
+					buttons:btns,
+					items:[{
+						columnWidth:1,
+						layout:"border",
+						height:300,
+						border:false,
+						items:[applySvrGrid]  //,svrDetail
+					},{
+						columnWidth:1,
+						layout:"border",
+						height:300,
+						border:false,
+						items:[historyGrid,applyForm]
+					}]
+				}]
+    		});
+    	});
+    </script>
+</head>
+
+<body>
+
+</body>
+</html>

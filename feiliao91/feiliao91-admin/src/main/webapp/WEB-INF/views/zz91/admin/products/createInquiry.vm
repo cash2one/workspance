@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.admin.products.list</title>
+
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/categoryProducts/tree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/inquiry/createInquiry.js" ></script>
+
+	<script type="text/javascript">
+		/**
+		var P = new function(){
+			this.imageServer = "$!{imageServer}";
+			this.model="$!{model}";
+		}
+		*/
+		Ext.onReady(function() {
+
+			var form = new ast.ast1949.admin.inquiry.inquiryForm({
+				id:CREATEINQUIRY.INQUIRY_FORM,
+				title:"询盘信息",
+				region:"north",
+				height:180
+			});
+
+			var tree = new ast.ast1949.admin.categoryproducts.treePanel({
+				region : "west",
+				layout:"fit",
+				split : true,
+				width : 180,
+				rootData:"",
+				isAssist:'0'
+			});
+
+			var grid = new ast.ast1949.admin.inquiry.productsGrid({
+				id:CREATEINQUIRY.PRODUCT_GRID,
+				title:"供求信息 - 查询结果",
+				region:"center"
+			});
+
+			var viewport = new Ext.Viewport({
+				layout : "border",
+				items : [form, tree, grid]
+			});
+
+			form.initProducts({
+				id:'$!{products.id}',
+				title:'$!{products.title}',
+				senderId:'$!{products.companyId}',
+				content:"$!{products.details}",
+				account:"$!{products.account}",
+				#if($!{products.productsTypeCode}=="10331000")
+					productsTypeCode:"供应"
+				#else
+					productsTypeCode:"求购"
+				#end
+			});
+
+			tree.on("click", function(node, event) {
+				var B= grid.getStore().baseParams||{};
+				B["categoryProductsMainCode"] = node.attributes["data"];
+				Ext.getCmp("search-products-category").setValue(node.attributes["data"]);
+				grid.getStore().reload({
+					params : {
+						"startIndex" : 0,
+						"pageSize" : Context.PAGE_SIZE
+					}
+				});
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

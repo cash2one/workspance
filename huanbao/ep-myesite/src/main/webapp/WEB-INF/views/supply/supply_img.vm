@@ -1,0 +1,216 @@
+#set($layout="/layout/defaultS.vm")
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li><a href="#springUrl('/supply/index.htm')">产品管理</a><span class="divider">/</span></li>
+			<li>图片修改</li>
+		</ul>
+		
+		<p>
+			<a href="#springUrl('/supply/index.htm')">返回供求信息列表</a>
+			<a href="#springUrl('/supply/update.htm')?id=$!{id}">修改供求</a>
+		</p>
+		
+		<div class="alert">
+			<p>
+				注：审核不通过的图片，将无法正常显示。(图片审核不通过并不影响供求信息的正常显示。)
+			</p>
+		</div>
+		
+	#set($photos="")
+	#foreach($photo in $!{photoList})
+		#if($velocityCount==1)
+			#set($photos = $!{photo.id})
+		#else
+			#set($photos = $!{photos}+","+$!{photo.id})
+		#end
+	#end
+	
+		<section class="container mt">
+			<h3 class="divide">相关图片</h3>
+			<div class="control-group">
+				<label class="control-label">
+					插入图片：
+				</label>
+				<div class="controls clearfix">
+					<input type="hidden" name="photos" id="photos" value="$!{photos}" />
+					<input type="hidden" name="photoCover" id="photoCover" value="$!{photoCover}" /> 
+					<input type="button" class="btn btn-small btn-primary" id="uploadRelevantPhotoBtn" value="上传图片" />
+					<input type="button" class="btn btn-small " name="relevantPhotoSelectBtn" id="relevantPhotoSelectBtn" value="插入相册图片" />
+					<div id="uploadPreview">
+						#foreach($photo in $!{photoList})
+							<div  style="margin: 8px 10px 0;text-align: left;" >
+								<img src='$!{address.thumb}$!{address.resource}$!{photo.path}&width=100&height=100' width='100' height='100' />
+								
+    						<p>状态：
+								#if($!{photo.checkStatus}==0)
+									<span class="grey">【未审核】</span>
+								#elseif($!{photo.checkStatus}==1)
+									<span class="green">
+										【通过】
+									</span>
+								#elseif($!{photo.checkStatus}==2)
+									<span class="red">【<b>退回</b>】<br/>原因:$!{photo.unpassReason}</span>
+								#end
+							</p>
+								
+								
+								<input type='button' class='btn btn-mini remove' value='移除' onclick='removePhoto(this, $!{photo.id})' />
+							</div>
+						#end
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	myrc.select("Js_select");
+	myrc.menu(2, 2);
+	
+	//图片上传
+	jQuery("#uploadRelevantPhotoBtn").click(function(){
+            var max=4;
+            if(jQuery("#photos").val()!=""){
+                var uploadedPhoto=jQuery("#photos").val();
+                var length=uploadedPhoto.split(",").length;
+                max=max-length;
+                
+                if(max<=0){
+                    alert("您已经上传了"+length+"张图片，一个供应信息最多只能上传4张图片！");
+                    return false;
+                }
+            }
+
+			var uploadBox = uploadPhoto("supply", max);
+
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+				//TODO show preview photo
+                var photos=new Array();
+                if(jQuery("#photos").val()!=""){
+                    photos.push(jQuery("#photos").val());
+                }
+
+				for(var key in uploadedFile){
+					
+                    var btn = jQuery("<input type='button' class='btn btn-mini remove' value='移除' onclick='removePhoto(this,"+key+")' />" );
+                    var pspan = jQuery("<p>状态：#if("$!{epAuthUser.memberCode}"=="10011001") <span class='green'>【通过】</span> #else <span class='grey'>【未审核】</span>  #end </p>" );
+					var prediv=jQuery("<div class='upload-wrap'     style='margin: 8px 10px 0;text-align: left;' ><img src='$!{address.resource}"+uploadedFile[key]+"' width='100' height='100' /></div>");
+					prediv.append(pspan);
+					prediv.append(btn);
+					jQuery("#uploadPreview").append(prediv);
+
+                    photos.push(key);
+                    jQuery("#photoCover").val(uploadedFile[key]);
+				}
+
+                jQuery("#photos").val(photos.join(","));
+
+				uploadBox.close();
+				
+			});
+		});
+		
+		jQuery("#relevantPhotoSelectBtn").click(function(){
+			var max=4;
+            if(jQuery("#photos").val()!=""){
+                var uploadedPhoto=jQuery("#photos").val();
+                var length=uploadedPhoto.split(",").length;
+                max=max-length;
+                
+                if(max<=0){
+                    alert("您已经上传了"+length+"张图片，一个供应信息最多只能上传4张图片！");
+                    return false;
+                }
+            }
+			
+			var uploadBox = promptPhoto(0, max, "-2", "supply", "$!{id}");
+
+			Asto.util.Callback.setSubmitCallback(function(success, uploadedFile){
+				//TODO show preview photo
+                var photos=new Array();
+                if(jQuery("#photos").val()!=""){
+                    photos.push(jQuery("#photos").val());
+                }
+
+				for(var key in uploadedFile){
+					
+                    var btn = jQuery("<input type='button' class='btn btn-mini remove' value='移除' onclick='removePhoto(this,"+key+")' />" );
+					var pspan = jQuery("<p>状态：#if("$!{epAuthUser.memberCode}"=="10011001") <span class='green'>【通过】</span> #else <span class='grey'>【未审核】</span>  #end</p>" );
+					var prediv=jQuery("<div class='upload-wrap'  style='margin: 8px 10px 0;text-align: left;' ><img src='$!{address.resource}"+uploadedFile[key]+"' width='100' height='100' /></div> ");
+					prediv.append(pspan);
+					prediv.append(btn);
+					jQuery("#uploadPreview").append(prediv);
+
+                    photos.push(key);
+                    jQuery("#photoCover").val(uploadedFile[key]);
+				}
+
+                jQuery("#photos").val(photos.join(","));
+
+				uploadBox.close();
+				
+			});
+			
+		});
+});
+	
+	function uploadPhoto(photoType, maxphoto){
+		return new Asto.util.Modal({
+            title:"上传图片",
+	    	url:"#springUrl('/photo/promptUpload.htm?targetType=')"+photoType+"&targetId=$!{id}&max="+maxphoto,
+	    	modal:true,
+	    	width:550,
+	    	height:450
+	    });
+	}
+	
+	function removePhoto(btn,id){
+
+        jQuery(btn).parent().fadeOut();
+        
+        var uploadedPhoto=jQuery("#photos").val().split(","); 
+
+        jQuery(uploadedPhoto).each(function(idx,element){
+            if(id==element){
+                uploadedPhoto.splice(idx,1);
+                return ;
+            }
+        });
+
+        jQuery("#photos").val(uploadedPhoto.join(","));
+		
+		jQuery.ajax({
+			url:"#springUrl('/photo/updateTargetId.htm')",
+			data:{"id":id},
+			dataType:"json",
+			type:"post",
+			cache:false,
+			success:function(req){
+				if(req.success){
+					Asto.util.Message.show({
+				        msg:"图片已移除！",
+				        autoClose:10000
+					 });
+		         } else {
+		            Asto.util.Message.show({
+						msg:"发生错误，图片没有移除！",
+						autoClose:10000
+					});
+		         }
+			}
+		});
+                        
+    }
+	
+	function promptPhoto(queryTarget, maxphoto, albumId, photoType, targetId){
+		return new Asto.util.Modal({
+            title:"上传图片",
+	    	url:"#springUrl('/photo/promptPhotos.htm')?queryTarget="+queryTarget+"&max="+maxphoto+"&albumId="+albumId+"&targetId="+targetId+"&targetType="+photoType,
+	    	modal:true,
+	    	width:650,
+	    	height:400
+	    });
+	}
+</script>

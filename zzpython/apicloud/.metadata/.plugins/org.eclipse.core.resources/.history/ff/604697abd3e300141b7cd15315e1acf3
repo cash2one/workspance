@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>性情中人</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+		<style>
+			* {
+				outline: 0;
+			}
+			html, body {
+				height: 100%;
+				width: 100%;
+			}
+			/*header*/
+			header {
+				background-color: #f2f2f2;
+				border-bottom: 1px solid #f2f2f2;
+			}
+			.header {
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+			}
+			.header a {
+				display: block;
+				background-size: 30px;
+				background-repeat: no-repeat;
+				background-position: center;
+				padding: 20px;
+			}
+			.title {
+				line-height: 40px;
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+				text-align: center;
+			}
+			.header .menu {
+				background-image: url("../image/menu.png");
+			}
+			.list{
+				border-top: solid 1px #F0F0F0;
+				padding:10px;
+			}
+			.list .title{
+				font-size:30px;
+				color:#000000;
+			}
+			
+			/*header*/
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="index header ">
+				<a class="menu" tapmode="" onclick="sliding()"></a>
+				<div class="title" >
+					性情中人
+				</div>
+				<a></a>
+			</div>
+		</header>
+		<div class="list">
+			<div class="title">每日轻松一刻 2015.2.1日-网易每日轻松一刻-新闻阁</title>
+			<div class="description">2015年2月1日 - 每日轻松一刻 2015.2.1日 今天,他(她)们挺“二”的。 粗大事辣!警察内讧啦喂,这是现实版无间道吗? 每日轻松一刻 2015.2.1日 队长别开枪是...</div>
+		</div>
+		<div class="content">
+			
+		</div>
+		<script type="text/javascript" src="../script/api.js"></script>
+		<script type="text/javascript" src="../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../script/iscroll.js"></script>
+		<script>
+			function sliding() {
+				api.openSlidPane({
+					type : 'left'
+				});
+			}
+
+			apiready = function() {
+				$api.fixIos7Bar($api.dom('.title'));
+				api.addEventListener({
+					name : 'keyback'
+				}, function(ret, err) {
+					api.closeWidget();
+				});
+				api.showProgress();
+				api.ajax({
+					url : 'http://app.zz91.com/sex/list.html',
+					method : 'get',
+					timeout : 30,
+					pageParam:{t:(new Date()).getTime().toString()},
+					dataType : 'text',
+					returnAll : false
+				}, function(ret, err) {
+					if (ret) {
+						$(".content").html(ret);
+						api.hideProgress();
+					} else {
+						api.alert({
+							msg : ('错误码：' + err.code + '；错误信息：' + err.msg + '网络状态码：' + err.statusCode)
+						});
+					};
+				});
+				
+			};
+			function toDetail(id) {
+				var pageParam={id:id,t:(new Date()).getTime().toString()};
+		        api.openWin({
+		            name: 'detail',
+		            pageParam:pageParam,
+		            url: 'newsDetail.html'
+		        })
+		    }
+
+		</script>
+	</body>
+</html>

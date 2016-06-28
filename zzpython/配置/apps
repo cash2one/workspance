@@ -1,0 +1,609 @@
+server {
+	listen 80;
+	index index.htm;
+	server_name test_apps.zz91.com;
+	location / {
+		proxy_pass http://7005.zz91server.com:8006/;
+		include /etc/nginx/proxy.conf;
+		allow 127.0.0.1;
+                allow 61.234.184.252;
+                allow 115.236.188.100;
+                allow 115.236.188.101;
+                allow 115.236.188.98;
+                allow 115.236.188.99;
+                allow 211.155.229.180;
+                allow 211.155.229.182;
+                allow 127.0.0.1;
+                allow 192.168.110.119;
+                allow 192.168.110.0/24;
+                deny all;
+	}
+	location /zz91/myrc/css/ {
+                proxy_next_upstream http_502;
+                proxy_pass http://100.98.27.114:825/zz91/myrc/css/;
+                include /etc/nginx/proxy.conf;
+                expires 1h;
+        }
+	log_not_found off;
+	access_log off;
+}
+server {
+	listen   80;
+	index index.html index.htm;
+	server_name img.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {
+        proxy_pass http://100.98.27.114:827/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+    }
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   80; 
+	index index.html index.htm;
+	server_name jienengadmin.zz91.com;
+	location / {
+		proxy_pass http://192.168.110.130:8097/;
+		include /etc/nginx/proxy.conf;
+		allow 127.0.0.1;
+		allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		allow 115.236.188.99;
+		allow 211.155.229.180;
+		allow 211.155.229.182;
+		allow 127.0.0.1;
+		allow 192.168.110.119;
+		allow 192.168.110.0/24;
+		deny all;
+	}
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+server {
+	listen   8099; 
+	index index.html index.htm;
+	server_name apps.zz91.com;
+	location / {
+        proxy_pass http://127.0.0.1:8201/;
+        include /etc/nginx/proxy.conf;
+   	}
+	location /admin-status-web {
+        proxy_pass http://127.0.0.1:8899/admin-status-web;
+        include /etc/nginx/proxy.conf;
+        allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		allow 115.236.188.99;
+        deny all;
+    }
+	location /haproxy1 {
+        proxy_pass http://127.0.0.1:7799/haproxy1;
+        include /etc/nginx/proxy.conf;
+        allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		allow 115.236.188.99;
+        deny all;
+    }
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+
+upstream ggServer {
+    #server 127.0.0.1:7120;
+	server 7007.zz91server.com:8003;
+	server 7008.zz91server.com:8003;
+}
+server {
+	listen   80;
+	index index.html index.htm;
+	server_name gg.zz91.com;
+	include /etc/nginx/deny.conf;
+	if ($http_user_agent ~* "qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot") {  
+		return 403;  
+	}
+	#if ($request_uri ~ "/show\?p=478$") {
+		#rewrite ^/show(.*)$ http://pyapp.zz91.com/ad/show.html permanent;
+	#}
+	#if ($request_uri ~ "/show\?p=88$") {
+                #rewrite ^/show(.*)$ http://pyapp.zz91.com/ad/show.html permanent;
+        #}
+	#if ($request_uri ~ "/show\?p=655$") {
+                #rewrite ^/show(.*)$ http://pyapp.zz91.com/ad/show.html permanent;
+        #}
+	location / {
+		proxy_pass http://ggServer/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	location /cacheManager {
+		proxy_pass http://ggServer/cacheManager;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	log_not_found off;
+	access_log off;
+	#include /etc/nginx/err.conf;
+}
+upstream imgrecyclechinaServer {
+    server 7006.zz91server.com:829;
+	server 7009.zz91server.com:829;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name images.recyclechina.com enimg.zz91.com;
+	location / {
+		#proxy_pass http://www.zz91server.com:6104/;
+		proxy_pass http://imgrecyclechinaServer/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+    }
+	log_not_found off;
+	access_log off;
+}
+
+server {
+	listen   80;
+	index index.html index.htm;
+	server_name img0.recyclechina.com;
+	location / {
+		proxy_pass http://www.zz91server.com:6102/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+upstream zz91workServer {
+    server 7005.zz91server.com:8007;
+    server 7010.zz91server.com:8007;
+}
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name work.zz91.com;
+	log_not_found off;
+	access_log off;
+	location / {
+        proxy_pass http://zz91workServer/;
+        include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+}
+
+upstream zz91apiServer {
+    server 7007.zz91server.com:8001;
+    server 7008.zz91server.com:8001;
+}
+
+
+server {
+        listen   80; ## listen for ipv4; this line is default and implied
+        index index.html index.htm;
+        server_name api.zz91.com;
+        log_not_found off;
+        access_log off;
+        location / {
+        #proxy_pass http://127.0.0.1:7017/;
+		proxy_pass http://zz91apiServer/;
+        include /etc/nginx/proxy.conf;
+		expires 30m;
+    }
+}
+upstream huanbaoapiServer {
+  #  server 7003.zz91server.com:8003;
+  #  server 7004.zz91server.com:8003;
+	server 7005.zz91server.com:8093;
+}
+server {
+        listen   80; ## listen for ipv4; this line is default and implied
+        index index.html index.htm;
+        server_name api.huanbao.com;
+        log_not_found off;
+        access_log off;
+        location / {
+        #proxy_pass http://127.0.0.1:7414/;
+		proxy_pass http://huanbaoapiServer/;
+        include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+}
+upstream huanbaoadminServer {
+    server 7002.zz91server.com:8003;
+}
+server {
+        listen   80; ## listen for ipv4; this line is default and implied
+        index index.html index.htm;
+        server_name admin.huanbao.com;
+        log_not_found off;
+        access_log off;
+        location / {
+        proxy_pass http://huanbaoadminServer/;
+        include /etc/nginx/proxy.conf;
+		expires -1;
+    }
+}
+
+upstream phpappsServer {
+    server 7006.zz91server.com:824;
+}
+server {
+	listen 80;
+	server_name php.zz91.com;
+	location / {
+		proxy_pass http://phpappsServer/;
+		include /etc/nginx/proxy.conf;
+		allow 61.234.184.252;
+		allow 115.236.188.99;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		allow 127.0.0.1;
+		allow 101.68.103.109;
+		deny all;
+		expires 24h;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name test_apps.huanbao.com testapps.huanbao.com;
+	location / {
+        proxy_pass http://192.168.110.2:9191/;
+        include /etc/nginx/proxy.conf;
+		allow 127.0.0.1;
+		allow 192.168.110.119;
+		allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.99;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		deny all;
+    }
+	log_not_found off;
+	access_log off;
+}
+
+upstream solrhuanbaoServer {   
+    #server 127.0.0.1:7123;
+	server 7002.zz91server.com:8001;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name solr.huanbao.com;
+	location / {
+		proxy_pass http://solrhuanbaoServer/;
+		include /etc/nginx/proxy.conf;
+	}
+	log_not_found off;
+	access_log off;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name nsolr.huanbao.com;
+	location / {
+		proxy_pass http://solrhuanbaoServer/;
+		include /etc/nginx/proxy.conf;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+
+
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name hb.app3.zz91.com;
+	location / {
+		allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.99;
+		allow 115.236.188.101;
+		allow 127.0.0.1;
+		allow 192.168.110.2;
+		allow 122.225.11.195;
+		allow 221.12.127.195;
+		allow 192.168.110.3;
+		deny all;
+		proxy_next_upstream http_502 http_504 error timeout invalid_header;
+		proxy_pass http://192.168.110.3:8081/;
+		include /etc/nginx/proxy.conf;
+		expires 30m;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+server {
+	listen 80;
+	index index.htm;
+	server_name img1.huanbao.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		proxy_pass http://100.98.27.114:828/;
+		include /etc/nginx/proxy.conf;
+		expires 2d;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+
+upstream recyclechinasolrServer {
+    server 7002.zz91server.com:8002;
+}
+
+server {
+	listen 80;
+	server_name solr.zz91.com;
+	proxy_redirect off;
+	location / {
+		proxy_pass http://recyclechinasolrServer/;
+		autoindex on;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	index index.htm;
+	server_name apps1.zz91.com;
+	location / {
+		proxy_pass http://7009.zz91server.com:7005/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	log_not_found off;
+	access_log off;
+}
+server {
+	listen 80;
+	index index.htm;
+	server_name apps2.zz91.com;
+	location / {
+		proxy_pass http://7009.zz91server.com:7005/;
+		include /etc/nginx/proxy.conf;
+		expires -1;
+	}
+	log_not_found off;
+	access_log off;
+}
+upstream zz91adminServer {
+    server 7005.zz91server.com:8001;
+    server 7010.zz91server.com:8001;
+}
+server {
+	listen   80; ## listen for ipv4; this line is default and implied
+	index index.html index.htm;
+	server_name admin1949.zz91.com;
+	location / {
+        proxy_pass http://zz91adminServer/;
+		include /etc/nginx/proxy.conf;
+		autoindex on;
+		allow 127.0.0.1;
+		allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.99;
+		allow 115.236.188.98;
+		allow 211.155.229.180;
+		allow 202.91.239.244;
+		allow 127.0.0.1;
+		allow 192.168.110.116;
+		allow 192.168.110.119;
+		deny all;
+    }
+	log_not_found off;
+	access_log off;
+}
+
+server {
+	listen  80;
+	server_name img0.zz91.com img0.kl91.com img0.huanbao.com img0.hunpin.com img0.taozaisheng.com;
+	location / {
+		proxy_pass http://100.98.27.114:825/;
+		include /etc/nginx/proxy.conf;
+		expires 30d;
+    }
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+	
+}
+
+server {
+	listen 80;
+	server_name img1.zz91.com img1.kl91.com *.hunpin.com img1.taozaisheng.com;
+	location / {
+	  	proxy_pass http://7006.zz91server.com:826/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;	
+}
+
+server {
+        listen 80;
+        server_name imgnews.zz91.com;
+        location / {
+                proxy_pass http://7006.zz91server.com:823/;
+                include /etc/nginx/proxy.conf;
+                expires 1d;
+    }
+        log_not_found off;
+        access_log off;
+        include /etc/nginx/err.conf;
+}
+
+server {
+        listen 80;
+        server_name img.zjfriend.com;
+        location / {
+                proxy_pass http://7006.zz91server.com:832/;
+                include /etc/nginx/proxy.conf;
+                expires 1d;
+    }
+        log_not_found off;
+        access_log off;
+        include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	server_name api.map.baidu.com;
+	location / {
+	  	proxy_pass http://api.map.baidu.com/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+    }
+	log_not_found off;
+	access_log off;
+	#include /etc/nginx/err.conf;	
+}
+
+server {
+        listen 80;
+        server_name cdn.aliyuncs.com;
+        location / {
+                proxy_pass http://cdn.aliyuncs.com/;
+                include /etc/nginx/proxy.conf;
+                expires 1d;
+    }
+        log_not_found off;
+        access_log off;
+        #include /etc/nginx/err.conf;
+}
+
+
+server {
+        listen 80;
+        server_name api.tt.zz91.com;
+        location / {
+                proxy_pass http://222.46.21.55:8000/;
+                include /etc/nginx/proxy.conf;
+                expires 1d;
+    }
+        log_not_found off;
+        access_log off;
+        #include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	server_name img.zjfriend.com;
+	location / {
+		proxy_pass http://7006.zz91server.com:823/;
+		include /etc/nginx/proxy.conf;
+		expires 1d;
+	}
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen   80;
+	server_name image01.zz91.com image01.huanbao.com;
+	location / {
+		log_not_found off;
+		access_log off;
+		proxy_pass http://phpappsServer/;
+		include /etc/nginx/proxy.conf;
+		expires 24h;
+	}
+}
+
+server {
+	listen 80;
+	server_name images.zz91.com img3.zz91.com img3.taozaisheng.com;
+	include /etc/nginx/deny.conf;
+	location / {
+		log_not_found off;
+		access_log off;
+		expires 1d;
+		proxy_pass http://7006.zz91server.com:824/;
+		include /etc/nginx/proxy.conf;
+		rewrite ^/([0-9]+)x([0-9]+)/(.*)$ /images.php?width=$1&height=$2&picurl=/$3 last;
+		
+	}
+	include /etc/nginx/err.conf;
+}
+
+server {
+	listen 80;
+	index index.htm;
+	server_name works.zz91.com;
+	location / {
+		proxy_pass http://127.0.0.1:7171/;
+		include /etc/nginx/proxy.conf;
+		allow 127.0.0.1;
+		allow 61.234.184.252;
+		allow 115.236.188.100;
+		allow 115.236.188.101;
+		allow 115.236.188.98;
+		allow 115.236.188.99;
+		allow 211.155.229.180;
+		allow 211.155.229.182;
+		allow 127.0.0.1;
+		allow 192.168.110.119;
+		allow 192.168.110.0/24;
+		deny all;
+	}
+	log_not_found off;
+	access_log off;
+}
+
+
+server{
+	listen   80;
+	server_name  phppay.zz91.com;
+	include /etc/nginx/deny.conf;
+	location / {	
+		proxy_pass http://phpappsServer/yeepay/;
+		include /etc/nginx/proxy.conf;
+	}
+	log_not_found off;
+	access_log off;
+	include /etc/nginx/err.conf;
+}
+
+server{
+        listen   80;
+        server_name  webpay.zz91.com;
+        include /etc/nginx/deny.conf;
+        location / {
+                proxy_pass http://phpappsServer/webpay/;
+                include /etc/nginx/proxy.conf;
+        }
+        log_not_found off;
+        access_log off;
+        include /etc/nginx/err.conf;
+}
+
+

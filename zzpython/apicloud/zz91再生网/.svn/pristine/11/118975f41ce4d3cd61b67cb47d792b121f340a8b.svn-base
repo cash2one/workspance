@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>发布供求</title>
+	<link rel="stylesheet" type="text/css" href="../../css/aui.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/myrc/issue-info.css"/>
+	<style type="text/css">
+	body{
+		height: auto;
+        background-color: #f4f4f4
+	}
+	.aui-card {
+    	margin-top: 15px;
+	}
+	</style>
+</head>
+<body>
+	<div class="aui-content aui-card aui-noborder">
+		<div class="issue-type radio aui-list-view-cell">
+				<input class="aui-radio aui-radio-info" type="radio" name="sex" id="man" value="man"> <span class="aui-radio-name">供应信息</span>
+                <input class="aui-radio aui-radio-info" type="radio" name="sex" id="woman" value="women"> <span class="aui-radio-name">供应信息</span>
+			<!-- <label><input name="Fruit" type="radio" value="" checked=""  class="aui-radio aui-radio-info"/>供应信息 </label> 
+			<label><input name="Fruit" type="radio" value="" class="aui-radio aui-radio-info" />供应信息 </label>  -->
+		</div>
+		<div class="cp-name aui-list-view-cell cp-name2">
+			<span class="handle-add">
+				<i class="aui-iconfont aui-icon-add"></i>
+			</span>
+		</div>
+		<div class="issue-title aui-list-view-cell">
+			<select class="slet"><option>废金属</option></select>
+			<i class="issue-img issue-img2"></i>
+		</div>
+		<div class="cp-name aui-list-view-cell">
+			<input type="text" placeholder="请输入产品名称">
+		</div>
+		<div class="cp-number aui-list-view-cell">
+			<input type="text" class="celt-num" placeholder="请输入产品数量">
+		 	<span class="num-str">
+		 		<select class="slet"><option>吨</option></select>
+		 		<i class="issue-img"></i>
+		 	</span>
+		</div>
+		<div class="see-price aui-list-view-cell">
+			<div class="seedown clear">
+				<input class="aui-radio aui-radio-info" type="radio" name="price"> <span class="aui-radio-name">公开价格</span>
+                <input class="aui-radio aui-radio-info" type="radio" name="price" > <span class="aui-radio-name">电议或面议</span>
+			</div>
+			<div class="advise">建议您选择公开报价，真实的价格有助于买/卖家找到您</div>
+		</div>
+		<div class="cp-number aui-list-view-cell">
+			<input type="text" class="celt-num" placeholder="请输入产品价格">
+		 	<span class="num-str">
+		 		<select class="slet"><option>元</option></select>
+		 		<i class="issue-img"></i>
+		 	</span>
+		</div>
+		<div class="describe aui-list-view-cell">
+			<textarea  placeholder="信息描述：建议您从产品性能、用途、包装、售后服务等方面来描述"></textarea>
+		</div>
+		<div class="issue-type clear aui-list-view-cell">
+			<input class="aui-radio aui-radio-info" type="radio" name="month" value="man"> <span class="aui-radio-name">长期有效</span>
+            <input class="aui-radio aui-radio-info" type="radio" name="month" value="women"> <span class="aui-radio-name">三个月</span>
+            <input class="aui-radio aui-radio-info" type="radio" name="month" value="women"> <span class="aui-radio-name">一个月</span>
+		</div>
+	</div>
+
+	<div class="aui-content-padded">
+        <div class="aui-btn aui-btn-block aui-btn-info" onclick="return false;">确认</div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		//删除添加的图片
+		$(".cp-name2").on("click",".aui-icon-move",function(){
+			$(this).parent().fadeOut(function(){
+				$(this).remove();
+			})
+		})
+		//浏览图片
+		var imagesList =[];
+		$(".cp-name2").on("click","img",function(){
+			// imagesList =["widget://image/demo1.png","widget://image/demo1.png"];
+			var photoBrowser = api.require('photoBrowser');
+			photoBrowser.open({
+			    images: imagesList,
+			    activeIndex: 0,
+			    bgColor: '#000'
+			}, function(ret){
+			    alert(JSON.stringify(ret));
+			});
+		})
+		//添加图片
+		$(".handle-add").on("click",function(){
+			var thisBtn = $(this);
+			var UIMediaScanner = api.require('UIMediaScanner');
+			UIMediaScanner.open({
+				type:'picture',
+				max:5,
+				texts:{
+					stateText: '图片选择',  //（可选项）字符串类型；状态文字内容；*号会被替换为已选择个数；默认：'已选择*项'
+    				cancelText: '取消',      //（可选项）字符串类型；取消按钮文字内容；默认：'取消'
+    				finishText: '完成' 
+				},
+				styles: {
+			        bg: '#fff',
+			        mark: {
+			            icon: '',
+			            position: 'bottom_left',
+			            size: 20
+			        },
+			        nav: {
+			            bg: '#eee',
+			            stateColor: '#000',
+			            stateSize: 18,
+			            cancelBg: 'rgba(0,0,0,0)',
+			            cancelColor: '#000',
+			            cancelSize: 18,
+			            finishBg: 'rgba(0,0,0,0)',
+			            finishColor: '#000',
+			            finishSize: 18
+			        }
+			    },
+			    scrollToBottom:{
+			       intervalTime: -1,
+			       anim: true
+			    },
+			    exchange: true
+			},function(ret, err){
+				if( ret ){
+					var imginfo = "";
+			       $.each(ret.list,function(i,item){
+			       		imagesList.push(item.path)
+			       		imginfo += '<span class="img-kuang">'
+									+'<img src="'+ item.path +'" width="100%" height="100%">'
+									+'<i class="delt-img aui-iconfont aui-icon-move"></i>'
+								+'</span>'
+			       });
+			       thisBtn.before(imginfo)
+			    }else{
+			        alert( JSON.stringify( err ) );
+			    }
+			})
+		})
+	}
+</script>
+</html>

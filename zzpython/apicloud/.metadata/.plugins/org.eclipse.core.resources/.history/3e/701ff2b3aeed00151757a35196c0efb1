@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>报价列表页</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	</head>
+	<style>
+		.offer-list {
+			padding: 8px 8px 0 8px;
+		}
+		.offer-list li {
+			height: 45px;
+			line-height: 45px;
+			border-bottom: 1px dotted #e1e1e1;
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<body>
+		<div class="nodata">暂无相关数据</div>
+		<ul class="offer-list"></ul>
+		<script type="text/javascript" src="../../script/api.js"></script>
+		<script type="text/javascript" src="../../script/zepto.min.js"></script>
+		<script type="text/javascript" src="../../script/common.js"></script>
+		<script type="text/javascript" src="../../script/laytpl.js"></script>
+		<script id="info-list" type="text/html">
+			<li tapmode="index-nav-li" id="{{ d.id }}" class="change-bgcolor">{{ d.title }}</li>
+		</script>
+		<script>
+			var currPage = 1;
+			var cityIt = "";
+			var keywords = "";
+			var categoryId;
+			var orderflag;
+			apiready = function() {
+				keywords = api.pageParam.keywords;
+				categoryId = api.pageParam.categoryId;
+				orderflag = api.pageParam.orderflag
+				//alert(JSON.stringify(api.pageParam.orderlist))
+				$(".offer-list").on("click", "li", function() {
+					var id = $(this).attr("id");
+					var pageParam = {
+						wintitle : "报价详情",
+						type : "price-detail",
+						id : id
+					};
+					openWin("price-detail" + id, "../price/price-detail.html", pageParam);
+				})
+				api.showProgress({
+					title : '加载中',
+					modal : true
+				});
+				ajaxInfo();
+				//底部加载更多
+				api.addEventListener({
+					name : 'scrolltobottom'
+				}, function(ret, err) {
+					//如果底部没有加载更多提示，添加加载更多提示
+					if ($(".mui-spinner").length == 0) {
+						$("body").append("<div class='mui-spinner' style='text-align:center;height:50px;line-height:50px;font-size:14px;color:#999'>更多加载中...</div>");
+					}
+					setTimeout(function() {
+						ajaxInfoMore();
+					}, 1000)
+				});
+				//页面刷新
+				api.setRefreshHeaderInfo({
+					visible : true,
+					// bgColor: '#F2F2F2',
+					bgColor : '#E6E6E6',
+					textColor : '#000000',
+					textDown : '下拉刷新',
+					textUp : '释放刷新',
+				}, function(ret, err) {
+					currPage = 1;
+					ajaxInfo();
+					
+					api.toast({
+						msg : '数据已是最新！',
+						duration : 3000,
+						location : 'bottom'
+					});
+				});
+			}
+			//页面刷新时获取的信息
+			function ajaxInfo() {
+				if (keywords) {
+					cityIt = keywords;
+				}
+				var mSrc = api.pageParam.mSrc;
+				if (mSrc == null) {
+					mSrc = ""
+				}
+				if (!categoryId){
+					categoryId = '';
+				}
+				api.ajax({
+					url : hosturl + '/price/?category_id=' + categoryId + '&keywords=' + cityIt + '&datatype=json' + mSrc+"&orderflag=1",
+					method : 'get',
+					timeout : 30,
+					dataType : 'json',
+					returnAll : false
+				}, function(ret, err) {
+					//alert('/price/?category_id=' + categoryId + '&keywords=' + cityIt + '&datatype=json' + mSrc)
+					//alert(JSON.stringify(ret))
+					if (ret) {
+						var pageHtml = "";
+						$.each(ret.result, function(index, item) {
+							var getTpl = $api.html($api.byId("info-list"));
+							laytpl(getTpl).render(item, function(html) {
+								pageHtml = pageHtml + html;
+							});
+						});
+						if (pageHtml==""){
+	                		$(".nodata").show();
+	                	}else{
+	                		$(".nodata").hide();
+	                    }
+						api.pageUp({
+							'top' : true
+						});
+						$(".offer-list").html(pageHtml);
+						api.refreshHeaderLoadDone();
+						api.hideProgress();
+						var city_list = ret.arealist;
+						api.execScript({
+							name : 'offer-list',
+							script : "cityList('" + city_list + "')"
+						});
+					} else {
+					};
+				});
+			}
+
+			var dataload = true;
+			//加载更多时获取的信息
+			function ajaxInfoMore() {
+				var mSrc = api.pageParam.mSrc;
+				if (mSrc == null) {
+					mSrc = ""
+				}
+				if (keywords) {
+					cityIt = keywords;
+				}
+				if (dataload == true) {
+					dataload = false;
+					//alert(hosturl + '/pricemore/?category_id=' + categoryId + '&keywords=' + cityIt + '&datatype=json&page=' + currPage + mSrc)
+					api.ajax({
+						url : hosturl + '/pricemore/?category_id=' + categoryId + '&keywords=' + cityIt + '&datatype=json&page=' + currPage + mSrc,
+						method : 'get',
+						timeout : 30,
+						dataType : 'json',
+						returnAll : false
+					}, function(ret, err) {
+						if (ret) {
+							var pageHtml = "";
+							$.each(ret, function(index, item) {
+								var getTpl = $api.html($api.byId("info-list"));
+								laytpl(getTpl).render(item, function(html) {
+									pageHtml = pageHtml + html;
+								});
+							})
+							$(".offer-list").append(pageHtml)
+							$(".mui-spinner").remove();
+							if (pageHtml!=""){
+								currPage += 1;
+							} 
+						} else {
+						};
+						dataload = true;
+					});
+				}
+			}
+
+			function outts(boj) {
+				api.showProgress({
+					title : '加载中',
+					modal : true
+				});
+				currPage = 1;
+				cityIt = boj;
+				ajaxInfo();
+			}
+
+			function searchprice(k) {
+				currPage = 1;
+				keywords = k;
+				categoryId = "";
+				api.showProgress({
+					title : '加载中',
+					modal : true
+				});
+				ajaxInfo();
+			}
+		</script>
+	</body>
+</html>

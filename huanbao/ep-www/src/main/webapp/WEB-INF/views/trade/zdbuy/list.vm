@@ -1,0 +1,148 @@
+#set($layout="/layout/trade/zdbuy.vm")
+<div class="wd958">
+	<div class="site over"><span>您目前所在位置：<a href="$!{address.www}">中国环保网</a> > <a href="#springUrl('/trade')/buy/index.htm">买家中心</a> > 行业潜在买家</span><em>共搜索到信息：<font class="num">$!{page.totals}条</font></em></div>
+	<div class="mainbox over">
+		<div class="wd235 bordere8 fl leftnav">
+			<ul>
+				<li><a href="$!{address.www}/ws">污水处理设备网</a></li>
+				<li><a href="$!{address.www}/ys">原水处理设备网</a></li>
+				<li><a href="$!{address.www}/kq">空气净化设备网</a></li>
+				<li><a href="$!{address.www}/yj">水处理药剂网</a></li>
+				<li><a href="#">泵/阀/风机/配件网</a></li>
+				<li><a href="$!{address.www}/yqyb">仪器仪表网</a></li>
+				<li><a href="$!{address.www}/hw">环卫清洁设备网</a></li>
+				<li style="border: none;"><a href="$!{address.www}/zh">其他环保设备网</a></li>
+			</ul>
+		</div>
+		<div class="wd464 fl ml10">
+                <div class="midbox" id="hbslide">
+                        <div class="toggleImg">
+                        <script type="text/javascript" src="http://gg.zz91.com/show?p=109"></script>
+                        </div>
+                        <div class="toggleBtn"></div>
+                </div>
+        </div>
+		<div class="mainbox over">
+			<div class="wd235 fl">
+			#cacheFragment("$!{address.fragment}/fragment/company/loadIndustryChain.htm?size=8&sss","","1","60")
+				<div class="bordere8 leftlist">
+					<dl>
+						<dt>热门产业圈</dt>
+						#foreach($industryChain in $!{industryChains})
+							<dd><span><a href="$!{address.company}/list-$!{industryChain.id}-$!{industryChain.areaCode}.htm">$!{industryChain.areaName}$!{industryChain.categoryName}</a></span></dd>
+						#end
+					</dl>
+				</div>
+			#end
+			</div>
+		</div>
+	</div>
+	<div class="mainbox over mt10">
+		<div class="wd235 fl">
+			#cacheFragment("$!{address.fragment}/fragment/trade/ibdCategory.htm?categoryCode=1000&zdbuy","","","86400")
+			<div class="bordere8 leftlist">
+				<dl>
+					<dt>终端买家企业名录</dt>
+					#foreach($ibd in $!{list})
+					<dd><span><a href="#springUrl('/trade')/zdbuy/list$!{ibd.code}.htm" target="_blank">$!{ibd.name}</a></span><em><font class="num">$!{ibd.isShow}</font> 家</em></dd>
+					#end
+				</dl>
+			</div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/trade/ibdCategory.htm?categoryCode=1001&zdbuy","","","600")
+			<div class="bordere8 leftlist mt10">
+				<dl>
+					<dt>线下展会企业名录<em>（可免费下载）</em></dt>
+					#foreach($ibd in $!{list})
+					<dd><span><a #if($velocityCount < 2) id="leftnewico" #end href="$!{ibd.downloadPath}" ref="nofollow" >$!{ibd.name}</a></span></dd>
+					#end
+				</dl>
+			</div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/trade/newestSupply.htm?size=10&zdbuy","","","600")
+			<div class="bordere8 leftlist mt10">
+				<dl>
+					<dt>最新供应信息</dt>
+					#foreach($supply in $!{list})
+					<dd><span><font class="num">供应</font> <a href="$!{address.esite}/detail$!{supply.id}.htm">#printTitle($!{supply.title} 15 "")</a></span></dd>
+					#end
+				</dl>
+			</div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/trade/newestBuy.htm?size=10&zdbuy","","","600")
+			<div class="bordere8 leftlist mt10">
+				<dl>
+					<dt>最新求购信息</dt>
+					#foreach($buy in $!{list})
+					<dd><span><font class="num">求购</font> <a href="#springUrl('/trade')/buy/detail$!{buy.id}.htm">#printTitle($!{buy.title} 15 "")</a></span></dd>
+					#end
+				</dl>
+			</div>
+			#end
+			#cacheFragment("$!{address.fragment}/fragment/company/newestCompany.htm?size=10&zdbuy","","","600")
+			<div class="bordere8 leftlist mt10">
+				<dl>
+					<dt>最新加入企业</dt>
+					#foreach($comp in $!{list})
+					<dd><span><a href="$!{address.esite}/index$!{comp.id}.htm" target="_blank">#printTitle($!{comp.name} 16 '')</a></span></dd>
+					#end
+				</dl>
+			</div>
+			#end
+		</div>
+		<div class="fr wd710 bordere8 rightbox">
+			<form action="#springUrl('/trade')/zdbuy/list.htm" method="post" id="zdbuySearchForm" name="zdbuySearchForm">
+			<h6 class="over"><span>行业企业名录</span><em class="over">
+				<input name="keywords" id="keywords" type="text" class="seartxt" value="$!{keywords}">
+				<input name="categoryCode" type="hidden" value="$!{categoryCode}">
+				<input type="submit" class="searbut" value=" " name="searchBtn"></em>
+			</h6>
+			</form>
+			<script type="text/javascript" >
+				jQuery(document).ready(function(){
+					jQuery("#zdbuySearchForm").submit(function(){
+						var kw=jQuery("#keywords").val();
+						kw=encodeURI(kw);
+						window.location="#springUrl('/trade')/zdbuy/list$!{categoryCode}--"+kw+"--s0--l20.htm";
+						return false;
+					});
+				});
+			</script>
+			#foreach($list in $!{page.records})
+			<dl>
+				<p><a href="#springUrl('/trade/zdbuy/detail')$!{list.id}.htm" target="_blank">#printTitle($!{list.name} 25 '')</a></p>
+				<dt><a>
+					<b>公司简介：</b>#printTitle($!{list.details} 100 '')<br/>
+					<b>主营产品：</b>#printTitle($!{list.mainProduct} 30 '')<br />
+					<b>公司地址：</b>#printTitle($!{list.address} 30 '')</a>
+				</dt>
+				<dd>
+					&nbsp;
+					##<span><a href="message.html">给我留言</a></span>
+					<em>
+						<a href="#springUrl('/trade')/zdbuy/detail$!{list.id}.htm" target="_blank">联系方式</a>
+					</em>
+				</dd>
+			</dl>
+			#end
+			<p>
+				#staticPageNav($!{page} "#springUrl('/trade/zdbuy/list')" "$!{categoryCode}--$!{keywords}" "")
+			</p>
+		</div>
+	</div>
+	<div class="mainbox over mt10 greenline">
+    <script language="JavaScript" type="text/javascript">
+    	$(function(){
+    		$(".rightnav dt a").click(function(){
+    			$(".rightnav dd").css("display","none");
+    			$(".rightnav dt").removeClass("open");
+    			$(this).parent("dt").next("dd").css("display","block");
+    			$(this).parent("dt").addClass("open");
+    			return false;
+    		})
+    	});
+    </script>
+	</div>
+</div>
+<script src="http://img0.huanbao.com/huanbao/js/hb.slide.js"></script>
+<script src="http://img0.huanbao.com/huanbao/js/hb.index.js"></script>

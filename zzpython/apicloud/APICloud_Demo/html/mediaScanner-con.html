@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='maximum-scale=1.0,minimum-scale=1.0,user-scalable=no,width=device-width,initial-scale=1.0'/>
+        <link rel='stylesheet' type='text/css' href='../css/module.css' />
+		<style type='text/css'>
+		  .diy-btn-group-test {margin : 10px 0px 0px 0px;}
+          body{-webkit-user-select:none;}
+		</style>
+    </head>
+    <body>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <h3 class="panel-title">open 打开系统相册资源选择器</h3>
+  </div>
+  <div class="panel-body">
+		<pre class="pre-scrollable">
+var mediaScanner = api.require('mediaScanner');
+
+mediaScanner.open({
+    bgColor: "#FFFFFF", // 背景色, 默认#FFFFFF, 支持rgb，rgba，#，imgPath.
+    row: 4, // 图片显示的列数.默认 4.
+    mark: {
+        icon: "#696969", // 标记的图标,默认 #696969, 支持支持rgb，rgba，#，imgPath.
+        position: "left_down", // 标记的位置, 默认left_down, 可选:left_up(左上角), left_down(左下角), right_up(右上角),right_down(右下角).
+        size: undefined // 标记的大小,默认为默认图片宽度的三分之一.
+    }, // 选中时显示的标记图标的相关配置.
+    navigation: {
+        bg: "rgba(0.5,0.5,0.5,0.8)",
+        state: {
+            title: "已选择*项",
+            titleColor: "#0000FF",
+            titleSize: 18
+        },
+        cancel:{
+            title: "取消", // 标题,默认"取消".
+            titleColor: "#0000FF", // 标题颜色.默认蓝色.支持rgb，rgba，#.
+            titleSize: 18, // 字体大小.默认18.
+            bg: "rgba(255, 255, 255, 0.6)" // 背景.默认: 白色 + 透明度 0.6.支持rgb，rgba，#，imgPath
+        }, // 顶部导航设置
+        finish: {
+            title: "完成", // 标题,默认"完成".
+            titleColor: "#0000FF", // 标题颜色.默认蓝色.支持rgb，rgba，#.
+            titleSize: 18, // 字体大小.默认18.
+            bg: "rgba(255, 255, 255, 0.6)" // 背景.默认: 白色 + 透明度 0.6.支持rgb，rgba，#，imgPath
+        } // 底部导航设置
+    }
+},function(ret, err) {
+    var list = ret.list;
+
+    var msg = "";
+
+    for(var idx in list){
+        var item = list[idx];
+
+        msg += "资源路径: " + item.url + "\n" +
+            "缩略图路径: " + item.thumbUrl  +"\n" +
+            "资源类型: " + item.mimeType  + "\n" +
+            "资源大小: " + item.size + "\n\n\n"
+    }
+
+    alert(msg);
+});
+	</pre>
+</div>
+<div class="panel-footer">	
+	<div class="btn-group btn-group-justified">
+	  <div class="btn-group">
+	    <button role="run" type="button" class="btn btn-primary">运行</button>
+	  </div>	  
+	  <div class="btn-group">
+	    <button  role="edit" type="button" class="btn btn-info">编辑</button>
+	  </div>
+	  <div class="btn-group">
+	    <button  role="restore" type="button" class="btn btn-warning">还原</button>
+	  </div>
+	</div>
+</div>
+</div>
+
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title">scann 获取系统相册所有媒体资源</h3>
+    </div>
+    <div class="panel-body">
+		<pre class="pre-scrollable">
+/* 获取系统相册所有媒体资源 */
+
+var mediaScanner = api.require('mediaScanner');
+
+mediaScanner.scann(function(ret, err) {
+    var list = ret.list;
+
+    var msg = "";
+
+    for(var idx in list){
+        var item = list[idx];
+
+        msg += "资源路径: " + item.url + "\n" +
+            "缩略图路径: " + item.thumbUrl  +"\n" +
+            "资源类型: " + item.mimeType  + "\n" +
+            "资源大小: " + item.size + "\n\n\n"
+    }
+
+    alert(msg);
+});
+	</pre>
+    </div>
+    <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button role="run" type="button" class="btn btn-primary">运行</button>
+            </div>
+            <div class="btn-group">
+                <button  role="edit" type="button" class="btn btn-info">编辑</button>
+            </div>
+            <div class="btn-group">
+                <button  role="restore" type="button" class="btn btn-warning">还原</button>
+            </div>
+        </div>
+    </div>
+</div>
+    </body>
+	<script src="../script/jquery-1.11.1.min.js"></script>
+	<script src='../script/highlight.pack.js'></script>
+	<script src='../script/module.js'></script>
+<script>
+    api = {};
+
+    var methods = ["open", "close", "reloadData", "deleteItem", "insertItem",
+        "refreshItem", "appendData", "setRefreshHeader", "setRefreshFooter", "show", "hide"];
+
+    api.require = function(name){
+        var module = {};
+
+        var demoFunc = function(params, callback){
+
+            if(params === undefined){
+                alert("这个函数没有任何方法");
+
+                return;
+            }
+
+            if(undefined == callback){
+                callback = params;
+            }else{
+                alert("传入的参数: " + JSON.stringify(params));
+            }
+
+            callback({
+                status: true,
+                uid: "uid123456",
+                state: "uploaded",
+                datas: ["data1", "data2", "data3"],
+                uuid: "uuid123490",
+                eventType: "leftBtn",
+                index: 0,
+                btnIndex: 0
+            }, {
+                msg: "未知错误",
+                code: "404"
+            });
+        }
+
+        for(var idx in  methods){
+            var methodName = methods[idx];
+
+            module[methodName] = demoFunc;
+        }
+
+        return module;
+    };
+</script>
+</html>

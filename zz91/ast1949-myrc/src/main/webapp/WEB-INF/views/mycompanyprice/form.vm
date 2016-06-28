@@ -1,0 +1,138 @@
+#set( $layout = "/layout/formLayout.vm" )
+<div class="content3">
+	<p><span class="asterisk">*</span>企业自主报价修改：</p>
+    <div class="c2-box">
+    	<form id="uploadForm" action="#springUrl('/mycompanyprice/doUpload.htm')" method="post" enctype="multipart/form-data">
+        	<div class="c2-item">
+            	<div class="ci2-tle fl"><label for="title"><span class="asterisk">*</span>标题:</label></div>
+                <div class="ci2-info fl"><input type="text" id="title" name="title" value="$!{offer.title}" class="ci-input" onblur="panduan(id)"/><span style="color:red;display:none;">请输入标题</span></div>
+                <div class="cb"></div>
+            </div>
+            <!--end c2-item-->
+            <div class="c2-item">
+            	<div class="ci2-tle fl"><label><span class="asterisk">*</span>主类别:</label></div>
+                <div class="ci2-info fl">
+                	<ul class="cate2">
+						#foreach($li in $map.keySet())
+							<li>
+								<a href="javascript:;" class="lay-sel2">$!{map.get($li)}</a>
+								<div class="layer" id="$velocityCount">
+									<table class="layer-tab">
+										<tr>
+											<td width="36" rowspan="2" class="lay-tle">
+												#set($words=$!{map.get($li)})
+												#foreach($ll in [0..$words.length()])
+													#set($a=$ll+1)
+													#if($ll!=$words.length())
+														#if($velocityCount==$words.length())
+															$words.substring($ll,$a)
+														#else
+															$words.substring($ll,$a)<br />
+														#end
+													#end
+												#end
+											</td>
+											<td>
+												<div class="layBox">
+													<ul class="lay-ul">
+														#foreach($aa in $!{mapl.get($li).keySet()})
+															<li><a href="javascript:;" class="sx_child" id="$!{map.get($li)}-m$velocityCount" rel="type" title="$aa" rel="type">$!{mapl.get($li).get($aa)}</a></li>
+														#end
+													</ul>
+												</div>
+											</td>
+										</tr>
+										<tr><td style="background:#eeeeee;"><input type="button" flag="0" class="lay_btn" /></td></tr>
+									</table>
+								</div>
+							</li>
+						#end
+                    </ul>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end c2-item-->
+            <div class="c2-item">
+            	<div class="ci2-tle fl"><label class="seled">已选类别：</label></div>
+                <div class="ci2-info fl">
+                	<div id="mainSelect" style="margin:0;"></div>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end c2-item-->
+            <div class="c2-item">
+            	<div class="ci2-tle fl"><label>附件：</label></div>
+                <div class="ci2-info file-box fl">
+                	<input type='text' name='excelName' id='textfield' class='txt' value="$!{offer.excelName}"/>  
+ 					<input type='button' class='c2-btn' value='重新上传报价表' />
+    				<input type="file" name="file" class="fileField" id="fileField" size="28"/>
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end c2-item-->
+            <div class="c2-item" style="height:162px;">
+            	<div class="ci2-tle fl"><label><span class="asterisk">*</span>报价描述:</label></div>
+                <div class="ci2-info fl"><textarea id="comment" name="instruction" value="$!{offer.instruction}" onblur="panduan(id)">$!{offer.instruction}</textarea><span style="color:red;display:none;">请填写报价描述</span></div>
+				<input type="hidden" name="category" id="category" value="$!{offer.category}"/>
+				<input type="hidden" name="id" id="id" value="$!{offer.id}"/>
+            </div>
+            <!--end c2-item-->
+            <div class="c2-item tc"><input type="button" class="edit_suc" id="edit_suc" value="提交修改" /></div>
+        </form>
+    </div>
+    <!--end c2-box-->	
+</div>
+<!--end content-->
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	var mk=$!{mark};
+	if(mk>0){
+		parent.closeoverlay2();
+		parent.openoverlay('edit_suc.htm?id=$!{offer.id}','',470,237,0);
+	}
+    var sel=jQuery('a[title="$!{offer.category}"]')
+	var sele=sel[0].id.split("-")[0];
+	jQuery(".seled").show();
+	jQuery("#mainSelect").html("<div class=\"divSmall\" rel=\""+sel[0].id+"\" ttype=\"type\">"+sele+"-"+sel[0].innerText+"</div>");
+});
+	$("ul.cate2 li").bind("click", function () {
+		var index = $(this).index()+1;
+		$("#1").hide();
+		$("#2").hide();
+		$("#3").hide();
+		$("#4").hide();
+		$("#"+index).show();
+	});
+	var ll="";
+ 	jQuery(".sx_child").click(function(){
+    	ll=jQuery(this).context.title;
+	});
+(function(){
+		jQuery("#fileField").bind("change",function(){
+		 var file= document.getElementById("fileField").value;
+   		 var array=new Array(file.split("\\"));
+  	     var i=array[0].length-1;
+		 jQuery("#textfield").val(array[0][i]);
+		});
+})();
+jQuery("#edit_suc").click(function(){
+    var cat=ll;
+	if(cat==""){
+		cat=$!{offer.category};
+	}
+	jQuery("#category").val(cat);
+	var title = jQuery("#title").attr("value").replace(/\s/g,'');
+	var content = jQuery("#comment").attr("value").replace(/\s/g,'');
+	if(title&&content){
+		jQuery("#uploadForm").submit();
+	}
+});
+function panduan(a){
+	var panduan = jQuery("#"+a).attr("value").replace(/\s/g,'');
+	if(!panduan){
+		jQuery("#"+a).parent().find("span").show();
+	}else{
+		jQuery("#"+a).parent().find("span").hide();
+	}
+}
+</script>

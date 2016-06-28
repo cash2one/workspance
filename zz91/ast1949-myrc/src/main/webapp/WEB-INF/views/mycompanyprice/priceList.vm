@@ -1,0 +1,187 @@
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/business/css/index.css" />
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/price/css/priceMyrc.css" />
+<script type="text/javascript" src="http://img0.zz91.com/front/js/lib/jquery/jquery_lib/jquery-1.4.3.js" ></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/price/js/openoverlay.js"></script>
+<!--[if lt IE 9]>
+<script>
+      (function(){if(!/*@cc_on!@*/0)return;var e = "abbr,article,aside,audio,canvas,datalist,details,dialog,eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,output,progress,section,time,video".split(','),i=e.length;while(i--){document.createElement(e[i])}})()
+</script>
+<link rel="stylesheet" href="css/ie.css" type="text/css" media="screen">
+<![endif]-->
+<div class="container mt clearfix">
+	<div class="grid_12">    
+		<div class="business"><div class="mainblock1"></div></div>
+		<div class="cb"></div>
+		<!--end business--> 
+    	<ul class="breadcrumb">
+			<li>
+				<a href="/myproducts/office_post_list.htm?checkStatus=1&amp;isExpired=0&amp;isPause=0">商机管理</a> <span class="divider">/</span>
+			</li>
+			<li class="active">企业自主报价管理</li>
+		</ul>
+        <!--end breadcrumb-->
+        <div class="form mt">
+        	<a href="#springUrl('/mycompanyprice/upload.htm')" target="_blank">上传我的报价</a>
+  				<input type="text" id="searchText" value="$!{keyword}" />
+    			<button id="search">搜&nbsp;索</button>
+            <div class="cb"></div>
+		</div>
+        <!--end form mt-->
+        <div class="cb"></div>
+        <div class="mod_list mt">      
+        	<ul class="tag">
+            	<li data-index="0" #if($flag==0)class="cur"#end><a href="#springUrl('/mycompanyprice/priceList.htm?flag=0')" name="bj">全部报价</a></li>
+                <li data-index="1" #if($flag==1)class="cur"#end><a href="#springUrl('/mycompanyprice/priceList.htm?flag=1')" name="bj">我关注的报价($!{noticeNum})</a></li>
+            </ul>
+			#if($flag==0)
+            <div class="mod_listbd" id="tag0">
+            	<table id="tab">
+                	<tr>
+                    	<th style="text-align:left;padding-left:12px;"><input type="checkbox" name="chk" />&nbsp;<label for="chk">标题</label></th>
+                        <th>类别</th>
+                        <th width="18%">报价说明</th>
+                        <th>下载数</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                        <th>审核状态</th>
+                    </tr>
+					#foreach($li in $page.records)
+                    <tr id="tr0">
+                    	<td style="text-align:left;padding-left:12px;"><input type="checkbox" name="ckb" />&nbsp;<label for="chk">$!{li.title}</label></td>
+                        <td>$!{li.categoryName}</td>
+                        <td>$!{li.instruction}</td>
+                        <td><span id="num_$!{li.id}">$!{li.downloadNum}</span></td>
+                        <td>#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{li.gmtCreated})</td>
+                        <td>
+                        	<a href="preview.htm?id=$!{li.id}" target="_blank">快速预览</a><br />
+                            <a href="#springUrl('/mycompanyprice/downloadFile.htm?id=')$!{li.id}" class="down">下载</a><br />
+                            <a href="javascript:openoverlay2('form.htm?id=$!{li.id}','',620,470,0);" class="edit">编辑</a><br />
+                            <a href="javascript:openoverlay('del.htm?id=$!{li.id}','',470,237,0);" class="del">删除</a>
+                        </td>
+                        <td>#if($!{li.checkStatus}==0)未审核#elseif($!{li.checkStatus}==1) 审核通过 #else 退回#end</td>
+                    </tr>
+					#end
+                </table>
+            </div>
+            <!--end mod_listbd-->
+			#end
+			#if($flag==1)
+            <div class="mod_listbd" id="tag1">
+            	<table id="tab2">
+                	<tr>
+                    	<th style="text-align:left;padding-left:12px;"><input type="checkbox" name="ckb" />&nbsp;<label for="chk">标题</label></th>
+                        <th>类别</th>
+                        <th>公司名</th>
+                        <th width="18%">报价说明</th>
+                        <th>下载数</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr>
+					#foreach($li in $page.records)
+                    <tr id="tm$velocityCount">
+                    	<td style="text-align:left;padding-left:12px;"><input type="checkbox" name="ckb" />&nbsp;<label for="chk">$!{li.title}</label></td>
+                        <td>$!{li.categoryName}</td>
+                        <td>$!{li.company.name}<br /><a href="javascript:openoverlay('follow_cancel.htm?id=$!{li.id}','',470,237,0);" data="1" class="follow">取消关注</a></td>
+                        <td>$!{li.instruction}</td>
+                        <td>$!{li.downloadNum}</td>
+                        <td>#printFragmentDate("yyyy-MM-dd HH:mm:ss" $!{li.gmtCreated})</td>
+                        <td><a href="preview.htm?id=$!{li.id}" target="_blank">快速预览</a><br /><a href="#springUrl('/mycompanyprice/downloadFile.htm?id=')$!{li.id}"><i></i>下载</a></td>
+                    </tr> 
+					#end
+                </table>
+            </div>
+            <!--end mod_listbd-->
+			#end
+			#if($!{keywords})
+				#myrcPageNav($!{page} "#springUrl('/mycompanyprice/priceList.htm')" "flag=$!{flag}&keywords=$!{keywords}" "")
+			#else
+				#myrcPageNav($!{page} "#springUrl('/mycompanyprice/priceList.htm')" "flag=$!{flag}" "")
+			#end
+        </div>
+        <!--end mod_list-->
+    </div>
+    <!--end grid_12-->
+</div>
+<script>
+$(".follow").live("click",function(){
+	var data = $(this).attr("data");
+		if(data==0){
+			$(this).html("取消关注");
+			$(this).attr("data","1");
+		}
+});	
+</script>
+<script language="javascript" src="http://img0.zz91.com/zz91/business/js/jquery.Sonline.js"></script> 
+<script type="text/javascript">
+jQuery(document).ready( function () { 
+	myrc.menu(1, 1);
+}); 
+
+jQuery(function(){
+	jQuery(".business").Sonline({
+		Position:"right",//left或right
+		Top:-110,//顶部距离，默认200px
+		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+		Qqlist:""
+	});
+})	
+
+</script>
+<script src="http://img0.zz91.com/zz91/js/zz91.myrc.js"></script> 
+<script>
+jQuery(function(){
+	myrc.select("Js_select");	
+
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"http://trade.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"http://price.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("http://huzhu.zz91.com/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("http://company.zz91.com/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+});
+jQuery(".down").click(function(){
+	var num = jQuery(this).parent().parent().find("span").html();
+	num=Number(num)+1;
+	jQuery(this).parent().parent().find("span").html(num);
+});
+jQuery("#search").click(function(){
+	var key=jQuery("#searchText").val();
+	key=encodeURI(key);
+	window.location.href="$!{address.myrc}/mycompanyprice/priceList.htm?keywords="+key+"&flag="+$!{flag};
+});
+</script>

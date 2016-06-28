@@ -1,0 +1,126 @@
+   #set($layout="/layout/securityDefault.vm")
+   #set($pageName="css")
+   #set($in="1")
+    <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm.css" />
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/priceindex/css/deal.css" />
+    <script src="http://img0.zz91.com/lib/jquery/jquery-1.9.1.js"></script>
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/selectJr.css" />
+    <script src="http://img0.zz91.com/trade/comm/input-plt.js"></script>
+    <link rel="stylesheet" href="http://img0.zz91.com/trade/comm/comm-pop.css" />
+    <script src="http://img0.zz91.com/trade/comm/comm.js"></script>
+    <!--[if IE 6]> 
+        <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+        <script type="text/javascript">  
+        DD_belatedPNG.fix('img');
+        DD_belatedPNG.fix('.info-img');
+        DD_belatedPNG.fix('.now-nav i');
+        DD_belatedPNG.fix('.myuse-dl i');
+        DD_belatedPNG.fix('.dis-syar i');
+        DD_belatedPNG.fix('.myuse-img');
+        </script>  
+    <![endif]-->
+	 <div class="content clearfix">
+       #parse("/common/left.vm")
+        <div class="ads-main fr ads-qh" id="tt">
+            <div class="manage-info clearfix">
+                <div class="state fl state2">
+                    <a href="#springUrl('/refund/my.htm')">我申请的退款</a>|
+                    <a href="#springUrl('/refund/get.htm')" class="now-hear">我收到的退款申请</a>
+                </div>
+                <a class="fr hushou" href="#">
+                    <i class="icon-hushou iconfont">&#xe60f;</i>回收站
+                </a>
+            </div>
+
+            <div class="tktitle clearfix">
+                <div class="fl tk-mo1">退款编号</div>
+                <div class="fl tk-mo2">订单编号/产品信息</div>
+                <div class="fl tk-mo3">卖家</div>
+                <div class="fl tk-mo4">交易金额</div>
+                <div class="fl tk-mo5">退款金额</div>
+                <div class="fl tk-mo6">申请时间</div>
+                <div class="fl tk-mo8">退款状态</div>
+                <div class="fl tk-mo9">操作</div>
+            </div>
+
+            <ul class="tkinfo-list">
+				#foreach($in in $!{page.records})
+                <li class="clearfix">
+                    <div class="fl tk-mo1">$!{in.orderReturn.id}</div>
+                    <div class="fl tk-mo2">
+                        <div class="tkcp-xx">$!{in.goods.title}</div>
+                        <div class="ddan-bh">订单编号:$!{in.orders.orderNo}</div>
+                    </div>
+                    <div class="fl tk-mo3">
+                        <div class="tk-firm">$!{in.companyInfo.name}</div>
+                    </div>
+                    <div class="fl tk-mo4">$!{in.price}</div>
+                    <div class="fl tk-mo5">
+                        <p class="red">$!{in.orderReturn.reurnPrice}</p>
+                    </div>
+                     <div class="fl tk-mo6">
+                        <p class="color-99">#printFragmentDate("yyyy-MM-dd" $!{in.orderReturn.gmtCreated})</p>
+                        <p class="color-99 hour-time">#printFragmentDate("HH:mm:ss" $!{in.orderReturn.gmtCreated})</p>
+                    </div>
+                    <div class="fl tk-mo8">
+						#if(${in.orderReturn.status}==0)
+                        <p class="greed">买家申请退款</p>
+						#end
+						#if(${in.orderReturn.status}==1)
+                        <p class="greed">等待买家发货</p>
+						#end
+						#if(${in.orderReturn.status}==3)
+                        <p class="greed">买家发货中</p>
+						#end
+						#if(${in.orderReturn.status}==2)
+                        <p class="greed">您拒绝退款</p>
+						#end
+						#if(${in.orderReturn.status}==66)
+                        <p class="greed">客服介入</p>
+						#end
+						#if(${in.orderReturn.status}==99)
+                        <p class="greed">退款成功</p>
+						#end
+						#if(${in.orderReturn.status}==55)
+                        <p class="greed">退款关闭</p>
+						#end
+                    </div>
+                    <div class="fl tk-mo9">
+						#if(${in.orderReturn.status}==0)
+                        <p><a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{in.orders.id}" class="blue">同意</a></p>
+						#end
+						#if(${in.orderReturn.status}==3)
+                        <p><a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{in.orders.id}" class="blue">确认并退款</a></p>
+						#end
+                        <p class="hour-time"><a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{in.orders.id}" class="blue">查看</a></p>
+                    </div>
+                </li>
+                #end
+            </ul>
+　				#postListPageNav($page "#springUrl('/refund/get.htm')" "" "")
+##            <div class="page-num">
+##                <span class="page-do"><</span>
+##                <span class="page-do this-page">1</span>
+##                <span class="page-do">2</span>
+##                <span class="page-do">3</span>
+##                <span class="page-do">4</span>
+##                <span class="page-do">5</span>
+##                <span class="morepage"><i class="dianmore">...</i></span>
+##                <span class="page-do">></span>
+##                <span class="page-ts">共27页，到第</span>
+##                <input class="page-into"/>
+##                <span class="page-ts">页</span>
+##                <span class="goto-page">确定</span>
+##            </div>
+        </div>
+    </div>  
+<script type="text/javascript">
+    //完善资料
+    var cerTified = false; //是否认证
+    $(".j_release").bind("click",function(){
+        if(!cerTified){
+          ##  popPd();
+        }
+    })
+</script>

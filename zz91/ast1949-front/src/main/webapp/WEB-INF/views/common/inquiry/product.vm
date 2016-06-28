@@ -1,0 +1,140 @@
+<div class="zi43">
+	<div class="left">
+			#if($!{productPicList.size()} > 0)
+				<a href="$!{address.trade}/picshow.htm?pid=$!{productDetails.products.id}">
+				#foreach($obj in $productPicList)
+					#if($velocityCount==1)
+						<img src="$!{address.thumb}$!{address.resource}/$!{obj.picAddress}&width=300" />
+					#end
+				#end
+				</a>
+			#else
+                <a><img src="$!{address.img}/front/images/global/noimage.gif" /></a>
+			#end
+	</div>
+	<div class="right">
+		<div class="zi44">#printProductType($!{productDetails.products.productsTypeCode} "" "")#printTitle($!{productDetails.products.title} 14 "")</div>
+		<div class="zi45">
+			#printProductType($!{productDetails.products.productsTypeCode} "" "")价格： #priceAndUnit($product "/")<br/>
+			
+			#printProductType($!{productDetails.products.productsTypeCode} "" "")数量：
+    			#if($!{productDetails.products.quantity} && $!{productDetails.products.quantity}!="")
+                    $!{productDetails.products.quantity}
+    				#if($!{productDetails.products.quantityUnit}&&$!{productDetails.products.quantityUnit}!="")
+            			$!{productDetails.products.quantityUnit}
+            		#else
+            			吨
+            		#end
+                #else
+                    不限
+                #end
+			<br/>
+			#if($!{productDetails.products.goodsTypeCode}&&$!{productDetails.products.goodsTypeCode}!="")
+				供货类型：
+					#if($!{productDetails.products.goodsTypeCode} == '10361001' )
+						现货
+					#end
+					#if($!{productDetails.products.goodsTypeCode} == '10361000' )
+						期货
+					#end
+					#if($!{productDetails.products.goodsTypeCode} == '10361002' )
+						其他
+					#end
+					<br/>	
+			#end
+			
+			$!{productDetails.productsTypeLabel}情况：
+				#if($!{productDetails.products.provideStatus}==0) 
+                    长期$!{productDetails.productsTypeLabel}
+                    #else 
+                        不定期$!{productDetails.productsTypeLabel}
+				#end
+            <br/>
+			##当该产品不是现货时，取通用固定属性
+			#if($!{productDetails.addTransaction}&&$!{productDetails.addTransaction}!="")
+				交易说明：$!{productDetails.addTransaction}<br />
+			#end
+			#if($!{productDetails.spotInfo.transaction}&&$!{productDetails.spotInfo.transaction}!="")
+				交易说明：$!{productDetails.spotInfo.transaction}<br />
+			#end
+			#if($!{productDetails.products.location}&&$!{productDetails.products.location}!="")
+				现货所在地：$!{productDetails.products.location}<br />
+			#end
+			
+			#if($!{productDetails.products.shipDay}&&$!{productDetails.products.shipDay}!="" && $!{productDetails.products.shipDay}!="0")
+				发货时间：$!{productDetails.products.shipDay}天内可以发货<br />
+			#end
+			
+			发布日期：#printFragmentDate('yyyy-MM-dd' $!{productDetails.products.refreshTime})<br/>
+			信息有效期：
+			#if($!{expiredFlag}=="1")
+				信息已过期
+			#else
+				#if($date.format("yyyy-MM-dd",$!{productDetails.products.expireTime}).substring(0,4) != "9999")
+					截止 $!date.format("yyyy-MM-dd",$!{productDetails.products.expireTime})
+				#else
+					长期有效
+				#end
+			#end
+			<br/>
+			<span class="zi46">产品标签：
+				#foreach($!{tag} in $!{tagsInfoList.keySet()})
+					#set($keytag=$!{tag})
+					<a href="$!{address.tags}/s/${tagsInfoList.get($!{tag})}/" target="_blank" title="$!{tag}">$!{tag}</a>
+				#end
+			</span>
+		</div>
+	</div>
+</div>
+<!--end zi43-->
+<div style="clear:both"></div>
+<div class="zi47">
+    <div class="zi48">产品详情</div>
+    <div class="zi49">
+		#if($!{productDetails.products.source} != "" && $!{productDetails.products.source})
+			 <p>货源地： $!{productDetails.products.source}</p>
+		#end
+		#if($!{productDetails.products.origin} != "" && $!{productDetails.products.origin})
+			<p>来源产品： $!{productDetails.products.origin}</p>
+		#end
+		#if($!{productDetails.products.useful} != "" && $!{productDetails.products.useful})
+			<p>此废料可用于： $!{productDetails.products.useful}</p>
+		#end
+		#if($!{productDetails.products.specification} != "" && $!{productDetails.products.specification})
+			<p>产品规格： $!{productDetails.products.specification}</p>
+		#end
+##        #if($!{productDetails.grade} != ""  && $!{productDetails.grade})
+##			<p>品位： $!{productDetails.grade}</p>
+##		#end
+		#if($!{productDetails.products.color} != "" && $!{productDetails.products.color})
+        	<p>颜色：$!{productDetails.products.color}</p>
+		#end
+        #if($!{productDetails.spotInfo.shape} != "" && $!{productDetails.spotInfo.shape})
+			<p>形态：$!{productDetails.spotInfo.shape}</p>
+		#end
+        #if($!{productDetails.spotInfo.level} != "" && $!{productDetails.spotInfo.level})
+			<p>级别：$!{productDetails.spotInfo.level}</p>
+		#end
+        #if($!{productDetails.products.appearance} != "" && $!{productDetails.products.appearance})
+			<p>外观：$!{productDetails.products.appearance}</p>
+		#end
+		#foreach($pap in $!productAddProperties)
+			#if($!{pap.property} != "交易说明" && $!{pap.content} != "" && $!{pap.content})
+				<p>$!{pap.property}：$!{pap.content}</p>
+			#end
+		#end
+        #if($!{productDetails.products.impurity} != "" && $!{productDetails.products.impurity})
+			<p>杂质（杂物）含量：$!{productDetails.products.impurity}</p>
+		#end
+		#if($!{productDetails.products.manufacture} != "" && $!{productDetails.products.manufacture})
+			<p>加工说明：
+			#foreach($manu in $!manufactureList)
+				#if($!{productDetails.products.manufacture} == $!{manu.code})
+					$!{manu.label}</p>
+				#end
+			#end
+		#end
+		<p>$!{productDetails.products.details}</p>
+	</div>
+</div>
+<!--end zi47-->

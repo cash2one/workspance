@@ -1,0 +1,201 @@
+﻿<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<SCRIPT src="jquery.min.js" type=text/javascript></SCRIPT>
+<title>格式</title>
+<style type="text/css">
+*{margin:0;padding:0;font-size: 12px;}
+body
+{
+	padding-left:50px;
+}
+#school{color: #666;}
+#school-box{
+	width:308px;
+	border:1px solid #CCC;
+	box-shadow:2px 3px 0 rgba(190,190,190,0.3);
+	background-color: #fff;
+	z-index: 9;
+	position: absolute;
+	display: none;
+}
+#school-box a{    
+    color:#3777bc;
+    text-decoration: none;
+    padding: 5px;
+    text-align: center;
+    display: inline-block;
+}
+#school-box a:hover{    
+    background-color:#ccc;
+    color: #fff;
+    cursor: pointer;
+}
+#school-box a.active{    
+    background-color:#666;
+    color:#fff;
+}
+#school-box a:hover{    
+    background-color:#ccc;
+    color: #fff;
+    cursor: pointer;
+}
+#school-box h1{
+	color: #333;
+	line-height: 2;
+	padding-left: 10px;
+	background-color: #ebebeb;
+}
+#school-box #province, #school-box #school,#school-box #country{
+    border: 1px solid #ccc;
+    margin:10px;
+    padding: 2px;
+    line-height: 1.5;
+}
+#school-box #school {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 200px;
+}
+#school-box #school a{
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+	float:left;
+}
+.area_blue
+{
+	background-image: url(arr.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+	height: 24px;
+	width: 300px;
+	border: 1px solid #A0B4C5;
+	line-height: 24px;
+	padding-right: 4px;
+	padding-left: 4px;
+	cursor:pointer;
+}
+#school-box .nav
+{
+	padding-right: 2px;
+	padding-left: 2px;
+	color: #333;
+	height: 22px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-bottom-style: dotted;
+	border-top-color: #CCC;
+	border-right-color: #CCC;
+	border-bottom-color: #CCC;
+	border-left-color: #CCC;
+}
+#school-box .navselect
+{
+	cursor:pointer;
+	
+}
+</style>
+
+<body>
+<br>
+<br>
+<br>
+选择国家/地区:
+
+<div class="area_blue" id="area_blue" onClick="poparea()">----地区----</div>
+<input type="hidden" name="areacode" id="areacode">
+<div id="school-box">
+    <h1>选择城市</h1>
+    <div id="country"><a id="1" href="#" onClick="getprovince('','10011000',1)">中国</a><a href="#" onClick="getprovince('','1001',1)">其他国家</a></div>
+    <div id="school"></div>
+</div>
+
+<script type="text/javascript">
+function closebox()
+{
+	var box = document.getElementById("school-box");
+	if (box.style.display=="block")
+	{
+		box.style.display = "";
+	}else{
+		box.style.display = "block";
+	}
+}
+
+function getprovince(area,code,nextarea)
+{
+
+	var ajaxurl="http://pyapp.zz91.com/areahtml/?code="+code;
+	if (nextarea==1)
+	{
+		$("#school").html("loading").css("color","red");
+	}
+	$.getScript(ajaxurl, function() {
+			var result = _suggest_result_.result;
+			if (nextarea==1)
+			{
+				$("#school").html(result);
+			}else{
+				if (area!=""){
+				$("#area_blue").html(area);
+				closebox();
+				}else{
+					$("#area_blue").html(_suggest_result_.navlist);
+					$("#school").html(result);
+				}
+				document.getElementById("areacode").value=code;
+				
+			}
+	})
+}
+function poparea()
+{
+	var box = document.getElementById("school-box"),
+        area_blue = document.getElementById("area_blue");
+		box.style.top = getPosition(area_blue).top + getPosition(area_blue).height + "px";
+        box.style.left = getPosition(area_blue).left + "px";
+        //box.style.display = "block";
+		closebox();
+	 box.onclick = function(e){
+     e = e || window.event;
+     if(window.event){    //阻止事件冒泡
+         e.cancelBubble = true;
+     } else {
+         e.stopPropagation();
+     }
+     }
+     
+     //点击body隐藏box
+     document.body.onclick = function(e){
+     e = e || window.event;
+     var target = e.target || e.srcElement;
+     if(target.id === "school-box" || target.id === "area_blue") {
+         return;
+     } else {
+         box.style.display = "none";
+     }
+     }
+}
+
+//获取元素在页面里的位置和宽高
+function getPosition(obj) {
+    var top = 0;
+    var left = 0;
+    var width = obj.offsetWidth;
+    var height = obj.offsetHeight;
+    while(obj.offsetParent){
+        top += obj.offsetTop;
+        left += obj.offsetLeft;
+        obj = obj.offsetParent;
+    }
+    return {"top":top,"left":left,"width":width,"height":height};
+}
+getprovince("","10011000101510021005",0)
+</script>
+
+</body>
+</html>

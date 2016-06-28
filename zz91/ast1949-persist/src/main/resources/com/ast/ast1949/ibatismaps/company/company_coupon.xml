@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyCoupon">
+
+	<typeAlias alias="companyCouponDo" type="com.ast.ast1949.domain.company.CompanyCoupon" />
+	<typeAlias alias="companyCouponDto" type="com.ast.ast1949.dto.company.CompanyCouponDto" />
+	<resultMap class="companyCouponDo" id="companyCouponResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="code" column="code" />
+		<result property="type" column="type" />
+		<result property="status" column="status" />
+		<result property="gmtStart" column="gmt_start" />
+		<result property="gmtEnd" column="gmt_end" />
+		<result property="serviceName" column="service_name"/>
+		<result property="price" column="price"/>
+		<result property="reducePrice" column="reduce_price"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="companyCouponDto" id="companyCouponDtoResult">
+		<result property="companyCoupon" resultMap="companyCoupon.companyCouponResult"/>
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		code,
+		type,
+		status,
+		gmt_start,
+		gmt_end,
+		service_name,
+		price,
+		reduce_price,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<sql id="pageColumn">
+		a.id,
+		a.company_id,
+		a.code,
+		a.type,
+		a.status,
+		a.gmt_start,
+		a.gmt_end,
+		a.service_name,
+		a.price,
+		a.reduce_price,
+		a.gmt_created,
+		a.gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="companyCouponDo">
+		INSERT INTO
+		company_coupon
+		(
+		company_id,
+		code,
+		type,
+		status,
+		gmt_start,
+		gmt_end,
+		service_name,
+		price,
+		reduce_price,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#companyId#,
+		#code#,
+		#type#,
+		#status#,
+		#gmtStart#,
+		#gmtEnd#,
+		#serviceName#,
+		#price#,
+		#reducePrice#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 取消优惠券 -->
+	<update id="updateStatus" parameterClass="companyCouponDo">
+		update company_coupon
+		set gmt_modified = now(),
+		status = #status#
+		where id = #id#
+	</update>
+	
+	<!-- 后台cs更新服务原价 -->
+	<update id="updateCouponInfo" parameterClass="companyCouponDo">
+		update company_coupon
+		set gmt_modified = now()
+		<isNotEmpty prepend="," property="status">
+			status = #status#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="price">
+			price = #price#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="serviceName">
+			service_name = #serviceName#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<select id="selectByCode" parameterClass="java.util.Map" resultMap="companyCouponResult">
+		select
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where company_id = #companyId# 
+		and status = 1
+		<isNotEmpty property="code" prepend="and">
+			code = #code#
+		</isNotEmpty>
+		<isNotEmpty property="type" prepend="and">
+			type = #type# 
+		</isNotEmpty>
+		limit 1
+	</select>
+	
+	<select id="selectByCompanyId" parameterClass="java.util.Map" resultMap="companyCouponResult">
+		select
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where company_id = #companyId# and YEAR(gmt_start) = YEAR(NOW())
+		<isNotEmpty property="from" prepend="and">
+			gmt_start >= #from#
+		</isNotEmpty>
+		<isNotEmpty property="to" prepend="and">
+			#to# > gmt_start
+		</isNotEmpty>
+		<isNotNull property="status" prepend="and">
+			status = #status#
+		</isNotNull>
+		<isNull  property="status" prepend="and">
+			status in (1,4)
+		</isNull>
+	</select>
+	
+	<select id="selectById" parameterClass="java.lang.Integer" resultMap="companyCouponResult">
+		select
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where id = #value#
+	</select>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="email">
+				exists (select id from company_account  where a.company_id = company_id and email = #email#)
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryCompanyCoupon" parameterClass="java.util.Map" resultMap="companyCouponDtoResult">
+		select
+		<include refid="pageColumn"/>
+		from company_coupon a
+		<include refid="whereClause"/>
+	 	<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryCompanyCouponCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from company_coupon a
+		<include refid="whereClause"/>
+	</select>
+	<select id="selectByServiceName" parameterClass="java.util.Map" resultMap="companyCouponResult">
+		select 
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where company_id = #companyId# and service_name=#serviceName# and status in (1,4)
+	</select>
+	<select id="queryByNameCode" parameterClass="java.util.Map" resultMap="companyCouponResult">
+		select 
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where company_id = #companyId# and service_name=#serviceName# and code=#code# and  status in (1,4)
+	</select>
+	
+	<select id="countCodeByCondition" parameterClass="java.util.Map" resultMap="companyCouponResult">
+		select 
+		<include refid="defaultColumn"/>
+		from company_coupon
+		where company_id = #companyId# and code = #code# and status = 1 
+		<!-- 
+		and now() >= gmt_start and gmt_end >now() 
+		 -->
+		
+	</select>
+	
+</sqlMap>

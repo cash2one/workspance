@@ -1,0 +1,152 @@
+#set( $layout = "/layout/default.vm" )
+
+<link rel="stylesheet" type="text/css" href="http://img0.zz91.com/zz91/business/css/index.css" />
+<style>
+.pb_tab .pt1 {width:10%;text-align:center;overflow:hidden;}
+.pb_tab .pt2 {width:28%;overflow:hidden;}
+.pb_tab .pt3 {width:14%;text-align:center;overflow:hidden;} 
+</style>
+<div class="container mt clearfix">
+	<div class="grid_12">    
+		<div class="business"><div class="mainblock1"></div></div>
+		<div class="cb"></div>
+		<!--end business-->
+		<div class="purchase_title">厂家直购-我的采购</div>
+		<div id="messagediv" class="alert mt hidden">请按照提示操作，操作按钮在下方！</div>
+		<!--end purchase_title-->
+		<form action="#springUrl('/mytrust/purchase.htm')" method="post">
+			<div class="purchase_search">
+				<label for="state">状态</label>&nbsp;&nbsp;
+				<select id="state" name="status">
+					<option value="">全部</option>
+					<option value="00" #if($!{searchDto.status}=="00") selected  #end>未审核</option>
+					<option value="01" #if($!{searchDto.status}=="01") selected  #end>正在报价</option>
+					<option value="02" #if($!{searchDto.status}=="02") selected  #end>已有报价</option>
+					<option value="03" #if($!{searchDto.status}=="03") selected  #end>正在洽谈</option>
+					<option value="04" #if($!{searchDto.status}=="04") selected  #end>等待打款</option>
+					<option value="05" #if($!{searchDto.status}=="05") selected  #end>交易完成</option>
+					<option value="06" #if($!{searchDto.status}=="06") selected  #end>交易终止</option>
+					<option value="99" #if($!{searchDto.status}=="99") selected  #end>审核未通过</option>
+				</select>
+				<input type="submit" class="ps_btn" value="搜索" />
+			</div>
+			<!--end purchase_search-->
+		</form>
+		<div class="purchase_box2">
+			<table class="pb_tab" cellpadding="0" cellspacing="0">
+				<tr>
+					<th class="pt1">采购单流水号</th>
+					<th class="pt2">采购内容</th>
+					<th class="pt1">交易状态状态</th>
+					<th class="pt3">跟进交易员</th>
+					<th class="pt1">发布时间</th>
+					<th class="pt1">发布状态</th>
+					<th class="pt1">操作</th>
+				</tr>
+				#foreach($li in $!{page.records})
+                <tr>
+                	<td class="pt1">No.$!{li.trustBuy.buyNo}</td>
+                    <td class="pt2">$!{li.trustBuy.detail}</td>
+                    <td class="pt1">
+						#if($!{li.trustBuy.status}=="00")
+							未审核
+						#elseif($!{li.trustBuy.status}=="01")
+							<span style="color:green">正在报价</span>
+						#elseif($!{li.trustBuy.status}=="02")
+							<span style="color:green">已有报价</span>
+						#elseif($!{li.trustBuy.status}=="03")
+							<span style="color:green">正在洽谈</span>
+						#elseif($!{li.trustBuy.status}=="04")
+							<span style="color:green">等待打款</span>
+						#elseif($!{li.trustBuy.status}=="05")
+							<span style="color:green">交易完成</span>
+						#elseif($!{li.trustBuy.status}=="06")
+							交易终止
+						#elseif($!{li.trustBuy.status}=="99")
+							<span style="color:red">审核不通过</span>
+						#end
+					</td>
+                    <td class="pt3">$!{li.trustDealer.name}<br />$!{li.trustDealer.tel}</td>
+                    <td class="pt3">$!date.format('yyyy-MM-dd HH:mm',$!{li.trustBuy.gmtCreated})</td>
+					<td class="pt3">
+					<span id="Fpshow$!{li.trustBuy.id}">
+					  #if($!{li.isPuase}==0) 已发布
+					  #else 暂不发布
+					  #end
+                    </span>
+	                </td>
+					<td class="pt3">
+					<span id="show$!{li.trustBuy.id}">
+                      #if($!{li.isPuase}==0)<input type="button"  onclick="fun($!{li.trustBuy.id})" value="暂不发布" "></input>
+                      #else <input type="button"  onclick="fun1($!{li.trustBuy.id})" value="重新发布"></input>
+					  #end
+                     </span>
+					</td>
+                </tr>
+				#end
+            </table>
+			<input type="hidden"  id="idStart" value=""/>
+            #myrcPageNav($!{page} "#springUrl('/mytrust/purchase.htm')" "" "" )	
+        </div>
+        <!--end purchase_box2-->
+    </div>
+    <!--end grid_12-->
+</div>
+##<script language="javascript" src="http://img0.zz91.com/zz91/business/js/jquery.Sonline.js"></script> 
+<script type="text/javascript">
+
+
+ function fun(id){
+   	       jQuery.ajax({
+		   url:'stopFp.htm',
+		   type:'post',
+		   datatype:'json',
+		   data:{id:id},
+		   cache:false,
+		   success:function(data){
+		   ajaxob=eval("("+data+")");
+		   var a=ajaxob.data;
+		   var b=ajaxob.success;
+		   if(b){
+           jQuery("#messagediv").removeClass("hidden");
+		   $("#messagediv").html("<b style='color:red'>成功暂停发布供求。</b>");
+		   $("#show"+id).html("<input type='button'  onclick='fun1("+id+")' value='重新发布'></input>");
+		   $("#Fpshow"+id).html("暂不发布");
+		   }
+		   }
+		  })
+	   }    
+	   
+ function fun1(id){
+   	       jQuery.ajax({
+		   url:'startFp.htm',
+		   type:'post',
+		   datatype:'json',
+		   data:{id:id},
+		   cache:false,
+		   success:function(data){
+		   ajaxob=eval("("+data+")");
+		   var a=ajaxob.data;
+		   var b=ajaxob.success;
+		   if(b){
+		   jQuery("#messagediv").removeClass("hidden");
+		   $("#messagediv").html("<b style='color:red'>成功发布供求。</b>");
+		   $("#show"+id).html("<input type='button'  onclick='fun("+id+")' value='暂不发布'></input>");
+		    $("#Fpshow"+id).html("已发布");
+		   }
+		   }
+		  })
+	   }       	   
+jQuery(document).ready(function(){
+	myrc.menu(3, 2);
+});
+##jQuery(function(){
+##	jQuery(".business").Sonline({
+##		Position:"right",//left或right
+##		Top:-110,//顶部距离，默认200px
+##		Effect:true, //滚动或者固定两种方式，布尔值：true或false
+##		DefaultsOpen:true, //默认展开：true,默认收缩：false隔开
+##		Qqlist:""
+##	});
+##})	
+</script> 

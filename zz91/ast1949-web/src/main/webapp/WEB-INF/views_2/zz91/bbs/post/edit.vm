@@ -1,0 +1,50 @@
+#set($layout="/layout/defaultS.vm")
+
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/bbs/post.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/bbscategorytree.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/bbscategorycombtree.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		var mainForm=Ext.create("ast.ast1949.bbs.post.MainForm",{
+			#if($!{id}>0)
+##			saveUrl:Context.ROOT+"/zz91/bbs/post/updatePost.htm",
+			editFlag:true,
+			#end
+			region:"center",
+			title:"贴子基本信息"
+		});
+		
+		var tabPanel=Ext.create("Ext.tab.Panel",{
+			region:"center",
+			items:[mainForm
+			#if($!{companyId}>0)
+			,{
+				xtype:"panel",
+				title:"公司信息",
+				html:'<iframe src="' + Context.ROOT+'/zz91/crm/company/compInfoReadonly.htm?companyId=$!{companyId}" frameBorder=0 scrolling="auto" style = "width:100%;height:100%"></iframe>'
+			}
+			#end
+			#if($!{id}>0)
+			,{
+				xtype:"panel",
+				title:"贴子详细信息",
+				html : '<iframe src="' + Context.ROOT+'/zz91/bbs/post/content.htm?id=$!{id}" frameBorder=0 scrolling="auto" style = "width:100%;height:100%"></iframe>'
+			}
+			#end
+			]
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[tabPanel]
+		});
+		
+		#if($!{id}>0)
+			mainForm.loadModel($!{id});
+		#else
+			mainForm.initCreate();
+		#end
+		
+	});
+</script>

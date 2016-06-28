@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subscribeSmsPrice">
+	<typeAlias alias="subscribeSmsPrice" type="com.ast.ast1949.domain.company.SubscribeSmsPriceDO"/>
+	
+	<resultMap id="subscribeSmsPriceResult" class="subscribeSmsPrice">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="areaNodeId" column="area_code" />
+		<result property="categoryCode" column="category_code" />
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="addSubscribeSMS" parameterClass="java.util.HashMap">
+		insert into subscribe_sms_price
+			(company_id,area_code,category_code,gmt_created,gmt_modified)
+		values
+			(#companyId#,#areaNodeId#,#categoryCode#,now(),now())
+			<selectKey keyProperty="id"  resultClass="int">
+				select last_insert_id()
+			</selectKey>
+	</insert>
+	
+	<delete id="deleteSubscribeSMSByArea" parameterClass="java.util.HashMap" >
+		delete from subscribe_sms_price where category_code=#categoryCode# and area_code=#areaNodeId# and company_id=#companyId#
+	</delete>
+	
+	<delete id="deleteSubscribeSMS" parameterClass="java.util.HashMap" >
+		delete from subscribe_sms_price where category_code=#categoryCode# and company_id=#companyId#
+	</delete>
+	
+	<delete id="deleteSubscribeSMSPrice" parameterClass="java.util.HashMap" >
+		delete from subscribe_sms_price where id=#id# and company_id=#companyId#
+	</delete>
+	
+	<select id="querySubscribeSMS" parameterClass="java.lang.Integer" resultMap="subscribeSmsPriceResult">
+		select * from subscribe_sms_price where company_id=#companyId# order by gmt_created desc
+	</select>
+	<select id="countSubscribeSmsByCategoryCode" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0) from subscribe_sms_price where company_id=#companyId# and category_code=#categoryCode#
+	</select>
+	
+	<select id="selectSubscribeSmsForList" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select category_code from subscribe_sms_price where company_id=#companyId# order by gmt_created desc limit 0,8
+	</select>
+	<select id="countSubscribeSms" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0) from subscribe_sms_price where company_id=#companyId#
+	</select>
+</sqlMap>

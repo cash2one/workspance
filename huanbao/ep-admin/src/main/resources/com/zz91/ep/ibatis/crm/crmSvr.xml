@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmSvr">
+	<typeAlias alias="crmSvr" type="com.zz91.ep.domain.crm.CrmSvr" />
+	<typeAlias alias="right" type="com.zz91.ep.domain.crm.CrmRight"/>
+	
+	<resultMap id="crmSvrResult" class="crmSvr">
+		<result property="id" column="id" />
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="details" column="details"/>
+		<result property="unitPrice" column="unit_price"/>
+		<result property="units" column="units"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<resultMap id="rightResult" class="right">
+		<result property="id" column="id" />
+		<result property="code" column="code"/>
+		<result property="name" column="name"/>
+		<result property="sort" column="sort"/>
+		<result property="content" column="content"/>
+		<result property="menu" column="menu"/>
+		<result property="menuUrl" column="menu_url"/>
+		<result property="menuCss" column="menu_css"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	<!-- 通过平台服务ID查询所有权限ID列表 -->
+	<select id="queryCrmRightIdOfCrmSvr" parameterClass="java.lang.Integer" resultClass="java.lang.Integer" >
+		select crm_right_id from crm_svr_right where crm_svr_id=#value#
+	</select>
+	<!-- 更新平台服务信息 -->
+	<update id="updateCrmSvr" parameterClass="crmSvr" >
+		update crm_svr
+		set 
+		code=#code#,
+		name=#name#,
+		details=#details#,
+		unit_price=#unitPrice#,
+		units=#units#,
+		gmt_modified=now()
+		where id=#id#
+	</update>
+	<!-- 插入平台服务对象 -->
+	<insert id="insertCrmSvr" parameterClass="crmSvr" >
+		insert into crm_svr(`code`,`name`,`details`,`unit_price`,`units`,`gmt_created`,`gmt_modified`)
+		values(#code#,#name#,#details#,#unitPrice#,#units#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<!-- 查询服务列表 -->
+	<select id="queryCrmSvrList" resultMap="crmSvrResult" >
+		select 
+			cs.id,
+			cs.code,
+			cs.name,
+			cs.details,
+			cs.unit_price,
+			cs.units,
+			cs.gmt_created,
+			cs.gmt_modified
+		from crm_svr cs
+	</select>
+	<!-- 通过服务ID删除服务所拥有的权限 -->
+	<delete id="deleteCrmRightOfCrmSvr" parameterClass="java.lang.String" >
+		delete from crm_svr_right 
+		where crm_svr_id in
+		(select cs.id from crm_svr cs where cs.code like concat(#value#,'%'))
+	</delete>
+	<!-- 通过服务ID删除平台服务 -->
+	<delete id="deleteCrmSvr" parameterClass="java.lang.String" >
+		delete from crm_svr
+		where code like concat(#value#,'%')
+	</delete>
+	<!-- 插入中间表crm_svr_right -->
+	<insert id="insertCrmSvrCrmRight" parameterClass="java.util.HashMap" >
+		insert into crm_svr_right(crm_svr_id,crm_right_id,gmt_created,gmt_modified)
+		values(#crmSvrId#,#crmRightId#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	<!-- 删除中间表记录crm_svr_right -->
+	<delete id="deleteCrmSvrCrmRight" parameterClass="java.util.HashMap" >
+		delete from crm_svr_right
+		where crm_svr_id=#crmSvrId# and crm_right_id=#crmRightId#
+	</delete>
+	<select id="countCrmSvrChild" parameterClass="java.lang.String" resultClass="java.lang.Integer" >
+		select count(*) from crm_svr where code like concat(#value#, '_%')
+	</select>
+	<select id="queryCrmSvrChild" parameterClass="java.lang.String"
+		resultMap="crmSvrResult">
+		select
+			cs.id,
+			cs.code,
+			cs.name,
+			cs.details,
+			cs.unit_price,
+			cs.units,
+			cs.gmt_created,
+			cs.gmt_modified
+		from crm_svr cs where cs.code like concat(#value#,'____')
+	</select>
+	<select id="queryOneCrmSvr" parameterClass="java.lang.String" resultMap="crmSvrResult">
+		select 
+			cs.id,
+			cs.code,
+			cs.name,
+			cs.details,
+			cs.unit_price,
+			cs.units,
+			cs.gmt_created,
+			cs.gmt_modified
+		from crm_svr cs where cs.code =#value#
+		limit 1
+	</select>
+	
+	<select id="queryMaxCodeOfChild" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select max(code) from crm_svr
+		where code like concat(#value#,'____')
+	</select>
+	<select id="queryIdByCode" parameterClass="java.lang.String" resultClass="java.lang.Integer">
+		select id from crm_svr
+		where code=#svrCode#
+	</select>
+	<select id="querySvrNameById" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select name from crm_svr 
+		where id=#crmSvrId#
+	</select>
+	<select id="queryOpenApi" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select open_api from crm_svr
+		where id=#crmSvrId#
+	</select>
+	<select id="queryCloseApi" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select close_api from crm_svr
+		where id=#crmSvrId#
+	</select>
+</sqlMap>

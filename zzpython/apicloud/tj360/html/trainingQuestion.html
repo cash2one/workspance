@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>提问</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/common.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	#left {
+		width:50px;
+		background:url(../image/back.png) no-repeat center;
+		-webkit-background-size:13px 21px;
+	}
+	#right{
+		width:50px;
+		display: -webkit-box;
+		-webkit-box-pack: center;
+		-webkit-box-align: center;
+		color: rgb(225, 66, 116);
+		font-size: 18px;
+	}
+	.rightBtnActive{
+		color: #00b8ff !important;
+	}
+	textarea{
+		width: 100%;
+		background-color: #FFFFFF;
+		border-bottom: 1px solid #D9D9D9;
+		border-top: 1px solid #D9D9D9;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+		<header id='header'>
+			<nav id="nav">
+				<a id="left" tapmode="leftBtnActive" onclick="api.closeWin();">
+				</a>
+				<div id="middle">
+					<strong id="title">提问</strong>
+				</div>
+				<a id="right" tapmode="rightBtnActive" onclick="submitCourseQuiz()">
+					提交
+				</a>
+			</nav>
+		</header>
+		<section id='content'>
+			<textarea placeholder="100字以内" id="question" onkeypress="validateWordNum(event)"></textarea>
+		</section>
+	</div>
+</body>
+<script>
+	apiready = function() {
+		var header = $api.byId('header');
+		$api.fixIos7Bar(header);
+		$api.byId('question').style.height = api.winHeight * 0.4 + 'px';
+	};
+	
+	function validateWordNum(event){
+		var value = $api.val($api.byId('question'));
+		if(value.length >= 100){
+			api.toast({msg: '您输入的内容已超过100字！', location: 'middle'});
+			event.preventDefault();
+		}
+	}
+	
+	function submitCourseQuiz(){
+		var q = $api.val($api.byId('question'));
+		if(q.length <= 0){
+			api.toast({msg: '请输入您的问题', location: 'middle'});
+			return;
+		}
+		if(q.length > 100){
+			q = q.substr(0, 100);
+		}
+		var values = {
+			mid: api.pageParam.mid,
+			uid: $api.getStorage('usr').uid,
+			fid: $api.getStorage('usr').fid,
+			account: $api.getStorage('usr').account,
+			oqContent: q
+		};
+		api.ajax({
+	    	url: serverUrl + '/user/ClassQuestions',
+		    method:'post',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json',
+		    data: {values: values}
+	    }, function(ret, err){
+	    	if(ret && ret.status){
+	    		api.toast({msg: '提交成功，管理员回复后才可见', location: 'middle'});
+				
+				api.execScript({name: 'trainingDetail', script: 'changeTrainingFrame("1")'});
+				
+				api.execScript({name: 'trainingDetail', frameName: 'trainingDetail_frame', script: 'loadData(true)'});
+				
+				setTimeout(function(){api.closeWin();}, 2000);
+	    	}else{
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    	}
+	    });
+	}
+</script>
+</html>

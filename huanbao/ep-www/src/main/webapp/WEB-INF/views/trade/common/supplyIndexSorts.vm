@@ -1,0 +1,69 @@
+  <div class="tdl_l_sorts margintop8 html5radius" id="hb_tdl">
+ 		<div class="tdl_l_sorts_s">
+        	<h3 class="tdl_l_sorts_t"><span class="paddingright2em">类</span>目：</h3>
+            <ul>
+				#foreach($list in $!{searchCategory})
+						<li><a href="#springUrl('/trade/supply/index')--$!{list.code}--.htm" >#printTitle($!{list.name} 8 '')</a></li>
+				#end
+            </ul>
+            <span class="showhidebtn" id="moreBtn">更多</span>
+        </div>
+		#foreach($list in $!{searchProperty})
+			#if($velocityCount < 3)
+            <div class="tdl_l_sorts_s">
+            	<h3 class="tdl_l_sorts_t" id="propertyName$!{list.id}">
+					$!{list.name}:
+				</h3>
+                <ul>
+                    #foreach($item in $!{list.searchValue})
+                        <li><a href="javascript:addSearchProperty('$!{list.id}','$item')">$!{item}</a></li>
+                    #end
+                </ul>
+                <span class="showhidebtn" id="moreBtn"></span>
+            </div>
+			#else
+				<div class="tdl_l_more">
+					<div class="tdl_l_more_s">
+	                   <h3 class="tdl_l_sorts_t" id="propertyName$!{list.id}">$!{list.name}：</h3>
+	                    <ul>
+							#foreach($item in $!{list.searchValue})
+	                         	<li><a href="javascript:addSearchProperty('$!{list.id}','$item')">$!{item}</a></li>
+	                        #end
+	                    </ul>
+					</div>
+				</div>
+			#end
+		#end
+	    <div class="tdl_l_smorebox"><div  class="tdl_l_smorebtn"><span class="moreview">显示更多</span></div></div>
+	    <!---点击显示更多按钮才显示-->
+        <div id="searchPropertyValueDiv" class="clear"></div>
+        <!---点击显示更多按钮才显示--->
+ </div>
+ 
+ <script>
+ 	var lsbtn = new hb.tradelist.mouseHover();
+	lsbtn.SortsHover({sortsls:'#hb_tdl'})
+	function addSearchProperty(id,value){
+	   var name = jQuery("#propertyName"+id).html();
+        if (jQuery("#property"+id).html() == null) {
+            jQuery("#searchPropertyDiv").append("<a id='property"+id+"' href='javascript:deleteSearchProperty("+id+")'>"+name+value+"</a>");
+            jQuery("#searchPropertyValueDiv").append("<input id='propertyValue"+id+"' name='propertyValueItems' type='hidden' value='"+id+"_"+value+"' />");
+        } else {
+            jQuery("#property"+id).html(name+value);
+            jQuery("#propertyValue"+id).val(id+"_"+value);
+        }
+        toSearchProperty(id);
+    }
+	function deleteSearchProperty(id){
+        jQuery("#property"+id).remove();
+        jQuery("#propertyValue"+id).remove();
+        toSearchProperty(id);
+	}
+	function toSearchProperty(id) {
+	    var propertyValue="";
+	    for(var i = 0; i < jQuery(":input[name='propertyValueItems']").size(); i++) {
+	       propertyValue = propertyValue + jQuery(":input[name='propertyValueItems']").eq(i).val() + ":";
+	    }
+		window.location="#springUrl('/trade/supply/index')"+"--$!{search.category}--$!{search.encodeKeywords}--"+propertyValue+"------------------s0--l$!{page.limit}.htm";
+	}
+ </script>

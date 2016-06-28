@@ -1,0 +1,442 @@
+#set($in="2")
+<script type="text/javascript" src="http://img0.zz91.com/zz91/polymer/js/picShow.js"></script>
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script src="$!{address.img}/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="$!{address.img}/zz91/css/openoverlay.css">
+#set($layout="layout/yuanliaoLayout.vm")
+	#if($!{sessionUser})
+         <input type="hidden" id="loginFlag" value="1" />
+    #else
+         <input type="hidden" id="loginFlag" value="0" />
+    #end
+    <div class="content">
+    	<div class="wrapper clearfix">
+        	<div class="hd_box layer clearfix">
+            	<div class="layer_header">
+                	<div class="layer_title">
+                		<h3>当前位置：<a href="$!{address.yuanliao}">首页</a>&nbsp;&gt;&nbsp;<a href="$!{address.yuanliao}/gy/">产品库</a>
+							#if($!{fisrtCode})&nbsp;&gt;&nbsp;<a href="#springUrl('/')$!{mapMain.get($!{fisrtCode})}/gy/">$!{fisrtLabel}</a>#end
+							#if($!{secondCode})&nbsp;&gt;&nbsp;<a href="#springUrl('/')$!{mapMain.get($!{secondCode})}/gy/">$!{secondLabel}</a>#end
+							&gt;&nbsp;<font class="bold">$!{yld.yuanliao.title}</font>
+                    </div>
+                    <div class="layer_btn clearfix">
+                    	<a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布供应信息</a>
+                        <a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank" class="btn_bg">发布求购信息</a>
+                    </div>
+                </div>
+                <!--end layer_header-->
+                <div id="detail">
+                	<div class="detail_block clearfix">
+                    	<div class="detail_left">
+                        	<div class="dl_box">                            	
+                                <div class="w310" style="position: relative;">
+									<div class="boxa" style="overflow: hidden">
+										<div class="w310 fl" style="height:270px;">
+											<div class="v_content_list">
+												<ul class="clear">
+													#foreach($li in $listpic)
+														<li>
+															<a href="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=310&height=270" target="_blank"><img src="$!{address.thumb}/$!{address.resource}/$!{li.picAddress}&width=310&height=270"/></a>
+														</li>
+													#end
+													#if($listpic.size()==0)
+														<li>
+															<a href="http://img0.zz91.com/zz91/polymer/images/notimg.jpg" target="_blank"><img src="http://img0.zz91.com/zz91/polymer/images/notimg.jpg" width="310" height="270" /></a>
+														</li>
+													#end
+												</ul>
+											</div>
+										</div>
+									</div>
+    								<div class="highlight_tip">
+										<ul class="tab clear">
+											#foreach($li in $listpic)
+												#if($velocityCount==1)
+													<li class="navigation current"><img src="$!{address.resource}/$!{li.picAddress}" width="56" height="55" /></li>
+												#else
+													<li class="navigation"><img src="$!{address.resource}/$!{li.picAddress}" width="56" height="55" /></li>
+												#end
+											#end
+										</ul>
+									</div>
+								</div>
+                                <!--end w310-->
+								#set($total=$!{list.size()})
+								#foreach($li in $!list)
+									#if($!{yld.yuanliao.id} == $!{li.id})
+										#set($current = $!{velocityCount} - 1)
+									#end
+								#end
+								#if(${current} != 0)
+									#set($pageUp = ${current} - 1)
+								#else
+									#set($pageUp = $total - 1)
+								#end
+								#if(${current} < ($total - 1))
+									#set($pageNext = ${current} + 1)
+								#else
+									#set($pageNext = 0)
+								#end
+                                <div class="dl_item clearfix">
+                                	<div class="dl_shoucang">
+                                    	<a href="javascript:;" class="collect" onclick="mycollect($!{yld.yuanliao.id})">收藏该产品</a>
+                                    </div>
+                                    <div class="dl_page">
+										#if($list.size()==0)
+											<a href="$!{address.yuanliao}/detail/$!{yld.yuanliao.id}.html" class="prev page">上一条</a>
+											<a href="$!{address.yuanliao}/detail/$!{yld.yuanliao.id}.html" class="next page">下一条</a>
+										#else
+											<a href="$!{address.yuanliao}/detail/$!{list.get($pageUp).id}.html" class="prev page">上一条</a>
+											<a href="$!{address.yuanliao}/detail/$!{list.get($pageNext).id}.html" class="next page">下一条</a>
+										#end
+                                    </div>
+                                </div>
+                                <!--end dl_item-->
+                            </div>
+                        </div>
+                        <div class="detail_right">
+                        	<div class="dr_box">
+                            	<div class="dr_item">
+                            		<p class="dr_title">#printProductType($!{yld.yuanliao.yuanliaoTypeCode} "" $!{yld.yuanliao.title})</p>
+                                    <div class="tag_list clearfix">
+                                    	<span>产品标签：</span>
+										#foreach($li in $listTag)
+											<a href="javascript:;" target="_blank" title="$li" class="tag">$li</a>
+										#end
+                                    </div>
+                            	</div>
+                                <div class="dr_item">
+                                	<table class="dr_tab" cellpadding="0" cellspacing="0">
+                                    	<tr>
+                                        	<td>产品价格：
+													#if($!{yld.yuanliao.minPrice})
+														<font class="red bold">$!{yld.yuanliao.minPrice}-$!{yld.yuanliao.maxPrice}</font>$!{yld.yuanliao.priceUnit}/$!{yld.yuanliao.unit} 
+													#else
+														#if($!{yld.yuanliao.price}&&$!{yld.yuanliao.price}!='0')
+															<font class="red bold">$!{yld.yuanliao.price}</font>$!{yld.yuanliao.priceUnit}/$!{yld.yuanliao.unit} 
+														#else
+															面议
+														#end
+													#end
+											</td>
+                                            <td>供应数量：<font class="red bold">#if($!{yld.yuanliao.quantity}==0)不限 #else $!{yld.yuanliao.quantity}#end</font> #if($!{yld.yuanliao.quantity}!=0)$!{yld.yuanliao.unit}#end #if($!{yld.yuanliao.provideStatus})#if($!{yld.yuanliao.provideStatus}=='0')（#printProductType($!{yld.yuanliao.yuanliaoTypeCode} "长期" "")）#else（#printProductType($!{yld.yuanliao.yuanliaoTypeCode} "不定期" "")） #end #end</td>
+                                            <td>货物所在地：$!{yld.address}#if($!{yld.yuanliao.goodsTypeCode}=="10361001")（现货）#elseif($!{yld.yuanliao.goodsTypeCode}=="10361000")（期货）#end</td>
+                                        </tr>
+                                        <tr>
+                                        	#if($!{yld.yuanliao.sendTime}&&$!{yld.yuanliao.sendTime}!='0')<td>发货时间：$!{yld.yuanliao.sendTime}天内发货</td>#end
+                                            #if($!{yld.yuanliao.tradeIntro}&&$!{yld.yuanliao.tradeIntro}!="")<td>交易说明：#if($!{yld.yuanliao.tradeIntro}=="支持线下看货")$!{yld.yuanliao.tradeIntro}#elseif($!{yld.yuanliao.tradeIntro}&&$!{yld.yuanliao.tradeIntro}!="") 指定销售地区$!{yld.yuanliao.tradeIntro} #end</td>#end
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="dr_item2 bgrey">
+                                	<span>厂家（产地）：$!{yld.categoryMainLabel}#if($!{yld.yuanliao.salesMode})#if($!{yld.yuanliao.salesMode}=='0')（品牌销售）#else（自产销售）#end #end</span>
+                                    <span>牌号：$!{yld.yuanliao.tradeMark}</span>
+                                    <span>#if($!{yld.typeLabel})类型：$!{yld.typeLabel}#end</span>
+                                </div>
+                                <div class="dr_item2">
+                                	<span>发布时间：$!date.format('yyyy-MM-dd',$!{yld.yuanliao.refreshTime})</span>
+                                    <span>信息有效期：截止 $!date.format('yyyy-MM-dd',$!{yld.yuanliao.expireTime})</span>
+                                </div>
+                                <div class="dr_link clearfix">
+									
+									<div class="xuanti">
+                                	   <a href="#springUrl('/firm/xunjia')$!{yld.company.id}.htm?yId=$!{yld.yuanliao.id}" class="dr_btn dr_bg01" target="_blank">立即询价</a>
+                                       <p>让对方与你联系</p>
+                                    </div>
+                                    <div class="xuanti">
+                                        <a class="dr_btn dr_bg02 back" href="javascript:;">查看联系方式</a>
+                                        <p>免费查看联系方式</p>
+                                    </div>
+                                    <div class="xuanti">
+										#if($!{account.qq})<a href="http://wpa.qq.com/msgrd?V=1&uin=$!{account.qq}&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes" class="dr_btn dr_bg03" target="_blank"><em class="qq">QQ联系</em></a>#end
+##                                        <a href="http://wpa.qq.com/msgrd?V=1&uin=343333672&Site=%B7%CF%BE%C9%CE%EF%D7%CA%CD%F8&Menu=yes" class="dr_btn dr_bg03" target="_blank"><em class="qq">QQ联系</em></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end detail_block-->
+                    <div class="info_block clearfix">
+                    	<div class="info_left">
+							#if($!{yld.company.membershipCode}=="10051000")
+								#parse("/common/puhui.vm")
+							#elseif($!{yld.company.membershipCode}=="10051003")
+								#parse("/common/ldb.vm")
+							#else
+								#parse("/common/zst.vm")
+							#end
+                            <div class="info_box mb20" style="border-bottom:0">
+                            	<div class="info_title">
+                                	##<a href="" target="_blank" class="fr">更多</a>
+                                	<h3 class="bold">塑料原料产品分类</h3>
+                                </div>
+                                <div class="tree_info_content">
+                                	<ul class="tree_ul">
+                                    	<li>
+                                        	<a href="javascript:;" id="tysl" haschild="hasChild">+ 通用塑料</a>
+                                        	<ul class="tree" id="t1">
+												#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?code=200910001000&companyId=$!{yld.yuanliao.companyId}&size=5", "", "", "")
+													#foreach($li in $list)
+														<li><a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode})#printTitle($!{li.yuanliao.title} 15 "...")</a></li>
+													#end
+												#end
+											</ul>
+										</li>
+										<li>
+											<a href="javascript:;" id="gcsl" haschild="hasChild">+ 工程塑料</a>
+											<ul class="tree" id="t2">
+												#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?code=200910001001&companyId=$!{yld.yuanliao.companyId}&size=5", "", "", "")
+													#foreach($li in $list)
+														<li><a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode})#printTitle($!{li.yuanliao.title} 15 "...")</a></li>
+													#end
+												#end
+											</ul>
+										</li>
+                                        <li>
+                                        	<a href="javascript:;" id="tssl" haschild="hasChild">+ 特殊塑料</a>
+                                            <ul class="tree" id="t3">
+                                        		#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?code=200910001002&companyId=$!{yld.yuanliao.companyId}&size=5", "", "", "")
+													#foreach($li in $list)
+														<li><a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode})#printTitle($!{li.yuanliao.title} 15 "...")</a></li>
+													#end
+												#end
+                                        	</ul>
+                                        </li>
+                                        <li>
+                                        	<a href="javascript:;" id="slhj" haschild="hasChild">+ 塑料合金</a>
+                                            <ul class="tree" id="t4">
+                                        		#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?code=200910001003&companyId=$!{yld.yuanliao.companyId}&size=5", "", "", "")
+													#foreach($li in $list)
+														<li><a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode})#printTitle($!{li.yuanliao.title} 15 "...")</a></li>
+													#end
+												#end
+                                        	</ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end info_box-->
+                            <div class="info_box mb20">
+                            	<div class="info_title"><h3 class="bold">相关类别热门产品</h3></div>
+                                <div class="info_content">
+                                	<ul class="info_ul">
+										#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryYuanliaoByCondition.htm?code=$!{categoryS}&noCompanyId=$!{yld.yuanliao.companyId}&size=8", "", "", "")
+											#foreach($li in $list)
+												<li>
+													<a href="$!{address.yuanliao}/detail/$!{li.yuanliao.id}.html" target="_blank" title="#printProductType($!{li.yuanliao.yuanliaoTypeCode} "" $!{li.yuanliao.title})">#printProductType($!{li.yuanliao.yuanliaoTypeCode})#printTitle($!{li.yuanliao.title} 20 "...")</a>
+												</li> 
+											#end
+										#end
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end info_box-->
+                            <div class="info_box mb20">
+                            	<div class="info_title">
+                                	<a href="$!{address.jiage}" target="_blank" class="fr">更多</a>
+                                	<h3 class="bold">塑料原料市场行情</h3>
+                                </div>
+                                <div class="info_content">
+                                	<ul class="info_ul">
+										#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryPriceByCondition.htm?$ll", "", "", "")
+											#foreach($li in $list)
+												<li>
+													<a href="$!{address.jiage}/detail/$!{li.id}.html" target="_blank" title="$!{li.title}">$!{li.title}</a>
+												</li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end info_box-->
+                            <div class="info_box">
+                            	<div class="info_title">
+                                	<a href="http://y.zz91.com/market/vi1001c.htm" target="_blank" class="fr">更多</a>
+                                	<h3 class="bold">相关热门产业带</h3>
+                                </div>
+                                <div class="info_content">
+                                	<ul class="info_ul">
+										#cacheFragment("$!{address.yuanliaoFragment}/market/queryMarketByCondition.htm?industry=$!{code}&size=8", "", "", "")
+											#foreach($li in $list)
+												<li><a href="$!{address.market}/$!{li.words}/" target="_blank" title="$!{li.name}">$!{li.name}</a></li>
+											#end
+										#end
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--end info_box-->
+                        </div>
+                        <!--end info_left-->
+                        <div class="info_right">
+                        	<div class="info_tag mb20 clearfix" id="pcProDetailIntro">
+                            	<div class="tag_ul">
+                                	<ul>
+                                    	<li name="Tag1" class="on">供求详情</li>
+                                        <li name="Tag2">联系方式</li>
+                                    </ul>
+                                </div>
+                                <div class="tag_box" id="Tag1">                           	
+                                 	<div class="tag1_item mb20">
+                                    	<table class="tag_tab" cellpadding="0" cellspacing="0">
+                                        	<tr>
+                                            	<td>厂家（产地）：$!{yld.categoryMainLabel}</td>
+                                                <td>牌号：$!{yld.yuanliao.tradeMark}</td>
+                                            </tr>
+                                            <tr>
+                                            	#if($!{yld.typeLabel}&&$!{yld.typeLabel}!="")<td>产品类型：$!{yld.typeLabel}</td>#end
+                                                #if($!{yld.processLabel}&&$!{yld.processLabel}!="")<td>加工级别：$!{yld.processLabel}</td>#end
+                                            </tr>
+                                            <tr>
+                                            	#if($!{yld.charaLabel}&&$!{yld.charaLabel}!="")<td>特性级别：$!{yld.charaLabel}</td>#end
+                                                #if($!{yld.usefulLabel}&&$!{yld.usefulLabel}!="")<td>用途级别：$!{yld.usefulLabel}</td>#end
+                                            </tr>
+                                            <tr>
+                                            	#if($!{yld.yuanliao.color}&&$!{yld.yuanliao.color}!="")<td>颜色：$!{yld.yuanliao.color}</td>#end
+                                                #if($!{yld.yuanliao.density}&&$!{yld.yuanliao.density}!="")<td>密度：$!{yld.yuanliao.density} g/cm³</td>#end
+                                            </tr>
+                                            <tr>
+                                            	#if($!{yld.yuanliao.hardness}&&$!{yld.yuanliao.hardness}!="")<td>硬度：$!{yld.yuanliao.hardness} HR</td>#end
+                                                #if($!{yld.yuanliao.tensile}&&$!{yld.yuanliao.tensile}!="")<td>拉伸强度：$!{yld.yuanliao.tensile} kg/cm²</td>#end
+                                            </tr>
+                                            <tr>
+                                            	#if($!{yld.yuanliao.bending}&&$!{yld.yuanliao.bending}!="")<td>弯曲强度：$!{yld.yuanliao.bending} kg/cm²</td>#end
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="tag1_item_2">
+                                    	$!{yld.yuanliao.description}
+                                    </div>
+                                    <!--end tag1_item2--> 
+                                </div>
+                                <div class="tag_box" style="display: none;" id="Tag2">                           	
+                                	<div class="tag2_item">
+                                    	<h2 class="f14">$!{yld.company.name}#if($!{isAttest})[<font class="red">已认证</font>]#end</h2>
+                                        <div class="tag2_mod">
+                                        	<table class="tag_tab" cellpadding="0" cellspacing="0">
+                                            	<tr>
+                                                	<td>联系人：$!{account.contact}</td>
+                                                	<td>地址：$!{province} $!{city}</td> 
+                                                </tr>
+                                                $!{zuheString}
+                                            </table>
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>
+                            <!--end info_tag-->
+                        	<div class="info_box mb20 clearfix">
+								<div class="info_title"><h3 class="bold">相关产品企业报价</h3></div>
+								#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/queryCompanyPriceByCondition.htm?categoryCompanyPriceCode=$!{priceCode}&size=10", "", "", "")
+									<div class="ib_list clearfix">
+										<div class="ib_list_left">
+											<ul class="ib_list_ul">
+												#foreach($li in $list)
+													#if($velocityCount>5)
+														#break
+													#end
+													<li>
+														<div class="ib2">
+															<a href="$!{address.jiage}/cdetail/$!{li.id}.html" target="_blank" title="$!{li.title}">#printTitle($!{li.title} 20 "...")</a>
+														</div>
+														<div class="ib3">$!{li.price}$!{li.priceUnit}</div>
+														<div class="ib4"><a href="$!{address.www}/inquiry/inquiryApi.htm?companyPriceId=$!{li.id}#messeges" class="enquiry" target="_blank">立即询价</a></div>
+														<div class="cb"></div>
+													</li>
+												#end
+											</ul>
+										</div>
+										<div class="ib_list_right">
+											<ul class="ib_list_ul">
+												#foreach($li in $list)
+													#if($velocityCount>5)
+														<li>
+															<div class="ib2">
+        														<a href="$!{address.jiage}/cdetail/$!{li.id}.html" target="_blank" title="$!{li.title}">#printTitle($!{li.title} 20 "...")</a>
+        													</div>
+        													<div class="ib3">$!{li.price}$!{li.priceUnit}</div>
+        													<div class="ib4"><a href="$!{address.www}/inquiry/inquiryApi.htm?companyPriceId=$!{li.id}#messeges" class="enquiry" target="_blank">立即询价</a></div>
+        													<div class="cb"></div>
+        												</li>
+													#end
+												#end
+											</ul>
+										</div>
+									</div>
+								#end
+							</div>
+							<!--end info_box-->
+						</div>
+						<!--end info_block-->
+					</div>
+					<!--end info_block-->
+                </div>
+                <!--end detail-->
+            </div>
+            <!--end hd_box-->
+        </div>
+    </div>
+    <div id="slider" class="slider">
+    	<dl>
+        	<dt>没有找到产品？</dt>
+            <dd>
+            	<p>可以告诉我们</p>
+                <p>你的采购需求</p>
+            	<a href="$!{address.myrc}/myyuanliao/office_post1.htm" target="_blank" class="fabu">发布求购信息</a>
+            </dd>
+            <dd>
+            	<p>查找其他更多</p>
+                <p class="mb20">供求信息</p>
+                <div class="sn_search">
+                	<input type="text" name="" class="slider_search" />
+                    <a href="javascript:void(0);" title="搜索" class="S_ficon ficon_search"></a>
+                </div>
+            </dd>
+        </dl>
+    </div>
+<script>	
+    function mycollect(a){
+		jQuery.ajax({
+           		url:"#springUrl('/yuanliao/collectYuanliao.htm')",
+            	data:{yuanliaoId : a},
+				dataType:"json",
+           		success:function(reg){
+					if(reg.collect=="has"){
+						alert("您已经收藏过该信息！");
+					}else if(reg.collect=="success"){
+						alert("收藏成功");
+					}else if(reg.collect=="login"){
+						Asto.util.Callback.setSubmitCallback(function(success, data){
+							closeoverlay();
+                			jQuery("#loginFlag").val(1);
+							mycollect(a);
+           		        });
+            		    openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.yuanliao}/submitCallback.htm&regfrom=10031019&loginType=1','注册/登录',750,430,0);
+					 }
+				}
+			})
+	}
+	$(document).ready(function() {
+		$(".tag1_item_2 img").each(function(index,item){
+			if($(this).width()>872){
+				$(this).attr("width","872")
+			}
+		})
+	});
+	
+	jQuery(".tag").click(function(){
+		var keyword = jQuery(this).attr("title");
+		keyword = encodeURI(keyword);
+		if(keyword){
+			window.open("#springUrl('/search').htm?keyword="+keyword);
+		}
+	});
+	jQuery(".ficon_search").click(function(){
+		var keyword = jQuery(".slider_search").val().replace(/\s/g,'');
+		keyword = encodeURI(keyword);
+		if(keyword){
+			location.href="#springUrl('/search').htm?keyword="+keyword;
+		}
+	});
+</script>

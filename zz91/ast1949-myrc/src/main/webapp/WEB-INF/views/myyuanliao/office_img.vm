@@ -1,0 +1,170 @@
+#set( $layout = "/layout/yuanliaoLayout.vm" )
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<div class="wrap">
+  <div class="box_head g-br2">
+    <h4 class="box-title">塑料原料管理 / 图片修改</h4>
+  </div>
+  <!--end box_head-->
+  <div class="box_upload">
+  	<h3><a href="$!{address.myrc}/myyuanliao/office_post_list.htm">返回供求信息列表</a>&nbsp;<a href="$!{address.myrc}/myyuanliao/office_post_edit.htm?id=$!{yuanliaoId}" target="_blank">修改供求</a></h3>
+  	<div class="upload-info">注：审核不通过的图片，将无法正常显示。（图片审核不通过并不影响供求信息的正常显示。）</div>
+	<input type="hidden" value="$!{limitCount}" name="limitCount" id="limitCount" >
+    <div class="upload-block clearfix">
+    	<div class="pass-portrait">
+			#if($!{piclist.size()}<5)
+					<input id="uploadBtn" type="button" class="pass-portrait-filebtn" value="上传更多图片" />
+					##<input type="file" class="pass-portrait-file" name="file" id="fileImg" />
+			#end
+        </div>
+        <div class="fix-wall clearfix">
+        	<div class="list-fix">
+				#if($!piclist.size()==0)
+				<div class="item-fix">
+                	<div class="img-fix"><img src="http://img0.zz91.com/front/images/global/noimage.gif" class="preview" data-size="100, 100" /></div>
+                    <div class="txt-fix">您还没有上传图片</div>
+                </div>
+				#end
+				#foreach($pic in $!piclist)
+            	<div class="item-fix">
+                	<div class="img-fix"><img src="$!{address.thumb}$!{address.resource}/$!{pic.picAddress}&width=100&height=60" class="preview" name="imag$!{pic.id}" data-size="100, 100" id="imag$!{pic.id}"/></div>
+                    <div class="txt-fix">状态:#if($!{pic.checkStatus}=='0')【未审核】#elseif($!{pic.checkStatus}=='1')【审核通过】#else <span class="red">【退回】<br/>原因:$!{pic.unpassReason}</span>#end</div>
+                    <div class="text-fix clearfix">
+                    	<a href="#springUrl('/myyuanliao/updateYuanliaoPic.htm?id=')$!{pic.id}&isDel=1&editFlag=$!{pic.yuanliaoId}" onclick="return confirm('你确定要删除这张图片吗？')" class="btn-sub btn-small fl">删除</a>
+                        <a class="btn-sub btn-small fr" onclick="editPic($!{pic.id})">修改</a>
+                    </div>
+                </div>
+                <!--end item-fix-->
+				#end
+            </div>
+            <!--end list-fix-->
+        </div>
+    </div>
+  </div>
+  <!--end box_upload--> 
+</div>
+<!--end wrap-->
+<script>
+## 上传图片弹框
+var upload = new Asto.util.PopupBox({
+	url:"#springUrl('/sys/upload/product.htm?productId=')$!{productsId}",
+	callbackFn:function(success, data){
+		//关闭窗口
+		//保存图片信息
+		//成功后刷新页面
+		upload.close();
+		window.location.reload();
+	},
+	title:"上传产品图片",
+	width:450,
+	height:250,
+	modal:true
+});
+jQuery(function(){
+	myrc.select("Js_select");
+	
+
+	(function() {
+		$("#Js_search").click(function(){
+	        var keyWord = $("#Js_keyword").val(),
+	        	option = $("#Js_select").find("em").attr("data-option");
+
+	        if ( keyWord == ""){
+	            return false;
+	        } else {
+	        	switch(option) {
+	        		case "0":
+	        			zz91Search.products({
+		                    contextpath:"http://trade.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "1":
+	        			zz91Search.price({
+		                    contextpath:"http://price.zz91.com",
+		                    target:"_blank",
+		                    searchOptions:{
+		                        keywords:keyWord
+		                    }
+		                });
+	        			break;
+	        		case "2":
+	        			window.open("http://huzhu.zz91.com/search.htm?keywords=" + encodeURIComponent(keyWord));
+	        			break;
+	        		case "3":
+	        			window.open("http://company.zz91.com/index-p-" + keyWord + ".htm");
+	        			break;
+	        		default:
+	        			break;
+	        	}
+				return false;
+	        }
+	    })
+	})();
+	jQuery("#uploadBtn").click(function(){
+		
+			Asto.util.Callback.setSubmitCallback(function (success, data) {
+			    var ids=data.picId
+				var idArr=ids.split(",");
+				var num=Number(jQuery("#limitCount").val())-Number(idArr.length-1);
+				jQuery("#limitCount").val(num);
+				var paths=data.picAddress;
+    			var pathArr=paths.split(",");
+				for(var i=1;i<pathArr.length;i++){
+					jQuery.ajax({
+						url:"#springUrl('/myyuanliao/insertYuanliaoPic.htm')",
+						data:{"yuanliaoId":$!{yuanliaoId},"picAddress":pathArr[i]}
+					});
+				}
+				parent.closeoverlay();
+				window.location.reload();
+			});
+			var urls="$!{address.myrc}/photoabum/productsUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=6&contextFlag=2&limitCount=";
+			var url=urls+jQuery("#limitCount").val();
+			//将弹框关闭等字显示出来
+			parent.overtitle("上传图片");
+			openoverlay(url,'上传图片',700,500,0);
+	});
+	var previewImg=new Asto.util.PopupBox({
+		url:"#",
+		width:850,
+		height:450,
+		modal:true,
+		title:"大图预览"
+	});
+	
+	jQuery(".upload-wrap img").click(function(e){
+		previewImg.show(jQuery(this).attr("src"));
+	});
+});
+// 编辑图片
+function editPic(id){
+	if(confirm('你确定要修改这张图片吗？')){
+			Asto.util.Callback.setSubmitCallback(function (success, data) {
+			    var ids=data.picId
+				var idArr=ids.split(",");
+				var num=Number(jQuery("#limitCount").val())-Number(idArr.length-1);
+				jQuery("#limitCount").val(num);
+				var paths=data.picAddress;
+    			var pathArr=paths.split(",");
+				for(var i=1;i<pathArr.length;i++){
+					jQuery.ajax({
+						url:"#springUrl('/myyuanliao/updateYuanliaoPic.htm')",
+						data:{"id":id,"picAddress":pathArr[i]}
+					});
+				}
+				parent.closeoverlay();
+				window.location.reload();
+			});
+			var urls="$!{address.myrc}/photoabum/productsUpload.htm?destUrl=$!{address.myrc}/submitCallback.htm&albumId=6&contextFlag=2&limitCount=1&id=";
+			var url=urls+id;
+			//将弹框关闭等字显示出来
+			parent.overtitle("上传图片");
+			openoverlay(url,'上传图片',700,500,0);
+	}
+}
+</script>

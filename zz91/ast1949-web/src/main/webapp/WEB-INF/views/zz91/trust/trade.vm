@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/trust/trade.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/trustpic.js" ></script>
+	<script type="text/javascript" src="/web/js/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="#springUrl('/js/trust/FileUploadField.js')" ></script>
+	<script type="text/javascript" src="#springUrl('/js/trust/UploadWin.js')" ></script>
+	
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		var grid=new ast.ast1949.trust.trade.Grid({
+			id:POST.GRID,
+			region:"center",
+    		layout:"fit"
+		});
+		grid.on('cellclick', function (grid, rowIndex, columnIndex, e) {
+			var btn1 = e.getTarget('.controlBtn'); 
+			var btn2 = e.getTarget('.deatilBtn');
+			if(btn1){
+				row = grid.getSelectionModel().getSelected();
+				var form1=new ast.ast1949.trust.pic.Grid({
+					id:PIC.GRID,
+					region:"center",
+    				layout:"fit"
+				});
+				form1.loadTrustPic(row.get("id"));
+				var win = new Ext.Window({
+						id:"picwin",
+						title:"交易凭证",
+						layout:'border',
+                		width:550,
+               			height:500,
+						modal:true,
+						items:[form1]
+				});
+				win.show();
+				form1.on('cellclick', function (grid, rowIndex, columnIndex, e) {
+					var btn3 = e.getTarget('.edits'); 
+					var btn4 = e.getTarget('.del');
+					var btn5 = e.getTarget('.top');
+					var btn6 = e.getTarget('.addMadePic');
+					if(btn3){
+						var record=grid.getSelectionModel().getSelected();
+						var _id=record.data.id;
+						com.zz91.trust.upload.UploadConfig.uploadURL=Context.ROOT+"/zz91/trust/doUpload.htm?id="+_id
+								var win = new com.zz91.trust.upload.UploadWin({
+									title:"修改内容图片"
+								});
+						com.zz91.trust.upload.UploadConfig.uploadSuccess=function(form,action){
+								Ext.Msg.alert(Context.MSG_TITLE,"图片上传成功！");
+								Ext.getCmp(PIC.GRID).store.reload();
+								win.close();
+						}
+						win.show();
+					}
+					if(btn4){
+						Ext.MessageBox.confirm("删除提醒","确定删除已选中的图片",function(e){
+							if(e=="yes"){
+								var row = grid.getSelections();
+								var _ids = new Array();
+								for (var i=0,len = row.length;i<len;i++){
+									var _id=row[i].get("id");
+									Ext.Ajax.request({
+										url:Context.ROOT+Context.PATH+"/trust/updateDelete.htm",
+										params:{
+											"isDel":1,
+											"id":_id
+										},
+										success:function(response,opt){
+												var obj = Ext.decode(response.responseText);
+												if(obj.success){
+														ast.ast1949.utils.Msg("","图片已删除");
+														grid.getStore().reload();
+												}else{
+														ast.ast1949.utils.Msg("","发生错误,操作被取消");
+												}
+										},
+										failure:function(response,opt){
+												ast.ast1949.utils.Msg("","发生错误,操作被取消");
+										}
+								});
+								}
+							}
+						});
+					}
+					if(btn5){
+						Ext.MessageBox.confirm("置顶提醒","确定要置顶已选中的图片",function(e){
+							if(e=="yes"){
+								var row = grid.getSelections();
+								if(row.length>1){
+									ast.ast1949.utils.Msg("","只能选择其中一张图片");
+								}
+								var _id = row[0].data.id;
+								var _isDefault = row[0].data.isDefault;
+								if(_isDefault=='1'){
+									_isDefault = 0;
+								}else{
+									_isDefault = 1;
+								}
+								Ext.Ajax.request({
+									url:Context.ROOT+Context.PATH+"/trust/updateDelete.htm",
+									params:{
+										"isDefault":_isDefault,
+										"id":_id
+									},
+									success:function(response,opt){
+											var obj = Ext.decode(response.responseText);
+											if(obj.success){
+													ast.ast1949.utils.Msg("",obj.data);
+													grid.getStore().reload();
+											}else{
+													ast.ast1949.utils.Msg("","发生错误,操作被取消");
+											}
+									},
+									failure:function(response,opt){
+											ast.ast1949.utils.Msg("","发生错误,操作被取消");
+									}
+								});
+							}
+						});
+					}
+					if(btn6){
+						var record=grid.getSelectionModel().getSelected();
+						var _id=record.data.id;
+						var _tradeId=record.data.tradeId;
+						var _name = record.data.name;
+						com.zz91.trust.upload.UploadConfig.uploadURL=Context.ROOT+"/zz91/trust/doUpload.htm?picId="+_id+"&tradeId="+_tradeId;
+						var win = new com.zz91.trust.upload.UploadWin({
+							title:"添加处理过的图片"
+						});
+						win.initName(_name+"（已处理）");
+						com.zz91.trust.upload.UploadConfig.uploadSuccess=function(form,action){
+    						Ext.Msg.alert(Context.MSG_TITLE,"图片上传成功！");
+    						Ext.getCmp(PIC.GRID).store.reload();
+    						win.close();
+						}
+						win.show();
+					}
+				},this); 
+				
+			}
+			if(btn2){
+				row = grid.getSelectionModel().getSelected();
+				var form=new ast.ast1949.trust.trade.TradeInfoForm({
+				});
+				form.loadInit(row);
+				var win = new Ext.Window({
+						id:"updatephonewin",
+						title:"订单详情",
+						width:500,
+						modal:true,
+						autoHeight:true,
+						items:[form]
+				});
+				win.show();
+			}
+		},this); 
+		var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [grid]
+    	});
+	});
+</script>
+</head>
+
+<body>
+</body>
+</html>

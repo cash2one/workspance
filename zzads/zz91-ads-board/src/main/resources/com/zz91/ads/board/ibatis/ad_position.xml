@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adPosition">
+	<typeAlias alias="adPosition" type="com.zz91.ads.board.domain.ad.AdPosition"/>
+	<typeAlias alias="adPositionDto" type="com.zz91.ads.board.dto.ad.AdPositionDto"/>
+	
+	<resultMap id="adPositionResult" class="adPosition">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="parentId" column="parent_id" />
+		<result property="requestUrl" column="request_url" />
+		<result property="deliveryStyleId" column="delivery_style_id" />
+		<result property="sequence" column="sequence" />
+		<result property="paymentType" column="payment_type" />	
+		<result property="width" column="width" />
+		<result property="height" column="height" />
+		<result property="maxAd" column="max_ad" />
+		<result property="hasExactAd" column="has_exact_ad" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="deleted" column="deleted" />
+	</resultMap>
+	
+	<resultMap id="adPositionDtoResult" class="adPositionDto">
+		<result property="adPosition" resultMap="adPosition.adPositionResult" />
+	</resultMap>
+	
+	<resultMap id="fullAdPositionDtoResult" class="adPositionDto">
+		<result property="adPosition" resultMap="adPosition.adPositionResult" />
+		<result property="parentName" column="parent_name" />
+	</resultMap>
+	
+	<sql id="fields">
+		id,name,parent_id,request_url,delivery_style_id,sequence,payment_type,width,height,
+		max_ad,has_exact_ad,gmt_created,gmt_modified,deleted
+	</sql>
+	
+	<insert id="insertAdPosition" parameterClass="adPosition">
+		INSERT INTO ad_position (
+			name,
+			parent_id,
+			request_url,
+			delivery_style_id,
+			sequence,
+			payment_type,
+			width,
+			height,
+			max_ad,
+			has_exact_ad,
+			gmt_created,
+			gmt_modified,
+			deleted
+		)
+		VALUES (
+			#name#,
+			#parentId#,
+			#requestUrl#,
+			#deliveryStyleId#,
+			#sequence#,
+			#paymentType#,
+			#width#,
+			#height#,
+			#maxAd#,
+			#hasExactAd#,
+			NOW(),
+			NOW(),
+			#deleted#
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="signDelete" parameterClass="java.lang.Integer">
+		UPDATE ad_position 
+		SET deleted='Y', gmt_modified=NOW()
+		WHERE id=#value#
+	</update>
+	
+	<update id="updateAdPosition" parameterClass="adPosition">
+		UPDATE ad_position 
+		SET 
+			name = #name#,
+			parent_id = #parentId#,
+			request_url = #requestUrl#,
+			delivery_style_id = #deliveryStyleId#,
+			sequence = #sequence#,
+			payment_type = #paymentType#,
+			width = #width#,
+			height = #height#,
+			max_ad = #maxAd#,
+			has_exact_ad = #hasExactAd#,
+			gmt_modified = now()
+		WHERE id=#id#
+	</update>
+	
+	<select id="queryAdPositionDtoByIdForEdit" parameterClass="java.lang.Integer" resultMap="fullAdPositionDtoResult">
+		SELECT 
+			ap1.id,ap1.name,ap1.parent_id,ap1.request_url,ap1.delivery_style_id,ap1.sequence,
+			ap1.payment_type,ap1.width,ap1.height,ap1.max_ad,ap1.has_exact_ad,ap1.gmt_created,
+			ap1.gmt_modified,ap1.deleted,ap2.name AS parent_name
+		FROM ad_position ap1
+		LEFT JOIN ad_position ap2 ON ap1.parent_id=ap2.id
+		WHERE ap1.id=#value#
+	</select>
+	
+	<select id="queryAdPositionById" parameterClass="java.lang.Integer" resultMap="adPositionResult">
+		SELECT 
+			<include refid="fields" />
+		FROM ad_position
+		WHERE id=#value#
+	</select>
+	
+	<select id="queryAdPositionByParentId" parameterClass="java.lang.Integer" resultMap="adPositionResult">
+		SELECT 
+			<include refid="fields" />
+		FROM ad_position
+		WHERE parent_id=#value# AND deleted='N'
+	</select>
+	
+	<select id="queryAdPositionDtoById" parameterClass="java.lang.Integer" resultMap="fullAdPositionDtoResult">
+		SELECT 
+			<include refid="fields" />
+		FROM ad_position
+		WHERE id=#value#
+	</select>
+	
+	<select id="countAdPositionNodesByParentId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM ad_position
+		WHERE parent_id=#value# AND deleted='N'
+	</select>
+</sqlMap>

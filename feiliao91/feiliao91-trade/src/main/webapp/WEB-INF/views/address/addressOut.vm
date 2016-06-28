@@ -1,0 +1,408 @@
+ <link rel="stylesheet" href="$!{address.css}/trade/information/css/infoment.css" />
+ <link rel="stylesheet" href="$!{address.css}/trade/other/css/service.css" />
+ <!--[if IE 6]> 
+        <script src="http://img0.zz91.com/trade/comm/clarity.js"></script> 
+        <script type="text/javascript">  
+        DD_belatedPNG.fix('img');
+        DD_belatedPNG.fix('i');
+        </script>  
+    <![endif]-->
+#set($layout="/layout/securityDefault.vm")
+#set($in="2")
+#set($ss=4)
+    <div class="content clearfix">
+       #parse("/common/left_1.vm")
+        <div class="ads-main fr" id="tt">
+            <div class="add-ads">
+                <div class="add-warn color-66">
+                    <span ><i class="icon-add iconfont">&#xe60b;</i>添加新地址</span>
+                    <span>电话号码、手机号码选填一项，备注和公司名称为可填项，其余均为必填</span>
+                </div>
+				<form action="" method="post" id="form2">
+                <div class="add-form">
+                    <ul class="form-list">
+                        <li class="clearfix">
+                            <div class="form-title"><span>联系人：</span><i>*</i> </div>
+                            <input class="form-info" placeholder="长度不超过25个字符" name="name" value="$!{addre.name}" id="name"/><span style="color:red" id="nameerro"></span>
+                        </li>
+                        <li class="clearfix">
+                            <div class="form-title"><span>所在地区：</span><i>*</i> </div>
+                            <div class="controls">
+            					<p>
+            						<select id='reg-area-0'>
+            							<option value="">请选择省份</option>
+            						</select>
+            						<select id='reg-area-1'>
+            							<option value="">请选择城市</option>
+            						</select>
+            						<select id='reg-area-2'>
+            							<option value="">请选择县区</option>
+            						</select>
+            						<input name="areaCode" type="hidden" id="areaCode"  value="$!{addre.areaCode}"/><span style="color:red" id="areaCodeerro"></span>
+            					</p>
+						   </div>
+                        </li>
+                        <li class="clearfix">
+                            <div class="form-title"><span>详细地址：</span><i>*</i></div>
+                            <textarea  id="address" placeholder="建议您如实填写详细收货地址，例如街道名称，门牌号码，楼层和房间号等信息" class="area-info" name="address">$!{addre.address}</textarea><span style="color:red" id="addresserro"></span>
+                        </li>
+                        <li class="clearfix">
+                            <div class="form-title"><span>邮政编码：</span></div>
+                            <input id="email" placeholder="如您不清楚邮递区号，请填写000000" class="form-info" name="zipCode" value="$!{addre.zipCode}"/><span style="color:red" id="emailerro"></span>
+                        </li>
+                        <li class="clearfix" style="position:relative;z-index:2">
+                            <div class="form-title"><span>手机号码：</span></div>
+                            <select class="zone-set">
+                                <option>中国大陆+86</option>
+                            </select>
+                            <input id="mobile" class="form-info" placeholder="电话号码、手机号码必须选填一项" name="mobile" value="$!{addre.mobile}"/><span style="color:red" id="mobileerro"></span>
+                        </li>
+                        <li class="clearfix" style="position:relative;z-index:1">
+                            <div class="form-title"><span>电话号码：</span></div>
+                            <select class="zone-set">
+                                <option>中国大陆+86</option>
+                            </select>
+                            <input class="tele-nifo nifo-rf" placeholder="区号" name="code" value="$!{tel0}"/> - 
+                            <input id="phone" class="tele-nifo" placeholder="电话号码" name="phone" value="$!{tel1}"/> -
+                            <input class="tele-nifo" placeholder="分机" name="phoneCode" value="$!{tel2}"/><span style="color:red" id="phoneerro"></span>
+                        </li>
+						<input type="hidden" value="1" name="addressType"/>
+						<input type="hidden" value="$!{ssoUser.companyId}" name="companyId"/>
+						<input type="hidden" value="0" name="isDefault"/>
+						<input type="hidden" value="0" name="isDel"/>
+						<input type="hidden" value="$!{addre.id}" name="id"/>
+                        <li class="clearfix">
+                            <div class="form-title"><span>公司名称：</span></div>
+                            <input class="form-info" name="companyName" value="$!{addre.companyName}"/>
+                        </li>
+                        <li class="clearfix">
+                            <div class="form-title"><span>备注：</span></div>
+                            <textarea class="area-info" name="detail">$!{addre.detail}</textarea>
+                        </li>
+                    </ul>
+					<span style="color:red" id="error"></span>
+                    <span class="add-btn" onclick="submit2()" style="background:grey;">保存设置</span>
+                </div>
+				</form>
+            </div>
+            <div class="ads-list">
+				<div class="ads-add-ts blue">
+                    已保存了$!{count}条地址，还可以保存$!{countsize}条地址
+                </div>
+                <table class="ads-table" width="100%">
+                    <tr>
+                       <th width="55">联系人</th>
+                       <th width="200">所在地区</th>
+                       <th width="225">详细地址</th>
+                       <th width="70">邮编</th>
+                       <th width="100">电话/手机</th>
+                       <th width="90">操作</th>
+                       <th></th> 
+                    </tr>
+					#foreach($!{list} in $!{addr})
+					 <tr>
+                        <td>$!{list.name}</td>
+                        <td>$!{list.areaCode}</td>
+                        <td><p class="dizi-xx">$!{list.address}</p></td>
+                        <td>$!{list.zipCode}</td>
+                        <td>$!{list.mobile}<br/><p>$!{list.tel}</p></td>
+                        <td>
+                            <a href="$!{address.trade}/address/updateAddress.htm?id=$!{list.id}&code=2" class="blue">修改</a> | <a  onclick="return delet($!{list.id},this)" class="blue delt-ads">删除</a> 
+                        </td>
+                        <td>
+                            <span class="set-up"  onclick="setDefault($!{list.id},$!{list.companyId},this)">设为默认</span>
+                        </td>
+                    </tr>
+                  #end
+               
+                   
+                </table>
+            </div>
+        </div>
+    </div>  
+</body>
+<script type="text/javascript">
+	window.onload=function(){
+		## 现货物所在地
+		var regarea = new Asto.util.Selector({
+			selects: ["#reg-area-0","#reg-area-1", "#reg-area-2"],
+			url: "#springUrl('/goods/catChild.htm')",
+			changeCallback: function (c, idx) {
+			setAreaCode();
+			}
+		});
+		regarea.init({
+			#if($!{addre.areaCode})
+		    initCode:"$!{addre.areaCode}",
+			rootCode: "10011000"
+		#else
+			initCode:"10011000",
+			rootCode: "10011000"
+		#end
+		});
+	}
+	
+	## 组装地址
+ 	function setAreaCode(){
+		var areacode="";
+		if(jQuery("#reg-area-0").val()!=""){
+			areacode=jQuery("#reg-area-0").val();
+		}
+		if(jQuery("#reg-area-1").val()!=""){
+			areacode=jQuery("#reg-area-1").val();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			areacode=jQuery("#reg-area-2").val();
+		}
+		jQuery("#areaCode").val(areacode);
+		
+	}
+
+
+　　##默认地址显示
+    var index_give;
+    #if($!{size})
+    index_give=$!{size};
+    #end
+	if(index_give!=null){
+    $(".set-up").eq(index_give).addClass("give").html("默认地址").css("display","block");
+    }
+    $(".ads-table tr:gt(0)").bind("mouseover",function(){
+        $(this).css("background","#e1e1e1").find(".set-up").css("display","block");
+    })
+    $(".ads-table tr:gt(0)").bind("mouseout",function(){
+        $(this).css("background","#fff");
+        if($(this).find(".set-up").hasClass("give")){
+            return;
+        }
+        $(this).find(".set-up").css("display","none");
+    })
+	
+	var submitFlag = false;
+	function validateToSub(){
+		submitFlag = false;
+		if($("#name").val()==""||$("#name").val().indexOf("长度不超过25个字符")!=-1){
+			$("#nameerro").html("请填写联系人");
+			return false;
+    	}else{
+    		$("#nameerro").html("");
+    	}
+		if(jQuery("#reg-area-0").find("option:selected").text()=="请选择省份"){
+			$("#areaCodeerro").html("请完善公司 ”国家/地区“ 至城市");
+			return false;
+		}else{
+			$("#areaCodeerro").html("");
+		}
+		if($("#address").val()==""||$("#address").val().indexOf("建议您")!=-1){
+			$("#addresserro").html("请填写地址");
+			return false;
+		}else{
+			$("#addresserro").html("");
+		}
+		## 联系方式必须填一个
+    	if($("#mobile").val()==""&&$("#phone").val()==""){
+    		$("#mobileerro").html("请填写其中一种联系方式");
+    		$("#phoneerro").html("请填写其中一种联系方式");
+    		return false;
+    	}else{
+			var pass = false;
+			## 电话号码
+			if($("#mobile").val()!=""){
+    			var ph3 =/^\d{10,11}$/;
+    			if(!ph3.test($("#mobile").val())){
+    				$("#mobileerro").html("请填写正确的手机号");
+    				return false;
+    			}else{
+					pass=true;
+    				$("#mobileerro").html("");
+    			}
+    		}
+			if(!pass){
+        		var ph =/^\d{3,5}$/;
+        		var c=$(".nifo-rf").val();
+        		if(c!=""){
+        			if(!ph.test(c)){
+        				$("#phoneerro").html("请填写正确的区号");
+        				return false;
+        			}else{
+        				$("#phoneerro").html("");
+        			}
+        		}
+        		if($("#phone").val()!=""){
+        			var ph4 =/^\d{7,8}$/;
+        			if(!ph4.test($("#phone").val())){
+        				$("#phoneerro").html("请填写正确的电话号码");
+        				return false;
+        			}else{
+						pass=true;
+        				$("#phoneerro").html("");
+        			}
+        		}
+			}
+			if(pass){
+        		$("#mobileerro").html("");
+        		$("#phoneerro").html("");
+			}
+    	}
+		
+		## 通过所有验证，可以提交地址信息
+		submitFlag= true;
+		jQuery(".add-btn").attr("style","background:rgb(2, 124, 255);")
+	}
+	
+	##form表单验证
+	$(document).ready(function(){
+		$("form :input").blur(function() {
+			validateToSub();
+		})
+	});
+	
+	##保存信息
+	function submit2(){
+	validateToSub();
+	if(!submitFlag){
+		jQuery(".add-btn").attr("style","background:rgb(96, 96, 96);")
+		return false;
+	}
+	if(jQuery("#email").val().indexOf("如您不清楚")!=-1){
+		jQuery("#email").val("");
+	}
+	## 区号 code 
+	if(jQuery("#code").val()!=undefined&&jQuery("#code").val().indexOf("区号")!=-1){
+		jQuery("#code").val("");
+	}
+	## 号码 phone
+	if(jQuery("#phone").val()!=undefined&&jQuery("#phone").val().indexOf("电话号码")!=-1){
+		jQuery("#phone").val("");
+	}
+	## 分机 phoneCode
+	if(jQuery("#phoneCode").val()!=undefined&&jQuery("#phoneCode").val().indexOf("分机")!=-1){
+		jQuery("#phoneCode").val("");
+	}
+	var da=$("#form2").serialize();
+	jQuery.ajax({
+		   url:'#springUrl('/address/addAddress.htm')',
+		   type:'post',
+		   datatype:'json',
+		   data:da,
+		   cache:false,
+		   success:function(data){
+           ajaxob=eval("("+data+")");
+		   var b=ajaxob.success;
+		   var c=ajaxob.data;
+		   if(b){
+             if(c=="out"){
+			 popHtml(succHtml)
+##    		 window.location.href="#springUrl('/address/addressOut.htm')";
+    		 }else if(c=="get"){
+			 popHtml(succHtml1)
+##    		 window.location.href="#springUrl('/address/addressGet.htm')";
+    		 }
+		   }else{
+		    $("#error").html(c);
+		   }
+		   }
+		  });
+	}
+	 var succHtml =  '<div class="tijiao-succ">'
+                            +'<h3 class="succh3">保存成功！</h3>'
+                            +'<span class="close_pop j_close1">关闭</span>'
+                        +'</div> ';
+						
+	 var succHtml1 =  '<div class="tijiao-succ">'
+                            +'<h3 class="succh3">保存成功！</h3>'
+                            +'<span class="close_pop j_close2">关闭</span>'
+                        +'</div> ';
+	
+	function popHtml1(Mainhtml){   //弹窗内主要html
+    if($(".pop-main").length==0){
+        var popBorder = '<div class="estopDiv"></div>'
+                    +'<div class="pop-main" style="display:block">'
+                    +'</div>';
+        $("body").append(popBorder);
+    }
+    $(".pop-main").html(Mainhtml);
+    locaTion();//弹出窗定位
+}				
+
+	//关闭弹窗
+	$(document).delegate(".j_close1","click",function(){
+	window.location.href="#springUrl('/address/addressOut.htm')";
+   		 $(".estopDiv").remove();
+   		 $(".pop-main").remove();
+	})
+
+	//关闭弹窗
+	$(document).delegate(".j_close2","click",function(){
+	window.location.href="#springUrl('/address/addressGet.htm')";
+   		 $(".estopDiv").remove();
+   		 $(".pop-main").remove();
+	})	
+
+	// 弹出窗定位
+	function locaTion(){
+		 var pop_Main = $(".pop-main");
+   		 var wHight = $(window).height();
+   		 var wWidth = $(window).width();
+  	 	 // var scrollTop = $(document).scrollTop();
+   		 $(".estopDiv").height(wHight).width(wWidth).show();
+  		 var left_pop = (wWidth - pop_Main.width())/2
+   		 var top_pop = ($(window).height() - pop_Main.height())/2;
+
+   	 if('undefined' == typeof(document.body.style.maxHeight)){
+   		 	pop_Main.css({"margin-top":top_pop+"px","left":left_pop+"px"}).show();
+  	  }else{
+  		  	pop_Main.css({"top":top_pop+"px","left":left_pop+"px"}).show();
+   	 }
+}
+
+	
+	
+	
+	##删除地址
+	function delet(id,obj){
+	var parent_tr = $(obj).parents("tr");
+	  if(confirm("确定删除该地址吗？")){
+	     jQuery.ajax({
+		   url:"#springUrl('/address/deleteAddress.htm')",
+		   type:'post',
+		   datatype:'json',
+		   data:{id:id},
+		   cache:false,
+		   success:function(data){
+           ajaxob=eval("("+data+")");
+		   var b=ajaxob.success;
+		   if(b){
+			 parent_tr.css("display","none");
+		   }
+		   }
+		  });
+	    return true;
+	  }else{
+	    return false;
+	  }
+	}	
+	
+	##设置默认地址
+	function setDefault(id,companyId,obj){
+	     jQuery.ajax({
+		   url:"#springUrl('/address/updateDefaultDelAddress.htm')",
+		   type:'post',
+		   datatype:'json',
+		   data:{id:id,companyId:companyId},
+		   cache:false,
+		   success:function(data){
+           ajaxob=eval("("+data+")");
+		   var b=ajaxob.success;
+		   if(b){
+		   $('.give').removeClass("give").html("设为默认");
+		   $(obj).addClass("give").html("默认地址").css("display","block");
+           
+		   }else{
+		   alert("设置失败")
+		   }
+		   }
+		   })
+	}	
+</script>
+</html>

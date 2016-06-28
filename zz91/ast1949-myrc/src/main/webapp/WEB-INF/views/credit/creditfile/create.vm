@@ -1,0 +1,139 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/credit/creditfile/index.htm')">诚信档案</a> <span class="divider">/</span>
+            </li>
+            <li class="active">添加荣誉证书</li>
+        </ul>
+		<div class="well">
+			<div class="well-head">荣誉证书信息(打<span class="red">*</span>为必填项)</div>
+			<div class="well-content">
+				<form id="form2" name="form2" method="post" action="#springUrl('/credit/creditfile/insertFile.htm')">
+					<div class="control-group">
+						<label for="categoryCode" class="control-label">
+							<span class="red">*</span>选择证书类别：
+						</label>
+						<div class="controls">
+							<select name='categoryCode' id='categoryCode' class="validate[required]">
+								<option value=''>请选择证书类别</option>
+								#foreach($category in ${categoryMap.entrySet()})
+									<option value="$!{category.key}" #if($!{category.key}==$!{code}) selected #end>${category.value}</option>
+								#end
+							</select>
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="fileName" class="control-label">
+							<span class="red">*</span>证书名称：
+	                	</label>
+						<div class="controls">
+							<input name="fileName" id="fileName" class="field input-xlarge validate[required]">
+	    					<span class="grey">证书名称要体现证书的认证内容，一目了然。</span>
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="startTime" class="control-label">
+							<span class="red">*</span>证书生效时间：
+	                	</label>
+						<div class="controls">
+							<input name="startTimeStr" type="date" id="startTime" class="field validate[required,custom[date]]">
+	    					<span class="gray"> 如：2012-01-01</span>
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="endTime" class="control-label">证书有效期截止：</label>
+						<div class="controls">
+							<input name="endTimeStr" type="date" id="endTime" class="field validate[custom[date]]">
+	    					<span class="grey">如果证书上有，必须填写</span>
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="fileNumber" class="control-label">
+							<span class="red">*</span>证书编号：
+	                	</label>
+						<div class="controls">
+							<input name="fileNumber" type="text" id="fileNumber" class="field input-xlarge validate[required]">
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="organization" class="control-label">
+							<span class="red">*</span>发证机构：
+	                	</label>
+						<div class="controls">
+							<input name="organization" type="text" id="organization" class="field input-xlarge validate[required]">
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="tel" class="control-label">
+							<span class="red">*</span>发证机构联系电话：
+	                	</label>
+						<div class="controls">
+							<input name="tel" type="tel" id="tel" class="field validate[required]">
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label for="website" class="control-label">
+							<span class="red">*</span>发证机构网址：
+	                	</label>
+						<div class="controls">
+							<input name="website" id="website" class="field input-xlarge validate[required]" />
+	                	</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">上传证书图片：</label>
+						<div class="controls">
+							<p>
+								<img id="previewImg" src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="1">
+								<br />
+								<input type="button" value="上传" class="btn btn-small" id="Js_uploadBtn"/>
+	                        </p>
+							<input type="hidden" id="picName" name="picName" class="addinfoinput">
+	    					<span class="grey">
+	    						您可将证书扫描（或到附近的电脑图文社请他们替您扫描）、或用数码相机拍成照片。证书上传所花费时间是由图片大小决定的，大的图片会占用比较长的上传时间。
+							</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="introduction" class="control-label">
+							<span class="red">*</span>证书介绍：
+	                	</label>
+						<div class="controls">
+							<textarea name="introduction" cols="50" rows="5" id="introduction" class="validate[required]"></textarea>
+	                	</div>
+					</div>
+					<div class="form-actions">
+						<input type="submit" value="提交审核" name="btSubmit" id="btSubmit" class="btn btn-primary">
+					</div>
+        		</form>
+        	</div>
+        </div>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+    jQuery(function(){
+    	myrc.menu(7, 2);
+		jQuery("#form2").validationEngine("attach");
+		
+		var upload = new Asto.util.PopupBox({
+			url:"#springUrl('/sys/upload/creditFile.htm')",
+			title:"上传证书图片",
+			width:450,
+			height:230,
+			modal:true
+		});
+		
+		jQuery("#Js_uploadBtn").click(function(obj){
+			var btn = jQuery(this);
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				jQuery("#previewImg").attr("src","$!{address.resource}/"+data.picAddress);
+				jQuery("#picName").val(data.picAddress);
+				btn.val("重新上传");
+				upload.close();
+     		});
+			upload.show("#springUrl('/sys/upload/creditFile.htm')");
+		});
+    });
+</script>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="logistics">
+	<typeAlias alias="logisticsDO"
+		type="com.ast.feiliao91.domain.logistics.Logistics" />
+	<resultMap class="logisticsDO" id="logisticsResult">
+		<result property="id" column="id" />
+		<result property="logisticsNo" column="logistics_no" />
+		<result property="logisticsCode" column="logistics_code" />
+		<result property="logisticsInfo" column="logistics_info" />
+		<result property="logisticsStatus" column="logistics_status" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+	    id,
+		logistics_no,
+		logistics_code,
+		logistics_info,
+		logistics_status,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="selectLogisticsByCode" parameterClass="java.lang.String"
+		resultMap="logisticsResult">
+		select
+		<include refid="logistics.fullColumn" />
+		from logistics where logistics_no = #code#
+		order by id desc limit 1 
+	</select>
+
+	<insert id="insertLogistics" parameterClass="logisticsDO">
+		insert into logistics
+		(
+		<include refid="logistics.fullColumn" />
+		)
+		values
+		(
+		 #id#,
+         #logisticsNo#,
+         #logisticsCode#,
+         #logisticsInfo#,
+         #logisticsStatus#,
+         now(),
+         now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+		    select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateLogisticsByCode" parameterClass="java.util.Map">
+		update logistics set gmt_modified=now(),
+			logistics_info=#logisticsInfo#
+        where logistics_no = #code#
+	</update>
+	
+	<!-- 改物流状态 -->
+	
+</sqlMap>

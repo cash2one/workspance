@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	 
+<sqlMap namespace="news">
+	<typeAlias alias="newsDO" type="com.ast.ast1949.domain.news.NewsDO" />
+	<!-- 
+	<typeAlias alias="newsForFrontDTO" type="com.ast.ast1949.dto.news.NewsForFrontDTO" />
+	 -->
+	
+	<resultMap class="newsDO" id="resultNewsDO">
+		<result property="id" column="id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="title" column="title" />
+		<result property="indexTitle" column="index_title" />
+		<result property="markCategoryCode" column="mark_category_code" />
+		<result property="titleStyleId" column="title_style_id" />
+		<result property="goUrl" column="go_url" />
+		<result property="seoDetails" column="seo_details" />
+		<result property="gmtPublished" column="gmt_published" />
+		<result property="gmtOrder" column="gmt_order" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	
+	<!-- 
+	<resultMap class="newsDO" id="resultWithLabelNewslDO">
+		<result property="id" column="id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="title" column="title" />
+		<result property="indexTitle" column="index_title" />
+		<result property="markCategoryCode" column="mark_category_code" />
+		<result property="titleStyleId" column="title_style_id" />
+		<result property="goUrl" column="go_url" />
+		<result property="seoDetails" column="seo_details" />
+		<result property="gmtPublished" column="gmt_published" />
+		<result property="gmtOrder" column="gmt_order" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		
+		<result property="label" column="label" />
+	</resultMap>
+	<resultMap class="newsForFrontDTO" id="resultNewsForFrontDTO">
+		<result property="news" resultMap="news.resultWithLabelNewslDO" />
+	</resultMap>
+	 -->
+	
+	<insert id="insertNews" parameterClass="newsDO">
+		INSERT INTO news
+            (bbs_post_id,
+             title,
+             index_title,
+             mark_category_code,
+             title_style_id,
+             go_url,
+             seo_details,
+             gmt_published,
+             gmt_order,
+             gmt_created,
+             gmt_modified)
+		VALUES (#bbsPostId#,
+		        #title#,
+		        #indexTitle#,
+		        #markCategoryCode#,
+		        #titleStyleId#,
+		        #goUrl#,
+		        #seoDetails#,
+		        #gmtPublished#,
+		        #gmtOrder#,
+		        now(),
+		        now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<!-- 
+	<delete id="deleteNewsById" parameterClass="java.lang.Integer">
+		DELETE
+		FROM news
+		WHERE id = #value#
+	</delete>
+	 -->
+
+	<update id="updateNewsById" parameterClass="newsDO">
+		UPDATE news
+		SET bbs_post_id = #bbsPostId#,
+		  title = #title#,
+		  index_title = #indexTitle#,
+		  mark_category_code = #markCategoryCode#,
+		  title_style_id = #titleStyleId#,
+		  go_url = #goUrl#,
+		  seo_details = #seoDetails#,
+		  gmt_published = #gmtPublished#,
+		  gmt_order = #gmtOrder#,
+		  gmt_modified = now()
+		WHERE id = #id#
+	</update>
+
+	<select id="queryNewsById" parameterClass="java.lang.Integer" resultMap="resultNewsDO">
+		SELECT
+		  id,
+		  bbs_post_id,
+		  title,
+		  index_title,
+		  mark_category_code,
+		  title_style_id,
+		  go_url,
+		  seo_details,
+		  gmt_published,
+		  gmt_order,
+		  gmt_created,
+		  gmt_modified
+		FROM news
+		WHERE id = #value#
+	</select>
+	<select id="queryNewsByModuleId" parameterClass="java.util.HashMap" resultMap="resultNewsDO">
+		SELECT
+		n.id,
+		n.bbs_post_id,
+		n.title,
+		n.index_title,
+		n.mark_category_code,
+		n.title_style_id,
+		n.go_url,
+		n.seo_details,
+		n.gmt_published,
+		n.gmt_order,
+		n.gmt_created,
+		n.gmt_modified
+		FROM news n
+		inner join news_relate_module nrm
+		on n.id = nrm.news_id
+		left JOIN bbs_post bp
+		ON bp.id = n.bbs_post_id
+		where nrm.module_id= #moduleId#
+		and bp.is_del = 0
+		and bp.check_status = 1
+		order by n.gmt_order
+		limit 0,#size#
+	</select>
+	<select id="queryNewsByTitle" parameterClass="map" resultMap="resultNewsDO">
+		SELECT
+		  n.id,
+		  n.bbs_post_id,
+		  n.title,
+		  n.index_title,
+		  n.mark_category_code,
+		  n.title_style_id,
+		  n.go_url,
+		  n.seo_details,
+		  n.gmt_published,
+		  n.gmt_order,
+		  n.gmt_created,
+		  n.gmt_modified
+		FROM news n
+		WHERE n.title like concat('%',#title#,'%')
+		ORDER BY n.gmt_created DESC
+		LIMIT 0,#number#
+	</select>
+	
+	<!-- 
+	<select id="queryNewsListForFront" parameterClass="newsForFrontDTO" resultMap="resultNewsForFrontDTO">
+		SELECT
+		  n.id,
+		  n.bbs_post_id,
+		  n.title,
+		  n.index_title,
+		  n.mark_category_code,
+		  n.title_style_id,
+		  n.go_url,
+		  n.seo_details,
+		  n.gmt_published,
+		  n.gmt_order,
+		  n.gmt_created,
+		  n.gmt_modified,
+		  c.label
+		FROM news_relate_module nrm
+		  LEFT JOIN news n
+		    ON n.id = nrm.news_id
+		  LEFT JOIN bbs_post bp
+		    ON bp.id = n.bbs_post_id
+		  LEFT JOIN category c
+    		ON c.code=n.mark_category_code
+		WHERE bp.is_del = 0
+		    AND bp.check_status = 1
+		<dynamic prepend="">
+			<isNotEmpty property="moduleId" prepend="and">
+				nrm.module_id= #moduleId#
+			</isNotEmpty>
+			<isNotEmpty property="tradeCode" prepend="and">
+				nrm.trade_id= #tradeCode#
+			</isNotEmpty>
+			<isNotEmpty property="gmtPublished" prepend="and">
+				TO_DAYS(n.gmt_published) = TO_DAYS(#gmtPublished#)
+		    </isNotEmpty>
+		</dynamic>
+		
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					 $page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex" compareValue="0" >
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	 -->
+</sqlMap>

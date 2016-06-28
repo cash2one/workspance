@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="sampleMsgset">
+
+	<typeAlias alias="sampleMsgsetDO" type="com.ast.ast1949.domain.sample.SampleMsgset" />
+
+	<resultMap id="sampleMsgsetResult" class="sampleMsgsetDO">
+		<result column="id" property="id" />
+		<result column="company_id" property="companyId" />
+		<result column="email" property="email" />
+		<result column="sms" property="sms" />
+		<result column="wechat" property="wechat" />
+		<result column="gmt_created" property="gmtCreated" />
+		<result column="gmt_modified" property="gmtModified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		email,
+		sms,
+		wechat,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryById" resultMap="sampleMsgsetResult"
+		parameterClass="java.lang.Integer">
+		select
+		<include refid="defaultColumn" />
+		from sample_msgset
+		where id = #value#
+	</select>
+
+	<select id="queryByCompanyId" resultMap="sampleMsgsetResult"
+		parameterClass="java.lang.Integer">
+		select
+		<include refid="defaultColumn" />
+		from sample_msgset
+		where company_id = #value#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="sampleMsgsetDO">
+		INSERT INTO
+		sample_msgset
+		(
+		company_id,
+		email,
+		sms,
+		wechat,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#companyId#,
+		#email#,
+		#sms#,
+		#wechat#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="sampleMsgsetDO">
+		update sample_msgset
+		set gmt_modified = now()
+		<isNotNull prepend="," property="email">
+			email = #email#
+		</isNotNull>
+		<isNotNull prepend="," property="sms">
+			sms = #sms#
+		</isNotNull>
+		<isNotNull prepend="," property="wechat">
+			wechat = #wechat#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+</sqlMap>

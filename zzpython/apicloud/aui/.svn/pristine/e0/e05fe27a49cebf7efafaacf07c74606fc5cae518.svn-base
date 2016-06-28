@@ -1,0 +1,121 @@
+/*
+ * AUI JAVASCRIPT PLUGIN
+ * 图片轮播
+ * Copyright (c) 2015 auicss.com @流浪男  QQ：343757327  群：344869952
+ */
+(function(window){
+    var aui = {};
+
+    aui.isElement = function(obj){
+        return !!(obj && obj.nodeType == 1);
+    };
+
+    aui.slider = function(el,opts){
+    	var index,duration,loop,speed,autoPlay,slideNum,slideWidth,container,dots,deltaX;
+    	var afterSlide = function(){},
+            beforeSlide = function(){return true};
+    	if(!aui.isElement(el)){
+            console.warn('$aui.prev Function need el param, el param must be DOM Element');
+            return;
+        }
+        //默认配置类
+        var _setting = function(){
+        	index = 0;//默认当前
+        	duration = 3000;//延迟
+        	loop = true;//循环
+        	autoPlay = false;//自动播放
+        	index = opts.index?opts.index:index;
+        	duration = opts.duration?opts.duration:duration;
+        	loop = opts.loop?opts.loop:loop;
+        	autoPlay = opts.autoPlay?opts.autoPlay:autoPlay;
+        }
+        //初始化容器
+        var _init = function(){
+        	var height = $api.offset(el).h;
+        	//$api.css(el,"width:200px;height:200px; background:#ff9900;");
+        	//获取图片数量
+        	container = $api.dom(el,'div:first-child');
+        	slideNum = $api.domAll(el,'div').length;
+        	slideWidth = $api.offset(el).w;
+        	var d = slideNum * slideWidth;//容器宽度
+        	console.log(container);
+        	$api.css(container,"width:"+slideWidth+"px; background:#ff9900;");
+        	$api.css(el,"width:"+d+"px; background:#ff9900;");
+        	//alert(height);
+        }
+		/*
+		* 绑定滑动事件
+		*/
+        var _bindEvent = function() {
+        	$api.addEvt(el, 'touchstart', _touchStart,false);
+        	$api.addEvt(el,'touchmove',_touchMove,false);
+            $api.addEvt(el,'touchend',_touchEnd,false);
+        };
+        var _touchStart = function(evt){
+        	var e = evt.touches[0];
+        	startPageX = e.pageX;
+        	startPageY = e.pageY;
+        	startTime = Number(new Date());
+            console.log(startPageX);
+            isMoving = true;
+            deltaX = 0;
+
+            gestureStarted = true;
+        }
+        var _touchMove = function(evt){
+        	if(isMoving){
+        		var e = evt.touches[0];
+            	deltaX = e.pageX - startPageX;
+            	var isScrolling = Math.abs(deltaX) < Math.abs(e.pageY - startPageY);
+            	console.log(isScrolling);
+        	}
+
+
+        	/*if(!gestureStarted)return;
+            var e = evt.touches[0];
+            deltaX = e.pageX - startPageX;
+            console.log(e.pageX);
+            if (isMoving) {
+                //根据X、Y轴的偏移量判断用户的意图是左右滑动还是上下滑动
+                isScrolling = Math.abs(deltaX) < Math.abs(e.pageY - startPageY)
+            }
+            $api.css(container[0],"-webkit-transform:translate3D("+deltaX+"px,0,0)");*/
+            /*if (!isScrolling) {
+                evt.preventDefault();
+                //判定是否达到了边界即第一个右滑、最后一个左滑
+                var isPastBounds = !index && deltaX > 0 || index == slideNum - 1 && deltaX < 0;
+                
+                if(isPastBounds)return;
+                //var pos = (deltaX - index * slideWidth);
+                $api.css(container[0],"-webkit-transform:translate3D("+pos+"px,0,0)");
+            }*/
+        }
+        var _touchEnd = function(evt){
+        	isMoving = false;
+            //$api.css(container[0],"-webkit-transition-duration:300ms;-webkit-transform:translate3D(0px,0,0)");
+            //$api.css(container[0],"-webkit-transform:translate3D(0px,0,0)");
+        }
+        /**
+         * 滑动到指定卡片
+         * @param i
+         * @param duration
+         * @private
+         */
+        var _slide = function(i, duration) {
+            duration = duration || speed;
+            $api.css(container, "-webkit-transition-duration:"+duration+"ms;-webkit-transform'translate3D(" + -(i * slideWidth) + "px,0,0)");
+            if(index != i){
+                index = i;
+                if(dots) $(dots.find('li').get(index)).addClass('active').siblings().removeClass('active');
+                afterSlide(index);
+            }
+        };
+        _setting();
+        _init();
+        _bindEvent();
+    }
+    window.$aui = aui;
+
+})(window);
+
+

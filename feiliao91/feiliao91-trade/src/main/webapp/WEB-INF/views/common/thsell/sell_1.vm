@@ -1,0 +1,150 @@
+				<div class="orderright fl">
+                    <div class="tuk-ts">
+                        <div class="odr-h">
+                            请处理退货申请
+                            <span class="count-down">
+                                <i class="icon iconfont">&#xe60c;</i>倒计时:  
+                                <span class="close-time anred">
+									<span id="times_day">2</span>&nbsp;天 
+									<span id="times_hour">23</span>&nbsp;时  
+									<span id="times_minute">4</span>&nbsp;分    
+									<span id="second">7</span>&nbsp;秒
+								</span>
+                        </div>
+						#if($!{orderReturn.logisticsNo})
+                        <div class="odr-tellus">
+                            <p>如果同意申请，请发送正确退货地址给买家。</p>
+                            <p>如果拒绝申请，买家有权要求废料交易网介入处理。</p>
+                            <p>如果您逾期未响应申请，视作同意买家申请，系统自动将您的默认退货地址发给买家。</p>
+                        </div>
+                        <a href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?flag=1&orderId=$!{order.id}"><span class="true-btn">同意退货</span></a>
+						<span class="true-btn j_refuse">拒绝退货</span>
+						#else
+						<div class="odr-tellus">
+                            <p>如果同意申请，将退款给买家。</p>
+                            <p>如果拒绝申请，买家有权要求废料交易网介入处理。</p>
+                            <p>如果您逾期未响应申请，视作同意买家申请，系统自动将金额退给给买家。</p>
+                        </div>
+                        <a href="javaScript:void(0);"><span class="true-btn true-btnbtn">同意退款</span></a>
+						<span class="true-btn j_refuse">拒绝退款</span>
+						<form action="#springUrl('/ordersreturn/thSpSrcdTy.htm')" method="post" id="form2">
+							<input type="hidden" value="2" name="flag"/>
+							<input type="hidden" value="orderId=$!{order.id}" name="orderId"/>
+                        </form>
+						#end
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div style="display:none">
+        <div class="refuse">
+			<form action="" method="post" id="form1">
+            <div class="clearfix">
+                <div class="pop-tltle fl">
+                <i class="icon-jg iconfont"></i>
+                <span>您确定要关闭该订单吗？关闭订单后，不能恢复。</span>
+                </div>
+                <a class="fr close-pay j_close" href="javascript:void(0)">x</a>
+            </div>
+            <div class="clearfix toptine">
+                <span class="">拒绝理由：</span>
+                <select class="refuse-set">
+                    <option value="请选择拒绝理由">请选择拒绝理由</option>
+					<option value="货物已发货">货物已发货</option>
+					<option value="商品无问题,买家未举证">商品无问题,买家未举证</option>
+					<option value="商品已影响到二次销售">商品已影响到二次销售</option>
+					<option value="其他">其他</option>
+                </select>
+				<input type="hidden" value="$!{orderReturn.id}" name="orderReturnId"/>
+				<input type="hidden" id="reason" name="reason"/>
+				<input type="hidden" name="text" id="text"/>
+            </div>
+            <div class="toptine">
+                <span class="">拒绝说明：</span>
+                <textarea class="refuse-text"></textarea>
+            </div>
+            <div class="dowork">
+                <span class="true_refuse refusemy">确定拒绝</span>
+                <a href="javascript:void(0)" class="j_close">取消</a>
+            </div>
+        </div>
+			</form>
+    </div>
+    <script type="text/javascript">
+	
+	$(".true-btnbtn").click(function(){
+			jQuery.ajax({
+			url:"#springUrl('/ordersreturn/sendCode.htm')",
+			type:'post',
+			dataType:'json',
+			data:{orderId:$!{order.id}},
+			cache:false,
+			success:function(data){
+				if(data.success){
+						window.location.href="#springUrl('/ordersreturn/thSpSrcdTy.htm')?orderId=$!{order.id}&flag=2";
+				}
+			}
+		});
+	})
+	
+	
+	
+	
+	
+	 function getNextDay(d,day){
+        d = new Date("2016-3-14");
+		alert(d)
+        d = +d + 1000*60*60*24*day;
+        d = new Date(d);
+		alert(d)
+        //格式化
+        return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate() +" "+ d.getHours() + ":" + d.getMinutes() +":" +d.getSeconds();
+    }
+	
+	//根据天，时，分，秒的ID找到相对应的元素
+	var time_day = document.getElementById("times_day");
+	var time_hour = document.getElementById("times_hour");
+	var time_minute = document.getElementById("times_minute");
+	var time_second = document.getElementById("second");
+	var time_end =$!{ntime}+1000*60*60*24*7;  // 设定活动结束结束时间
+	count_down();
+	function count_down(){ 
+		 var time_now = new Date();  // 获取当前时间
+   		 time_now = time_now.getTime();
+   		 var time_distance = time_end - time_now;  // 时间差：活动结束时间减去当前时间   
+   		 var int_day, int_hour, int_minute, int_second;   
+		 if(time_distance >= 0){   
+		 	 // 相减的差数换算成天数   
+    		 int_day = Math.floor(time_distance/86400000)
+     		 time_distance -= int_day * 86400000; 
+     		 // 相减的差数换算成小时
+            int_hour = Math.floor(time_distance/3600000) 
+        	time_distance -= int_hour * 3600000;  
+        	// 相减的差数换算成分钟   
+     		int_minute = Math.floor(time_distance/60000)    
+    		time_distance -= int_minute * 60000; 
+    		// 相减的差数换算成秒数  
+      		int_second = Math.floor(time_distance/1000)    
+			// 判断小时小于10时，前面加0进行占位
+        	if(int_hour < 10) {
+        		int_hour = "0" + int_hour;  
+        	}
+        	// 判断分钟小于10时，前面加0进行占位      
+  			if(int_minute < 10){    
+   				int_minute = "0" + int_minute;  
+   			}
+   			 // 判断秒数小于10时，前面加0进行占位 
+      		if(int_second < 10) {
+      			int_second = "0" + int_second;  
+      		} 
+      		// 显示倒计时效果       
+			time_day.innerHTML = int_day;
+			time_hour.innerHTML = int_hour; 
+			time_minute.innerHTML = int_minute; 
+			time_second.innerHTML = int_second;	
+			setTimeout("count_down()",1000);    
+		 }else{
+		 //系统任务
+		 }
+	}
+    </script>

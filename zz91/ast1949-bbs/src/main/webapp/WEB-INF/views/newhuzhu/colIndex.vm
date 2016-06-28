@@ -1,0 +1,316 @@
+#set($headName="xueyuan")
+#set($layout="/layout/xueyuanLayout.vm")
+<script>		
+$(document).ready(function(e) {
+    $(".hz-coitem li a").mouseover(function() {
+        $(this).css("background", "#009944");
+		$(this).css("color", "#fff");
+    });
+	$(".hz-coitem li a").mouseout(function() {
+		$(this).css("background", "#fff");
+        $(this).css("color", "#303030");
+    });
+});
+
+$(function (){
+  $(".left_nav dd").hover(function(){
+  $(".nav_right",this).show();
+  });
+  $(".left_nav dd").mouseleave(function(){
+  $(".nav_right",this).hide();
+  });
+});
+</script>
+  <div class="huzhu">
+  	<div class="hz-content pos mb25">
+    	<div class="hz-lt fl">
+        <div class="left_nav">
+    		<dl>
+                <dt class="white f14 tc"><a href="#springUrl('/xueyuan/hangye/')">行业知识</a></dt>
+				#foreach($!{li} in $!{list})
+    			<dd class="dd_nav"><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{li.id})}/" class="nav_left bold f14">$!{li.name}</a>
+					#if($!{map.get($!{li.id})})
+        			<div class="nav_right">
+            			<table class="nav_tab">
+							#foreach($!{aa} in $!{map.get($!{li.id})})
+							#if($velocityCount%3==1)
+                			<tr>
+                    			<td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{aa.id})}/" target="_blank">$!{aa.name}</a></td>
+							#elseif($velocityCount%3==2)
+                        		<td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{aa.id})}/" target="_blank">$!{aa.name}</a></td>
+							#elseif($velocityCount%3==0)
+                        		<td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{aa.id})}/" target="_blank">$!{aa.name}</a></td>
+                    		</tr>
+							#end
+							#end
+							#if($!{map.get($!{li.id}).size}%3!=0)
+								</tr>
+							#end
+                		</table>
+            		</div>
+					#end
+                    <!--end nav_right-->
+        		</dd>
+				#end
+    		</dl>
+            <dl>
+            	<dt class="white f14 tc"><a href="#springUrl('/xueyuan/shengyijing/')">废料生意经</a></dt>
+                <dd style="padding:10px 0">
+					#cacheFragment("$!{address.fragment}/huzhu/xueyuanCategory.htm?parentId=14" "" "" "")
+                	<table class="guide" cellpadding="0" cellspacing="0">
+						#foreach($li in $!{list})
+						#if($velocityCount%3==1)
+                    	<tr>
+                        	<td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{li.id})}/" target="_blank">$!{li.name}</a></td>
+						#elseif($velocityCount%3==2)
+                            <td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{li.id})}/" target="_blank">$!{li.name}</a></td>
+						#elseif($velocityCount%3==0)
+							<td><a href="#springUrl('/xueyuan/')$!{mapPath.get($!{li.id})}/" target="_blank">$!{li.name}</a></td>
+                        </tr>	
+						#end
+						#end
+						#if($!{list.size}%3!=0)
+							</tr>
+						#end
+                    </table>
+					#end
+                </dd>
+            </dl>
+            <dl>
+            	<dt class="white f14 tc"><a href="#springUrl('/xueyuan/baike/')">废料百科</a></dt>
+                <dd></dd>
+            </dl>
+  		  </div>
+		<!-- end left_nav -->
+       </div>
+        <!--end hz-lt fl-->
+        <div class="hz-gt mainblock fr">
+        	<div class="mb-dh lt2">大家在关注</div>
+            <!--end mb-dh lt2 bold-->
+            	<ul class="hg-item">
+					#foreach($!{li} in $!{tags})
+                   <li>
+                        <div class="hg-box-bg bold f16"><a href="#springUrl('/viewTags')-$!{li.id}.htm">$!{li.tagName}<a></div>
+                        <!--end hg-box-bg-->
+                        <div class="hg-box-info">
+                        	<p>关注数：$!{li.noticeCount}</p>
+                            <p>评论数：$!{li.articleCount}</p>
+                        </div>
+                        <!--end hg-box-info-->
+                    </li>
+					#end
+                </ul>
+            <!--end hg-box-->
+        </div>
+        <!--end hz-gt fr-->
+        <div class="cb"></div>
+    </div>
+    <!--end hz-content-->
+  	 <div class="hz-content">
+     	<div class="hz-left fl">
+        	<div class="mainblock">
+            	<div class="mb-dh lt4">
+                	<div class="d_tit fl">行业知识</div>
+                    <ul class="d_list1 fr">
+                        <li><a href="#springUrl('/xueyuan/hangye-feijs/')">废金属</a></li>
+                        <li><a href="#springUrl('/xueyuan/hangye-feisl/')">废塑料</a></li>
+                        <li><a href="#springUrl('/xueyuan/hangye-zonghe/')">综合废料</a></li>
+                    </ul>
+                </div>
+                <!--end mb-dh-->
+                <div class="cb"></div>
+                <div class="mb-box">
+					#cacheFragment("$!{address.fragment}/huzhu/xueyuanIndex.htm?categoryId=11&size=10" "" "" "")
+                	<div class="m2-left fl mr">
+                    	<ul class="item3">
+							#foreach($!{li} in $!{ListCategory})
+							#if($velocityCount<6)
+                        	<li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">[$!{li.childCategory}]&nbsp;$!{li.title}</a></li>
+                            #end
+							#end
+                        </ul>
+                    </div>
+                    <!--end m2-left-->
+                    <div class="m2-left fl">
+                    	<ul class="item3">
+							#foreach($!{li} in $!{ListCategory})
+							#if($velocityCount>5)
+                        	<li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">[$!{li.childCategory}]&nbsp;$!{li.title}</a></li>
+                            #end
+							#end
+						</ul>
+                    </div>
+					#end
+                    <!--end m2-left-->
+                    <div class="cb"></div>
+                </div>
+                <!--end mb-box-->
+            </div>
+            <!--end mainblock-->
+        </div>
+        <!--end hz-left fl-->
+        <div class="hz-right mainblock fr">
+        	<div class="mb-dh lt4">废料生意经</div>
+           <!--end mb-dh-->
+           <div class="mb-list gclear mb">
+               <ul class="mb-item">
+				   #cacheFragment("$!{address.fragment}/huzhu/xueyuanIndex.htm?categoryId=14&size=5" "" "" "")
+				   #foreach($!{li} in $!{ListCategory})
+                   <li>&middot;<a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">&nbsp;$!{li.title}</a></li>
+				   #end
+                   #end
+               </ul>
+           </div>
+          <!--end su-post-->
+        </div>
+        <!--end hz-right fr-->
+        <div class="cb"></div>
+     </div>
+     <!--end hz-content-->
+     <div class="hz-content mainblock">
+         <div class="mb-dh lt5 black">
+			<div class="fl">AQSIQ</div>
+##			<ul class="d_list1 fr">
+##                 <li><a href="#springUrl('/list_col21.htm')">废金属</a></li>
+##                 <li><a href="#springUrl('/list_col22.htm')">废塑料</a></li>
+##                 <li><a href="#springUrl('/list_col23.htm')">综合废料</a></li>
+##             </ul>
+         </div>
+        <!--end mb-dh-->
+        <div class="cb"></div>
+        <div class="m">
+           <div class="mb-box fl">
+			  #cacheFragment("$!{address.fragment}/huzhu/xueyuanIndex.htm?categoryId=12&size=15" "" "" "")
+              <div class="m2-left fl mr">
+                 <ul class="item3">
+					#foreach($!{li} in $!{ListCategory})
+					#if($velocityCount<6)
+                     <li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">$!{li.title}</a></li>
+					#end
+					#end
+				 </ul>
+              </div>
+              <!--end m2-left-->
+              <div class="m2-left fl">
+                 <ul class="item3">
+					#foreach($!{li} in $!{ListCategory})
+					#if($velocityCount>5&&$velocityCount<11)
+                     <li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">$!{li.title}</a></li>
+					#end
+					#end
+                 </ul>
+              </div>
+              <!--end m2-left-->
+            <div class="cb"></div>
+          </div>
+          <!--end mb-box fl-->
+       	  <div class="mb-list1 gclear fr">
+               <ul class="mb-item">
+					#foreach($!{li} in $!{ListCategory})
+					#if($velocityCount>10)
+                     <li><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end target="_blank" title="$!{li.title}">$!{li.title}</a></li>
+					#end
+					#end
+               </ul>
+           </div>
+		   #end
+           <!---end mb-list1 fr-->
+          <div class="cb"></div>
+       </div>
+       <!--end m-->
+   </div>
+   <!--end hz-content mainblock-->
+   <div class="hz-content">
+   		<a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/img_ad.jpg" /></a>
+   </div>
+   <!--end hz-content -->
+   <div class="hz-content mt8">
+     	<div class="hz-left fl">
+        	<div class="mainblock">
+            	<div class="mb-dh lt3">废料百科</div>
+                <!--end mb-dh-->
+                <div class="cb"></div>
+                <div class="m0">
+					#cacheFragment("$!{address.fragment}/huzhu/xueyuanIndex.htm?categoryId=13&size=10" "" "" "")
+                	<div class="m2-left fl">
+                    	<ul class="m2-info">
+							#foreach($!{li} in $!{ListCategory})
+							#if($velocityCount<6)
+                        	<li>
+                            	<div class="m2-img fl"><a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/logo_img.jpg" /></a></div>
+                                <!--end m2-img fl-->
+                                <div class="m2-text fl">
+                                	<div class="m2i-name"><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end title="$!{li.title}" target="_blank" class="blue bold">$!{li.title}</a>
+                                    </div>
+                                    <!--end m2i-name-->
+                                    <div class="m2-info-item">
+                                    	#printTitle($!{li.content} 37 "...")
+                                    </div>
+                                    <!--end m2-info-item-->
+                                </div>
+                                <!--end m2-text fl-->
+                                <div class="cb"></div>
+                            </li>
+							#end
+							#end
+                        </ul>
+                    </div>
+                    <!--end m2-left-->
+                    <div class="m2-left fr">
+                    	<ul class="m2-info">
+							#foreach($!{li} in $!{ListCategory})
+							#if($velocityCount>5)
+                        	<li>
+                            	<div class="m2-img fl"><a href="javascript:;" target="_blank"><img src="http://img0.zz91.com/zz91/newhuzhu/images/logo_img.jpg" /></a></div>
+                                <!--end m2-img fl-->
+                                <div class="m2-text fl">
+                                	<div class="m2i">
+                                    	<div class="m2i-name fl"><a #if($!{li.url}&&$!{li.url}!="")href="$!{li.url}" #else href="#springUrl('/detail/')$!{li.id}.html"#end title="$!{li.title}" target="_blank" class="blue bold">$!{li.title}</a></div>
+                                        <!--end fl-->
+                                    </div>
+                                    <!--end m2i-->
+                                    <div class="m2-info-item">
+                                    	#printTitle($!{li.content} 37 "...")
+                                    </div>
+                                    <!--end m2-info-item-->
+                                </div>
+                                <!--end m2-text fl-->
+                                <div class="cb"></div>
+                            </li>
+						#end
+						#end
+                        </ul>
+                    </div>
+					#end
+                    <!--end m2-left-->
+                    <div class="cb"></div>
+                </div>
+                <!--end mb-box-->
+            </div>
+            <!--end mainblock-->
+        </div>
+        <!--end hz-left fl-->
+        <div class="hz-right mainblock fr">
+        	<div class="mb-dh lt5 black">废料标签</div>
+           <!--end mb-dh-->
+		   #cacheFragment("$!{address.fragment}/huzhu/tags.htm?category=3&size=18" "" "" "")
+           <div class="mb-list gclear mb">
+               <ul class="hz-coitem">
+				#foreach($!{li} in $!{tags})
+                   <li>
+						<a href="#springUrl('/viewTags')-$!{li.id}.htm" target="_blank" title="$!{li.tagName}">$!{li.tagName}</a>
+				   </li>
+				#end
+               </ul>
+           </div>
+		   #end
+          <!--end su-post-->
+        </div>
+        <!--end hz-right fr-->
+        <div class="cb"></div>
+     </div>
+     <!--end hz-content-->
+  </div>
+  <!--end huzhu-->
+</div>
+<!--end community-->

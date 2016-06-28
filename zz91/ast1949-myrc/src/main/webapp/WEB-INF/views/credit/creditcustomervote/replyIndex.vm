@@ -1,0 +1,100 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/credit/creditfile/index.htm')">诚信档案</a> <span class="divider">/</span>
+            </li>
+            <li class="active">客户评价</li>
+        </ul>
+        <div class="well pd clearfix">
+			<div class="well-body grid_3 alpha voteinfo">
+				#set($vote_total = $!{vote_0} + $!{vote_1} + $!{vote_2})
+				您目前共收到评价 <span class="red">${vote_total}</span> 条
+				<p>好评：<span class="red">$!{vote_0}</span> 条</p>
+				<p>中评：<span class="red">$!{vote_1}</span> 条</p>
+				<p>差评：<span class="red">$!{vote_2}</span> 条</p>
+			</div>
+			<div class="alert alert-info grid_8">
+    			<p><strong>重要提醒：</strong></p>
+                <p>您收到的“好评”会在通过本网审核后即时上网，“中评”“差评”会在通过本网审核<span class="red">15天</span>后上网，在此期间您可与对方协调，对方有权删除（但不能修改）。</p>
+    			<p>对于收到的评价，您可在对方作出评价后<span class="red">30天</span>内作出解释。</p>
+    			<p>以下评价由会员自行提供，并负责内容的真实性，zz91再生网作为信息平台提供者不介入评价细节，请双方自行协调。</p>
+    		</div>
+    	</div>
+    	<p>
+    		<a href="#springUrl('/credit/creditcustomervote/index.htm')" class="label">收到的评价</a>
+			<a href="javascript:void(0)" class="label label-info">作出的评价</a>
+		</p>
+		<ul class="breadcrumb">
+			<li class="active">
+			#if($!{status}==''||!$!{status})
+				所有客户评价
+			#else
+				#if(${status}==0) 所有好评 #end
+				#if(${status}==1) 所有中评 #end
+				#if(${status}==2) 所有差评 #end
+			#end
+			</li>
+		</ul>
+		<table class="table table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th width="10%" class="tac">
+						<select onChange="window.location='#springUrl('/credit/creditcustomervote/index.htm?status=')'+this.value;" name="type" class="radioPositionFix" style="top:2px;">
+							<option value="" selected>筛选</option>
+							<option #if($!{status}=='0') selected #end value=0>好评</option>
+							<option #if($!{status}=='1') selected #end value=1>中评</option>
+							<option #if($!{status}=='2') selected #end value=2>差评</option>
+						</select>
+					</th>
+					<th width="30%" class="tac">评价内容</th>
+					<th width="30%" class="tac">被评价者回复内容</th>
+					<th width="30%" class="tac">被评价者</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($customerVote in $!page.records)
+				<tr>
+					<td class="tac">
+						#if($!{customerVote.vote.status}=='0')
+							<img src="$!{address.images}/myrc/good.gif" title="好评"/> 
+						#elseif($!{customerVote.vote.status}=='1')
+							<img src="$!{address.images}/myrc/common.gif" title="中评"/> 
+						#else 
+							<img src="$!{address.images}/myrc/bad.gif" title="差评"/> 
+						#end
+					</td>
+	    			<td>
+						#if($!{customerVote.vote.replyContent} && ${customerVote.vote.replyContent}!="")
+							<img src="$!{address.images}/global/icon/mailopen2.gif" title="已回复" />
+						#else
+							<img src="$!{address.images}/global/icon/mailopen.gif" title="未回复"/>
+						#end
+						$!{customerVote.vote.content}<br>
+						<span class="grey">$date.format('yyyy-MM-dd hh:mm',$!{customerVote.vote.gmtCreated})</span>
+					</td>
+					<td class="tac">
+						$!{customerVote.vote.replyContent}
+						#if(15 >= $!{customerVote.dateDiff} && $!{customerVote.vote.status} !="0")
+							<a href="#springUrl('/credit/creditcustomervote/deleteVote.htm?id=')$!{customerVote.vote.id}">我要删除</a>
+						#end
+					</td>
+					<td class="tac">
+						<a href="$!{address.company}/compinfo$!{customerVote.vote.fromCompanyId}.htm" target="_blank">$!{customerVote.company.name}</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+		#if($!{page.records.size()} ==0)
+		<div class="alert alert-error">没有评价信息</div>
+		#end
+		#myrcPageNav($!{page} "#springUrl('/credit/creditcustomervote/replyIndex.htm')" "s=$!{status}" "")
+	</div>
+</div>
+<script>
+jQuery(document).ready(function(){
+	myrc.menu(7, 1);
+});
+</script> 

@@ -1,0 +1,116 @@
+<script type="text/javascript" >
+function myrcLogout(){
+	zz91Util.logout({
+		contextpath:"#springUrl('')",
+		url:'$!{address.front}'
+	});
+}
+</script>
+<div style="padding:3px;background:#FFF1A8;text-align:center;">
+	全新界面的生意管家现在开始可以试用啦！！！
+	<a href="$!{address.myrc}/preview/" style="color:blue;font-weight:bold;">抢先体验新版生意管家</a>
+</div>
+<div class="esiteLeader">
+	<div class="esiteLeaderMargin">
+		<a href="http://renzheng.recyclechina.com/" target="_blank" title="海外优质供应商专区">海外优质供应商</a>
+			│
+		<a href="$!{address.front}" target="_blank">ZZ91首页</a>
+			│
+		<a href="$!{address.trade}" target="_blank">废料交易中心</a>
+			│
+		<a href="$!{address.price}" target="_blank">报价资讯中心</a>
+			│
+		<a href="$!{address.huzhu}" target="_blank">再生互助</a>
+			│
+		<a href="http://sms.zz91.com/" target="_blank">短信报价</a>
+    </div>
+</div>
+<div class="myrc_top">
+	<div  class="myrc_logo">
+		<img src="$!{address.images}/myrc/toplogo.gif" border="0" usemap="#Map" />
+	</div>
+	<div  class="myrc_leader">
+				
+				<form action="" method="post" name="formsearc" target="_blank" id="formsearc" onsubmit="return submitstr(this)">
+            		
+                  <div class="esiteSearch">  ##style="position:absolute; left:680px; top:30px" 
+                		   <div class="seachSelect">
+								<ul>
+                                  <li class="m_on" id="offerlm1" onclick="offeron(1)">供应</li>
+                                  <li class="m_off" id="offerlm2" onclick="offeron(2)">求购</li>
+                                  <li class="m_off" id="offerlm3" onclick="offeron(3)">报价</li>
+                                  <li class="m_off" id="offerlm4" onclick="offeron(4)">资讯</li>
+                                  <li class="m_off" id="offerlm5" onclick="offeron(5)">门市部</li>
+                                  <div style="clear:both"></div>
+								</ul>
+                            </div>
+							<div class="m_onbottom">
+                					<input name="searchname" type="text" id="searchname" onclick="this.value=''" value="请输入你感兴趣的产品名称！" class="searchInput"/>
+                					<input id="url" name="url" type="hidden" value="$!{request.requestURI}"/>
+                					<input type="submit" name="Submit" class="buttonNormalGray" value="搜   索" />
+                           </div>
+            		  </div>
+                </form>
+	</div>
+    <map name="Map" id="Map"><area shape="rect" coords="2,12,224,67" href="$!{address.front}" target="_blank" /></map>
+    <div id="top_navigation" class="top_navigation">
+    	<div class="myrc_welcome">
+				<img src="$!{address.images}/global/icon/user2.gif" align="absmiddle"><span id="accountinfo" ></span>
+				<a href="#springUrl('/dologout.htm')" class="myrcloginout">[退出]</a>
+    	</div>
+		<script type="text/javascript" >
+			jQuery.ajax({
+				url:"#springUrl('/loadaccount.htm')",
+				type:"POST",
+				dataType:"json",
+				success:function(msg){
+					var sex="先生";
+					if(msg.data.sex==1){
+						sex="女士";
+					}
+					var str="欢迎您<span title='"+msg.data.contact+"' >"+msg.data.contact+"</span>"+sex;
+					jQuery("#accountinfo").html(str);
+				}
+			});
+		</script>
+    	<div class="myrc_channel_nav">
+    		<ul>
+    			<li class="toplm_off" id="top_menu_00" onclick="window.location='#springUrl('/index.htm')';logiing()">
+    				<img src="$!{address.images}/global/icon/home2.gif" width="16" height="16" align="absmiddle" >生意管家首页
+    			</li>
+    			<li class="toplm_off" id="top_menu_10" onclick="window.location='#springUrl('/mymessage/inbox.htm')';logiing()">
+    				<img src="$!{address.images}/global/icon/quote2.gif" width="16" height="16" align="absmiddle" >询盘留言
+    			</li>
+    			<li class="toplm_off" id="top_menu_20" onclick="window.location='#springUrl('/myproducts/office_post_list.htm')';logiing()">
+    				<img src="$!{address.images}/global/icon/info2.gif" width="16" height="16" align="absmiddle" >我的供求信息
+    			</li>
+    			<li class="toplm_off" id="top_menu_30" onclick="window.location='#springUrl('/mysubscribe/bizList.htm')';logiing()">
+    				<img src="$!{address.images}/global/icon/graph2.gif" width="16" height="16" align="absmiddle">我的商机</li>
+                <li id="esiteinfo">
+        			#if($!{sessionUser.membershipCode} && $!{sessionUser.membershipCode} != 10051000)
+        				<script type="text/javascript" >
+						var homePic="<img src='$!{address.images}/global/icon/home3.gif' align='absmiddle'>";
+        				jQuery.ajax({
+        					url:"#springUrl('/loadesite.htm')",
+            				type:"POST",
+            				data:{id:'$!{sessionUser.companyId}'},
+            				dataType:"json",
+            				success:function(msg){
+                				var url="http://"+msg.data.domainZz91+".zz91.com";
+        						var esitestr=homePic+'门市部地址：<a href="'+url+'/" target="_blank" >'+url+'</a>';
+        						jQuery("#esiteinfo").html(esitestr);
+                			}
+        				});
+        				</script>
+        			#else
+        				<a href="http://www.zz91.com/service/zst/" target="_blank"  class="commAdvanced2">请升级为高级会员</a>
+        			#end
+				</li>
+             </ul>
+      	</div>	
+    </div>
+</div>
+<div class="loging" id="loging" style="display:none;">
+	正在加载数据，请稍候......
+</div>
+<div style="clear:both"></div>

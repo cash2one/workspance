@@ -1,0 +1,133 @@
+#set($layout="/layout/defaultS.vm")
+<div class="contain" >
+	
+	<div class="location">
+		#parse("/common/esitenavigation.vm")		
+		>
+		<a href="#springUrl('/products')$!{mid}.htm" >产品展示</a>
+	</div>
+
+	<div class="mainblock">
+		#parse("/common/esiteleft.vm")
+		<div class="mk-body">
+			#if("$!{profile.memberCode}" == "10011001")
+				#cacheFragment("$!{address.fragment}/fragment/esite/recommendSupply.htm?cid=$!{cid}&size=8&dzd", "", "", "")
+				<div class="panel mt8px">
+					<h3>
+						<table>
+							<tr>
+								<td>推荐产品</td>
+							</tr>
+						</table>					
+					</h3>
+					<div class="panel-body">
+						<ul class="pb-lidl">
+							#foreach($supply in $!{list})
+							<li style="width:170px;">
+								<dl>
+									<dt>
+										<a href="$!{address.trade2}/supply/detail$!{supply.id}.htm" target="_blank">
+											#if("$!{supply.photoCover}" == "")
+												<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif"  style=" width:154px;height:124px;"/>
+											#else
+												<img src="$!{address.thumb}$!{address.resource}$!{supply.photoCover}&width=154&height=124" style=" width:154px;height:124px;" />
+											#end
+										</a>
+									</dt>
+									<dd>
+										<a href="$!{address.trade2}/supply/detail$!{supply.id}.htm" target="_blank">#printTitle($!{supply.title} 12 "")</a><br />
+										<em style="color:#f00;">
+		                       				#if("$!{supply.priceNum}"=="" || "$!{supply.priceNum}"=="0")
+					                        	面议
+					                        #else
+					                        	$!{supply.priceNum}
+					                        	#if("$!{supply.priceUnits}"=="")
+					                        		元
+					                            #else
+					                        	    $!{supply.priceUnits}
+					                            #end
+					                        #end
+										</em>
+									</dd>
+								</dl>
+							</li>
+							#end
+						</ul>
+						<div class="clear"></div>
+					</div>
+				</div>
+				#end
+			#end
+
+			<div class="panel mt8px">
+				<h3>
+					<table>
+						<tr>
+							<td>产品展示</td>
+						</tr>
+					</table>
+					<span style="right:16px;top:4px;">
+					<form action="#springUrl('/products.htm')" method="post">
+						<input name="keywords" type="text" class="list_input" value="$!{keywords}"/>
+						<input name="cid" type="hidden" value="$!{cid}"/>
+						<input name="group" type="hidden" value="$!{group}"/>
+						<input type="submit" value="搜索" class="list_search"/>
+					</form>
+					</span>
+				</h3>
+				<div class="panel-body">
+					<ul class="pb-ulpage">
+						 #foreach($list in $!{page.records})
+						<li>
+							<table>
+								<tbody>
+									<tr>
+										<td width="130px">
+											<a href="$!{address.trade2}/supply/detail${list.id}.htm" target="_blank">
+								                #if("$!{list.photoCover}"=="")
+													<img src="$!{address.img}/huanbao/images/trade/tradelist/noprod.gif" style=" width:120px;height:80px;" alt="$!{list.title}"/>
+												#else
+													<img src="$!{address.thumb}$!{address.resource}$!{list.photoCover}&width=120&height=80" style=" width:120px;height:80px;" alt="$!{list.title}"/>
+												#end
+								            </a>
+										</td>
+										<td style="padding-right:8px" width="280px" align="left"><h4><a href="$!{address.trade2}/supply/detail${list.id}.htm" target="_blank">#printTitle($!{list.title} 24 "")</a></h4> 
+											<p class="gd_p">#printTitle($!{list.detailsQuery} 50 '...')</p>
+										</td>
+										<td width="130px" align="center">
+											<em style="color:#f00;">
+											#if("$!{list.priceNum}"=="" || "$!{list.priceNum}"=="0")
+								            	面议
+								            #else
+								            	$!{list.priceNum}
+								            	#if("$!{list.priceUnits}"=="")
+								            	元
+								                #else
+								            	    $!{list.priceUnits}
+								                #end
+								            #end
+											</em>
+										</td>
+										<td width="135px" align="center">#printFragmentDate("yyyy-MM-dd" $!{list.gmtRefresh})</td>
+									</tr>
+								</tbody>
+							</table>
+						</li>
+						#end
+					</ul>
+					<div class="msb3_page">
+						<table>
+							<tbody>
+								<tr>
+									#newStaticPageNav(${page} "#springUrl('/products')$!{mid}--$!{group}--$!{keywords}" "" "")
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>

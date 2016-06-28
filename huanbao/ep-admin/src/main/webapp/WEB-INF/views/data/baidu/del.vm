@@ -1,0 +1,57 @@
+<script language="JavaScript">
+function subDel(){
+	Ext.MessageBox.confirm("确认", '请确认信息,是否删除?', function(_btn){
+		if (_btn != "yes")
+			return;
+			
+			
+		var keywords =document.myform.keywords.value;
+		if(keywords==""){
+			com.zz91.utils.Msg(MESSAGE.TITLE, "请输入关键字!");
+			return false;
+		}
+		
+		var deltype="";
+		if(document.myform.delType[0].checked)
+		deltype=document.myform.delType[0].value;
+		if(document.myform.delType[1].checked)
+		deltype=document.myform.delType[1].value;
+		if(document.myform.delType[2].checked)
+		deltype=document.myform.delType[2].value;
+		
+		var myMask = new Ext.LoadMask(Ext.getBody(), {
+			msg    : "正在操作,请稍后...",
+			msgCls : 'z-index:10000;'
+		});
+    	myMask.show();
+		
+		Ext.Ajax.request({
+			timeout: 600000,
+			url:Context.ROOT+"/data/baidu/updateData.htm",
+			params:{"keywords":keywords,"deltype":deltype},
+			success:function(response,opt){
+				var obj = Ext.decode(response.responseText);
+				if(obj.success){
+					com.zz91.utils.Msg(MESSAGE.TITLE, "成功删除"+obj.data+"条数据!");
+					myMask.hide();
+				}else{
+					com.zz91.utils.Msg(MESSAGE.TITLE, "处理0条数据,请检查关键字内容是否合法或网络是否通畅!");
+					myMask.hide();
+				}
+			},
+			failure:function(response,opt){
+				com.zz91.utils.Msg(MESSAGE.TITLE, "处理异常,该关键字范围过大或网络问题,请检查.");
+				myMask.hide();
+			}
+		});
+	});
+}
+</script>
+<form name="myform">
+<input type="text" name="keywords"/>关键字</br>
+<input type="radio" name="delType" value="company" checked=true>公司信息</br>
+<input type="radio" name="delType" value="supply">供应信息</br>
+<input type="radio" name="delType" value="buy">求购信息</br>
+<input type="button" id="btnDel" value="删除数据需谨慎,确认无误后提交" onclick="subDel()">
+</form>
+

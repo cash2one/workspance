@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="analysisAdHit">
+	<typeAlias alias="hit" type="com.zz91.ads.board.domain.analysis.AnalysisAdHit"/>
+
+	<resultMap id="hitResult" class="hit">
+		<result property="id" column="id" />
+		<result property="adId" column="ad_id" />
+		<result property="adTitle" column="ad_title" />
+		<result property="adPositionId" column="ad_position_id" />
+		<result property="numShow" column="num_show" />
+		<result property="numHit" column="num_hit" />
+		<result property="numHitFirst" column="num_hit_first" />
+		<result property="numHitPerHour" column="num_hit_per_hour" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	
+	<sql id="dynamicQueryAanalysis">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="adPositionId">
+				ad_position_id = #adPositionId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="gmtTarget">
+				gmt_target=#gmtTarget#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryAnalysis" parameterClass="java.util.HashMap" resultMap="hitResult">
+		select 
+			id,ad_id,ad_title,ad_position_id,num_show,num_hit,num_hit_first,num_hit_per_hour,gmt_target
+		from analysis_ad_hit
+		<include refid="analysisAdHit.dynamicQueryAanalysis" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryAnalysisCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*)
+		from analysis_ad_hit
+		<include refid="analysisAdHit.dynamicQueryAanalysis" />
+	</select>
+	
+</sqlMap>

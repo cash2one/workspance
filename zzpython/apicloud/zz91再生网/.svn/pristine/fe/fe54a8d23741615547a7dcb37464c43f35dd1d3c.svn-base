@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>留言</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+	<link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+	<style>
+	.text-area{
+		padding: 10px 8px 0;
+		font-size: 12px;
+	}
+	.text-area textarea{
+		border-top: 1px solid #e1e1e1;
+		border-bottom: 1px solid #e1e1e1;
+		width: 100%;
+		height: 130px;
+		font-size: 12px;
+	}
+	.handle{
+		padding: 30px 8px 0px;
+	}
+	.btn{
+		background-color: #e1e1e1;
+		margin: 0 8px;
+		line-height: 35px;
+		color: #fff;
+		text-align: center;
+		display: block;
+		margin-top:20px;
+		border-radius: 3px;
+	}
+	.fb-btn{
+		background-color: #01ba2e;	
+	}
+	</style>
+</head>
+<body>	
+	<div class="text-area">
+		<textarea  placeholder="说的什么吧" class="hf-info"></textarea>
+	</div>
+	<span class="btn fb-btn">留言</span>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/zepto.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+	apiready = function(){
+		var Pid = api.pageParam.Pid;
+		var forcompany_id = api.pageParam.forcompany_id;
+		var be_inquired_type = api.pageParam.be_inquired_type;
+		var company_id = UserInfo.memberID();
+		var usertoken = UserInfo.token();
+		var appsystem = api.systemType;
+		$(".fb-btn").on("click",function(){
+			$(this).removeClass("fb-btn");
+			var Content = $(".hf-info").val();
+			var data = {
+				company_id:company_id,
+				usertoken:usertoken,
+				appsystem:appsystem,
+				datatype:"json",
+				be_inquired_type:be_inquired_type,
+				forcompany_id:forcompany_id,
+				content:Content,
+				pid:Pid
+			}
+			api.ajax({
+		        url : hosturl + 'leavewords_save/',
+		        method : 'post',
+		        timeout : 30,
+		        dataType : 'json',
+		        returnAll : false,
+		        data:{
+        			values: data
+    			}
+		    }, function(ret, err) {
+		    	$(".btn").addClass("fb-btn");
+		        if (ret) {
+		        	 if (ret.err == "true"){
+		        	 	api.alert({
+						    title: '留言失败',
+						    msg: ret.errkey,
+						    buttons:['确定']
+						},function(ret,err){
+						})
+		        	 }else{
+		        	 	api.alert({
+						    title: '留言成功',
+						    msg: "留言成功",
+						    buttons:['确定']
+						},function(ret,err){
+						})
+		        	 }
+		        } else {
+		        };
+		    });
+		})
+	}
+</script>
+</html>

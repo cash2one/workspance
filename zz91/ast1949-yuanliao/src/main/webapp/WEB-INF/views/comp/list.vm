@@ -1,0 +1,284 @@
+        <link rel="shortcut icon" href="http://img0.zz91.com/front/favicon.ico" />
+        <link rel="stylesheet" href="http://img0.zz91.com/front/css/zz91.base.css" />
+        <link rel="stylesheet" href="http://img0.zz91.com/zz91/polymer/css/library-cp.css" />
+#set($layout="layout/yuanliaoLayout.vm")
+#set($inflag=2)
+#set($in=3)
+<style >
+	a {
+		cursor:pointer;
+	}
+</style>
+        <div class="pagecenter">
+            <div class="thiseat clearfix">
+                <div class="fl">
+                    <a href="#springUrl('/')">首页</a> > <a href="#springUrl('/firm/index.htm')" #if(!$!{search.keyword}) class="thiseat-name" #end>企业库</a> 
+					#if($!{search.keyword}) > <span class="thiseat-name">$!{search.keyword}</span> #end
+                </div>
+                <div class="fr">想推广公司的产品和服务？ 马上 <a href="#springUrl('/user/register.html')" target="_blank" class="orange-color">入驻企业库</a></div>
+            </div>
+
+            <div class="selectfirm">
+                <div class="motitle clearfix">
+                    <span class="fl motitle-name">企业筛选</span>
+                </div>
+
+                <div class="clearfix typeselt">
+                    <div class="fl typeselt-name">产品类别</div>
+                    <span class="clearfix fl typeselt-ui typeselt-ui1">
+						#foreach($in in $prentMap.keySet())
+                        <a  #if(${mainCode}&&${mainCode.substring(0,12)}==$in) class="this-sect" #end onclick="prentfun('$!categoryMap.get($mapMain.get($in))')">$prentMap.get($in)</a>
+						#end
+                    </span>
+					<input type="hidden" value="$!{code}" id="preCode" name="proCode"/>
+					<input type="hidden" value="$!{pro}" id="proCode" name="childCode"/>
+					<input type="hidden" value="$!{search.keyword}" id="keyword"/>
+                </div>
+                #if($!{proMap})
+                <div class="clearfix typeselt">
+                    <div class="fl typeselt-name">详细类别</div>
+                    <span class="clearfix fl typeselt-ui">
+                        <a  #if(${mainCode}==${mainCode.substring(0,12)}) class="this-sect" #end onclick="prentfun('$!categoryMap.get($mapMain.get(${mainCode.substring(0,12)}))')">全部</a>
+						#foreach($in in $proMap.keySet())
+                        <a  #if(${mainCode}==$in) class="this-sect" #end onclick="prentfun('$!categoryMap.get($!{mapMain.get($in)})')">$!{proMap.get($in)}</a>
+                        #end
+                    </span>
+                </div>
+				#end
+                <div class="clearfix typeselt typeselt-city">
+                    <div class="fl typeselt-name">热门地区</div>
+                    <span class="clearfix fl typeselt-ui">
+                        <a  #if(!$!{pro}||$!{pro}=='76') class="this-sect" #end onclick="addfun('$!categoryMap.get('qbdq')')">全部</a>
+                        <a  #if($!{pro}=='63') class="this-sect" #end onclick="addfun('$!categoryMap.get('gdsz')')">深圳</a>
+                        <a  #if($!{pro}=='64') class="this-sect" #end onclick="addfun('$!categoryMap.get('gddw')')">东莞</a>
+                        <a  #if($!{pro}=='65') class="this-sect" #end onclick="addfun('$!categoryMap.get('zjnb')')">宁波</a>
+                        <a  #if($!{pro}=='66') class="this-sect" #end onclick="addfun('$!categoryMap.get('zssz')')">苏州</a>
+                        <a  #if($!{pro}=='67') class="this-sect" #end onclick="addfun('$!categoryMap.get('gdmm')')">茂名</a>
+                        <a  #if($!{pro}=='68') class="this-sect" #end onclick="addfun('$!categoryMap.get('sdqd')')">青岛</a>
+                        <a  #if($!{pro}=='69') class="this-sect" #end onclick="addfun('$!categoryMap.get('sh')')">上海</a>
+                        <a  #if($!{pro}=='70') class="this-sect" #end onclick="addfun('$!categoryMap.get('jswx')')">无锡</a>
+                        <a  #if($!{pro}=='71') class="this-sect" #end onclick="addfun('$!categoryMap.get('gdfs')')">佛山</a>
+                        <a  #if($!{pro}=='72') class="this-sect" #end onclick="addfun('$!categoryMap.get('sccd')')">成都</a>
+                        <a  #if($!{pro}=='73') class="this-sect" #end onclick="addfun('$!categoryMap.get('lnsy')')">沈阳</a>
+                        <a  #if($!{pro}=='74') class="this-sect" #end onclick="addfun('$!categoryMap.get('zjhz')')">杭州</a>
+                        <a  #if($!{pro}=='75') class="this-sect" #end onclick="addfun('$!categoryMap.get('zsnj')')">南京</a>
+                    </span>
+                </div>
+            </div>
+
+            <div class="selectfirm">
+                <div class="motitle clearfix">
+                    <span class="fl motitle-name">企业列表</span>
+                    #if($page.totalRecords>0)<span class="fr">共有 <em class="orange-color">$!{page.totalRecords}</em> 家相关企业</span>#end
+                </div>
+				#if($page.totalRecords>0)
+                <ul class="firmlist">
+					#foreach($li in $page.records)
+                    <li>
+                        <div class="clearfix">
+                            <div class="fl firmlist-info">
+                                <h2 class="firm-h2"><a href="#springUrl('/comp/detail')$!{li.company.id}.html" target="_blank">$!{li.company.name}</a></h2>##<i class="sbimg"></i>
+                                <div class="clearfix firmlist-cnt">
+                                 <div class="cnt-jjie fl">#if(${li.company.introduction}) #printTitle(${li.company.introduction} 75 '... ') #if($li.company.introduction.trim().length()>75)<a href="#springUrl('/comp/detail')$!{li.company.id}-1.html" target="_blank" class="orange-color">[ 查看更多 ]</a>#end  #end</div>
+                                    <div class="fl cnt-city">$!{li.company.areaCode}</div>
+
+                                    <div class="fr cnt-btn">
+                                        <a href="#springUrl('/comp/detail')$!{li.company.id}-3.html" target="_blank" class="cnt-btn1">联系方式</a>
+                                        <a href="#springUrl('/comp/xunjia')$!{li.company.id}.html" target="_blank" class="cnt-btn2">在线询价</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="color-66">主营业务：#printTitle($!{li.company.business} 22 '...')</div>
+                                
+                            </div>
+                            <div class="fr clearfix pct-list">
+								#if(${li.list})
+								#foreach($lii in $li.list)
+                                <div class="firm-pct fl">
+                                    <div class="firm-pct-img"><a href="#springUrl('/detail')/$!{lii.yuanliao.id}.html" target="_blank">#if($!{lii.picAddress}) <img src="$!{address.thumb}/$!{address.resource}/$!{lii.picAddress}&width=142&height=100"/ style="width:142px;height:100px"> #else <img src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" style="width:142px;height:100px" /> #end</a></div>
+                                    <p class="firm-pct-name"><a href="#springUrl('/detail')/$!{lii.yuanliao.id}.html" target="_blank">#printTitle($!{lii.yuanliao.title} 10 "...")</a></p>
+                                </div>
+								#end
+								#else
+								<div class="notpct">该企业暂未发布原料产品！</div>
+								#end
+                            </div>
+                        </div>
+                    </li>
+					#end
+                </ul>
+				#else
+				 <div class="notnum-list clearfix">
+                    <div class="fl wawaimg"></div>
+                    <div class="fr notnum-sm">
+                        <p>很抱歉，没有找到与 “<span class="ftcr"> $!{search.keyword} $!{search.province} </span>” 相关的公司信息</p>
+                        <p class="ftcr">您可以：</p>
+                        <p>1. 去掉不必要的字句，扩大搜索范围</p>
+                        <p>2. 查看我们为您精心推荐的优质商家</p>
+                    </div>
+                </div>
+				#end
+            </ul>
+			</div>
+				#if($page.totalRecords<1)
+				<div class="selectfirm">
+				  <div class="motitle clearfix">
+                    <span class="fl motitle-name">优质商家推荐</span>
+                </div>
+				<ul class="firmlist">
+					#cacheFragment("$!{address.yuanliaoFragment}/fragment/yuanliao/indexByCodeId.htm?code=10231011&size=1","","1","")
+					#foreach($li in $!list)
+                    <li>
+                        <div class="clearfix">
+                            <div class="fl firmlist-info">
+                                <h2 class="firm-h2"><a href="#springUrl('/comp/detail')$!{li.company.id}.html" target="_blank">$!{li.company.name}</a></h2>##<i class="sbimg"></i>
+                                <div class="clearfix firmlist-cnt">
+                                 <div class="cnt-jjie fl">#if(${li.company.introduction}) #printTitle(${li.company.introduction} 75 '... ') #if($li.company.introduction.trim().length()>75)<a href="#springUrl('/comp/detail')$!{li.company.id}-1.html" target="_blank" class="orange-color">[ 查看更多 ]</a>#end  #end</div>
+                                    <div class="fl cnt-city">$!{li.company.areaCode}</div>
+
+                                    <div class="fr cnt-btn">
+                                        <a href="#springUrl('/firm/3detail')$!{li.company.id}.htm" target="_blank" class="cnt-btn1">联系方式</a>
+                                        <a href="#springUrl('/firm/xunjia')$!{li.company.id}.htm" target="_blank" class="cnt-btn2">在线询价</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="color-66">主营业务：#printTitle($!{li.company.business} 22 '...')</div>
+                                
+                            </div>
+                            <div class="fr clearfix pct-list">
+								#if(${li.list})
+								#foreach($lii in $li.list)
+                                <div class="firm-pct fl">
+                                    <div class="firm-pct-img"><a href="#springUrl('/detail')/$!{lii.yuanliao.id}.html" target="_blank">#if($!{lii.picAddress})<img src="$!{address.thumb}/$!{address.resource}/$!{lii.picAddress}&width=142&height=100"/ style="width:142px;height:100px">#else <img src="http://img0.zz91.com/zz91/polymer/images/listnotimg.jpg" style="width:142px;height:100px" /> #end</a></div>
+                                    <p class="firm-pct-name"><a href="#springUrl('/detail')/$!{lii.yuanliao.id}.html" target="_blank">#printTitle($!{lii.yuanliao.title} 10 "...")</a></p>
+                                </div>
+								#end
+								#else
+								<div class="notpct">该企业暂未发布原料产品！</div>
+								#end
+                            </div>
+                        </div>
+                    </li>
+					#end
+					#end
+                </ul>
+			</div>
+			#end
+			#if($page.totalRecords>0)
+						<div class="page_block">
+							<div class="page_a02">
+								#pageYuanliao2($page)
+							</div>
+						</div>
+			#end
+    </body>
+    <script type="text/javascript">
+       $(".firmlist li:last").css("border","0px");
+	   
+	   
+	   function prentfun(obj){
+	   search(obj,"");
+	   }
+	   function addfun(obj){
+	   search("",obj);
+	   }
+	   
+	   function search(preCode,proCode){
+	   
+	   var a=$("#preCode").val();
+	   var b=$("#proCode").val();
+	   
+	    var url = "#springUrl('/comp/list')";
+		var keyword=$("#keyword").val();
+		if(keyword!=""){
+		keyword=encodeURI(keyword);
+		}
+		if(preCode==""){
+	   	 preCode=$("#preCode").val();
+		 }
+		 var fla=1;
+		if(preCode!=""){
+		fla=1;
+			url=url+"-c"+preCode;
+		}else{
+		if(keyword!=""){
+		fla=2;
+			url=url+".htm?keyword="+keyword
+		}
+		}
+		 if(proCode==""){
+		 proCode=$("#proCode").val();
+		 }
+		 if(proCode!=""){
+		 	if(fla==1){
+			url=url+"-d"+proCode;
+			}else{
+			url=url+"&pro="+proCode;
+			}
+		}
+		if(fla==1){
+		location.href=url+".htm";
+		}else{
+		location.href=url;
+		}
+	   }
+	   
+    	jQuery(".tip").click(function(){
+    	var currentPage = '';
+    	if(jQuery(this).attr("class")=="tip other"){
+    		currentPage = jQuery(this).attr("name");
+    	}
+    	if(jQuery(this).attr("class")=="go tip"){
+    		var num = Number(jQuery(".jump_page").val());
+			if(num==""||num==null){
+    			alert("请输入页码");
+    			return false;
+    		}
+			if(isNaN(num)){
+			alert("请输入数字")
+			return false;
+			}
+    		if(num<0){
+    			alert("页码不能小于零");
+    			return false;
+    		}
+    		if(num>$totalPage){
+    			num = $totalPage;
+    		}
+    		if(num > 0){
+    			currentPage = num ;
+    		}
+    	}
+    	//跳转链接
+    	var url = "#springUrl('/comp/list')";
+		
+		var keyword=$("#keyword").val();
+		
+		if(keyword!=""){
+			keyword=encodeURI(keyword);
+		}
+		
+	   	var preCode=$("#preCode").val();
+		var proCode=$("#proCode").val();
+		if(keyword&&preCode==""){
+		if(proCode==""){
+			url=url+".htm?keyword="+keyword+"&currentPage="+currentPage;
+		}else{
+			url=url+".htm?keyword="+keyword+"&pro="+proCode+"&currentPage="+currentPage;
+			}
+		}else{
+		if(preCode!=""){
+			url=url+"-c"+preCode;
+		}
+		var proCode=$("#proCode").val();
+		 if(proCode!=""){
+			url=url+"-d"+proCode;
+		}
+		url=url+"-"+currentPage+".htm";
+		}
+		
+		location.href=url;
+    });
+	   
+    </script>
+</html>

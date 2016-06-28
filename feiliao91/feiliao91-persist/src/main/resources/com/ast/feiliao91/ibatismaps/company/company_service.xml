@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap 
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="companyService">
+	<typeAlias alias="companyServiceDO"
+		type="com.ast.feiliao91.domain.company.CompanyService" />
+	<resultMap class="companyServiceDO" id="companyServiceResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="serviceScore" column="service_score" />
+		<result property="serviceName" column="service_name" />
+		<result property="serviceCode" column="service_code" />
+		<result property="isDel" column="is_del" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,
+		company_id,
+		service_score,
+		service_name,
+		service_code,
+		is_del,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<!-- 创建公司服务 shiqp 2016-01-26-->
+	<insert id="insertCompanyService" parameterClass="companyServiceDO">
+		insert into company_service
+		(
+		gmt_created,
+		gmt_modified,
+		company_id,
+		service_score,
+		service_name,
+		service_code,
+		is_del
+		)
+		values
+		(
+		now(),
+		now(),
+		#companyId#,
+		#serviceScore#,
+		#serviceName#,
+		#serviceCode#,
+		#isDel#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateToOpen" parameterClass="java.util.Map">
+		update company_service
+		set gmt_modified = now(), is_del = 0
+		where company_id = #companyId# and service_code =#serviceCode#
+	</update>
+	
+	<update id="updateToClose" parameterClass="java.util.Map">
+		update company_service
+		set gmt_modified = now(), is_del = 1
+		where company_id = #companyId# and service_code =#serviceCode#
+	</update>
+	
+	<!-- 指定个数并查询公司服务 zhujq 2016-01-26-->
+	<select id="queryCompanyServiceListByCompanyId" parameterClass="java.util.Map"
+		resultMap="companyServiceResult">
+		select
+		<include refid="companyService.fullColumn" />
+		from company_service where company_id=#companyId# and
+		is_del=0 limit 0,#pageSize#
+	</select>
+	
+	<!-- 根据service_code与company_id返回count数 zhujq 2016-01-29-->
+	<select id="queryServiceCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from company_service where company_id=#companyId# and is_del=0 and service_code=#serviceCode#
+	</select>
+	
+</sqlMap>

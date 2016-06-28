@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="trustPic">
+	<typeAlias alias="trustPic" type="com.ast.ast1949.domain.trust.TrustPic" />
+	<resultMap class="trustPic" id="trustPicResult">
+		<result property="id" column="id" />
+		<result property="tradeId" column="trade_id" />
+		<result property="picAddress" column="pic_address" />
+		<result property="isDel" column="is_del" />
+		<result property="name" column="name" />
+		<result property="isDefault" column="is_default" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="picId" column="pic_id" />
+	</resultMap>
+	<sql id="defaultColumn">
+		id,trade_id,pic_address,is_del,name,is_default,gmt_created,gmt_modified,pic_id
+	</sql>
+	
+	<insert id="insertTrustPic" parameterClass="trustPic">
+		insert into trust_pic
+		(
+			trade_id,
+			pic_id,
+			pic_address,
+			name,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#tradeId#,
+			#picId#,
+			#picAddress#,
+			#name#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<update id="updatePicInfo" parameterClass="trustPic">
+		update trust_pic
+		set gmt_modified=now()
+		<isNotEmpty prepend="," property="picAddress">
+			pic_address = #picAddress#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="name">
+			name = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDefault">
+			is_default = #isDefault#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	<select id="querypicList" parameterClass="java.util.Map" resultMap="trustPicResult">
+		select 
+		<include refid="defaultColumn"/>
+		from trust_pic
+		where is_del = '0' and trade_id = #tradeId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countpicList" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from trust_pic
+		where is_del = '0' and trade_id = #tradeId#
+	</select>
+	<update id="updateTradeIdByPicAddress" parameterClass="java.util.Map">
+		update trust_pic
+		set gmt_modified = now(),trade_id=#tradeId#
+		where pic_address = #picAddress#
+	</update>
+	<select id="queryOnePic" parameterClass="java.lang.Integer" resultMap="trustPicResult">
+		select 
+		<include refid="defaultColumn"/>
+		from trust_pic
+		where trade_id = #tradeId# and is_del = '0'
+		order by is_default desc,gmt_modified desc
+		limit 1
+	</select>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="trustPicResult">
+		select 
+		<include refid="defaultColumn"/>
+		from trust_pic
+		where id = #value#
+	</select>
+	
+</sqlMap>

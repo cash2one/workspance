@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>课程提问</title>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="copyright" content="www.thundersoft.com" />
+<link rel="stylesheet" href="../css/base.css">
+<script src="../script/api.js"></script>
+<script src="../script/common.js"></script>
+<style>
+	html, body{
+		width: 100%;
+		height: 100%;
+	}
+	body{
+		background-color: #FAFAFA;
+	}
+	section{
+		border-bottom: 1px solid #CCCCCC;
+		line-height: 20px;
+		font-size: 14px;
+		width: 100%;
+	}
+	dl, dt, dd{
+		margin: 0px;
+		padding: 0px;
+	}
+	dl{
+		padding-top: 10px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	section dd{
+		padding-left: 20px;
+	}
+	.ques dt, .ques dd{
+		color: #666666;
+		margin-bottom: 5px;
+	}
+	.ans dt, .ans dd {
+		color: #A34154;
+	}
+	.nodata{
+		display: -webkit-box;
+		-webkit-box-align: center;
+		-webkit-box-pack: center;
+		background-color: #FAFAFA;
+		-webkit-box-flex: 1;
+		font-size: 14px;
+		padding-top: 14px;
+		padding-top: 40px;
+	}
+</style>
+</head>
+<body>
+	<div id="main">
+	</div>
+</body>
+<script>
+	var pageIndex = 0;
+	var inLoading = false;
+	var needLoadMore = false;
+
+	apiready = function() {
+		api.showProgress({modal: false});
+		//下拉到页面底部，加载更多
+		api.addEventListener({name:'scrolltobottom'}, function(){
+	        if (needLoadMore) {
+	            loadData(false);
+	        }
+	    });
+	    //下拉刷新
+	    api.setRefreshHeaderInfo({
+	    	visible:true, 
+	    	bgColor: '#F2F2F2', 
+	    	textColor: '#000000',
+	    	textDown: '下拉刷新',
+	    	textUp: '释放刷新',
+	    },function(ret,err){
+	        loadData(true);
+	    });
+	    loadData(true);
+	};
+	
+	function loadData(isReload_){
+		if (inLoading) {//如果还在加载中，不执行操作
+	        return;
+	    }
+	    inLoading = true;
+	    if (isReload_) {//下拉刷新，即重新载入,pageIndex为0
+	        pageIndex = 0;
+	    }
+	    
+	    function ajaxBack(ret,err){
+	    	inLoading = false;
+	    	if(ret && ret.status){
+	    		if(ret.body.list.length > 0){ 
+	    			var list = ret.body.list;
+	    			var html = createContent(list);	    									
+	    			pageIndex++;
+					if(isReload_){//如果是刷新
+	    				$api.html($api.byId('main'), html);
+	    				
+	    				setTimeout(function(){api.hideProgress();}, 500);
+					}else{//如果是加载更多
+						$api.append($api.byId('main'), html);
+						api.toast({msg: '已加载更多', location: 'bottom'});
+					}
+					api.parseTapmode();
+	    		}else if(ret.body.list.length == 0){
+	    			api.refreshHeaderLoadDone();
+	    			api.hideProgress();
+	    			if(isReload_){//如果是刷新
+	    				var html = '<div class="nodata">暂无数据</div>';
+	    				$api.html($api.byId('main'), html);
+	    			}
+	    		}
+	    		
+	    		if(pageIndex < ret.pages){
+	    			needLoadMore = true;
+	    		}else{
+	    			needLoadMore = false;
+	    		}
+	    		api.refreshHeaderLoadDone();
+	    	}else{
+	    		api.refreshHeaderLoadDone();
+	    		if(ret){
+	    			api.toast({msg: ret.msg, location: 'middle'});
+	    		}else if(err){
+	    			api.toast({msg: err.msg, location: 'middle'});
+	    		}else{
+	    			api.toast({msg: '数据错误', location: 'middle'});
+	    		}
+	    		var html = '<div class="nodata">数据错误，请下拉刷新重试！</div>';
+	    		$api.html($api.byId('main'), html);
+	    	}
+	    }
+	    
+    	api.ajax({
+	    	url: serverUrl + '/user/ClassQuestionsList?mid=' + api.pageParam.item._id + '&pageIndex='+ pageIndex,
+		    method:'get',
+		    cache:false,
+		    timeout:15,
+		    dataType:'json'
+	    }, ajaxBack);
+	}
+	
+	function createContent(list){
+		var html = '';
+		for(var i=0; i<list.length; i++){
+			html += '<section>';
+			html += '<dl class="ques">';
+			html += '<dt>' + list[i].createUser + '</dt>';
+			html += '<dd>' + list[i].oqContent + '</dd>';
+			html += '</dl>';
+			html += '<dl class="ans">';
+			html += '<dt>回复：</dt>';
+			html += '<dd>' + list[i].replyContent + '</dd></dl>';
+			html += '</section>';
+		}
+		return html;
+	}
+</script>
+</html>

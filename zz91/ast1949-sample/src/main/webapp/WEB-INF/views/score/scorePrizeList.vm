@@ -1,0 +1,154 @@
+#set($layout="/layout/defaultScore.vm")
+
+<style>
+caption, th {
+text-align: center;
+}
+a:hover {text-decoration:none} 
+</style>
+
+<script>
+  function loginScore(){
+		#if(!$!{sessionUser})
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				window.location = "#springUrl('/')score.htm";
+			});
+			openoverlay('$!{address.front}/mini/login.htm?destUrl=$!{address.yang}/submitCallback.htm&regfrom=10031030','注册/登录',750,400,0);
+		#else
+			window.location = "#springUrl('/')score.htm";
+		#end
+	}
+</script>
+
+##parse("mngr/include/nav.vm")
+<div class="yang_point">
+	## 顶部 搜索框
+	#parse("/common/searchLabel.vm")
+	
+  <div class="yang_nav itemUl">
+  	<ul>
+    	<li><a href="#springUrl('/index.htm')" target="_blank">首页</a></li>
+        <li><a href="#springUrl('/nyzx.htm')" target="_blank">拿样中心</a></li>
+        <li><a href="#springUrl('/buy/order.htm')" target="_blank">样品定制</a></li>
+		<li><a href="#springUrl('/yiyuan.htm')" target="_blank">一元拿样</a></li>
+        <li><a href="#springUrl('/score.htm')" target="_blank" class="on">积分超值兑</a></li>
+        <li><span class="tag_phone">服务热线：0571-5663 5663</span></li>
+    </ul>
+  </div>
+  
+  
+  <!--end yang_nav-->
+  <div class="yangMain pointContent">
+  	<div class="yangItem ypLt">
+		#if(!$!{sessionUser})
+    	<div class="box-lt-user" id="lt1_">
+        	<div class="boxUser header">
+            	<div class="cell-header picHeader">
+                	<img src="$!{address.img}/zz91/sample/score/images/head_yang.jpg" />
+                </div>
+                <!--end cell-header-->
+                    <div class="cell-header">
+                    	<span class="wel-header">欢迎您，您还未登录！</span>
+                        <!--end wel-header-->
+                        <span class="login-header"  onclick="loginScore()" >登录</span>
+                        <!--end login-header-->
+                    </div>
+                <!--end cell-header-->
+                <div class="cb"></div>
+            </div>
+            <!--end boxUser header-->
+            <div class="boxUL">
+            	<ul>
+                	<li>登陆后为您提供：</li>
+                    <li>1、查询积分余额</li>
+                    <li>2、查询兑换记录</li>
+                    <li>3、参加积分兑换活动</li>
+                </ul>
+            </div>
+            <!--end boxUL-->
+            <div class="boxReg">还不是会员，立即<a href="$!{address.front}/register/register_stp1.htm" target="_blank">免费注册</a></div>
+            <!--end box-->
+        </div>
+        <!--end box-lt-user-->
+		#else
+        <div class="box-lt-user" id="lt2_">
+        	<div class="boxUser header">
+            	<div class="cell-header picHeader">
+                	<img src="$!{address.img}/zz91/sample/score/images/head.jpg" />
+                </div>
+                <!--end cell-header-->
+                <div class="cell-header">
+                	<span class="wel-header">欢迎您，</span>
+                    <!--end wel-header-->
+                    <span class="user-header">#printTitle($!{sessionUser.account} 16 ".")</span>
+                    <!--end user-header-->
+                </div>
+                <!--end cell-header-->
+                <div class="cb"></div>
+            </div>
+            <!--end boxUser header-->
+            <div class="userPoints">
+            	您的积分：<span class="up_login">#if($!{totalScore}) $!{totalScore} #else 0 #end</span> 分
+            </div>
+            <!--end userPoints-->
+            <div class="loginBg"><img src="$!{address.img}/zz91/sample/score/images/tree.jpg" /></div>
+            <!--end loginBg-->
+        </div>
+        <!--end box-lt-user-->
+		#end
+		
+        <div class="box-lt-req">
+        	<div class="reqTle">积分问答</div>
+            <!--end reqTle-->
+            <div class="reqInfo">
+            	<ul>
+					#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10181002&size=10&","","","")
+							#foreach($obj in $list)
+								<li><a href="$!{obj.link}" title="$!{obj.title}" target="_blank" class="title">#printTitle($!{obj.title} 13 "")</a></li>
+							#end
+					#end
+                </ul>
+            </div>
+            <!--end reqInfo-->
+        </div>
+        <!--end box-lt-req-->
+    </div>
+    <!--end yangItem ypLt-->
+    <div class="yangItem ypGt">
+		<!-- 
+    	<div class="box-gt-ad"><a href="" target="_blank"><img src="$!{address.img}/zz91/sample/score/images/ad.jpg" /></a></div>
+		-->
+    	<div class="box-gt-ad"><script type="text/javascript" src="http://gg.zz91.com/show?p=657"></script></div>
+        <!--end box-gt-ad-->
+        <div class="box-gt-tle">超值兑</div>
+        <!--end box-gt-tle-->
+        <div class="box-gt-list">
+        	<ul>
+				
+				#foreach($obj in $page.records)
+            	<li>
+                	<div class="list-img">
+						#if($!{obj.webpic} && $!{obj.webpic}!='' )
+						<img src="$!{address.img}/zz91/sample/score/images/$!{obj.webpic}"      width="172"  height="155" />
+						#else
+						<img src="$!{address.img}/zz91/sample/score/images/zs.jpg"     width="172"  height="155" />
+						#end	
+					</div>
+                    <div class="list-name">$!{obj.title}</div>
+                    <div class="list-points">
+                    	<span class="lp">剩余：<span class="point">$!{obj.num}</span>/$!{obj.numall}</span>
+                        <span class="lp">需要积分：<span class="point">$!{obj.score}</span></span>
+                        <div class="lp_btn" id="dh_${velocityCount}"   onclick="javascript:jIframe('score/scorePrizeDetail.htm?id=$!{obj.id} ', '兑换奖品','230','230');">兑换</div>
+                    </div>
+                </li>
+				#end 
+				
+            </ul>
+        </div>
+        <!--end box-gt-list-->
+    </div>
+    <!--end yangItem ypGt-->
+    <div class="cb"></div>
+  </div>
+  <!--end yangMain pointContent-->
+  </div>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="bbsScore">
+
+	<typeAlias alias="bbsScoreDO" type="com.ast.ast1949.domain.bbs.BbsScore" />
+	<resultMap id="bbsScoreResult" class="bbsScoreDO">
+		<result property="id" column="id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="qaPostId" column="qa_post_id" />
+		<result property="bbsReplyId" column="bbs_reply_id" />
+		<result property="qaReplyId" column="qa_reply_id" />
+		<result property="companyId" column="company_id" />
+		<result property="companyAccount" column="company_account" />
+		<result property="score" column="score" />
+		<result property="remark" column="remark" />
+		<result property="postType" column="post_type" />
+		<result property="replyType" column="reply_type" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		bbs_post_id,
+		qa_post_id,
+		bbs_reply_id,
+		qa_reply_id,
+		company_id,
+		post_type,
+		reply_type,
+		score,
+		remark,
+		company_account,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="bbsScoreDO">
+		INSERT INTO bbs_score
+		(
+		bbs_post_id,
+		qa_post_id,
+		bbs_reply_id,
+		qa_reply_id,
+		company_id,
+		post_type,
+		reply_type,
+		score,
+		remark,
+		company_account,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#bbsPostId#,
+		#qaPostId#,
+		#bbsReplyId#,
+		#qaReplyId#,
+		#companyId#,
+		#postType#,
+		#replyType#,
+		#score#,
+		#remark#,
+		#companyAccount#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="whereCaluse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="bbsScore.companyId">
+				company_id = #bbsScore.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.scoreType">
+				<isEqual compareValue="1" property="bbsScore.scoreType">
+					bbs_post_id > 0 
+					and qa_post_id = 0
+					and bbs_reply_id = 0
+					and qa_reply_id = 0
+				</isEqual>
+				<isEqual compareValue="2" property="bbsScore.scoreType">
+					bbs_post_id = 0 
+					and qa_post_id = 0
+					and bbs_reply_id > 0
+					and qa_reply_id = 0
+				</isEqual>
+				<isEqual compareValue="3" property="bbsScore.scoreType">
+					bbs_post_id = 0 
+					and qa_post_id > 0
+					and bbs_reply_id = 0
+					and qa_reply_id = 0
+				</isEqual>
+				<isEqual compareValue="4" property="bbsScore.scoreType">
+					bbs_post_id = 0 
+					and qa_post_id = 0
+					and bbs_reply_id = 0
+					and qa_reply_id > 0
+				</isEqual>
+				<isEqual compareValue="5" property="bbsScore.scoreType">
+					bbs_post_id = 0 
+					and qa_post_id = 0
+					and bbs_reply_id = 0
+					and qa_reply_id = 0
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="query" parameterClass="java.util.Map" resultMap="bbsScoreResult">
+		select
+		<include refid="defaultColumn" />
+		from bbs_score
+		<include refid="whereCaluse" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from bbs_score
+		<include refid="whereCaluse" />
+	</select>
+	
+	<sql id="whereSumCaluse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="bbsScore.companyId">
+				company_id = #bbsScore.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.bbsPostId">
+				bbs_post_id = #bbsScore.bbsPostId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.bbsReplyId">
+				bbs_reply_id = #bbsScore.bbsReplyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.qaPostId">
+				qa_post_id = #bbsScore.qaPostId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.qaReplyId">
+				qa_reply_id = #bbsScore.qaReplyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.postType">
+				post_type = #bbsScore.postType#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="bbsScore.replyType">
+				reply_type = #bbsScore.replyType#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="sumScore" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select sum(score)
+		from bbs_score
+		<include refid="whereSumCaluse" />
+	</select>
+    <select id="querybyId" parameterClass="java.util.Map" resultMap="bbsScoreResult">
+		select
+		<include refid="defaultColumn" />
+		from bbs_score
+		<include refid="whereSumCaluse" />
+		limit 1
+    </select>
+</sqlMap>

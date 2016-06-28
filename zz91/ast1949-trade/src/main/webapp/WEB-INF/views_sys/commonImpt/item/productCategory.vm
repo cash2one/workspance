@@ -1,0 +1,44 @@
+## 产品类目
+#if(!$!{categoryFlag})
+	#set($categoryFlag="100310001001")
+#end
+<div class="te_class te_tit_border">
+	<div class="te_tit_name">所有产品类目</div>
+	#cacheFragment("$!{address.fragment}/china/indexMainByCode.htm?code=$!{categoryFlag}&td2", "", "", "")
+		#set($nameMap=$map.get("nameMap"))
+		#foreach($obj in $map.keySet())
+			<div class="te_class_a" onmouseover="this.className='active_cat'" onmouseout="this.className='te_class_a'" >
+				<div>
+					#set($key=$nameMap.get(${obj}))
+					<a class="te_classoone" href="http://trade.zz91.com/offerlist--a1--p--$!{key}.htm" target="_blank">$!{key}</a>
+					#foreach($o in $map.get($obj))
+						#if($!{o.sort} <=8 )
+							<a href="$!o.link" class="te_classotwo" title="$!{o.title}" target="_blank">#printTitle($!{o.title} 5 "")</a>
+						#else
+						#end
+					#end
+				</div>
+				<div class="h3_cat">
+					<div class="shadow">
+						<div class="shadow_border">
+							<ul>
+								#foreach($o in $map.get($obj))
+									#if($!{o.sort} > 8)
+										<li>
+											<a href="$!o.link" class="te_classotwo" title="$!{o.title}" target="_blank">#printTitle($!{o.title} 5 "")</a>
+										</li>
+									#end
+								#end
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="clear:both"></div>
+		#end
+	#end
+	<!--te_class_a-->
+	<div style="background-color:#e1ffe6; height:30px; line-height:30px; text-align:center; font-size:14px; font-weight:bold; color:#0b8621; border-top:solid 1px #088d27;">
+		<a href="#springUrl('/index.htm')#viewAll">所有产品类目 >></a>
+	</div>
+</div>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="productsAlbums">
+	<typeAlias alias="productsAlbumsDO"
+		type="com.ast.ast1949.domain.products.ProductsAlbumsDO" />
+	<resultMap class="productsAlbumsDO" id="productsAlbumsResult">
+		<result property="id" column="id" />
+		<result property="parentId" column="parent_id" />
+		<result property="name" column="name" />
+		<result property="isDelete" column="is_delete"/>
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<select id="queryProductsAlbumsById" parameterClass="java.lang.Integer"
+		resultMap="productsAlbumsResult">
+		select id,
+		parent_id,
+		name,
+		is_delete,
+		gmt_created,
+		gmt_modified
+		from
+		products_albums
+		where id=#id:Integer#
+	</select>
+
+	<select id="queryProductsAlbumsByParentId" parameterClass="java.lang.Integer"
+		resultMap="productsAlbumsResult">
+		select id,
+		parent_id,
+		name,
+		is_delete,
+		gmt_created,
+		gmt_modified
+		from
+		products_albums
+		where
+		parent_id=#value#
+		and is_delete=0
+	</select>
+	<insert id="insertProductsAlbums" parameterClass="productsAlbumsDO">
+		insert into
+		products_albums
+		(
+		parent_id,
+		name,
+		is_delete,
+		gmt_created,
+		gmt_modified)
+		values(
+		#parentId#,
+		#name#,
+		#isDelete#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<update id="updateProductsAlbums" parameterClass="productsAlbumsDO" >
+       update products_albums
+       set 
+       parent_id=#parentId#,
+       name=#name#,
+       gmt_modified=now()
+       where id=#id:Integer#
+	</update>
+	<update id="updateProductsAlbumsIsDelete" parameterClass="productsAlbumsDO">
+	 update products_albums
+	 set is_delete=#isDelete#
+	 where id=#id:Integer#
+	</update>
+</sqlMap>

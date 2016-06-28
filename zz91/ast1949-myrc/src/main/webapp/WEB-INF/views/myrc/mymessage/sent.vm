@@ -1,0 +1,118 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1102","20","10")
+#pageNavStyle()
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#checkAllToggle").attr("checked",false);
+		//toggle checked all
+    	jQuery("#checkAllToggle").click(function(){
+    		var chk=jQuery(this).attr("checked");
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+	});
+	
+	//点击全选按钮
+	function buttonCheckedAll(){
+		//alert ("点击全选按钮");
+		jQuery("#checkAllToggle").attr("checked",true);
+		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=true;
+    	});
+	}
+	
+	//获取所有选中信息ID
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name=cbb]"),function(index,obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+	//删除信息
+	function deleteInquiryInfos(){
+		var inquiryIds=getAllInquiryIds();
+		//alert ("选中以下询盘信息："+inquiryIds.join(','));
+		if(inquiryIds.length==0){
+			alert ("选择删除信息！");
+			return false;
+		}
+		if (confirm("你选中"+inquiryIds.length+"条留言,确实要删除这些信息?")){
+ 			jQuery.ajax({
+				url:"#springUrl('/mymessage/removeSentInquiry.htm')",
+				type:"POST",
+				cache:false,
+				data:{ids:inquiryIds.join(',')},
+				dataType:"json",
+				success:function(msg){
+					if(msg!=null&&msg.success==true){
+    					window.location.reload();
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				zz91Util.showmsg("default");
+    			}
+			});
+		}
+	}
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	});
+</script>
+<div class="myrcNormalFrame">
+		<div class="commTip" >
+			<span class="commTipRight">
+			<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=226" class="commHowDo">如何管理已收到的留言</a>
+			<a target="_blank" href="http://www.zz91.com/cn/helpcenter/news.asp?id=227" class="commHowDo">如何回复已收到的留言</a>
+			</span>
+			<div style="clear:both"></div>
+		</div>
+
+		<form action="#" method="post" id="sForm" name="sForm">
+				<div class="commList">
+					<div class="commListTit">
+						<span class="feedbackSelect">&nbsp;</span>
+						<span class="feedbackSentTit">留言标题</span>
+						<span class="feedbackSentTo">留言接收</span>
+                        <div style="clear:both"></div>
+                    </div>
+					<ul>
+					#foreach($inquiry in ${page.records})
+						<li id="$!{inquiry.inquiry.id}">
+							<span class="feedbackSelect">
+								<input type="checkbox" name="cbb" value="$!{inquiry.inquiry.id}" id="id$!{inquiry.inquiry.id}" class="radioPositionFix"/>
+							</span>
+							<span class="feedbackSentTit">
+                                <a href="#springUrl('/mymessage/showmessage.htm?id=')$!{inquiry.inquiry.id}"><b>$!{inquiry.inquiry.title}</b></a>
+								<span>$!{inquiry.inquiry.content}</span>
+								<font  style="color:#AAA; font-size:12px;">$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.inquiry.sendTime})</font>
+							</span>
+							<span class="feedbackSentTo">
+								<a target="_blank" href="$!{address.server}/company/compinfo.htm?account=$!{inquiry.inquiry.senderAccount}">
+    								#if($!{inquiry.senderContact}!="")
+    									$!{inquiry.senderContact}
+    								#else
+    									$!{inquiry.inquiry.senderAccount}
+    								#end
+    							</a>
+							</span>
+                        </li>
+					#end
+                    <div style="clear:both"></div>
+				</ul>
+					<div class="listApplicationBtn" style="_margin-top:8px;">
+						<input type="checkbox" id="checkAllToggle" name="checkAllToggle" />
+						<input type="button" value="全选" onclick="buttonCheckedAll()" class="buttonMinGray" name="Submit"/> 
+						<input type="button" onclick="deleteInquiryInfos()" value="永久删除" class="buttonMinGray" name="Submit4"/>
+					</div>
+					<div class="pageNav">
+						#myrcPageNav($!{page} "#springUrl('/mymessage/sent.htm')" "" "")
+					</div>
+                </div>
+			</form>
+		</div>

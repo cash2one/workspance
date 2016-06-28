@@ -1,0 +1,54 @@
+#set($layout="/layout/innerPageLayout.vm")
+
+#if($!{error}=="1")
+	<div class="alert alert-error"> 
+			<strong>提示：</strong>
+			发生错误，您刚刚的操作没有成功！
+    </div>
+#elseif($!{error}=="0")
+	<div class="alert alert-success"> 
+			<strong>提示：</strong>
+			您刚刚的操作成功了！
+    </div>
+#end
+<table class="table table-bordered table-condensed mt">
+    <thead>
+        <tr>
+            <th class="tac" width="60%">分组名称</th>
+    		<th class="tac" width="40%">
+                操作
+    			<button id="groupCreateBtn" class="btn btn-mini">新增</button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="tac">我的供应商</td>
+            <td class="tac"></td>
+        </tr>
+        <tr>
+            <td class="tac">我的采购商</td>
+            <td class="tac"></td>
+        </tr>
+        <tr>
+            <td class="tac">商界好友</td>
+            <td class="tac"></td>
+        </tr>
+    #foreach($rs in $groupList)
+        <tr bgcolor="#FFFFFF" onmouseover="this.style.backgroundColor='#f7f7f7';" onmouseout="this.style.backgroundColor='#FFFFFF';">
+            <td class="tac">$!{rs.name}</td>
+            <td class="tac">
+                <a href="#springUrl('/mycompanycustomers/editGroup.htm?id=')$!{rs.id}">编辑</a>
+                <a href="#springUrl('/mycompanycustomers/deleteGroup.htm?id=')$!{rs.id}" onclick="javascript:return confirm('您确定要删除这个分组吗?');">删除</a>
+            </td>
+        </tr>
+    #end
+    </tbody>
+</table>
+<script>
+	jQuery(function(){
+		jQuery("#groupCreateBtn").click(function(){
+			window.location.href="#springUrl('/mycompanycustomers/editGroup.htm')";
+		});
+	});
+</script>

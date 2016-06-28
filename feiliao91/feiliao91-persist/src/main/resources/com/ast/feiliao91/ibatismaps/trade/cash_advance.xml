@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	
+<sqlMap namespace="cashAdvance">
+	<typeAlias alias="cashAdvanceDo" type="com.ast.feiliao91.domain.trade.CashAdvance" />
+	<resultMap class="cashAdvanceDo" id="cashAdvanceResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="linkman" column="linkman" />
+		<result property="mobile" column="mobile" />
+		<result property="bank" column="bank" />
+		<result property="bankName" column="bank_name" />
+		<result property="bankAccount" column="bank_account" />
+		<result property="money" column="money" />
+		<result property="status" column="status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,
+		company_id,
+		linkman,
+		mobile,
+		bank,
+		bank_name,
+		bank_account,
+		money,
+		status,
+		check_person,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<sql id="whereCaulse">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cashAdvance.companyId">
+				company_id =
+				#cashAdvance.companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cashAdvance.linkman">
+				linkman =
+				#cashAdvance.linkman#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cashAdvance.gmtCreated">
+				<![CDATA[gmt_created >=  #cashAdvance.gmtCreated#]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cashAdvance.gmtModified">
+				<![CDATA[gmt_modified <  #cashAdvance.gmtModified#]]>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<sql id="whereCaulseBySearch">
+		<dynamic prepend="where"> 
+			<isNotEmpty prepend="and" property="search.status">
+				status = #search.status#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<!-- 插入提现申请 -->
+	<insert id="insertCashAdvance" parameterClass="cashAdvanceDo">
+	insert into cash_advance
+		(
+			<include refid="fullColumn" />
+		)
+		values
+		(
+			#id#,
+			#companyId#,
+			#linkman#,
+			#mobile#,
+			#bank#,
+			#bankName#,
+			#bankAccount#,
+			#money#,
+			#status#,
+			#checkPerson#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 根据id查找CashAdvance类 -->
+	<select id="queryCashAdvanceById" parameterClass="java.lang.Integer" resultMap="cashAdvanceResult">
+		select
+		<include refid="fullColumn" />
+		from cash_advance
+		where id = #id#
+	</select>
+	
+	<!-- 根据条件查询 -->
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="cashAdvanceResult">
+		select
+		<include refid="fullColumn" />
+		from cash_advance
+		<include refid="whereCaulse" />
+	</select>
+	
+	<!-- 后台搜索提现记录申请 -->
+	<select id="queryCashAdvanceByCondition" parameterClass="java.util.Map" resultMap="cashAdvanceResult">
+		select 
+			<include refid="cashAdvance.fullColumn"/>
+		from cash_advance
+		<include refid="cashAdvance.whereCaulseBySearch"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<!-- 后台搜索提现记录申请条数 -->
+	<select id="countCashAdvanceByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from cash_advance
+		<include refid="cashAdvance.whereCaulseBySearch"/>
+	</select>
+	
+	<!-- 更新后台申请状态 -->
+	<update id="updateStatus" parameterClass="java.util.Map">
+		update cash_advance set status = #checkStatus#,check_person = #checkPerson#,gmt_modified = now()
+		where id = #id#
+	</update>
+</sqlMap>

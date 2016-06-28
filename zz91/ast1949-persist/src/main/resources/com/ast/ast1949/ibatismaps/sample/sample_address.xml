@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="sample_address" >
+  <resultMap id="AddressResult" class="com.ast.ast1949.domain.sample.Address" >
+    <result column="id" property="id"  />
+    <result column="company_id" property="companyId"  />
+    <result column="address" property="address" />
+    <result column="address_code" property="addressCode" />
+    <result column="address_zip" property="addressZip" />
+    <result column="contact" property="contact" />
+    <result column="mobile" property="mobile" />
+    <result column="tel" property="tel" />
+    <result column="gmt_created" property="gmtCreated"  />
+    <result column="gmt_modified" property="gmtModified"  />
+    <result column="isdefault" property="isdefault"  />
+    <result column="flag" property="flag"  />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="AddressResult" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    select id, company_id, address, address_code, address_zip, contact, mobile, tel, gmt_created,
+      gmt_modified, isdefault, flag
+    from sample_address
+    where id = #id#
+  </select>
+  
+    <select id="selectDefault" resultMap="AddressResult" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    select id, company_id, address, address_code, address_zip, contact, mobile, tel, gmt_created,
+      gmt_modified, isdefault, flag
+    from sample_address
+    where company_id = #companyId#
+    and  flag = #flag#
+    	
+    <isNotEmpty prepend=" and " property="isdefault">
+	 isdefault = #isdefault#
+	</isNotEmpty>
+    	
+    limit 1	
+  </select>
+  
+    <select id="findListByCompanyIdAndFlag" resultMap="AddressResult" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    select id, company_id, address, address_code, address_zip, contact, mobile, tel, gmt_created,
+      gmt_modified, isdefault, flag
+    from sample_address
+    where company_id = #companyId#
+    and  flag = #flag#
+    group by 	id  desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    delete from sample_address
+    where id = #id#
+  </delete>
+  
+  <insert id="insert" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    insert into sample_address (id, company_id, address, address_code, address_zip, contact, mobile,
+      tel, gmt_created, gmt_modified, isdefault, flag)
+    values (#id#, #companyId#, #address#, #addressCode#,
+      #addressZip#, #contact#, #mobile#, #tel#,
+      #gmtCreated#, #gmtModified#, #isdefault#, #flag#)
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    update sample_address
+    set company_id = #companyId#,
+      address = #address#,
+      address_code = #addressCode#,
+      address_zip = #addressZip#,
+      contact = #contact#,
+      mobile = #mobile#,
+      tel = #tel#,
+      gmt_created = #gmtCreated#,
+      gmt_modified = #gmtModified#,
+      isdefault = #isdefault#,
+      flag = #flag#
+    where id = #id#
+  </update>
+  
+  
+  <update id="updateDefault" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    update sample_address
+    set     isdefault = '0'
+    where 
+  	company_id = #companyId#
+  	and      flag = #flag#
+  	<isNotNull prepend=" and " property="id" >
+  	id != #id#
+  	</isNotNull>
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterClass="com.ast.ast1949.domain.sample.Address" >
+    update sample_address
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="companyId" >
+        company_id = #companyId#
+      </isNotNull>
+      <isNotNull prepend="," property="address" >
+        address = #address#
+      </isNotNull>
+      <isNotNull prepend="," property="addressCode" >
+        address_code = #addressCode#
+      </isNotNull>
+      <isNotNull prepend="," property="addressZip" >
+        address_zip = #addressZip#
+      </isNotNull>
+      <isNotNull prepend="," property="contact" >
+        contact = #contact#
+      </isNotNull>
+      <isNotNull prepend="," property="mobile" >
+        mobile = #mobile#
+      </isNotNull>
+      <isNotNull prepend="," property="tel" >
+        tel = #tel#
+      </isNotNull>
+      <isNotNull prepend="," property="gmtCreated" >
+        gmt_created = #gmtCreated#
+      </isNotNull>
+      <isNotNull prepend="," property="gmtModified" >
+        gmt_modified = #gmtModified#
+      </isNotNull>
+      <isNotNull prepend="," property="isdefault" >
+        isdefault = #isdefault#
+      </isNotNull>
+      <isNotNull prepend="," property="flag">
+        flag = #flag#
+      </isNotNull>
+    </dynamic>
+    where id = #id#
+  </update>
+  <select id="queryAimAddressByCompanyId" parameterClass="java.lang.Integer" resultMap="AddressResult">
+  	 select id, company_id, address, address_code, address_zip, contact, mobile, tel, gmt_created,gmt_modified, isdefault, flag
+     from sample_address
+     where company_id = #companyId# and isdefault ='1' and flag='B'
+  </select>
+</sqlMap>

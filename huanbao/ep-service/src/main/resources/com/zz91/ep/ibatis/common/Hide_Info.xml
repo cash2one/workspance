@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="hideInfo">
+
+	<typeAlias alias="hideInfo" type="com.zz91.ep.domain.common.HideInfo" />
+	<resultMap class="hideInfo" id="hideInfoMap">
+		<result property="id" column="id" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_type" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		target_id,
+		target_type,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<insert id="insert" parameterClass="hideInfo">
+		INSERT INTO hide_info
+		(
+		target_id,
+		target_type,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#targetId#,
+		#targetType#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="hideInfo">
+		UPDATE hide_info
+		SET
+		gmt_modified = now()
+		WHERE
+		target_id = #targetId#
+		and
+		target_type = #targetType#
+	</update>
+
+	<select id="queryHideInfoByIdandTargeId" resultMap="hideInfoMap"
+		parameterClass="java.util.HashMap">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM hide_info
+		WHERE
+		target_id = #targetId#
+		and target_type=#targetType#
+		limit 1
+	</select>
+
+
+	<sql id="dynamicByCategory">
+		<dynamic prepend="where">
+			<isNotEmpty property="targetId" prepend="and">
+				target_id =
+				#targetId#
+			</isNotEmpty>
+			<isNotEmpty property="targetType" prepend="and">
+				target_type=#targetType#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+
+	<select id="queryCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.HashMap">
+		SELECT count(*)
+		FROM
+		hide_info
+		<include refid="hideInfo.dynamicByCategory" />
+	</select>
+
+
+
+	<delete id="delete" parameterClass="java.util.HashMap">
+		DELETE FROM hide_info
+		WHERE
+		target_id = #targetId#
+		and target_type=#targetType#
+	</delete>
+
+</sqlMap>

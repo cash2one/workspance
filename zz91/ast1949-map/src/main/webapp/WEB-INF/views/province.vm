@@ -1,0 +1,849 @@
+<script type="text/javascript"> 
+   var startDate = new Date().getTime(); 
+</script> 
+#parse("/common/head.vm")
+<div class="container navbar">
+	#parse("/common/menu.vm")
+<!--     <div class="pos"><span>您所在的位置：</span><a href="#">$!{name}$!{productName}网</a></div> -->
+</div>
+#parse("/common/search.vm")
+<div class="container mt clearfix">
+    <div class="fl">
+		<div>
+		    #if($!{productCode}=="1000")
+				<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废金属&showborder=1&showposition=1&m=4&padding=8&w=700&num=4&adposition=678"></script>	
+			#elseif($!{productCode}=="1001")
+				<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=废塑料&showborder=1&showposition=1&m=4&padding=8&w=700&num=4&adposition=679"></script>	
+			#else
+				<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=综合废料&showborder=1&showposition=1&m=4&padding=8&w=700&num=4&adposition=680"></script>	
+			#end
+	    </div>
+        <div class="about_wrap clearfix">
+            <div class="about_info">
+                <h4>$!{name}再生市场简介 >></h4>
+                <p>废料企业总数：$!{totalCompany}</p>
+                <p>一周新增信息：$!{weeklyPublish}</p>
+                <p>供求信息总量：$!{productsCount}</p>
+				#parse("/common/scjj.vm")
+            </div>
+            <div class="about_ad"><script type="text/javascript" src="http://gg.zz91.com/show?p=450"></script></div>
+        </div>
+		<div class="info_wrap mt">
+			<div class="info_head">
+				<h3>$!{name}热门供求</h3>
+				<a href="$!{address.trade}/postoffer_step1.htm" class="post" target="_blank">我要发布供求</a>
+				<ul>
+					#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10051004&size=8&id1", "", "", "")
+						#foreach($!index in $!list)
+							<li>
+								<a href="$!{index.link}" style="$!{index.style}" class="red" target="_blank">$!{index.title}</a>
+							</li>
+						#end
+					#end
+##					<li><a href="#">废机械</a></li>
+                </ul>
+                <a href="$!{address.trade}/" class="more" target="_blank">更多》</a>
+			</div>
+            <div class="info_title">
+                <span class="w1">供求信息</span>
+                <span class="w2">公司名称</span>
+                <span class="w7">供求数量</span>
+                <span class="w4">给我留言</span>
+                <span class="control">
+                    <s class="prev" id="prev"></s>
+                    <span id="num"></span>/5
+                    <s class="next" id="next"></s>
+                </span>
+			</div>
+			<div id="Js_tabs" class="info_content">
+                <div class="item">
+					##cacheFragment("$!{address.fragment}/trade/tradeByAreaCode.htm?areaCode=$!{areaKey}&industryCode=$!{productType}&size=30&30212", "", "", "")
+                    <ul>
+				    ##cacheFragment("http://127.0.0.1:8006/api/fragment/map/queryProductsList.htm?areaKey=$!{areaKey}&productCode=$!{productCode}&size=30&1", "", "", "")
+					#cacheFragment("$!{address.fragment}/map/queryProductsList.htm?areaKey=$!{areaKey}&productCode=$!{productCode}&size=30&1", "", "", "")
+					 #foreach($comp in $productsList)
+						#if(($velocityCount)%6==1&&$velocityCount>1)
+							</ul>
+							</div>
+							<div class="item">
+								<ul>
+									<li>
+										#if($!{comp.company.membershipCode}==10051000)
+											<span class="w1"><a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" title="$!{comp.products.title}" target="_blank">#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")</a></span>
+										#else
+											<span class="w1"><a href="http://$!{comp.company.domainZz91}.zz91.com/products$!{comp.products.id}.htm" title="$!{comp.products.title}" target="_blank">#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")</a></span>
+										#end
+                                        <span class="w2">
+            								#printTitle($!{comp.company.name} 12 "..")
+            							</span>
+                                        <span class="w7">
+											#if($!{comp.products.quantity}&&$!{comp.products.quantity}!=""&&$!{comp.products.quantity}!=" ")
+											    	
+												#printTitle("${comp.products.quantity}" 9 "")
+												#if($!{comp.products.quantityUnit} !=""&&$!{comp.products.quantityUnit}!=" ")
+												        $!{comp.products.quantityUnit}
+												#else
+												   吨
+												#end
+												 
+											#else 
+													面议 
+											#end&nbsp;</span>
+                                        <span class="w4">
+											#if($!{comp.company.membershipCode}==10051000)
+												##<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm">给我留言</a>
+												<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" target="_blank">给我留言</a>
+											#else
+												<a href="$!{address.company}/compinfo$!{comp.company.id}.htm" target="_blank">给我留言</a>
+											#end
+										</span>
+                                    </li>
+						#else
+                            <li>
+                                #if($!{comp.company.membershipCode}==10051000)
+									<span class="w1"><a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" title="$!{comp.products.title}" target="_blank">#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")</a></span>
+            					#else
+									 <span class="w1"><a href="http://$!{comp.company.domainZz91}.zz91.com/products$!{comp.products.id}.htm" title="$!{comp.products.title}" target="_blank">#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")</a></span>
+								#end
+								<span class="w2">
+    								#printTitle($!{comp.company.name} 12 "..")
+    							</span>
+								<span class="w7">
+									#if($!{comp.products.quantity}&&$!{comp.products.quantity}!=""&&$!{comp.products.quantity}!=" ")
+										#printTitle("${comp.products.quantity}" 9 "") 
+										        #if($!{comp.products.quantityUnit} !=""&&$!{comp.products.quantityUnit}!=" ")
+												        $!{comp.products.quantityUnit}
+												#else
+												   吨
+												#end
+										#else 面议 
+									   #end&nbsp;</span>
+								<span class="w4">
+									#if($!{comp.company.membershipCode}==10051000)
+										##<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm">给我留言</a>
+										<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" target="_blank">给我留言</a>
+									#else
+										<a href="$!{address.company}/compinfo$!{comp.company.id}.htm" target="_blank">给我留言</a>
+									#end
+									</span>
+    							</span>
+                            </li>
+						#end
+					#end
+				  #end
+					</ul>
+	               </ul>
+				</div>
+            </div>
+		</div>
+			<div class="mt fll_rmqyadsinfo">
+                <a><script type="text/javascript" src="http://gg.zz91.com/show?p=$!{adsCode}"></script></a>
+            </div>
+		</div>
+		<div class="fr">
+			<div class="quickEntry">
+				<a href="$!{address.front}/register/register_stp1.htm" title="免费注册ZZ91再生网" target="_blank">免费注册</a>
+				<a href="$!{address.front}/login.htm" title="快速登录ZZ91再生网" target="_blank">登录</a>
+				<a href="http://www.zz91.com/service/newzst/" target="_blank" title="ZZ91再生网再生通服务">再生通</a>
+			</div>
+			<div class="grey_wrap mt">
+				<div class="wrap_head">
+					<div class="control">
+						<s class="prev" id="prev0"></s><s class="next" id="next0"></s>
+					</div>
+					<span class="blue">$!{name}热门商家推荐</span>
+				</div>
+				<div class="wrap_content" id="Js_tabs0">
+					<div class="item">
+							#foreach($comp in $vipList)
+								#if(($velocityCount)%3==1&&$velocityCount>1)
+									</div>
+								<div class="item">
+        						<div class="q">
+        							<div class="pic">
+        								#if($!{comp.coverPicUrl} && $!{comp.coverPicUrl}!="")
+											<img src="$!{address.resource}/$!{comp.coverPicUrl}" width="75" height="75" />
+										#else
+											<img src="$!{address.img}/zz91/map/images/np$!{comp.company.membershipCode}.jpg" width="75" height="75" />
+										#end
+        							</div>
+        							<p>
+										#if($!{comp.company.membershipCode}==10051000)
+											<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" style="color:#ea801d;" target="_blank">
+												#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")
+											</a>
+										#else
+											<a href="http://$!{comp.company.domainZz91}.zz91.com/products$!{comp.products.id}.htm" style="color:#ea801d;" target="_blank">
+												#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")
+											</a>
+										#end
+									</p>
+        							<p>
+										#if($!{comp.company.membershipCode}==10051000)
+											<a href="javascript:void(0)" title="$!{comp.company.name}" class="novip">#printTitle($!{comp.company.name} 10 "..")</a>
+        								#else
+											<a href="http://$!{comp.company.domainZz91}.zz91.com" title="$!{comp.company.name}" target="_blank">#printTitle($!{comp.company.name} 10 "..")</a>
+        								#end
+									</p>
+        							<p>
+										<a href="$!{address.company}/compinfo$!{comp.company.id}.htm" target="_blank"><b>给我留言</b></a>
+									</p>
+        						</div>
+								#else
+									<div class="q">
+        							<div class="pic">
+        								#if($!{comp.coverPicUrl} && $!{comp.coverPicUrl}!="")
+											<img src="$!{address.resource}/$!{comp.coverPicUrl}" width="75" height="75" />
+										#else
+											<img src="$!{address.img}/zz91/map/images/np$!{comp.company.membershipCode}.jpg" width="75" height="75" />
+										#end
+        							</div>
+        							<p>
+										#if($!{comp.company.membershipCode}==10051000)
+										<a href="$!{address.trade}/productdetails$!{comp.products.id}.htm" style="color:#ea801d;" target="_blank">
+											#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")
+										</a>
+										#else
+											<a href="http://$!{comp.company.domainZz91}.zz91.com/products$!{comp.products.id}.htm" style="color:#ea801d;" target="_blank">
+												#if($!{comp.products.productsTypeCode}==10331000)供应#else求购#end#printTitle($!{comp.products.title} 10 "..")
+											</a>
+										#end
+									</p>
+        							<p>
+										#if($!{comp.company.membershipCode}==10051000)
+        								<a href="javascript:void(0)" title="$!{comp.company.name}" class="novip" title="$!{comp.company.name}">#printTitle($!{comp.company.name} 10 "..")</a>
+        								#else
+        								<a href="http://$!{comp.company.domainZz91}.zz91.com" title="$!{comp.company.name}" target="_blank">#printTitle($!{comp.company.name} 10 "..")</a>
+        								#end
+									</p>
+        							<p>
+										<a href="$!{address.company}/compinfo$!{comp.company.id}.htm" target="_blank"><b>给我留言</b></a>
+									</p>
+        						</div>
+								#end
+							#end
+					</div>
+				</div>
+			</div>
+			
+##            <div class="mt">
+##                <a><script type="text/javascript" src="http://gg.zz91.com/show?p=452"></script></a>
+##            </div>
+
+                <div class="content_right mt">
+                    <div class="ad" >
+                        <ul class="slider" >
+                            <script type="text/javascript" src="http://gg.zz91.com/show?p=452"></script>
+                        </ul>
+                        <ul class="num" >
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                        </ul>
+                    </div>
+                </div>
+<script>
+    $(function(){
+        var len  = $(".num > li").length;
+	    var index = 0;
+	    var adTimer;
+	  $(".num li").mouseover(function(){
+		index  =   $(".num li").index(this);
+		showImg(index);
+	            }).eq(0).mouseover();	
+	 //滑入 停止动画，滑出开始动画.
+	 $('.ad').hover(function(){
+			 clearInterval(adTimer);
+	  },function(){
+			 adTimer = setInterval(function(){
+			    showImg(index)
+				index++;
+				if(index==len){index=0;}
+			  } , 6000);
+	 }).trigger("mouseleave");
+     })
+// 通过控制top ，来显示不同的幻灯片
+function showImg(index){
+        var adHeight = $(".content_right .ad").height();
+		$(".slider").stop(true,false).animate({bottom : -adHeight*index},1000);
+		$(".num li").removeClass("on")
+			.eq(index).addClass("on");
+                   }
+</script>
+			</div>
+		</div>
+</div>
+<div class="container mt clearfix">
+    <div class="fl">
+        <div class="info_wrap">
+            <div class="info_head">
+                <h3>$!{name}网商报价</h3>
+                <a href="$!{address.myrc}/mycompanyprice/createPrice.htm" class="post">我要报价</a>
+                <ul>
+					#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10051005&size=8&tryid1", "", "", "")
+						#foreach($!index in $!list)
+							<li>
+								<a href="$!{index.link}" style="$!{index.style}" class="red" target="_blank">$!{index.title}</a>
+							</li>
+						#end
+					#end
+##                    <li><a href="#">PET</a></li>
+##                    <li><a href="#">铝</a></li>
+##                    <li><a href="#">废电子</a></li>
+##                    <li><a href="#">不锈钢</a></li>
+##                    <li><a href="#">PVC</a></li>
+##                    <li><a href="#" class="red">棉</a></li>
+##                    <li><a href="#">废机械</a></li>
+                </ul>
+                <a href="$!{address.price}" class="more">更多》</a>
+            </div>
+            <div class="info_title" style="text-align:center">
+				<span class="w3">产品名称</span>
+			    <span class="w3">公司名称</span>
+                <span class="w5">发布日期</span>
+                <span class="w6">所在地</span>
+                <span class="w4">给我留言</span>
+                <span class="control">
+                    <s class="prev" id="prev1"></s>
+                    <span id="num1"></span>/5
+                    <s class="next" id="next1"></s>
+                </span>
+            </div>
+            <div id="Js_tabs1" class="info_content">
+                <div class="item">
+					<ul>
+				##cacheFragment("http://127.0.0.1:8006/api/fragment/map/queryComppriceList.htm?areaKey=$!{areaKey}&productCode=$!{productCode}&dfg", "", "", "")
+				#cacheFragment("$!{address.fragment}/map/queryComppriceList.htm?areaKey=$!{areaKey}&productCode=$!{productCode}&dfg", "", "", "")
+					 #foreach($comp in $comppriceList)
+							#if(($velocityCount)%6==1&&$velocityCount>1)
+								</ul>
+								</div>
+								<div class="item">
+									<ul>
+										<li>
+											<span class="w1">
+												<a href="$!{address.price}/companyprice/priceDetails$!{comp.companyPriceDO.id}.htm" title="$!{comp.title}" target="_blank" >#printTitle($!{comp.companyPriceDO.title} 10 "..")</a>
+											</span><span class="w3">
+												#if($!{comp.membershipCode}==10051000)
+													<a href="javascript:void(0)" title="$!{comp.companyName}" class="novip">#printTitle($!{comp.companyName} 10 "..")</a>
+												#else
+													#if($!{comp.domainZz91}&&$!{comp.domainZz91}!="")
+														<a href="http://$!{comp.domainZz91}.zz91.com/" title="$!{comp.companyName}" target="_blank">#printTitle($!{comp.companyName} 8 "..")</a>
+													#else
+														<a href="javascript:void(0)" title="$!{comp.companyName}" class="novip">#printTitle($!{comp.companyName} 8 "..")</a>
+													#end
+												#end
+											</span>
+											<span class="w5">#printFragmentDate('yyyy-MM-dd ',$comp.companyPriceDO.postTime)</span>
+											<span class="w6">$!{comp.provinceName}$!{comp.areaName}</span>
+											<span class="w4"><a href="$!{address.company}/compinfo$!{comp.companyPriceDO.companyId}.htm" target="_blank">给我留言</a></span>
+										</li>
+							#else
+								<li>
+									<span class="w1">
+										<a href="$!{address.price}/companyprice/priceDetails$!{comp.companyPriceDO.id}.htm" title="$!{comp.title}" target="_blank">#printTitle($!{comp.companyPriceDO.title} 8 "..")</a>
+									</span>
+									<span class="w3">
+										#if($!{comp.membershipCode}==10051000)
+											<a href="javascript:void(0)" title="$!{comp.companyName}" class="novip">
+												#printTitle($!{comp.companyName} 8 "..")
+											</a>
+										#else
+											#if($!{comp.domainZz91}&&$!{comp.domainZz91}!="")
+												<a href="http://$!{comp.domainZz91}.zz91.com/" title="$!{comp.companyName}" target="_blank">
+													#printTitle($!{comp.companyName} 8 "..")
+												</a>
+											#else
+												<a href="javascript:void(0)" title="$!{comp.companyName}" class="novip">
+													#printTitle($!{comp.companyName} 8 "..")
+												</a>
+											#end
+										#end
+									</span>
+									<span class="w5">
+										#printFragmentDate('yyyy-MM-dd ',$comp.companyPriceDO.postTime)
+									</span>
+                                    <span class="w6">
+										$!{comp.provinceName}$!{comp.areaName}
+									</span>
+                                    <span class="w4">
+										<a href="$!{address.company}/compinfo$!{comp.companyPriceDO.companyId}.htm" target="_blank">给我留言
+										</a>
+									</span>
+                                </li>
+							#end
+						#end
+				    #end
+					</ul>
+					
+                </div>
+            </div>
+        </div>
+    </div> 
+    <div class="fr">
+        <div class="grey_wrap">
+            <div class="wrap_head">市场报价</div>
+            <div class="wrap_content">
+                <dl class="price">
+                    <dt>废金属：</dt>
+                    <dd>
+					#cacheFragment("$!{address.fragment}/price/priceCategory.htm?id=17&29", "", "", "")
+						#foreach($category in $list)
+							#if($!{velocityCount}>6)
+							#else
+								<a href="$!{address.jiage}/$!{category.pinyin}/"  target="_blank">$!{category.name}</a>
+							#end
+							#end
+						#end
+					</a>
+					<p><a href="$!{address.jiage}/jinshu/" class="org">更多 >></a></p>
+					</dd>
+                </dl>
+            	<dl class="price">
+                    <dt>废塑料：</dt>
+                    <dd>
+						##cacheFragment("$!{address.fragment}/price/priceCategory.htm?id=11&767676", "", "", "")
+						##foreach($category in $list)
+							##if($!{velocityCount}>7) 
+							##else             
+								##<a href="$!{address.price}/priceList_t$!{category.id}_plastic.htm"  target="_blank">#set($cname=$!{category.name})#if(($cname.length())>=7) #printTitle($!{category.name} 2 " ") #else $!{category.name} #end </a>
+								<a href="$!{address.jiage}/quanguofeisuliaojiagehangqing/"  target="_blank">全国</a>
+								<a href="$!{address.jiage}/gedifeisuliaohangqing/"  target="_blank">各地</a>	
+								<a href="$!{address.jiage}/pe/"  target="_blank">PE</a>
+								<a href="$!{address.jiege}/meiguofeisuliaojiagehangqing/"  target="_blank">美国</a>	
+								<a href="$!{address.jiage}/ouzhoufeisuliaojiagehangqing/"  target="_blank">欧洲</a>
+								<a href="$!{address.jiage}/suliaozaishengliaojiagehangqing/"  target="_blank">塑料再生</a>	
+								<a href="$!{address.jiage}/suliaoqihuo/"  target="_blank">塑料期货</a>	
+							##end
+							##end
+						##end
+                             <p><a href="$!{address.jiage}/suliao/" class="org">更多 >></a></p></dd>
+					  ##<p><a href="$!{address.price}/list_plastic.htm" class="org">更多 >></a></p></dd>
+                </dl>
+                <dl class="price">
+                    <dt>废橡胶：</dt>
+                    <dd>
+						#cacheFragment("$!{address.fragment}/price/priceCategory.htm?id=15&52678678", "", "", "")
+						#foreach($category in $list)
+							#if($!{velocityCount}>7)
+							#else
+								<a href="$!{address.jiage}/$!{category.pinyin}/"  target="_blank">$!{category.name}</a>
+							#end
+							#end
+						#end
+						<p><a href="$!{address.jiage}/other/" class="org">更多 >></a></p></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt flnewborder">
+    <div class="flnewtitle">
+        <a href="$!{address.huzhu}/bbsCategory1.htm">废料动态</a>
+		<a href="$!{address.huzhu}/bbsCategory2.htm">行业知识</a>
+		<a href="$!{address.huzhu}/bbsCategory3.htm">江湖风云</a>
+		<a href="$!{address.huzhu}/bbsCategory4.htm">ZZ91动态</a>
+		<a href="$!{address.huzhu}/search.htm?keywords=国内资讯">国内资讯</a>
+		<a href="$!{address.huzhu}/search.htm?keywords=再生技术">再生技术</a>
+		<a href="$!{address.huzhu}/search.htm?keywords=行情综述">行情综述</a>
+    </div>
+    <div class="clearfix">
+        <div class="flnewpicinfo">
+            <ul>
+				#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10051007&size=&id1", "", "", "")
+            		#foreach($!index in $!list)
+    					<li>
+    						<a href="$!{index.link}" target="_blank" style="$!{index.style}"><img src="$!{address.resource}/$!{index.pic}" title="$!{index.title}" width="129" height="90" /><br />#printTitle($!{index.title} 15 " ")</a>
+    					</li>
+            		#end
+        		#end
+            </ul>
+        </div>
+        <div class="flnewsinfo">
+            <ul>
+				#foreach($plist3 in $!{postByType3})
+					<li>
+					#if(2>=$velocityCount)
+                    <a href="$!{address.huzhu}/viewReply$!{plist3.id}.htm" target="_blank" title="$!{plist3.title}">#printTitle($!{plist3.title} 15 "")</a>
+					#end
+					</li>
+				#end
+				
+				## 2条互助最新发布信息
+				#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=2&1213" "" "" "")
+					#foreach($flist in $!{frontBbsPostList})
+						<li><a href="$!{address.huzhu}/viewReply$!{flist.id}.htm" title="$!{flist.title}" target="_blank">
+								#printTitle($!{flist.title} 15 "")
+						</a></li>
+					#end
+				#end
+               
+				#foreach($exhibit in $!{exhibitList})
+					<li>
+						<a href="$!{address.exhibit}/details$!{exhibit.id}.htm" target="_blank" title="$!{exhibit.name}">
+							#printTitle($!{exhibit.name} 15 "")
+						</a>
+					</li>
+				#end
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="container mt clearfix">
+    <div class="fl">
+<script>
+function g(o) {
+    return document.getElementById(o);
+}
+function HoverLil(n) {
+    for(var i=1;i<3;i++){
+        g('ltb_'+i).className='ssbj';
+        g('ltbc_0'+i).className='undis';
+    }
+    g('ltbc_0'+n).className='dis';
+    g('ltb_'+n).className='ssbjn';
+	if(n==2){
+		jQuery("#listType").val('p');
+	}else{
+		jQuery("#listType").val('');
+	}
+}
+</script>
+	<a name="scity"></a>
+	<div class="flinfoclass">
+            <ul class="clearfix">
+              <li class="ssbjn" id="ltb_1" onclick="HoverLil(1);">优质企业</li>
+              <li class="ssbj" id="ltb_2" onclick="HoverLil(2);">最新供求商机</li>
+              <!--<li class="ssbj" id="ltb_3" onclick="HoverLil(3);">人气搜索排行</li>-->
+              <li class="flinfoclass_d">再生通会员具有优先权，<a href="http://www.zz91.com/service/newzst/" target="_blank" style="font-size:14px; font-weight:bold; color:#F00;">点此申请！</a></li>
+            </ul>
+        </div>
+        <div class="flinfosx">
+			<form id="offFilter" name="offFilter" onsubmit="return false">
+				<ul class="clearfix">
+					<li class="flinfosxsh_a">
+						<select id="selectCity" >
+							<option value="">请选择省份</option>
+							<option value="100110001018" cvalue="guangdong" #if($!{areaKey}=="100110001018") selected #end>广东</option>
+							<option value="100110001010" cvalue="zhejiang" #if($!{areaKey}=="100110001010") selected #end>浙江</option>
+							<option value="100110001014" cvalue="shandong" #if($!{areaKey}=="100110001014") selected #end>山东</option>
+							<option value="100110001009" cvalue="jiangsu" #if($!{areaKey}=="100110001009") selected #end>江苏</option>
+							<option value="100110001000" cvalue="beijing" #if($!{areaKey}=="100110001000") selected #end>北京</option>
+							<option value="100110001008" cvalue="shanghai" #if($!{areaKey}=="100110001008") selected #end>上海</option>
+							<option value="100110001001" cvalue="tianjin" #if($!{areaKey}=="100110001001") selected #end>天津</option>
+							<option value="100110001002" cvalue="hebei" #if($!{areaKey}=="100110001002") selected #end>河北</option>
+							<option value="100110001015" cvalue="henan" #if($!{areaKey}=="100110001015") selected #end>河南</option>
+							<option value="100110001017" cvalue="hunan" #if($!{areaKey}=="100110001017") selected #end>湖南</option>
+						</select>
+						<input type="hidden" id="listType" value="$!{listType}" />
+					</li>
+					<script type="text/javascript">
+						jQuery("#selectCity").change(function(){
+							var url = "#springUrl('')";
+							var areaCode = jQuery("#selectCity").find("option:selected").attr("cvalue");
+							var productType = "$!{productType}";
+							var listType = jQuery("#listType").val();
+							if(productType.length>0){
+								productType = "-" + productType;
+							}else{
+								productType = "";
+							}
+							if(listType=='p'){
+								listType = "?listType=p";
+							}else{
+								listType="";
+							}
+							url += areaCode+productType+".htm"+listType+"#scity";
+	                		window.location = url;
+						});
+					</script>
+					#parse("/common/hotcity.vm")
+##					<li class="flinfosxsh_b"><span>热门城市：</span>
+##						#if($!{areaKey}=="100110001010")
+##							#set($indexCode="100510061000")
+##						#elseif($!{areaKey}=="100110001018")
+##							#set($indexCode="100510061001")
+##						#elseif($!{areaKey}=="100110001014")
+##							#set($indexCode="100510061002")
+##						#elseif($!{areaKey}=="100110001009")
+##							#set($indexCode="100510061003")
+##						#end
+##						#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=$!{$indexCode}&size=5&id", "", "", "")
+##							#foreach($!index in $!list)
+##								<a href="$!{index.link}" target="_blank" title="$!{index.title}" style="$!{index.style}">
+##									#printTitle($!{index.title} 10 "") 
+##								</a>
+##							#end
+##						#end
+##					</li>
+					<li class="flinfosxsh_c">关键字：</li>
+					<li class="flinfosxsh_d">
+						<input type="text" id="searchKey" name="keywords" />
+					</li>
+					<li class="flinfosxsh_e">
+						<input type="submit" id="searchBtn" style="background:url($!{address.img}/zz91/map/images/fsl_72-75.jpg);width:49px;height:24px;border:none;" value=""/>
+					</li>
+				</ul>
+				<input type="hidden" id="productCode" name="productCode" value="$!{productCode}" />
+			</form>
+			<script type="text/javascript">
+				jQuery("#offFilter").submit(function(){
+					var url = "#springUrl('/list')";
+                	var keywords = jQuery("#searchKey").val();
+					keywords = encodeURI(keywords);
+                	var areaCode = "$!{areaName}";
+                	if(keywords.length>0){
+                		url += "-"+areaCode+"-"+keywords+".htm";
+                		window.open(url);
+                	}else{
+                		alert("请输入关键字");
+                		return false;
+                	}
+				});
+			</script>
+		</div>
+##		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&showborder=1&showposition=1&m=4&padding=8&w=713&num=4&adposition=680"></script>
+        <div>
+            <ul>
+				<a name="yxo"></a>
+                <li id="ltbc_01" class="dis">
+		
+					#foreach($obj in $!{yzCompanyList})
+    					#if(11>$velocityCount)
+        					<div #if($!{velocityCount}%2==0) class="flinfolist grey" #else  class="flinfolist" #end>
+        						<ul class="clearfix" id="yz1">
+        							<li class="flinfolist_as">
+											<a href="http://$!{obj.company.domainZz91}.zz91.com" title="$!{obj.company.name}">
+												<b>${obj.company.name}</b>
+											</a>
+											<br />${obj.company.business}
+									</li>
+        							<li class="flinfolist_c">
+										<img src="$!{address.img}/zz91/map/images/$!{obj.company.membershipCode}.gif" width="20" height="21"/>
+									</li>
+                                    <li class="flinfolist_d">
+										#if($!{obj.company.membershipCode}=="10051001")
+											再生通
+										#elseif($!{obj.company.membershipCode}!="10051001"&&$!{obj.company.membershipCode}!=""&&$!{obj.company.membershipCode}!="10051000")
+											品牌通
+										#end
+										<br />
+										<span>第 $!{obj.company.zstYear}年</span>
+									</li>
+        							<li class="flinfolist_e">
+                                        <a href="$!{address.company}/compinfo$!{obj.company.id}.htm">
+    										<img src="$!{address.img}/zz91/map/images/fsl_80.jpg" width="68" height="17" />
+    									</a>
+    									&nbsp;&nbsp;
+    									<a href="http://$!{obj.company.domainZz91}.zz91.com/lxfs.htm">
+    										<img src="$!{address.img}/zz91/map/images/fsl_82.jpg" width="67" height="17" />
+    									</a>
+									</li>
+        						</ul>
+    					</div>
+    					#end
+					#end
+                </li>
+                <li id="ltbc_02" class="undis">
+			   #cacheFragment("$!{address.fragment}/map/queryProductsList.htm?areaKey=$!{areaKey}&productCode=$!{productCode}&size=10", "", "", "")
+					#foreach($list in $!{productsList})
+						<div #if($!{velocityCount}%2==0) class="flinfolist grey" #else class="flinfolist" #end >
+							<ul class="clearfix">
+								<li class="flinfolist_a">
+									#if($!{list.company.membershipCode}==10051000)
+										<a href="$!{address.trade}/productdetails$!{list.products.id}.htm" target="_blank">
+											#if($!{list.products.productsTypeCode}==10331000) 供应#else 求购#end$!{list.products.title}
+										</a>
+										<br />
+										<a href="$!{address.company}/compinfo$!{list.company.id}.htm" target="_blank">
+											<b>$!{list.company.name}</b>
+										</a>
+									#else
+										<a href="http://$!{list.company.domainZz91}.zz91.com/products$!{list.products.id}.htm" target="_blank">
+											#if($!{list.products.productsTypeCode}==10331000) 供应#else 求购#end$!{list.products.title}
+										</a>
+										<br />
+										<a href="http://$!{list.company.domainZz91}.zz91.com/" target="_blank">
+											<b>$!{list.company.name}</b>
+										</a>
+									#end
+									
+								</li>
+								<li class="flinfolist_b">#if($!{list.products.price}&&$!{list.products.price}!='0'&&$!{list.products.price}!='') $!{list.products.price}$!{list.products.priceUnit}/$!{list.products.quantityUnit} #else 面议 #end</li>
+									#if(!$!{list.company.membershipCode}||$!{list.company.membershipCode}==10051000)
+										<li class="flinfolist_c">&nbsp;</li>
+										<li class="flinfolist_d">普通会员</li>
+									#elseif($!{list.company.membershipCode}==10051001)
+										<li class="flinfolist_c">
+											<img src="$!{address.img}/zz91/map/images/$!{list.company.membershipCode}.gif" />
+										</li>
+										<li class="flinfolist_d">再生通<br /><span>第 $!{list.company.zstYear}年</span></li>
+									#else
+										<li class="flinfolist_c">
+        									<img src="$!{address.img}/zz91/map/images/$!{list.company.membershipCode}.gif" />
+        								</li>
+										<li class="flinfolist_d">品牌通<br /><span>第 $!{list.company.zstYear}年</span></li>
+									#end
+								<li class="flinfolist_e">
+									#if($!{list.products.location})
+										<p>#if($!{list.products.location})现货所在地:$!{list.products.location}#end</p>
+									#end
+									#if(!$!{list.company.membershipCode}==10051000)
+										<a href="$!{address.trade}/productdetails$!{list.products.id}.htm" target="_blank">
+											<img src="$!{address.img}/zz91/map/images/fsl_80.jpg" width="68" height="17" />
+										</a>
+										&nbsp;&nbsp;
+										<a href="javascript:void(0)" class="novip">
+											<img src="$!{address.img}/zz91/map/images/fsl_82.jpg" width="67" height="17" />
+										</a>
+									#else
+										<a href="$!{address.company}/compinfo$!{list.company.id}.htm" target="_blank">
+											<img src="$!{address.img}/zz91/map/images/fsl_80.jpg" width="68" height="17" />
+										</a>
+										&nbsp;&nbsp;
+										<a href="http://$!{list.company.domainZz91}.zz91.com/lxfs.htm" target="_blank">
+											<img src="$!{address.img}/zz91/map/images/fsl_82.jpg" width="67" height="17" />
+										</a>
+									#end
+								</li>
+							</ul>
+						</div>
+					#end
+				#end
+                </li>
+            </ul>
+        </div>
+        <div class="flinfono">
+            <span>
+				<a href="$!{address.myrc}/mycompanyprice/createPrice.htm" target="_blank">发布报价</a>，让更多商家找到我！
+			</span>没有找到符合的商家？去
+			<a href="$!{address.trade}/postoffer_step1.htm" target="_blank">发布信息</a>
+			！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="$!{address.map}/list-$!{areaName}#if($!{productType}&&$!{productType}!="")-$!{productType}#end.htm" style="font-size:14px; font-weight:bold; color:#2d72b7;" target="_blank">
+				查看更多 >>
+			</a>
+        </div>
+		##mapPageNav($page1 "index.htm" "" "")
+    </div>
+    <div class="fr">
+        #parse("/common/place.vm")
+		<div class="grey_wrap mt">
+		    <div class="wrap_head">行情综述</div>
+		    <div class="wrap_content">
+		        <dl class="priceList bdb">
+		            <dt><a href="$!{address.jiage}/feijinshuhangqingzongshu/" class="more" target="_blank">更多>></a>废金属行情综述</dt>
+		            <dd>
+		                <ul>
+							#cacheFragment("$!{address.fragment}/map/queryPriceByTypeId.htm?typeId=216&1", "", "", "")
+							#foreach($list in ${priceDo})
+								<li>
+									<a target="_blank" href="$!{address.jiage}/detail/${list.id}.html" title="$!{list.title}" target="_blank">#printTitle($!{list.title} 16 "")</a>
+								</li>
+							#end
+							#end
+		                </ul>
+		            </dd>
+		        </dl>
+		        <dl class="priceList bdb">
+		            <dt><a href="$!{address.jiage}/feisuliaopinglun/" class="more" target="_blank">更多>></a>废塑料行情综述</dt>
+		            <dd>
+		                <ul>
+						#cacheFragment("$!{address.fragment}/map/queryPriceByTypeId.htm?typeId=217&1", "", "", "")
+						   #foreach($list in ${priceDo})
+								<li>
+									<a target="_blank" href="$!{address.jiage}/detail/${list.id}.html" title="$!{list.title}" target="_blank">#printTitle($!{list.title} 16 "")</a>
+								</li>
+						   #end
+						#end
+		                </ul>
+		            </dd>
+		        </dl>
+		        <dl class="priceList">
+		            <dt><a href="$!{address.jiage}/hangqingzongshu/" class="more" target="_blank">更多>></a>原油/橡胶行情综述</dt>
+		            <dd>
+		                <ul>
+		                   #foreach($list in ${yuanyou})
+								<li>
+									<a target="_blank" href="$!{address.jiage}/detail/${list.id}.html" title="$!{list.title}" target="_blank">#printTitle($!{list.title} 16 "")</a>
+								</li>
+							#end
+		                </ul>
+		            </dd>
+		        </dl>
+		    </div>
+		</div>
+	</div>
+</div>
+<div id="endTimes" style="display:none;"></div> 
+<!--百度商桥-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+ #parse("/common/foot.vm")
+<script>
+jQuery(document).ready(function(){
+	var areaSelector = new zz91Selector({
+		url:"#springUrl('/areaChild.htm')"
+	});
+	
+	areaSelector.init({
+		rootCode:"10011000",
+		initCode:"$!{province}",
+		selects:["#province"]
+	});
+	
+	jQuery(".novip").click(function(){
+		alert("该商家还未开通商铺，您可以留言给对方。");
+	});
+	
+	#if($listType=='p')
+		HoverLil(2);
+	#end
+});
+function tab(id, prev, next, tabs, numId) {
+	var tab = jQuery("#" + id),
+		prev = jQuery("#" + prev),
+		next = jQuery("#" + next),
+		item = tab.find("." + tabs),
+		number = jQuery("#" +　numId),
+		length = item.length - 1,
+		pos = 0, temp;
+	item.eq(pos).show();
+	number.text(pos + 1);
+	if (length > 0) { 
+	prev.on("click", function(){
+		temp = pos;
+		pos = pos === 0 ? length : pos - 1;
+		item.eq(pos).show();
+		item.eq(temp).hide();
+		number.text(pos + 1);
+	});
+  	next.on("click", function(){
+    	temp = pos;
+    	pos = pos === length ? 0 : pos + 1;
+    	item.eq(pos).show();
+    	item.eq(temp).hide();
+		number.text(pos + 1);
+  	});
+  	var loop = setInterval(function(){
+  		next.click();
+  	}, 3000);
+  	tab.hover(function(){
+  		clearInterval(loop);
+  	}, function(){
+  		loop = setInterval(function(){
+  			next.click();
+  		}, 3000);
+  	})
+	}
+}
+tab("Js_tabs", "prev", "next", "item", "num");
+tab("Js_tabs0", "prev0", "next0", "item", "tjnum");
+tab("Js_tabs1", "prev1", "next1", "item", "num1");
+</script>
+<script type="text/javascript">
+ window.onload=function(){ 
+ document.getElementById("endTimes").innerHTML= new Date().getTime()-startDate;
+ }
+</script>

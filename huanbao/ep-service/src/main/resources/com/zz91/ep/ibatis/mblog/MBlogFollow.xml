@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblogFollow">
+	<typeAlias alias="mblogFollow" type="com.zz91.ep.domain.mblog.MBlogFollow" />	
+    <resultMap class="mblogFollow" id="mblogFollowMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="targetId" column="target_id"/>
+    	<result property="groupId" column="group_id"/>
+    	<result property="followStatus" column="follow_status"/>
+    	<result property="type" column="type"/>
+    	<result property="noteName" column="note_name"/>
+    	<result property="gmtCreated" column="gmt_created"/>
+    	<result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	target_id,
+    	group_id,
+    	follow_status,
+    	type,
+    	note_name,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+      <sql id="mblogFollowColumn">
+    	mf.id,
+    	mf.info_id,
+    	mf.target_id,
+    	mf.group_id,
+    	mf.follow_status,
+    	mf.type,
+    	mf.note_name,
+    	mf.gmt_created,
+    	mf.gmt_modified
+    </sql>
+    <insert id="insert" parameterClass="mblogFollow">
+		insert into mblog_follow
+		(
+		info_id,
+		target_id,
+		follow_status,
+		note_name,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#infoId#,
+		#targetId#,
+		#followStatus#,
+		#noteName#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByIdAndTargetId" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select 
+		<include refid="defaultColumn"/>
+		from mblog_follow
+		where info_id = #infoId#
+		and target_id = #targetId#
+		<isNotEmpty property="followStatus">
+		and follow_status=#followStatus#
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryFansByConditions" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select
+		<include refid="defaultColumn"/>
+		from mblog_follow
+		where target_id = #targetId#
+		and follow_status = 1
+		order by gmt_modified desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryFansCountByConditions" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from mblog_follow mf
+		inner join mblog_info mi on mi.id=mf.info_id
+		where mf.target_id = #targetId#
+		and mi.is_delete = 0
+		and mf.follow_status = 1
+		<isNotEmpty property="type">
+		and mf.type = #type# 
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryFollowByConditions" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select
+		<include refid="mblogFollowColumn"/>
+		from mblog_follow mf
+		inner join mblog_info mi on mi.id=mf.target_id
+		where mf.info_id = #infoId#
+		and mi.is_delete=0
+		<isNotEmpty property="groupId">
+			and mf.group_id = #groupId#
+		</isNotEmpty>
+		<isNotEmpty property="type">
+			and mf.type =#type#
+		</isNotEmpty>
+		and mf.follow_status = 1
+		order by mf.gmt_modified desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryFollowCountByConditions" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+		count(*)
+		from mblog_follow mf
+		inner join mblog_info mi on mi.id=mf.target_id
+		where mf.info_id = #infoId#
+		and mi.is_delete = 0
+		<isNotEmpty property="groupId">
+		and mf.group_id = #groupId#
+		</isNotEmpty>
+		<isNotEmpty property="type">
+		and mf.type = #type#
+		</isNotEmpty>
+		and mf.follow_status = 1
+	</select>
+	
+	
+	<select id="queryFollowByIdAndType" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select
+		<include refid="defaultColumn"/>
+		from mblog_follow
+		where info_id = #infoId#
+		and follow_status = 1
+		and type = #type#
+		order by gmt_modified desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryFollowCountByIdAndType" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+		count(*)
+		from mblog_follow
+		where info_id = #infoId#
+		and follow_status = 1
+		and type = #type#
+	</select>
+	
+	<select id="queryOneFollowById" parameterClass="java.util.Map" resultMap="mblogFollowMap">
+	 select
+	 <include refid="defaultColumn"/>
+	  from mblog_follow
+	  where
+	  id = #id#
+	  limit 1
+	</select>
+	
+	<update id="update" parameterClass="java.util.Map">
+		update mblog_follow
+		set
+		type = #type#,
+		follow_status = #followStatus#,
+		note_name = #noteName#,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+	
+	<update id="updateTypeById" parameterClass="java.util.Map">
+		update mblog_follow
+		set
+		type = #type#,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+	
+	<update id="updateNoteNameById" parameterClass="java.util.Map">
+		update mblog_follow
+		set
+		note_name = #noteName#
+		where 
+		info_id = #infoId#
+		and target_id = #targetId#
+	</update>
+	
+	<update id="updateFollowGroup" parameterClass="java.util.Map">
+		update mblog_follow
+		set
+		group_id = #groupId#,
+		gmt_modified = now()
+		where info_id = #infoId#
+		and target_id = #targetId#
+	</update>
+	
+	<select id="queryByInfoIdOrGroupId" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select
+		<include refid="mblogFollowColumn"/>
+		from mblog_follow mf
+		inner join mblog_info mi on mi.id=mf.target_id
+		where mf.info_id = #infoId#
+		and mi.is_delete = 0
+		<isNotEmpty property="groupId">
+			and mf.group_id = #groupId#
+		</isNotEmpty>
+		and mf.follow_status = 1
+		order by mf.gmt_modified desc
+	</select>
+	
+	<select id="queryFansByTargetId" parameterClass="java.util.HashMap" resultMap="mblogFollowMap">
+		select
+		<include refid="mblogFollowColumn"/>
+		from mblog_follow mf
+		inner join mblog_info mi on mi.id=mf.info_id
+		where mf.target_id = #targetId#
+		and mi.is_delete = 0
+		and mf.follow_status = 1
+		<isNotEmpty property="type">
+		and mf.type = #type# 
+		</isNotEmpty>
+		order by mf.gmt_modified desc
+		limit #start#,#size#
+	</select>
+	
+	
+	
+	<update id="updateFollowStstus" parameterClass="java.util.HashMap" >
+	 update mblog_follow 
+	 set 
+	 type = #type#,
+	 follow_status = #followStatus#,
+	 group_id= #groupId#,
+	 gmt_modified = now()
+	 where info_id=#infoId#
+	 and target_id = #targetId#
+	</update>
+	
+</sqlMap>

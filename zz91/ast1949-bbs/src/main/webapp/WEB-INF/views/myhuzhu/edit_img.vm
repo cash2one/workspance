@@ -1,0 +1,115 @@
+#set($layout="/layout/myhuzhuLayout.vm")
+
+#parse("/common/myhuzhu/head.vm")
+
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/huzhu/css/theme.css" />
+<script src="http://img0.zz91.com/zz91/js/jquery-ui-1.8.23.dialog.min.js"></script>
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<script type="text/javascript" src="http://img0.zz91.com/zz91/js/openoverlay.js"></script>
+<link type="text/css" rel="stylesheet" href="http://img0.zz91.com/zz91/css/openoverlay2.css" />
+<div class="huzhu">
+    <div class="hz-left fl">
+		
+		#set($urlName="img")
+		#parse("/common/myhuzhu/edit_head.vm")
+		
+        <div class="mainblock">
+            <div class="mb-upload">
+                <div class="mb-upload-head fl">
+					#if($!{bbsUserProfilerDO.picturePath} && $!{bbsUserProfilerDO.picturePath}!="")
+						<img src="$!{address.thumb}$!{address.resource}/$!{bbsUserProfilerDO.picturePath}" width="174px" height="174px" />
+					#else
+						<img src="$!{address.img}/zz91/newhuzhu/images/pc_img.jpg" />
+					#end
+                </div>
+                <!--end mb-upload-head fl-->
+                <div class="mb-upload-info fl">
+                    <div class="ud-info-top">
+                        <h3 class="bold">更换新头像</h3>
+                    </div>
+                    <!--end ud-info-top-->
+                    <div class="ud-info-down">
+                        <a href="javascript:;" id="upload2" class="upload">上传头像</a>
+						<input id="imgidupfile" name="imgidupfile" type="hidden" id="imgidupfile" value="$!{bbsUserProfilerDO.picturePath}">
+                        <p class="grey">提示：图片不要大于2M;只能上传格式为.jpg的图片</p>
+                    </div>
+                    <!--end ud-info-down-->
+                </div>
+                <!--end mb-upload-info fl-->
+                <div class="cb"></div>
+            </div>
+            <!--end mb-upload-->
+        </div>
+        <!--end mainblock-->
+    </div>
+    <!--end hz-left-->
+	
+	## 右边e个人信息
+	#parse("/common/myhuzhu/right.vm")
+	
+</div>
+<!--end huzhu-->
+<script type="text/javascript">
+    function onAjaxUpLoad(data) {
+    	jQuery("#imgidupfile").val(data);
+    	jQuery.ajax({
+    		url: "#springUrl('/myupdateimg.htm')",
+    		data: "path=" + jQuery("#imgidupfile").val(),
+    		type: "GET",
+    		dataType: "json",
+    		cache: false,
+    		success: function(response) {
+    			if (response.success) {
+    				window.location.reload();
+    			}
+    		},
+    		error: function() {
+    			window.location.reload();
+    		}
+    	});
+    }
+    	jQuery("#upload2").click(function(){
+				Asto.util.Callback.setSubmitCallback(function (success, data) {
+					
+					
+					var paths=data.picAddress;
+					var pathArr=paths.split(",");
+					for(var i=1;i<pathArr.length;i++){
+						var img = "<img src='$!{address.resource}/" + pathArr[i] + "'/>";
+						jQuery("#mylogoId").html(img);
+					}
+					parent.closeoverlay();
+					onAjaxUpLoad(pathArr[1]);
+					
+				});
+				var url="$!{address.huzhu}/sys/upload/myrcUpload.htm?destUrl=$!{address.huzhu}/submitCallback.htm&albumId=4&uploadFlag=1&limitCount=1";
+				//将弹框关闭等字显示出来
+				parent.overtitle("上传图片");
+				openoverlay(url,'上传图片',700,500,0);
+		});
+    ##初始化上传窗口
+   ## var upload = new Asto.util.PopupBox({
+    ##	url: "/sys/upload/bbs.htm",
+    ##	callbackFn: function(success, data) {
+    ##		//关闭窗口
+    ##		//保存图片信息
+    ##		//成功后刷新页面
+##			upload.close();
+##			window.location.reload();
+    ##	},
+    ##	title: "上传产品图片",
+    ##	width: 450,
+    ##	height: 250,
+    ##	modal: true
+   ## });
+    
+   ## function uploadPic() {
+    ##	Asto.util.Callback.setSubmitCallback(function(success, data) {
+    ##		var img = "<img src='$!{address.resource}/" + data.picAddress + "'/>";
+	##		jQuery("#mylogoId").html(img);
+    ##		upload.close();
+	##		onAjaxUpLoad(data);
+    ##	});
+    ##	upload.show("#springUrl('/sys/upload/bbs.htm?type=logo')");
+    ##}
+</script>

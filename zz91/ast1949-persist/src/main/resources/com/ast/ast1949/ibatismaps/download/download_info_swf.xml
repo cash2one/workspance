@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap 
+	PUBLIC "//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="downloadInfoSwf">
+	<typeAlias alias="downloadInfoSwfDO"
+		type="com.ast.ast1949.domain.download.DownloadInfoSwf" />
+
+	<resultMap class="downloadInfoSwfDO" id="downloadInfoSwfResult">
+		<result property="id" column="id" />
+		<result property="downloadId" column="download_id" />
+		<result property="url" column="url" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,download_id,url,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="downloadInfoSwfResult">
+		select
+		<include refid="defaultColumn" />
+		from download_info_swf
+		where id = #id#
+	</select>
+
+	<select id="queryListByDownloadId" parameterClass="java.lang.Integer"
+		resultMap="downloadInfoSwfResult">
+		select
+		<include refid="defaultColumn" />
+		from download_info_swf
+		where download_id = #downloadId#
+	</select>
+
+	<insert id="insert" parameterClass="downloadInfoSwfDO">
+		INSERT INTO download_info_swf
+		(
+		download_id,
+		url,
+		gmt_created,gmt_modified)
+		VALUES
+		(
+		#downloadId#,
+		#url#,
+		now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</sqlMap>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmContact">
+	
+	<typeAlias alias="crmContact" type="com.zz91.crm.domain.CrmContact"/>
+	
+	<resultMap class="crmContact" id="fullCrmContactResultMap">
+		<result property="id" column="id"/>
+		<result property="cid" column="cid"/>
+		<result property="email" column="email"/>
+		<result property="name" column="name"/>
+		<result property="sex" column="sex"/>
+		<result property="mobile" column="mobile"/>
+		<result property="phoneCountry" column="phone_country"/>
+		<result property="phoneArea" column="phone_area"/>
+		<result property="phone" column="phone"/>
+		<result property="faxCountry" column="fax_country"/>
+		<result property="faxArea" column="fax_area"/>
+		<result property="fax" column="fax"/>
+		<result property="contact" column="contact"/>
+		<result property="position" column="position"/>
+		<result property="isKey" column="is_key"/>
+		<result property="remark" column="remark"/>
+		<result property="saleAccount" column="sale_account"/>
+		<result property="saleName" column="sale_name"/>
+		<result property="saleDept" column="sale_dept"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		`id`,
+		`cid`,
+		`email`,
+		`name`,
+		`sex`,
+		`mobile`,
+		`phone_country`,
+		`phone_area`,
+		`phone`,
+		`fax_country`,
+		`fax_area`,
+		`fax`,
+		`contact`,
+		`position`,
+		`is_key`,
+		`remark`,
+		`sale_account`,
+		`sale_name`,
+		`sale_dept`,
+		`gmt_created`,
+		`gmt_modified`
+	</sql>
+	
+	<insert id="createCrmContact" parameterClass="crmContact">
+		insert into `crm_contact`
+		(
+		`cid`,
+		`email`,
+		`name`,
+		`sex`,
+		`mobile`,
+		`phone_country`,
+		`phone_area`,
+		`phone`,
+		`fax_country`,
+		`fax_area`,
+		`fax`,
+		`contact`,
+		`position`,
+		`is_key`,
+		`remark`,
+		`sale_account`,
+		`sale_name`,
+		`sale_dept`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#cid#,
+		#email#,
+		#name#,
+		#sex#,
+		#mobile#,
+		#phoneCountry#,
+		#phoneArea#,
+		#phone#,
+		#faxCountry#,
+		#faxArea#,
+		#fax#,
+		#contact#,
+		#position#,
+		#isKey#,
+		#remark#,
+		#saleAccount#,
+		#saleName#,
+		#saleDept#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryCrmContactByCid" parameterClass="java.lang.Integer" resultMap="fullCrmContactResultMap">
+		select 
+		<include refid="crmContact.fullColumn"/>
+		from crm_contact
+		where cid=#cid#
+	</select>
+	
+</sqlMap>

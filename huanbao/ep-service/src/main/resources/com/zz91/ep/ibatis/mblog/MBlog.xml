@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mblog">
+	<typeAlias alias="mblog" type="com.zz91.ep.domain.mblog.MBlog" />	
+	<typeAlias alias="mblogDto" type="com.zz91.ep.dto.mblog.MBlogDto" />
+    <resultMap class="mblog" id="mblogMap">
+    	<result property="id" column="id"/>
+    	<result property="infoId" column="info_id"/>
+    	<result property="title" column="title"/>
+    	<result property="content" column="content"/>
+    	<result property="type" column="type"/>
+    	<result property="isDelete" column="is_delete"/>
+    	<result property="discussCount" column="discuss_count"/>
+    	<result property="sentCount" column="sent_count"/>
+    	<result property="photoPath" column="photo_path"/>
+    	<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+    </resultMap>
+    <resultMap class="mblogDto" id="mblogDtoMap">
+    	<result property="mBlog" resultMap="mblog.mblogMap"/>
+    </resultMap>
+    <resultMap class="mblog" id="simpleMblogMap">
+    	<result property="infoId" column="info_id"/>
+    </resultMap>
+    
+    <resultMap class="mblog" id="mblogSomeResultMap">
+   		<result property="id" column="id"/> 
+    	<result property="title" column="title"/>
+    	<result property="count" column="count1"/>
+    </resultMap>
+    <sql id="defaultColumn">
+    	id,
+    	info_id,
+    	title,
+    	content,
+    	type,
+    	is_delete,
+    	discuss_count,
+    	sent_count,
+    	photo_path,
+    	gmt_created,
+    	gmt_modified
+    </sql>
+    
+    <sql id="followMblogColumn">
+    	m.id,
+    	m.info_id,
+    	m.title,
+    	m.content,
+    	m.type,
+    	m.is_delete,
+    	m.discuss_count,
+    	m.sent_count,
+    	m.photo_path,
+    	m.gmt_created,
+    	m.gmt_modified
+    </sql>
+    
+	<update id="updateIsDeleteStatus" parameterClass="java.lang.Integer">
+		update mblog
+		set
+		is_delete = 1,
+		gmt_modified = now()
+		where id = #id#
+	</update>
+	
+	<insert id="insert" parameterClass="mblog">
+		insert into mblog
+		(
+		info_id,
+		title,
+		content,
+		type,
+		photo_path,
+		gmt_created,
+		gmt_modified
+		)
+		values
+		(
+		#infoId#,
+		#title#,
+		#content#,
+		#type#,
+		#photoPath#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryAllmBlogById" resultMap="mblogDtoMap" parameterClass="java.util.Map">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog
+		where info_id = #infoId#
+		and
+		is_delete = 0
+		order by gmt_created desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryAllMBlogCountById" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select 
+		count(0)
+		from  mblog
+		where info_id = #infoId#
+		and 
+		is_delete = 0
+	</select>
+	
+	<select id="queryOneById" parameterClass="java.util.HashMap" resultMap="mblogMap">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog
+		where id = #id#
+		and is_delete = 0
+		limit 1
+	</select>
+	
+	<select id="queryOneBymblogId" parameterClass="java.util.HashMap" resultMap="mblogDtoMap">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog
+		where id = #id#
+		and is_delete = 0
+		limit 1
+	</select>
+	
+	<update id="updateSentCount" parameterClass="java.lang.Integer">
+		update mblog 
+		set
+		sent_count = sent_count+1
+		where 
+		id = #id#
+	</update>
+	
+	<update id="updateDiscussCount" parameterClass="java.lang.Integer">
+		update mblog
+		set
+		discuss_count = discuss_count+1
+		where id=#id# 
+	</update>
+		           
+	<select id="queryAllmBlogByInfoId" resultMap="mblogMap" parameterClass="java.util.Map">
+		select 
+		<include refid="defaultColumn"/> 
+		from mblog
+		where info_id = #infoId#
+		and
+		is_delete = 0
+		order by gmt_created desc
+		limit #size#
+	</select>
+	
+	<select id="queryTopicTitle" resultMap="mblogSomeResultMap" parameterClass="java.util.Map">
+		select m1.id,m1.title,count(0) as count1  
+		from mblog m1 
+		inner join mblog_info mi on mi.id=m1.info_id
+		where exists (select m2.id from ep.mblog m2  where m1.id=m2.id)  
+		and date(m1.gmt_created) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+		and m1.is_delete=0 
+		and mi.is_delete = 0
+		and m1.type=2 group by m1.title order by count1 desc
+		limit #size#
+	</select>
+	
+	<select id="queryMyFollowBlog" resultMap="mblogDtoMap" parameterClass="java.util.Map">
+	 select 
+	 <include refid="followMblogColumn"/> 
+	 from mblog m 
+	 where 
+	 exists 
+	 (select * from mblog_follow mf where
+	  mf.follow_status=1 
+	 <isNotEmpty property="groupId">
+			and mf.group_id = #groupId#
+	</isNotEmpty>
+	 and (m.info_id=mf.target_Id <isEmpty property="groupId"> or m.info_id=mf.info_id</isEmpty>)
+	 and mf.info_id=#infoId#)
+	 and m.is_delete=0
+	 order by m.gmt_created desc
+	 <include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryMyFollowBlogCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from mblog m 
+		where 
+	 	exists 
+	 	(select * from mblog_follow mf where 
+	 	mf.follow_status=1
+	 	<isNotEmpty property="groupId">
+			and mf.group_id = #groupId#
+		</isNotEmpty>
+	 	and (m.info_id=mf.target_Id<isEmpty property="groupId"> or m.info_id=mf.info_id</isEmpty>)
+	 	and mf.info_id=#infoId#)
+	 	and m.is_delete=0
+	</select>
+	
+	
+	<select id="queryMyBlog" resultMap="mblogDtoMap" parameterClass="java.util.Map">
+	 select 
+	 <include refid="followMblogColumn"/> 
+	 from mblog m 
+	 where 
+	 m.info_id=#infoId#
+	 and m.is_delete=0		
+	 order by m.gmt_created desc
+	 <include refid="common.pageLimit"/>
+	</select>	
+		
+	<select id="queryMyBlogCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	 select 
+     count(0) 
+	 from mblog m 
+	 where 
+	 m.info_id=#infoId#
+	 and m.is_delete=0		
+	</select>	
+			
+	
+	
+	<select id="queryAllBlog" resultMap="mblogDtoMap" parameterClass="java.util.Map">
+		select
+		<include refid="followMblogColumn"/>
+		from mblog m
+		inner join mblog_info mi on mi.id=m.info_id
+		where 
+		m.is_delete = 0
+		and mi.is_delete= 0 
+		order by gmt_created desc
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryAllBlogCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select
+		count(0)	
+		from mblog m
+		inner join mblog_info mi on mi.id=m.info_id
+		where
+		m.is_delete = 0
+		and mi.is_delete= 0
+	</select>
+	
+	
+	<select id="queryCountBlogByTime" resultClass="java.lang.Integer" parameterClass="java.util.Map">
+		select
+		count(0)
+		from mblog
+		where 
+		is_delete = 0
+		and  gmt_created > #gmtCreated#  
+	</select>
+	
+	<select id="querymblogByTitle" parameterClass="java.util.Map" resultMap="mblogMap">
+		select
+		<include refid="defaultColumn"/>
+		from mblog
+		where
+		title=#title#
+		and is_delete = 0
+		order by gmt_created asc
+		limit 1
+	</select>
+	
+	<select id="querytopicbyInfo" parameterClass="java.util.Map" resultMap="mblogDtoMap">
+		select 
+		<include refid="defaultColumn"/>
+		from mblog 
+	    where
+		title=#title#
+		and is_delete = 0
+		order by gmt_created desc
+		limit #size#
+	</select>
+	
+	
+	<select id="querytopicCountByInfo" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from mblog 
+	    where
+		title=#title#
+		and is_delete = 0
+	</select>
+	
+	<select id="queryInfoBytopIcTitle"  parameterClass="java.util.Map" resultMap="simpleMblogMap">
+	 	select
+	 	distinct info_id
+	 	from mblog 
+	 	where
+	 	title=#title#
+	 	and is_delete = 0
+	 	order by gmt_created desc
+	 	limit #size#
+	</select>
+		
+	<update id="updateMblogIsDeleteStatus" parameterClass="java.util.Map">
+		update mblog
+		set
+		is_delete = #isDelete#
+		where
+		id=#id#
+	</update>
+	
+	<select id="queryPhotoCountByInfo" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select
+		count(0)
+		from mblog 
+	    where
+		photo_path is not null and photo_path!=''
+		and info_id = #infoId#
+		and is_delete = 0
+	</select>	
+</sqlMap>

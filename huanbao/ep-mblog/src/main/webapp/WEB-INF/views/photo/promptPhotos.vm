@@ -1,0 +1,289 @@
+#set($layout='/layout/promptLayout.vm')
+<div>
+	##左侧导航
+##	<section class="breadcrumb">
+##		<input type="button" class="btn btn-primary btn-large" value="本地上传" />
+##		<input type="button" class="btn btn-large" value="从相删选取" />
+##	</section>
+	
+	<section class="pd">
+		
+		<div class="well mt" id="uploadWell" style="float:left;width:400px;">
+			<div class="well-head">
+				相册：
+				<select id="albumCombox" >
+                    <option value="" >--请选择相册--</option>
+					<optgroup label="系统相册">
+						#foreach($album in $!{sysAlbum})
+						<option value="$!{album.photoAlbum.id}" #if($!{album.photoAlbum.id}=="$!{albumId}") selected #end>$!{album.photoAlbum.name}</option>
+						#end
+                    </optgroup>
+					<optgroup label="您的相册">
+						#foreach($album in $!{userAlbum})
+						<option value="$!{album.photoAlbum.id}" #if($!{album.photoAlbum.id}=="$!{albumId}") selected #end>$!{album.photoAlbum.name}</option>
+						#end
+                    </optgroup>
+                </select>
+				<strong ></strong>
+			</div>
+			<div class="well-content" id="photoListContent">
+			</div>
+		</div>
+
+		<div class="well mt" id="resultListWell" style="margin-left:8px;float:left;width:156px;">
+			<div class="well-head">
+				<strong>注意：</strong>
+				最多只能选取$!{max}张
+			</div>
+			<div class="well-content clearfix" id="photoSelectedContent" style="overflow-y:scroll; height: 270px">
+			</div>
+		</div>
+	</section>
+	
+	<div class="mt breadcrumb stick" style="width:100%;">
+		<input type="button" id="yesBtn" value="确定" class="btn btn-primary btn-large"/>
+	</div>
+	
+</div>
+
+<script type="text/javascript" src="$!{address.img}/lib/mustache.js/mustache.js"></script>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function(){
+	
+	jQuery("#yesBtn").click(function(){
+		#if($!{targetId} && $!{targetId} > 0)
+			//update targetId
+			for(var key in uploadedFile){
+				jQuery.ajax({
+        			url:"#springUrl('/photo/updateTargetId.htm')",
+        			data:{"id":key, "targetId":"$!{targetId}","targetType":"$!{targetType}"},
+        			dataType:"json",
+        			success:function(output){
+						
+        			}
+        		});
+			}
+		#end
+		window.parent.Asto.util.Callback.submit("true", uploadedFile);
+	});
+	
+	// TODO init photos
+	var rowTmpl=["<div class='clearfix' >",
+		"{{#records}}",
+		"<div class='upload-wrap'>",
+		'<img src="$!{address.resource}{{path}}" width="100" height="100" photo-id="{{id}}" photo-path="{{path}}" />',
+##		'<img src="https://www.google.com/images/srpr/logo3w.png" width="100" height="100" photo-id="{{id}}" photo-path="{{path}}" />',
+##		"<br />",
+##		"<input type='checkbox' value='{{id}}' id='{{id}}' path='{{path}}'/>{{id}}",
+		,"</div>",
+		"{{/records}}",
+		"{{^records}}",
+		"<div class='alert alert-error' >没有图片</div>",
+		"{{/records}}",
+		"</div>"];
+		
+	var imgDisplayTmpl=[
+		"<div class='upload-wrap'>",
+		'<img src="$!{address.resource}{{path}}" width="100" height="100" />',
+##		'<img src="https://www.google.com/images/srpr/logo3w.png" width="100" height="100" />',
+		"<br />",
+		"<input type='button' class='btn btn-mini' value='移除' onclick='deleteUploadedPhoto(this, {{id}})' />",
+		"</div>"
+	];
+	
+	var grid = new PhotoGrid({
+		url:"#springUrl('/photo/queryPhotos.htm')",
+		data:{"targetId":"$!{targetId}", "albumId":"$!{albumId}", "queryTarget":"$!{queryTarget}"},
+		sm:{onSelect:function(){
+			// eliminate duplicates
+			var _id=jQuery(this).attr("photo-id");
+			for(var key in uploadedFile){
+				if(parseInt(key) == parseInt(_id)){
+					return false;
+				}
+			}
+			
+			// limit the number of selected photos
+			if(uploadedNum >= parseInt("$!{max}")){
+				alert("您最多只能选择$!{max}个文件，已选择了"+uploadedNum+"个，请重新选择！");
+				return false;
+			}
+			
+			var model = {
+				id: _id, 
+				path:jQuery(this).attr("photo-path")
+			};
+			jQuery("#photoSelectedContent").append(Mustache.render(imgDisplayTmpl.join(""), model));
+			
+			uploadedFile[_id]=jQuery(this).attr("photo-path");
+			uploadedNum++;
+			
+		}},
+		appendTo:"#photoListContent",
+		tmpl:rowTmpl.join("")
+	});
+	
+	grid.load();
+	
+	// reload data when album change
+	jQuery("#albumCombox").change(function(){
+	
+		// change data only which changed
+		// reset pagnation params
+		
+		grid.data["albumId"]=jQuery(this).val();
+		grid.load({start:0});
+		
+	});
+	
+});
+
+var uploadedFile = {};
+var uploadedNum=0;
+
+function deleteUploadedPhoto(node,id){
+
+	jQuery(node).parent().fadeOut();
+	
+	if(id!=null){
+		
+		delete uploadedFile[id];
+		
+		if(uploadedNum>0){
+			uploadedNum--;
+		}
+		
+		//alert(uploadedNum)
+		
+##		//if targetId > 0 do delete action, substantially update targetId
+##		jQuery.ajax({
+##			url:"#springUrl('/photo/.htm')",
+##			data:{"id":id},
+##			dataType:"json",
+##			success:function(output){
+##			}
+##		});
+	}
+
+}
+
+var PhotoGrid = function (config){
+	config = config||{};
+
+	this.sm = config.sm||{};
+	this.tmpl = config.tmpl||"";
+	this.pageTmpl = config.pageTmpl||"";
+	this.url = config.url||"";
+	this.appendTo = config.appendTo||"body";
+	this.data = config.data||{};
+	var _this = this;
+	
+	// load or reload data
+	this.load = function(c){
+		// load data from data proxy
+		// if c change param
+		// merge send data and page parameters
+		c=c||{};
+		
+		_this.data["start"]=c.start||0;
+		_this.data["limit"]=c.limit||6;
+		
+		jQuery.ajax({
+			//type : "post",
+			url:_this.url,
+			data:_this.data,
+			dataType:"json",
+			success:function(resp){
+				jQuery(_this.appendTo).empty();
+				
+				jQuery(_this.appendTo).append( Mustache.render(_this.tmpl, resp) );
+				
+				jQuery(_this.appendTo+" img").click(_this.sm.onSelect);
+					
+				var page=_this.caculatePage(resp);
+				
+				jQuery(_this.appendTo).append( Mustache.render( _this.renderPageTmpl(), page) );
+				_this.bindPageEvent(page);
+			}
+		});
+	}
+	
+	this.disSelect=function(id){
+		
+	}
+	
+	this.caculatePage = function(pages){
+	
+		var totalPage = Math.ceil(pages.totals/pages.limit);
+		var currentPage = Math.ceil(pages.start/pages.limit) + 1;
+		
+		var pageArr = new Array();
+		var nav=[-3,-2,-1,0,1,2,3];
+		
+		for(var i=0; i<nav.length; i++){
+			if((currentPage + nav[i])>0 && totalPage >= (currentPage + nav[i])){
+				var start =  (currentPage + nav[i] -1) * pages.limit;
+				var o={num: (currentPage + nav[i]), start: start, active:false};
+				if(pages.start == start){
+					o.active=true;
+				}
+				pageArr.push(o);
+			}
+		}
+		
+		return {
+			"pages": pageArr,
+			"maxStart":(totalPage-1)*pages.limit 
+			};
+	}
+	
+	this.bindPageEvent = function(pages){
+		jQuery("#page-first").click(function(){
+			_this.load({start:0});
+		});
+		jQuery("#page-end").click(function(){
+			_this.load({start:pages.maxStart})
+		});
+		// console.log(pages.pages[0]["num"]);
+		
+		for(var i=0; i<pages.pages.length; i++){
+			if(pages.pages[i]["active"]){
+				continue ;
+			}
+			jQuery("#page-"+pages.pages[i]["num"]).attr("start", pages.pages[i]["start"]);
+			
+			jQuery("#page-"+pages.pages[i]["num"]).click(function(){
+    			_this.load({"start":jQuery(this).attr("start")});
+    		});
+			
+		}
+	}
+	
+	this.test=function(){
+		var a=[-5,-4,-3,-2,-1,0,1,2,3]
+		for( var i in a){
+			alert(a[i])
+		}
+	}
+
+	this.renderPageTmpl=function(){
+		if(_this.pageTmpl==""){
+    		return ['<div class="pagination pagination-centered mt" >',
+    			"<ul>",
+                "<li ><a href='javascript:void(0);' id='page-first'>首页</a></li>",
+    			"{{#pages}}",
+                "<li {{#active}} class='active' {{/active}}><a href='javascript:void(0);' id='page-{{num}}'>{{num}}</a></li>",
+    			"{{/pages}}",
+                "<li><a href='javascript:void(0);' id='page-end'>末页</a></li>",
+    			"</ul>",
+    			"</div>"].join("");
+		}
+		return _this.pageTmpl;
+	}
+	
+}
+
+</script>
+

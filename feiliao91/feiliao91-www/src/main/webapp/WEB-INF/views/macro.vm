@@ -1,0 +1,71 @@
+#**
+ * springUrl
+ *
+ * Takes a relative URL and makes it absolute from the server root by
+ * adding the context root for the web application.
+ *#
+#macro( springUrl $relativeUrl )$springMacroRequestContext.getContextPath()${relativeUrl}#end
+
+#macro(printTitle $word $maxSize $prefix)#set($word=$word.trim())#if($word.length() >$maxSize)$word.substring(0, $maxSize)$prefix#else$word#end#end
+
+#macro(compInfoPageNav $pageContext $url $suffixUrl $template)
+	#set($totalPage=((${pageContext.totalRecords} - 1)/${pageContext.pageSize})+1)
+	#set($currentPage=(${pageContext.startIndex}/${pageContext.pageSize})+1)
+	<div class="page-num">
+		#set($startIndex=${pageContext.startIndex} - ${pageContext.pageSize})
+		#if(0 >= $startIndex)
+			#set($startIndex = 0)
+		#end
+		<a href='$!{url}?startIndex=$!startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">&lt;</span></a>
+    	#foreach($jj in [-6..4])
+    		#if(($currentPage+$jj)>=0 && $totalPage > ($currentPage+$jj))
+    			#set($startIndex = ($currentPage + $jj)*${pageContext.pageSize} )
+    			#set($nowPage = $currentPage + $jj + 1)
+    			#if($startIndex == ${pageContext.startIndex})
+    				<a href="javascript:void(0)"><span class="page-do this-page">$nowPage</span></a></li>
+    			#else
+    				<a href='$!{url}?startIndex=$startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">$nowPage</span></a>
+    			#end
+    		#end
+    	#end
+    	#set($startIndex=${pageContext.startIndex} + ${pageContext.pageSize})
+    	#if($startIndex > ${pageContext.totalRecords})
+    		#set($startIndex=(${totalPage} - 1)*${pageContext.pageSize})
+    	#end
+		<a href='$!{url}?startIndex=$!startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">&gt;</span></a>
+	</div>
+#end
+
+#macro(listPageNav $pageContext $url $suffixUrl $template)
+	#set($totalPage=((${pageContext.totalRecords} - 1)/${pageContext.pageSize})+1)
+	#set($currentPage=(${pageContext.startIndex}/${pageContext.pageSize})+1)
+	<div class="page-num">
+		#set($startIndex=${pageContext.startIndex} - ${pageContext.pageSize})
+		#if(0 >= $startIndex)
+			#set($startIndex = 0)
+		#end
+		<a href='$!{url}?startIndex=$!startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">&lt;</span></a>
+    	#foreach($jj in [-6..4])
+    		#if(($currentPage+$jj)>=0 && $totalPage > ($currentPage+$jj))
+    			#set($startIndex = ($currentPage + $jj)*${pageContext.pageSize} )
+    			#set($nowPage = $currentPage + $jj + 1)
+    			#if($startIndex == ${pageContext.startIndex})
+    				<a href="javascript:void(0)"><span class="page-do this-page">$nowPage</span></a>
+    			#else
+    				<a href='$!{url}?startIndex=$startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">$nowPage</span></a>
+    			#end
+    		#end
+    	#end
+    	#set($startIndex=${pageContext.startIndex} + ${pageContext.pageSize})
+    	#if($startIndex > ${pageContext.totalRecords})
+    		#set($startIndex=(${totalPage} - 1)*${pageContext.pageSize})
+    	#end
+		<a href='$!{url}?startIndex=$!startIndex&pageSize=$!{pageContext.pageSize}&$!{suffixUrl}' ><span class="page-do">&gt;</span></a>
+		<span class="page-ts">共$totalPage页&nbsp;&nbsp;&nbsp;到</span>
+		<input class="page-into" />
+		<span class="page-ts">页</span>
+		<span class="goto-page">确定</span>
+	</div>
+#end
+
+#macro(printFragmentDate $format $d)#if($d!="null")$!date.format("$format",${d.time})#end#end

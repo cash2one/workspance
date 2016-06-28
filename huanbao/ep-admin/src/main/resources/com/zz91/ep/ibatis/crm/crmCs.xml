@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCs">
+	<typeAlias alias="crmCs" type="com.zz91.ep.domain.crm.CrmCs" />
+	
+	<resultMap id="crmCsResult" class="crmCs">
+		<result property="id" column="id" />
+		<result property="csAccount" column="cs_account"/>
+		<result property="cid" column="cid"/>
+		<result property="gmtVisit" column="gmt_visit"/>
+		<result property="gmtNextVisitPhone" column="gmt_next_visit_phone"/>
+		<result property="gmtNextVisitEmail" column="gmt_next_visit_email"/>
+		<result property="visitTarget" column="visit_target"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<sql id="fullColumn">
+		cc.id,
+		cc.cs_account,
+		cc.cid,
+		cc.gmt_visit,
+		cc.gmt_next_visit_phone,
+		cc.gmt_next_visit_email,
+		cc.visit_target,
+		cc.gmt_created,
+		cc.gmt_modified
+	</sql>
+	
+	<select id="queryCsOfCompany" parameterClass="java.lang.Integer" resultMap="crmCsResult">
+		select <include refid="crmCs.fullColumn"/>
+		from crm_cs cc
+		where cc.cid=#companyId#
+	</select>
+</sqlMap>

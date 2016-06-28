@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.crm.cs.analysis.log</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/trust/crm/analysis.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/trust/crm/log.js" ></script>
+	
+##	<script type="text/javascript" src="$!{address.js}/trust/buylog.js" ></script>
+##	<script type="text/javascript" src="$!{address.js}/trust/companylog.js" ></script>
+	
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		#if($!{trustMap})
+			ast.ast1949.trust.analysis.CSMAP=$!{trustMap};
+		#end
+
+		var grid=new ast.ast1949.trust.analysis.Grid({
+			id:"analysisTrustGrid",
+			region:"center"
+		});
+		
+##		var logGrid = new ast.ast1949.trust.CompanyLogGrid({
+##			title:"小记情况",
+##			buyId:0,
+##			companyId:$!{companyId},
+##			id:"loggrid",
+##			layout:"fit",
+##			columnWidth:1,
+##			height:400,
+##			region:"center",
+##			collapsible:true,
+##			titleCollapse:true
+##		});
+##		
+##		var logBuyGrid = new ast.ast1949.trust.LogGrid({
+##			title:"小记情况",
+##			buyId:0,
+##			companyId:$!{companyId},
+##			id:"logbuygrid",
+##			layout:"fit",
+##			columnWidth:1,
+##			height:400,
+##			region:"center",
+##			collapsible:true,
+##			titleCollapse:true
+##		});
+		
+
+		## 获取小记 检索条件
+		grid.on("cellclick",function(grid,rowIndex,columnIndex,e){
+			var record = grid.getStore().getAt(rowIndex);
+			var csAccount = record.get("account");
+			var fieldName = grid.getColumnModel().getDataIndex(columnIndex);
+			var flag;
+			if(fieldName.indexOf("B")>0){
+				flag = "B"
+			}
+			if(fieldName.indexOf("C")>0){
+				flag = "C"
+			}
+			var star;
+			if(columnIndex==2||columnIndex==3){
+				star = 5
+			}
+			if(columnIndex==4||columnIndex==5){
+				star = 4
+			}
+			if(columnIndex==6||columnIndex==7){
+				star = 3
+			}
+			if(columnIndex==8||columnIndex==9){
+				star = 2
+			}
+			if(columnIndex==10||columnIndex==11){
+				star = 1
+			}
+			var B=csLogGrid.getStore().baseParams;
+			B["trustAccount"]=csAccount;
+			B["star"]=star;
+			B["flag"]=flag;
+			var targetFrom=Ext.getCmp("targetFrom").getValue();
+			var targetTo=Ext.getCmp("targetTo").getValue();
+			if(targetFrom!="" && targetTo!=""){
+				B["from"]=targetFrom;
+				B["to"]=targetTo;
+			}else{
+				B["from"]="$!{from}";
+				B["to"]="$!{to}";
+			}
+			csLogGrid.getStore().baseParames=B;
+			csLogGrid.getStore().load();
+		});
+		
+		
+		var csLogGrid= new ast.ast1949.crm.cslog.LogGrid({
+			height:300,
+			id:"csLog",
+			region:"south"
+		});
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[grid,csLogGrid]
+		});
+		
+		grid.initDate("$!{from}", "$!{to}","$!{account}");
+		
+	});
+</script>
+</head>
+
+<body>
+</body>
+</html>

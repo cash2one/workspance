@@ -1,0 +1,280 @@
+#set($layout='/layout/blank.vm')
+<!DOCTYPE html>
+<head>
+<title>中国环保网--www.huanbao.com--图片上传</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="图片上传窗口" />
+<meta name="description" content="图片上传窗口" />
+<link rel="stylesheet" href="$!{address.img}/huanbao/css/hb.upload.css">
+<!--[if lt IE 9]>
+	<script type="text/javascript" src="$!{address.img}/huanbao/js/global/html5forIE.js"></script>
+<![endif]-->
+<script src="$!{address.img}/huanbao/js/jquery/jquery-1.6.4.min.js"></script>
+
+</head>
+<body>
+<div class="inpicbody">
+<div class="inpicclass">
+        <ul>
+            <li class="inpicclasstit">选择您要添加图片的来源</li>
+            <li class="inpicssbj" id="ltb_1" onclick="HoverLil(1);reloadPhotos(0)">图片管家</li>
+            <li class="inpicssbjs"></li>
+          <li class="inpicssbjn" id="ltb_2" onclick="HoverLil(2);">上传图片</li>
+        </ul>
+    </div><!--inpicclass-->
+  <div id="ltbc_2" class="inpicdis">
+    <div class="inpicmge">如果您不希望上传的图片在相册中公开展示，建议将图片上传到不公开相册中</div>
+      <div style="height:110px;">
+          <div class="inpicinfo">
+                <table align="center">
+                <tr>
+                <td>选择相册：</td>
+                <td><select id = "albumId" name="albumId" class="inpicselect" >
+					
+					#if("$!{photoType}" == "company")
+						<option value="-1">公司相册</option>
+					#end
+					#if("$!{photoType}" == "supply")
+						<option value="-2">产品相册</option>
+					#end
+					#foreach($album in $!{albums})
+						<option value="$!{album.photoAlbum.id}" >$!{album.photoAlbum.name}</option>
+					#end
+                </select></td>
+                </tr>
+                <tr>
+                <td>上传图片：</td>
+                <td>
+					<div class="inpicupdbtn">
+						<form id="uploadForm" action="#springUrl('/photo/doUploadPhoto.htm')" enctype="multipart/form-data" method="post" target="uploadActionForm" onsubmit="return upload()">
+    						<input name="uploadfile" type="file" class="upload_btn" value="上传图片" onchange="submitFile()"/>
+							<input name="targetType" type="hidden" value="$!{photoType}" />
+							<input name="albumId" type="hidden" value="" id = "id"/>
+    						<iframe id="uploadActionForm" name="uploadActionForm" style="display:none"></iframe>
+						</form>
+					</div></td>
+                </tr>
+				
+                <tr>
+                <td>&nbsp;</td>
+                <td id="uploadMsg" style="color:#E04F00;">&nbsp;</td>
+                </tr>
+                </table>
+       </div>
+   </div>
+   <div class="inpicprompt">提示：您可以上传4张图片，选择的图片单张大小不超过5MB，支持jpg,jpeg,gif,bmp,png </div><!--inpicprompt-->
+  </div>
+  <div id="ltbc_1" class="inpicundis">
+      <div class="inpicmysel">
+                <select class="inpicselect" id = "imId" onchange="reloadPhotos(0)" >
+					#if("$!{photoType}" == "company")
+						<option value="-1">公司相册</option>
+					#end
+					#if("$!{photoType}" == "supply")
+						<option value="-2">产品相册</option>
+					#end
+					#foreach($album in $!{albums})
+						<option value="$!{album.photoAlbum.id}" >$!{album.photoAlbum.name}</option>
+					#end
+                </select>&nbsp;&nbsp;请从您的图片管家中点击选择插入或者删除图片（点击图片默认选择插入）
+      </div>
+      <div>
+		  <div id="imagesDiv0" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv1" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv2" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv3" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv4" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv5" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv6" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv7" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv8" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv9" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv10" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv11" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv12" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv13" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv14" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv15" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv16" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv17" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv18" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div id="imagesDiv19" class="inpicmylist" onmouseover="this.className='inpicmylists'" onmouseout="this.className='inpicmylist'"></div>
+          <div style="clear:both;"></div>
+      </div>
+      <div id="pageDiv" style="height:38px; line-height:38px; text-align:right;">
+		<a href="#" class="inpicpage">上一页</a>
+		<a href="#" class="inpicpages">1</a>
+		<a href="#" class="inpicpage">2</a>
+		<a href="#" class="inpicpage">下一页</a>
+		&nbsp;&nbsp;共40张
+	  </div>
+  </div>
+  <div class="inpicwant"><span>可通过点击图片删除选择</span>要插入的图片</div>
+    <div class="inpiclist">
+        <ul>
+			#foreach($item in [1..$!maxInsert])
+				<li>
+					<img id="insertImage$!{item}" onclick="removePhoto($!{item})" src="$!{address.img}/huanbao/images/upload/$!{item}.jpg" width="90" height="90" />
+					<input id="insertImageId$!{item}" name="imageId" type="hidden" value="" />
+					<input id="insertImagePath$!{item}" name="imagePath" type="hidden" value="" />
+				</li>
+			#end
+        </ul>
+    </div>
+    <div class="inpicbtn"><img onclick="endSelect();" src="$!{address.img}/huanbao/images/upload/btn_09.jpg" width="61" height="25" /></div>
+</div>
+<script type="text/javascript" language="javascript">
+	jQuery(document).ready(function() {
+		#foreach($!{photo} in $!{photos})
+			insertPhoto($!{photo.id},'$!{photo.path}');
+		#end
+	});
+    function g(o) {
+		return document.getElementById(o);
+    }
+    function HoverLil(n) {
+        for(var i=1;i<3;i++) {
+            g('ltb_'+i).className='inpicssbj';
+            g('ltbc_'+i).className='inpicundis';
+        }
+        g('ltbc_'+n).className='inpicdis';
+        g('ltb_'+n).className='inpicssbjn';
+    }
+	function reloadPhotos(start) {
+		for(var i=0;i<20;i++) {
+           jQuery("#imagesDiv"+i).html("");
+        }
+		
+		var albumId = jQuery("#imId").val();
+
+		jQuery.ajax({
+            url:"#springUrl('/photo/getPhotos.htm')?albumId="+albumId+"&start="+start,
+            type:"get",
+            cache:false,
+            dataType:"json",
+            success:function(req){
+                jQuery(req).each(function(idx,e){
+					var totalPage = Math.ceil(e.page.totals/e.page.limit);
+					var currentPage = Math.ceil(e.page.start/e.page.limit);
+					if(e.page.start == 0) {
+						currentPage = 1;
+					} else {
+						currentPage++;
+					}
+					jQuery(e.page.records).each(function(idx,e){
+						jQuery("#imagesDiv"+idx).html("<div class='inpicmylistimg'><img src='$!{address.thumb}$!{address.resource}"+e.path
+						+"&width=70&height=70' onclick='insertPhoto("+e.id+",\""+e.path+"\");' width='70' height='70'/></div><div class='inpicdel'><img src='$!{address.img}/huanbao/images/upload/del.gif' onclick='deletePhoto("+e.id+",\""+e.path+"\");' /></div>");
+					});
+					buildPageDIv(totalPage,currentPage,e.page.totals);
+                });
+            },
+            error:function(e){
+            }
+        });
+	}
+	
+	function deletePhoto(id,path) {
+        jQuery.ajax({
+	        url:'#springUrl('/photo/deletePhoto.htm')',
+	        data:{"id":id,"path":path},
+	        cache:false,
+	        dataType:"json",
+	        type:"post",
+	        success:function(req){
+	                if(req.success){
+						var start = jQuery(".inpicpages").html();
+	                    reloadPhotos((start-1)*20);
+	                }
+	            },
+	        failure:function(){
+
+	        }
+       });
+	}
+	
+	function buildPageDIv(totals,current,count) {
+		var htmlString = "";
+		if(current==1) {
+			htmlString = htmlString + "<a class='inpicpage'>上一页</a>";
+		} else {
+			htmlString = htmlString + "<a href='javascript:reloadPhotos("+((current-2)*20)+")' class='inpicpage'>上一页</a>";
+		}
+		for(var i = 1; i <= totals; i++) {
+			if(current==i) {
+				htmlString = htmlString + "<a class='inpicpages'>"+i+"</a>";
+			} else {
+				htmlString = htmlString + "<a href='javascript:reloadPhotos("+((i-1)*20)+")' class='inpicpage'>"+i+"</a>";
+			}
+		}
+		if(current == totals) {
+			htmlString = htmlString + "<a class='inpicpage'>下一页</a>";
+		} else {
+			htmlString = htmlString + "<a href='javascript:reloadPhotos("+((current)*20)+")' class='inpicpage'>下一页</a>";
+		}
+		htmlString = htmlString + "&nbsp;&nbsp;共"+count+"张";
+		jQuery("#pageDiv").html(htmlString);
+	}
+	
+	function insertPhoto(imgeId,path) {
+		var isEnableInsert = true;
+		jQuery.each(jQuery("input[name=imageId]"),function(idx,e){
+			if(e.value == imgeId){
+				isEnableInsert = false;
+				return;
+			}
+		});
+		if(isEnableInsert){
+    		for(var i = 1; i <= $!{maxInsert}; i++) {
+    			if(jQuery("#insertImageId"+i).val() == "" || i == $!{maxInsert}) {
+    				jQuery("#insertImage"+i).attr("src","$!{address.thumb}$!{address.resource}"+path+"&width=90&height=90");
+    				jQuery("#insertImageId"+i).val(imgeId);
+    				jQuery("#insertImagePath"+i).val(path);
+    				return;
+    			}
+    		}
+		}
+	}
+	
+	function removePhoto(imgeId) {
+		jQuery("#insertImage"+imgeId).attr("src","$!{address.img}/huanbao/images/upload/"+imgeId+".jpg");
+		jQuery("#insertImageId"+imgeId).val("");
+		jQuery("#insertImagePath"+imgeId).val("");
+	}
+
+    function submitFile(){
+		var albumId = jQuery("#albumId").val();
+		jQuery("#id").attr("value",albumId);
+		jQuery("#uploadForm").submit();
+    }
+	
+	var uploadCallback=null;
+	function upload(){
+		uploadCallback=function(success, data){
+		     if(success) {
+			 	jQuery("#uploadMsg").html("上传成功！");
+			 	var dataobj=eval("("+data+")");
+				insertPhoto(dataobj.id,dataobj.path);
+		     } else {
+			 	jQuery("#uploadMsg").html(data);
+			 }
+		};
+		return true;
+	}
+	function endSelect(){
+		var photoCover = new Array;
+		jQuery.each(jQuery("input[name=imagePath]"),function(idx,e){
+			if(e.value != ""){
+				photoCover.push(e.value);
+			}
+		});
+		var a=new Array();
+		jQuery.each(jQuery("input[name=imageId]"),function(idx,e){
+			if(e.value != ""){
+				a.push(e.value);
+			}
+		});
+		window.parent.Asto.util.Callback.submit(photoCover.join(","),a.join(","));
+	}
+</script>
+</body>
+</html>

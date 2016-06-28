@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisPpcLog">
+
+	<typeAlias alias="analysisPpcLog" type="com.ast.ast1949.domain.analysis.AnalysisPpcLog" />
+	
+	<resultMap id="analysisPpcLogResult" class="analysisPpcLog">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="pv" column="pv" />
+		<result property="uv" column="uv" />
+		<result property="gmtTarget" column="gmt_target" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<resultMap id="someAnalysisPpcLogResult" class="analysisPpcLog">
+		<result property="pv" column="pv" />
+		<result property="uv" column="uv" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,
+		cid,
+		pv,
+		uv,
+		gmt_target,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<select id="queryByCid" resultMap="analysisPpcLogResult">
+		select 
+		<include refid="fullColumn"/>
+		from analysis_ppc_log
+		where cid=#cid#
+	</select>
+
+	<select id="queryAllPvByCid" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select 
+		sum(pv)
+		from analysis_ppc_log
+		where cid=#cid#
+	</select>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="analysisPpcLog.cid">
+				cid = #analysisPpcLog.cid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="analysisPpcLog.from">
+			  gmt_target >= #analysisPpcLog.from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="analysisPpcLog.to">
+			  #analysisPpcLog.to# >= gmt_target 
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="someAnalysisPpcLogResult">
+		select
+		sum(pv) as pv,sum(uv) as uv 
+		from analysis_ppc_log
+		<include refid="whereClause" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select 
+		count(0)
+		from analysis_ppc_log
+		<include refid="whereClause" />
+	</select>
+	<!--统计一段时间内的流量-->
+	<select id="sumPvByTimeACid" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(pv)
+		from analysis_ppc_log
+		<include refid="whereClause" />
+	</select>
+</sqlMap>

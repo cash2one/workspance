@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="sample_account">
+	<resultMap id="sampleAccountResult" class="com.ast.ast1949.domain.sample.Account">
+		<result column="id" property="id"  />
+		<result column="company_id" property="companyId"  />
+		<result column="amount" property="amount"  />
+		<result column="aplipay_acc" property="aplipayAcc" />
+		<result column="tenpay_acc" property="tenpayAcc" />
+		<result column="state" property="state" />
+		<result column="gmt_created" property="createTime"  />
+		<result column="gmt_modified" property="lastupdateTime"/>
+		<result column="check_value" property="checkValue" />
+		<result column="cancel_time" property="cancelTime"  />
+		<result column="pay_passwd" property="payPasswd" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		s.id, s.company_id, s.amount, s.aplipay_acc, s.tenpay_acc, s.state,
+		s.gmt_created, s.gmt_modified,s.check_value, s.cancel_time,
+		s.pay_passwd
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="sampleAccountResult"
+		parameterClass="com.ast.ast1949.domain.sample.Account">
+		select id, company_id, amount, aplipay_acc, tenpay_acc, state, gmt_created,
+		gmt_modified,
+		check_value, cancel_time, pay_passwd
+		from sample_account
+		where id = #id#
+	</select>
+
+	<select id="selectByCompanyId" parameterClass="java.lang.Integer"
+		resultMap="sampleAccountResult">
+		select id, company_id, amount, aplipay_acc, tenpay_acc, state, gmt_created,
+		gmt_modified,
+		check_value, cancel_time, pay_passwd
+		from sample_account
+		where company_id = #companyId#
+	</select>
+
+
+	<delete id="deleteByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Account">
+		delete from sample_account
+		where id = #id#
+	</delete>
+	
+	<insert id="insert" parameterClass="com.ast.ast1949.domain.sample.Account">
+		insert into sample_account (id, company_id, amount, aplipay_acc,
+		tenpay_acc, state, gmt_created,
+		gmt_modified, check_value, cancel_time, pay_passwd)
+		values (#id#, #companyId#, #amount#,
+		#aplipayAcc#,
+		#tenpayAcc#, #state#, #createTime#, #lastupdateTime#,
+		#checkValue#, #cancelTime#, #payPasswd#)
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterClass="com.ast.ast1949.domain.sample.Account">
+		update sample_account
+		set company_id = #companyId#,
+		amount = #amount#,
+		aplipay_acc = #aplipayAcc#,
+		tenpay_acc = #tenpayAcc#,
+		state = #state#,
+		gmt_created = #createTime#,
+		gmt_modified = #lastupdateTime#,
+		check_value = #checkValue#,
+		cancel_time = #cancelTime#,
+		pay_passwd = #payPasswd#
+		where id = #id#
+	</update>
+	
+	<update id="updateByPrimaryKeySelective"
+		parameterClass="com.ast.ast1949.domain.sample.Account">
+		update sample_account
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="companyId">
+				company_id = #companyId#
+			</isNotNull>
+			<isNotNull prepend="," property="amount">
+				amount = #amount#
+			</isNotNull>
+			<isNotNull prepend="," property="aplipayAcc">
+				aplipay_acc = #aplipayAcc#
+			</isNotNull>
+			<isNotNull prepend="," property="tenpayAcc">
+				tenpay_acc = #tenpayAcc#
+			</isNotNull>
+			<isNotNull prepend="," property="state">
+				state = #state#
+			</isNotNull>
+			<isNotNull prepend="," property="createTime">
+				gmt_created = #createTime#
+			</isNotNull>
+			<isNotNull prepend="," property="lastupdateTime">
+				gmt_modified = #lastupdateTime#
+			</isNotNull>
+			<isNotNull prepend="," property="checkValue">
+				check_value = #checkValue#
+			</isNotNull>
+			<isNotNull prepend="," property="cancelTime">
+				cancel_time = #cancelTime#
+			</isNotNull>
+			<isNotNull prepend="," property="payPasswd">
+				pay_passwd = #payPasswd#
+			</isNotNull>
+		</dynamic>
+		where id = #id#
+	</update>
+
+	<sql id="defaultColumn2">
+		s.id, s.company_id, s.amount, s.aplipay_acc, s.tenpay_acc, s.state,
+		s.gmt_created, s.gmt_modified,s.check_value, s.cancel_time,
+		s.pay_passwd, c.name c_name
+	</sql>
+
+	<resultMap id="AccountResult2" class="com.ast.ast1949.domain.sample.Account">
+		<result column="id" property="id"  />
+		<result column="company_id" property="companyId"  />
+		<result column="amount" property="amount"  />
+		<result column="aplipay_acc" property="aplipayAcc" />
+		<result column="tenpay_acc" property="tenpayAcc" />
+		<result column="state" property="state" />
+		<result column="gmt_created" property="createTime"  />
+		<result column="gmt_modified" property="lastupdateTime"
+			 />
+		<result column="check_value" property="checkValue" />
+		<result column="cancel_time" property="cancelTime"  />
+		<result column="pay_passwd" property="payPasswd" />
+		<result property="companyName" column="c_name" />
+	</resultMap>
+
+	<sql id="dynamicSearch">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and " property="companyName">
+				exists( select id from company where s.company_id = id and name = #companyName# )
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="account">
+				exists( select id from company_account where s.company_id = company_id and account = #account# )
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="companyId">
+				s.company_id = #companyId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="from">
+				s.gmt_created >= #from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="to">
+				#to# > s.gmt_created
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+
+	<!-- queryListByFilter start -->
+	<select id="queryListByFilter" parameterClass="java.util.Map"
+		resultMap="sampleAccountResult">
+		select
+		<include refid="defaultColumn" />
+		from sample_account s
+		<include refid="dynamicSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListByFilterCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from sample_account s
+		<include refid="dynamicSearch" />
+	</select>
+	<!-- queryListByFilter end -->
+
+</sqlMap>

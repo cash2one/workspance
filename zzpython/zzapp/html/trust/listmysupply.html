@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="format-detection"  content="telephone=no">
+    <title>我的供货-zz91再生网</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" type="text/css" href="../../css/mui.min.css">
+	<script type="text/javascript" charset="utf-8" src="../../js/mui.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/zepto.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/laytpl.js"></script>
+	<script type="text/javascript" charset="utf-8" src="../../js/laytpl/common.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../../js/laytpl/DBapi.js"></script>
+	<link href="../../media/trust/css/caigou.m.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav" id="apptop">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" onclick="closewindow()"></a>
+		<a id="rightbutton" class="mui-icon mui-icon-close mui-pull-right" onclick="closewindow()"></a>
+		<h1 class="mui-title" id="apptopname">我的供货单</h1>
+	</header>
+    <div class="sel-search mui-content">
+        <form id="search-form"  method="get" style="display: block;" onsubmit="return tplsearch({'ptype':this.ptype.value})">
+            <div class="box-search" style="display: block!important;">
+                <select title="" class="srch-sel" name=ptype id="ptype">
+                	<option value="">全部</option>
+                    <option value="00">已报价</option>
+                    <option value="01">报价被采纳</option>
+                    <option value="99">报价被否决</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" gaevent="imt/search/submit"  id="search-submit">搜索</button>
+        </form>
+    </div>
+    <!--end sel-search-->
+    <h3 class="grey f12 ml12">共： <span class="black" id="listcountdiv">1</span>　条</h3>
+    <div class="wrap" style="margin-bottom: 50px;">
+    	<section class="supply-con">
+        	<ul class="supply-list" id="pagelist">
+            </ul> 
+        </section>
+    </div>
+</body>
+<script id="pageTpl" type="text/html">
+<li>
+	<div class="supply-box">
+    	<div class="supply-item">
+        	<p>
+            	<label>供货内容：</label>{{d.content}}
+            </p>
+            <p>
+            	<label>采购内容：</label>{{d.detail}}
+            </p>
+            <p class="supply-info">
+            	No.{{d.buy_no}}
+                <span class="fr">状态：<font class="red">{{d.status}}</font></span>
+            </p>
+            <p class="supply-info">
+            	跟进交易员：{{d.dealername}}&nbsp;<img src="http://www.zz91.com/zt/0629/images/icon_phone.png" />
+                <span class="fr">时间：{{d.gmt_modified}}</span>
+            </p>
+        </div>
+        <!--end supply-item-->
+    </div>
+</li>
+</script>
+<div class="page" style="line-height: 35px;margin: 0;margin-top: 20px;position:fixed;bottom:0px;z-index: 999;width: 100%; background-color: #f2f2f2;">
+	<ul>
+		<li class="page_prev" onclick='mypageup()'>上一页</li>
+		<li class="page_prev" id="pages">1</li>
+		<li class="page_next" onclick='mypagedown()'>下一页</li>
+    </ul>
+</div>
+<script>
+	mui.init({
+		swipeBack:true //启用右滑关闭功能
+	});
+	mui.plusReady(function() {
+		var self = plus.webview.currentWebview();
+		company_id = self.company_id;
+		loadcompanyid(company_id);
+	   	loadCommlisttplData("/trust/listmysupply.html","pageTpl","pagelist","")
+	});
+	function tplsearch(data){
+		loadCommlisttplData("/trust/listmysupply.html","pageTpl","pagelist","",data);
+		return false;
+	}
+	function mypageup(){
+		loadCommlisttplData("/trust/listmysupply.html","pageTpl","pagelist","pageup",{'ptype':ptype.value})
+	}
+	function mypagedown(){
+		loadCommlisttplData("/trust/listmysupply.html","pageTpl","pagelist","pagedown",{'ptype':ptype.value})
+	}
+</script>
+</body>
+</html>

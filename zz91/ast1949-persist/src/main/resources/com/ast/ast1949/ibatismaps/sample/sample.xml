@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="sample">
+
+	<typeAlias alias="sampleDO" type="com.ast.ast1949.domain.sample.Sample" />
+
+	<resultMap class="sampleDO" id="sampleResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="amount" column="amount" />
+		<result property="weight" column="weight" />
+		<result property="takePrice" column="take_price" />
+		<result property="sendPrice" column="send_price" />
+		<result property="areaCode" column="area_code" />
+		<result property="isDel" column="is_del" />
+		<result property="isCashDelivery" column="is_cashdelivery" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="unpassReason" column="unpass_reason" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		s.id,
+		s.company_id,
+		s.amount,
+		s.weight,
+		s.take_price,
+		s.send_price,
+		s.area_code,
+		s.is_del,
+		s.is_cashdelivery,
+		s.gmt_created,
+		s.gmt_modified,
+		s.unpass_reason
+	</sql>
+
+	<insert id="insert" parameterClass="sampleDO">
+		INSERT INTO sample
+		(
+		company_id,
+		amount,
+		weight,
+		take_price,
+		send_price,
+		area_code,
+		is_del,
+		is_cashdelivery,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#amount#,
+		#weight#,
+		#takePrice#,
+		#sendPrice#,
+		#areaCode#,
+		#isDel#,
+		#isCashDelivery#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="sampleDO">
+		update sample set
+		gmt_modified = now(),
+		unpass_reason =#unpassReason#
+		<isNotEmpty prepend="," property="amount">
+			amount = #amount#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="weight">
+			weight = #weight#
+		</isNotEmpty>
+		<isNotNull prepend="," property="takePrice">
+			take_price = #takePrice#
+		</isNotNull>
+		<isNotNull prepend="," property="sendPrice">
+			send_price = #sendPrice#
+		</isNotNull>
+		<isNotEmpty prepend="," property="areaCode">
+			area_code = #areaCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isCashDelivery">
+			is_cashdelivery = #isCashDelivery#
+		</isNotEmpty>
+		where id = #id# and company_id = #companyId#
+	</update>
+
+	<update id="updateDelStatus" parameterClass="java.util.Map">
+		update sample set
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="isDel">
+			is_del = #isDel#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+
+	<update id="updateSampleForUnpassReason" parameterClass="java.util.Map">
+		update
+		sample set
+		gmt_modified = now(),
+		unpass_reason = #unpassReason#
+		where id
+		= #id#
+	</update>
+
+	<select id="queryByProductId" parameterClass="java.lang.Integer"
+		resultMap="sampleResult">
+		select
+		<include refid="defaultColumn" />
+		from sample s
+		where exists(select id from sample_relate_product where
+		s.id = sample_id and product_id = #productId#)
+		limit 1
+	</select>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="sampleResult">
+		select
+		<include refid="defaultColumn" />
+		from sample s
+		where id = #value#
+		and is_del = '0'
+	</select>
+
+	<select id="countByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from sample s
+		where s.company_id = #value#
+		and s.is_del = 0 and
+		exists(select id from products where company_id =
+		s.company_id and check_status=1
+		and is_pause=0 and is_del=0)
+	</select>
+
+	<select id="queryListByCompanyId" parameterClass="java.util.Map"
+		resultMap="sampleResult">
+		select
+		<include refid="defaultColumn" />
+		from sample s
+		where is_del = 0
+		<isNotNull prepend="and " property="companyId">
+			company_id = #companyId#
+		</isNotNull>
+		limit #size#
+	</select>
+
+	<select id="countAmountByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from sample
+		where is_del = 0 and company_id
+		=#value#
+	</select>
+
+	<!-- <resultMap class="sampleDO" id="sampleResult2"> <result property="id" 
+		column="id" /> <result property="companyId" column="company_id" /> <result 
+		property="amount" column="amount" /> <result property="weight" column="weight" 
+		/> <result property="takePrice" column="take_price" /> <result property="sendPrice" 
+		column="send_price" /> <result property="areaCode" column="area_code" /> 
+		<result property="isDel" column="is_del" /> <result property="gmtCreated" 
+		column="gmt_created" /> <result property="gmtModified" column="gmt_modified" 
+		/> <result property="companyName" column="c_name" /> <result property="title" 
+		column="p_title" /> <result property="productId" column="p_id" /> </resultMap> -->
+
+
+	<!-- <sql id="defaultColumn2"> s.id, s.company_id, s.amount, s.weight, s.take_price, 
+		s.send_price, s.area_code, s.is_del, s.gmt_created, s.gmt_modified, c.name 
+		c_name, p.title p_title, p.id p_id </sql> -->
+
+	<sql id="dynamicSearch">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and " property="companyName">
+				exists(select id from company where name = #companyName# and s.company_id = id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="membershipCode">
+				exists(select id from company where membership_code = #membershipCode# and s.company_id = id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="isVip">
+				exists(select id from company where membership_code > '10051000' and s.company_id = id)
+			</isNotEmpty>
+
+			<isNotEmpty prepend="and " property="productsTypeCode">
+				exists(select id from products where products_type_code = #productsTypeCode# and srp.product_id = id)
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="title">
+				exists(select id from products where title = #title# and srp.product_id = id)
+			</isNotEmpty>
+			
+			<isNotNull prepend="and" property="productStatus">
+				exists(select id from products where check_status = #productStatus# and srp.product_id = id)
+			</isNotNull>
+
+			<isNotEmpty prepend="and " property="companyId">
+				s.company_id = #companyId:INTEGER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="from">
+				$dateType$ >= #from#
+			</isNotEmpty>
+			<isNotEmpty prepend="and " property="to">
+				#to# > $dateType$
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="checkStatus">
+				<isEqual property="checkStatus" compareValue="0">
+					s.is_del = 0
+				</isEqual>
+				<isEqual property="checkStatus" compareValue="1">
+					unpass_reason > "" and s.is_del =1
+				</isEqual>
+				<isEqual property="checkStatus" compareValue="2">
+					s.is_del =1
+				</isEqual>
+			</isNotEmpty>
+			
+			<isNotNull property="takePrice" prepend="and">
+				s.take_price = #takePrice#
+			</isNotNull>
+			
+		</dynamic>
+	</sql>
+
+	<!-- queryListByFilter start -->
+	<select id="queryListByFilter" parameterClass="java.util.Map" resultMap="sampleResult">
+		select
+		<include refid="defaultColumn" />
+		from sample s
+		left join sample_relate_product srp on s.id = srp.sample_id
+		<include refid="dynamicSearch" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryListByFilterCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from sample s
+		left join sample_relate_product srp on s.id = srp.sample_id
+		<include refid="dynamicSearch" />
+	</select>
+	<!-- queryListByFilter end -->
+
+</sqlMap>

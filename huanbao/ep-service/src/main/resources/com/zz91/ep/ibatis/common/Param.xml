@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="param">
+
+	<typeAlias alias="param" type="com.zz91.util.domain.Param" />
+
+	<resultMap class="param" id="fullResultMap">
+		<result property="id" column="id" />
+		<result property="types" column="types"/>
+		<result property="name" column="name"/>
+		<result property="key" column="key"/>
+		<result property="value" column="value" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		`id`,
+		`types`,
+		`name`,
+		`key`,
+		`value`
+	</sql>
+
+	<select id="queryUsefulParam" resultMap="fullResultMap">
+		select
+			<include refid="param.fullColumn"/>
+		from param
+		where isuse = 1;
+	</select>
+	
+	<select id="queryParamsByType"  resultMap="fullResultMap" parameterClass="java.lang.String">
+		select
+			<include refid="param.fullColumn"/>
+		from param
+		where types=#value#
+		order by sort asc
+	</select>
+	
+	<select id="queryParamByKey"  resultMap="fullResultMap" parameterClass="java.lang.String">
+		select
+			<include refid="param.fullColumn"/>
+		from param p 
+		where p.key=#value#
+	</select>
+	
+	<select id="queryNameByTypeAndValue" resultClass="java.lang.String" parameterClass="java.util.Map">
+		select name from param where types=#category# and value = #val#
+	</select>
+</sqlMap>

@@ -1,0 +1,143 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importJqueryui.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+<div class="wrapper mt clearfix">
+	<div class="zz91leader">当前位置：
+		<a href="$!{address.www}">$!{siteInfo.site_name}</a>
+		&gt;<a href="#springUrl('/')" >公司黄页</a>
+		#if($!{company.industryCode} &&$!{company.industryCode}!="")
+			&gt;<a href="#springUrl('/')index-b$!{company.industryCode}-c-p.htm"> $!{industryCodeList.get($!company.industryCode)}</a> 
+		#end
+		&gt;
+		#if($!{keywords} && $!{keywords}!="")
+			$!{keywords} 
+		#end
+		企业黄页
+	</div>
+	#parse("/company/vm_company/searchBar.vm")
+	<div id="businesscenter" class="wrapper mt clearfix">
+		<div class="left wrap cpy_list">
+			<div id="mid_box_title" class="wt">
+				<h3>公司库列表</h3>
+				<div class="cpy_select">
+					<span class="info">共有<span style="color:red;">$!{page.totalRecords}</span>家 #if($!{keywords}!="")关于<b>$!{keywords}</b>的#end 公司黄页</span>
+				</div>
+			</div>
+			#if($!{page.totalRecords}==0)
+				<div id="businesscenter_main" class="wc">
+					<div class="noresult">对不起，没有关于$!{keywords}的公司</div>
+				</div>
+			#else
+				<!--公司列表 S-->
+				#parse("/company/vm_company/CompanyList.vm")
+			<!--公司列表 E-->
+			#end
+		</div>
+    	<div class="right">
+    		<!--box_1 S-->
+    		#parse("/company/vm_company/RightBox_One.vm")
+			#cacheFragment("$!{address.fragment}/market/queryMarketAndCompany.htm?industry=$!{industry}&province=$!{province}&1" "" "" "")
+			#if($pageM.size()>0)
+			<!-- 产业带 -->
+			<div class="uldiv">
+				<div class="scrollcontainer">
+					<ul>
+						#foreach($li in $pageM)
+						<li>
+            				<div class="scr-img">
+								<a href="$!{address.market}/$!{li.words}/" target="_blank">
+									#if($!{li.pic.picAddress})
+										<img src="$!{address.resource}/$!{li.pic.picAddress}" width="249" height="112"/>
+									#else
+										<img src="http://img0.zz91.com/front/images/global/noimage.gif"/>
+									#end
+								</a>
+							</div>
+                			<div class="scr-info">
+                				<dl>
+                    				<dt><a href="$!{address.market}/$!{li.words}/" target="_blank">$!{li.name}</a></dt>
+									#foreach($ll in $!{mapn.get($li.words)})
+										<dd>
+											[$!{ll.address}]
+											#if($!{ll.company.membershipCode}=="10051000")
+												<a href="$!{address.company}/compinfo$!{ll.company.id}.htm" target="_blank" title="$!{ll.company.name}">$!{ll.company.name}</a>
+											#elseif($!{ll.company.membershipCode}=="10051003")
+												<a href="$!{address.www}/ppc/index$!{ll.company.id}.htm" target="_blank" title="$!{ll.company.name}">$!{ll.company.name}</a>
+											#else
+												<a href="http://$!{ll.company.domainZz91}.zz91.com" target="_blank" title="$!{ll.company.name}">$!{ll.company.name}</a>
+											#end
+										</dd>
+									#end
+                    			</dl>
+                			</div>
+            			</li>
+						#end
+					</ul>
+				</div>
+				<div class="btndiv">
+					<a class="abtn aleft" href="#left">左移</a>
+					<a class="abtn aright" href="#right">右移</a>
+				</div>	 
+			</div>
+			#end
+			#end
+			<script type="text/javascript">
+				$(function(){
+					$(".uldiv").Xslider({
+						unitdisplayed:1,
+						numtoMove:1,
+						speed:300,
+						autoscroll:3000,
+						scrollobjSize:Math.ceil($(".uldiv").find("li").length/1)*249
+					})
+				})
+			</script>
+			
+			
+			<script src="http://pyapp.zz91.com/app/yangad.html?keywords=颗粒&amp;w=268&amp;adposition=650"></script>
+            <div style="margin-top:10px;"><script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=$!{keywords}&showborder=1&showposition=&m=10&padding=8&w=268&num=1"></script></div>
+    		<!--金属集散中心 -->
+    		#parse("/company/vm_company/MetalsCenter.vm")
+    		<!--塑料集散中心 S-->
+    		#parse("/company/vm_company/PlasticsCenter.vm")
+            <div class="wrap mt st2">
+                <div class="wt"><h3>省物流、看货近,一键寻找最匹配商机</h3></div>
+                <div class="wc plastic y clearfix">
+                    <ul class="inf_ul plastic_ul">
+                        <li><a href="http://map.zz91.com/guangdong.htm" target="_blank" title="广东废料网">广东废料网</a></li>
+                        <li><a href="http://map.zz91.com/zhejiang.htm" target="_blank" title="浙江废料网">浙江废料网</a></li>
+                        <li><a href="http://map.zz91.com/shandong.htm" target="_blank" title="山东废料网">山东废料网</a></li>
+                        <li><a href="http://map.zz91.com/jiangsu.htm" target="_blank" title="江苏废料网">江苏废料网</a></li>
+                        <li><a href="http://map.zz91.com/beijing.htm" target="_blank" title="北京废料网">北京废料网</a></li>
+                        <li><a href="http://map.zz91.com/shanghai.htm" target="_blank" title="上海废料网">上海废料网</a></li>
+                        <li><a href="http://map.zz91.com/tianjin.htm" target="_blank" title="天津废料网">天津废料网</a></li>
+                        <li><a href="http://map.zz91.com/hebei.htm" target="_blank" title="河北废料网">河北废料网</a></li>
+                        <li><a href="http://map.zz91.com/henan.htm" target="_blank" title="河南废料网">河南废料网</a></li>
+                        <li><a href="http://map.zz91.com/hunan.htm" target="_blank" title="湖南废料网">湖南废料网</a></li>
+                    </ul>
+            	</div>
+            </div>			
+    		<!--登陆排行 S-->
+    		#parse("/company/vm_company/LogRanking.vm")
+    		<!--Rbox3 b-->
+    		#parse("/company/vm_company/TradeRanking.vm")
+    		<!--Rbox4 b-->
+            #parse("/company/vm_company/IncomeRanking.vm")
+    		<!--Rbox5 b-->
+    		#parse("/company/vm_company/ExhibitRanking.vm")
+    		<!--成功网商 S-->
+			#parse("/company/vm_company/Eboos.vm")
+			
+    	</div>
+	</div>
+</div>
+<input name="hidVip" type="hidden" id="hidVip" />
+<!--百度商桥-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+

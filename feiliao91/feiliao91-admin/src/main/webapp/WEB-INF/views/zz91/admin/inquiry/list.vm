@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+#parse("/zz91/common/import.vm")
+#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/CategoryCombo.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/inquiry/list.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/sysdata/statesData.js" ></script>
+	
+    <script type="text/javascript">
+		var Page_Context = new function () {
+			this.FRONT_SERVER="$!{address.frontServer}";
+        	this.RESULT_GRID="RESULT_GRID";
+        }
+        
+        Ext.onReady(function(){
+        	var grid = new ast.ast1949.admin.inquiry.ResultGrid({
+				//title:"询盘信息列表",
+        		id:Page_Context.RESULT_GRID,
+        		listUrl:Context.ROOT + Context.PATH + "/admin/inquiry/listInquiry.htm",
+        		region:"center",
+				layout:"fit"
+        	});
+        	
+        	var viewport = new Ext.Viewport({
+        		layout:"border",
+        		items:[grid]
+        	});
+			
+			var _store = grid.getStore();
+			
+			_store.baseParams = {};
+			_store.baseParams = {"exportStatus":"0,1"}
+			_store.reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+			
+			var form = new ast.ast1949.admin.inquiry.searchForm({
+            	title:"搜索询盘信息",
+            	collapsible: true,
+                animCollapse: false,
+                frame:true,
+                titleCollapse:true,
+                style: "position:absolute;right:0;bottom:26;z-index:101",
+                height:300,
+                width:350,
+                targetGrid:grid
+            });
+            
+            form.render(Ext.getBody());
+            
+            form.resizer = new Ext.Resizable(form.el, {
+                minHeight:50,
+                minWidth:100,
+                handles: "n",
+                pinned: true,
+                transparent:true,
+                resizeElement : function(){
+                    var box = this.proxy.getBox();
+                    this.proxy.hide();
+                    form.setHeight(box.height);
+                    return box;
+                }
+            });
+        })
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<script type="text/javascript" src="#springUrl('/app/csale/csCompany.js')" ></script>
+<script type="text/javascript" src="#springUrl('/app/sale/searchCommon.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var grid=new com.zz91.ep.cscrm.Grid({
+			id:MYCOMP.MYCOMP_GRID,
+			layout:"fit",
+			region:"center",
+			contextmenu:new Ext.menu.Menu({
+				items:[{
+					text: '分配给',
+					menu:[
+					#foreach($l in $!{deptSale})
+    					#if($velocityCount > 1),#end
+    					{
+    						text:"${l.name}",
+    						handler:function(){
+    							var rows=grid.getSelectionModel().getSelections();
+    							var assignArr=new Array();
+    							for(var i=0;i<rows.length;i++){
+    								assignArr.push({
+										saleCompId:rows[i].get("sale_comp_id"),
+    									cid:rows[i].get("id"),
+    									companyType:rows[i].get("company_type"),
+    									saleAccount:"$!{l.account}",
+    									saleDept: "$!{l.deptCode}",
+    									saleName:"$!{l.name}",
+										cname:rows[i].get("cname"),
+										ctype:rows[i].get("ctype")
+    								})
+    							}
+    							com.zz91.ep.cscrm.assign(grid, assignArr, "$!{l.name}");
+    						}
+    					}
+					#end
+					]
+				}]
+			})
+		});
+		
+		grid.getColumnModel().setHidden(1,true);
+		
+		grid.loadCompany("","","","","","","$!{search.ctype}");
+		
+		var viewport = new Ext.Viewport({
+			layout:"border",
+			items:[grid]
+		});
+		
+		var form = new com.zz91.ep.crm.searchForm({
+			title:"高级搜索",
+			collapsible: true,
+			animCollapse: false,
+			frame:true,
+			titleCollapse:true,
+			style: "position:absolute;right:0;bottom:26;z-index:101",
+			width:600,
+			targetGrid:grid
+		});
+		
+		form.render(Ext.getBody());
+		form.initSearchDto("","","","","","","","","$!{search.ctype}");
+		form.resizer = new Ext.Resizable(form.el, {
+			minHeight:50,
+			minWidth:100,
+			resizeElement : function(){
+				var box = this.proxy.getBox();
+				this.proxy.hide();
+				form.setHeight(box.height);
+				return box;
+			}
+		});
+	})
+</script>

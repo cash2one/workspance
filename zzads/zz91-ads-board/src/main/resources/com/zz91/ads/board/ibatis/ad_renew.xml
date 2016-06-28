@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="adRenew">
+	<typeAlias alias="adRenew" type="com.zz91.ads.board.domain.ad.AdRenew"/>
+	
+	<resultMap id="adRenewResult" class="adRenew">
+		<result property="id" column="id" />
+		<result property="adId" column="ad_id" />
+		<result property="gmtStart" column="gmt_start" />
+		<result property="gmtEnd" column="gmt_end" />
+		<result property="applicant" column="applicant" />
+		<result property="gmtApply" column="gmt_apply" />
+		<result property="dealer" column="dealer" />
+		<result property="gmtDeal" column="gmt_deal" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="detail" column="detail" />
+	</resultMap>
+	<insert id="createRenew" parameterClass="adRenew">
+		insert into ad_renew
+		(
+			ad_id,
+			gmt_start,
+			gmt_end,
+			applicant,
+			gmt_apply,
+			gmt_created,
+		  	gmt_modified,
+			detail
+		)
+		values
+		(
+			#adId#,
+			#gmtStart#,
+			#gmtEnd#,
+			#applicant#,
+			now(),
+			now(),
+		    now(),
+		    #detail#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<sql id="allColumn">
+		id,
+		ad_id,
+		gmt_start,
+		gmt_end,
+		applicant,
+		gmt_apply,
+		dealer,
+		gmt_deal,
+		gmt_created,
+		gmt_modified,
+		detail
+	</sql>
+	<select id="queryRenewByAdId" parameterClass="java.util.Map" resultMap="adRenewResult">
+		select 
+		<include refid="adRenew.allColumn" />
+		from ad_renew
+		where ad_id=#adId#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countRenewByAdId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from ad_renew
+		where ad_id=#adId#
+	</select>
+	<update id="updateRenew" parameterClass="adRenew">
+		update ad_renew
+		set gmt_modified=now()
+		<isNotEmpty prepend="," property="gmtStart">
+			gmt_start = #gmtStart#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="gmtEnd">
+			gmt_end = #gmtEnd#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="detail">
+			detail = #detail#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="applicant">
+			applicant = #applicant#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="dealer">
+			dealer = #dealer#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="gmtDeal">
+			gmt_deal = #gmtDeal#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	<select id="queryRenewById" parameterClass="java.lang.Integer" resultMap="adRenewResult">
+		select 
+		<include refid="adRenew.allColumn"/>
+		from ad_renew
+		where id = #id#
+	</select>
+	
+	<sql id="allColumn1">
+		ar.id,
+		ar.ad_id,
+		ar.gmt_start,
+		ar.gmt_end,
+		ar.applicant,
+		ar.gmt_apply,
+		ar.dealer,
+		ar.gmt_deal,
+		ar.gmt_created,
+		ar.gmt_modified,
+		ar.detail
+	</sql>
+	
+	<sql id="selectAdRenewByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="search.email">
+				exists (select ad.id from advertiser ad where a.advertiser_id=ad.id and ad.email=#search.email#)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="search.anchorPoint">
+				exists (select aet.ad_id from ad_exact_type aet where a.id=aet.ad_id and aet.anchor_point=#search.anchorPoint#)
+			</isNotEmpty>
+			<isEqual prepend="and" property="search.checkStatus" compareValue="0">
+				ar.dealer is null
+			</isEqual>
+			<isEqual prepend="and" property="search.checkStatus" compareValue="1">
+				ar.dealer != ''
+			</isEqual>
+		</dynamic>
+	</sql>
+	
+	<select id="queryRenewByCondition" parameterClass="java.util.HashMap" resultMap="adRenewResult">
+		select 
+		<include refid="adRenew.allColumn1"/>
+		from ad_renew ar
+		inner join ad  a on a.id = ar.ad_id
+		<include refid="adRenew.selectAdRenewByCondition"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countRenewByCondition" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0)
+		from ad_renew ar
+		inner join ad  a on a.id = ar.ad_id
+		<include refid="adRenew.selectAdRenewByCondition"/>
+	</select>
+</sqlMap>

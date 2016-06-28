@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>{{companyinfo.company_name}}-详情</title>
+		<script type="text/javascript" src="/assets/js/companydetail.js"></script>
+		<script type="text/javascript" src="/assets/js/province.js"></script>
+		<link href="/assets/css/dpl-min.css" rel="stylesheet" type="text/css">
+		<link href="/assets/css/bui-min.css" rel="stylesheet" type="text/css">
+		<style>
+			/*  sectable两状态  begin*/
+			
+			.unselect {
+				cursor: hand;
+				background-color: #b9dbfe;
+				border-left: 1px #243f74 solid;
+				color: #243f74;
+				font-size: 12px;
+				word-break: keep-all;
+				padding: 5px 8px;
+				font-weight: bold;
+				text-align: center;
+			}
+			
+			.selected {
+				background-color: #e0edf7;
+				word-break: keep-all;
+				font-weight: bold;
+				font-size: 14px;
+				padding: 5px 8px;
+				color: #fff;
+				background-color: #5773a5;
+			}
+			
+			.secTable {}
+		</style>
+	</head>
+
+	<body>
+		<div class="demo-content">
+			<table id="secTable" cellspacing="0" cellpadding="0" border="0">
+				<tbody>
+					<tr>
+						<td nowrap="" class="selected" onclick="secBoard(0)">基本信息</td>
+						<td nowrap="" class="unselect"><a href="http://admin1949.zz91.com/web/zz91/salecrm/viewInfo.htm?companyId=885105&amp;email=401959160@qq.com" target="_blank">供求信息 <br>(<font color="#FF0000"></font>)</a></td>
+						<TD nowrap class=unselect><a href="http://admin.zz91.com/admin1/crm/crm_messageto_local.asp?idprod=885105&cemail=" target="_blank">发送的询盘信息<br>有<font color="#FF0000"></font>条</a></TD>
+						<TD nowrap class=unselect><a href="http://admin.zz91.com/admin1/crm/crm_messagefrom_local.asp?idprod=885105&cemail=" target="_blank">收到的询盘信息<br>有<font color="#FF0000"></font>条</a></TD>
+						<td width="99%" class="unselect">
+							<input name="com_rankFlag" type="hidden" id="com_rankFlag" value="2">
+							<input name="Submit" type="button" id="submit_cominfo1" class="button" value="保存公司信息"> &nbsp;&nbsp;
+							<input name="closebu" type="button" class="button" id="closebu" onclick="parent.window.close();" value="关闭">
+							<input type="button" name="Submit" class="button" value="CS丢公海记录" onclick="window.open('http://admin1949.zz91.com/web/zz91/crm/highsea/index.htm?companyId=885105','','')">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<br />
+			<div class="doc-content">
+				<form class="form-horizontal">
+					<div class="row">
+						<div class="control-group span50">
+							<label class="control-label control-label-small">客户信息：</label>
+							<div class="controls control-row-auto span45 span-width">
+								<div class="well well-small">
+									<div class="row">
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">公司名称</label>
+											<div class="controls">
+												<input type="text" class="control-text" name="company_name" id="company_name" value="{{companyinfo.company_name}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												地址
+											</label>
+											<div class="controls">
+												<input type="text" class=" control-text" name="address" id="address" value="{{companyinfo.address}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												邮编
+											</label>
+											<div class="controls">
+												<input type="text" class="control-text" name="address_zip" id="address_zip" value="{{companyinfo.address_zip}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												网站
+											</label>
+											<div class="controls">
+												<input type="text" class="input-small control-text" name="website" id="website" value="{{companyinfo.website}}">
+											</div>
+											.zz91.com
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												行业
+											</label>
+											<div class="controls">
+												<select id="industry_code" name="industry_code">
+													{%if companyinfo.industry_code%}
+													<option value="{{companyinfo.industry_code}}">{{companyinfo.industry_code_txt}}</option>{%endif%}
+													<option value="">--请选择--</option>
+													<option value="10001000">废塑料</option>
+													<option value="10001001">废金属</option>
+													<option value="10001002">废纸</option>
+													<option value="10001003">废旧轮胎与废橡胶</option>
+													<option value="10001004">废纺织品与废皮革</option>
+													<option value="10001005">废电子电器</option>
+													<option value="10001006">废玻璃</option>
+													<option value="10001007">废旧二手设备</option>
+													<option value="10001008">其他废料</option>
+													<option value="10001009">服务</option>
+													<option value="10001010">塑料原料</option>
+												</select>
+											</div>
+										</div>
+										<div class="control-group span7">
+											<label for="" class="control-label control-label-small">
+												类型
+											</label>
+											<div class="controls">
+												<select id="service_code" name="service_code">
+													{%if companyinfo.service_code%}
+													<option value="{{companyinfo.service_code}}">{{companyinfo.service_code_txt}}</option>{%endif%}
+													<option value="">--请选择--</option>
+													<option value="10201001">国外供货商</option>
+													<option value="10201002">国外回收贸易商</option>
+													<option value="10201003">码头，仓库储存商</option>
+													<option value="10201004">国内供应商</option>
+													<option value="10201005">国内回收贸易商</option>
+													<option value="10201006">国内加工，拆解商</option>
+													<option value="10201007">利废企业</option>
+													<option value="10201008">设备，技术，服务提供商</option>
+													<option value="10201009">冶炼厂</option>
+													<option value="10201010">电子厂</option>
+													<option value="10201011">造粒厂</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="control-group span12">
+											<label class="control-label control-label-small">
+												公司简介
+											</label>
+											<div class="controls control-row4">
+												<textarea type="text" class="input-large" name="introduction" id="introduction" data-valid="{}">{{companyinfo.introduction}}{{companyinfo.province_txt}}{{companyinfo.city_txt}}</textarea>
+											</div>
+										</div>
+										<div class="control-group span16">
+											<label class="control-label control-label-small">
+												主营业务
+											</label>
+											<div class="controls control-row4">
+												<textarea type="text" class="input-large" name="business" id="business" data-valid="{}">{{companyinfo.business}}</textarea>
+											</div>
+										</div>
+										<div class="control-group span10">
+											<label class="control-label control-label-small">国家</label>
+											<div class="controls control-row4">
+												<select name="country" id="country" onchange="selectcountry(this.value)">
+													<option value="1">中国</option>
+													<option value="0">其他国家/地区</option>
+												</select>
+											</div>
+										</div>
+
+										<div class="control-group span8" id="othercountrys" style="display:none;">
+											<label class="control-label control-label-small">其他国家</label>
+											<div class="controls control-row4">
+												<select name="ccountry" id="ccountry" onchange="selecttextname(this)">
+													<option value="">台湾</option>
+													<option value="">香港</option>
+													<option value="">美国</option>
+													<option value="">日本</option>
+												</select>
+												<script>
+													selectOption("ccountry", "1")
+												</script>
+											</div>
+										</div>
+										<div id="mycountry">
+											<div class="control-group span8">
+												<label class="control-label control-label-small">省份</label>
+												<div class="controls control-row4">
+													<select name="p" id="p">
+														{%if companyinfo.province_code%}
+														<option value="{{companyinfo.province_code}}">{{companyinfo.province_txt}}</option>
+														{%endif%}
+														<option value="">--请选择省份--</option>
+														{%for province in provincelist%}
+														<option value="{{province.code}}">{{province.label}}</option>
+														{%endfor%}
+													</select>
+												</div>
+											</div>
+											<div class="control-group span8">
+												<label class="control-label control-label-small">城市</label>
+												<div class="controls control-row4">
+													<select name="c" id="c">
+														{%if companyinfo.city_code%}
+														<option value="{{companyinfo.city_code}}">{{companyinfo.city_txt}}</option>
+														{%endif%}
+														<option value="">--请选择城市--</option>
+													</select>
+												</div>
+											</div>
+											<!--  <div class="control-group span8" >
+													<label class="control-label control-label-small">产业带</label>
+													<div class="controls control-row4">
+														<select >
+															<option value="">--请选择产业带--</option>
+														</select>
+													</div>
+											</div>-->
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="control-group span50">
+							<label class="control-label control-label-small">联系方式：</label>
+							<div class="controls control-row-auto span45 span-width">
+								<div class="well well-small">
+									<div class="row">
+
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												手机
+											</label>
+											<div class="controls">
+												<input type="text" class=" control-text" name="mobile" id="mobile" value="{{companyinfo.mobile}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												联系人
+											</label>
+											<div class="controls">
+												<input type="text" class=" control-text" name="contact" id="contact" value="{{companyinfo.contact}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												职位
+											</label>
+											<div class="controls">
+												<input type="text" class=" control-text" name="position" id="position" value="{{companyinfo.position}}">
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label class="control-label control-label-small">
+												性别
+											</label>
+											<div class="controls">
+												<select class="input-small" name="sex" id="sex">
+													{%if companyinfo.sex%}
+													<option value="{{companyinfo.sex}}">{{companyinfo.sex_txt}}</option>{%endif%}
+													<option value="">--请选择--</option>
+													<option value="0">先生</option>
+													<option value="1">女士</option>
+												</select>
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												email
+											</label>
+											<div class="controls">
+												<input type="text" class=" control-text" name="email" id="email" value="{{companyinfo.email}}">
+											</div>
+										</div>
+										<div class="control-group span12">
+											<label for="" class="control-label control-label-small">
+												电话
+											</label>
+											<div class="controls">
+												<input type="text" style="width:20px;" name="tel_country_code" id="tel_country_code" value="{{companyinfo.tel_country_code}}">-
+												<input type="text" style="width:30px;" name="tel_area_code" id="tel_area_code" value="{{companyinfo.tel_area_code}}">-
+												<input type="text" style="width:80px;" name="tel" id="tel" value="{{companyinfo.tel}}">
+											</div>
+										</div>
+										<div class="control-group span7">
+											<label for="" class="control-label control-label-small">
+												传真
+											</label>
+											<div class="controls">
+												<input type="text" style="width:20px;" name="fax_country_code" id="fax_country_code" value="{{companyinfo.fax_country_code}}">-
+												<input type="text" style="width:30px;" name="fax_area_code" id="fax_area_code" value="{{companyinfo.fax_area_code}}">-
+												<input type="text" style="width:80px;" name="fax" id="fax" value="{{companyinfo.fax}}">
+											</div>
+										</div>
+
+									</div>
+									其他联系人
+									<button type="button" class="button button-success" id="otherpersonShow">添加</button>
+									<table cellspacing="0" class="table table-bordered">
+										<thead>
+											<tr>
+												<th class="control-group span6">联系人</th>
+												<th class="control-group span4">性别</th>
+												<th class="control-group span6">职位</th>
+												<th class="control-group span4">电话</th>
+												<th class="control-group span4">传真</th>
+												<th class="control-group span4">手机</th>
+												<th class="control-group span4">Email</th>
+												<th class="control-group span4">地址</th>
+												<th class="control-group span4">添加时间</th>
+												<th class="control-group span4">备注</th>
+												<th class="control-group span4">修改时间</th>
+												<th class="control-group span4">操作</th>
+											</tr>
+										</thead>
+										<tbody>
+											{%for otherperson in otherpersonlist%}
+											<tr>
+												<td>{{otherperson.name}}</td>
+												<td>{{otherperson.sextxt}}</td>
+												<td>{{otherperson.station}}</td>
+												<td>{{otherperson.tel}}</td>
+												<td>{{otherperson.fax}}</td>
+												<td>{{otherperson.mobile}}</td>
+												<td>{{otherperson.email}}</td>
+												<td>{{otherperson.address}}</td>
+												<td>{{otherperson.gmt_created}}</td>
+												<td>{{otherperson.bz}}</td>
+												<td>{{otherperson.gmt_modified}}</td>
+												<td>
+													<a href="del_otherperson.html?otherperson_id={{otherperson.id}}&company_id={{company_id}}" onclick="return confirm('确定要删除吗！')">删除</a>|
+													<!--<a href="?edit=0&otherperson_id={{otherperson.id}}&company_id={{company_id}}">修改</a>-->
+													<span class="edit" style="cursor:pointer;color:#f00" editid="{{otherperson.id}}">修改</span>
+												</td>
+											</tr>
+											{%endfor%}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="control-group span50">
+							<label class="control-label control-label-small">业务方向：</label>
+							<div class="controls control-row-auto span45 span-width">
+								<div class="well well-small">
+									<div class="row">
+										<div class="control-group span8">
+											<label class="control-label control-label-small">主营方向</label>
+											<input type="radio" name="business_type" id="business_type1" class="radioItem" value="1" {%ifequal companyinfo.business_type '1' %}checked="checked" {%endifequal%}>
+											<label for="business_type1">销售</label> &nbsp;&nbsp;&nbsp;
+											<input type="radio" name="business_type" id="business_type2" class="radioItem" value="2" {%ifequal companyinfo.business_type '2' %}checked="checked" {%endifequal%}>
+											<label for="business_type2">采购</label> &nbsp;&nbsp;&nbsp;
+											<input type="radio" name="business_type" id="business_type0" class="radioItem" value="0" {%ifequal companyinfo.business_type '0' %}checked="checked" {%endifequal%}>
+											<label for="business_type0">两者都有</label> &nbsp;&nbsp;&nbsp;
+										</div>
+										<div class="control-group span9" id="sale_product_txt" style="display:none;">
+											<label class="control-label-auto">销售的产品(提供的服务)</label>
+											<input type="text" class=" control-text" id="sale_details" value="{{companyinfo.sale_details}}">
+										</div>
+										<div class="control-group span9" id="buy_product_txt" style="display:none;">
+											<label class="control-label control-label-auto">采购的产品(需要的服务)</label>
+											<input type="text" class=" control-text" id="buy_details" value="{{companyinfo.buy_details}}">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="control-group span50">
+							<label class="control-label control-label-small">客户活动：</label>
+							<div class="controls control-row-auto span45 span-width">
+								<div class="well well-small">
+									<div class="row">
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												最近登录:
+											</label>
+											<div class="controls">
+												{{companyinfo.last_login_time}}
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												登录次数:
+											</label>
+											<div class="controls">
+												{{companyinfo.num_login}}
+											</div>
+										</div>
+										<div class="control-group span6">
+											<label for="" class="control-label control-label-small">
+												注册时间:
+											</label>
+											<div class="controls">
+												{{companyinfo.regtime}}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="control-group span50">
+							<label class="control-label control-label-small">客户分类：</label>
+							<div class="controls control-row-auto span45 span-width">
+								<div class="well well-small">
+									<div class="row">
+										<div class="control-group">
+											<label class="control-label">公海除杂：</label>
+											<div class="controls">
+												<label class="checkbox" for="cz1">
+													<input type="checkbox" id="cz1" />成品/新品</label>
+												<label class="checkbox" for="cz2">
+													<input type="checkbox" id="cz2" />不做废料</label>
+												<label class="checkbox" for="cz3">
+													<input type="checkbox" id="cz3" />量小、10吨一下、边缘产品</label>
+												<label class="checkbox" for="cz4">
+													<input type="checkbox" id="cz4" />已是高会</label>
+												<label class="checkbox" for="cz5">
+													<input type="checkbox" id="cz5" />半废品池</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="doc-content">
+						<h3>联系小计</h3>
+						<div class="form-links">
+							<ul class="nav-tabs">
+								<li class="active"><a href="#">ICD电话销售电话记录</a></li>
+								<li><a href="#">VAP销售电话记录</a></li>
+								<li><a href="#">CS服务记录</a></li>
+								<li><a href="#">交易组电话记录</a></li>
+								<li><a href="#">SEO小计</a></li>
+							</ul>
+							<iframe id=topt name=topt style="HEIGHT: 500px; VISIBILITY: inherit; WIDTH: 100%; Z-INDEX: 2" frameborder="0" src="tellist.html?company_id={{company_id}}&telflag=0"></iframe>
+						</div>
+					</div>
+					<br />
+					<br />
+					<br />
+					<br />
+					<br />
+
+					<div style="position: fixed;bottom: 0px;width: 100%;background-color: #5773a5;height: 50px;line-height: 50px; z-index: 1000;">
+						<div class="control-group" style="text-align: center;margin: 0 auto;width: 800px;">
+							<div class="row">
+								<ul class="toolbar pull-left">
+									<li>
+										<button type="button" class="button" id="sale_record">销售记录</button>
+									</li>
+									<li>
+										<button type="button" class="button" id="service_record">查看服务记录</button>
+									</li>
+									<li>
+										<button type="button" class="button" id="customer_log">客户日志</button>
+									</li>
+									<li>
+										<button type="button" class="button" id="record_data">查看录音数据</button>
+									</li>
+									<li>
+										<button type="button" class="button button-success" id="submit_cominfo2">保存公司信息</button>
+									</li>
+									<li>
+										<button type="button" class="button button-success" id="close" onclick="parent.window.close();">关闭</button>
+									</li>
+									<li>
+										<button type="button" class="button button-success" onClick="window.location.href='returnpage.html?request_url={{request_url}}'">返回</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+
+				</form>
+				</p>
+				<!-- script end -->
+			</div>
+			<div class="hide">
+				<div class="hidden" id="sale_record_show">
+					<form id="form" class="form-horizontal">
+						<div class="control-group">
+							<label class="control-label">下次联系时间：</label>
+							<div class="controls">
+								<input type="text" class="calendar calendar-time" name="contactnexttime" id="contactnexttime" />
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">联系情况：</label>
+							<div class="controls">
+								<input type="radio" name="contacttype" value="13" checked="checked" onClick="changeTab(13)" id="c_13">
+								<label for="c_13">有效联系</label>
+								<input type="radio" name="contacttype" value="12" onClick="changeTab(12)" id="c_12">
+								<label for="c_12">无效联系</label>
+								<div style="display:none;" id="tabinfo1">
+									<input type='radio' name='c_Nocontact' value='5' id="c_Nocontact5" />
+									<label for="c_Nocontact5">无进展</label>
+									<input type='radio' name='c_Nocontact' value='1' id="c_Nocontact1" />
+									<label for="c_Nocontact1">无人接听</label>
+									<input type='radio' name='c_Nocontact' value='2' onClick="alert('提醒：请注意此选项，请再次确认该客户手机和座机“号码错误”，选择完后该客户将不会在公海和前台出现。如有发现该客户乱选，责任自负。')" id="c_Nocontact2" />
+									<label for="c_Nocontact2">号码错误</label>
+									<input type='radio' name='c_Nocontact' value='3' id="c_Nocontact3" />
+									<label for="c_Nocontact3">停机</label>
+									<input type='radio' name='c_Nocontact' value='4' id="c_Nocontact4" />
+									<label for="c_Nocontact4">关机</label>
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="control-group">
+							<label class="control-label">客户等级：</label>
+							<div class="controls">
+								<select name="com_rank" id="com_rank" onChange="changestar(this.value)">
+									<option value="">--请选择等级--</option>
+									<option value="1">★无条件，无意向</option>
+									<option value="2">★★有条件，目前无意向</option>
+									<option value="3">★★★条件好，意向一般</option>
+									<option value="4">★★★★条件好，意向好</option>
+									<option value="4.1">|——普通四星</option>
+									<option value="4.8">|——钻石四星</option>
+									<option value="5">★★★★★口头确定付款</option>
+								</select>
+							</div>
+						</div>
+						<!--  <div class="control-group" style='display:none' id="change5star">
+							<label class="control-label">五星条件及流程：</label>
+							<div class="controls">
+							</div>
+						</div>-->
+						<div class="control-group">
+							<label class="control-label">电话类型：</label>
+							<div class="controls">
+								<input type="radio" name="telflag" id="new_zst" value="0" checked="checked">
+								<label for="new_zst">新签再生通</label>
+								<input type="radio" name="telflag" id="renew_zst" value="2">
+								<label for="renew_zst">续签再生通</label>
+								<input type="radio" name="telflag" id="vapflag" value="4">
+								<label for="vapflag">VAP销售</label>
+								<input name="seoflag" type="checkbox" id="seoflag">
+								<label for="seoflag">SEO销售</label>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">备注：</label>
+							<div class="controls">
+								<textarea type="text" class="input-large" name="detail" id="detail" data-valid="{}"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<script type="text/javascript" src="/assets/js/jquery-1.8.1.min.js"></script>
+			<script type="text/javascript" src="/assets/js/bui-min.js"></script>
+			<script type="text/javascript" src="/assets/js/config-min.js"></script>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					//业务方向checkradio切换（销售，采购，或两者都有）
+					var business_type_value = $("input[name='business_type']:checked").val();
+					if (business_type_value == 0) {
+						$("#sale_product_txt").show();
+						$("#buy_product_txt").show();
+					}
+					if (business_type_value == 1) {
+						$("#sale_product_txt").show();
+						$("#buy_product_txt").hide();
+					}
+					if (business_type_value == 2) {
+						$("#sale_product_txt").hide();
+						$("#buy_product_txt").show();
+					}
+					$(".radioItem").change(function() {
+						var business_type_value = $("input[name='business_type']:checked").val();
+						if (business_type_value == 0) {
+							$("#sale_product_txt").show();
+							$("#buy_product_txt").show();
+						}
+						if (business_type_value == 1) {
+							$("#sale_product_txt").show();
+							$("#buy_product_txt").hide();
+						}
+						if (business_type_value == 2) {
+							$("#sale_product_txt").hide();
+							$("#buy_product_txt").show();
+						}
+					});
+				});
+			</script>
+			<script type="text/javascript">
+				function changeTab(ID) {
+					//切换
+					if (ID == "13") {
+						document.getElementById("tabinfo1").style.display = "none"
+					} else {
+						document.getElementById("tabinfo1").style.display = ""
+					}
+				}
+			</script>
+			<script type="text/javascript">
+				function changestar(id) {
+					var obj = document.getElementById("change5star")
+						//var dotype=document.getElementById("dotype").value
+					if (id == "5") {
+						obj.style.display = ""
+					} else {
+						obj.style.display = "none"
+					}
+				}
+			</script>
+
+			<script type="text/javascript">
+				//保存公司信息提交
+				$(document).ready(function() {
+					$("#submit_cominfo1,#submit_cominfo2").click(function() {
+						var company_id = {{company_id}};
+						var company_name = $("#company_name").val();
+						var address = $("#address").val();
+						var address_zip = $("#address_zip").val();
+						var website = $("#website").val();
+						var industry_code = $("#industry_code").val();
+						var service_code = $("#service_code").val();
+						var introduction = $("#introduction").val();
+						var business = $("#business").val();
+						var business_type = $("input[name='business_type']:checked").val();
+						var sale_details = $("#sale_details").val();
+						var buy_details = $("#buy_details").val();
+						//var province1txt=$("#province1").find("option:selected").text();
+						//var city1txt=$("#city1").find("option:selected").text();
+						var p = $("#p").val();
+						var c = $("#c").val();
+						var area_code = "";
+						if (p != "" && c == "") {
+							area_code = p
+						}
+						if (p != "" && c !== "") {
+							area_code = c
+						}
+						//正则匹配["($","^()$"]
+						var contact = $("#contact").val();
+						var position = $("#position").val();
+						var tel_country_code = $("#tel_country_code").val();
+						var tel_area_code = $("#tel_area_code").val();
+						var tel = $("#tel").val();
+						var sex = $("#sex").val();
+						var mobile = $("#mobile").val();
+						var email = $("#email").val();
+						var fax_country_code = $("#fax_country_code").val();
+						var fax_area_code = $("#fax_area_code").val();
+						var fax = $("#fax").val();
+						if (confirm("确定修改改公司的信息")) {
+							$.ajax({
+								type: "post",
+								url: "save_crm_cominfoedit.html",
+								data: {
+									company_id: company_id,
+									company_name: company_name,
+									address: address,
+									address_zip: address_zip,
+									website: website,
+									industry_code: industry_code,
+									service_code: service_code,
+									introduction: introduction,
+									business: business,
+									business_type: business_type,
+									sale_details: sale_details,
+									buy_details: buy_details,
+									contact: contact,
+									position: position,
+									tel_country_code: tel_country_code,
+									tel_area_code: tel_area_code,
+									tel: tel,
+									sex: sex,
+									mobile: mobile,
+									email: email,
+									fax_country_code: fax_country_code,
+									fax_area_code: fax_area_code,
+									fax: fax,
+									area_code: area_code
+								},
+								dataType: "json",
+								success: function(data) {
+									window.location.href = "";
+								}
+							});
+						}
+					});
+				});
+			</script>
+
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$("#p").change(function() {
+						var selectprovince = $("#p").val()
+						if (selectprovince) {
+							//alert("okoko");
+							$.ajax({
+								type: "GET",
+								url: "getsite.html?sitecode=" + selectprovince,
+								dataType: "json",
+								success: function(data) {
+									$("#c").empty();
+									html = "<option value=''>--请选择城市--</option>";
+									$("#c").append(html);
+									for (var i = 0; i < data.length; i++) {
+										html = "<option value='" + data[i]['code'] + "'>" + data[i]['label'] + "</option>";
+										$("#c").append(html);
+									}
+								},
+								error: function(data) {
+									alert("错误!青重试.");
+								}
+							});
+						} else {
+							$("#c").empty();
+							html = "<option value=''>--请选择城市--</option>";
+							$("#c").append(html);
+						}
+					});
+				});
+			</script>
+
+			<script type="text/javascript">
+				BUI.use('bui/calendar', function(Calendar) {
+					var datepicker = new Calendar.DatePicker({
+						trigger: '.calendar-time',
+						showTime: true,
+						autoRender: true
+					});
+				});
+				BUI.use(['bui/overlay', 'bui/form', 'bui/mask'], function(Overlay, Form) {
+					var form,
+						dialog = new Overlay.Dialog({
+							title: '增加联系人',
+							width: 500,
+							height: 450,
+							loader: {
+								url: '/icd/otherperson.html',
+								autoLoad: false, //不自动加载
+								params : {a : 'a'},//附加的参数
+								lazyLoad: false, //不延迟加载
+								callback: function() {
+									var node = dialog.get('el').find('form'); //查找内部的表单元素
+									form = new Form.HForm({
+										srcNode: node,
+										autoRender: true
+									});
+								}
+							},
+							//mask: false,
+							success: function() {
+//								var user_id = {{user_id}};
+//								var company_id = {{company_id}}; //公司id
+//								var name = $("#other_name").val(); //联系人姓名
+//								var sex = $("#other_sex").val(); //性别
+//								var tel = $("#other_tel").val(); //电话
+//								var mobile = $("#other_mobile").val(); //手机
+//								var station = $("#other_station").val(); //职务
+//								var fax = $("#other_fax").val(); //传真
+//								var email = $("#other_email").val(); //email
+//								var address = $("#other_address").val(); //address
+//								var bz = $("#other_bz").val(); //备注bz
+//								//var editflag=$("#editflag").val();
+//								var editflag = $("#editflag").attr("value"); //编辑标志
+//								if (name == null || name == undefined || name == "") {
+//									alert("请填写联系人姓名");
+//									return false;
+//								}
+//								$.ajax({
+//									type: "post",
+//									url: "add_otherperson.html",
+//									data: {
+//										user_id: user_id,
+//										company_id: company_id,
+//										name: name,
+//										sex: sex,
+//										tel: tel,
+//										mobile: mobile,
+//										station: station,
+//										fax: fax,
+//										email: email,
+//										address: address,
+//										bz: bz,
+//										editflag: editflag
+//									},
+//									dataType: "json",
+//									success: function(data) {}
+//								});
+								//可以直接action 提交
+								form && form.submit(); //也可以form.ajaxSubmit(params);
+								//this.close();
+								//window.location.href = "";
+							}
+						});
+					//dialog.show();
+					var count = 0;
+					$('#otherpersonShow,.edit').on('click', function() {
+						form && form.destroy(); //移除掉之前的表单
+						dialog.show();
+						var editid = $(this).attr('editid');
+						var params = {
+							company_id: {{company_id}},
+							edit: editid
+						}; //加载表单的参数
+						dialog.get('loader').load(params);
+						count++;
+					});
+				});
+				BUI.use(['bui/overlay', 'bui/form'], function(Overlay, Form) {
+					var form = new Form.HForm({
+						srcNode: '#form'
+					}).render();
+					var dialog = new Overlay.Dialog({
+						title: '销售记录',
+						width: 500,
+						height: 320,
+						//配置DOM容器的编号
+						contentId: 'sale_record_show',
+						success: function() {
+							var user_id = {{user_id}};
+							var company_id = {{company_id}}; //公司id
+							var contacttype = $("input[name='contacttype']:checked").val(); //联系情况
+							var c_Nocontact = $("input[name='c_Nocontact']:checked").val(); //无效联系类型
+							var contactnexttime = $("#contactnexttime").val(); //下次联系时间
+							var com_rank = $("#com_rank").val();
+							var telflag = $("input[name='telflag']:checked").val(); //电话类型
+							var detail = $("#detail").val();
+							$.ajax({
+								type: "post",
+								url: "addtellist.html",
+								data: {
+									user_id: user_id,
+									company_id: company_id,
+									contacttype: contacttype,
+									c_Nocontact: c_Nocontact,
+									contactnexttime: contactnexttime,
+									com_rank: com_rank,
+									telflag: telflag,
+									detail: detail
+								},
+								dataType: "json",
+								success: function(data) {}
+							});
+							this.close();
+							window.location.href = "";
+						}
+					});
+					//dialog.show();
+					$('#sale_record').on('click', function() {
+						dialog.show();
+					});
+				});
+			</script>
+	</body>
+
+</html>

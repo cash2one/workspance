@@ -1,0 +1,101 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+    jQuery("#question_form").submit(function(){
+    var ids = jQuery("#questionIdList").val();
+    var submitItems=$(this).serialize();
+    var flag=1;
+    var dataArr=new Array();
+    jQuery(ids.split(",")).each(function(data){
+    if(data>0){
+    var question="question_"+data+"=";
+    if(submitItems.indexOf(question)==-1){
+    flag=0;
+    }
+    }
+    });
+    if(flag==0){
+    alert("请将问卷填写完整。");
+    return false;
+    }else{
+    jQuery.ajax({
+    url:"#springUrl('/questionnaire/add.htm')",
+    type:"POST",
+    cache:false,
+    async:false,
+    data:{submitData:submitItems},
+    dataType:"json",
+    success:function(msg){
+    if(msg!=null&&msg.success==true){
+    alert('问卷已经提交成功！');
+    window.location.reload();
+    } else {
+    alert('问卷提交失败！');
+    }
+    }
+    });
+    }
+    return false;
+    });
+    return false;
+    });
+    function clickedSelfAnsChoice(answerId){
+    var e= document.getElementById("choice_ans_self_"+answerId);
+    //alert(e);
+    if(e!=null){
+    e.disabled=false;
+    }
+    }
+</script>
+<div class="myrcNormalFrame">
+    #if($!{questionnaireInfo})
+        ##如果存在指定的在用的问卷调查信息列表
+        <form id="question_form" name="question_form" method="post" action="add.htm" onsubmit="return false;">
+            ##onsubmit="return chkfrm(this)"
+            <input id="subjectId" name="subjectId" type="hidden" value="$!{questionnaireInfo.questionnaire.id}"/>
+            <div class="officetitle" style="margin-top:0">$!{questionnaireInfo.questionnaire.title}</div>
+            <div class="productskuang">
+                #set($questionList="")
+                #foreach($!{question} in $!{questionnaireInfo.questionList})
+                    #set($questionList=$!{questionList}+","+$!{question.id})
+                    <div class="publishFormItems">
+                        <div class="questionnaire_tit">$!{velocityCount}:$!{question.question}</div>
+                        <div class="questionnaire_fill">
+                            #foreach(${answer} in $!{question.answerList})	
+                                #set($choiceInputType="radio")
+                                #if($!{answer.isMultipleChoice}==1)
+                                    #set($choiceInputType="checkbox")
+                                #end
+                                #if($!{answer.choice}!="N")
+                                    ##默认单选
+                                    #if($!{answer.isSelfFill}==1)
+                                        <input id="choice_ans_$!{answer.id}" name="question_$!{question.id}" type="$!{choiceInputType}" value="$!{answer.id}" onclick="clickedSelfAnsChoice($!{answer.id})" class="radioPositionFix" style="border:none"/>
+                                        $!{answer.choice} $!{answer.answerPrompt}
+                                        <textarea id="choice_ans_self_$!{answer.id}" name="question_$!{question.id}_$!{answer.id}" style="width:180px; height:24px;line-height:24px;" cols="45" rows="1"  disabled="disabled"></textarea>
+                                        #else
+                                            <input id="choice_ans_$!{answer.id}" name="question_$!{question.id}" type="$!{choiceInputType}" value="$!{answer.id}" class="radioPositionFix" style="border:none"/>
+                                            $!{answer.choice} $!{answer.answerPrompt}
+                                    #end
+                                    #else
+                                        ##choice为N表示自答类型
+                                        ##$!{answer.answerPrompt}
+                                        <textarea id="ans_self_$!{answer.id}" name="question_$!{question.id}" style="width:700px; height:120px;" cols="45" rows="3"></textarea>
+                                #end
+                            #end
+                        </div>
+                    </div>
+                #end
+                <input id="questionIdList" name="questionIdList" type="hidden" value=" $!{questionList}"/>
+                ##<div style="border:solid 1px #093" id="newcontent">$!{quesionnaire.content}</div>
+                ##<input type="hidden" name="title" id="title" value="$!{quesionnaire.title}"/>
+                ##<input type="hidden" name="content" id="content" value='$!{quesionnaire.content}'/>
+                <div class="publishFormSub">
+                    <input type="submit" value="确 认 提 交"  class="buttonMax" />
+                </div>
+            </div>
+        </form>
+        #else
+            ##不存在有效的问卷调查
+            <div class="tishiWarn">$!{noQuestionnairePrompt}</div>
+    #end
+</div>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsExpire">
+	<typeAlias alias="productsExpireDo" type="com.ast.ast1949.domain.products.ProductsExpire" />
+	<resultMap class="productsExpireDo" id="productsExpireResult">
+		<result property="id" column="id" />
+		<result property="productsId" column="products_id" />
+		<result property="day" column="day" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		products_id,
+		day,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<insert id="insert" parameterClass="productsExpireDo">
+		INSERT INTO products_expire
+		(
+		products_id,
+		day,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#productsId#,
+		#day#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id="queryByProductsId" parameterClass="java.lang.Integer" resultMap="productsExpireResult">
+		SELECT 
+		<include refid="defaultColumn"/>
+		from products_expire
+		where products_id= #productsId# order by id desc limit 1
+	</select>
+	
+	<update id="updateDayById" parameterClass="java.util.Map">
+		update products_expire
+		set day=#day# where id =#id#
+	</update>
+</sqlMap>

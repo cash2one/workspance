@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="esiteFriendlink">
+	<typeAlias alias="esiteFriendlink" type="com.kl91.domain.company.EsiteFriendlink" />
+	<typeAlias alias="esiteFriendlinkDto" type="com.kl91.domain.dto.company.EsiteFriendlinkSearchDto" />
+
+	<resultMap class="esiteFriendlink" id="resultEsiteFriendlink">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="name" column="name" />
+		<result property="logoUrl" column="logo_url" />
+		<result property="Url" column="url" />
+		<result property="showFlag" column="show_flag" />
+		<result property="remark" column="remark" />
+		<result property="orderby" column="orderby" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insert" parameterClass="esiteFriendlink">
+		insert into esite_friendlink
+			(cid,name,logo_url,url,show_flag,remark,orderby,gmt_created,gmt_modified)
+		values
+			(#cid#,#name#,#logoUrl#,#Url#,#showFlag#,#remark#,#orderby#,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<sql id="all_column">
+		id,cid,name,logo_url,url,show_flag,remark,orderby,gmt_created,gmt_modified
+	</sql>
+	
+	<delete id="delete" parameterClass="java.lang.Integer">
+		delete from esite_friendlink where id=#id#
+	</delete>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="resultEsiteFriendlink">
+		select 
+			<include refid="all_column"/>
+		from esite_friendlink
+			where id=#id#
+	</select>
+	
+	<update id="update" parameterClass="esiteFriendlink">
+		UPDATE esite_friendlink
+		SET
+			cid =#cid#,
+			name = #name#,
+			logo_url = #logoUrl#,
+			url =#Url#,
+			show_flag = #showFlag#,
+			remark = #remark#,
+			gmt_created =now(),
+			orderby=#orderby#,
+			gmt_modified = now()
+		where
+			id=#id#
+	</update>
+	
+	<sql id="where_clause">
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="searchDto.cid">
+				cid = #searchDto.cid#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryFriendlink" parameterClass="java.util.Map" resultMap="resultEsiteFriendlink">
+		select 
+		<include refid="all_column" />
+		from esite_friendlink
+		<include refid="where_clause" />
+		<include refid="common.pageOrderBy" />
+	</select>
+</sqlMap>

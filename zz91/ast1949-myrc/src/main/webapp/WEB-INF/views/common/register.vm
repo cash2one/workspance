@@ -1,0 +1,191 @@
+
+<div class="addRigster">
+	 抱歉！您还不是ZZ91再生网会员，提交前请填写以下注册信息！
+</div>
+
+<div class="addRigsterInfo">
+    <img src="$!{address.img}/front/images/common/mid_sec_title_r.gif" width="4" height="8" />
+    <b>姓名及联系方式</b>
+</div>
+
+<div class="regFormItem">
+	<label for="account"><font color="RED">*</font>登录名：</label>
+	<input name="account" type="text" id="account" size="28" maxlength="48" onBlur="check_account()" />
+	<span id="lb_account" >用户名只能包含英文字母、数字和下划线</span>
+</div>
+<div class="regFormItem">
+	<label for="password"><font color="RED">*</font>密码：</label>
+	<input name="password" type="password" id="password" size="28" maxlength="48" onBlur="check_password()" />
+	<span id="lb_password" >密码至少6位，只能包含英文字母、数字和下划线</span>
+</div>
+<div class="regFormItem">
+    <label for="vpassword"><font color="RED">*</font>确认密码：</label>
+	<input name="vpassword" type="password" id="vpassword" size="28" maxlength="48" onBlur="check_vpassword()" />
+	<span id="lb_vpassword" >请再一次输入密码</span>
+</div>
+<div class="regFormItem">
+    <label for="contact"><font color="RED">*</font>真实姓名：</label>
+    <input name="contact" type="text" id="contact" size="28" maxlength="48" onBlur="check_isblank('contact',{failure:'联系人信息不能为空',success:'填写正确'});">
+	<span id="lb_contact" ></span>
+</div>
+<div class="regFormItem">
+    <label>性别：</label>
+	<input name="sex" type="radio" value="0" checked="true" class="input_redio"> 先生
+    <input name="sex" type="radio" value="1" class="input_redio"> 女士
+</div>
+<div class="regFormItem">
+    <label for="telCountryCode"><font color="RED">* </font> 固定电话：</label>
+	<input name="telCountryCode" type="text" id="telCountryCode" value="86" size="5" style="width:45px;">
+	<input name="telAreaCode" type="text" id="telAreaCode" size="5" style="width:45px;">
+	<input name="tel" type="text" id="tel" size="15" maxlength="96" onBlur="check_tel()">
+	<span id="lb_tel" >请正确填写您的电话号码,号码在7-9位之间</span>
+</div>
+<div class="regFormItem">
+    <label for="mobile"><font color="RED">*</font>手机：</label>
+	<input name="mobile" type="text" id="mobile" size="30" maxlength="96" onBlur="check_mobile()" />
+	<span id="lb_mobile" > 请正确填写您的手机号码,号码为11位</span>
+</div>
+<!--  -->
+<div class="addRigsterInfo">
+    <img src="$!{address.img}/front/images/common/mid_sec_title_r.gif" width="4" height="8" />
+    <b>公司基本信息</b>
+</div>
+
+<div class="regFormItem">
+    <label for="name"><font color="RED">*</font>公司名称：</label>
+	<input name="name" type="text" id="name" size="30" maxlength="96" onBlur="check_isblank('name',{failure:'公司信息必需填写',success:'填写正确'});">
+	<span id="lb_name">请输入公司名称</span>
+</div>
+ 
+    <div class="regFormItem">
+    <label for="industryCode"><font color="RED">*</font>主营行业： </label>
+	<select name="industryCode" id="industryCode" style="width:150px" onChange="check_isblank('industryCode',{failure:'主营行业必需填写',success:'填写正确'});">
+    <option value="">请选择</option>
+	</select>
+	<span id="lb_industryCode" ></span>
+</div>
+
+<div class="regFormItem">
+    <label for="reg-area-0"><font color="RED">*</font>国家/地区：</label>
+    <div align="left">
+        <select id='reg-area-0'>
+            <option value="">请选择国家</option>
+        </select>
+        <select id='reg-area-1' >
+            <option value="">请选择省份</option>
+        </select>
+        <select id='reg-area-2'>
+            <option value="">请选择城市</option>
+        </select>
+        <select id='reg-area-3'>
+            <option value="">请选择区县</option>
+        </select>
+		<span id="lb_reg-area-0">请选择国家地区</span>
+		<input type="hidden" name="regareacode" id="regareacode" value="" />
+     </div>
+</div>
+<div id="mygarden" class="regFormItem">
+    <label class="ttext_b1">园区、集散地、市场：</label>
+	<select id='reg-garden' name="categoryGardenId">
+        <option value="">请选择集散地</option>
+    </select>
+</div>
+<div>$!{registerErrorText}</div>
+<script type="text/javascript" src="$!{address.js}/zz91.register.js" ></script>
+<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		var regarea = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')",
+			assistUrl:"#springUrl('/category/gardenChild.htm')"
+    	});
+    	
+    	regarea.init({
+    		rootCode:"1001",
+    		initCode:"",
+			initAssistCode:"",
+			assistSelects:["#reg-garden"],
+    		selects:["#reg-area-0","#reg-area-1","#reg-area-2","#reg-area-3"]
+    	});
+		
+		var industry = new zz91Selector({
+			url:"#springUrl('/category/categoryChild.htm')"
+		});
+		
+		industry.init({
+			rootCode:"1000",
+			initCode:"",
+			selects:["#industryCode"]
+		});
+	});
+	
+	function preregister(formid,successfn){
+		if(chkRegisterForm()){
+			jQuery.ajax({
+				url:'$!{address.front}/register/preregister.htm',
+				data:jQuery("#"+formid).serialize(),
+				cache:false,
+				dataType:"json",
+				type:"post",
+				success:successfn,
+				failure:function(){
+					//alert(1)
+				}
+			});
+		}
+	}
+	
+	function check_isblank(targetId,msg){
+		var msgDisplay = jQuery("#lb_"+targetId);
+		msgDisplay.removeClass();
+		if(jQuery("#"+targetId).val()==""){
+			msgDisplay.addClass("err");
+			msgDisplay.html(msg.failure);
+			return false;
+		}
+		
+		msgDisplay.addClass("right");
+		msgDisplay.html(msg.success);
+		return true;
+	}
+	
+	function chkRegisterForm(){
+		var chk=true;
+    	if (!check_account()){chk=false;}
+    	if (!check_password()){chk=false;}
+    	if (!check_vpassword()){chk=false;}
+    	if (!check_tel()){chk=false;}
+    	if (!check_mobile()){chk=false;}
+    	
+		if (!check_isblank('contact',{failure:'联系人信息不能为空',success:'填写正确'})){
+			chk=false;
+		}
+		
+		if(!check_isblank('name',{failure:'公司信息必需填写',success:'填写正确'})){
+			chk=false;
+		}
+		
+		if(!check_isblank('industryCode',{failure:'主营行业必需填写',success:'填写正确'})){
+			chk=false;
+		}
+		
+		if(!check_isblank('reg-area-0',{failure:'必需选择国家或地区',success:'填写正确'})){
+			chk=false;
+		}
+		
+		if(chk){
+			var areacode=jQuery("#reg-area-0").val();
+			if(jQuery("#reg-area-1").val()!=""){
+				areacode=jQuery("#reg-area-1").val();
+			}
+			if(jQuery("#reg-area-2").val()!=""){
+				areacode=jQuery("#reg-area-2").val();
+			}
+			if(jQuery("#reg-area-3").val()!=""){
+				areacode=jQuery("#reg-area-3").val();
+			}
+			jQuery("#regareacode").val(areacode);
+		}
+		
+    	return chk;
+	}
+</script>

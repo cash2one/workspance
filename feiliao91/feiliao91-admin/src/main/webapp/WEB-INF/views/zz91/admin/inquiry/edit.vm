@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+	<script type="text/javascript" src="$!{address.js}/jquery-1.4rc1.js" ></script>
+    #parse("/zz91/common/import.vm")
+    #parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/categoryProducts/tree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/productsPic/productsPic.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/products/editProducts.js" ></script>
+
+    <script type="text/javascript">
+		var Page_Context = new function () {
+			this.PRODUCTSID="$!{productsId}";
+			this.COMPANYID="$!{companyId}";
+			this.CONTACTSID="$!{contactsId}";
+			this.ACCOUNT="$!{account}";
+			this.INQUIRYID="$!{inquiryId}";
+        }
+        
+        Ext.onReady(function(){
+        	var form = new ast.ast1949.admin.products.productsForm({
+				saveUrl:Context.ROOT+Context.PATH+"/admin/inquiry/addProduct.htm?ts="+timestamp(),
+				title:"新建供求",
+				layout:"fit",
+				region:"center",
+				newProductFlag:true,
+				inquiryData:{"id":Page_Context.INQUIRYID}
+			});
+			
+			
+			var viewport = new Ext.Viewport({
+				layout : "border",
+				items : [
+					{
+						xtype:"tabpanel",
+    					region:'center',
+    					activeTab: 0,
+						items:[form,{
+							title:"被询盘的对象",
+    						layout : 'fit',
+    						html : '<iframe src="' + Context.ROOT+Context.PATH+'/admin/inquiry/simpleproduct.htm?id='+Page_Context.PRODUCTSID+'" frameBorder=0 scrolling="auto" style = "width:100%;height:100%"></iframe>'
+						}]
+					}
+				]
+				//items : [form,simple]
+			})
+			
+			//获取询盘信息
+			jQuery(document).ready(function() {
+				jQuery.ajax({
+                    url: Context.ROOT+Context.PATH+ "/admin/inquiry/querySimpleInquiry.htm?random="+Math.random(),
+                    global: false,
+                    type: "POST",
+                    data: ({id : Page_Context.INQUIRYID}),
+                    dataType: "json",
+                    async:false,
+                    success: function(msg){
+						Ext.get("details").dom.value=msg.data;
+                    }
+				})
+			})
+			
+			Ext.get("account").dom.value=Page_Context.ACCOUNT;
+			Ext.get("account").dom.value=Page_Context.ACCOUNT;
+			//Ext.get("details").dom.value=Page_Context.DETAILS;
+        })
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

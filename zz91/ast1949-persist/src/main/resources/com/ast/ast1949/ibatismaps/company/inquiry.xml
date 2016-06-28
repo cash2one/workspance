@@ -1,0 +1,1311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="inquiry">
+
+	<typeAlias alias="inquiry" type="com.ast.ast1949.domain.company.Inquiry" />
+	<typeAlias alias="inquiryDto" type="com.ast.ast1949.dto.company.InquiryDto"/>
+
+	<resultMap class="inquiryDto" id="inquiryDtoResult">
+		<result property="inquiry" resultMap="inquiry.inquiryResult" />
+		<result property="senderContact" column="contact" />
+	</resultMap>
+		
+	<sql id="fullColumn">
+		ir.`id`,
+		ir.`title`,
+		ir.`content`,
+		ir.`conversation_group`,
+		ir.`group_id`,
+		ir.`be_inquired_type`,
+		ir.`be_inquired_id`,
+		ir.`inquired_type`,
+		ir.`inquired_id`,
+		ir.`sender_account`,
+		ir.`receiver_account`,
+		ir.`batch_send_type`,
+		ir.`export_status`,
+		ir.`export_person`,
+		ir.`is_rubbish`,
+		ir.`is_viewed`,
+		ir.`is_sender_del`,
+		ir.`send_time`,
+		ir.`gmt_created`,
+		ir.`gmt_modified`,
+		ir.`is_replyed`,
+		ir.`is_receiver_del`
+	</sql>
+	
+	<resultMap class="inquiry" id="inquiryResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="conversationGroup" column="conversation_group"/>
+		<result property="groupId" column="group_id" />
+		<result property="beInquiredType" column="be_inquired_type" />
+		<result property="beInquiredId" column="be_inquired_id" />
+		<result property="inquiredType" column="inquired_type" />
+		<result property="inquiredId" column="inquired_id" />
+		<result property="senderAccount" column="sender_account" />
+		<result property="receiverAccount" column="receiver_account"/>
+		<result property="batchSendType" column="batch_send_type" />
+		<result property="exportStatus" column="export_status" />
+		<result property="exportPerson" column="export_person" />
+		<result property="isRubbish" column="is_rubbish" />
+		<result property="isViewed" column="is_viewed" />
+		<result property="isSenderDel" column="is_sender_del" />
+		<result property="sendTime" column="send_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="isReplyed" column="is_replyed" />
+		<result property="isReceiverDel" column="is_receiver_del" />
+	</resultMap>
+	
+	<sql id="historyColumn">
+		ir.`id`,
+		ir.`title`,
+		ir.`content`,
+		ir.`conversation_group`,
+		ir.`group_id`,
+		ir.`be_inquired_type`,
+		ir.`be_inquired_id`,
+		ir.`inquired_type`,
+		ir.`inquired_id`,
+		ir.`sender_account`,
+		ir.`receiver_account`,
+		ir.`send_time`
+	</sql>
+	
+	<resultMap class="inquiry" id="historyColumnResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="conversationGroup" column="conversation_group"/>
+		<result property="groupId" column="group_id" />
+		<result property="beInquiredType" column="be_inquired_type" />
+		<result property="beInquiredId" column="be_inquired_id" />
+		<result property="inquiredType" column="inquired_type" />
+		<result property="inquiredId" column="inquired_id" />
+		<result property="senderAccount" column="sender_account" />
+		<result property="receiverAccount" column="receiver_account"/>
+		<result property="sendTime" column="send_time" />
+	</resultMap>
+	
+	<delete id="deleteBlackList" parameterClass="java.util.HashMap">
+		delete from `inquiry_blacklist`
+		where account=#account# and blacked_company_id=#blackedCompanyId#
+	</delete>
+	
+	<insert id="insertBlackList" parameterClass="java.util.HashMap">
+		insert into `inquiry_blacklist`
+		(
+		`company_id`,
+		`account`,
+		`blacked_company_id`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#companyId#,
+		#account#,
+		#blackedCompanyId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryConversation" parameterClass="java.util.HashMap" resultMap="inquiryDtoResult">
+		select
+		<include refid="inquiry.fullColumn"/>
+		, sca.contact
+		from inquiry as ir 
+		inner join company_account sca on ir.sender_account=sca.account
+		where ir.conversation_group=#conversationGroup#
+		order by id desc
+		limit #max#
+	</select>
+	
+	<sql id="dynmicInquiry">
+		<dynamic prepend="where" >
+			<isNotEmpty property="inquiry.groupId" prepend="and">
+				ir.group_id=#inquiry.groupId#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.senderAccount" prepend="and">
+				ir.sender_account=#inquiry.senderAccount#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.receiverAccount" prepend="and">
+				ir.receiver_account=#inquiry.receiverAccount#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isViewed" prepend="and">
+				ir.is_viewed=#inquiry.isViewed#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isRubbish" prepend="and">
+				ir.is_rubbish=#inquiry.isRubbish#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isSenderDel" prepend="and">
+				ir.is_sender_del=#inquiry.isSenderDel#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isReceiverDel" prepend="and">
+				ir.is_receiver_del=#inquiry.isReceiverDel#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isReplyed" prepend="and">
+				ir.is_replyed=#inquiry.isReplyed#
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.beInquiredType" prepend="and">
+				ir.be_inquired_type=#inquiry.beInquiredType#
+			</isNotEmpty>
+			
+			<!--  查询系统询盘 与 客户主动询盘 -->
+			<isNotEmpty property="inquiry.inquiredType" prepend="and">
+				<isEqual compareValue="0" property="inquiry.inquiredType">
+					ir.inquired_type = #inquiry.inquiredType#
+				</isEqual>
+				<isNotEqual compareValue="0" property="inquiry.inquiredType">
+					ir.inquired_type > 0
+				</isNotEqual>
+			</isNotEmpty>
+			
+			<!-- 标题关键字检索 -->
+			<isNotEmpty prepend="and" property="inquiry.title">
+				ir.title like concat('%',#inquiry.title#,'%')
+			</isNotEmpty>
+			
+		</dynamic>
+	</sql>
+
+	<select id="queryInquiryByUser" parameterClass="java.util.HashMap" resultMap="inquiryDtoResult">
+		select 
+		<include refid="inquiry.fullColumn"/>
+		, sca.contact
+		from inquiry as ir 
+		inner join company_account sca on ir.sender_account=sca.account
+		<include refid="inquiry.dynmicInquiry"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryInquiryListByUser" parameterClass="java.util.HashMap" resultMap="inquiryDtoResult">
+		select 
+		<include refid="inquiry.fullColumn"/>
+		, sca.contact
+		from inquiry as ir 
+		inner join company_account sca on ir.sender_account=sca.account
+		<include refid="inquiry.dynmicInquiry"/>
+		order by send_time desc
+	</select>
+	
+	<select id="queryInquiryByUserCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from inquiry as ir
+		<include refid="inquiry.dynmicInquiry"/>
+	</select>
+	
+	<insert id="insertInquiry" parameterClass="inquiry">
+		insert into `inquiry`
+		(
+		`title`,
+		`content`,
+		`conversation_group`,
+		`group_id`,
+		`be_inquired_type`,
+		`be_inquired_id`,
+		`inquired_type`,
+		`inquired_id`,
+		`sender_account`,
+		`receiver_account`,
+		`batch_send_type`,
+		`export_status`,
+		`export_person`,
+		`is_rubbish`,
+		`is_viewed`,
+		`is_sender_del`,
+		`send_time`,
+		`gmt_created`,
+		`gmt_modified`,
+		`is_replyed`,
+		`is_receiver_del`)
+		values
+		(
+		#title#,
+		#content#,
+		#conversationGroup#,
+		#groupId#,
+		#beInquiredType#,
+		#beInquiredId#,
+		#inquiredType#,
+		#inquiredId#,
+		#senderAccount#,
+		#receiverAccount#,
+		#batchSendType#,
+		#exportStatus#,
+		#exportPerson#,
+		#isRubbish#,
+		#isViewed#,
+		#isSenderDel#,
+		now(),
+		now(),
+		now(),
+		#isReplyed#,
+		#isReceiverDel#
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="queryInquiry" parameterClass="java.lang.Integer" resultMap="inquiryResult">
+		select
+		<include refid="inquiry.fullColumn"/>
+		from inquiry ir where ir.id=#id# 
+	</select>
+	
+	<update id="updateInquiryGroup" parameterClass="java.util.HashMap">
+		update inquiry set
+			group_id=#groupId#,
+			gmt_modified=now()
+		where id=#id#	
+		
+	</update>
+	
+	<update id="updateIsRubbish" parameterClass="java.util.HashMap">
+		update inquiry set 
+			is_rubbish=#isRubbish#,
+			gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	<update id="updateReceiverDel" parameterClass="java.util.HashMap">
+		update inquiry set 
+			is_receiver_del=#isReceiverDel#,
+			gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	
+	<update id="updateViewed" parameterClass="java.util.HashMap">
+		update inquiry set 
+			is_viewed=#isViewed#,
+			gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	<update id="updateSenderDel" parameterClass="java.util.HashMap">
+		update inquiry set 
+			is_sender_del=#isSenderDel#,
+			gmt_modified=now()
+		where id=#id#	
+	</update>
+	
+	<select id="queryScrollInquiry" parameterClass="java.util.HashMap" resultClass="inquiry">
+		SELECT i.sender_account AS senderAccount, i.receiver_account AS receiverAccount, i.send_time AS sendTime
+		FROM inquiry i
+		WHERE batch_send_type = #batchSendType#
+		AND i.send_time > date_sub(curdate(),interval 1 day)
+		GROUP BY i.sender_account
+		ORDER BY i.send_time DESC 
+		LIMIT #limit#
+	</select>
+	
+	<select id="countBlackedCompany" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from inquiry_blacklist
+		where account=#account# and blacked_company_id=#blackedCompanyId#
+	</select>
+	
+	<select id="countUnviewedInquiry" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from inquiry 
+		where receiver_account=#receiverAccount# and is_viewed='0'
+		and is_receiver_del='0' and is_rubbish='0'
+		<dynamic>
+			<isNotEmpty prepend="and" property="beInquiredType">
+				be_inquired_type=#beInquiredType#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updateIsReplyed" parameterClass="java.util.HashMap" >
+		update inquiry set is_replyed=#isReplyed#
+		where id=#inquiryId#
+	</update>
+	
+	<sql id="historyCondition">
+		where (sender_account in (#senderAccount#,#receiverAccount#)
+		or receiver_account in (#senderAccount#,#receiverAccount#))
+		and send_time>#dateline#
+	</sql>
+	
+	<select id="queryAllConversation" parameterClass="java.util.HashMap" resultMap="historyColumnResult">
+		select 
+			<include refid="inquiry.historyColumn"/>
+		from inquiry ir
+		<include refid="inquiry.historyCondition"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryAllConversationCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select 
+			count(*)
+		from inquiry ir
+		<include refid="inquiry.historyCondition"/>
+	</select>
+	
+	<select id="queryInquiryBySenderUser" parameterClass="java.util.HashMap" resultMap="inquiryResult">
+		select
+			<include refid="inquiry.fullColumn" />
+		from inquiry ir
+		where ir.sender_account=#senderAccount# and is_sender_del=0
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryInquiryBySenderUserCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select
+			count(*)
+		from inquiry ir
+		where ir.sender_account=#senderAccount# and is_sender_del=0
+	</select>
+	
+	<sql id="simpleColumn">
+		ir.id,
+		ir.title
+	</sql>
+	<resultMap class="inquiry" id="simpleColumnResult">
+		<result property="id" column="id"/>
+		<result property="title" column="title"/>
+	</resultMap>
+	
+	<sql id="preNextCondition">
+		<dynamic>
+			<isNotEmpty property="sendAccount">
+				and is_sender_del='0'
+				and sender_account=#sendAccount#
+			</isNotEmpty>
+			<isNotEmpty property="receiverAccount">
+				and is_receiver_del='0'
+				and is_rubbish='0'
+				and receiver_account=#receiverAccount#
+			</isNotEmpty>
+			<isNotEmpty property="type">
+				and	be_inquired_type = #type#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryOnMessageById" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select 
+		<include refid="inquiry.simpleColumn"/>
+		from inquiry ir
+		where #id# > ir.id
+		<include refid="inquiry.preNextCondition"/>
+		order by gmt_created desc
+		limit 1	
+	</select>
+	
+	<select id="queryDownMessageById" parameterClass="java.util.HashMap" resultMap="simpleColumnResult">
+		select
+		<include refid="inquiry.simpleColumn"/>
+		from inquiry ir 
+		where ir.id > #id# 
+		<include refid="inquiry.preNextCondition"/>
+		order by gmt_created asc 
+		limit 1	
+	</select>
+	
+	<sql id="adminCondition">
+		<dynamic prepend="where">
+			<isNotEmpty property="inquiry.senderAccount" prepend="and">
+				sender_account=#inquiry.senderAccount#
+				and is_sender_del='0'
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.receiverAccount" prepend="and">
+				receiver_account=#inquiry.receiverAccount#
+				and is_receiver_del='0'
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isRubbish" prepend="and">
+				is_rubbish = #inquiry.isRubbish#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryInquiryByAdmin" parameterClass="java.util.HashMap" resultMap="historyColumnResult">
+		select 
+			<include refid="inquiry.historyColumn"/>
+		from inquiry ir
+		<include refid="inquiry.adminCondition"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryInquiryByAdminCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select 
+			count(*)
+		from inquiry ir
+		<include refid="inquiry.adminCondition"/>
+	</select>
+	
+	<sql id="dynamicInquiryList">
+		<dynamic prepend="where">
+			
+		</dynamic>
+	</sql>
+	
+	<select id="queryInquiryByList" parameterClass="java.util.Map" resultMap="inquiryResult">
+		select
+		<include refid="inquiry.fullColumn"/>
+		from inquiry as ir
+		<include refid="dynamicInquiryList"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="countInquiryByList" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from inquiry as ir
+		<include refid="dynamicInquiryList"/>
+	</select>
+	
+	<select id="countInquiryByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) 
+		from inquiry
+		where
+		send_time >= #from# and #to# > send_time
+		and sender_account = #account#
+		group by receiver_account
+	</select>
+	
+	<select id="countByBeinquiredTypeAndTypeID" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) 
+		from inquiry
+		where 
+		be_inquired_type=#beInquiredType#
+		and
+		be_inquired_id = #beInquiredId#
+	</select>
+	
+	<select id="queryExportInquiryFromProduct" parameterClass="java.util.Map" resultMap="inquiryResult">
+		select
+		<include refid="inquiry.fullColumn"/>
+		from inquiry ir
+		where inquired_type = '2'
+		and sender_account = #sendAccount#
+		and be_inquired_type = '0'
+		and be_inquired_id = #targetId#
+		order by id desc
+		limit 1
+	</select>
+	
+	<!-- ..........................以下老代码...............................
+	<typeAlias alias="inquiryDO" type="com.ast.ast1949.domain.company.InquiryDO" />
+	<typeAlias alias="inquiryDTO" type="com.ast.ast1949.dto.company.InquiryDTO" />
+	<typeAlias alias="productsDO" type="com.ast.ast1949.domain.products.ProductsDO" />
+	<typeAlias alias="companyAccount"
+		type="com.ast.ast1949.domain.company.CompanyAccount" />
+	<typeAlias alias="inquiryDetailDto" type="com.ast.ast1949.dto.inquiry.InquiryDto" />
+	
+	<resultMap class="inquiryDetailDto" id="inquiryDetailDtoResult">
+		<result property="inquiryId" column="id" />
+		<result property="inquiryTitle" column="title" />
+		<result property="inquiryContent" column="content" />
+		<result property="inquiryIsViewed" column="is_viewed" />
+		<result property="sendTime" column="send_time" />
+		<result property="beInquiredType" column="be_inquired_type" />
+		<result property="beInquiredId" column="be_inquired_id" />
+		<result property="isReplyed" column="is_replyed" />
+		<result property="senderId" column="sender_id" />
+		<result property="senderAccount" column="account" />
+		<result property="senderCompanyId" column="sender_company_id" />
+		<result property="senderCompanyName" column="sender_company_name" />
+		<result property="receiverId" column="receiver_id" />
+		<result property="receiverAccount" column="receiver_account" />
+		<result property="receiverCompanyId" column="receiver_company_id" />
+		<result property="receiverCompanyName" column="receiver_company_name" />
+		<result property="productsId" column="products_id" />
+		<result property="productsTitle" column="products_title" />
+	</resultMap>
+
+	<resultMap class="inquiryDO" id="inquiryResult">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="groupId" column="group_id" />
+		<result property="beInquiredType" column="be_inquired_type" />
+		<result property="beInquiredId" column="be_inquired_id" />
+		<result property="inquiredType" column="inquired_type" />
+		<result property="inquiredId" column="inquired_id" />
+		<result property="senderId" column="sender_id" />
+		<result property="receiverId" column="receiver_id" />
+		<result property="batchSendType" column="batch_send_type" />
+		<result property="exportStatus" column="export_status" />
+		<result property="exportPerson" column="export_person" />
+		<result property="isRubbish" column="is_rubbish" />
+		<result property="isViewed" column="is_viewed" />
+		<result property="isReceiverDel" column="is_receiver_del" />
+		<result property="isSenderDel" column="is_sender_del" />
+		<result property="isReplyed" column="is_replyed" />
+		<result property="sendTime" column="send_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="account" column="account" />
+	</resultMap>
+	<resultMap class="CompanyContactsDO" id="companyContactsResult">
+		<result property="id" column="id" />
+		<result property="account" column="account" />
+		<result property="companyId" column="company_id" />
+		<result property="defaultContact" column="default_contact" />
+		<result property="telCountryCode" column="tel_country_code" />
+		<result property="telAreaCode" column="tel_area_code" />
+		<result property="tel" column="tel" />
+		<result property="mobile" column="mobile" />
+		<result property="faxCountryCode" column="fax_country_code" />
+		<result property="faxAreaCode" column="fax_area_code" />
+		<result property="fax" column="fax" />
+		<result property="email" column="email" />
+		<result property="website" column="website" />
+		<result property="contact" column="contact" />
+		<result property="sex" column="sex" />
+		<result property="position" column="position" />
+		<result property="address" column="address" />
+		<result property="zip" column="zip" />
+		<result property="qq" column="qq" />
+		<result property="msn" column="msn" />
+		<result property="hiddenContacts" column="hidden_contacts" />
+		<result property="backEmail" column="back_email" />
+		<result property="isUseBackEmail" column="is_use_back_email" />
+		<result property="isShowEmail" column="is_show_email" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<resultMap id="productsResult" class="productsDo">
+		<result property="companyId" column="company_id" />
+		<result property="title" column="product_title" />
+	</resultMap>
+	
+	<resultMap id="inquiryDtoResult" class="inquiryDTO">
+		<result property="inquiry" resultMap="inquiry.inquiryResult" />
+		<result property="products" resultMap="inquiry.productsResult" />
+		<result property="groupName" column="group_name" />
+		<result property="senderEmail" column="sender_email" />
+		<result property="senderName" column="sender_name" />
+		<result property="receiverName" column="receiver_name" />
+		<result property="pid" column="pid" />
+	</resultMap>
+		<resultMap id="resultInquiryForFrontDTO" class="inquiryForFrontDTO">
+			<result property="inquiry" resultMap="inquiry.inquiryResult" />
+			<result property="senderCompanyName" column="sender_company_name" />
+			<result property="senderCompanyId" column="sender_company_id" />
+			<result property="senderCompanyMembershipCode" column="sender_company_membership_code" />
+		</resultMap>
+		
+	
+	<typeAlias alias="inquiryBlackList" type="com.ast.ast1949.domain.company.InquiryBlackList" />
+ 	<insert id="insertInquiryBlackListByInquiryIds" parameterClass="map">
+ 		Insert into inquiry_blacklist(account_id,black_account_id,gmt_created)
+ 		SELECT 
+ 			distinct
+ 			inq.receiver_id,
+ 			inq.sender_id,
+ 			now()
+		FROM  inquiry inq
+		WHERE 
+		<iterate open="(" close=")" property="inquiryIds" conjunction="OR">
+			inq.id = #inquiryIds[]#
+		</iterate>
+		and not exists(
+		select 1 
+		from inquiry_blacklist inbl 
+		where inq.receiver_id= inbl.account_id and inq.sender_id =inbl.black_account_id)
+	</insert>
+
+	<select id="queryInquiryBlankListByAccountId" parameterClass="int" resultClass="inquiryBlackList">
+		SELECT
+			account_id as accountId,
+			black_account_id as blackAccountId
+		FROM inquiry_blacklist
+		WHERE account_id=#accountId#
+ 	</select>
+ 	
+ 	<delete id="deleteInquiryBlankListByAccountIdAndBlackAccountId" parameterClass="map">
+ 		delete from inquiry_blacklist where account_id=#accountId# and black_account_id=#blackAccountId#
+ 	</delete>
+ 	
+ 	<select id="queryInquirySenderAndReceiverList" parameterClass="map" resultClass="inquiryBlackList">
+ 		SELECT
+ 			distinct 
+			receiver_id as accountId,
+			sender_id as blackAccountId
+		FROM inquiry
+		WHERE
+		<iterate open="(" close=")" property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>
+ 	</select>
+	<insert id="insertInquiry" parameterClass="inquiryDO">
+		INSERT INTO inquiry(
+			title,
+			content,
+			group_id,
+			be_inquired_type,
+			be_inquired_id,
+			inquired_type,
+			inquired_id,
+			sender_id,
+			receiver_id,
+			batch_send_type,
+			export_status,
+			export_person,
+			is_rubbish,
+			is_viewed,
+			is_receiver_del,
+			is_sender_del,
+			is_replyed,
+			send_time,
+			gmt_created,
+			account
+		) VALUES (
+			#title#,
+			#content#,
+			#groupId#,
+			#beInquiredType#,
+			#beInquiredId#,
+			#inquiredType#,
+			#inquiredId#,
+			#senderId#,
+			#receiverId#,
+			#batchSendType#,
+			#exportStatus#,
+			#exportPerson#,
+			#isRubbish#,
+			#isViewed#,
+			#isReceiverDel#,
+			#isSenderDel#,
+			#isReplyed#,
+			#sendTime#,
+			now(),
+			#account#)		
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+		    select last_insert_id() as value 
+		</selectKey>
+	</insert>
+	<update id="updateInquiry"  parameterClass="inquiryDO">
+ 		UPDATE inquiry 
+		SET
+		<isNotEmpty property="inquiredType">
+		    inquired_type=#inquiredType#,
+		</isNotEmpty> 
+		<isNotEmpty property="inquiredId">
+		    inquired_id=#inquiredId#,
+		</isNotEmpty> 
+		<isNotEmpty property="exportStatus">
+		    export_status=#exportStatus#,
+		</isNotEmpty> 
+		<isNotEmpty property="groupId">
+		    group_id=#groupId#,
+		</isNotEmpty> 
+		<isNotEmpty property="gmtCreated">
+		    gmt_created=#gmtCreated#,
+		</isNotEmpty> 
+		<isNotEmpty property="isViewed">
+		    is_viewed=#isViewed#,
+		</isNotEmpty> 
+		<isNotEmpty property="content">
+		    content=#content#,
+		</isNotEmpty> 
+		<isNotEmpty property="beInquiredType">
+		    be_inquired_type=#beInquiredType#,
+		</isNotEmpty> 
+		<isNotEmpty property="sendTime">
+		    send_time=#sendTime#,
+		</isNotEmpty> 
+		<isNotEmpty property="title">
+		    title=#title#,
+		</isNotEmpty> 
+		<isNotEmpty property="senderId">
+		    sender_id=#senderId#,
+		</isNotEmpty> 
+		<isNotEmpty property="isRubbish">
+		    is_rubbish=#isRubbish#,
+		</isNotEmpty> 
+		<isNotEmpty property="account">
+		    account=#account#,
+		</isNotEmpty> 
+		<isNotEmpty property="isReceiverDel">
+		    is_receiver_del=#isReceiverDel#,
+		</isNotEmpty> 
+		<isNotEmpty property="isSenderDel">
+		    is_sender_del=#isSenderDel#,
+		</isNotEmpty> 
+		<isNotEmpty property="isReplyed">
+		    is_replyed=#isReplyed#,
+		</isNotEmpty> 
+		<isNotEmpty property="beInquiredId">
+		    be_inquired_id=#beInquiredId#,
+		</isNotEmpty> 
+		<isNotEmpty property="receiverId">
+		    receiver_id=#receiverId#,
+		</isNotEmpty> 
+		<isNotEmpty property="batchSendType">
+		    batch_send_type=#batchSendType#,
+		</isNotEmpty> 
+		<isNotEmpty property="exportPerson">
+		    export_person=#exportPerson#,
+		</isNotEmpty>
+		gmt_modified = now() 
+		WHERE id=#id#
+	</update>
+	<update id="updateInquiryGroup" parameterClass="map">
+ 		UPDATE inquiry 
+		SET group_id=#groupId#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+	<update id="updateInquiryIsRubbish" parameterClass="map">
+ 		UPDATE inquiry 
+		SET is_rubbish=#isRubbish#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+ 
+	<update id="updateInquiryIsViewed" parameterClass="map">
+ 		UPDATE inquiry 
+		SET is_viewed=#isViewed#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+ 
+	<update id="updateInquiryExportStatus" parameterClass="map">
+ 		UPDATE inquiry 
+		SET  export_status=#exportStatus#,export_person=#exportPerson#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+ 
+	<update id="updateInquiryIsReceiverDel" parameterClass="map">
+ 		UPDATE inquiry 
+		SET is_receiver_del=#isDel#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+ 	
+ 	<update id="updateInquiryIsSenderDel" parameterClass="map">
+ 		UPDATE inquiry 
+		SET is_sender_del=#isDel#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+	
+	<update id="updateInquiryAllDel" parameterClass="map">
+ 		UPDATE inquiry 
+		SET is_sender_del=#isDel#,is_receiver_del=#isDel#,gmt_modified = now()
+		WHERE
+		<iterate property="inquiryIds" conjunction="OR">
+			id = #inquiryIds[]#
+		</iterate>   
+	</update>
+	
+	
+ 
+ 	<update id="updateInquiryIsReplyed" parameterClass="int">
+ 		UPDATE inquiry 
+		SET is_replyed=#isReplyed#,gmt_modified = now()
+		WHERE id = #id# 
+	</update>
+		
+	<delete id="deleteInquiryById" parameterClass="java.lang.Integer">
+		delete from
+		inquiry
+		where id = #id#
+	</delete>
+  	
+	<select id="queryInquiryListByBeInquiredId" parameterClass="map" resultMap="inquiryResult">
+		SELECT
+			id,
+			title,
+			content,
+			group_id,
+			be_inquired_type,
+			be_inquired_id,
+			inquired_type,
+			inquired_id,
+			sender_id,
+			receiver_id,
+			batch_send_type,
+			export_status,
+			export_person,
+			is_rubbish,
+			is_viewed,
+			is_receiver_del,
+			is_sender_del,
+			is_replyed,
+			send_time,
+			gmt_created,
+			gmt_modified,
+			account
+		FROM  inquiry
+		WHERE be_inquired_id=#beInquiredId#
+		<dynamic prepend="">
+			<isNotEmpty property="beInquiredType" prepend="and">
+            	be_inquired_type=#beInquiredType# 
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryInquiryListByBeInquiredIdCount" parameterClass="map" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM inquiry
+		WHERE be_inquired_id=#beInquiredId#
+		<dynamic prepend="">
+			<isNotEmpty property="beInquiredType" prepend="and">
+            	be_inquired_type=#beInquiredType# 
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryInquiryListByReceiverId" resultMap="inquiryResult"
+		parameterClass="java.lang.Integer">
+  		SELECT
+			id,
+			title,
+			content,
+			group_id,
+			be_inquired_type,
+			be_inquired_id,
+			inquired_type,
+			inquired_id,
+			sender_id,
+			receiver_id,
+			batch_send_type,
+			export_status,
+			export_person,
+			is_rubbish,
+			is_viewed,
+			is_receiver_del,
+			is_sender_del,
+			is_replyed,
+			send_time,
+			gmt_created,
+			gmt_modified,
+			account
+		FROM  inquiry
+		WHERE receiver_id=#receiverId#
+	</select>
+	<select id="queryInquiryListByReceiverIdCount" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		SELECT COUNT(*) FROM inquiry
+		WHERE receiver_id=#receiverId#
+	</select>	
+				
+	<select id="queryInquiryById" resultMap="inquiryResult"
+		parameterClass="java.lang.Integer">
+		SELECT
+			id,
+			title,
+			content,
+			group_id,
+			be_inquired_type,
+			be_inquired_id,
+			inquired_type,
+			inquired_id,
+			sender_id,
+			receiver_id,
+			batch_send_type,
+			export_status,
+			export_person,
+			is_rubbish,
+			is_viewed,
+			is_receiver_del,
+			is_sender_del,
+			is_replyed,
+			send_time,
+			gmt_created,
+			gmt_modified,
+			account
+		FROM  inquiry
+		where id=#id#
+	</select>
+	<select id="queryInquiryContentById" resultClass="inquiryDO"
+		parameterClass="java.lang.Integer">
+		SELECT
+			i.content
+		FROM  inquiry i
+		where i.id=#value#
+	</select>
+	
+	<select id="queryInquiryUnviewedByReciverIdCount" resultClass="java.lang.Integer"
+		parameterClass="java.util.Map">
+		select
+		count(iq.id)
+		from inquiry iq
+		where iq.is_receiver_del = '0'
+		and iq.receiver_id = #receiverId#
+		and iq.be_inquired_type = #beInquiredType#
+		and iq.is_viewed = '0'
+	</select>
+	
+	<resultMap class="companyAccount" id="inquiryDetailSenderResult">
+		<result property="id" column="sender_id" />
+		<result property="companyId" column="sender_company_id" />
+		<result property="contact" column="sender_contact" />
+		<result property="sex" column="sender_sex" />
+		<result property="tel" column="sender_tel" />
+		<result property="fax" column="sender_fax" />
+		<result property="mobile" column="sender_mobile" />
+		<result property="email" column="sender_email" />
+	</resultMap>
+	
+	<resultMap class="CompanyContactsDO" id="inquiryDetailReceiverResult">
+		<result property="id" column="receiver_id" />
+		<result property="companyId" column="receiver_company_id" />
+		<result property="contact" column="receiver_contact" />
+		<result property="sex" column="receiver_sex" />
+		<result property="address" column="receiver_address" />
+		<result property="tel" column="receiver_tel" />
+		<result property="fax" column="receiver_fax" />
+		<result property="mobile" column="receiver_mobile" />
+		<result property="email" column="receiver_email" />
+	</resultMap>
+ 
+	<resultMap class="inquiryDTO" id="inquiryDetailResult">
+		<result property="inquiry" resultMap="inquiry.inquiryResult"/>
+		<result property="sender" resultMap="inquiry.inquiryDetailSenderResult"/>
+		<result property="senderCompanyName" column="senderCompanyName" />
+	</resultMap>
+	
+	<select id="queryInquiryDetailById" resultMap="inquiryDetailResult"
+		parameterClass="java.lang.Integer">
+		select
+			iq.id,
+			iq.title,
+			iq.content,
+			iq.group_id,
+			iq.be_inquired_type,
+			iq.be_inquired_id,
+			iq.inquired_type,
+			iq.inquired_id,
+			iq.sender_id,
+			iq.receiver_id,
+			iq.batch_send_type,
+			iq.export_status,
+			iq.export_person,
+			iq.is_rubbish,
+			iq.is_viewed,
+			iq.is_receiver_del,
+			iq.is_sender_del,
+			iq.is_replyed,
+			iq.send_time,
+			iq.gmt_created,
+			iq.gmt_modified,
+			iq.account,
+			cc.company_id as sender_company_id,
+			cc.tel as sender_tel,
+			cc.mobile as sender_mobile,
+			cc.fax as sender_fax,
+			cc.email as sender_email,
+			cc.contact as sender_contact,
+			cc.sex as sender_sex,
+			c.name as senderCompanyName
+		from inquiry iq
+		LEFT JOIN company_account cc on cc.id = iq.sender_id
+		LEFT JOIN company c on c.id = cc.company_id
+		where iq.id=#id#
+	</select>
+	
+	<select id="queryInquiryListByReceiverAndSender" parameterClass="map"
+		resultMap="inquiryDetailResult">
+		select
+			iq.id,
+			iq.title,
+			iq.content,
+			iq.group_id,
+			iq.be_inquired_type,
+			iq.be_inquired_id,
+			iq.inquired_type,
+			iq.inquired_id,
+			iq.sender_id,
+			iq.receiver_id,
+			iq.batch_send_type,
+			iq.export_status,
+			iq.export_person,
+			iq.is_rubbish,
+			iq.is_viewed,
+			iq.is_sender_del,
+			iq.is_receiver_del,
+			iq.is_replyed,
+			iq.send_time,
+			iq.gmt_created,
+			iq.gmt_modified,
+			iq.account,
+			cc.company_id as sender_company_id,
+			cc.tel as sender_tel,
+			cc.mobile as sender_mobile,
+			cc.fax as sender_fax,
+			cc.email as sender_email,
+			cc.contact as sender_contact,
+			cc.sex as sender_sex,
+			cc.address as sender_address,
+			c.name as senderCompanyName
+		from inquiry iq
+		LEFT JOIN company_account cc on cc.id = iq.sender_id
+		LEFT JOIN company c on c.id = cc.company_id
+		<include refid="common.paginationWhere"/>
+		<include refid="common.paginationOrderAndLimit"/>
+	</select>
+	
+	<select id="queryInquiryListByReceiverAndSenderCount" parameterClass="map"
+		resultClass="java.lang.Integer">
+		select count(1)
+		from inquiry iq
+		left join company_account cc on cc.id = iq.sender_id
+		left join company c on c.id = cc.company_id
+		<include refid="common.paginationWhere"/>
+	</select>
+
+	<select id="queryInquiryListByInquiryCondition" resultMap="inquiryDetailDtoResult" parameterClass="map">
+		SELECT
+			mid_view.*,
+			pd.id as products_id,
+			pd.title as products_title
+		FROM (
+			SELECT
+				iq.id,
+				iq.title,
+				iq.content,
+				iq.is_viewed,
+				iq.sender_id,
+				iq.receiver_id,
+				iq.send_time,
+				iq.account,
+				iq.be_inquired_type,
+				iq.be_inquired_id,
+				iq.is_replyed,
+				c.id as sender_company_id,
+				c.name as sender_company_name,
+				scc2.account as receiver_account,
+				c2.id as receiver_company_id,
+				c2.name as receiver_company_name
+			FROM inquiry iq
+			LEFT JOIN company_account scc ON scc.id=iq.sender_id
+			LEFT JOIN company c ON c.id=scc.company_id
+			LEFT JOIN company_account scc2 ON scc2.id=iq.receiver_id
+			LEFT JOIN company c2 ON c2.id=scc2.company_id
+			<include refid="common.paginationWhere"/>
+			<include refid="common.paginationOrderAndLimit"/>) as mid_view
+		LEFT JOIN products pd on mid_view.be_inquired_type='0' and mid_view.be_inquired_id=pd.id
+		
+	</select>
+	
+	<select id="queryInquiryListByInquiryConditionCount" parameterClass="map"
+		resultClass="java.lang.Integer">
+		select count(1)
+		FROM inquiry iq
+		LEFT JOIN company_account scc ON scc.id=iq.sender_id
+		LEFT JOIN company sc ON sc.id=scc.company_id
+		<include refid="common.paginationWhere"/>
+	</select>
+		
+		<select id="queryInquiryByConditions" parameterClass="inquiryDTO" resultMap="inquiryDtoResult">
+			SELECT
+				q.id,
+				q.title,
+				q.content,
+				q.group_id,
+				q.be_inquired_type,
+				q.be_inquired_id,
+				q.inquired_type,
+				q.inquired_id,
+				q.sender_id,
+				q.receiver_id,
+				q.batch_send_type,
+				q.export_status,
+				q.export_person,
+				q.is_rubbish,
+				q.is_viewed,
+				q.send_time,
+				q.gmt_created,
+				q.gmt_modified,
+				q.account,
+				q.is_receiver_del,
+				q.is_sender_del,
+				q.is_replyed,
+				p.id AS pid,
+				p.company_id,
+				p.title AS product_title,
+				g.name AS group_name,
+				scc.email AS sender_email,
+				scc.contact AS sender_name,
+				rcc.contact AS receiver_name
+			FROM inquiry q
+			LEFT JOIN products p ON q.be_inquired_id=p.id
+			LEFT JOIN inquiry_group g ON q.group_id=g.id
+			LEFT JOIN company_account scc ON q.sender_id=scc.id
+			LEFT JOIN company_account rcc ON q.receiver_id=rcc.id
+			WHERE 2>be_inquired_type
+			<isNotEmpty property="senderEmail" prepend="and">
+				<![CDATA[ scc.email LIKE concat(#senderEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="receiverEmail" prepend="and">
+				<![CDATA[ rcc.email LIKE concat(#receiverEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="sendTimeStart" prepend="and">
+				<![CDATA[ TO_DAYS(q.send_time)>=TO_DAYS(#sendTimeStart#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="sendTimeEnd" prepend="and">
+				<![CDATA[ TO_DAYS(q.send_time)<=TO_DAYS(#sendTimeEnd#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.beInquiredType" prepend="and">
+				<![CDATA[ q.be_inquired_type=#inquiry.beInquiredType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.inquiredType" prepend="and">
+				<![CDATA[ q.inquired_type=#inquiry.inquiredType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.batchSendType" prepend="and">
+				<![CDATA[ q.batch_send_type=#inquiry.batchSendType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.exportStatus" prepend="and">
+				<![CDATA[ q.export_status in ($inquiry.exportStatus$) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="senderEmail" prepend="and">
+				<![CDATA[ q.account LIKE concat('%',#senderEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.receiverId" prepend="and">
+				<![CDATA[ q.receiver_id=#inquiry.receiverId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.groupId" prepend="and">
+				<![CDATA[ q.group_id=#inquiry.groupId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.senderId" prepend="and">
+				<![CDATA[ q.sender_id=#inquiry.senderId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isRubbish" prepend="and">
+				<![CDATA[ q.is_rubbish=#inquiry.isRubbish# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isViewed" prepend="and">
+				<![CDATA[ q.is_viewed=#inquiry.isViewed# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="isPublished" prepend="and">
+				<isEqual property="isPublished" compareValue="false">
+					NOT 
+				</isEqual>
+					EXISTS(
+						SELECT p2.id 
+						FROM products p2 
+						WHERE scc.company_id=p2.company_id 
+						<isNotEmpty property="productsPublishedTime" prepend="and">
+							p2.gmt_created>#productsPublishedTime#
+						</isNotEmpty>
+					)
+			</isNotEmpty>
+
+			<dynamic prepend="order by">
+				<isNotEmpty property="page.sort">
+					$page.sort$
+					<isNotEmpty property="page.dir">
+						$page.dir$
+					</isNotEmpty>
+				</isNotEmpty>
+			</dynamic>
+			<dynamic prepend="limit">
+				<isGreaterThan property="page.pageSize" compareValue="0">
+					<isGreaterEqual property="page.startIndex"
+						compareValue="0">
+						#page.startIndex#,#page.pageSize#
+					</isGreaterEqual>
+				</isGreaterThan>
+			</dynamic>
+		</select>
+		
+		<select id="countInquiryByConditions" parameterClass="inquiryDTO" resultClass="java.lang.Integer">
+			SELECT
+				COUNT(0)
+			FROM inquiry q
+			LEFT JOIN products p ON q.be_inquired_id=p.id
+			LEFT JOIN inquiry_group g ON q.group_id=g.id
+			LEFT JOIN company_account scc ON q.sender_id=scc.id
+			LEFT JOIN company_account rcc ON q.receiver_id=rcc.id
+			WHERE 2>be_inquired_type
+			<isNotEmpty property="senderEmail" prepend="and">
+				<![CDATA[ scc.email LIKE concat(#senderEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="receiverEmail" prepend="and">
+				<![CDATA[ rcc.email LIKE concat(#receiverEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="sendTimeStart" prepend="and">
+				<![CDATA[ TO_DAYS(q.send_time)>=TO_DAYS(#sendTimeStart#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="sendTimeEnd" prepend="and">
+				<![CDATA[ TO_DAYS(q.send_time)<=TO_DAYS(#sendTimeEnd#) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.beInquiredType" prepend="and">
+				<![CDATA[ q.be_inquired_type=#inquiry.beInquiredType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.inquiredType" prepend="and">
+				<![CDATA[ q.inquired_type=#inquiry.inquiredType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.batchSendType" prepend="and">
+				<![CDATA[ q.batch_send_type=#inquiry.batchSendType# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.exportStatus" prepend="and">
+				<![CDATA[ q.export_status in ($inquiry.exportStatus$) ]]>
+			</isNotEmpty>
+			<isNotEmpty property="senderEmail" prepend="and">
+				<![CDATA[ q.account LIKE concat('%',#senderEmail#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.receiverId" prepend="and">
+				<![CDATA[ q.receiver_id=#inquiry.receiverId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.groupId" prepend="and">
+				<![CDATA[ q.group_id=#inquiry.groupId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.senderId" prepend="and">
+				<![CDATA[ q.sender_id=#inquiry.senderId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isRubbish" prepend="and">
+				<![CDATA[ q.is_rubbish=#inquiry.isRubbish# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="inquiry.isViewed" prepend="and">
+				<![CDATA[ q.is_viewed=#inquiry.isViewed# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="isPublished" prepend="and">
+				<isEqual property="isPublished" compareValue="false">
+					NOT 
+				</isEqual>
+					EXISTS(
+						SELECT p2.id 
+						FROM products p2 
+						WHERE scc.company_id=p2.company_id 
+						<isNotEmpty property="productsPublishedTime" prepend="and">
+							p2.gmt_created>#productsPublishedTime#
+						</isNotEmpty>
+					)
+			</isNotEmpty>
+		</select>
+		
+		<update id="setInquiryUngroupedByGroupId" parameterClass="java.lang.Integer">
+	 		UPDATE inquiry
+			SET group_id='0'
+			WHERE group_id = #value# 
+		</update>
+		
+		-->
+	<!--某段时间某公司的询盘数-->
+	<select id="countInquiryByCidAtime" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+	    from inquiry
+		where be_inquired_id=#targetId# and send_time>=#from# and #to#>send_time		
+	</select>
+</sqlMap>

@@ -1,0 +1,101 @@
+#set($layout="/layout/scoreLayout.vm")
+#pageNavStyle()
+<div id="left">
+    		<div class="leftpart7">
+            	<div class="tit">
+                	<h3>热门服务积分兑换</h3>
+              	    <div class="marquee" id="marquee">
+                    	<ul>
+                        	<li><a href="redeem.asp?servicetype=11#tab">废纸独家广告，原价800元/一个月,现在只需37000个积分,就能享受服务一周。</a></li>
+                            <li><a href="redeem.asp?servicetype=11#tab">生铁排名广告，原价3500/一年，现在只需9800个积分，就能享受服务一个月。</a></li>
+                            <li><a href="redeem.asp?servicetype=10#tab">中国废料大黄页，只需60000个积分，就能够轻松兑换！更多商机，尽在废料大黄页！</a></li>
+                        </ul>
+                    </div>
+                    
+                    <script type="text/javascript">
+	                    jQuery(document.body).ready(function(){
+	                    	jQuery("#marquee").RollTitle({line:1,speed:1000,timespan:1000});
+	    				});
+					</script>
+                </div>
+                
+                <div class="cont">
+                #foreach($goods in $!{hotGoods})
+                	<div class="redeembox margin-style02">
+                    	<div class="img borderstyle01"><a href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class=thickbox ><img src="$!{address.resource}/$!{goods.showPicture}" width="152" height="174"/></a></div>
+                        #if($!{goods.isHot} == "Y" )
+                        <div class="tipshot"></div>
+                        #end
+                        <div class="price">
+                            <div class="unitname">$!{goods.name}</div>
+                            <div class="unitprice"><!--￥--><span class="fontcolor01">$!{goods.priceBuy}</span>元#if($!{goods.priceDay})/$!{goods.priceDay}天#end</div>
+                        </div>
+                        <div class="toredeem">
+                        	<div class="redeemdateparice"><span class="fontcolor02">$!{goods.scoreBuy}</span>分#if($!{goods.scoreDay})/$!{goods.scoreDay}#end</div>
+                            <div class="redeemgo">
+                            	<!--如果兑换正在进行,那么此处显示图片 integralSys_tipbc08.gif 以及兑换链接-->
+                               <a href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class="thickbox" title="兑换$!{goods.name}"></a>
+                                 <!--如果兑换活动已经结束,那么此处显示文字 已结束-->
+                               <!--已结束-->
+                                
+                            </div>
+                        </div>
+                    </div>
+                #end
+                </div>
+            </div>
+              
+            <div id="clear"></div>
+			<!--
+            <div class="notices margin-style01">
+            	<p><span class="fontweight">公告：</span></p>
+            </div>
+            -->
+            <div id="clear"></div>
+            <div class="leftpart8 margin-style01">
+            	<div class="tit"><h3>所有兑换服务<a name="tab" id="tab"></a></h3>
+            	</div>
+                
+                <div class="cont">
+                	<ul class="tabs11">
+   					    <li class="tab111"><a href="?category=0#tab" >#if($!{category}==0)<img src="$!{address.images}/score/item2_on.gif" width="74" height="69" />#else<img src="$!{address.images}/score/item2.gif" width="74" height="69" />#end</a></li>
+                        <li class="tab111"><a href="?category=1#tab" >#if($!{category}==1)<img src="$!{address.images}/score/item1_on.gif" width="74" height="69" />#else<img src="$!{address.images}/score/item1.gif" width="74" height="69" />#end</a></li>
+					</ul>
+                    
+                    <div class="tab_container">
+				  <div id="tab1" class="tab_content">
+                           #foreach($goods in $!{page.records})
+                        	<div class="redeembox margin-style12 margin-style01">
+								<div class="img borderstyle01"><a href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class=thickbox ><img src="$!{address.resource}/$!{goods.showPicture}" width="152" height="174"/></a></div>
+								#if($!{goods.isHot} == "Y")
+                                <div class="tipshot"></div>
+								#end
+                        		<div class="price">
+                        			<div class="unitname">$!{goods.name}</div>
+									#if($!{goods.keywords} && $!{goods.keywords}!="")
+                                    <div class="keyword">关键字:<span class="fontcolor02">$!{goods.keywords}</span></div>
+									#end
+                            		<div class="unitprice">原价:<span class="fontcolor02">$!{goods.priceBuy}</span>元#if($!{goods.priceDay} && $!{goods.priceDay}>0)/$!{goods.priceDay}天#end</div>
+                        		</div>
+                        		<div class="toredeem">
+                        			<div class="redeemdateparice"><span class="fontcolor02">$!{goods.scoreBuy}分</span>#if($!{goods.scoreDay}&&$!{goods.scoreDay}>0)/$!{goods.scoreDay}天#end</div>
+                            		<div class="redeemgo">
+                            			<!--如果兑换正在进行,那么此处显示图片 integralSys_tipbc08.gif 以及兑换链接-->
+                              			 <a href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class=thickbox title="兑换$!{goods.name}"></a>
+                                 		<!--如果兑换活动已经结束,那么此处显示文字 已结束-->
+                              			 <!--已结束-->
+                           	   	 	</div>
+                        		</div>
+                    		</div>
+                    		#end
+                            
+                        </div>
+                        <div style="clear:both"></div>
+                        <div align="center" style="margin-top:5px;">
+							#myrcPageNav($!{page} "#springUrl('/goods.htm')" "category=$!{category}" "")
+						</div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>

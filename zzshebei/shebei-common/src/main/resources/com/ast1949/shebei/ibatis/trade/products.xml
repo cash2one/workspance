@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="products">
+	<typeAlias alias="products" type="com.ast1949.shebei.domain.Products" />
+
+	<resultMap class="products" id="resultProductsAllColumn">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="productsType" column="products_type" />
+		<result property="categoryCode" column="category_code" />
+		<result property="title" column="title" />
+		<result property="details" column="details" />
+		<result property="price" column="price" />
+		<result property="priceMax" column="price_max" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="source" column="source" />
+		<result property="tags" column="tags" />
+		<result property="area" column="area" />
+		<result property="quality" column="quality" />
+		<result property="gmtShow" column="gmt_show" />
+	</resultMap>
+
+	<resultMap class="products" id="resultProcutsByTypeColumn">
+		<result property="id" column="id" />
+		<result property="cid" column="cid" />
+		<result property="title" column="title" />
+		<result property="gmtShow" column="gmt_show" />
+	</resultMap>
+
+	<sql id="sqlProductsAllColumn">
+		id,
+		cid,
+		products_type,
+		category_code,
+		title,
+		details,
+		price,
+		price_max,
+		price_unit,
+		quantity,
+		quantity_unit,
+		source,
+		tags,
+		area,
+		quality,
+		gmt_show
+	</sql>
+
+	<sql id="judgeCidPtypeCategoryCode">
+		where now() > gmt_show
+		<isNotEmpty property="categoryCode" prepend="and">
+			category_code like concat (#categoryCode#,'%')
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cid">
+			cid = #cid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="type">
+			products_type =#type#
+		</isNotEmpty>
+	</sql>
+
+	<sql id="sqlProcutsByTypeColumn">
+		id,
+		cid,
+		title,
+		gmt_show
+	</sql>
+
+	<select id="queryProductsByType" parameterClass="java.util.Map"
+		resultMap="resultProcutsByTypeColumn">
+		select
+		<include refid="sqlProcutsByTypeColumn" />
+		from products
+		where now() > gmt_show
+		<isNotEmpty property="type" prepend="and">
+			products_type = #type#
+		</isNotEmpty>
+		<isNotEmpty property="cid" prepend="and">
+			cid = #cid#		
+		</isNotEmpty>
+	     LIMIT #size#
+	</select>
+
+	<select id="queryProductsByCidAndType" parameterClass="java.util.Map"
+		resultMap="resultProcutsByTypeColumn">
+		select
+		<include refid="sqlProcutsByTypeColumn" />
+		from products
+		<include refid="judgeCidPtypeCategoryCode" />
+		<!-- 
+		<include refid="common.pageOrderBy" />
+		 -->
+		 order by gmt_show desc
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryProductsByCidAndTypeCount" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from products
+		<include refid="judgeCidPtypeCategoryCode" />
+	</select>
+
+	<select id="queryProductbyId" parameterClass="java.lang.Integer"
+		resultMap="resultProductsAllColumn">
+		select
+		<include refid="sqlProductsAllColumn" />
+		from products
+		where
+		id = #value#
+	</select>
+
+	<select id="queryOtherProducts" parameterClass="java.util.Map"
+		resultMap="resultProcutsByTypeColumn">
+		select
+		<include refid="sqlProcutsByTypeColumn" />
+		from products
+		where now() > gmt_show
+		<isNotEmpty prepend="and" property="categoryCode">
+			category_code not in(#categoryCode#)
+		</isNotEmpty>
+		<isNotEmpty property="type" prepend="and">
+			products_type = #type#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cid">
+			cid = #cid# 
+		</isNotEmpty>
+		LIMIT #size#
+	</select>
+
+	<select id="queryRelatedProducts" parameterClass="java.util.Map"
+		resultMap="resultProcutsByTypeColumn">
+		select
+		<include refid="sqlProcutsByTypeColumn" />
+		from products 
+		<include refid="judgeCidPtypeCategoryCode"/>
+		LIMIT #size#
+	</select>
+
+	<select id="queryMaxGmtShow" resultClass="java.util.Date">
+		select
+		max(gmt_show)
+		from products
+	</select>
+	
+	<insert id="insertProducts" parameterClass="products">
+		insert into `products`
+		(
+		`cid`,
+		`products_type`,
+		`category_code`,
+		`title`,
+		`details`,
+		`price`,
+		`price_max`,
+		`price_unit`,
+		`quantity`,
+		`quantity_unit`,
+		`source`,
+		`tags`,
+		`area`,
+		`quality`,
+		`gmt_publish`,
+		`gmt_refresh`,
+		`gmt_expired`,
+		`gmt_show`,
+		`expired_day`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#cid#,
+		#productsType#,
+		#categoryCode#,
+		#title#,
+		#details#,
+		#price#,
+		#priceMax#,
+		#priceUnit#,
+		#quantity#,
+		#quantityUnit#,
+		#source#,
+		#tags#,
+		#area#,
+		#quality#,
+		#gmtPublish#,
+		now(),
+		#gmtExpired#,
+		#gmtShow#,
+		#expiredDay#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+</sqlMap>
