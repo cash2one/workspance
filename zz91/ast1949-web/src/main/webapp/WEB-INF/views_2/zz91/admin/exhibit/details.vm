@@ -1,0 +1,65 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/admin/exhibit.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		var mainForm=Ext.create("ast.ast1949.admin.exhibit.MainForm",{
+			region:"center",
+			title:"展会基本信息",
+			saveModel:function(btn,e){
+				var form=this.up("form").getForm();
+				if(form.isValid()){
+					var _url=Context.ROOT+"/zz91/admin/exhibit/doCreate.htm";
+    				#if($!{id}>0)
+    					_url=Context.ROOT+"/zz91/admin/exhibit/doUpdate.htm";
+    				#end
+					//保存
+					form.submit({
+						url:_url,
+						success: function(f, action) {
+							if(action.result.success){
+								#if(${id} && ${id}>0)
+								Ext.Msg.alert(Context.MSG_TITLE, "展会基本信息已更新！");
+								#else
+								var tabs=mainForm.up("tabpanel");
+								var tab=tabs.add({
+									id:"content-"+action.result.data,
+									title:"展会详细信息",
+									html : '<iframe src="' + Context.ROOT+'/zz91/admin/exhibit/content.htm?id='+action.result.data+'" frameBorder=0 scrolling="auto" style = "width:100%;height:100%"></iframe>'
+								});
+								tabs.setActiveTab(tab);
+								#end
+							}
+						},
+						failure: function(form, action) {
+							Ext.Msg.alert(Context.MSG_TITLE, "发生错误，信息没有更新！");
+						}
+					});
+				}
+			}
+		});
+		
+		var tabPanel=Ext.create("Ext.tab.Panel",{
+			region:"center",
+			items:[mainForm
+			#if($!{id}>0)
+			,{
+				xtype:"panel",
+				title:"展会详细信息",
+				html : '<iframe src="' + Context.ROOT+'/zz91/admin/exhibit/content.htm?id=$!{id}" frameBorder=0 scrolling="auto" style = "width:100%;height:100%"></iframe>'
+			}
+			#end
+			]
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[tabPanel]
+		});
+		
+		#if($!{id}>0)
+			mainForm.loadModel($!{id});
+		#end
+		
+	});
+</script>

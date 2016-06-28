@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="chartdata">
+	<typeAlias alias="chartDataDO" type="com.ast.ast1949.domain.information.ChartDataDO" />
+	<typeAlias alias="chartDataDTO" type="com.ast.ast1949.dto.information.ChartDataDTO" />
+	
+	
+	<resultMap class="chartDataDO" id="resultChartDataDO">
+		<result property="id" column="id" />
+		<result property="chartInfoId" column="chart_info_id" />
+		<result property="chartCategoryId" column="chart_category_id" />
+		<result property="name" column="name" />
+		<result property="value" column="value" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap class="chartDataDO" id="miniResultChartDataDO">
+		<result property="name" column="name" />
+		<result property="value" column="value" />
+	</resultMap>
+	
+	<resultMap class="chartDataDTO" id="miniResultChartDataDTO">
+		<result property="chartData" resultMap="chartdata.miniResultChartDataDO" />
+		<result property="gmtDate" column="gmt_date" />
+	</resultMap>
+	
+	<insert id="insertChartData" parameterClass="chartDataDO">
+		INSERT INTO chart_data 
+		(
+			chart_info_id,
+			chart_category_id, 
+			name, 
+			value, 
+			gmt_created,
+			gmt_modified
+		)
+		VALUES
+		(
+			#chartInfoId#,
+			#chartCategoryId#, 
+			#name#, 
+			#value#, 
+			now(),
+			now()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!-- 
+	<delete id="deleteChartDataById" parameterClass="java.lang.Integer">
+		DELETE
+		FROM chart_data
+		WHERE id = #value#
+	</delete>
+	 -->
+	
+	<delete id="deleteChartDataByChartInfoId" parameterClass="java.lang.Integer">
+		DELETE
+		FROM chart_data
+		WHERE chart_info_id = #value#
+	</delete>
+	
+	<!-- 
+	<delete id="deleteChartDataBychartCategoryId" parameterClass="java.lang.Integer">
+		DELETE
+		FROM chart_data
+		WHERE chart_category_id = #value#
+	</delete>
+	 -->
+	
+	<update id="updateChartDataById" parameterClass="chartDataDO">
+		UPDATE chart_data
+		SET 
+		  chart_info_id=#chartInfoId#,
+		  chart_category_id = #chartCategoryId#,
+		  name = #name#,
+		  value = #value#,
+		  gmt_modified = now()
+		WHERE id = #id#
+	</update>
+	
+	<!-- 
+	<select id="queryChartDataById" parameterClass="java.lang.Integer" resultMap="resultChartDataDO">
+		SELECT
+		  cd.id,
+		  cd.chart_info_id,
+		  cd.chart_category_id,
+		  cd.name,
+		  cd.value,
+		  cd.gmt_created,
+		  cd.gmt_modified
+		FROM chart_data cd
+		WHERE cd.id = #value#
+	</select>
+	 -->
+	
+	<select id="queryChartDataByCondition" parameterClass="java.util.Map" resultMap="resultChartDataDO">
+		SELECT
+		  cd.id,
+		  cd.chart_info_id,
+		  cd.chart_category_id,
+		  cd.name,
+		  cd.value,
+		  cd.gmt_created,
+		  cd.gmt_modified
+		FROM chart_data cd
+		<dynamic prepend="where">
+			<isNotEmpty property="chartInfoId" prepend="and">
+				cd.chart_info_id = #chartInfoId#
+			</isNotEmpty>
+			<isNotEmpty property="chartCategoryId" prepend="and">
+				cd.chart_category_id = #chartCategoryId#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				cd.name = #name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryChartData" parameterClass="java.util.Map" resultMap="miniResultChartDataDTO">
+		SELECT
+		  cd.name,
+		  cd.value,
+		  ci.gmt_date
+		FROM chart_data cd
+		  INNER JOIN charts_info ci
+		    ON ci.id = cd.chart_info_id
+		<dynamic prepend="where">
+			<isNotEmpty property="chartInfoId" prepend="and">
+				cd.chart_info_id = #chartInfoId#
+			</isNotEmpty>
+			<isNotEmpty property="chartCategoryId" prepend="and">
+				cd.chart_category_id = #chartCategoryId#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				cd.name = #name#
+			</isNotEmpty>
+			<isNotEmpty property="fromDate" prepend="and">
+				<isNotEmpty property="toDate">
+					TO_DAYS(ci.gmt_date)>=TO_DAYS(#fromDate#) AND TO_DAYS(#toDate#)>=TO_DAYS(ci.gmt_date)
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY ci.gmt_date ASC 
+		limit 100
+	</select>
+	
+	<select id="queryChartDataDesc" parameterClass="java.util.Map" resultMap="miniResultChartDataDTO">
+		SELECT
+		  cd.name,
+		  cd.value,
+		  ci.gmt_date
+		FROM chart_data cd
+		  INNER JOIN charts_info ci
+		    ON ci.id = cd.chart_info_id
+		<dynamic prepend="where">
+			<isNotEmpty property="chartInfoId" prepend="and">
+				cd.chart_info_id = #chartInfoId#
+			</isNotEmpty>
+			<isNotEmpty property="chartCategoryId" prepend="and">
+				cd.chart_category_id = #chartCategoryId#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				cd.name = #name#
+			</isNotEmpty>
+			<isNotEmpty property="fromDate" prepend="and">
+				<isNotEmpty property="toDate">
+					TO_DAYS(ci.gmt_date)>=TO_DAYS(#fromDate#) AND TO_DAYS(#toDate#)>=TO_DAYS(ci.gmt_date)
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY ci.gmt_date desc , cd.id desc
+		limit 100
+	</select>
+	
+	<select id="queryChartDataByChartCategoryId" parameterClass="java.lang.Integer" resultMap="resultChartDataDO">
+		SELECT 
+			cd.id,
+			cd.chart_info_id,
+			cd.chart_category_id,
+			cd.name,
+			cd.value,
+			cd.gmt_created,
+			cd.gmt_modified 
+	 	FROM chart_data cd
+		LEFT JOIN chart_category cc ON cd.chart_category_id=cc.id
+		WHERE cd.chart_category_id=#value#
+		ORDER BY cd.gmt_created DESC 
+		LIMIT 0,2
+	</select>
+</sqlMap>

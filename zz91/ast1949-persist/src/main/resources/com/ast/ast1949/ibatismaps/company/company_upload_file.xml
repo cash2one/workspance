@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyUploadFile">
+	<typeAlias alias="companyUploadFileDO"
+		type="com.ast.ast1949.domain.company.CompanyUploadFileDO" />
+
+	<resultMap class="companyUploadFileDO" id="companyUploadFileResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="filename" column="filename" />
+		<result property="filepath" column="filepath" />
+	</resultMap>
+	<select id="queryByCompanyId" parameterClass="java.lang.Integer" resultClass="companyUploadFileDO">
+		select id,
+		company_id,
+		filename,
+		filetype,
+		filepath,
+		remark,
+		gmt_created,
+		gmt_modified
+		FROM
+		company_upload_file
+		where company_id=#companyId# 
+		order by id desc
+  </select>
+  <!-- 
+  <select id="queryByCompanyIdAndModefied" parameterClass="java.lang.Integer" resultClass="companyUploadFileDO">
+		select id,
+		company_id,
+		filename,
+		filetype,
+		filepath,
+		remark,
+		gmt_created,
+		gmt_modified
+		FROM
+		company_upload_file
+		where company_id=#companyId#
+		order by gmt_modified desc
+		limit 0,1
+  </select>
+   -->
+	<insert id="insertCompanyUploadFile" parameterClass="companyUploadFileDO">
+		insert into company_upload_file
+		(
+		company_id,
+		filename,
+		filetype,
+		filepath,
+		remark,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#companyId#,
+		#filename#,
+		#filetype#,
+		#filepath#,
+		#remark#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	
+	<!-- 
+	<update id="updateCompanyUploadFile" parameterClass="companyUploadFileDO">
+		update
+		company_upload_file
+		SET
+		company_id = #companyId# ,
+		filename =
+		#filename# ,
+		filetype = #filetype# ,
+		filepath = #filepath# ,
+		remark =
+		#remark# ,
+		gmt_created = #gmtCreated# ,
+		gmt_modified = #gmtModified#
+		WHERE
+		id = #id# ;
+      
+	</update>
+	 -->
+	<delete id="deleteComapanyUploadFileById" parameterClass="java.lang.Integer">
+		delete from company_upload_file
+		WHERE
+		id = #id# ;
+	</delete>
+	
+	<select id="queryById" parameterClass="java.lang.Integer" resultMap="companyUploadFileResult">
+		select 
+		id,
+		company_id,
+		filename,
+		filepath
+		FROM
+		company_upload_file
+		where id=#value#
+	</select>
+
+</sqlMap>

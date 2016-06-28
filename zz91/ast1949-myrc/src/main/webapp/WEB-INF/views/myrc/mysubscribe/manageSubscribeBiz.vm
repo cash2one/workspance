@@ -1,0 +1,79 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1501","","30")
+<div class="myrcNormalFrame">
+	#if($isNeverSubscribe)
+	<div class="tishiWarn" style="margin-top:0">
+		<img src="$!{address.images}/global/icon/caution2.gif"> 您还没有订阅您的商机，不能查看在线商机快递
+	</div>
+    #end
+	<div class="commTip">
+        <h3 class="subscribManageTit">供求商机管理</h3>
+        <span class="subscribManageSub" ><a href="$!{address.server}/subscribe/subscribe.htm" target="_blank" class="commArrowNews">订阅新的商机</a></span>
+        <div style="clear:both"></div>
+    </div>
+	
+	<div class="commList">
+    	<div class="commListTit">
+            <span class="subscibInfoTit">订阅内容</span>
+            <span class="subscibInfoType">商机类型</span>
+            <span class="subscibInfoArea">地区</span>
+            <span class="subscibInfoTipType">提醒方式</span>
+            <span class="subscibInfoOperat">操作</span>
+            <div style="clear:both"></div>
+        </div>
+    	<ul>
+              #foreach($biz in $bizList)
+              <li>
+              	<span class="subscibInfoTit"><a href="#springUrl('/mysubscribe/bizList.htm?id=')$!{biz.id}">$biz.keywords</a></span>
+              	<span class="subscibInfoType">
+              		#if($biz.productsTypeCode=='10331000')
+              			供应
+              		#elseif($biz.productsTypeCode=='10331001')
+              			求购
+              		#elseif($biz.productsTypeCode=='')
+              			供应/求购
+        			#end
+        		</span>
+        		<span class="subscibInfoArea">
+					#if(!$!{biz.province})
+                        <font style="color:#AAA">无地区信息</font>
+					#else
+						$!{biz.province}
+					#end
+				</span>
+        		<span class="subscibInfoTipType">
+        			#if($biz.isSendByEmail)
+        				信息发送到：$!{biz.email}
+        			#else
+                        <font style="color:#AAA">无邮件提醒</font>
+        			#end
+              	</span>
+        		<span class="subscibInfoOperatMod"><a href="$!{address.server}/subscribe/subscribe.htm?id=$!{biz.id}" target="_blank" class="commBackFeed">修改</a></span>
+        		<span class="subscibInfoOperatDel"><a onclick="javascript:if(confirm('您确定要删除吗？')){return true;}else{return false;}" href="#springUrl('/mysubscribe/deleteSubscribe.htm?id=')$!{biz.id}" class="commTrashFeed">
+						删除</a></span>
+              </li>
+			  #end
+              <div style="clear:both"></div>
+        </ul>
+		##<div class="pageNav" style="margin:10px 0;">
+            		##myrcPageNav($!{page} "$!{address.server}/myrc/mysubscribe/manageSubscribeBiz.htm" "$!{suffixUrl}" "")
+		##</div>
+    </div>
+	
+	 #if($isNeverSubscribe)
+         <div class="tishiError">你还没有订阅最新供求商机! <a href="$!{address.server}/subscribe/subscribeBiz.htm" target="_blank" style="color:#333">点此订阅</a></div>
+     #end
+    <div style="clear:both"></div>  
+	<div class="mailTip">
+            <b>邮件地址提醒</b><br> 
+			<hr style="color:#CCC;height:1px;">	
+				当前用于接收的电子邮箱为：<font color=#ff7300>$!{currentEmail} </font> 
+			<a href="#springUrl('/mycompany/updateCompany.htm')" class="modMail" title="点击修改接收电子邮箱">修改</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	})
+</script>

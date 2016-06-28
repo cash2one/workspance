@@ -1,0 +1,34 @@
+#if(!$!{hotType})
+	#set($hotType="废金属")
+#end
+<!--企业报价-->
+#cacheFragment("$!{address.fragment}/price/newestCompPrice.htm?size=10&td4", "", "", "")
+<div class="te_tit_border">
+	<div class="te_tit_name">$!{hotType}企业报价</div>
+	<div>
+		<ul style="padding-top:10px;">
+			#foreach($obj in $list)
+				<li class="terightgew">
+						#set($price=$!{obj.minPrice})
+						#if($!{obj.maxPrice} && $!{obj.maxPrice}>0)
+							#set($price=$!{price}+"-"+$!{obj.maxPrice})
+						#end
+						#set($price=$price + $!{obj.priceUnit})
+						#if($!{productDetails.quantityUnit} && $!{productDetails.quantityUnit.length()} >0)
+							#set($!{price}=$!{price} + "/"+$!{productDetails.quantityUnit})
+						#end
+						#set($!{price} = $!{price.toString()})
+					<span title="$!{price}">
+						#printTitle($!{price} 10 "..")
+					</span>
+##						#if($!{obj.minPrice} && $!{obj.minPrice.length()}>0)$!{obj.minPrice}#if($!{obj.maxPrice} && $!{obj.maxPrice.length()}>0)-$!{obj.maxPrice}#end
+##								##$!{obj.priceUnit} 
+##								#else 暂无 #end
+					<a href="$!{address.price}/companyprice/priceDetails.htm?id=$!{obj.id}" class="te_classotwo" target="_blank">#printTitle($!{obj.title} 10 "")</a>
+				</li>
+			#end
+		</ul>
+	</div>
+</div>
+#end
+<!--结束企业报价-->

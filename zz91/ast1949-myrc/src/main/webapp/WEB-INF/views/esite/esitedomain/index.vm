@@ -1,0 +1,68 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/esite/esitenews/index.htm')">商铺管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">绑定商铺域名</li>
+        </ul>
+		<div class="alert mt">
+			<strong>重要通知:</strong>
+			<p>中国再生资源交易网最新推出以下免费增值服务：</p>
+			<p><b>企业商铺</b>能免费绑定外部域名，客户可通过这些域名访问您的企业商铺！</p>
+			<strong>重要防骗提醒:</strong></br>
+			<p>您在中国再生资源交易网绑定域名，不需要另外费用，敬请注意借以绑定域名为由进行欺骗的公司，<br /></p>
+			<p>如有疑问，可咨询网站客服热线：<span class="red">$!{csPhone}</span></p>
+		</div>
+		<div class="well mt">
+			<div class="well-head">第一步：域名解析</div>
+			<div class="well-content">
+				<strong>将您的域名解释到CNAME：</strong><span style="color:red;" >$!{customDomainIp}</span>
+			</div>
+		</div>
+		<div class="well mt">
+			<div class="well-head">第二步：绑定域名</div>
+			<div class="well-content">
+				<form id="form1" name="form1" action="#springUrl('/esite/esitedomain/bind.htm')" method="post" onsubmit="return bindDomain();">
+			    		#if($!{memberInfo.domainZz91} && $!{memberInfo.domainZz91}!="")
+			    		<div class="control-group">
+			    			<label for="" class="control-label">您的免费二级域名：</label>
+			    			<div class="controls">
+			    				<a href="http://$!{memberInfo.domainZz91}.zz91.com" target="_blank" >$!{memberInfo.domainZz91}.zz91.com</a>
+			    			</div>
+			    		</div>
+			    		#end
+			    		#if($!{memberInfo.domain})
+			        	<div class="control-group">
+			    			<label class="control-label">您当前绑定的域名：</label>
+			    			<div class="controls">
+		        				<a href="http://$!{memberInfo.domain}" target="_blank" >$!{memberInfo.domain}</a> 
+		        				<a href="#springUrl('/esite/esitedomain/bind.htm')" title="点击取消绑定">取消绑定</a>
+		        			</div>
+		    			</div>
+			    		#end
+			    		<div class="control-group">
+			    			<label for="domain" class="control-label">重新绑定域名：</label>
+			    			<div class="controls">
+			    				<input type="text" id="domain" name="domain" value="$!{memberInfo.domain}" class="field input-large validate[required]">
+			    			</div>
+		    			</div>
+		    			<div class="form-actions">
+		    				<input type="submit" value="重新绑定" id="submitNormal" class="btn btn-primary">
+		    			</div>
+					<div class="alert alert-info mt"> 
+			    		<b>注意：</b>域名绑定时，网站必须备案，没有通过备案的域名，本站将拒绝开通域名绑定。
+			    	</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+jQuery(document).ready(function(){
+	myrc.menu(6, 2);
+	jQuery("#form1").validationEngine("attach");
+});
+</script>

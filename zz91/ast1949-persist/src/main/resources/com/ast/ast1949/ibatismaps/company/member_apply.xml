@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="memberApply">
+	<typeAlias alias="memberApplyDO" type="com.ast.ast1949.domain.company.MemberApplyDO"/>
+	<typeAlias alias="memberApplyDTO" type="com.ast.ast1949.dto.company.MemberApplyDTO"/>
+
+	<resultMap class="memberApplyDO" id="resultMemberApplyDO">
+		<result property="id" column="id"/>
+		<result property="username" column="username"/>
+		<result property="membershipCode" column="membership_code"/>
+		<result property="tel" column="tel"/>
+		<result property="mobile" column="mobile"/>
+		<result property="email" column="email"/>
+		<result property="processStatus" column="process_status"/>
+		<result property="processPerson" column="process_person"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+		<result property="remark" column="remark"/>
+		<result property="companyContactsId" column="company_contacts_id"/>
+	</resultMap>	
+	
+	<resultMap class="memberApplyDTO" id="resultMemberApplyDTO">
+		<result property="memberApply" resultMap="memberApply.resultMemberApplyDO"/>
+		<result property="membershipName" column="membership_name"/>
+		
+	</resultMap>
+	
+	<insert id="insertMemberApply" parameterClass="memberApplyDO">
+		insert into member_apply
+            (username,
+             membership_code,
+             tel,
+             mobile,
+             email,
+             process_status,
+             process_person,
+             gmt_created,
+             gmt_modified,
+             company_contacts_id,
+             remark)
+		values (#username#,
+		        #membershipCode#,
+		        #tel#,
+		        #mobile#,
+		        #email#,
+		        #processStatus#,
+		        #processPerson#,
+		        now(),
+		        now(),
+		        #companyContactsId#,
+		        #remark#);
+		<selectKey keyProperty="id" resultClass="int">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="queryMemberApplyList" parameterClass="memberApplyDTO" resultMap="resultMemberApplyDTO">
+		SELECT
+		  m.id,
+		  m.username,
+		  m.membership_code,
+		  m.tel,
+		  m.mobile,
+		  m.email,
+		  m.process_status,
+		  m.process_person,
+		  m.gmt_created,
+		  m.gmt_modified,
+		  m.remark,
+		  m.company_contacts_id,
+		  c.label AS membership_name
+		FROM member_apply m
+		LEFT JOIN category c ON c.code=m.membership_code
+		<dynamic prepend="where">
+			<isNotEmpty property="memberApply.processStatus" prepend="and">
+				m.process_status=#memberApply.processStatus#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<select id="countMemberApplyList" parameterClass="memberApplyDTO" resultClass="java.lang.Integer">
+		SELECT
+		  COUNT(*)
+		FROM member_apply m
+		LEFT JOIN category c ON c.code=m.membership_code
+		<dynamic prepend="where">
+			<isNotEmpty property="memberApply.processStatus" prepend="and">
+				m.process_status=#memberApply.processStatus#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updateProcessStatusById" parameterClass="java.util.Map">
+		UPDATE member_apply
+		SET process_status = #processStatus#,
+		  process_person = #processPerson#,
+		  gmt_modified = now(),
+		  remark = #remark#
+		WHERE id = #id#
+	</update>
+</sqlMap>

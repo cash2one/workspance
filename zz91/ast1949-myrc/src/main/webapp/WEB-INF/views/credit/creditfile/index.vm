@@ -1,0 +1,78 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/credit/creditfile/index.htm')">诚信档案</a> <span class="divider">/</span>
+            </li>
+            <li class="active">管理荣誉证书</li>
+        </ul>
+    	<div class="alert alert-info">
+    		您一共发布了<span class="red"> $!{fileList.size()} </span>张证书，共获得了 <span class="red">#if($!{integral})$!{integral} #else 0 #end</span>分
+    	</div>
+		#foreach($category in ${categoryMap.entrySet()})
+		<div class="alert mt">
+			<strong>${category.value}</strong>
+			#if($velocityCount == 1)
+				(注意:税务登记证是买家非常关注的证书，请务必上传，经审核可立即获得信用积分<b>10分</b>！)
+			#end
+		</div>
+        <p><button class="btn btn-mini Js_addFile" name="${category.key}">新增</button></p>
+		<table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th width="35%">证书名称</th>
+                    <th width="35%">发证机构</th>
+                    <th width="10%" class="tac">状态</th>
+                    <th width="10%" class="tac">有效期限</th>
+                    <th width="10%" class="tac">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            #set($listCount=0)
+            #foreach($credit in $!fileList)
+                <tr>
+                #if(${credit.categoryCode} == ${category.key})
+                    <td>
+                        <a href="javascript:void(0)" onClick="window.open('$!{address.resource}/$!{credit.picName}','_blank','width=800, height=450')">
+                            $!{credit.fileName}
+                        </a>
+                    </td>
+                    <td>$!{credit.organization}</td>
+                    <td class="tac">
+                        #if($!{credit.checkStatus}=='0')
+                            <span class="grey">未审核</span>
+                        #elseif($!{credit.checkStatus}=='1')
+                            <span class="green">已审核</span>
+                        #else 
+                            <span class="red">未通过</span>
+                        #end
+                    </td>
+                    <td class="tac">$!date.format('yyyy-MM-dd',$!{credit.endTime})</td>
+                    <td class="tac">
+                        <a href="#springUrl('/credit/creditfile/edit.htm?id=')$!{credit.id}">修改</a>
+                        <a href="#springUrl('/credit/creditfile/deleteFile.htm?id=')$!{credit.id}" onClick="return confirm('确实要删除吗？')">删除</a>
+                    </td>
+                #set($listCount=$listCount+1)
+                #end
+                </tr>
+            #end 
+            </tbody>
+    	</table>
+		#if($listCount==0)
+		<div class="alert alert-error mt">
+			暂无${category.value}
+			<a href="#springUrl('/credit/creditfile/create.htm?code=')${category.key}">立即上传</a>
+        </div>
+		#end
+	   #end
+	</div>
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(7, 2);
+    jQuery(".Js_addFile").click(function(){
+        location.href = "#springUrl('/credit/creditfile/create.htm?code=')" + this.name;
+    });
+})
+</script> 

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.analysis.operator</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/operate/analysis.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/operate/product.js" ></script>
+	
+<script type="text/javascript">
+	Ext.onReady(function() {
+		
+		#if($!{csMap})
+			ast.ast1949.operate.analysis.CSMAP=$!{csMap};
+		#end
+
+		var grid=new ast.ast1949.operate.analysis.Grid({
+			region:"center"
+		});
+
+		## 获取小记 检索条件
+		grid.on("cellclick",function(grid,rowIndex,columnIndex,e){
+			var record = grid.getStore().getAt(rowIndex);
+			var account = record.get("operator");
+			var B=opLogGrid.getStore().baseParams;
+			B["account"]=account;
+			var targetFrom=Ext.getCmp("targetFrom").getValue();
+			var targetTo=Ext.getCmp("targetTo").getValue();
+			if(targetFrom!="" && targetTo!=""){
+				B["from"]=targetFrom;
+				B["to"]=targetTo; 
+			}else{
+				B["from"]="$!{from}";
+				B["to"]="$!{to}";
+			}
+			opLogGrid.getStore().baseParames=B;
+			opLogGrid.getStore().reload();
+		});
+		
+		
+		var opLogGrid= new ast.ast1949.analysis.product.Grid({
+			height:180,
+			region:"south"
+		});
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[grid,opLogGrid]
+		});
+		
+		grid.initDate("$!{from}", "$!{to}");
+		
+	});
+</script>
+</head>
+<body>
+</body>
+</html>

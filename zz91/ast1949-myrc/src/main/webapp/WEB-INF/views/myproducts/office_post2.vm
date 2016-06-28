@@ -1,0 +1,779 @@
+#set( $layout = "/layout/default.vm" )
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/myrc/css/myproducts.css" />
+<script src="http://img0.zz91.com/zz91/myrc/js/myproducts.js"></script>
+<div class="container">
+	<div class="process-bar">
+	    <ul class="clearfix">
+	        <li>第一步：填写基本信息<s class="l"></s><s class="r"></s></li>
+	        <li class="active">第二步：填写详细信息<s class="l"></s><s class="r"></s></li>
+	        <li>第三步：发布成功<s class="l"></s><s class="r"></s></li>
+	    </ul>
+	</div>
+	#set($typename = "供应")
+	#if($!{productsDO.productsTypeCode}=="10331001")
+		#set($typename = "求购")
+	#end
+	<div class="alert alert-info"> 
+		<strong>提醒：</strong>您已选择了类别：<span class="org">$!{mainCodeLabels}</span>
+		<a href="#springUrl('/myproducts/office_post1.htm')?categoryProductsMainCode=$!{productsDO.categoryProductsMainCode}&categoryProductsAssistCode=$!{productsDO.categoryProductsAssistCode}&productsTypeCode=$!{productsDO.productsTypeCode}&title=$!{titleEncode}&mainCodeLabel=$!{mainCodeLabelEncode}&mainCodeLabels=$!{mainCodeLabelsEncode}" id="linktags" title="点击修改类别">
+			点击这里可以重新修改类别
+		</a>，<b>但是您现在填写的供求信息将会丢失，请谨慎操作！</b>
+	</div>
+		<form id="editForm" name="editForm" method="post" action="#springUrl('/myproducts/publishProducts.htm')">
+			<input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode" value="$!{productsDO.categoryProductsMainCode}">
+    		<input id="categoryProductsAssistCode" type="hidden" name="categoryProductsAssistCode" value="$!{productsDO.categoryProductsAssistCode}"/>
+    		<input id="productsTypeCode" type="hidden" name="productsTypeCode" value="$!{productsDO.productsTypeCode}"/>
+    		<input id="isShowInPrice" type="hidden" name="isShowInPrice" value="0">
+			<!-- part I Start -->
+			<h3 class="divide">请填写产品详细信息</h3>
+			##基本信息
+			<div class="control-group">
+				<label for="title" class="control-label">
+					<span class="red">*</span>产品名称：
+				</label>
+				<div class="controls">
+					<input name="title" type="text" id="title" value="$!{productsDO.title}" class="field input-xlarge validate[required,maxSize[50]]">
+					<span class="grey">建议在标题中包含产品名称和相应关键词</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="tags" class="control-label">
+					<span class="red">*</span>产品标签：
+				</label>
+				<div class="controls">
+					<input name="tags" type="text" id="tags" value="$!{mainCodeLabel}" class="field input-xlarge validate[required,maxSize[100]]">
+					<span class="grey">让客户更快更准找到您！多个标签用逗号（,）隔开 <a href="http://help.zz91.com/detail-54/" target="_blank" id="linktags" title="点击查看在线帮助，教你如何填写标签">怎样填标签!</a></span>
+				  <p>
+						热门标签:
+						#foreach($tag in $!{tagsList.keySet()})
+						<a href="javascript:void(0)" class="hotTags$!{velocityCount}" title="$!{tag}" onclick="chooseTags($!{velocityCount})">$!{tag}</a>
+						#end
+					</p>
+					<p>以上标签供您参考，点击即可进入上面的方框内</p>
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="quantity" class="control-label">
+					<span class="red">*</span>$!{typename}数量：
+				</label>
+				<div class="controls">
+					<input name="quantity" type="text" id="quantity" class="field input-small validate[required,custom[number]]" maxlength="6">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label"><span class="red">*</span>计量单位：</label>
+				<div class="controls">
+        			<label class="radio"><input type="radio" name="quantityUnit" value='吨' checked />吨</label>
+        			<label class="radio"><input type="radio" name="quantityUnit" value='千克' />千克</label>
+        			<label class="radio"><input type="radio" name="quantityUnit" value='斤' />斤</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='台' />台</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='辆' />辆</label>
+        			<label class="radio">
+        				<input type="radio" name="quantityUnit" value='' id="myQuantityUnit">其他
+        			</label>
+        			<span id="otherQuantity" class="hidden">
+        				：<input type="text" value="" id="otherU1" class="field input-small">
+        			</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label"><span class="red">*</span>报价：</label>
+				<div class="controls">
+					<label class="radio"><input type="radio" class="opPrice" name="opPrice" value="0" checked>公开价格</label>
+					<label class="radio"><input type="radio" class="opPrice" name="opPrice" value="1">电议或面议</label>
+					<span class="grey">建议您选择公开报价，真实的价格有助于买/卖家找到您！</span>
+					<div id="priceDetail">
+						价格：<input name="minPrice" type="text" id="minPrice" value="" maxlength="6" size="10" class="field input-small validate[required,custom[number],min[1]]" />
+						<span id="priceFlag" class="hidden">
+							至
+							<input name="maxPrice" type="text" id="maxPrice"   value="" class="field input-small validate[custom[number],min[1],funcCall[checkMaxPrice]]" />
+							##<span id="maxError" class="hidden" style="color:#B94A48"></span>
+						</span>
+						<label class="checkbox"><input type="checkbox" name="togglePrice" id="togglePrice" value="1" />支持价格范围</label>
+						</br>
+						货币单位：<label class="radio"><input type="radio" name="priceUnit" value='元' checked />元</label>
+						<label class="radio"><input type="radio" name="priceUnit" value='美元' />美元</label>
+						<label class="radio"><input type="radio" name="priceUnit" value='欧元' />欧元</label>
+						<label class="radio"><input type="radio" name="priceUnit" value='欧元' />日元</label>
+						<label class="radio"><input type="radio" name="priceUnit" value='' id="myPriceUnit" maxlength="6" />其他</label>
+						<span id="otherQuantityPrice" class="hidden">
+							：<input id="otherUnit" type="text" value="" class="field input-small" />
+						</span>
+##						每<span id="Js_unit">吨</span>
+##							
+					</div>
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<label for="shipDay" class="control-label"><span class="red">*</span>供货类型：</label>
+				<div class="controls">
+					<label class="radio"><input type="radio" name="goodsTypeCode" value='10361001' />现货(发布现货供求请点击“<span class="red">现货</span>”)</label>
+					<label class="radio"><input type="radio" name="goodsTypeCode" value='10361000' />期货</label>
+					<label class="radio"><input type="radio" name="goodsTypeCode" value='10361002' checked />其他</label>
+				</div>
+			</div>
+			<div class="control-group">
+    			<label class="control-label">交易说明：</label>
+				<div class="controls">
+					<input type="radio" name="transaction" value="提供样品" />提供样品
+					<input type="radio" name="transaction" value="支持线下看货" />支持线下看货
+        			<input type="radio" name="transaction" value="指定销售地区" id="transactionValue" />
+        			<label for="transactionValue">指定销售地区</label>
+					<input type="text" class="field input-small" id="transactionArea" />
+				</div>
+			</div>
+			<script>
+				jQuery("#transactionArea").on({
+				
+    			   	"blur": function(){
+    				jQuery("#transactionValue").val("指定销售地区"+jQuery("#transactionArea").val())
+    				},
+    				"click": function(){
+    				jQuery('#transactionValue').attr('checked', true);
+    				}
+				});
+			</script>
+		
+			
+		
+        	<div class="b-item">
+				<div class="b-item-title fl">
+				<span class="b-item-h1">产品属性：</span>
+				</div> 
+			<div class="cb"></div>
+			</div>
+			<div class="b-item">
+            	<div class="b-item-title fl ">
+                	货源地：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "source"/>
+                <div class="b-item-info fl ">
+                	（此货物来源地，如：国外、美国、国产...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item">
+            	<div class="b-item-title fl ">
+                	来源产品：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "origin"/>
+                <div class="b-item-info fl ">
+                	
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="useful_item">
+            	<div class="b-item-title fl ">
+                	此废料可用于：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name="useful"/>
+                <div class="b-item-info fl ">
+                	（此货品加工后的用途，如：造粒、注塑...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item" id="specification_item">
+            	<div class="b-item-title fl ">
+                	产品规格：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "specification"/>
+                <div class="b-item-info fl ">
+                	（如：产品大小30cm*50cm、厚度20mm...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+			 <div class="b-item hidden" id="grade_item">
+            	<div class="b-item-title fl ">
+                	品位：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "grade"/>
+                <div class="b-item-info fl ">
+                	
+                </div>
+                <div class="cb"></div>
+            </div>
+            <div class="b-item hidden" id="color_item">
+            	<div class="b-item-title fl ">
+                	颜色：
+                </div>
+                <input type="text" class="b-item-text2 fl field input-small" name = "color"/>
+                <div class="b-item-info fl ">
+                	（如：本色、白色、黑色、灰色、红色、蓝色、杂色、绿色、透明、黄色、棕色、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="shape_item">
+            	<div class="b-item-title fl ">
+                	形态：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name="shape"/>
+                <div class="b-item-info fl ">
+                	（如：片状、颗粒、破碎、原状未加工、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="level_item">
+            	<div class="b-item-title fl ">
+                	级别：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "level"/>
+                <div class="b-item-info fl ">
+                	（如：特级、一级、二级、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="appearance_item">
+            	<div class="b-item-title fl ">
+                	外观：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name = "appearance"/>
+                <div class="b-item-info fl ">
+                	（如：光滑、干净、未处理、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="impurity_item">
+            	<div class="b-item-title fl ">
+                	杂质（杂物）含量：
+                </div>
+                <input type="text" class="b-item-text fl field input-large" name="impurity"/>
+                <div class="b-item-info fl ">
+                	（请写明具体杂质及其含量，如：含镍3%）
+                </div>
+                <div class="cb"></div>
+            </div>
+			<div class="b-item">
+				<label class="b-item-title fl ">加工说明：</label>
+					#foreach($manu in $!{manufactureList.keySet()})
+						<label class="radio"><input type="radio" name="manufacture" value="$!{manu}" #if($!velocityCount==1) checked #end>$!{manufactureList.get($manu)}</label>
+					#end
+                <div class="cb"></div>
+            </div>
+			<div class="b-item hidden" id ="addProp_item">
+                <div id="item"></div>
+				
+				<div class="b-item hidden" id = "add_tishi">
+                	<p style="color:#b94a48; margin-left:88px;"><strong><b>注： 属性和属性值</b></strong>都不能含有逗号(，)。如果需要则用顿号(、)代替。
+                    </p>
+                    <p style="color:#b94a48; margin-left:88px;"><strong><b>1. 属性：</b></strong>请根据具体产品填写，例如废金属，属性一栏可填写品位，形态，颜色等
+                    </p>
+					<p style="color:#b94a48; margin-left:88px;"><strong><b>2. 属性值：</b></strong>请根据属性填写，例如属性为颜色，属性值则为红色
+                    </p>
+                </div>
+				
+                <div class="b-item">
+                	<div class="b-item-addimg fl">
+                    	<a href="#"></a>
+                    </div>
+                    <div class="b-item-addtext fl" id="item-addtext">
+                    	<a id="additem" >添加产品属性</a>
+                        如果您觉得我们提供的产品属性无法满足您的需要，您可以手动添加产品属性
+                    </div>
+					
+                    <div class="cb"></div>
+                </div>
+                <!--end b-item-->
+            </div>
+			
+			<div class="control-group">
+				<label class="control-label">产品图片：</label>
+				<div class="controls clearfix">
+					<p>成为本站再生通会员，可为您的产品同时发布多达 <span class="red">5</span> 张图片！
+						<a href="http://help.zz91.com/detail-59/" target="_blank">如何给信息配上图片</a>
+						<a href="http://help.zz91.com/detail-60/" target="_blank">最多可以上传几张照片</a>
+					</p>
+				#foreach($pic in [1..$uploadPicNum])
+					<div class="upload-wrap">
+						<img id="previewImg$pic" src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="1">
+						<br />
+						<input type="button" value="上传" class="uploadBtn btn" id="uploadBtn_$pic">
+						<input type="hidden" value="" name="picIds" id="previewId$pic">
+                    </div>
+				#end
+				#if($!{sessionUser.membershipCode} == "10051000")
+					#foreach($pic in [1..4])
+					<div class="upload-wrap">
+						<a href="$!{address.www}/zst/" target="_blank">
+							<img id="previewImg$pic" src="$!{address.images}/myrc/zstimges.gif" name="imag" width="75" height="75" border="1">
+						</a>
+					</div>
+					#end
+				#end
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="details" class="control-label"><span class="red">*</span>信息描述：</label>
+				<div class="controls">
+					#if($!{productsDO.productsTypeCode}=="10331001") 
+						#set($title = "求购" + $!{productsDO.title})
+					#else 
+						#set($title = "供应" + $!{productsDO.title})
+					#end
+					<p>建议您从产品性能、用途、包装、售后服务等方面来描述</p>
+					<textarea name="details" cols="80" rows="5" id="details" class="validate[required]"></textarea>###if($!{productsDO.productsTypeCode}=="10331001") 求购：#else 供应：#end$!{productsDO.title} 
+					<p id="js-tip" class="red hidden">请注意：请勿在此填入电话、手机、邮箱、网址等联系方式，否则本站将不予审核通过，谢谢合作！</p>
+					<p>
+        				<label class="radio"><input type="radio" value="有意者请与我联系" id="pde1" name="pde" onclick="setDetails(this)">有需要者请联系</label>
+        				<label class="radio"><input type="radio" value="具体情况联系详谈" id="pde2" name="pde" onclick="setDetails(this)">具体情况联系详谈</label>
+        				<label class="radio"><input type="radio" value="愿与新老客户建立良好合作关系" id="pde3" name="pde" onclick="setDetails(this)" class="radioPositionFix">愿与新老客户建立良好合作关系</label>
+        				<br />
+						<label class="radio"><input type="radio" value="欢迎有货者与我联系" name="pde" id="pde4" onclick="setDetails(this)">欢迎有货者与我联系</label>
+        				<label class="radio"><input type="radio" value="欢迎来电垂询,详谈" name="pde" id="pde5" onclick="setDetails(this)">欢迎来电垂询,详谈</label>
+                    </p>
+                </div>
+			</div>
+			
+			## 发货地址
+			<div class="control-group" id="J_spotAddr">
+				<div class="control-group">
+					<label class="control-label"><span class="red">*</span>现货物所在地：</label>
+					<div class="controls">
+						<p>
+							<select id='reg-area-1'>
+								<option value="">请选择省份</option>
+							</select>
+							<select id='reg-area-2'>
+								<option value="">请选择城市</option>
+							</select>
+							<input name="location" type="hidden" id="location" class="field" />
+						</p>
+					</div>
+				</div>
+			</div>
+			<script>
+				jQuery(document).ready(function(){
+    				var regarea = new Asto.util.Selector({
+                		selects:["#reg-area-1","#reg-area-2","#reg-area-3"],
+            			assistSelects:["#reg-garden"],
+            			url:"#springUrl('/category/areaChild.htm')",
+            			assistUrl:"#springUrl('/category/gardenChild.htm')",
+            			changeCallback:function(c,idx){
+							
+            			}
+            		});
+    				regarea.init({
+            			rootCode:"10011000",
+            			initCode:"10011000",
+            			initAssistCode:"10011000"
+            		});
+				});
+			</script>
+			<div class="control-group">
+				<label for="shipDay" class="control-label">发货时间：</label>
+				<div class="controls">
+					<input name="shipDay" type="text" id="shipDay" class="field input-small validate[custom[number]]">
+					<span class="grey">天内可以发货</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">
+					<span class="red">*</span>信息有效期：
+				</label>
+				<div class="controls">
+					<label class="radio"><input type='radio' name='postlimittime' value='-1' />长期有效</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='90' />3个月</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='30' />1个月</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='20' checked />20天</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='10' />10天</label>
+				</div>
+			</div>
+			<!-- part IV Start -->
+			## 联系方式确认
+			##parse("/commonImpt/products/companyAccount.vm")
+			<!-- part IV End -->
+			<div class="control-group">
+				<div class="control-label"></div>
+				<div class="controls">
+					<input name="verifyCodeKey" id="verifyCodeKey" type="hidden">
+					<input name="verifyCode" id="verifyCode" class="field input-small" type="text">
+					<img id='codeImg' src='$!{address.img}/front/images/global/loading.gif' class="image3" width="100" height="28" title="看不清楚?点击图刷新验证码！" style="cursor:pointer;vertical-align:middle" />
+					<span class="textcolor2" id="changImg">看不清楚?换一张。</span>
+					<p><strong class="red">请将上方图片里显示的信息填入框中。</strong></p>
+				</div>
+			</div>
+			<div class="form-actions">
+				<input type="submit" id="submitBtn" class="btn btn-primary" value="发布信息"/>
+				<span id="noMore" class="hidden">您发布信息太频繁，请稍后再发！</span>
+			</div>
+			<input type="hidden" name="provideStatus" checked value="$!{provideStatus}"/>
+		</form>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+	jQuery(function(){
+		var typeCode = jQuery("#categoryProductsMainCode").val().substring(0, 4);
+		if(typeCode === "1001"){
+			jQuery("#useful_item").removeClass("hidden");
+			jQuery("#color_item").removeClass("hidden");
+			jQuery("#shape_item").removeClass("hidden");
+			jQuery("#level_item").removeClass("hidden");
+			jQuery("#appearance_item").removeClass("hidden");
+			jQuery("#impurity_item").removeClass("hidden");
+		} else if (typeCode === "1000") {
+			jQuery("#grade_item").removeClass("hidden");
+			jQuery("#shape_item").removeClass("hidden");
+			jQuery("#addProp_item").removeClass("hidden");
+		} else {
+			jQuery("#useful_item").removeClass("hidden");
+			jQuery("#impurity_item").removeClass("hidden");
+			jQuery("#addProp_item").removeClass("hidden");
+		}
+		//菜单
+		myrc.menu(2, 1);
+		// 图片上传
+		var upload = new Asto.util.PopupBox({
+			url:"#springUrl('/sys/upload/product.htm')",
+			title:"上传产品图片",
+			width:450,
+			height:300,
+			modal:true
+		});
+		jQuery(".uploadBtn").click(function(obj){
+			var id = jQuery(this).attr("id").replace("uploadBtn_", "");
+			var btn = jQuery(this);
+			if(btn.val() == "上传"){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					var url = "delayPicChange('"+id+"','"+data.picAddress+"')";
+					setTimeout(url,2000);
+					jQuery("#previewId"+id).val(data.id);
+					btn.val("删除");
+    				upload.close();
+         		});
+				upload.show("#springUrl('/sys/upload/product.htm')");
+			} else {
+				deletePic(btn, id);
+			}
+		});
+		var previewImg = new Asto.util.PopupBox({
+			url : "#",
+			width : 850,
+			height : 450,
+			modal : true,
+			title : "大图预览"
+		});
+		jQuery(".upimgBlock img").click(function(e){
+			previewImg.show(jQuery(this).attr("src"));
+		});
+		// 验证码
+		var imgCode = (function(){
+			var img = document.getElementById("codeImg");
+			var changeTime = function(){
+				img.src = "$!{address.front}/validationcode/vcode.htm?" + new Date();
+			}
+			changeTime();
+			jQuery(img).on("click", changeTime);
+			jQuery("#changImg").on("click", changeTime);
+		})();
+		// 单位
+		jQuery("input[name='quantityUnit']").on(
+			"change", function(){
+    			jQuery("#Js_unit").text($(this).val());
+    			if (this.getAttribute("id") === "myQuantityUnit") {
+					jQuery('#otherQuantity').removeClass("hidden");
+    				jQuery("#otherU1").focus();
+    			} else {
+					jQuery('#otherQuantity').addClass("hidden");
+    				jQuery(this).parent().parent().parent().removeClass("error");
+    			}
+			});
+		
+		jQuery("#otherU1").on({
+			"blur": function(){
+				if (this.value === "") {
+					this.value = "吨";
+					jQuery(this).parent().parent().addClass("error");
+				} else {
+					jQuery(this).parent().parent().removeClass("error");
+				}
+				ortherInput('myQuantityUnit',this.value);
+				jQuery('#Js_unit').text(this.value);
+			},
+			"click": function(){
+				jQuery('#myQuantityUnit').attr('checked', true);
+			}
+		});
+			
+		jQuery("input[name='priceUnit']").on("change", function(){
+			if (this.getAttribute("id") === "myPriceUnit") {
+				jQuery('#otherQuantityPrice').removeClass("hidden");
+				jQuery("#otherUnit").focus();
+			} else {
+				jQuery('#otherQuantityPrice').addClass("hidden");
+				jQuery(this).parent().parent().parent().parent().removeClass("error");
+			}
+		});
+		jQuery("#otherUnit").on({
+			"blur": function(){
+				if (this.value === "") {
+					this.value = "元";
+					jQuery(this).parent().parent().parent().addClass("error");
+				} else {
+					jQuery(this).parent().parent().parent().removeClass("error");
+				}
+				ortherInput('myPriceUnit', this.value);
+			},
+			"click": function(){
+				jQuery('#myPriceUnit').attr('checked', true);
+			}
+		});
+		jQuery("#togglePrice").on("click", function(){
+			if(this.checked){
+				jQuery('#priceFlag').show();
+			} else {
+				jQuery('#priceFlag').hide();
+			}
+		})
+		
+		## 公开价格 填写价格
+		jQuery(".opPrice").click(function(){
+			var s = jQuery(":input[name='opPrice'][checked]").val();
+			if(s == 1){
+				jQuery("#priceDetail").hide();
+				jQuery("#minPrice").validationEngine("hide");
+			} else {
+				jQuery("#priceDetail").show();
+			}
+		});
+		
+		
+		// 组装供求详细
+		var details = (function(){
+			var firstClick = true;
+			jQuery("#details").on({
+				"click": function(){
+					if(firstClick){
+		    			firstClick = false;
+		    			jQuery("#js-tip").show();
+		    			appendDetail();
+					}
+				},
+				"blur": function(){
+					jQuery("#js-tip").hide();
+				},
+				"keyup": function(){
+					jQuery("#js-tip").hide();
+				}
+			})	
+			// 客户不点供求详细
+			jQuery("#submitBtn").click(function(){
+				if(firstClick){
+					appendDetail();
+				}
+			});
+		})();
+
+		// 表单验证
+		jQuery("#editForm").validationEngine("attach");
+		jQuery("#editForm").submit(function() {
+			var $property = $("input[name=property]");
+			var flg1 = 1;
+			for(var i=0;i<$property.length;i++){
+	    		if ($property.eq(i).val()==="属性") {
+			
+					flg1 += 1;
+					if (flg1 > "2") {
+						$property.eq(i).parent().parent().find(".tag").html("*属性名不能为空!");
+						$property.eq(i).css("border-color","#b94a48");		
+					} 
+				}
+			}
+			var $content = $("input[name=content]");
+			var flg2 = 1;
+			for(var i=0;i<$content.length;i++){
+			
+	    		if ($content.eq(i).val()==="属性值") {
+			
+					flg2 += 1;
+					if (flg2 >= "2") {
+						if ($content.eq(i).parent().parent().find(".tag").html() === "*属性名不能为空!") {
+							$content.eq(i).parent().parent().find(".tag").html("*属性名和属性值都不能为空!");
+							$content.eq(i).parent().parent().find("input[name=property]").css("border-color","#b94a48");
+						} else{
+							$content.eq(i).parent().parent().find(".tag").html("*属性值不能为空!");
+						}
+						$content.eq(i).css("border-color","#b94a48");		
+					} 
+				}
+			}
+			for(var i=0;i<$property.length;i++){
+				if ($property.eq(i).parent().parent().find(".tag").html() != ""){
+					return false;
+				}
+			}
+			if(!jQuery("#editForm").validationEngine("validate")){
+    			return false;
+    		} else {
+	            //提交表单数据
+	            jQuery.ajax({
+	                url: "#springUrl('/myproducts/publishProducts.htm')",
+	                data: jQuery("#editForm").serialize(),
+	                cache: false,
+	                dataType: "json",
+	                type: "post",
+	                success: function(req) {
+	                    if (req.success) {
+	                        //保存成功后给出提示 或 跳转到提示页面
+	                        window.location.href = "#springUrl('/myproducts/office_post_suc.htm?productId=')" + req.data.id;
+	                    } else {
+	                        if (req.data == "sessionTimeOut") {
+	                            window.open("$!{address.front}/login.htm");
+	                        }
+							if(req.data == "noMore"){
+								$("#noMore").show();
+							}
+							else{
+								alert(req.data);
+	    					}
+							jQuery("#codeImg").attr("src", "$!{address.front}/validationcode/vcode.htm?" + new Date()); 
+	                    }
+	                },
+	                failure: function() {}
+	            });
+	             return false;
+    		}
+        });
+	});
+	
+	## 组装供求详细
+	function appendDetail(){
+		jQuery("#details").empty();
+		var detailStr = "$title";
+		var quantity = jQuery("#quantity").val();
+		if(quantity){
+			detailStr += "；$!{typename}数量" + quantity + jQuery(":input[name='quantityUnit'][checked]").val() + "左右";
+		}
+		var minPrice = jQuery("#minPrice").val();
+		if(minPrice){
+			detailStr += "；大概报价" + minPrice;
+			var maxPrice = jQuery("#maxPrice").val();
+			if(maxPrice){
+				detailStr += " - " + maxPrice;
+			}
+			detailStr += jQuery(":input[name='priceUnit'][checked]").val()+"/"+jQuery(":input[name='quantityUnit'][checked]").val();
+		}else{
+			detailStr += "；价格面议"
+		}
+		var source = jQuery("#source").val();
+		if(source){
+			detailStr += "；现在货在" + source;
+		}
+		var shipDay = jQuery("#shipDay").val();
+		if(shipDay){
+			detailStr += "；大概" + shipDay + "天内可以发货";
+		}
+		detailStr += "。";
+		jQuery("#details").val(detailStr);
+	}
+	
+	function deletePic(btn, id){
+		jQuery.ajax({
+			type : "post",
+			url : "#springUrl('/myproducts/deleteOnlyPic.htm')",
+			data : {"id" : jQuery("#previewId"+id).val()},
+			dataType : "json",
+			success : function(req){
+				jQuery("#previewImg" + id).attr("src", "$!{address.img}/front/images/global/noimage.gif");
+				jQuery("#previewId" + id).val("");
+				btn.val("上传");
+			},
+			failure : function(){
+				Asto.util.Message.show({
+					msg : "发生错误，图片没有被删除，请过一会再试一下！",
+					msgType : Asto.util.Message.ERROR,
+					autoClose : 5000
+				});
+			}
+		});
+	}
+	
+	function ortherInput(id, value) {
+        jQuery("#" + id).val(value);
+    }
+	
+	function chooseTags(id){
+		var tag = jQuery("#tags").val(),
+			group = tag.split(","),
+			atag = jQuery(".hotTags" + id).attr("title");
+		for (var i in group) {
+			if (group[i] === atag) {
+				return false
+			}
+		}
+		jQuery("#tags").val(tag + "," + atag);
+	}	
+	function toggle(target){
+		target.toggle();
+	}
+	var oldStr = "";
+	var changeFlag = 0;
+	function setDetails(v){
+		var target = document.getElementById("details");
+		if(changeFlag==0){
+			changeFlag=1;
+			oldStr = target.value;
+			target.value = target.value + v.value;
+		}else{
+			target.value = oldStr + v.value;
+		}
+	}
+	jQuery("#details").keyup(function(){
+		changeFlag = 0;
+	});
+	
+	var regarea = new Asto.util.Selector({
+		selects:["#reg-area-1","#reg-area-2"],
+		assistSelects:["#reg-garden"],
+		url:"#springUrl('/category/areaChild.htm')",
+		assistUrl:"#springUrl('/category/gardenChild.htm')",
+		changeCallback:function(c,idx){
+			setAddress();
+		}
+	});
+
+	regarea.init({
+		rootCode:"10011000"
+	});
+	
+	##组装地址
+	function setAddress(){
+		var address ="";
+		if(jQuery("#reg-area-1").val()!=""){
+			address =address+ jQuery("#reg-area-1").find("option:selected").text();
+		}
+		if(jQuery("#reg-area-2").val()!=""){
+			address = address+jQuery("#reg-area-2").find("option:selected").text();
+		}
+		jQuery("#location").val(address);
+	}
+	## 判断最大价格
+	function checkMaxPrice(field, rules, i, options){
+		var min = parseInt(jQuery("#minPrice").val());
+		var max = parseInt(jQuery("#maxPrice").val());
+		if(min>0&&max>0&&min<max){
+			##jQuery("#maxError").hide();
+		}else{
+			##jQuery("#maxError").html("<span>* 必须大于最小价格： "+min+"</span>")
+			##jQuery("#maxError").show();
+			##var str = "<span>* 必须大于最小价格： "+min+"</span>"
+			##jQuery(".maxPriceformError").html("<div class='formErrorContent'><span>"+str+"</span></div>");
+			rules.push('required');
+			return "价格范围填写不正确";
+		}
+	}
+	
+	function delayPicChange(id,address){
+		jQuery("#previewImg" + id).attr("src", "$!{address.resource}/"+address);
+	}
+	
+</script>

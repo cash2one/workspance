@@ -1,0 +1,192 @@
+#set($layout="/layout/blank.vm")
+#parse("/common/context.vm")
+<script src="$!{address.js}/lib/jquery/jquery_lib/jquery-1.4.3.js"" type="text/javascript"></script>
+<link href="$!{address.css}/global/comm_hack.css" rel="stylesheet" type="text/css" />
+<link href="$!{address.css}/myrc/zz91_myrc.css" rel="stylesheet" type="text/css" />
+
+<div class="editFloatFrame">
+	<form id="groupform" name="groupform" onsubmit="return false;">
+		<div class="editAddSorts">
+            <div class="editItemsTit"><label for="name">组名：</label></div>
+			<div class="editItemsFill">
+                <input id="name" name="name" type="text" class="editSortsName" onkeydown='if(event.keyCode==13) creategroup();'>
+                <input id="creatnewgroup" type="button" class="buttonMinGray" value="添加" onclick="creategroup()">
+             </div> 
+			 <div style="clear:both"></div>
+        </div>
+	</form>
+	
+	<div class="editSortsList">
+		<ul>
+			#if($!{ids})
+    			#foreach($rs in $sysGroups)
+                <li class="editSortsListA">
+    				<span class="editSortsListSelect">
+						<input type="radio" name="checkcom" value="$!{rs.id}" />
+            		</span>
+                    <span class="editSortsListTit">
+            			<img src="$!{address.images}/global/icon/open-folder2.gif"> $!{rs.name}
+            		</span>
+                </li>
+    			#end
+			#end
+        	#foreach($rs in $groups)
+            <li class="editSortsListA">
+				<span class="editSortsListSelect">
+        			#if($!{ids})
+        				<input type="radio" name="checkcom" value="$!{rs.id}" />
+        			#end
+        		</span>
+                <span class="editSortsListTit">
+        			<img src="$!{address.images}/global/icon/open-folder2.gif"> $!{rs.name}
+        		</span>
+                <span class="editSortsListMod">
+        			<a href="javascript:void(0);" onclick="modgroup($!{rs.id})"  style="cursor:pointer">修改</a>
+        		</span>
+                <span class="editSortsListDel">
+					<a href="javascript:void(0);" onclick="return deletegroup('$!{rs.id}')" style="cursor:pointer">删除</a>
+        		</span>
+        		
+            </li>
+            <li class="editSortsListB" style="display:none" id="mod$!{rs.id}">
+    			<form id="form$!{rs.id}" name="form$!{rs.id}">
+                <input name="name" type="text"  value="$!{rs.name}" class="editSortsName">
+    			<input name="id" type="hidden" value="$!{rs.id}">
+                <input name="Submit3" type="button" class="buttonMinGray" value="确定" onclick="update('form$!{rs.id}')"><!-- onsubstr2 -->	
+                <input name="Submit4" type="button" class="buttonMinGray" value="取消" onclick="modgroupno($!{rs.id})">
+                </form>
+            </li>
+        	#end
+    	</ul>
+	</div>
+	#if($!{ids})
+    	<div style="clear:both"></div>
+    	<div class="editSub">
+    	<form id="formSetGroups" name="formSetGroups">
+    		<input type="button" class="buttonMinGray" value="确定分组" onclick="groupInquiry()"></center>
+    	</form>
+    	</div>
+    #end
+</div>
+
+<script language="javascript">
+function deletegroup(id) {
+    var r=confirm("你确定要删除吗？");
+    if (r==true) {
+		//提交
+    	jQuery.ajax({
+    		url:Context.ROOT+"/myrc/mymessage/deleteGroup.htm?id="+id,
+    		type:"POST",
+    		cache:false,
+    		dataType:"json",
+    		success:function(msg){
+    			if(msg!=null&&msg.success==true){
+    				window.location.reload();
+    			} else {
+    				alert('删除失败！');
+    			}
+    		},
+    		error:function(e){
+    			alert('删除失败！');
+    		}
+    	});
+	}
+}
+
+function update(id){
+	//提交
+	jQuery.ajax({
+		url:Context.ROOT+"/myrc/mymessage/updateGroup.htm",
+		type:"POST",
+		cache:false,
+		dataType:"json",
+		data:jQuery("#"+id).serialize(),
+		success:function(msg){
+			if(msg!=null&&msg.success==true){
+				window.location.reload();
+			} else {
+				alert('修改失败！');
+			}
+		},
+		error:function(e){
+			alert('修改失败！');
+		}
+	});
+}
+function creategroup() {
+    if (jQuery("#name").val()=="") {
+        alert ("请输入组名！");
+        jQuery("#name").focus();
+        return false;
+    }
+	//提交
+	jQuery.ajax({
+		url:Context.ROOT+"/myrc/mymessage/createGroup.htm",
+		type:"POST",
+		cache:false,
+		dataType:"json",
+		data:jQuery("#groupform").serialize(),
+		success:function(msg){
+			if(msg!=null&&msg.success==true){
+				window.location.reload();
+			} else {
+				alert('添加失败！');
+			}
+		},
+		error:function(e){
+			alert('添加失败！');
+		}
+	});
+}
+function modgroup(id){
+    var obj=document.getElementById("mod"+id);
+    obj.style.display=""
+}
+
+function modgroupno(id){
+    var obj=document.getElementById("mod"+id);
+    obj.style.display="none"
+}
+
+function onselectchek(obj){
+	var inquiryGroupId=document.getElementById("inquiryGroupId");
+	
+	if(obj.checked){
+		inquiryGroupId.value=obj.value;
+	}
+}
+
+function groupInquiry(){
+	var groupId= jQuery("input[name=checkcom]:checked").val();
+	if(typeof(groupId)=="undefined"){
+		return false;
+	}
+	jQuery.ajax({
+		url:Context.ROOT+"/myrc/mymessage/groupInquiry.htm?ids=$!{ids}&groupId="+groupId,
+		type:"POST",
+		cache:false,
+		dataType:"json",
+		data:jQuery("#groupform").serialize(),
+		success:function(msg){
+			if(msg!=null&&msg.success==true){
+				parent.location.reload();
+			} else {
+				alert('添加失败！');
+			}
+		},
+		error:function(e){
+			alert('添加失败！');
+		}
+	});
+}
+
+jQuery(document).ready(function(){
+	$(".editSortsList").find(".editSortsListA").mouseover(function(){
+		$(this).css({"background-color":"#EFF6EF"})
+	});
+	$(".editSortsList").find(".editSortsListA").mouseout(function(){
+		$(this).css({"background-color":"#FFF"})
+	});
+});
+
+</script>

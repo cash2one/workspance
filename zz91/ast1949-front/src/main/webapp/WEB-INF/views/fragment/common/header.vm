@@ -1,0 +1,159 @@
+#set($layout="/layout/blank.vm")
+<!--header start-->
+<div class="clear"></div>
+
+<div id="header">
+    <div id="logo">
+        <a href="$!{address.front}"><img src="$!{address.logo}" alt="$!{siteInfo.site_name}" /></a>
+    </div>
+    <div id="zz91-searchWeb">
+        <form id="searchForm" action="#" onsubmit="return topSearch();">
+            <fieldset>
+                <legend style="display:none">ZZ91搜索</legend>
+                <div class="searchList">
+                    <ul id="search_tab">
+                        <li class="searchSelected">
+                            <a href="javascript:void(0)">供应</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">求购</a>
+                        </li>
+                        <li>
+							<a href="javascript:void(0)">报价</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="searchNotice">
+                    <div id="marquee">
+                        <marquee behavior="scroll" direction="left" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="3" height="24" width="293">
+							#foreach($inquiry in $list)
+							<span class="searchNoticeList">
+                                #printFragmentDate("HH:mm:ss" $!{inquiry.inquiry.sendTime})（$!{inquiry.receiverCompanyName}）收到（$!{inquiry.senderCompanyName}）的询盘商机
+                            </span>
+							#end
+                      </marquee>
+                    </div>
+                </div>
+                <div class="searchArea">
+                    <label id="search_label" for="search" class="search_label">输入你感兴趣的产品</label>
+                    <input name="search" id="search" type="text" value="" class="ZZ91Search" />
+                    <input type="submit" value="" class="ZZ91SearchSub" name="TopSeaSubmit"  id="TopSeaSubmit" onmouseover="this.className='ZZ91SearchSubOver'"  onmouseout="this.className='ZZ91SearchSub'"/>
+                    <input type="hidden" value="1" name="TopSeaType"  id="TopSeaType" />
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div style="clear:both"></div>
+    <div id="webAccess">
+        <div id="channels">
+			<h2 class="zz91Index">
+                <a href="$!{address.front}" #if($!{ik}=="index")class="selected"#end title="$!{siteInfo.site_name}首页">首页</a>
+            </h2>
+            <h2 class="tradingCenter">
+                <a href="$!{address.trade}" #if($!{ik}=="trade")class="selected"#end title="ZZ91再生网交易中心">交易中心</a>
+            </h2>
+            <h2 class="quote">
+                <a href="$!{address.price}" #if($!{ik}=="price")class="selected"#end title="废料行情报价">行情报价</a>
+            </h2>
+            <h2 class="interactiveCommunity">
+                <a href="$!{address.huzhu}" #if($!{ik}=="huzhu")class="selected"#end title="ZZ91再生网互助社区，废料商人的家">互助社区</a>
+            </h2>
+        </div>
+        <div id="navigation">
+            <ul id="subNet">
+                <li><a href="$!{address.price}/channel/wasteMetal.htm" target="_blank">废金属网</a></li>
+                <li><a href="$!{address.price}/channel/wastePlastic.htm" target="_blank">废塑料网</a></li>
+				<li><a href="http://suliao.zz91.com/" target="_blank">再生塑料网</a></li>
+                <li><a href="$!{address.price}/channel/otherWaste.htm" target="_blank">综合废料</a></li>
+				<li><a href="$!{address.price}/companyprice/" target="_blank">企业报价</a></li>
+				<li><a href="http://zhanhui.zz91.com/" target="_blank">再生展会</a></li>
+				<li><a href="http://renzheng.recyclechina.com/" target="_blank">优质海外供应商</a></li>
+                <li><a href="http://aqsiq.zz91.com" target="_blank">AQSIQ/环保证</a></li>
+            </ul>
+            <ul id="intranetChannel">
+                <li class="treasureBox" >
+                    <a href="javascript:void(0)" class="nohover">百宝箱</a>
+                    <ul>
+						<li >
+                            <a href="$!{address.score}" target="_blank">积分商城</a>
+                        </li>
+                        <li>
+                            <a href="http://shebei.zz91.com/" target="_blank">二手设备</a>
+                        </li>
+                        <li >
+                            <a href="http://tech.zz91.com/" target="_blank">再生技术</a>
+                        </li>
+                        <li >
+                            <a href="$!{address.map}" target="_blank">再生地图</a>
+                        </li>
+                        <li >
+                            <a href="http://www.zz91.com/jgj" target="_blank">金管家</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="liIntranetChannel"><a href="http://www.zz91.com/subject/" target="_blank">热点专题</a></li>
+                <li class="liIntranetChannel"><a href="$!{address.company}" target="_blank">公司黄页</a></li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+<!--head end-->
+<script type="text/javascript">
+$(document).ready(function(){
+	new zz91SearchSlide("#zz91-searchWeb","TopSeaType","search");
+	
+	$('li.treasureBox').mousemove(function() {
+        $(this).find('ul').slideDown("fast"); //you can give it a speed
+        $(this).find('a').first().addClass('ishover');
+        $(this).find('a').first().removeClass('nohover');
+    });
+    $('li.treasureBox').mouseleave(function() {
+        $(this).find('ul').slideUp("fast");
+        $(this).find('a').first().removeClass('ishover');
+        $(this).find('a').first().addClass('nohover');
+    });
+	
+})
+
+//以下为搜索相关
+function topSearch() {
+    var keyWord = document.getElementById("search").value;
+    var type = document.getElementById("TopSeaType");
+    
+    if (keyWord == "" || keyWord.substring(0, "请输入您感兴趣的".length) == "请输入您感兴趣的") {
+        alert("请您输入关键字！");
+        return false;
+    }
+	
+    if (type.value == "1") {
+        zz91Search.products({
+            contextpath:"${address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"1"
+            }
+        });
+    } else if (type.value == "2") {
+        zz91Search.products({
+            contextpath:"$!{address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"2"
+            }
+        });
+    } else if (type.value == "3") {
+        zz91Search.price({
+            contextpath:"$!{address.price}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord
+            }
+        });
+    }
+	
+	return false;
+}
+</script>

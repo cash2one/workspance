@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+    <script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ext-ckeditor/Ext.form.BasicForm.js"></script>
+	<script type="text/javascript" src="$!{address.js}/ext-ckeditor/ckeditor/ckeditor.js"></script>
+	<script type="text/javascript" src="$!{address.js}/ext-ckeditor/Ext.form.CKEditor.js"></script>
+	
+	<script type="text/javascript" src="$!{address.js}/bbs/post.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/bbs/reply.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+		#if($!{id}>0)
+		var form=new ast.ast1949.bbs.post.Form({
+			title:"贴子信息",
+			collapsible:true,
+			titleCollapse:true,
+			columnWidth:1
+		});
+		
+		form.loadPost($!{id});
+		
+		var replyForm = new ast.ast1949.bbs.reply.ReplyForm({
+			region:"east",
+			editType:"my",
+			width:400,
+			split:true
+		});
+		ast.ast1949.bbs.reply.TARGETPOST=$!{id};
+		var replyGrid=new ast.ast1949.bbs.reply.Grid({
+			id:REPLY.GRID,
+			region:"center",
+			goHuzhu:true,
+			listeners:{
+				"rowclick":function(g,rowIndex,e){
+					replyForm.loadreply(g);
+				}
+			}
+		});
+		
+		var viewport = new Ext.Viewport({
+			layout : "border",
+			items : [{
+				region:"center",
+				autoScroll:true,
+				layout:"column",
+				items:[form,{
+					columnWidth:1,
+					height:500,
+					layout:"border",
+					title:"贴子的所有回复信息(可以这里编辑和审核回复的信息)",
+					collapsible:true,
+					titleCollapse:true,
+					items:[replyGrid,replyForm]
+				}]
+			}]
+		});
+		
+		ast.ast1949.bbs.reply.queryReply(REPLY.GRID, {"bbsPostId":"$!{id}"});
+		
+		#else
+		
+		var form=new ast.ast1949.bbs.post.Form({
+			title:"贴子信息",
+			collapsible:true,
+			titleCollapse:true,
+			columnWidth:1
+		});
+		
+		form.initFormField();
+
+		var viewport = new Ext.Viewport({
+			layout : "border",
+			items : [{
+				region:"center",
+				autoScroll:true,
+				layout:"column",
+				items:[form]
+			}]
+		});
+		
+		#end
+		
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

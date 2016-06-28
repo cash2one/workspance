@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>/ast1949-web/src/main/webapp/WEB-INF/views/zz91/admin/timejob/view.vm</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<style>
+		td,th{
+			padding:5px;
+		}
+		th{
+			font-weight:bold;
+		}
+		caption{
+			line-height:24px;
+		}
+	</style>
+</head>
+
+<body>
+<table border="1" style="border-collapse:collapse;">
+	<caption>任务关闭后，如果WEB项目重启过了，则任务会重新开启！</caption>
+	<tr>
+		<th>序号</th>
+		<th>任务描述</th>
+		<th>任务名</th>
+		<th>cronExpression</th>
+		<th>操作</th>
+	</tr>
+	#foreach($job in $jobs)
+	<tr>
+		<td>$!{velocityCount}</td>
+		<td>$!{job.promptText}</td>
+		<td>$!{job.jobName}</td>
+		<td>$!{job.jobTime}</td>
+		<td>
+			<form action="">
+				#if($!{job.status}=="on")
+					<input type="button" style="color:red" value="已开启" onclick="this.form.action.value='close';this.form.submit()">
+				#elseif($!{job.status}=="off")
+					<input type="button" value="已关闭" onclick="this.form.action.value='open';this.form.submit()">
+				#end
+				##if($!{job.runStatus}=="normal")
+					<input type="button" value="立即执行" onclick="this.form.runAction.value='execute';this.form.submit()">
+				##elseif($!{job.runStatus}=="run")
+					##<input type="button" value="暂停" onclick="this.form.runAction.value='pause';this.form.submit()">
+				##elseif($!{job.runStatus}=="pause")
+					##<input type="button" value="继续执行" onclick="this.form.runAction.value='resume';this.form.submit()">
+				##end
+				<input type="hidden" value="" name="action" id="action" />
+				<input type="hidden" value="" name="runAction" id="runAction" />
+				<input type="hidden" value="$!{job.schedulerFactoryId}" name="schedulerFactoryId">
+				<input type="hidden" value="$!{job.cronTriggerId}" name="cronTriggerId">
+			</form>
+		</td>
+	</tr>
+
+	#end
+
+</table>
+</body>
+</html>

@@ -1,0 +1,141 @@
+#set($layout="/layout/starIndexLayout.vm")
+##parse("/common/importJqueryUi.vm")
+<link rel="stylesheet" href="$!{address.img}/lib/jquery-ui/1.8.24/css/smoothness/jquery-ui-1.8.24.custom.css" />
+<script src="$!{address.img}/lib/jquery-ui/1.8.24/js/jquery-ui-1.8.24.custom.min.js"></script>
+ #if($!{sessionUser})
+	<input type="hidden" id="loginFlag" value="1" />
+	#else
+	<input type="hidden" id="loginFlag" value="0" />
+ #end
+<div class="wrapper nav">
+	<ul>
+		<li><a href="$!{address.mingxing}/index.htm">首页</a></li>
+		<li><a href="$!{address.mingxing}/qyft.htm">明星企业访谈</a></li>
+		<li><a href="$!{address.mingxing}/hyjy.htm">行业精英</a></li>
+	</ul>
+</div>
+
+<div class="wrapper mt">
+	当前位置： <a href="$!{address.mingxing}/index.htm" target="_blank">明星企业首页</a> > 
+		#if($!{typeCodeName})
+			<a href="$!{address.mingxing}/hyjy.htm?code=$!{bbsPostDO.bbsPostCategoryId}" target="_blank">$!{typeCodeName}</a> > $!{bbsPostDO.title}
+		#else
+			<a href="$!{address.mingxing}/qyft.htm" target="_blank">明星企业访谈</a> > $!{bbsPostDO.title}
+		#end
+</div>
+
+<div class="wrapper mt clearfix">
+	<div class="mainCol">
+		<div class="wrap">
+			<div class="article_nav clearfix">
+				
+				<span class="previous">上一篇:<a href="$!{address.mingxing}/starDetail$!{onBbs.id}.htm" >
+					#if($!{onBbs.id} && $!{onBbs.id}>0)
+						#printTitle($!{onBbs.title} 18 "")
+					#end
+				</a></span>
+				<span class="next">下一篇:<a href="$!{address.mingxing}/starDetail$!{downBbs.id}.htm" >
+					#if($!{downBbs.id} && $!{downBbs.id}>0)
+						#printTitle($!{downBbs.title} 18 "")
+					#end</a></span>	
+			</div>
+			<div class="article">
+				<h3 class="title">$!{bbsPostDO.title}</h3>
+				<p class="meta">时间：#printFragmentDate('yyyy-MM-dd hh:ss:mm' $!{bbsPostDO.postTime}) ZZ91再生网</p>
+				<div class="content">
+					$!{bbsPostDO.content}
+				</div>
+				<a href="http://china.zz91.com/register/register_stp1.htm" class="join" target="_blank">免费加入ZZ91，独享高端废料行情、资讯</a>
+				<div class="statement">
+					免责声明：本版文章内容系作者个人观点，仅供投资者参考，ZZ91登载此文出于传递更多信息之目的，并不意
+味着赞同其观点或证实其描述，并不构成投资建议。投资者据此操作，风险自担。
+					<p class="center">ZZ91再生网 - 资讯中心 ZZ91资深团队 强力打造业内最专业、最权威资讯！</p>
+					<p class="center"><a href="javascript:history.go(-1);" target="_blank">【返回上一层】</a><a href="$!{address.mingxing}" target="_blank">【返回首页】</a><a href="javascript:void(0)" class="collectBtn" title="点此收藏">【收藏本页】</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="siderCol">
+		#parse("/common/starCommonRight.vm")
+		<div class="wrap mt">
+			<div class="head">
+				省物流、看货近，一键寻找最匹配商机
+			</div>
+			<div class="cont">
+				<ul class="infoList clearfix">
+					<li><a href="" target="_blank">广东废料网</a></li>
+					<li><a href="" target="_blank">浙江废料网</a></li>
+					<li><a href="" target="_blank">山东废料网</a></li>
+					<li><a href="" target="_blank">江苏废料网</a></li>
+					<li><a href="" target="_blank">北京废料网</a></li>
+					<li><a href="" target="_blank">上海废料网</a></li>
+					<li><a href="" target="_blank">天津废料网</a></li>
+					<li><a href="" target="_blank">河北废料网</a></li>
+					<li><a href="" target="_blank">河南废料网</a></li>
+					<li><a href="" target="_blank">湖南废料网</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="http://img0.zz91.com/zz91/js/mKits.js"></script>
+<script>
+jQuery(function(){
+	
+	jQuery("#loginBtn").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				loginBox.close();
+				window.parent.location.reload();
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=#springUrl('/submitCallback.htm')");
+		});
+		
+		## 收藏按钮 点击弹出 收藏页面
+		var collectBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{bbsPostDO.id}&favoriteTypeCode=10091010&title=$!{bbsPostDO.title}",
+			destUrl:"#springUrl('/submitCallback.htm')",
+			modal:true,
+			height:370,
+			width:660
+		});
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"#springUrl('/submitCallback.htm')",
+			modal:true,
+			height:450,
+			width:631
+		});
+	jQuery(".collectBtn").click(function(){
+			var id = ${bbsPostDO.id};
+			var title = "$!{bbsPostDO.title}";
+			title = encodeURI(title);
+			if(jQuery("#loginFlag").val()==0){
+    			Asto.util.Callback.setSubmitCallback(function(success, data){
+					jQuery("#loginFlag").val(1);
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						collectBox.close();
+					});
+					loginBox.close();
+					collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091010&title="+title+"&destUrl=#springUrl('/submitCallback.htm')");
+				});
+				
+				loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=#springUrl('/submitCallback.htm')");
+			}else{
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+					if(success=="false"){
+						jQuery("#loginFlag").val(0);
+					}
+				});
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091010&title="+title+"&destUrl=#springUrl('/submitCallback.htm')");
+			}
+		});
+	mKits.tabs("#J_tab");
+	mKits.carousel("#J_c1", {
+		showNum: 7,
+		direction: "vertical",
+		auto: 2000
+	});
+});
+</script>

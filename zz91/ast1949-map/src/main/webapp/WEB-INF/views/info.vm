@@ -1,0 +1,158 @@
+#parse("/common/head.vm")
+<div class="container navbar">
+	#parse("/common/menu.vm")
+<!--     <div class="pos"><span>您所在的位置：</span><a href="#">$!{name}$!{productName}网</a></div> -->
+</div>
+#parse("/common/search.vm")
+<div class="container mt clearfix">
+    <div class="fl">
+        <script>
+        function g(o) {
+            return document.getElementById(o);
+        }
+        function HoverLil(n) {
+            for(var i=1;i<3;i++){
+                g('ltb_'+i).className='ssbjs';
+                g('ltbc_0'+i).className='undis';
+            }
+            g('ltbc_0'+n).className='dis';
+            g('ltb_'+n).className='ssbjns';
+        }
+        </script>
+        <div class="flinfoclass">
+            <ul class="clearfix">
+                <li class="ssbjns" id="ltb_1" onmouseover="HoverLil(1);">供应信息</li>
+                <li class="ssbjs" id="ltb_2" onmouseover="HoverLil(2);">求购信息</li>
+                <li class="flinfoclass_d">再生通会员具有优先权，<a href="http://www.zz91.com/service/newzst/" target="_blank" style="font-size:14px; font-weight:bold; color:#F00;">点此申请！</a></li>
+            </ul>
+        </div>
+        <div class="flr_gqinfo mt clearfix">
+            <div class="flr_gqinfo_a"><img src="http://img0.zz91.com/zz91/map/images/fls1_10.jpg" width="6" height="37" /></div>
+            <div class="flr_gqinfo_b">
+                <ul>
+                    <li class="flr_gqinfo_b_a">供应品类</li>
+                    <li class="flr_gqinfo_b_b">公司名称</li>
+                    <li class="flr_gqinfo_b_c">发布时间</li>
+                    <li class="flr_gqinfo_b_d">给我留言</li>
+                </ul>
+            </div>
+            <div class="flr_gqinfo_c"><img src="http://img0.zz91.com/zz91/map/images/fls1_14.jpg" width="6" height="37" /></div>
+        </div>
+        <div class="flr_gqinfobor">
+            <ul>
+				<!--供应-->
+				<li id="ltbc_01" class="dis">
+					<div class="flr_gqinfolist">
+					<ul>
+						#foreach($products in $gList)
+							<li class="flr_gqinfolist_a">
+								<a href="$!{address.trade}/productdetails$!{products.products.id}.htm" target="_blank" title="$!{products.title}">
+								<font color='#CC6600'>#printProductType($!{products.products.productsTypeCode} "" "")</font>#printTitle($!{products.products.title} 6 "")
+								</a>
+							</li>
+							<li class="flr_gqinfolist_b"><a href="$!{address.company}/compinfo$!{products.products.companyId}.htm" target="_blank" title="$!{products.company.name}">#printTitle($!{products.company.name} 12 "")</a></li>
+							<li class="flr_gqinfolist_c">#printFragmentDate('yyyy-MM-dd' $!{products.products.refreshTime})</li>
+							<li class="flr_gqinfolist_d"><a href="$!{address.company}/compinfo$!{products.products.companyId}.htm" target="_blank">给我留言</a></li>
+						#end
+					</ul>
+					<div class="clear"></div>
+					</div>
+					<div class="flr_gqinfomore"><a href="http://trade.zz91.com/offerlist--a1--b--c--d--e--f--p--$!{keywords}.htm" target="_blank">更多信息</a></div>
+				</li>
+				<!--求购-->
+                <li id="ltbc_02" class="undis">
+                    <div class="flr_gqinfolist">
+                        <ul>
+							#foreach($products in $pList)
+								<li class="flr_gqinfolist_a">
+									<a target="_blank" href="$!{address.trade}/productdetails$!{products.products.id}.htm"  title="$!{products.title}">
+									<font color='#CC6600'>#printProductType($!{products.products.productsTypeCode} "" "")</font>#printTitle($!{products.products.title} 6 "")
+									</a>
+								</li>
+								<li class="flr_gqinfolist_b"><a href="$!{address.company}/compinfo$!{products.products.companyId}.htm" target="_blank" title="$!{products.company.name}">#printTitle($!{products.company.name} 12 "")</a></li>
+								<li class="flr_gqinfolist_c">#printFragmentDate('yyyy-MM-dd' $!{products.products.refreshTime})</li>
+								<li class="flr_gqinfolist_d"><a href="$!{address.company}/compinfo$!{products.products.companyId}.htm" target="_blank">给我留言</a></li>
+	                        #end
+                        </ul>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="flr_gqinfomore"><a href="http://trade.zz91.com/offerlist--a1--b--c--d--e--f--p--$!{keywords}.htm" target="_blank">更多信息</a></div>
+                </li>
+            </ul>
+        </div>
+        <div class="mt">
+            <div class="flr_cprbjinfo"><span>$!{keywords}报价信息</span></div>
+            <div class="flr_cprbjinfolist">
+                <ul class="flr_cprbjinfolists">
+				##	#cacheFragment("$!{address.fragment}/price/onlinePrice.htm?typeId=&size=6&1", "", "", "")	
+						#foreach($price in $priceList)
+							<li>
+								<span>$!date.format('yyyy-MM-dd',$!{price.gmtOrder})</span>
+								<a href="$!{address.price}/priceDetails_$!{price.id}.htm" target="_blank" title="$!{price.title}">$!{price.title}</a>
+							</li>
+						  #end
+		  		##	#end
+                </ul>
+                <ul class="flr_cprbjinfolistm">
+                	 <li><a href="http://price.zz91.com/priceSearch.htm?title=$!{keywords}" target="_blank">更多信息</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt">
+            <div class="flr_cprbjinfo"><span>$!{keywords}资讯信息</span></div>
+            <div class="flr_cprbjinfolista">
+                <ul class="flr_cprbjinfolists">
+					
+					#foreach($info in $infoList)
+							<li>
+								<span>$!date.format('yyyy-MM-dd',$!{info.postTime})</span>
+								<a href="http://huzhu.zz91.com/viewReply$!{info.id}.htm" target="_blank" title="$!{info.title}">$!{info.title}</a>
+							</li>
+					 #end
+                </ul>
+                <ul class="flr_cprbjinfolistm">
+                    <li><a href="http://huzhu.zz91.com/search.htm?keywords=$!{keywords}" target="_blank">更多信息</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<div class="fr">
+#parse("/common/place.vm")
+		<div class="flr_tcjjdss mt">
+            <div class="flr_tcjjdtitss">相关热门产品推荐</div>
+            <div class="flr_tcjjdtbqss">
+				#foreach($tag in $!{tagsList.keySet()})
+				  	#set($step=$velocityCount%4+1)
+					<a href="$!{address.tags}/tagssearchList/${tagsList.get($!{tag})}/" class="tag$!{step}" target="_blank" title="$!{tag}">$!{tag}</a>|
+				#end
+            </div>
+            <div class="flr_tcjjdtbqsrs">
+				<a href="http://price.zz91.com/companyprice">查看更多</a>
+            </div>
+        </div>
+        <div class="flr_tcjjdss mt">
+            <div class="flr_tcjjdtitss">废料产品导航</div>
+            <div class="flr_tcjjddh">
+				<ul>
+              <li><span><a href="http://daohang.zz91.com/jinshu/" target="_blank">金属产品</a></span><a href="http://daohang.zz91.com/ershouyifu/" target="_blank">二手衣服</a></li>
+                <li><span><a href="http://daohang.zz91.com/feizhi/" target="_blank">废纸产品</a></span><a href="http://daohang.zz91.com/suliao/" target="_blank">废塑料产品</a></li>
+                <li><span><a href="http://daohang.zz91.com/dianzhi/" target="_blank">电子电器</a></span><a href="http://daohang.zz91.com/xiangjiao/" target="_blank">废橡胶产品</a></li>
+                <li><span><a href="http://daohang.zz91.com/feifangzhi/" target="_blank">纺织产品</a></span><a href="http://daohang.zz91.com/shebei/" target="_blank">二手设备</a></li>
+                <li><span><a href="http://daohang.zz91.com/feitie/" target="_blank">废铁价格</a></span><a href="http://daohang.zz91.com/feiliaofuwu/" target="_blank">废料服务</a></li>
+                <li><span><a href="http://daohang.zz91.com/feiluntai/" target="_blank">废旧轮胎</a></span><a href="http://daohang.zz91.com/feitong/" target="_blank">废铜价格</a></li>
+                <li><span><a href="http://daohang.zz91.com/guijinshu/" target="_blank">贵金属</a></span><a href="http://daohang.zz91.com/feidianping/" target="_blank">废电瓶</a></li>
+                <li><span><a href="http://daohang.zz91.com/feilv/" target="_blank">废铝</a></span><a href="http://daohang.zz91.com/shengtie/" target="_blank">生铁</a></li>
+                <li><span><a href="http://daohang.zz91.com/feixi/" target="_blank">废锡网</a></span><a href="http://daohang.zz91.com/feixin/" target="_blank">废锌</a></li>
+                <li><span><a href="http://daohang.zz91.com/suliaokeli/" target="_blank">塑料颗粒</a></span><a href="http://daohang.zz91.com/gongchengsuliao/" target="_blank">工程塑料</a></li>
+			</ul>
+            </div>
+        </div>
+        #parse("/common/commons.vm")
+    </div>
+</div>
+<!--百度商桥-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+#parse("/common/foot.vm")

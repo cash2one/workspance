@@ -1,0 +1,94 @@
+#set( $layout = "/layout/blank.vm" )
+#parse("/common/context.vm")
+#parse("/common/import.vm")
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>上传</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="$!{address.js}/lib/jquery/jauery_lib/jquery-1.4.3.js"></script>
+    <script type="text/javascript" src="$!{address.js}/fileupload/interface.js"></script>
+	<script type="text/javascript" src="$!{address.js}/fileupload/ajaxfileupload.js"></script>
+    <style type="text/css">
+        *{ margin:0; padding:0; }
+    </style>
+    <script type="text/javascript">
+		var uploadSelect = function() {
+			
+			var _url="$!{address.server}/upload?tp="+timestamp()+"&filetype=$!{filetype}&model=$!{model}"
+			jQuery.ajaxFileUpload({
+              url:_url,//服务器端程序
+              secureuri:false,
+              fileElementId:"file",//input框的ID
+              dataType: "json",//返回数据类型
+              beforeSend:function() {//上传前需要处理的工作，如显示Loading...
+              },
+              success: function (reponse, status) {//上传成功
+			    var obj = eval(reponse.data[0]);
+    			if(obj.success) {
+                  //从data中获取数据，进行处理
+				  jQuery("#path").val(obj.path);
+				  jQuery("#uploadedFilename").val(obj.uploadedFilename);
+
+				  showMsg(obj.success);
+				  noticeParent(obj);
+				  
+                } else{
+				  jQuery("#path").val("");
+				  jQuery("#uploadedFilename").val("");
+				  
+                  showMsg(obj.success);
+                }
+              }
+            });
+	    };
+		
+        /**
+        * 重新上传(初始Form) 
+        * @param {} success 要显示的控件的id值
+        * @param {} outEl 要隐藏的控件的id值
+        */
+        function showMsg(success) {
+        	var msg="上传失败！"
+        	if(success) {
+        		msg="上传成功！"
+        	}
+        	// 提示：上传成功！文件路径:  bbs/2010/10/29/12883241479082168.jpeg  [重新上传]
+        	jQuery("#uploadmsg").html("提示："+msg);
+        	jQuery("#uploadstatus").show(2000,function(){});
+        	jQuery("#file").hide(1000,function(){});
+			jQuery("#uploadBtn").hide(1000,function(){});
+			
+        }
+		
+		/**
+        * 通知父页面
+        * @param {} data 返回数据
+        */
+		function noticeParent(data) {
+			var control = "$!{control}";
+
+			if(control!=null && control!="") {
+				//多图片上传
+				parent.onAjaxUpLoad(data, control);
+			} else {
+				//单图片上传
+				parent.onAjaxUpLoad(data);
+			}
+		}
+    </script>
+</head>
+<body>
+    <form id="frmUpload" method="post" enctype="multipart/form-data">
+		<div id="uploadstatus" style="display:none">
+			<span id="uploadmsg" style="color:red"></span>&nbsp;
+			<span id="filepath"></span>&nbsp;
+			<a href="$!{address.server}/ajaxUpload.htm?&filetype=$!{filetype}&model=$!{model}&control=$!{control}">[继续上传]</a>
+		</div>
+        <input type="file" id="file" name="file" size="40"  style="border:1px solid #CCC"/>
+		<input id="uploadBtn" type="button" value="上传" onclick="uploadSelect();" style="border:1px solid #CCC;cursor:pointer;padding:2px 12px;"/>
+		<input type="hidden" id="path" name="path" value="" />
+		<input type="hidden" id="uploadedFilename" name="uploadedFilename" value="" style="border:1px solid #CCC;"/>
+    </form>
+</body>
+</html>

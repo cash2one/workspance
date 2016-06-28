@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmSvrApply">
+
+	<typeAlias alias="apply" type="com.ast.ast1949.domain.company.CrmServiceApply"/>
+	
+	<resultMap class="apply" id="crmSvrApplyResult">
+		<result property="id" column="id"/>
+		<result property="applyGroup" column="apply_group"/>
+		<result property="orderNo" column="order_no"/>
+		<result property="gmtIncome" column="gmt_income"/>
+		<result property="email" column="email"/>
+		<result property="amount" column="amount"/>
+		<result property="amountDetails" column="amount_details"/>
+		<result property="saleStaff" column="sale_staff"/>
+		<result property="remark" column="remark"/>
+		<result property="membershipCode" column="membership_code"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+    <sql id="fullCollumm">
+    	csa.`id`,
+		csa.`apply_group`,
+		csa.`order_no`,
+		csa.`gmt_income`,
+		csa.`email`,
+		csa.`amount`,
+		csa.`amount_details`,
+		csa.`sale_staff`,
+		csa.`remark`,
+		csa.`membership_code`,
+		csa.`gmt_created`,
+		csa.`gmt_modified`
+    </sql>
+    
+	<select id="queryApplyByGroup" parameterClass="java.lang.String" resultMap="crmSvrApplyResult">
+		select
+		<include refid="crmSvrApply.fullCollumm"/>
+		from crm_service_apply csa
+		where csa.apply_group=#applyGroup#
+
+	</select>
+	
+	<insert id="insertApply" parameterClass="apply">
+		insert into `crm_service_apply`
+		(
+		`apply_group`,
+		`order_no`,
+		`gmt_income`,
+		`email`,
+		`amount`,
+		`amount_details`,
+		`sale_staff`,
+		`remark`,
+		`membership_code`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#applyGroup#,
+		#orderNo#,
+		#gmtIncome#,
+		#email#,
+		#amount#,
+		#amountDetails#,
+		#saleStaff#,
+		#remark#,
+		#membershipCode#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+				select last_insert_id()
+		</selectKey>	
+	</insert>
+	
+	<update id="updateApply" parameterClass="apply">
+		update `crm_service_apply`
+		set
+		`gmt_income` = #gmtIncome#,
+		`email` = #email#,
+		`amount` = #amount#,
+		`amount_details` = #amountDetails#,
+		`remark` = #remark#,
+		`membership_code` = #membershipCode#,
+		`gmt_modified` = now()
+		where id=#id#
+	</update>
+	
+</sqlMap>

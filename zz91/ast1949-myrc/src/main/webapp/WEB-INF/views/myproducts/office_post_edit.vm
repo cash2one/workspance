@@ -1,0 +1,639 @@
+#set( $layout = "/layout/default.vm" )
+<script src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/myrc/css/myproducts.css" />
+<script src="http://img0.zz91.com/zz91/myrc/js/myproducts.js"></script>
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">编辑供求信息</li>
+        </ul>
+		<form id="editForm" name="editForm" method="post" action="#springUrl('/myproducts/editProducts.htm')">
+			<input type="hidden" name="id" id="id" value="$!{productsDO.id}">
+    		<input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode" value="$!{productsDO.categoryProductsMainCode}">
+			<!-- part I Start -->
+    		<h3 class="divide">一、供求基本信息</h3>
+    		<div class="control-group">
+				<label for="title" class="control-label">
+					<span class="red">*</span>产品名称：
+				</label>
+				<div class="controls">
+					<input name="title" type="text" id="title" value="$!{productsDO.title}" class="field validate[required,maxSize[50]]">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">
+					<span class="red">*</span>产品名称(信息类型)：
+				</label>
+				<div class="controls">
+				#foreach($!products in $!productsTypeList)
+					<label class="radio">
+						<input name="productsTypeCode" type="radio"  value="$!{products.code}" #if($!{productsDO.productsTypeCode}==$!{products.code}) checked #end>$!{products.label}信息
+					</label>
+				#end
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">
+					<span class="red">*</span>产品名称(所属类别)：
+				</label>
+				<div class="controls">
+					<p>
+						<select id='c1' name='c1' class="validate[required]">
+                        	<option value="">--请选择主类别--</option>
+                    	</select>
+                    </p>
+                    <select id='c2' name='c2' size='10' class="validate[required]">
+                        <option value="">--二级分类--</option>
+                    </select>
+                    <select id='c3' name='c3' size='10'>
+                        <option value="">--三级分类--</option>
+                    </select>
+                    <select id='c4' name='c4' size='10'>
+                        <option value="">--四级分类--</option>
+                    </select>
+            		<select id='ac' name='categoryProductsAssistCode' size='10'>
+                        <option value="">--请选择辅助类别--</option>
+                    </select>
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="details" class="control-label">
+					<span class="red">*</span>信息描述：
+				</label>
+				<div class="controls">
+					<textarea name="details" cols="60" rows="5" id="details" class="validate[required]">$!{productsDO.details}</textarea>
+				</div>
+			</div>
+			<!-- <div class="alert alert-info mt"> 
+				<strong>小窍门：</strong>给你的供求信息贴上标签，让客户更快更准找到你！多个标签用逗号隔开！
+				<a href="http://www.zz91.com/cn/helpcenter/news.asp?id=392" target="_blank" id="linktags" title="点击查看在线帮助，教你如何填写标签">怎样填标签？</a>
+        	</div> -->
+			<div class="control-group mt">
+				<label for="tags" class="control-label">
+					<span class="red">*</span>产品标签：
+				</label>
+				<div class="controls">
+					<input name="tags" type="text" id="tags" size="100" value="$!{productsDO.tags}" class="field input-large validate[required,maxSize[100]]">
+				</div>
+    		</div>
+			<!-- part I End -->
+			<!-- part II Start -->
+			<h3 class="divide">二、产品属性</h3>
+			
+			
+			<div class="b-item " id = "source_item">
+            	<div class="b-item-title fl ">
+                	货源地：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "source" value="$!{productsDO.source}"/>
+                <div class="b-item-info fl ">
+                	（此货物来源地，如：国外、美国、国产...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item" id = "origin_item">
+            	<div class="b-item-title fl ">
+                	来源产品：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "origin" value="$!{productsDO.origin}"/>
+                <div class="b-item-info fl ">
+                	
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="useful_item">
+            	<div class="b-item-title fl ">
+                	此废料可用于：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name="useful" value="$!{productsDO.useful}"/>
+                <div class="b-item-info fl ">
+                	（此货品加工后的用途，如：造粒、注塑...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item" id = "specification_item">
+            	<div class="b-item-title fl ">
+                	产品规格：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "specification" value="$!{productsDO.specification}"/>
+                <div class="b-item-info fl ">
+                	（如：产品大小30cm*50cm、厚度20mm...）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+			<div class="b-item hidden" id = "grade_item">
+            	<div class="b-item-title fl ">
+                	品位：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "grade" id = "grade" value=""/>
+                <div class="b-item-info fl ">
+                	
+                </div>
+                <div class="cb"></div>
+            </div>
+            <div class="b-item hidden" id = "color_item">
+            	<div class="b-item-title fl ">
+                	颜色：
+                </div>
+                <input type="text" class="b-item-text2 fl field input-small" name = "color" value="$!{productsDO.color}"/>
+                <div class="b-item-info fl ">
+                	（如：本色、白色、黑色、灰色、红色、蓝色、杂色、绿色、透明、黄色、棕色、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="shape_item">
+            	<div class="b-item-title fl ">
+                	形态：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name="shape" value="$!{spot.shape}"/>
+                <div class="b-item-info fl ">
+                	（如：片状、颗粒、破碎、原状未加工、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id = "level_item">
+            	<div class="b-item-title fl ">
+                	级别：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "level" value="$!{spot.level}"/>
+                <div class="b-item-info fl ">
+                	（如：特级、一级、二级、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id = "appearance_item">
+            	<div class="b-item-title fl ">
+                	外观：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name = "appearance" value="$!{productsDO.appearance}"/>
+                <div class="b-item-info fl ">
+                	（如：光滑、干净、未处理、其他）
+                </div>
+                <div class="cb"></div>
+            </div>
+            <!--end b-item-->
+            <div class="b-item hidden" id="impurity_item">
+            	<div class="b-item-title fl ">
+                	杂质（杂物）含量：
+                </div>
+                <input type="text" class="b-item-text fl field input-small" name="impurity" value="$!{productsDO.impurity}"/>
+                <div class="b-item-info fl ">
+                	（请写明具体杂质及其含量，如：含镍3%）
+                </div>
+                <div class="cb"></div>
+            </div>
+			<div class="b-item">
+				<label class="b-item-title fl ">加工说明：</label>
+					#foreach($manu in $!manufactureList)
+						<label class="radio"><input type="radio" name="manufacture" value="$!{manu.code}" #if($!{productsDO.manufacture}==$!{manu.code})checked#end> $!{manu.label}</label>
+					#end
+                <div class="cb"></div>
+            </div>
+			<div class="b-item hidden" id ="addProp_item">
+    			#foreach($pap in $!productAddProperties)
+    				#if($!{pap.property}=="品位")
+    					<input type="hidden" name="pinwei" id="pinwei" value="$!{pap.content} " />
+						#set( $cout = $velocityCount - 1)
+    				#else
+						#if($cout==0)
+							#set( $velocityCount = $velocityCount - 2)
+						#else
+							#set( $velocityCount = $velocityCount - 1)
+						#end
+    				<div class="b-item1" id = "prop$velocityCount" >
+    					<div class="b-item-title">
+    						<input type="text" class="b-item-text5 field input-small" onclick=itemtext1(this) value="$!{pap.property}" name = "property"  id = "property$velocityCount" />：</div>
+    					<div class="b-item-info2">
+    						<input type="text" class="b-item-text6 field input-small" onclick=itemtext2(this) value="$!{pap.content}" name="content" id = "content$velocityCount"/></div>
+    					<div class="b-item-info"><a href="javascript:deleteProperty('property$velocityCount','prop$velocityCount');">删除</a><span class="tag" id="span$velocityCount"></span></div>
+    					<input type="hidden" name="propertyId" id="propertyId$velocityCount" value="$!{pap.id}" />
+						<div class="cb"></div>
+    				</div>
+    				#end
+				#end
+					
+                <div id="item"></div>
+				<div class="b-item hidden" id = "add_tishi">
+                	<p style="color:#f00; margin-left:88px;"><strong><b>注. 属性和属性值</b></strong>都不能含有逗号(,)。如果需要则用顿号(、)代替。
+                    </p>
+                    <p style="color:#f00; margin-left:88px;"><strong><b>1. 属性：</b></strong>请根据具体产品填写，例如废金属，属性一栏可填写品位，形态，颜色等
+                    </p>
+					<p style="color:#f00; margin-left:88px;"><strong><b>2. 属性值：</b></strong>请根据属性填写，例如属性为颜色，属性值则为红色
+                    </p>
+                </div>
+                <div class="b-item">
+                	<div class="b-item-addimg fl">
+                    	<a href="#"></a>
+                    </div>
+                    <div class="b-item-addtext fl" id="item-addtext" >
+                    	<a id="additem">添加产品属性</a>
+                        如果您觉得我们提供的产品属性无法满足您的需要，您可以手动添加产品属性
+                    </div>
+                    <div class="cb"></div>
+                </div>
+            </div>
+			
+			#set($typename = "供应")
+    		#if($!{productsDO.productsTypeCode}=="10331001")
+    			#set($typename = "求购")
+			#elseif($!{productsDO.productsTypeCode}=="10331002")
+				#set($typename = "合作")
+    		#end
+			<!-- part III Start -->
+			<h3 class="divide">三、交易条件</h3>
+			<div class="control-group">
+				<label for="useful" class="control-label">
+					<span class="red">*</span>$!{typename}数量：
+				</label>
+				<div class="controls">
+					<input name="quantity" type="text" id="quantity" value="$!{productsDO.quantity}" class="field validate[required,custom[number]]" maxlength="6">
+				</div>
+			</div>
+			<div class="control-group">
+				<label for="useful" class="control-label">计量单位：</label>
+				<div class="controls">
+					<label class="radio"><input type="radio" name="quantityUnit" value='吨' #if($!{productsDO.quantityUnit}=="吨") checked #end />吨</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='千克' #if($!{productsDO.quantityUnit}=="千克") checked #end />千克</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='斤' #if($!{productsDO.quantityUnit}=="斤") checked #end />斤</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='台' #if($!{productsDO.quantityUnit}=="台") checked #end />台</label>
+					<label class="radio"><input type="radio" name="quantityUnit" value='辆' #if($!{productsDO.quantityUnit}=="辆") checked #end />辆</label>
+					#if($!{productsDO.quantityUnit}=="吨" || $!{productsDO.quantityUnit}=="千克" || $!{productsDO.quantityUnit}=="斤" || $!{productsDO.quantityUnit}=="台" || $!{productsDO.quantityUnit}=="辆") 
+						<label class="radio">
+							<input type="radio" name="quantityUnit" value='' id="myQuantityUnit" />其他：
+						</label>
+						<input type="text" value="" onblur="ortherInput('myQuantityUnit',this.value);" class="field">
+					#else
+						<label class="radio">
+							<input type="radio" name="quantityUnit" value='$!{productsDO.quantityUnit}' id="myQuantityUnit" checked/>其他：
+						</label>
+						<input type="text" value="$!{productsDO.quantityUnit}" onblur="ortherInput('myQuantityUnit',this.value);" class="field">
+					#end
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">${typename}情况：</label>
+				<div class="controls">
+					<label class="radio"><input type="radio" name="provideStatus" id="provideStatus" #if($!{productsDO.provideStatus}==0) checked #end value="0" onclick="document.getElementById('supplyTr').style.display='';" >
+					长期${typename}</label>
+					<label class="radio"><input type="radio" name="provideStatus" id="provideStatus" #if($!{productsDO.provideStatus}==1) checked #end value="1" onclick="document.getElementById('supplyTr').style.display='none';" >
+    				不定期${typename}</label>
+				</div>
+			</div>
+##			<div class="control-group">
+##				<label for="totalQuantity" class="control-label">${typename}总量：</label> 
+##				<div class="controls">
+##					<input name="totalQuantity" type="text" id="totalQuantity" value="$!{productsDO.totalQuantity}" class="field validate[custom[number]]"> 
+##				</div>
+##			</div>
+			<div class="control-group">
+				<label for="totalQuantity" class="control-label">公开报价</label> 
+				<div class="controls">
+					<label class="radio">
+						<input type="radio" name="opPrice" class="opPrice" value="0" #if($!{productsDO.minPrice}&&$!{productsDO.minPrice}!="0.0") checked='true' #end /> 公开报价
+					</label>
+					<label class="radio">
+						<input type="radio" name="opPrice" class="opPrice" value="1" #if(!$!{productsDO.minPrice}||$!{productsDO.minPrice}=="0.0") checked='true' #end /> 电议或面议
+					</label>
+				</div>
+			</div>
+			<div class="control-group validatePrice">
+				<label for="minPrice" class="control-label"><span class="red">*</span>报价：</label>
+				<div class="controls">
+					<input name="minPrice" type="text" id="minPrice" value="$!{productsDO.minPrice}" class="field validate[required,custom[number],min[1]]">
+					#set($chkflag='')
+					#set($displayflag='none')
+					#if($!{productsDO.maxPrice} && $!{productsDO.maxPrice}>0)
+						#set($chkflag='checked')
+						#set($displayflag='')
+					#end
+					<span id="priceFlag" style='display:$!{displayflag}'>
+						至
+						<input name="maxPrice" type="text" id="maxPrice"   value="$!{productsDO.maxPrice}" class="field validate[custom[number],funcCall[checkMaxPrice]]">
+					</span>
+    				<p class="red">（请写明价格，如：50000，如果是一个价格范围，请选中以下&ldquo;支持价格范围&rdquo;）</p>
+    				<label for="" class="checkbox">
+    					<input type="checkbox" name="togglePrice" id="togglePrice" $!{chkflag} value="1" onclick="if(this.checked){jQuery('#priceFlag').show();}else{jQuery('#priceFlag').hide();}"/> 支持价格范围
+    				</label>
+				</div>
+			</div>
+			<div class="control-group validatePrice">
+				<label class="control-label">价格单位：</label>
+				<div class="controls">
+					<label class="radio"><input type="radio" name="priceUnit" value='元' #if($!{productsDO.priceUnit}=="元")checked#end>元</label>
+					<label class="radio"><input type="radio" name="priceUnit" value='美元' #if($!{productsDO.priceUnit}=="美元")checked#end style="border:none"/>美元</label>
+					<label class="radio"><input type="radio" name="priceUnit" value='欧元' #if($!{productsDO.priceUnit}=="欧元")checked#end style="border:none"/>欧元</label>
+					<label class="radio"><input type="radio" name="priceUnit" value='日元' #if($!{productsDO.priceUnit}=="日元")checked#end style="border:none"/>日元</label>
+					#if($!{productsDO.priceUnit}=="元" || $!{productsDO.priceUnit}=="美元" || $!{productsDO.priceUnit}=="欧元" || $!{productsDO.priceUnit}=="日元")
+    					<label class="radio">
+    						<input type="radio" name="priceUnit" value='' id="myPriceUnit">其他：
+    					</label>
+    					<input id="otherUnit" type="text" value="" onblur="ortherInput('myPriceUnit',this.value);" class="field input-small">
+					#else
+    					<label class="radio">
+    						<input type="radio" name="priceUnit" value='$!{productsDO.priceUnit}' checked id="myPriceUnit">其他：
+    					</label>
+    					<input id="otherUnit" type="text" value="$!{productsDO.priceUnit}" onblur="ortherInput('myPriceUnit',this.value);" class="field input-small">
+					#end
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">期货现货：</label> 
+				<div class="controls">
+				#foreach($goods in $!goodsTypeList)
+					<label class="radio"><input type="radio" name="goodsTypeCode" value="$!{goods.code}" #if($!{productsDO.goodsTypeCode}==$!{goods.code})checked#end/>$!{goods.label}</label>
+				#end
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label"><span class="red">*</span>信息有效期：</label> 
+				<div class="controls">
+					<label class="radio"><input type='radio' name='postlimittime' value='-1' checked/>长期有效</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='90' #if($!day==90)checked#end	/>3个月</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='30' #if($!day==30)checked#end	/>1个月</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='20' #if($!day==20)checked#end	/>20天</label>
+					<label class="radio"><input type='radio' name='postlimittime' value='10' #if($!day==10)checked#end	/>10天</label>
+				</div>
+			</div>
+			<div class="control-group">
+    			<label class="control-label">交易说明：</label>
+				<div class="controls">
+					<input type="radio" name="transaction" value="提供样品" #if($!spot.transaction=="提供样品")checked#end/>提供样品
+					<input type="radio" name="transaction" value="支持线下看货" #if($!spot.transaction=="支持线下看货")checked#end/>支持线下看货
+        			<input type="radio" name="transaction" value="指定销售地区" id="transactionValue" #if($!spot.transaction=="指定销售地区$!{trans}")checked#end />
+        			<label for="transactionValue">指定销售地区</label>
+					<input type="text" class="field input-small" id="transactionArea" value="$!{trans}" />
+				</div>
+			</div>
+			<script>
+				// 指定销售地区 填写 时间
+				jQuery("#transactionArea").on({
+				
+    			   	"blur": function(){
+    				jQuery("#transactionValue").val("指定销售地区"+jQuery("#transactionArea").val())
+    				},
+    				"click": function(){
+    				jQuery('#transactionValue').attr('checked', true);
+    				}
+				});
+			</script>
+			<div class="control-group">
+				<label class="control-label">现货物所在地：</label>
+				<div class="controls hidden" id = "address">$!{productsDO.location}&nbsp; &nbsp;&nbsp;&nbsp; <input type = "button"  onClick="setAddress()" value="重设" /></div>
+				
+				<div class="controls hidden" id="setAddress">
+					<select id='reg-area-1'>
+						<option value="">请选择省份</option>
+					</select>
+					<select id='reg-area-2'>
+						<option value="">请选择城市</option>
+					</select>
+					<input name="location" type="hidden" id="location" class="field" value="$!{productsDO.location}" /> 
+				</div>
+				
+			</div>
+			<script type="text/javascript">
+				jQuery(document).ready(function(){
+    				var regarea = new Asto.util.Selector({
+                		selects:["#reg-area-1","#reg-area-2"],
+            			assistSelects:["#reg-garden"],
+            			url:"#springUrl('/category/areaChild.htm')",
+            			assistUrl:"#springUrl('/category/gardenChild.htm')",
+            			changeCallback:function(c,idx){
+							var address ="";
+                    		if(jQuery("#reg-area-1").val()!=""){
+                    			address =address+ jQuery("#reg-area-1").find("option:selected").text();
+                    		}
+                    		if(jQuery("#reg-area-2").val()!=""){
+                    			address = address+jQuery("#reg-area-2").find("option:selected").text();
+                    		}
+                    		jQuery("#location").val(address);
+            			}
+            		});
+    				regarea.init({
+            			rootCode:"10011000",
+            			initCode:"10011000",
+            			initAssistCode:"10011000"
+            		});
+				});
+			</script>	
+			<!-- part IV Start -->
+			#parse("/commonImpt/products/companyAccount.vm")
+			<!-- part IV End -->
+			<div class="form-actions">
+				<input type="submit" id="submitBtn" value="提 交" class="btn btn-primary">
+			</div>
+			<input type="hidden" name="spotId" value="$!{spot.spotId}" />
+		</form>
+	</div>
+</div>
+#parse("/common/importValidate.vm")
+<script>
+
+	jQuery(document).ready(function(){
+	
+		var typeCode = jQuery("#categoryProductsMainCode").val().substring(0, 4);
+		if(typeCode === "1001"){
+            			jQuery("#useful_item").removeClass("hidden");
+            			jQuery("#color_item").removeClass("hidden");
+            			jQuery("#shape_item").removeClass("hidden");
+            			jQuery("#level_item").removeClass("hidden");
+            			jQuery("#appearance_item").removeClass("hidden");
+            			jQuery("#impurity_item").removeClass("hidden");
+						jQuery("#grade_item").addClass("hidden");
+            			jQuery("#addProp_item").addClass("hidden");
+            		} else if (typeCode === "1000") {
+            			jQuery("#grade_item").removeClass("hidden");
+            			jQuery("#shape_item").removeClass("hidden");
+            			jQuery("#addProp_item").removeClass("hidden");
+						jQuery("#useful_item").addClass("hidden");
+            			jQuery("#color_item").addClass("hidden");
+            			jQuery("#level_item").addClass("hidden");
+            			jQuery("#appearance_item").addClass("hidden");
+            			jQuery("#impurity_item").addClass("hidden");
+            		} else {
+            			jQuery("#useful_item").removeClass("hidden");
+            			jQuery("#impurity_item").removeClass("hidden");
+            			jQuery("#addProp_item").removeClass("hidden");
+						jQuery("#grade_item").addClass("hidden");
+            			jQuery("#shape_item").addClass("hidden");
+            			jQuery("#color_item").addClass("hidden");
+            			jQuery("#level_item").addClass("hidden");
+            			jQuery("#appearance_item").addClass("hidden");
+            		}
+		
+		##地址显示
+		if (jQuery("#location").val()) {
+			jQuery("#address").removeClass("hidden")
+		} else {
+			jQuery("#setAddress").removeClass("hidden");
+		}
+		
+		myrc.menu(2, 2);
+		var category=new Asto.util.Selector({
+			selects:["#c1","#c2","#c3","#c4"],
+			assistSelects:["#ac"],
+			url:"#springUrl('/category/productChild.htm')",
+			assistUrl:"#springUrl('/category/productAssist.htm')",
+			changeCallback:function(){
+				if (jQuery("#categoryProductsMainCode").val()!= category.getValue()){
+					jQuery("#categoryProductsMainCode").val(category.getValue());
+					var typeCode = category.getValue().substring(0, 4);
+            		if(typeCode === "1001"){
+            			jQuery("#useful_item").removeClass("hidden");
+            			jQuery("#color_item").removeClass("hidden");
+            			jQuery("#shape_item").removeClass("hidden");
+            			jQuery("#level_item").removeClass("hidden");
+            			jQuery("#appearance_item").removeClass("hidden");
+            			jQuery("#impurity_item").removeClass("hidden");
+						jQuery("#grade_item").addClass("hidden");
+            			jQuery("#addProp_item").addClass("hidden");
+            		} else if (typeCode === "1000") {
+            			jQuery("#grade_item").removeClass("hidden");
+            			jQuery("#shape_item").removeClass("hidden");
+            			jQuery("#addProp_item").removeClass("hidden");
+						jQuery("#useful_item").addClass("hidden");
+            			jQuery("#color_item").addClass("hidden");
+            			jQuery("#level_item").addClass("hidden");
+            			jQuery("#appearance_item").addClass("hidden");
+            			jQuery("#impurity_item").addClass("hidden");
+            		} else {
+            			jQuery("#useful_item").removeClass("hidden");
+            			jQuery("#impurity_item").removeClass("hidden");
+            			jQuery("#addProp_item").removeClass("hidden");
+						jQuery("#grade_item").addClass("hidden");
+            			jQuery("#shape_item").addClass("hidden");
+            			jQuery("#color_item").addClass("hidden");
+            			jQuery("#level_item").addClass("hidden");
+            			jQuery("#appearance_item").addClass("hidden");
+            		}
+				}
+				
+			}
+		});
+		
+		category.init({
+			initAssistCode:"$!{productsDO.categoryProductsAssistCode}",
+			initCode:"$!{productsDO.categoryProductsMainCode}",
+			rootCode:""
+		});
+		
+		jQuery("#editForm").validationEngine("attach");
+		jQuery("#editForm").submit(function() {
+			var $property = $("input[name=property]");
+			var flg1 = 1;
+			for(var i=0;i<$property.length;i++){
+			
+	    		if ($property.eq(i).val()==="属性") {
+					flg1 += 1;
+					if (flg1 > "2") {
+						$property.eq(i).parent().parent().find(".tag").html("*属性名不能为空!");
+						$property.eq(i).css("border-color","#b94a48");		
+					} 
+				}
+			}
+			var $content = $("input[name=content]");
+			var flg2 = 1;
+			for(var i=0;i<$content.length;i++){
+	    		if ($content.eq(i).val()==="属性值") {
+					flg2 += 1;
+					if (flg2 >= "2") {
+						if ($content.eq(i).parent().parent().find(".tag").html() === "*属性名不能为空!") {
+							$content.eq(i).parent().parent().find(".tag").html("*属性名和属性值都不能为空!");
+							$content.eq(i).parent().parent().find("input[name=property]").css("border-color","#b94a48");
+						} else{
+							$content.eq(i).parent().parent().find(".tag").html("*属性值不能为空!");
+						}
+						$content.eq(i).css("border-color","#b94a48");		
+					} 
+				}
+			}
+			for(var i=0;i<$property.length;i++){
+				if ($property.eq(i).parent().parent().find(".tag").html() != ""){
+					return false;
+				}
+			}
+        });
+		
+		##给品位赋值
+		
+		var pinwei = jQuery("#pinwei").val();
+		jQuery("#grade").val(pinwei);
+		
+		## 公开价格 填写价格
+		jQuery(".opPrice").click(function(){
+			var s = jQuery(":input[name='opPrice'][checked]").val();
+			if(s == 1){
+				jQuery(".validatePrice").hide();
+				jQuery("#minPrice").val("");
+				jQuery("#minPrice").validationEngine("hide");
+			} else {
+				jQuery(".validatePrice").show();
+				jQuery("#minPrice").val("$!{productsDO.minPrice}");
+			}
+		});
+		## 隐藏价格
+		#if(!$!{productsDO.minPrice}||$!{productsDO.minPrice}=="0.0")
+			jQuery(".validatePrice").hide();
+		#end
+
+
+		## 现货切换
+		jQuery(":input[name='goodsTypeCode']").change(function(){
+					var code = jQuery(":input[name='goodsTypeCode'][checked]").val();
+					if(code === "10361001") {
+						jQuery(".J_spotProp").removeClass("hidden")
+					} else {
+						jQuery(".J_spotProp").addClass("hidden")
+					}
+				});
+	});
+	
+	function ortherInput(id, value) {
+        jQuery("#" + id).val(value);
+    }
+	
+	## 判断最大价格
+	function checkMaxPrice(field, rules, i, options){
+		var min = parseInt(jQuery("#minPrice").val());
+		var max = parseInt(jQuery("#maxPrice").val());
+		if(min>0&&max>0&&min<max){
+			##jQuery("#maxError").hide();
+		}else{
+			##jQuery("#maxError").html("<span>* 必须大于最小价格： "+min+"</span>")
+			##jQuery("#maxError").show();
+			##var str = "<span>* 必须大于最小价格： "+min+"</span>"
+			##jQuery(".maxPriceformError").html("<div class='formErrorContent'><span>"+str+"</span></div>");
+			rules.push('required');
+			return "价格范围填写不正确";
+		}
+	}
+	
+	##删除增加属性
+	function deleteProperty(propertyId,div) {
+		 var id = jQuery("#id").val();
+		 var property = encodeURI(jQuery("#"+propertyId).val());
+	     jQuery.ajax({
+		    type:"post",
+			url:encodeURI("/myproducts/updateIsDel.htm?productId="+id+"&property=" +property),
+			dataType:"json",
+			cache:false,
+			success:function(data){
+				jQuery("#"+div).remove();
+		     }
+    	});
+		
+	  }	
+  
+</script>
+

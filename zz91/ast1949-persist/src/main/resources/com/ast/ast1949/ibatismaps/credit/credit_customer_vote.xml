@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="creditCustomerVote">
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="creditCustomerVoteDo"
+		type="com.ast.ast1949.domain.credit.CreditCustomerVoteDo" />
+	<typeAlias alias="creditCustomerVoteDto"
+		type="com.ast.ast1949.dto.credit.CreditCustomerVoteDto" />
+	<typeAlias alias="company" type="com.ast.ast1949.domain.company.Company" />
+
+	<resultMap id="voteWithCompanyResult" class="creditCustomerVoteDto">
+		<result property="vote" resultMap="creditCustomerVote.voteResult" />
+		<result property="company" resultMap="creditCustomerVote.companyResult" />
+	</resultMap>
+	
+	<resultMap id="creditCustomerVoteDtoResult" class="creditCustomerVoteDto">
+		<result property="vote" resultMap="creditCustomerVote.voteResult" />
+		<result property="fromCompanyName" column="from_company_name" />
+		<result property="toCompanyName" column="to_company_name" />
+		<result property="fromEmail" column="from_email" />
+	</resultMap>
+
+	<!-- 客户评价结果集 -->
+	<resultMap id="voteResult" class="creditCustomerVoteDo">
+		<result property="id" column="id" />
+		<result property="fromCompanyId" column="from_company_id" />
+		<result property="fromAccount" column="from_account" />
+		<result property="toCompanyId" column="to_company_id" />
+		<result property="status" column="status" />
+		<result property="content" column="content" />
+		<result property="replyContent" column="reply_content" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<resultMap id="companyResult" class="company">
+		<result property="name" column="name" />
+	</resultMap>
+
+	<delete id="deleteVoteByCompany" parameterClass="java.util.HashMap">
+		delete from
+		credit_customer_vote
+		where id=#id#
+		and from_company_id=#companyId# and
+		gmt_created >= #deadline#
+	</delete>
+
+	<insert id="insertVote" parameterClass="creditCustomerVoteDo">
+		insert into credit_customer_vote
+		(from_company_id,from_account,to_company_id,status,content,
+		reply_content,check_status,check_person,gmt_created,gmt_modified)
+		values(#fromCompanyId#,#fromAccount#,#toCompanyId#,#status#,#content#,
+		#replyContent#,#checkStatus#,#checkPerson#,now(),now())
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<sql id="fullColumn">
+		id,from_company_id,from_account,to_company_id,status,content,
+		reply_content,check_status,check_person,gmt_created,gmt_modified
+	</sql>
+
+	<sql id="fullColumnWithPrefix">
+		ccv.id,ccv.from_company_id,ccv.from_account,ccv.to_company_id,ccv.status,ccv.content,
+		ccv.reply_content,ccv.check_status,ccv.check_person,ccv.gmt_created,ccv.gmt_modified
+	</sql>
+
+	<sql id="dynamicVote">
+		<dynamic>
+			<isNotEmpty prepend="and" property="vote.status">
+				ccv.status=#vote.status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vote.checkStatus">
+				ccv.check_status=#vote.checkStatus#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryOneVoteById" parameterClass="java.lang.Integer">
+		select
+		<include refid="fullColumn" />
+		from credit_customer_vote
+		where id=#value#
+	</select>
+
+	<select id="queryVoteByFromCompany" parameterClass="java.util.HashMap"
+		resultMap="voteWithCompanyResult">
+		select
+		<include refid="fullColumnWithPrefix" />
+		,c.name
+		from credit_customer_vote ccv
+		inner join company c on
+		ccv.to_company_id = c.id
+		where ccv.from_company_id = #vote.fromCompanyId#
+		<include refid="dynamicVote" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryVoteByFromCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select count(*)
+		from credit_customer_vote ccv
+		inner join
+		company c on ccv.to_company_id = c.id
+		where from_company_id =#vote.fromCompanyId#
+		<include refid="dynamicVote" />
+	</select>
+
+	<select id="queryVoteByToCompany" parameterClass="java.util.HashMap"
+		resultMap="voteWithCompanyResult">
+		select
+		<include refid="fullColumnWithPrefix" />
+		,c.name
+		from credit_customer_vote ccv
+		inner join company c on
+		ccv.from_company_id = c.id
+		where to_company_id = #vote.toCompanyId#
+		<include refid="dynamicVote" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryVoteByToCompanyCount" parameterClass="java.util.HashMap"
+		resultClass="java.lang.Integer">
+		select
+		count(*)
+		from credit_customer_vote ccv
+		inner join
+		company c on ccv.from_company_id = c.id
+		where to_company_id = #vote.toCompanyId#
+		<include refid="dynamicVote" />
+	</select>
+
+	<update id="updateReplyContentByCompany" parameterClass="java.util.HashMap">
+		update
+		credit_customer_vote
+		set
+		reply_content=#replyContent#,
+		gmt_modified=now()
+		where id = #id#
+	</update>
+	
+	<select id="countVoteNumByToCompany" parameterClass="java.util.HashMap" resultClass="java.lang.Integer" >
+		select count(*) from credit_customer_vote
+		where to_company_id=#toCompanyId#
+		<dynamic>
+			<isNotEmpty property="status" prepend="and">
+				status=#status#
+			</isNotEmpty>
+			<isNotEmpty property="checkStatus" prepend="and">
+				check_status=#checkStatus#
+			</isNotEmpty>
+			<isEqual property="isOnLine" compareValue="true"  prepend="and">
+				#deadDate# > gmt_created
+			</isEqual>
+			<isEqual property="isOnLine" compareValue="false"  prepend="and">
+				gmt_created >= #deadDate#
+			</isEqual>
+		</dynamic>
+	</select>
+	
+	<sql id="dynamicByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty property="dto.vote.checkStatus" prepend="and">
+				ccv.check_status in ($dto.vote.checkStatus$)
+			</isNotEmpty>
+			<isNotEmpty property="dto.fromCompanyName" prepend="and">
+				fc.name LIKE CONCAT(#fromCompanyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.toCompanyName" prepend="and">
+				tc.name LIKE CONCAT(#toCompanyName#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryCreditCustomerVoteByConditions" parameterClass="java.util.HashMap" 
+		resultMap="creditCustomerVoteDtoResult">
+		SELECT
+			ccv.id,
+			ccv.from_company_id,
+			ccv.from_account,
+			ccv.to_company_id,
+			ccv.status,
+			ccv.content,
+			ccv.reply_content,
+			ccv.check_status,
+			ccv.check_person,
+			ccv.gmt_created,
+			ccv.gmt_modified,
+			fc.name AS from_company_name,
+			tc.name AS to_company_name,
+			fcc.email AS from_email
+		FROM credit_customer_vote ccv
+		JOIN company fc ON fc.id=ccv.from_company_id
+		JOIN company tc ON tc.id=ccv.to_company_id
+		JOIN company_account fcc ON fcc.account=ccv.from_account
+		<include refid="creditCustomerVote.dynamicByCondition" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countCreditCustomerVoteByConditions" parameterClass="java.util.HashMap" 
+		resultClass="java.lang.Integer">
+		SELECT
+			COUNT(0)
+		FROM credit_customer_vote ccv
+		JOIN company fc ON fc.id=ccv.from_company_id
+		JOIN company tc ON tc.id=ccv.to_company_id
+		JOIN company_account fcc ON fcc.account=ccv.from_account
+		<include refid="creditCustomerVote.dynamicByCondition" />
+	</select>
+
+	<update id="updateCreditCustomerVoteStatusById" parameterClass="java.util.HashMap">
+		UPDATE credit_customer_vote 
+		SET
+			check_status=#checkStatus#,
+			check_person=#checkPerson#,
+			gmt_modified=NOW()
+		WHERE id=#id#
+	</update>
+</sqlMap>

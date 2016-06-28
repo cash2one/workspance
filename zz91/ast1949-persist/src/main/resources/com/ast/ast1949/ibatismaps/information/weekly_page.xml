@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="weeklyPage">
+	<typeAlias alias="weeklyPageDO"
+		type="com.ast.ast1949.domain.information.WeeklyPageDO" />
+	<typeAlias alias="weeklyDTO" type="com.ast.ast1949.dto.information.WeeklyDTO"/>
+	
+	<typeAlias alias="pageDto" type="com.ast.ast1949.dto.PageDto" />
+	<resultMap id="weeklyPageResult" class="weeklyPageDO">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="periodicalId" column="periodical_id" />
+		<result property="pageNum" column="page_num" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="weeklyDTO" id="weeklyDTOResult">
+	  	<result property="perdicalName" column="perdicalName"/>
+	 	 <result property="weeklyPageDO" resultMap="weeklyPage.weeklyPageResult"/>
+	</resultMap>
+	
+	<!-- 
+	<select id="listWeeklyPageByPage" parameterClass="java.util.HashMap"
+		resultMap="weeklyPageResult">
+		SELECT id,
+		NAME,
+		periodical_id,
+		page_num,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_page
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	 -->
+	<!--
+		<select id="CountWeeklyPage" resultClass="java.lang.Integer"> 
+			select
+			count(id) from weekly_page 
+		</select>
+	-->
+	<select id="listWeeklyPageByPeriodicalId" parameterClass="java.lang.Integer"
+		resultMap="weeklyPageResult">
+		SELECT id,
+		NAME,
+		periodical_id,
+		page_num,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_page
+		where periodical_id=#periodicalId#
+		order by page_num
+	</select>
+	<select id="listWeeklyPageById" parameterClass="java.lang.Integer" resultMap="weeklyPageResult">
+	    SELECT id,
+		name,
+		periodical_id,
+		page_num,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_page
+		where id=#id#
+	</select>
+	<select id="listPerdicalAndPageById" parameterClass="java.lang.Integer" resultMap="weeklyDTOResult">
+		SELECT 
+		wp.id,
+		wp.name,
+		wp.periodical_id,
+		wp.page_num,
+		wp.gmt_created,
+		wp.gmt_modified,
+		w.NAME as perdicalName
+		FROM weekly_page wp
+		INNER JOIN weekly_periodical w
+		ON wp.periodical_id=w.id
+		WHERE wp.id=#pageId#
+	</select>
+	<!-- 上一版面 -->
+	<select id="listOnWeeklyPageById" parameterClass="java.lang.Integer" resultMap="weeklyPageResult">
+		SELECT id,
+		name,
+		periodical_id,
+		page_num,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_page
+		<![CDATA[where id<#id#]]>
+		ORDER BY id DESC
+		LIMIT 0,1
+	</select>
+	<!-- 下一版面 -->
+	<select id="listDownWeeklyPageById" parameterClass="java.lang.Integer" resultMap="weeklyPageResult">
+		SELECT id,
+		name,
+		periodical_id,
+		page_num,
+		gmt_created,
+		gmt_modified
+		FROM
+		weekly_page
+		WHERE id>#id#
+		ORDER BY id asc
+		LIMIT 0,1
+	</select>
+	<insert id="insertWeeklyPage" parameterClass="weeklyPageDO">
+	   insert into weekly_page(
+	   name,
+	   periodical_id,
+	   page_num,
+	   gmt_created,
+	   gmt_modified
+	   )
+	   values(
+	   #name#,
+	   #periodicalId#,
+	   #pageNum#,
+	   now(),
+	   now()
+	   )
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id="updateWeeklyPage" parameterClass="weeklyPageDO">
+	  update weekly_page set
+	  name=#name#,
+	  periodical_id=#periodicalId#,
+	  page_num=#pageNum#,
+	  gmt_modified=now()
+	  where id=#id:Integer#
+	</update>
+	<delete id="deleteWeeklyPageById" parameterClass="java.lang.Integer">
+	 delete from weekly_page
+	 where id=#id#
+	</delete>
+</sqlMap>

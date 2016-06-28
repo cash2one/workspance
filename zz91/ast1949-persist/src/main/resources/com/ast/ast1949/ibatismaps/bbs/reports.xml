@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="reports">
+	<typeAlias alias="reportsDO" type="com.ast.ast1949.domain.bbs.ReportsDO" />
+	<!-- 举报信息结果集 -->
+	<resultMap id="reportsResult" class="reportsDO">
+		<result property="id" column="id" />
+		<result property="reportId" column="report_id" />
+		<result property="reportType" column="report_type" />
+		<result property="reportReason" column="report_reason" />
+		<result property="reportAccount" column="report_account" />
+		<result property="reportName" column="report_name" />
+		<result property="gmtReportTime" column="gmt_report_time" />
+		<result property="ip" column="ip" />
+		<result property="checkstate" column="checkstate" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<!--insert添加举报信息-->
+	<insert id="insertReportsDO" parameterClass="reportsDO">
+		insert into reports
+		(
+			id,
+			report_id,
+			report_type,
+			report_reason,
+			report_account,
+			report_name,
+			gmt_report_time,
+			ip,
+			checkstate,
+			gmt_created,
+			gmt_modified
+		)
+		values
+		(
+			#id#,
+			#reportId#,
+			#reportType#,
+			#reportReason#,
+			#reportAccount#,
+			#reportName#,
+			now(),
+			#ip#,
+			#checkstate#,
+			now(),
+			now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<!--删除举报信息-->
+	<delete id="deleteReportsDOById" parameterClass="java.lang.Integer">
+		delete
+		from
+		reports
+		where
+		id = #id#
+	</delete>
+	
+	<!--修改举报信息-->
+	<update id="updateReportsDOCheckstateById" parameterClass="java.util.Map">
+		update
+		reports
+		set
+		checkstate = #checkstate#,
+		gmt_modified = now()
+		where
+		id = #id# 
+	</update>
+	
+	<!--查询举报信息条数-->
+	<select id="queryReportsDOCount" parameterClass="java.util.Map" 
+			resultClass="java.lang.Integer">
+		SELECT 	
+		count(id)
+		FROM reports
+	</select>
+	<!--查询举报信息并分页-->
+	<select id="queryReportsDO" parameterClass="java.util.Map"
+		resultMap="reportsResult">
+		SELECT
+			a.id,
+			a.report_id,
+			a.report_type,
+			a.report_reason,
+			a.report_account,
+			a.report_name,
+			a.gmt_report_time,
+			a.ip,
+			a.checkstate,
+			a.gmt_created,
+			a.gmt_modified
+		FROM reports a
+		<dynamic prepend="where">
+			<isNotEmpty property="reportsDO.reportType" prepend="and">
+				a.report_type like concat('%',#reportsDO.reportType#,'%')
+        	</isNotEmpty>
+			<isNotEmpty property="reportsDO.reportReason" prepend="and">
+				a.report_reason like concat('%',#reportsDO.reportReason#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="reportsDO.reportName" prepend="and">
+				a.report_name like concat('%',#reportsDO.reportName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="reportsDO.gmtReportTime" prepend="and">
+				a.gmt_report_time like concat('%',#reportsDO.gmtReportTime#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="reportsDO.checkstate" prepend="and">
+				a.checkstate like concat('%',#reportsDO.checkstate#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+				$pageDto.sort$
+				<isNotEmpty property="pageDto.dir">
+					$pageDto.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+					#pageDto.startIndex#,#pageDto.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+</sqlMap>

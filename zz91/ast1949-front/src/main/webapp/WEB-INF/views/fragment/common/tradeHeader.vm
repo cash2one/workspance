@@ -1,0 +1,91 @@
+#set($layout="/layout/blank.vm")
+<div style="clear:both"></div>
+<div class="zz91_tradecenterHeader">
+	<h1 class="zz91Name">ZZ91再生交易网</h1>
+	<div class="zz91Logo"><a href="${address.front}" title="zz91再生网"><img src="$!{address.images}/logo/logomin.gif" alt="$!{siteInfo.site_name}" /></a></div>
+    <div class="zz91tradeSearch">
+    	<div class="tradeNotice">
+        	<marquee behavior="scroll" direction="left" onmouseover="this.stop()" onmouseout="this.start()" scrollamount="3" height="24" width="423">
+				#foreach($inquiry in $list)
+				<span class="searchNoticeList">
+                    #printFragmentDate("HH:mm:ss" $!{inquiry.inquiry.sendTime}) （$!{inquiry.receiverCompanyName}）收到（$!{inquiry.senderCompanyName}）的询盘商机
+                </span>
+				#end
+            </marquee>
+        </div>
+   	  	<form id="zz91tradeSearchForm" method="post" name="topsearchfrm" onsubmit="return offerlistSearch();">
+			<fieldset>
+            	<legend style="display:none;">zz91交易中心搜索</legend>
+                <div class="zz91searchNav">
+                	<ul id="search_tab">
+                   	  <li class="searchSelected"><a href="javascript:void(0);" class="classAply" >供应</a></li>
+                      <li><a href="javascript:void(0);" class="classBuy">求购</a></li>
+                      <li><a href="javascript:void(0);" class="classPrice">报价</a></li>
+                    </ul>
+                </div>
+                <div class="searchContent">
+                	<div class="searchNameFrame">
+                   	    <label for="searchname" class="searchnamelabel" id="search_label" >请输入想要搜索的内容</label>
+                    	<input type="text" name="searchname"  id="searchname" />
+      				</div>
+                    <div class="searchSubmitFrame">
+               	        <input type="submit"  value=" "/>
+                    	<input type="hidden"  value="1" name="searchTypeValue" id="searchTypeValue"/>
+                  </div>
+                  <div style="clear:both"></div>
+              </div>
+            </fieldset>
+      	</form>
+    </div>
+</div>
+	
+<script type="text/javascript" >
+
+$(document).ready(function(){
+	zz91SearchSlide(".zz91tradeSearch","searchTypeValue","searchname");
+})
+
+
+function offerlistSearch(){
+	var keyWord = document.getElementById("searchname").value;
+    var type = document.getElementById("searchTypeValue");
+    
+	
+    if (keyWord.length<=0) {
+        alert("请您输入关键字！");
+        return false;
+    }
+    
+    if (type.value == "1") {
+        zz91Search.products({
+			contextpath:"$!{address.trade}",
+			target:"_blank",
+			searchOptions:{
+				keywords:keyWord,
+				ptype:"1"
+			}
+		});
+    } else if (type.value == "2") {
+    	zz91Search.products({
+			contextpath:"$!{address.trade}",
+			target:"_blank",
+			searchOptions:{
+				keywords:keyWord,
+				ptype:"2"
+			}
+		});
+		
+    } else if (type.value == "3") {
+        zz91Search.price({
+			contextpath:"$!{address.price}",
+			target:"_blank",
+			searchOptions:{
+				keywords:keyWord
+			}
+		});
+    }
+	return false;
+}
+	
+	
+</script>

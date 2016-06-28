@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+ "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="scoreConversionHistory">
+	<typeAlias alias="scoreConversionHistoryDo"
+		type="com.ast.ast1949.domain.score.ScoreConversionHistoryDo" />
+	<typeAlias alias="scoreGoodsDo" type="com.ast.ast1949.domain.score.ScoreGoodsDo" />
+	<typeAlias alias="scoreConversionHistoryDto"
+		type="com.ast.ast1949.dto.score.ScoreConversionHistoryDto" />
+
+	<resultMap id="fullResult" class="scoreConversionHistoryDo">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="scoreGoodsId" column="score_goods_id" />
+		<result property="conversionCategory" column="conversion_category" />
+		<result property="companyName" column="company_name" />
+		<result property="contactName" column="contact_name" />
+		<result property="phone" column="phone" />
+		<result property="tel" column="tel" />
+		<result property="email" column="email" />
+		<result property="keywords" column="keywords" />
+		<result property="status" column="status" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<resultMap id="miniScoreGoodsResult" class="scoreGoodsDo">
+		<result property="name" column="name" />
+		<result property="scoreBuy" column="score_buy" />
+		<result property="scoreDay" column="score_day" />
+		<result property="priceBuy" column="price_buy" />
+		<result property="priceDay" column="price_day" />
+		<result property="detailUrl" column="detail_url" />
+	</resultMap>
+
+	<resultMap id="scoreConversionHistoryDtoResult" class="scoreConversionHistoryDto">
+		<result property="history" resultMap="scoreConversionHistory.fullResult" />
+		<result property="goods" resultMap="scoreConversionHistory.miniScoreGoodsResult" />
+	</resultMap>
+	
+	<resultMap id="scoreConversionHistoryDtoResultWithScore" class="scoreConversionHistoryDto">
+		<result property="history" resultMap="scoreConversionHistory.fullResult" />
+		<result property="totalScore" column="total_score" />
+	</resultMap>
+	
+	<resultMap id="scoreConversionHistoryDtoResultWithGoodsAndScore" class="scoreConversionHistoryDto">
+		<result property="history" resultMap="scoreConversionHistory.fullResult" />
+		<result property="goods" resultMap="scoreConversionHistory.miniScoreGoodsResult" />
+		<result property="totalScore" column="total_score" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,company_id,score_goods_id,conversion_category,company_name,contact_name,
+		phone,tel,email,keywords,status,remark,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryRecentConversionHistory" parameterClass="java.util.HashMap"
+		resultMap="scoreConversionHistoryDtoResult">
+		SELECT
+		sch.id,
+		sch.company_id,
+		sch.score_goods_id,
+		sch.conversion_category,
+		sch.company_name,
+		sch.contact_name,
+		sch.phone,
+		sch.tel,
+		sch.email,
+		sch.keywords,
+		sch.status,
+		sch.remark,
+		sch.gmt_created,
+		sch.gmt_modified,
+		sg.name,
+		sg.score_buy,
+		sg.score_day,
+		sg.price_buy,
+		sg.price_day,
+		sg.detail_url
+		FROM score_conversion_history sch
+		inner join score_goods sg on sch.score_goods_id = sg.id
+		<dynamic prepend="where">
+			<isNotEmpty property="status" prepend="and">
+				status=#status#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY gmt_created DESC
+		LIMIT 0,#max#
+	</select>
+
+	<select id="queryConversionHistoryByCompanyId" parameterClass="java.util.HashMap"
+		resultMap="scoreConversionHistoryDtoResult">
+		SELECT
+		sch.id,
+		sch.company_id,
+		sch.score_goods_id,
+		sch.conversion_category,
+		sch.company_name,
+		sch.contact_name,
+		sch.phone,
+		sch.tel,
+		sch.email,
+		sch.keywords,
+		sch.status,
+		sch.remark,
+		sch.gmt_created,
+		sch.gmt_modified,
+		sg.name,
+		sg.score_buy,
+		sg.score_day,
+		sg.price_buy,
+		sg.price_day,
+		sg.detail_url
+		FROM score_conversion_history sch
+		inner join score_goods sg on sch.score_goods_id = sg.id
+		<dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+				company_id=#companyId#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				status=#status#
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryConversionHistoryByCompanyIdCount"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT
+		COUNT(0)
+		FROM score_conversion_history
+		inner join score_goods on score_conversion_history.score_goods_id=score_goods.id
+		<dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+				company_id=#companyId#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				status=#status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<insert id="insertConversionHistoryByCompany" parameterClass="scoreConversionHistoryDo">
+		INSERT INTO score_conversion_history
+		(
+		company_id,
+		score_goods_id,
+		conversion_category,
+		company_name,
+		contact_name,
+		phone,
+		tel,
+		email,
+		keywords,
+		status,
+		remark,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#scoreGoodsId#,
+		#conversionCategory#,
+		#companyName#,
+		#contactName#,
+		#phone#,
+		#tel#,
+		#email#,
+		#keywords#,
+		#status#,
+		#remark#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="queryConversionHistoryById" parameterClass="java.lang.Integer"
+		resultMap="fullResult">
+		SELECT
+		<include refid="fullColumn" />
+		FROM score_conversion_history
+		WHERE id=#value#
+	</select>
+
+	<update id="updateConversionHistoryStatusById" parameterClass="java.util.HashMap">
+		UPDATE score_conversion_history
+		SET
+		status=#status#,
+		<isNotEmpty property="remark" prepend="">
+			remark=#remark#,
+		</isNotEmpty>
+		gmt_modified = NOW()
+		WHERE id = #id#
+	</update>
+
+	<select id="queryConversionHistoryByGoodsId" parameterClass="java.util.HashMap"
+		resultMap="scoreConversionHistoryDtoResultWithScore">
+		SELECT 
+			sch.id,
+			sch.company_id,
+			sch.score_goods_id,
+			sch.conversion_category,
+			sch.company_name,
+			sch.contact_name,
+			sch.phone,
+			sch.tel,
+			sch.email,
+			sch.keywords,
+			sch.status,
+			sch.remark,
+			sch.gmt_created,
+			sch.gmt_modified,
+			ss.score AS total_score
+		FROM score_conversion_history sch
+		LEFT JOIN score_summary ss ON ss.company_id=sch.company_id
+		<dynamic prepend="where">
+			<isNotEmpty property="goodsId" prepend="and">
+				sch.score_goods_id=#goodsId#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				sch.status IN($status$)
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize" compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<select id="queryConversionHistoryByGoodsIdCount"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT
+		COUNT(0)
+		FROM score_conversion_history sch
+		LEFT JOIN score_summary ss ON ss.company_id=sch.company_id
+		<dynamic prepend="where">
+			<isNotEmpty property="goodsId" prepend="and">
+				sch.score_goods_id=#goodsId#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				sch.status IN($status$)
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="queryConversionHistoryWithGoods" parameterClass="java.util.HashMap"
+		resultMap="scoreConversionHistoryDtoResultWithGoodsAndScore">
+		SELECT
+			sch.id,
+			sch.company_id,
+			sch.score_goods_id,
+			sch.conversion_category,
+			sch.company_name,
+			sch.contact_name,
+			sch.phone,
+			sch.tel,
+			sch.email,
+			sch.keywords,
+			sch.status,
+			sch.remark,
+			sch.gmt_created,
+			sch.gmt_modified,
+			sg.name,
+			sg.score_buy,
+			sg.score_day,
+			sg.price_buy,
+			sg.price_day,
+			sg.detail_url,
+			ss.score AS total_score
+		FROM score_conversion_history sch
+		LEFT JOIN score_goods sg ON sg.id=sch.score_goods_id
+		LEFT JOIN score_summary ss ON ss.company_id=sch.company_id
+		<dynamic prepend="where">
+			<isNotEmpty property="conversion.status" prepend="and">
+				sch.status IN($conversion.status$)
+			</isNotEmpty>
+			<isNotEmpty property="conversion.scoreGoodsId" prepend="and">
+				sch.score_goods_id IN($conversion.scoreGoodsId$)
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryConversionHistoryWithGoodsCount"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM score_conversion_history sch
+		LEFT JOIN score_goods sg ON sg.id=sch.score_goods_id
+		LEFT JOIN score_summary ss ON ss.company_id=sch.company_id
+		<dynamic prepend="where">
+			<isNotEmpty property="conversion.status" prepend="and">
+				sch.status IN($conversion.status$)
+			</isNotEmpty>
+			<isNotEmpty property="conversion.scoreGoodsId" prepend="and">
+				sch.score_goods_id IN($conversion.scoreGoodsId$)
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

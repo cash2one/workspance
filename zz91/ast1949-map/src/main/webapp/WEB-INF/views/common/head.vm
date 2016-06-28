@@ -1,0 +1,67 @@
+## 登陆状态栏
+#parse("/common/topbar.vm")
+<div class="container toplogo clearfix">
+	<h1 class="logo"><a href="$!{address.www}" target="_blank">zz91再生网</a></h1>
+	<span class="sub_title">$!{name}废料网</span>
+	<div class="infos_wrap">
+		<div class="marquee" id="Js_scroll1">
+			#foreach($inquiry in $listInquiry)
+    			<span >
+    				#printFragmentDate("HH:mm:ss" $!{inquiry.inquiry.sendTime})（$!{inquiry.receiverCompanyName}）收到（$!{inquiry.senderCompanyName}）的询盘商机
+    			</span>
+			#end
+		</div>
+		<div class="marquee" id="Js_scroll2">
+			#cacheFragment("$!{address.fragment}/company/recentZst.htm?size=100&00", "", "", "")
+				#foreach($comp in $list)
+					<span>$!{comp.name}加入ZZ91高级服务</span>
+				#end
+			#end
+		</div>
+	</div>
+	<script>
+	var Marquee = function(id){
+		var doc = document;
+		this.mq = doc.getElementById(id);
+		this.item = this.mq.children;
+		var contain = doc.createElement("div"),
+			containStyle = contain.style,
+			num = this.item.length,
+			i, width = 0;
+		for (i = 0; i < num; i ++) {
+			width = width + this.item[i].offsetWidth;
+			contain.appendChild(this.item[i].cloneNode(true));
+		}
+		for (i = 0; i < num; i ++) {
+			contain.appendChild(this.item[i].cloneNode(true));
+		}
+		containStyle.width = width * 2 + "px";
+		this.mq.innerHTML = "";
+		this.mq.appendChild(contain);
+		this.scroll(width);
+	};
+	Marquee.prototype.scroll = function(width){
+		var _this = this,
+			left = 0;
+		var move = function(){
+			left = _this.mq.scrollLeft;
+			if (left < width) {
+				_this.mq.scrollLeft = left + 1;
+			} else {
+				_this.mq.scrollLeft = 0;
+			}
+		}
+		var loop = setInterval(move, 50);
+		this.mq.onmouseover = function(){
+			clearInterval(loop);
+		}
+		this.mq.onmouseout = function(){
+			loop = setInterval(move, 50);
+		}
+	}
+	new Marquee("Js_scroll1");
+	new Marquee("Js_scroll2");
+	</script>
+</div>
+</div>
+	

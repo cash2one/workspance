@@ -1,0 +1,88 @@
+<div style="clear:both"></div>
+<div class="zz91searchFrame">
+	<div class="zz91-searchWebF">
+    	<form id="topsearchfrmF" method="post" name="topsearchfrmF" action="index.htm" onsubmit="return topSearch();">
+        	<fieldset>
+           	  <legend style="display:none">ZZ91搜索</legend>
+    				<div class="searchListF">
+                    	<ul id="search_tabF">
+                            <li class="searchSelectedF">
+                                <a href="javascript:void(0)">供应</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">求购</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)">报价</a>
+                            </li>
+                        </ul>
+                    </div> 
+					
+					<div class="searchAreaF">
+						<label id="search_labelF" for="searchF" class="search_labelF">输入你感兴趣的产品</label>
+                        <input name="search" id="searchF" type="text" value="" class="ZZ91SearchF"/>
+                        <input type="submit" value="" class="ZZ91SearchSubF" name="TopSeaSubmit"  id="ZZ91SearchSubF"/>
+                        <input type="hidden" value="1" name="TopSeaType"  id="TopSeaTypeF" />
+              		</div>	
+        	</fieldset>
+        </form>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+	new zz91SearchSlide("#zz91-searchWebF","TopSeaTypeF","searchF");
+	
+	$('li.treasureBox').mousemove(function() {
+        $(this).find('ul').slideDown("fast"); //you can give it a speed
+        $(this).find('a').first().addClass('ishover');
+        $(this).find('a').first().removeClass('nohover');
+    });
+    $('li.treasureBox').mouseleave(function() {
+        $(this).find('ul').slideUp("fast");
+        $(this).find('a').first().removeClass('ishover');
+        $(this).find('a').first().addClass('nohover');
+    });
+})
+
+//以下为搜索相关
+function topSearch() {
+//    var server = Context.ROOT;
+    var keyWord = document.getElementById("search").value;
+    var type = document.getElementById("TopSeaType");
+    
+    if (keyWord == "" || keyWord.substring(0, "请输入您感兴趣的".length) == "请输入您感兴趣的") {
+        alert("请您输入关键字！");
+        return false;
+    }
+    if (type.value == "1") {
+        zz91Search.products({
+            contextpath:"$!{address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"1"
+            }
+        });
+    } else if (type.value == "2") {
+        zz91Search.products({
+            contextpath:"$!{address.trade}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord,
+                ptype:"2"
+            }
+        });
+        
+    } else if (type.value == "3") {
+        zz91Search.price({
+            contextpath:"$!{address.price}",
+            target:"_blank",
+            searchOptions:{
+                keywords:keyWord
+            }
+        });
+    }
+    
+    return false;
+}
+</script>

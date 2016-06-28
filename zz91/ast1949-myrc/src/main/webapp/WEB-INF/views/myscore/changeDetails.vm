@@ -1,0 +1,53 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/myscore/changeDetails.htm')">商机和行情</a><span class="divider">/</span>
+			</li>
+			<li class="active">积分变更历史</li>
+		</ul>
+		<div class="alert alert-info">
+			<p>您现在拥有的积分为：$!{scoreSummary.score}</p>
+			<p><a href="#springUrl('/myscore/conversionHistory.htm')" target="_blank">点击这里查看您的积分兑换历史</a> <a href="$!{address.score}" target="_blank">什么是积分？获得积分的途径？</a></p>
+		</div>
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+				<tr>
+					<th width="25%">变更项目</th>
+					<th width="25%">积分花费</th>
+					<th width="25%">备注</th>
+					<th width="25%">变更时间</th>
+				</tr>
+			</thead>
+			<tbody>
+			#if(${pageContext.records.size()}==0)
+			<tr>
+				<td colspan="5">暂时没有变更!</td>
+			</tr>
+			#else
+				#foreach($!{details} in $!{pageContext.records})
+        		<tr>
+        			<td>$!{details.name}</td>
+        			<td>#if($!{details.score}>0)+#end$!{details.score}</td>
+        			<td>
+						#if($!{details.remark}) 
+							$!{details.remark}
+						#else
+							<span class="grey">无备注</font>
+						#end
+					</td>
+        			<td>$!date.format('yyyy-MM-dd',$!{details.gmtCreated})</td>
+        		</tr>
+				#end
+			#end
+			</tbody>
+		</table>
+		#myrcPageNav($!{pageContext} "#springUrl('/myscore/changeDetails.htm')" "" "")
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(8, 2);
+});
+</script> 

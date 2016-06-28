@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisOperate">
+	<typeAlias alias="operate"
+		type="com.ast.ast1949.domain.analysis.AnalysisOperate" />
+
+	<resultMap id="analysisOperateResult" class="operate">
+		<result property="id" column="id" />
+		<result property="bbsAdminPost" column="bbs_admin_post" />
+		<result property="bbsClientPostFailure" column="bbs_client_post_failure" />
+		<result property="bbsClientPostSuccess" column="bbs_client_post_success" />
+		<result property="bbsReplyFailure" column="bbs_reply_failure" />
+		<result property="bbsReplySuccess" column="bbs_reply_success" />
+		<result property="checkComppriceFailure" column="check_compprice_failure" />
+		<result property="checkComppriceSuccess" column="check_compprice_success" />
+		<result property="checkProductsFailure" column="check_products_failure" />
+		<result property="checkProductsSuccess" column="check_products_success" />
+		<result property="importToProducts" column="import_to_products" />
+		<result property="postPrice" column="post_price" />
+		<result property="postPriceText" column="post_price_text" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="operator" column="operator" />
+	</resultMap>
+	
+	<resultMap id="analysisOperateSUMResult" class="operate">
+		<result property="bbsAdminPost" column="bbs_admin_post" />
+		<result property="bbsClientPostFailure" column="bbs_client_post_failure" />
+		<result property="bbsClientPostSuccess" column="bbs_client_post_success" />
+		<result property="bbsReplyFailure" column="bbs_reply_failure" />
+		<result property="bbsReplySuccess" column="bbs_reply_success" />
+		<result property="checkComppriceFailure" column="check_compprice_failure" />
+		<result property="checkComppriceSuccess" column="check_compprice_success" />
+		<result property="checkProductsFailure" column="check_products_failure" />
+		<result property="checkProductsSuccess" column="check_products_success" />
+		<result property="importToProducts" column="import_to_products" />
+		<result property="postPrice" column="post_price" />
+		<result property="postPriceText" column="post_price_text" />
+		<result property="operator" column="operator" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,
+		bbs_admin_post,
+		bbs_client_post_failure,bbs_client_post_success,
+		bbs_reply_failure,bbs_reply_success,
+		check_compprice_failure,check_compprice_success,
+		check_products_failure,	check_products_success,
+		import_to_products,
+		post_price,post_price_text,,
+		gmt_created,gmt_modified,
+		operator
+	</sql>
+	
+	<sql id="sumFullColumn">
+		sum(bbs_admin_post) as bbs_admin_post,
+		sum(bbs_client_post_failure) as bbs_client_post_failure,sum(bbs_client_post_success) as bbs_client_post_success,
+		sum(bbs_reply_failure) as bbs_reply_failure,sum(bbs_reply_success) as bbs_reply_success,
+		sum(check_compprice_failure) as check_compprice_failure,sum(check_compprice_success) as check_compprice_success,
+		sum(check_products_failure) as check_products_failure,sum(check_products_success) as check_products_success,
+		sum(import_to_products) as import_to_products,
+		sum(post_price) as post_price,
+		sum(post_price_text) as post_price_text,
+		operator
+	</sql>
+	
+
+	<select id="queryAnalysisOperate" parameterClass="java.util.HashMap"
+		resultMap="analysisOperateSUMResult">
+		select
+		<include refid="analysisOperate.sumFullColumn" />
+		from analysis_operate
+		<dynamic prepend="where">
+			<isNotEmpty property="account" prepend="and">
+				operator=#account#
+			</isNotEmpty>
+			<isNotEmpty property="start" prepend="and">
+				gmt_created >= #start#
+			</isNotEmpty>
+			<isNotEmpty property="end" prepend="and">
+				#end# >= gmt_created
+			</isNotEmpty>
+		</dynamic>
+		group by operator
+		order by operator asc
+	</select>
+</sqlMap>

@@ -1,0 +1,239 @@
+<div class="main_box clearfix">
+    <div class="left">
+        <div class="nav3">
+            <div class="nav3_l"></div>
+            <div class="nav3_c">
+                <div class="nav3_bg">
+                    <h3><a href="#springUrl('/list_metal.htm')" target="_blank">废金属 - 市场行情</a></h3>
+                </div>
+                <div class="subType">
+                #cacheFragment("$!{address.fragment}/price/latestPrice.htm?parentId=17&2", "", "", "")
+                #foreach($metal in $latestList)
+                    #if($velocityCount<=9)
+					<a #if($!{metal.id}==40||$!{metal.id}==41||$!{metal.id}==42||$!{metal.id}==43||$!{metal.id}==44||$!{metal.id}==45) href="#springUrl('/moreList_p3_t')$!{metal.id}_metal.htm" #else href="#springUrl('/priceList_t')$!{metal.id}_metal.htm"
+                    #end target="_blank" title="$!{metal.name}">$!{metal.name}
+                    </a> |
+                    #end
+				#end
+                #end  
+                </div>
+            </div>
+            <div class="nav3_r"></div>
+        </div>
+        <div class="leftContent">
+            #parse("/price/vm_index/chart.vm")
+            <div class="metalRight">
+                <div class="articlesList">
+                    <div class="title">
+                        <h4><a href="#springUrl('/moreList_p17_metal.htm')" target="_blank" title="废金属价格">废金属价格</a></h4>
+                        <span class="more">
+							<a href="#springUrl('/moreList_p17_metal.htm')"  target="_blank" title="更多废金属价格">----------------------更多废金属价格</a>
+                        </span>
+					</div>
+					#cacheFragment("$!{address.fragment}/price/latestPrice.htm?parentId=17", "", "", "")
+                    <ul>
+                    #foreach($metal in $latestList)
+                        <li>
+                            <a #if($!{metal.id}==40||$!{metal.id}==41||$!{metal.id}==42||$!{metal.id}==43||$!{metal.id}==44||$!{metal.id}==45) href="#springUrl('/moreList_p3_t')$!{metal.id}_metal.htm" #else href="#springUrl('/priceList_t')$!{metal.id}_metal.htm" #end target='_blank'>[$!{metal.name}]</a>
+                            <a #if($!{metal.id}==40||$!{metal.id}==41||$!{metal.id}==42||$!{metal.id}==43||$!{metal.id}==44||$!{metal.id}==45) href="#springUrl('/moreList_p3_t')$!{metal.id}_metal.htm" #else href="#springUrl('/priceList_t')$!{metal.id}_metal.htm" #end target="_blank" title="$!date.format('M月dd日',$!{metal.gmtOrder})全国各地$!{metal.name}价格">#printFragmentDate('M月dd日',$!{metal.gmtOrder})全国各地$!{metal.name}价格</a>
+                        </li>
+                    #end
+                    </ul>
+					#end
+                    <div id="metalMore">
+						|
+						#cacheFragment("$!{address.fragment}/price/priceCategory.htm?id=3", "", "", "")
+                        #foreach($area in $list)
+                            <a href="#springUrl('/moreList_p17_a')$!{area.id}_metal.htm" target="_blank">$!{area.name}</a>
+                            | 
+						#end
+						#end
+                    </div>
+                </div>
+                <div class="articlesList">
+                    <div class="title">
+                        <h4>
+                            <a href="#springUrl('/moreList_p18_metal.htm')" target="_blank" title="金属新材料价格">金属新料价格</a>
+                        </h4>
+                        <span class="more">
+                            <a href="#springUrl('/moreList_p18_metal.htm')" target="_blank" title="更多金属新料价格">--------------------更多金属新料价格</a>
+                        </span>
+                    </div>
+                    <ul>
+                        #foreach($metalNewmaterials in ${metalNewmaterialsList.keySet()})
+                            #foreach($price in $!metalNewmaterialsList.get($!{metalNewmaterials}))
+                               ## $!{metalNewmaterials.priceCategoryDO.name}
+                                <li>
+                                    <a href="#springUrl('/moreList_p')$!{metalNewmaterials}_metal.htm" target="_blank">[$!{price.typeName}]</a>
+                                    <a href="#springUrl('/priceDetails_')$!{price.price.id}_metal.htm" target="_blank" title="$!{price.price.title}">
+                                        #printTitle($!{price.price.title} 13 "")
+                                    </a>
+                                </li>
+                            #end
+                        #end
+                    </ul>
+                </div>
+                <div class="articlesList">
+                    <div class="title">
+                        <h4>
+                            <a href="#springUrl('/moreList_p19_metal.htm')" target="_blank" title="废金属市场动态">废金属市场动态</a>
+                        </h4>
+                        <span class="more">
+                            <a href="#springUrl('/moreList_p19_metal.htm')"  target="_blank" title="更多废金属市场动态">-------------------更多废金属市场动态</a>
+                        </span>
+                    </div>
+                    <ul>
+					##	#cacheFragment("$!{address.fragment}/price/metalPlatic.htm?parentId=19", "", "", "")
+					#cacheFragment("$!{address.fragment}/price/overPrice.htm?parentId=19&size=7", "", "", "")
+                        #foreach($Market in $overPrice)
+                            <li>
+                                [<a href="#springUrl('/priceList_t')${Market.typeId}_metal.htm" target="_blank"> $!{Market.typeName} </a>]
+                                <a href="#springUrl('/priceDetails_')${Market.id}_metal.htm" target="_blank" title="$!{Market.title}"> #printTitle($!{Market.title} 13 "") </a>
+                            </li>
+						#end
+					#end
+                    </ul>
+                </div>
+            </div>
+            <div class="price_figure clearfix">
+            #cacheFragment("$!{address.fragment}/price/chart.htm?id=0&5", "91", "", "")
+            #foreach($cl in $chartCategoryList)
+                <div class="item">
+                    <a href="#springUrl('/charts/index.htm?id=')$!{cl.id}" target="_blank" title="$!{cl.name}"><img src="$!{address.img}/front/images/price/01_1158724837755.gif" border="0" alt="$!{cl.name}" title="$!{cl.name}" width="100" height="60"> </a>
+                    <p>
+                        <a href="#springUrl('/charts/index.htm?id=')$!{cl.id}" target="_blank" title="$!{cl.name}">
+                            #if($!{cl.name.length()}>=8)
+                                $!{cl.name.substring(0,8)}
+                            #else
+                                $!{cl.name}
+                            #end
+                        </a>
+                    </p>
+                </div>
+            #end
+            #end 
+            </div>   
+        </div>
+        <div class="clearfix clear pt">
+			<div class="price_block halfWidth fl">
+                <div class="block_title">
+                    <h3 class="title_text">最新塑料报价行情</h3>
+				</div>
+				<div class="block_content">
+					<div id="Js_scroll">
+    					<ul class="fjszs" style="padding-left:16px">
+    						#foreach($metalNewmaterials in ${qSuList.keySet()})
+                                #foreach($price in $!qSuList.get($!{metalNewmaterials}))
+    								<li style="width: auto">
+                                        <a href="$!{address.price}/moreList_p$!{price.price.typeId}_metal.htm" target="_blank">
+                                           [$!{price.typeName}]
+                                        </a>
+                                        <a href="$!{address.price}/priceDetails_$!{price.price.id}_metal.htm" target="_blank" title="$!{price.price.title}">
+                                            #printTitle($!{price.price.title} 16 "")
+                                        </a>
+    									<span class="d">#printFragmentDate('yyyy-MM-dd',$!{price.price.gmtOrder})</span>
+                                    </li>
+                                #end
+                            #end
+    					</ul>
+					</div>
+				</div>
+			</div>
+			<div class="price_block halfWidth fr">
+                <div class="block_title">
+                    <h3 class="title_text">最新金属报价行情</h3>
+				</div>
+				<div class="block_content">
+					<div id="Js_scroll_else">
+    					<ul class="fjszs" style="padding-left:16px">
+    						#foreach($metalNewmaterials in ${qJinList.keySet()})
+                                #foreach($price in $!qJinList.get($!{metalNewmaterials}))
+    								<li style="width: auto">
+                                        <a href="$!{address.price}/moreList_p$!{price.price.typeId}_metal.htm" target="_blank">
+                                           [$!{price.typeName}]
+                                        </a>
+                                        <a href="$!{address.price}/priceDetails_$!{price.price.id}_metal.htm" target="_blank" title="$!{price.price.title}">
+                                            #printTitle($!{price.price.title} 13 "")
+                                        </a>
+    									<span class="d">#printFragmentDate('yyyy-MM-dd',$!{price.price.gmtOrder})</span>
+                                    </li>
+                                #end
+							#end
+    					</ul>
+					</div>
+				</div>
+			</div>
+			<script>
+				function myScroll(id){
+					var doc = document,
+						el = doc.getElementById(id),
+						ul = el.getElementsByTagName("ul")[0],
+						li = ul.children,
+						liHeight = li[0].offsetHeight,
+						top;
+					el.style.cssText = "overflow:hidden;height:" + liHeight * 8 + "px;";
+					el.appendChild(ul.cloneNode(true));
+					var move = function(){
+						top = el.scrollTop;
+						if (top > ul.offsetHeight) {
+							el.scrollTop = 0;
+						} else {
+							el.scrollTop = top + 1;
+						}
+					}
+					var loop = setInterval(move, 100);
+					el.onmouseover = function(){
+						clearInterval(loop);
+					};
+					el.onmouseout = function(){
+						loop = setInterval(move, 100);
+					}
+				}
+				myScroll("Js_scroll");
+				myScroll("Js_scroll_else");
+			</script>
+		</div>
+		 <div class="mt">
+		<script src="http://gg.zz91.com/show?p=32"></script>
+	</div>
+    </div>
+    <div class="right">
+    	<div class="weChat_code">
+    		<img src="http://img0.zz91.com/zz91/price/images/weChat_code_inner.png" width="228" height="206" alt="zz91再生网微信交流平台" />
+    	</div>
+        <div class="nav5">
+            <div class="nav5_l"></div>
+            <div class="nav5_c">
+                <div class="nav5_bg">
+                    <h3>废金属行情评论</h3>
+                </div>
+            </div>
+            <div class="nav5_r"></div>
+        </div>
+        <div class="right_content">
+			#cacheFragment("$!{address.fragment}/price/comment.htm?parentId=10&size=9&21", "", "", "")
+            #foreach($metalComment in $!{commentList})
+                <div class="title clearfix">
+                    <h4>
+                        <a href="#springUrl('/priceList_t')$!{metalComment.priceCategoryDO.id}_c10_metal.htm" target="_blank">废金属$!{metalComment.priceCategoryDO.name}</a>
+                    </h4>
+                    <span class="more">
+						<a href="#springUrl('/priceList_t')$!{metalComment.priceCategoryDO.id}_c10_metal.htm" target="_blank" title="更多$!{metalComment.priceCategoryDO.name}">-----更多</a>
+                    </span>
+                </div>
+                <ul>
+                    #foreach($price in $!{metalComment.priceChildDO})
+                        #if($!{price.typeId}==$!{metalComment.priceCategoryDO.id})
+                            <li>
+                                <a target="_blank" href="#springUrl('/priceDetails_')$!{price.id}_metal.htm" title='$!{price.title}'>
+                                    $!{price.title}
+                                </a>
+                            </li>
+                        #end
+                    #end
+                </ul>
+			#end
+		#end
+        </div>
+    </div>
+</div>

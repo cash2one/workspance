@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="configNotify">
+	<typeAlias alias="configNotify" type="com.ast.ast1949.domain.company.ConfigNotifyDO"/>
+	
+	<resultMap id="configNotifyResult" class="configNotify">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="notifyCode" column="notify_code" />
+		<result property="status" column="status" />
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<insert id="insertConfigNotify" parameterClass="java.util.HashMap">
+		insert into config_notify
+			(company_id,notify_code,status,gmt_created,gmt_modified)
+		values
+			(#companyId#,#notifyCode#,#status#,now(),now())
+			<selectKey keyProperty="id"  resultClass="int">
+				select last_insert_id()
+			</selectKey>
+	</insert>
+	
+	<update id="updateConfigNotifyForSend" parameterClass="java.util.HashMap">
+		update config_notify set status=#status# where company_id=#companyId# and notify_code=#notifyCode#
+	</update>
+	
+	<select id="selectConfigNotify" parameterClass="java.util.HashMap" resultMap="configNotifyResult">
+		select * from config_notify 
+		<dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+				company_id like concat('%',#companyId#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				status like concat('%',#status#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="notifyCode" prepend="and">
+			    notify_code like concat('%',#notifyCode#,'%') 
+			</isNotEmpty>
+		 </dynamic>
+	</select>
+	
+	<select id="countConfigByCode" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(0) from config_notify where company_id=#companyId# and notify_code=#notifyCode#
+	</select>
+	
+	<delete id="deleteConfigByCode">
+		delete from config_notify where notify_code=#notifyCode# and company_id=#companyId# and status=#status#
+	</delete>
+</sqlMap>

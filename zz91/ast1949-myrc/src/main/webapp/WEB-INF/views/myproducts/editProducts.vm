@@ -1,0 +1,66 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+		<div class="alert alert-success"> 
+    		<p class="larger"><strong>提示：</strong>您的信息已成功提交! </p>
+			<p>
+				<a href="$!{address.front}" target="_blank" class="red" title="返回ZZ91再生网首页">ZZ91再生网</a> 将在<b>24小时</b>内进行审核，届时请上网查看。如果审核不通过，我们将及时通知您。
+			</p>
+    		#if($!{imgCount}==0)
+			<p>
+				你尚未上传图片,请为您的产品添加图片,以获得更多的商机!
+				<a href="#springUrl('/myproducts/office_img.htm?productsId=')$!{productsDO.id}" target="_parent">上传图片</a>
+            </p>
+    		#end
+    		<p>
+				发布您的此类产品价格信息,让更多的客户及时了解您企业的产品和价格,提高<b>企业知名度</b>和<b>市场开拓力度</b>
+    			<a href="#springUrl('/mycompanyprice/saveCompanyPrice.htm?productId=')$!{productsDO.id}">添加或修改该产品报价</a>
+            </p>
+    	</div>
+		<div class="action mt">
+			<a href="#springUrl('/myproducts/office_post_edit.htm?productsId=')$!{id}" class="btn">重新修改信息</a>
+			<a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')" class="btn">查看已发布信息</a>
+		</div>
+		<div class="alert alert-info">
+			<strong>匹配的供求：</strong>
+			生意管家特别为您匹配了最新的 "<span class="red">$!{productsDO.title}</span>"信息，赶快去联系吧！
+			<a href="$!{address.trade}/offerlist--a--b--c--d--e--f--p1--$!{escapeKeywords}.htm" target="_blank">查看更多</a>
+            <a href="#springUrl('/subscribe/subscribe.htm')?searchKey=$!{escapeKeywords}" target="_blank">订阅此类商机</a>
+		</div>
+		<table class="table table-striped table-bordered table-condensed mt">
+			<thead>
+	            <tr>
+	                <th width="50%">最新匹配信息</th>
+	                <th width="30%">数量</th>
+	    			<th width="20%" class="tac">发布时间</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	        	#foreach ($main in $!mainList)
+	    		<tr>
+	                <td height="26">
+	                	#printProductType($!{main.productsTypeCode} "" "")
+						<a target="_blank" href="$!{address.trade}/productdetails$!{main.id}.htm" title="$!{main.title}">$!{main.title}</a>
+	                </td>
+	                <td class="tac">$!{main.quantity} $!{main.quantityUnit}</td>
+	    			<td class="tac">
+						$!date.format('yyyy-MM-dd', $!{main.refreshTime})
+	                </td>
+	    		</tr>
+	    		#end
+	        </tbody>
+        </table>
+		#if($!{sessionUser.membershipCode}=="10051000")
+		<div class="alert alert-info"> 
+    		<p>希望你这条"<span class="red">$!{productsDO.title}</span>"产品信息排在<b>竞争对手</b>前面吗？<a href="http://www.zz91.com/service/newzst/apply.asp" target="_blank">立即申请再生通</a></p>
+			<p>再生通咨询热线： $!{zst_phone}</p>
+		</div>
+		#end
+	</div>	
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(2,1);
+})
+</script>
+	

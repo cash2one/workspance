@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="friendLink">
+	<typeAlias alias="friendLinkDTO"
+		type="com.ast.ast1949.dto.site.FriendLinkDTO" />
+	<typeAlias alias="friendLinkDO"
+		type="com.ast.ast1949.domain.site.FriendLinkDO" />
+
+	<resultMap id="friendLinkDTOResult" class="friendLinkDTO">
+		<result property="linkCategoryName" column="linkCategoryName" />
+		<result property="friendLinkDO" resultMap="friendLink.friendLinkResult" />
+	</resultMap>
+
+
+	<resultMap id="friendLinkResult" class="friendLinkDO">
+		<result property="id" column="id" />
+		<result property="linkName" column="link_name" />
+		<result property="linkCategoryCode" column="link_category_code" />
+		<result property="height" column="height" />
+		<result property="width" column="width" />
+		<result property="picAddress" column="pic_address" />
+		<result property="showIndex" column="show_index" />
+		<result property="link" column="link" />
+		<result property="isChecked" column="is_checked" />
+		<result property="textColor" column="text_color" />
+		<result property="addTime" column="add_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+
+	<select id="queryFriendLinkByCondition" parameterClass="friendLinkDTO"
+		resultMap="friendLinkDTOResult">
+		select
+		f.id,
+		f.link_name,
+		f.link_category_code,
+		c.label as
+		linkCategoryName,
+		f.height,
+		f.width,
+		f.pic_address,
+		f.show_index,
+		f.link,
+		f.is_checked,
+		f.text_color,
+		f.add_time,
+		f.gmt_created,
+		f.gmt_modified
+		from friend_link f, category c
+		WHERE
+		f.link_category_code=c.code
+		<dynamic prepend="">
+			<isNotEmpty property="linkName" prepend="and">
+			<![CDATA[f.link_name like concat('%',#linkName#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="linkCategoryName" prepend="and">
+			<![CDATA[f.link_category_code like concat('%',#linkCategoryName#,'%') ]]>
+			</isNotEmpty>
+			<isNotEmpty property="friendLinkDO.isChecked" prepend="and">
+				f.is_checked=#friendLinkDO.isChecked#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="pageDto.sort">
+			<![CDATA[ $pageDto.sort$ ]]>
+			</isNotEmpty>
+			<isNotEmpty property="pageDto.dir">
+			<![CDATA[ $pageDto.dir$ ]]>
+			</isNotEmpty>
+		</dynamic>
+
+		<dynamic prepend="limit">
+			<isGreaterThan property="pageDto.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="pageDto.startIndex"
+					compareValue="0">
+				<![CDATA[ #pageDto.startIndex#,#pageDto.pageSize# ]]>
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+
+	<select id="getFriendLinkRecordCountByCondition" parameterClass="friendLinkDTO"
+		resultClass="int">
+		select
+		count(0)
+		from friend_link f,
+		category c
+		WHERE
+		f.link_category_code=c.code
+	</select>
+
+	<select id="queryFriendLinkById" parameterClass="int"
+		resultMap="friendLinkResult">
+		select
+		id,
+		link_name,
+		link_category_code,
+		height,
+		width,
+		pic_address,
+		show_index,
+		link,
+		is_checked,
+		text_color,
+		add_time,
+		gmt_created,
+		gmt_modified
+		from
+		friend_link
+		where id=#id:INTEGER#
+	</select>
+
+	<insert id="insertFriendLink" parameterClass="friendLinkDO">
+		insert into friend_link(
+		link_name,
+		link_category_code,
+		height,
+		width,
+		pic_address,
+		show_index,
+		is_checked,
+		link,
+		text_color,
+		add_time,
+		gmt_created
+		)
+		values(
+		#linkName#,
+		#linkCategoryCode#,
+		#height#,
+		#width#,
+		#picAddress#,
+		#showIndex#,
+		#isChecked#,
+		#link#,
+		#textColor#,
+		#addTime#,
+		#gmtCreated#)
+		<selectKey keyProperty="id" resultClass="int">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+	<update id="updateFriendLink" parameterClass="friendLinkDO">
+		update friend_link
+		set
+		link_name=#linkName#,
+		link_category_code=#linkCategoryCode#,
+		height=#height#,
+		width=#width#,
+		pic_address=#picAddress#,
+		show_index=#showIndex#,
+		is_checked=#isChecked#,
+		link=#link#,
+		text_color=#textColor#,
+		gmt_modified=#gmtModified#
+		where
+		id=#id:INTEGER#
+
+	</update>
+	<delete id="batchDeleteFriendLinkById" parameterClass="int">
+		delete
+		from
+		friend_link
+		where id=#id#
+	</delete>
+	<update id="batchCancelCheckedFriendLinkById" parameterClass="int">
+		update
+		friend_link
+		set is_checked=0
+		where id=#id#
+	</update>
+	<update id="batchCheckedFriendLinkById" parameterClass="int">
+		update
+		friend_link
+		set is_checked=1
+		where id=#id#
+	</update>
+</sqlMap>

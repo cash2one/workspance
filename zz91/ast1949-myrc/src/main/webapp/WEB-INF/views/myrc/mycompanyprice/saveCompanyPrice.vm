@@ -1,0 +1,252 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("100201","","00")
+<div class="myrcNormalFrame">
+	<div class="tishiWarn">
+		再生通会员发布企业报价将会获得在首页黄金位置滚动推广支持
+		<a href="http://www.zz91.com/cn/publish/zst_upgrade/" target="_blank" >什么是再生通?</a>
+	</div>
+	
+    <div class="officetitle">添加报价(提示：带<font color="#FF0000"> * </font>为必填项)</div>
+	<form id="form2" name="form2" method="post" action="save.htm" onsubmit="return substrm(this)">
+		<div class="productskuang" id="testTbl">
+			<div class="publishFormItems">
+				<div class="products_title">
+                    <label for="category1"><font color="red"> * </font>所属类别：</label>
+				</div>
+				<div class="products_selectSorts" style="height:230px;">	
+					<div class="ComPicCategory1" id="category1"></div>
+					<div class="ComPicCategory2" id="category2"></div>
+					<div class="ComPicCategory3" id="category3"></div>
+					<span class="ComPicCategoryGray">请选择详细类别以便让客户更快的找到您的报价</span>	
+				</div>
+            </div>
+			<div class="publishFormItems">
+                <div class="products_title"><label for="title"><font color="#FF0000"> * </font>产品名称：</label></div>
+				<div class="products_fill">
+						<input name="title" type="text" id="title" value="$!{companyPriceDO.title}" maxlength="50" />
+						<span class="gray">填写单一产品名称将更有利于潜在客户找到您的报价，如:PP</span>
+				</div>
+            </div>
+			<div class="publishFormItems">
+				<div class="products_title">
+                    <label><font color="#FF0000">* </font>价格单位：</label>
+                </div>
+				<div class="products_fill">
+    					<input type="radio" name="priceUnit" value='元' class="radioPositionFix" #if($!{companyPriceDO.priceUnit}=='元') checked #end style="border:none"/>
+						元
+    					<input type="radio" name="priceUnit" value='美元' class="radioPositionFix" #if($!{companyPriceDO.priceUnit}=='美元') checked #end style="border:none"/>
+						美元
+    					<input type="radio" name="priceUnit" value='$!{companyPriceDO.priceUnit}' id="myPriceUnit" class="radioPositionFix" style="border:none"/>
+                        <label for="otherPriceUnit">其他：</label>
+    					<input type="text" id="otherPriceUnit" value="" onblur="ortherInput('myPriceUnit',this.value);" />
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+						<label for="price"><font color="#FF0000"> * </font>产品价格：</label>
+                </div>
+				<div class="products_fill" style="_padding-bottom:8px;"> 
+					<span id="Scope1" >
+						<input name="price" type="text" id="price" value="$!{companyPriceDO.price}"  maxlength="20"/>
+					</span> 
+					<span id="Scope2" style='display:none;' >
+						<input name="minPrice" type="text" id="minPrice"  value="$!{companyPriceDO.minPrice}" size="10"  />
+						到
+						<input name="maxPrice" type="text" id="maxPrice"   value="$!{companyPriceDO.maxPrice}" size="10"  />
+					</span>
+                    <div style="clear:both"></div>
+					<input name="unitscope" type="checkbox" id="unitscope" value="1" onclick="changeScope(this)" class="radioPositionFix" style="border:none"/> 支持价格范围
+				</div>
+				 <div style="clear:both"></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+                        <label><font color="#FF0000"> * </font>地区：</label>
+				</div>
+				<div class="products_fill">
+					<select id="province" name="province" style="width:100px;">
+                        <option value=''>请选择省份</option>
+					</select>
+					<select id="areaCode" name="areaCode" style="width:100px;">
+						<option value=''>请选择城市</option>
+					</select>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label><font color="#FF0000"> * </font>有效期：</label>
+                </div>
+				<div class="products_fill">
+						<select name='expired' id='expired' style="width:100px;">
+							<option value=''  #if($!{days}=='') selected #end>请选择</option>
+							<option value='10' #if($!{days}==10) selected #end>10天</option>
+							<option value='20' #if($!{days}==20) selected #end>20天</option>
+							<option value='30' #if($!{days}>=25&&$!{days}==30) selected='true' #end>1个月</option>
+							<option value='90' #if($!{days}>=85&&$!{days}<=90) selected #end>3个月</option>
+							<option value="180" #if($!{days}>=175&&$!{days}<=180) selected #end>6个月</option>
+							<option value='-1' #if($!{days}==0) selected #end>长期有效</option>
+						</select>
+				</div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label for="details">产品描述：</label>
+                </div>
+				<div class="products_fill">
+						<textarea name="details" id="details" cols="60" rows="5" style="width:90%;">$!{companyPriceDO.details}</textarea>
+				</div>
+			</div>
+            <div style="clear:both"></div>
+			<div class="publishFormSub"">
+				<input name="button" type="submit" class="buttonMax" id="buttonSub" value="提交添加" />
+				<input name="add" type="hidden" value="1" />
+				<input name="id" id="id" type="hidden" value="$!{companyPriceDO.id}" />
+				<input name="productId" id="productId" type="hidden" value="$!{companyPriceDO.productId}" />
+			</div>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+function chknum(NUM){
+	var i,j,strTemp;
+	strTemp=".0123456789";
+	if ( NUM.length== 0)
+	return 0
+	for (i=0;i<NUM.length;i++){
+		j=strTemp.indexOf(NUM.charAt(i));
+		if (j==-1){
+			//说明有字符不是数字
+			return 0;
+		}
+	}
+	//说明是数字
+	
+	return 1;
+}
+
+function substrm(frm){
+	
+	if (jQuery('#first').val()==null){
+			alert("请选择第一类")
+			jQuery('#first').focus()
+			return false;
+	}
+	
+	if (jQuery('#second').val()==null)
+	{
+		alert("请选择第二类")
+		jQuery('#second').focus()
+		return false;
+	}
+	
+	if (jQuery('#title').val()==""){
+		alert("请输入产品名称")
+		jQuery('#title').focus()
+		return false;
+	}
+	
+	if(jQuery('#priceUnit').val()==""){
+	  alert("请输入计量单位")
+	  jQuery('#priceUnit').focus()
+	  return false;
+	}
+
+	if (document.getElementById("unitscope").checked==true){
+		if (jQuery('#minPrice').val()==""){
+			alert("请输入最小值");
+			jQuery('#minPrice').focus();
+			return false;
+		}
+		if (jQuery('#maxPrice').val()==""){
+			alert("请输入最大值");
+			jQuery('#maxPrice').focus();
+			return false;
+		}
+		if (chknum(jQuery('#minPrice').val())==0){
+			alert("你输入产品价格必须是数字")
+			jQuery('#minPrice').focus()
+			return false;
+		}
+		if (chknum(jQuery('#maxPrice').val())==0){
+			alert("你输入产品价格必须是数字")
+			jQuery('#maxPrice').focus()
+			return false;
+		}
+		if(jQuery("#minPrice").val()>jQuery("#maxPrice").val()){
+			alert("最低价格不能高于最高价格");
+			return false;
+		}
+		var min=jQuery("#minPrice").val();
+		var max=jQuery('#maxPrice').val();
+		 //返回X,Y 的平均值
+		jQuery('#price').val((min&max)+((min^max)>>1));
+		
+	}else{
+		if (jQuery('#price').val()==""){
+			alert("请输入产品价格");
+			jQuery('#price').focus();
+			return false;
+		}
+		
+		if (chknum(jQuery('#price').val())==0){
+			alert("你输入产品价格必须是数字")
+			jQuery('#price').focus()
+			return false;
+		}
+	}
+	
+	if (jQuery('#province').val()==""){
+		alert("请选择省份")
+		jQuery('#province').focus()
+		return false;
+	}
+	
+	if (jQuery('#areaCode').val()==""){
+		alert("请选择城市")
+		jQuery('#areaCode').focus()
+		return false;
+	}
+	
+	if (jQuery('#expired').val()==""){
+		alert("请输入有效期")
+		jQuery('#expired').focus()
+		return false;
+	}
+}
+function changeScope(obj){
+	if (obj.checked==true){
+		document.getElementById("Scope1").style.display="none"
+		document.getElementById("Scope2").style.display=""
+
+	}else{
+		document.getElementById("Scope1").style.display=""
+		document.getElementById("Scope2").style.display="none"
+
+	}
+}
+function ortherInput(id,value){
+	jQuery("#"+id).val(value);
+}
+
+jQuery(document).ready(function(){
+		var areaSelector = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')"
+    	});
+	
+		areaSelector.init({
+    		rootCode:"10011000",
+    		initCode:"$!{myrcSaveCompanyPrice.areaCode}",
+    		selects:["#province","#areaCode"]
+    	});
+	});
+</script>
+
+<input name="pcode" id="pcode" type="hidden" value="$!{pcode}" />
+<input name="ccode" id="ccode" type="hidden" value="$!{ccode}" />
+<input name="threeCode" id="threeCode" type="hidden" value="$!{threeCode}" />
+<input name="secondCode" id="secondCode" type="hidden" value="$!{secondCode}" />
+<input name="firstCode" id="firstCode" type="hidden" value="$!{firstCode}" />
+<script type="text/javascript" src="$!{address.js}/root/cate.js" ></script>
+<script type="text/javascript" src="$!{address.js}/root/country.js" ></script>
+

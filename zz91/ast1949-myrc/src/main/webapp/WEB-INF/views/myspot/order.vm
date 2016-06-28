@@ -1,0 +1,81 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                我的订单<span class="divider">/</span>
+            </li>
+            <li class="active">订单列表</li>
+        </ul>
+		## 订单
+		<div class="alert mt">
+			<strong>我的订单</strong>
+		</div>
+		<div class="table-select mt">
+			<div class="btn-group">
+				<a href="#springUrl('/myspot/order.htm')"  #if(!$!{spotOrder.orderStatus}) class="btn btn-small btn_active" #else class="btn btn-small" #end >全部</a>
+				<a href="#springUrl('/myspot/order.htm?orderStatus=1')"  #if($!{spotOrder.orderStatus}=="1") class="btn btn-small btn_active" #else class="btn btn-small" #end >购买</a>
+	    		<a href="#springUrl('/myspot/order.htm?orderStatus=0')"  #if($!{spotOrder.orderStatus}=="0") class="btn btn-small btn_active" #else class="btn btn-small" #end>购物车</a>
+	    		<a href="#springUrl('/myspot/order.htm?orderStatus=2')"  #if($!{spotOrder.orderStatus}=="2") class="btn btn-small btn_active" #else class="btn btn-small" #end>下单</a>
+	    	</div>
+		</div>
+		<table class="table table-condensed table-bordered mt">
+			<thead>
+                <tr>
+                    <th width="25%">订单名称</th>
+					<th width="10%">单价</th>
+					<th width="10%">数量</th>
+                    <th width="20%">总价</th>
+                    <th width="10%" class="tac">状态</th>
+                    <th width="15%" class="tac">操作时间</th>
+                    <th width="10%" class="tac">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            #foreach($obj in $!{page.records})
+                <tr>
+                    <td>
+                        <a href="$!{address.xianhuo}/detail$!{obj.spotOrder.spotId}.htm" target="_blank">
+                            $!{obj.spotOrder.orderProductTitle}
+                        </a>
+                    </td>
+                    <td>$!{obj.spotOrder.price}$!{obj.spotOrder.priceUnit}</td>
+					<td>$!{obj.spotOrder.quantity}$!{obj.spotOrder.quantityUnit}</td>
+					<td>$!{obj.spotOrder.total}$!{obj.spotOrder.priceUnit}</td>
+                    <td class="tac">
+                        #if($!{obj.spotOrder.orderStatus}=='0')
+                            <span class="grey">购物车</span>
+                        #elseif($!{obj.spotOrder.orderStatus}=='1')
+                            <span class="red">已购买待确认</span>
+                        #elseif($!{obj.spotOrder.orderStatus}=='2')
+                            <span class="green">已下单</span>
+						#else
+							&nbsp;
+                        #end
+                    </td>
+                    <td class="tac">$!date.format('yyyy-MM-dd HH:mm:ss',$!{obj.spotOrder.gmtCreated})</td>
+                    <td class="tac">
+						#if($!{obj.spotOrder.orderStatus}=='0')
+							<a href="$!{address.xianhuo}/cart.htm">购买</a>
+                        #elseif($!{obj.spotOrder.orderStatus}=='1')
+							<a href="$!{address.xianhuo}/confirm.htm">确认订单</a>
+						#else
+							<a href="$!{address.xianhuo}/detail$!{obj.spotOrder.spotId}.htm">查看</a>
+                        #end
+                        ##<a href="#springUrl('/credit/creditfile/deleteFile.htm?id=')$!{credit.id}" onClick="return confirm('确实要删除吗？')">删除</a>
+                    </td>
+                </tr>
+            #end 
+            </tbody>
+    	</table>
+	</div>
+	#myrcPageNav($!{page} "#springUrl('/myspot/order.htm')" "checkStatus=$!{spotOrder.orderStatus}" "")
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(7, 2);
+    jQuery(".Js_addFile").click(function(){
+        location.href = "#springUrl('/credit/creditfile/create.htm?code=')" + this.name;
+    });
+})
+</script> 

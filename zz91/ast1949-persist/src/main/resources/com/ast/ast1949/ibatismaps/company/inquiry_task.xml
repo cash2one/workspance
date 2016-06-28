@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="inquiryTask">
+
+	<typeAlias alias="inquiryTaskDO" type="com.ast.ast1949.domain.company.InquiryTask" />
+
+	<resultMap class="inquiryTaskDO" id="inquiryTaskResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="targetId" column="target_id" />
+		<result property="targetType" column="target_type" />
+		<result property="postStatus" column="post_status" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="postTime" column="post_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		target_id,
+		target_type,
+		post_status,
+		title,
+		content,
+		post_time,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryOne" parameterClass="java.util.Map" resultMap="inquiryTaskResult">
+		select
+		<include refid="defaultColumn" />
+		from inquiry_task
+		where company_id = #companyId#
+		and target_id = #targetId#
+		and target_type = #targetType#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="inquiryTaskDO">
+		INSERT INTO
+		inquiry_task
+		(
+		company_id,
+		target_id,
+		target_type,
+		post_status,
+		title,
+		content,
+		post_time,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#companyId#,
+		#targetId#,
+		#targetType#,
+		#postStatus#,
+		#title#,
+		#content#,
+		#postTime#,
+		now(),
+		now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</sqlMap>

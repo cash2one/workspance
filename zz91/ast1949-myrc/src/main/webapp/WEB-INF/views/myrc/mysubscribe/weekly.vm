@@ -1,0 +1,73 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1506","30","30")
+<div class="myrcNormalFrame">
+	<div class="subscribeWeeklySortsTit">本周最新的产品信息。</div>
+	<div class="subscribeWeeklyList">
+		#if($!{productsList.size()}==0)
+            <div class="tishiError" style="background-color:#FFF;">没有信息！</div>
+		#else
+        	<div class="commListTit" style="border:none">
+                <span class="subscribeWeeklyTit">供需</span>
+                <span class="subscribeWeeklyComp">公司名称</span>
+                <span class="subscribeWeeklyPubTime">发布时间</span>
+                <div style="clear:both"></div>
+            </div>
+            <ul>
+                #foreach($p in  $!productsList)
+                    <li>
+                        <span class="subscribeWeeklyTit"><a href="$!{address.server}/trade/productdetails$!{p.productsDO.id}.htm"  target="_blank">($!{p.buyOrSale}) $!{p.productsDO.title}</a></span>
+                        <span class="subscribeWeeklyComp"><a href="$!{address.server}/company/compinfo$!{p.productsDO.companyId}.htm" target="_blank">$!{p.companyDO.name}</a></span>
+                        <span class="subscribeWeeklyPubTime">$!date.format('yyyy-MM-dd  HH:MM:ss',$!{p.productsDO.realTime})</span>
+                    </li>
+    			#end
+                <div style="clear:both"></div>
+            </ul>
+		#end
+	</div>
+
+	<!-- 与CRM有关 -->
+    <div style="clear:both"></div>
+    <div class="subscribeWeeklySortsTit">本周最新的与你匹配的客户信息。</div>
+    <div class="subscribeWeeklyList">&nbsp;</div>
+    <!-- 与CRM有关 -->
+
+    <div class="subscribeWeeklySortsTit">本周最新的资讯信息。</div>
+    <div class="subscribeWeeklyList">
+		#if($!{bbsList.size()}==0)
+            <div class="tishiError" style="background-color:#FFF;">没有信息！</div>
+		#else
+		<ul class="subscribeWeeklyListOnly">
+            #foreach($bbs in $!bbsList)
+                <li>
+                        <font style="color:#5F9410">$!{bbs.categoryName}</font>
+    					<a href="$!{address.bbsServer}/viewReply$!{bbs.bbsPost.id}.htm"  target="_blank">$!{bbs.bbsPost.title}</a>
+                </li>
+			#end
+            <div style="clear:both"></div>
+        </ul>
+		#end
+    </div>
+
+	<div style="clear:both"></div>
+    <div class="subscribeWeeklySortsTit">本周最新的市场动态。</div>
+    <div class="subscribeWeeklyList">
+		#if($!{priceList.size()}==0)
+            <div class="tishiError" style="background-color:#FFF;">没有信息！</div>
+		#else
+		<ul>
+            #foreach($price in $!priceList)
+                <li>
+					[$!{price.typeName}]
+					<a href="$!{address.server}/price/priceDetails_$!{price.price.id}.htm"  target="_blank">$!{price.price.title}</a>
+				</li>
+            #end 
+            <div style="clear:both"></div>
+        </ul>
+		#end
+    </div>
+</div>
+<script type="text/javascript"> 
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".subscribeWeeklyList","#EFF6EF","#FFF")
+	})
+</script> 

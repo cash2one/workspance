@@ -1,0 +1,141 @@
+
+<!-- for include js code -->
+<script type="text/javascript" >
+	//Ext.QuickTips.init();
+	
+	var Context = new function(){
+		this.PATH = "/zz91";
+		this.ROOT = "#springUrl('')";
+		this.RESOURCES="http://img1.zz91.com"
+		
+		this.MSG_TITLE = "信息提示";
+		
+		this.START="startIndex";
+		this.LIMIT="pageSize";
+		this.SORT="orderby";
+		this.PAGESIZE=20;
+	}
+	
+	Ext.BLANK_IMAGE_URL = "$!{address.img}/lib/extjs/themes/images/s.gif";
+	//Ext.ERROR_INTERNET_INVALID_URL = "http://www.ast.com:880/error.html";
+	
+	//权限过滤,检查登录情况
+	Ext.Ajax.on('requestcomplete',function (conn,response,options){
+        if(options.isUpload){
+			return true;
+		}
+		
+		if(typeof(response.getResponseHeader("sessionstatus"))!= 'undefined'){
+			//session超时，需要重新登录
+			ast.ast1949.admin.UserLoginWin(function(form,action){
+				Ext.getCmp(LOGIN.LOGINWINDOW).close();
+ 			});
+		}
+		
+	}, this);
+	
+	//AJAX请求发生错误时出现此提示信息
+	Ext.Ajax.on('requestexception',function(conn,response,options){
+		//response.responseText
+		//if("$!{address.debug}"=="true"){
+			//新的写法
+			var win = Ext.create("Ext.Window",{
+	            title:Context.MSG_TITLE,
+	            width:700,
+	            autoHeight:true,
+	            modal:true,
+	            maximizable:true,
+	            items:[{
+	            	xtype:"panel",
+	            	height:500,
+	            	region:"center",
+	            	autoScroll:true,
+	            	html:"请求的URL：<span style='font-weight:bold;color:red;'>"+options.url+"</span><br/>"+response.responseText
+	            	//width:"100%"
+	            }]
+			});
+			win.show();
+		/*
+		}else{
+			Ext.MessageBox.show({
+	            title:Context.MSG_TITLE,
+	            msg : "#"+response.status+"<br/>"+"噢！发生了一点错误，请再试一次<br/>如果还是这样，请 <a href='mailto:group.dev@zz91.net' >联系我们</a>",
+	            buttons:Ext.MessageBox.OK,
+	            icon:Ext.MessageBox.ERROR
+	        });
+        }
+		*/
+	},this);
+
+	Ext.override(Ext.data.Store, {
+		setExtraParam: function (name, value){
+			this.proxy.extraParams = this.proxy.extraParams || {};
+			this.proxy.extraParams[name] = value;
+			this.proxy.applyEncoding(this.proxy.extraParams);
+		}
+	});
+	
+	/*
+	Ext.override(Ext.form.BasicForm,{
+	    findField : function(id){
+	        var field = this.items.get(id);
+	        if(!field){
+	            this.items.each(function(f){
+	                if(f.isXType('radiogroup')||f.isXType('checkboxgroup')){
+	                    f.items.each(function(c){
+	                        if(c.isFormField && (c.dataIndex == id || c.id == id || c.getName() == id)){
+	                            field = c;
+	                            return false;
+	                        }
+	                    });
+	                }
+
+	                if(f.isFormField && (f.dataIndex == id || f.id == id || f.getName() == id)){
+	                    field = f;
+	                    return false;
+	                }
+	            });
+	        }
+	        return field || null;
+	    }
+	});
+	*/
+
+	/*
+	ast.ast1949.utils = function(){
+		var msgCt;
+
+	    function createBox(t, s){
+	        return ['<div class="msg">',
+	                '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
+	                '<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>', t, '</h3>', s, '</div></div></div>',
+	                '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
+	                '</div>'].join('');
+	    }
+	    
+	   	return {
+	       Msg : function(title, format){
+	       	if(!msgCt){
+	                msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
+	            }
+	           msgCt.alignTo(document, 't-t');
+	           var s = String.format.apply(String, Array.prototype.slice.call(arguments, 1));
+	           var m = Ext.DomHelper.append(msgCt, {html:createBox(title, s)}, true);
+	           m.slideIn('t').pause(1).ghost("t", {remove:true});
+	   		}
+       	};
+	}();
+	*/
+	
+	## google 时间控件 异常bug
+	Ext.override(Ext.menu.DateMenu, {
+    	render: function() {
+    		Ext.menu.DateMenu.superclass.render.call(this);
+    		if (Ext.isChrome) {
+    			this.picker.el.dom.childNodes[0].style.width = '178px';
+    			this.picker.el.dom.style.width = '178px';
+    		}
+    	}
+    });
+	
+</script>

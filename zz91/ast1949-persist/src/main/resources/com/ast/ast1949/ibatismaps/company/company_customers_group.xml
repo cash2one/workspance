@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyCustomersGroup">
+	<typeAlias alias="companyCustomersGroupDO"
+		type="com.ast.ast1949.domain.company.CompanyCustomersGroupDO" />
+	<resultMap class="companyCustomersGroupDO" id="companyCustomersGroupResult">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="remark" column="remark" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<select id="queryCompanyCustomersGroupByCompanyId" parameterClass="int" resultMap="companyCustomersGroupResult">
+		SELECT id,
+		name,
+		remark,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified
+		FROM
+		company_customers_group
+		where  company_id=#companyId#
+	</select>
+	<select id="queryGroupById" parameterClass="int" resultMap="companyCustomersGroupResult">
+		SELECT id,
+		name,
+		remark,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified
+		FROM
+		company_customers_group 
+		where id=#id#
+	</select>
+	<insert id="insertCompanyCustomersGroup" parameterClass="companyCustomersGroupDO">
+		INSERT
+		INTO company_customers_group
+		(
+		name,
+		remark,
+		company_id,
+		account,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#name#,
+		#remark#,
+		#companyId#,
+		#account#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID() as id
+		</selectKey>
+	</insert>
+	<update id="updateCompanyCustomersGroup" parameterClass="companyCustomersGroupDO">
+		UPDATE
+		company_customers_group
+		SET
+		id = #id#,
+		name =#name# ,
+		remark = #remark# ,
+		gmt_created = now() ,
+		gmt_modified = now()
+		WHERE
+		id = #id#
+	</update>
+	<delete id="deleteCompanyCustomersGroupById" parameterClass="int">
+		delete from company_customers_group
+		where id=#id#
+ 	</delete>
+</sqlMap>

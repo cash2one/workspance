@@ -1,0 +1,153 @@
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="productsRub">
+	<typeAlias alias="productsRub"
+		type="com.ast.ast1949.domain.products.ProductsRub" />
+	<resultMap class="productsRub" id="productsRubResult">
+		<result property="id" column="id" />
+		<result property="productId" column="product_id" />
+		<result property="minPrice" column="min_price" />
+		<result property="maxPrice" column="max_price" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="tags" column="tags" />
+		<result property="title" column="title" />
+		<result property="location" column="location" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="source" column="source" />
+		<result property="specification" column="specification" />
+		<result property="checkPerson" column="check_person" />
+		<result property="details" column="details" />
+		<result property="refreshTime" column="refresh_time" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="checkTime" column="check_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		p.id,
+		p.product_id,
+		p.min_price,
+		p.max_price,
+		p.products_type_code,
+		p.tags,
+		p.title,
+		p.location,
+		p.quantity,
+		p.quantity_unit,
+		p.price_unit,
+		p.source,
+		p.specification,
+		p.check_person,
+		p.details,
+		p.refresh_time,
+		p.expired_time,
+		p.check_time,
+		p.gmt_created,
+		p.gmt_modified
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="productsRub.tags">
+				p.tags = #productsRub.tags#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="productsRub.productsTypeCode">
+				p.products_type_code = #productsRub.productsTypeCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="productsRub.title">
+				p.title = #productsRub.title#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="queryRub" parameterClass="java.util.Map" resultMap="productsRubResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM products_rub p
+		<include refid="dynamicWhere"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryRubCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		SELECT count(0)
+		FROM products_rub p
+		<include refid="dynamicWhere"/>
+	</select>
+	
+	<select id="queryRubByProductId" parameterClass="java.lang.Integer" resultMap="productsRubResult">
+		SELECT
+		<include refid="defaultColumn" />
+		FROM products_rub p
+		where product_id = #value#
+		limit 1
+	</select>
+	
+	<insert id="insert" parameterClass="productsRub">
+		INSERT INTO products_rub
+		(
+		product_id,min_price,max_price,products_type_code,
+		tags,title,location,quantity,quantity_unit,price_unit,
+		source,specification,check_person,details,
+		refresh_time,expired_time,check_time,gmt_created,gmt_modified)
+		VALUES
+		(
+		#productId#,#minPrice#,#maxPrice#,#productsTypeCode#,
+		#tags#,#title#,#location#,#quantity#,#quantityUnit#,#priceUnit#,
+		#source#,#specification#,#checkPerson#,#details#,
+		#refreshTime#,#expiredTime#,now(),now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<update id="update" parameterClass="productsRub">
+	UPDATE products_rub
+	SET
+		gmt_modified = #gmtModified#,
+		products_type_code = #productsTypeCode#,
+		tags = #tags#,
+		title = #title#,
+		location = #location#,
+		quantity = #quantity#,
+		source = #source#,
+		specification = #specification#,
+		details = #details#
+		<isNotEmpty property="minPrice" prepend=",">
+			min_price = #minPrice#
+		</isNotEmpty>
+		<isNotEmpty property="maxPrice" prepend=",">
+			max_price = #maxPrice#
+		</isNotEmpty>
+		<isNotEmpty property="quantityUnit" prepend=",">
+			quantity_unit = #quantityUnit#
+		</isNotEmpty>
+		<isNotEmpty property="priceUnit" prepend=",">
+			price_unit = #priceUnit#
+		</isNotEmpty>
+		WHERE product_id = #productId#
+	</update>
+	
+	<delete id="deleteByProductId" parameterClass="java.lang.Integer">
+		delete 
+		from products_rub 
+		where product_id = #value#
+	</delete>
+	
+	<select id="queryRubForDetail" parameterClass="java.util.Map" resultMap="productsRubResult">
+		SELECT
+			<include refid="defaultColumn" />
+		FROM products_rub p inner join products ps on p.product_id=ps.id 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="companyId">
+					ps.company_id = #companyId#
+				</isNotEmpty>
+		</dynamic>
+		limit 0,#size#
+	</select>
+	
+</sqlMap>

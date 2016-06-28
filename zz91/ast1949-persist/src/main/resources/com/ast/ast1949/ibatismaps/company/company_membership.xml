@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyMembership">
+	<typeAlias alias="companyMembershipDO"
+		type="com.ast.ast1949.domain.company.CompanyMembershipDO" />
+
+	<insert id="insertCompanyMembershipDO" parameterClass="companyMembershipDO">
+		insert into company_membership
+		(company_id,
+		membership_type_code,
+		years,
+		contract_type,
+		date_from,
+		date_end,
+		checking,
+		service_status,
+		url,
+		gmt_created,
+		gmt_modified,
+		total_year)
+		values (#companyId#,
+		#membershipTypeCode#,
+		#years#,
+		#contractType#,
+		#dateFrom#,
+		#dateEnd#,
+		#checking#,
+		#serviceStatus#,
+		#url#,
+		#gmtCreated#,
+		#gmtModified#,
+		#totalYear#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id() as value
+		</selectKey>
+	</insert>
+
+	<select id="queryCompanyMembershipByCompanyId" parameterClass="java.lang.Integer"
+		resultClass="companyMembershipDO">
+		select id,company_id as companyId,membership_type_code as
+		membershipTypeCode,
+		years,contract_type as contractType,date_from as dateFrom,
+		date_end as dateEnd,checking,service_status as serviceStatusc,
+		url as url,gmt_created as gmtCreated,gmt_modified as
+		gmtModified,total_year as totalYear, domain
+		from company_membership
+		where company_id=#companyId#
+	</select>
+
+	<update id="updateCompanyMembershipByCompanyId" parameterClass="companyMembershipDO">
+		UPDATE company_membership
+		SET
+		<isNotEmpty property="membershipTypeCode">
+			membership_type_code = #membershipTypeCode#,
+		  </isNotEmpty>
+		<isNotEmpty property="dateFrom">
+			date_from = #dateFrom#,
+		  </isNotEmpty>
+		<isNotEmpty property="dateEnd">
+			date_end = #dateEnd#,
+		  </isNotEmpty>
+		<isNotEmpty property="checking">
+			checking = #checking#,
+		  </isNotEmpty>
+		<isNotEmpty property="years">
+			years = #years#,
+		  </isNotEmpty>
+		<isNotEmpty property="contractType">
+			contract_type = #contractType#,
+		  </isNotEmpty>
+		<isNotEmpty property="serviceStatus">
+			service_status = #serviceStatus#,
+		  </isNotEmpty>
+		<isNotEmpty property="serviceStatus">
+			url = #url#,
+		  </isNotEmpty>
+		gmt_modified = now()
+		WHERE company_id = #companyId#
+	</update>
+
+	<select id="queryCompanyIdByUrl" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select company_id from
+		company_membership
+		where url=#value#
+		limit 1
+	</select>
+
+	<select id="queryCompanyIdByDomain" parameterClass="java.lang.String"
+		resultClass="java.lang.Integer">
+		select company_id from
+		company_membership
+		where domain=#value#
+		limit 1
+	</select>
+	
+	<update id="saveCustomDomain" parameterClass="java.util.HashMap" >
+		update company_membership set
+		domain=#domain#,
+		gmt_modified=now()
+		where company_id=#companyId#
+	</update>
+
+</sqlMap>

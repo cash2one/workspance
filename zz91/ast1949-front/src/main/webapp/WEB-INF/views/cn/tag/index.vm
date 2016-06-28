@@ -1,0 +1,309 @@
+#set($layout="/layout/tagsLayout.vm")
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/css/zz91.common.css" />
+<link rel="stylesheet" href="http://img0.zz91.com/zz91/tags/css/zz91.tags.css" />
+
+<!-- container start -->
+<div class="container_12  clearfix">
+    <!-- grid_12 start -->
+    <div class="grid_12 clearfix pb15 tags_bg">
+        <div class="grid_7 tags_tip">
+            <p>
+                <strong><span class="orange">什么是</span>标签？</strong>
+                <span class="grey">通过标签您可以用更少的时间，更准确、更直接地找到您想要的所有信息！</span>
+            </p>
+			<div class="search_box">
+				<form class="search_form" id="tagForm" action="http://tags.zz91.com/search/a/">
+					<input type="text" name="tagName" id="searchTag" class="s"  class="swap_value" />
+					<input type="submit" id="searchBtn" style="background:url($!{address.img}/zz91/tags/images/search_btn.gif);width:61px;height:30px;border:none;" value=""  class="go" alt="Search" title="Search" />
+				</form>
+##				<script type="text/javascript">
+##					jQuery("#tagForm").submit(function(){
+##						var url = "http://tags.zz91.com/tagssearchList/";
+##						var key = jQuery("#searchTag").val();
+##						if(key.length>0){
+##							window.open(url+encodeURI(jQuery("#searchTag").val())+"/");
+##						}else{
+##							alert("请输入关键字");
+##						}
+##						return false;
+##					});
+##                </script>
+            </div>
+            <div class="">
+                <p>
+                    <span class="blak">热门搜索：</span>
+                    <a href="http://tags.zz91.com/tagsInfoList/18/">PET</a>
+                    <a href="http://tags.zz91.com/tagsInfoList/15/">PP</a>
+                    <a href="http://tags.zz91.com/tagsInfoList/294/">PVC</a>
+                    <a href="http://tags.zz91.com/tagsInfoList/212/">废纸</a>
+					<a href="http://tags.zz91.com/tagsInfoList/358/">废金属</a>
+					<a href="http://tags.zz91.com/tagsInfoList/66/">不锈钢</a>
+                </p>
+            </div>
+        </div>
+        <!-- grid_12 end -->
+        <div class="container_12">
+            <!-- left_col start -->
+            <div class="left_col grid_9 clearfix">
+                <!-- 最活力标签 start -->
+                <div class="left_column mt8">
+                    <div class="title clearfix">
+                        <h2><span class="orange">最活力</span>标签</h2>
+                    </div>
+                    <div class="left_content clearfix">
+                        <ul>
+							#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10061000&size=35&tag", "", "","")
+								#foreach($obj in $list)
+									<li><a href="$!{obj.link}" target="_blank"><span style="$!{obj.style}">#printTitle($!{obj.title} 10 "")</span></a></li>
+								#end
+							#end
+                        </ul>
+                    </div>
+                </div>
+                <!-- 最活力标签 end -->
+                <!-- 当月热门标签 start -->
+                <div class="left_column">
+                    <div class="title clearfix">
+						<h2><span class="orange">当月热门</span>标签</h2>
+					</div>
+					<div class="left_content pl16">
+						#foreach($obj in $hotTags.keySet())
+							<a href="http://tags.zz91.com/s/$!hotTags.get($!{obj})/" target="_blank">
+								#if($velocityCount%3==2)
+									<strong class="orange">$obj</strong>
+								#elseif($velocityCount%3==1)
+									<strong class="blue">$obj</strong>
+								#else
+									$obj
+								#end
+							</a>
+						#end
+                    </div>
+                </div>
+                <!-- 当月热门标签 end -->
+                <!-- 最新标签 start -->
+                <div class="left_column">
+                    <div class="title clearfix">
+                        <h2><span class="orange">最新</span>标签</h2>
+                    </div>
+                    <div class="left_content pl16">
+                        #foreach($obj in $newTags.keySet())
+							<a href="http://tags.zz91.com/s/$!newTags.get($!{obj})/" target="_blank">
+    							#if($velocityCount%3==0)
+    								$obj
+    							#elseif($velocityCount%3==1)
+    								<strong class="orange">$obj</strong>
+    							#else
+    								<strong class="blue">$obj</strong>
+    							#end
+							</a>
+						#end
+                    </div>
+                </div>
+                <!-- 最新标签 end -->
+                <!-- 热门产品推荐start -->
+                <div class="left_column">
+                    <div class="title clearfix">
+						<a href="$!{address.trade}" target="_blank" style="float:right">更多>></a>
+						<h2><span class="orange">热门产品</span>推荐</h2>
+					</div>
+					<div class="left_content pl16 clearfix">
+						#foreach($obj in $vipList)
+    						<dl class="figure_item">
+    							<dt>
+    								<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">
+										#if($!{obj.coverPicUrl}&&$!{obj.coverPicUrl}!="")
+											<img src="$!{address.resource}/$!{obj.coverPicUrl}" width="90" height="92" />
+										#else
+											<img src="http://img0.zz91.com/front/images/global/noimage.gif" width="90" height="92" />
+										#end
+    								</a>
+    							</dt>
+    							<dd>
+    								<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank" title="$!{obj.products.title}">
+										#if($!{obj.products.title}&&$!{obj.products.title}!="")
+											#if($!{obj.products.productsTypeCode}=="10331000")供应#else求购#end#printTitle($!{obj.products.title} 7 "")
+										#else
+											该高会暂无供求!
+										#end
+									</a>
+    							</dd>
+    						</dl>
+						#end
+                    </div>
+                </div>
+            </div>
+            <!-- left_col end -->
+            <!-- right_col start -->
+            <div class="right_col grid_3 clearfix">
+                <!--7日最热标签排行榜 start -->
+                <div class="right_column">
+                    <div class="right_title">
+                        <h2>7日最热标签排行榜</h2>
+                    </div>
+                    <div class="right_content clearfix ">
+                        <ul>
+							#foreach($obj in $sHotTags.keySet())
+                                <li>
+                                    <span>$velocityCount</span>
+									##<a href="http://tags.zz91.com/tagssearchList/$!sHotTags.get($!{obj})/">$obj</a>
+									<a href="http://tags.zz91.com/s/$!sHotTags.get($!{obj})/">$obj</a>
+                                </li>
+							#end
+                        </ul>
+                    </div>
+                </div>
+                <!--7日最热标签排行榜 end -->
+                <!--最新产品报价 start -->
+                <div class="right_column">
+                    <div class="right_title">
+                        <h2 >最新产品报价</h2>
+                        <span class="more">
+                            <a href="$!{address.price}" target="_blank">更多 >></a>
+                        </span>
+                    </div>
+                    <div class="right_content_01 clearfix ">
+                        <ul>
+							#cacheFragment("$!{address.fragment}/price/newHotPrice.htm?code=metal_price_new&size=14&1", "", "", "")
+								#foreach($a in $list)
+									<li>
+										<a href="$!{address.price}/priceDetails_$!{a.id}_metal.htm" target="_blank" title=" $!{a.title} "> #printTitle($!{a.title} 17 "")</a>
+									</li>
+								#end
+		  					#end
+                        </ul>
+                    </div>
+                </div>
+                <!--最新产品报价 end -->
+                <!--最新资讯start -->
+                <div class="right_column">
+                    <div class="right_title">
+                        <h2 >最新资讯</h2>
+                        <span class="more">
+                            <a href="$!{address.huzhu}" target="_blank">更多 >></a>
+                        </span>
+                    </div>
+                    <div class="right_content_01 clearfix ">
+                        <ul>
+							#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=4&size=12" "" "1" "")
+								#foreach($obj in $!{list})
+									<li><a href="$!{address.huzhu}/viewReply$!{obj.post.id}.htm" target="_blank" title="$!{obj.post.title}">#printTitle($!{obj.post.title} 15 "")</a></li>
+								#end
+							#end
+                        </ul>
+                    </div>
+                </div>
+				<div class="right_column">
+                    <div class="right_title">
+                        <h2 >ZZ91优质客户推荐</h2>
+                        <span class="more">
+                            <a href="http://subject.zz91.com/carveout/compmore/" target="_blank">更多 >></a>
+                        </span>
+                    </div>
+                    <div class="right_content_01 clearfix ">
+                        <ul id="Js_scroll" class="scroll">
+							#cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10061001&size=36&id11", "", "", "")
+							## #cacheFragment("$!{address.fragment}/company/recentZst.htm?size=36", "", "", "")
+								#foreach($comp in $list)
+									<li>
+										<a href="$!{comp.link}" title="$!{comp.name}"  target="_blank">
+											#printTitle($!{comp.title} 15 "")
+										</a>
+									</li>
+								#end
+							#end
+                        </ul>
+                    </div>
+                </div>
+				
+##                <ul id="topscroll3" style="overflow-y: hidden; overflow-x: hidden; height:200px;">
+##					#foreach($comp in $list)
+##						<li class="listyle01">
+##							<a href="http://$!{comp.domainZz91}.zz91.com" title="$!{comp.name}"  target="_blank">
+##								$!{comp.name}
+##							</a>
+##						</li>
+##					#end
+##                </ul>
+				
+                <!--最新资讯 end -->
+            </div>
+            <!-- right_col end -->
+        </div>
+    </div>
+</div>
+<!-- container end -->
+<script>
+	//以下为搜索相关
+    function topSearch() {
+        var keyWord = document.getElementById("search").value;
+        var type = document.getElementById("TopSeaType");
+        
+        if (keyWord == "" || keyWord.substring(0, "请输入您感兴趣的".length) == "请输入您感兴趣的") {
+            alert("请您输入关键字！");
+            return false;
+        }
+    	
+        if (type.value == "1") {
+            zz91Search.products({
+                contextpath:"${address.trade}",
+                target:"_blank",
+                searchOptions:{
+                    keywords:keyWord,
+                    ptype:"1"
+                }
+            });
+        } else if (type.value == "2") {
+            zz91Search.products({
+                contextpath:"$!{address.trade}",
+                target:"_blank",
+                searchOptions:{
+                    keywords:keyWord,
+                    ptype:"2"
+                }
+            });
+        } else if (type.value == "3") {
+            zz91Search.price({
+                contextpath:"$!{address.price}",
+                target:"_blank",
+                searchOptions:{
+                    keywords:keyWord
+                }
+            });
+        }
+    	return false;
+    }
+	function getRan(){
+		Math.floor(Math.random()*3);
+	}
+    //向上滚动
+    function scroll(id, showNum) {
+        var ul = jQuery("#" + id),
+            li = ul.find("li"),
+            h = li.height(),
+            top = 0;
+        if (li.length > showNum) {
+            ul.append(li.clone());
+            ul.css({
+                "height" : h * showNum + "px",
+                "overflow" : "hidden"
+            });
+            var move = function() {
+                top = ul.get(0).scrollTop;
+                if (top >= showNum * h) {
+                    ul.get(0).scrollTop = 0;
+                } else {
+                    ul.get(0).scrollTop = top + 22;
+                }
+            }
+            var timer = setInterval(move, 1000);
+            ul.mouseover(function(){
+                clearInterval(timer);
+            });
+            ul.mouseout(function(){
+                timer = setInterval(move, 1000);
+            });
+        }
+    }
+    scroll("Js_scroll", 6);
+</script>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotPromotions">
+	<typeAlias alias="spotPromotionsDO" type="com.ast.ast1949.domain.spot.SpotPromotions" />
+	<resultMap class="spotPromotionsDO" id="spotPromotionsResult">
+		<result property="id" column="id" />
+		<result property="spotId" column="spot_id" />
+		<result property="productId" column="product_id" />
+		<result property="companyId" column="company_id"/>
+		<result property="title" column="title" />
+		<result property="price" column="price" />
+		<result property="promotionsPrice" column="promotions_price" />
+		<result property="checkStatus" column="check_status" />
+		<result property="quantity" column="quantity" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<sql id="defaultColumn">
+		id,
+		spot_id,
+		product_id,
+		company_id,
+		title,
+		price,
+		promotions_price,
+		check_status,
+		quantity,
+		quantity_unit,
+		price_unit,
+		gmt_created,
+		expired_time,
+		gmt_modified
+	</sql>
+	<select id="queryBySpotId" parameterClass="java.lang.Integer"
+		resultMap="spotPromotionsResult">
+		SELECT
+		<include refid="spotPromotions.defaultColumn" />
+		FROM spot_promotions
+		where spot_id = #spotId# and check_status = 1 and expired_time > now()
+		limit 1
+	</select>
+	
+	<select id="queryByIdAndCompanyId" parameterClass="java.util.Map" resultMap="spotPromotionsResult">
+		select 
+		<include refid="spotPromotions.defaultColumn" />
+		FROM spot_promotions
+		where id = #id# and company_id = #companyId#
+		limit 1
+	</select>
+	
+
+	<insert id="insert" parameterClass="spotPromotionsDO">
+		INSERT INTO spot_promotions
+		(spot_id,product_id,company_id,title,
+		price,promotions_price,check_status,
+		quantity,quantity_unit,price_unit,
+		gmt_created,expired_time,gmt_modified)
+		VALUES
+		(#spotId#,#productId#,#companyId#,#title#,
+		#price#,#promotionsPrice#,#checkStatus#,
+		#quantity#,#quantityUnit#,#priceUnit#,
+		now()
+		<isNotNull prepend="," property="expiredTime">
+			#expiredTime#
+		</isNotNull>
+		<isNull prepend="," property="expiredTime">
+			now()
+		</isNull>
+		,now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="spotPromotionsDO">
+		UPDATE spot_promotions
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotNull prepend="," property="price">
+			price = #price#
+		</isNotNull>
+		<isNotNull prepend="," property="promotionsPrice">
+			promotions_price = #promotionsPrice#
+		</isNotNull>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status = #checkStatus#
+		</isNotEmpty>
+		<isNotNull prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotNull>
+		<isNotEmpty prepend="," property="quantityUnit">
+			quantity_unit = #quantityUnit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="priceUnit">
+			price_unit = #priceUnit#
+		</isNotEmpty>
+		<isNotNull prepend="," property="expiredTime">
+			expired_time = #expiredTime#
+		</isNotNull>
+		WHERE id = #id#
+	</update>
+	
+	<sql id="dynamicByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="spotPromotions.checkStatus">
+				check_status = #spotPromotions.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="spotPromotions.companyId">
+				company_id = #spotPromotions.companyId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="spotPromotionsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from spot_promotions
+		<include refid="dynamicByCondition"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_promotions
+		<include refid="dynamicByCondition"/>
+	</select>
+	
+	<select id="queryPromotionsBySize" parameterClass="java.lang.Integer" resultMap="spotPromotionsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from spot_promotions
+		where expired_time > now() and check_status = 1
+		order by id desc
+		limit #size#
+	</select>
+	
+	<select id="queryExpiredPromotionsBySize" parameterClass="java.lang.Integer" resultMap="spotPromotionsResult">
+		select 
+		<include refid="defaultColumn"/>
+		from spot_promotions
+		where now() > expired_time and check_status = 1
+		order by id desc
+		limit #size#
+	</select>
+	
+</sqlMap>

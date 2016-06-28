@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="subscribe">
+	<typeAlias alias="subscribe" type="com.ast.ast1949.domain.company.SubscribeDO"/>
+    <typeAlias alias="subscribeDTO" type="com.ast.ast1949.dto.company.SubscribeDTO"/>
+	<typeAlias alias="subscribeForMyrcDTO" type="com.ast.ast1949.dto.company.SubscribeForMyrcDTO" />
+	
+    <resultMap id="subscribeResult" class="subscribe">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="keywords" column="keywords" />
+		<result property="isSearchByArea" column="is_search_by_area" jdbcType="char" />
+		<result property="areaCode" column="area_code" />
+		<result property="productsTypeCode" column="products_type_code" />
+		<result property="priceTypeId" column="price_type_id" />
+		<result property="priceAssistTypeId" column="price_assist_type_id" />
+		<result property="isSendByEmail" column="is_send_by_email" jdbcType="char" />
+		<result property="subscribeType" column="subscribe_type" />
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="isMustSee" column="is_must_see" />
+		<result property="email" column="email" />
+	</resultMap>
+                                        
+    <resultMap class="subscribeDTO" id="subscribeDTOResult">
+       <result property="id" column="id"/>
+       <result property="chineseName" column="chinese_name"/>
+	   <result property="isMustSee" column="isMustSee" />
+       <result property="companyName" column="name"/>
+       <result property="email" column="email"/>
+       <result property="keywords" column="keywords"/>
+       <result property="supplydemandoffer" column="supply_demand_offer"/>
+    </resultMap>
+    
+	<resultMap class="subscribeForMyrcDTO" id="resultSubscribeForMyrcDTO">
+		<result property="priceTypeId" column="price_type_id" />
+		<result property="priceAssistTypeId" column="price_assist_type_id" />
+		
+		<result property="firstTypeName" column="first_type_name" />
+		<result property="secondTypeName" column="second_type_name" />
+		<result property="thirdTypeName" column="third_type_name" />
+		<result property="priceAssistIdName" column="price_assist_id_name" />
+	</resultMap>
+	
+    <select id="selectSubscribeByCondition" parameterClass="subscribeDTO" resultMap="subscribeDTOResult">
+         select 
+         a.id as id,
+         b.contact as chinese_name,
+         d.name,
+		 a.is_must_see as isMustSee,
+         b.email as email,
+         a.keywords as keywords,
+         a.subscribe_type as supply_demand_offer 
+         from subscribe a 
+         inner join company_contacts b on a.account=b.account
+         inner join company d on  d.id=b.company_id
+         left join category c on a.products_type_code = c.code
+         <dynamic prepend="where">
+			<isNotEmpty property="email" prepend="and">
+				b.email like concat('%',#email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+				d.name like concat('%',#companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="keywords" prepend="and">
+			    a.keywords like concat('%',#keywords#,'%') 
+			</isNotEmpty>
+			<isNotEmpty property="supplydemandoffer" prepend="and">
+				a.subscribe_type=#supplydemandoffer#
+			</isNotEmpty>
+ 		</dynamic>
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+    </select>
+    
+    <select id="selectCountSubscribeByCondition" parameterClass="subscribeDTO" resultClass="java.lang.Integer">
+         select 
+         count(a.id) 
+         from subscribe a 
+         inner join company_contacts b on a.account=b.account
+         inner join company d on  d.id=b.company_id
+         left join category c on a.products_type_code = c.code
+         <dynamic prepend="where">
+			<isNotEmpty property="email" prepend="and">
+				b.email like concat('%',#email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="companyName" prepend="and">
+				d.name like concat('%',#companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="keywords" prepend="and">
+			    a.keywords like concat('%',#keywords#,'%') 
+			</isNotEmpty>
+		 </dynamic>
+    </select>
+    <sql id="fullColumn" >
+    	id,
+		company_id,
+		account,
+		keywords,
+		is_search_by_area,
+		area_code,
+		products_type_code,
+		price_type_id,
+		price_assist_type_id,
+		is_send_by_email,
+		subscribe_type,
+		gmt_created,
+		gmt_modified,
+		is_must_see,
+		email
+    </sql>
+	<select id="selectSubscribeById" resultMap="subscribeResult" >
+	  select
+	    <include refid="fullColumn" />
+		from
+	 subscribe
+	 where id=#value#
+
+	</select>
+	
+	<insert id="insertSubscribe" parameterClass="subscribe">
+	insert into subscribe
+		(
+		company_id,
+		account,
+		keywords,
+		is_search_by_area,
+		area_code,
+		products_type_code,
+		price_type_id,
+		price_assist_type_id,
+		is_send_by_email,
+		subscribe_type,
+		gmt_created,
+		gmt_modified,
+		is_must_see,
+		email
+		)
+		values
+		(
+		#companyId#,
+		#account#,
+		#keywords#,
+		#isSearchByArea#,
+		#areaCode#,
+		#productsTypeCode#,
+		#priceTypeId#,
+		#priceAssistTypeId#,
+		#isSendByEmail#,
+		#subscribeType#,
+		now(),
+		now(),
+		#isMustSee#,
+		#email#
+		)
+		<selectKey keyProperty="id"  resultClass="int">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+
+	<select id="querySubscribeByCompanyIdAndSubscribeType" parameterClass="hashMap" resultMap="subscribeResult">
+		select
+		   <include refid="fullColumn" />
+			from
+		 subscribe s
+		 <dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+            	<![CDATA[ s.company_id =#companyId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="subscribeType" prepend="and">
+        		<![CDATA[ s.subscribe_type=#subscribeType# ]]>
+			</isNotEmpty>
+		</dynamic>
+		order by id desc
+	</select>
+	
+	<select id="querySubscribeByCompanyIdAndSubscribeTypeCount" parameterClass="hashMap" resultClass="java.lang.Integer">
+		select count(*) from subscribe
+		where company_id=#companyId#
+		and subscribe_type=#subscribeType#
+	</select>
+
+	<delete id="deleteSubscribeByCompanyIdAndSubscribeType" parameterClass="hashMap">
+		delete from
+		 subscribe 
+		 <dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+            	<![CDATA[ company_id =#companyId# ]]>
+			</isNotEmpty>
+			<isNotEmpty property="subscribeType" prepend="and">
+        		<![CDATA[ subscribe_type=#subscribeType# ]]>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+	<delete id="deleteSubscribeById" >
+		delete from subscribe where id=#id:Integer#
+	</delete>
+    
+	<update id="updateSubscribe">
+		update subscribe
+		set
+			keywords = #keywords# ,
+			is_search_by_area = #isSearchByArea# ,
+			area_code = #areaCode# ,
+			products_type_code = #productsTypeCode# ,
+			price_Type_id = #priceTypeId# ,
+			price_assist_type_id=#priceAssistTypeId#,
+			is_send_by_email = #isSendByEmail# ,
+			subscribe_type = #subscribeType# ,
+			is_must_see = #isMustSee# ,
+			email=#email#,
+			gmt_modified = now()
+		where
+		id = #id#
+	</update>
+	
+	<select id="selectByIdSubscribe" resultMap="subscribeDTOResult">
+	     SELECT 
+         a.id AS id,
+         b.contact AS chinese_name,
+         d.name,
+		 a.is_must_see as isMustSee,
+         b.email AS email,
+         a.keywords AS keywords,
+         a.subscribe_type AS supply_demand_offer 
+         FROM subscribe a 
+         INNER JOIN company_contacts b ON a.account=b.account
+         INNER JOIN company d ON  d.id=b.company_id
+         LEFT JOIN category c ON a.products_type_code = c.code
+		 where a.id=#value#
+	</select>
+	
+	<update id="updateByIdSubscribe" parameterClass="subscribeDTO">
+		update subscribe
+		set
+		keywords=#keywords#,
+		is_must_see=#isMustSee#,
+		subscribe_type=#supplydemandoffer#
+		where
+		id=#id#
+	</update>
+	
+	<select id="querySubscribeForMycrByCondition" parameterClass="subscribeForMyrcDTO" resultMap="resultSubscribeForMyrcDTO">
+		SELECT 
+			s.price_type_id,
+			s.price_assist_type_id,
+			pc1.name AS third_type_name,
+			pc2.name AS second_type_name,
+			pc3.name AS first_type_name,
+			pc4.name AS price_assist_id_name
+		FROM subscribe s 
+			LEFT JOIN price_category pc1 ON pc1.id=s.price_type_id
+			LEFT JOIN price_category pc2 ON pc2.id=pc1.parent_id
+			LEFT JOIN price_category pc3 ON pc3.id=pc2.parent_id
+			LEFT JOIN price_category pc4 ON pc4.id=s.price_assist_type_id
+		WHERE s.company_id=#companyId# 
+			AND s.subscribe_type=#subscribeType#
+		<dynamic prepend="order by">
+			<isNotEmpty property="page.sort">
+				$page.sort$
+				<isNotEmpty property="page.dir">
+					$page.dir$
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="limit">
+			<isGreaterThan property="page.pageSize"
+				compareValue="0">
+				<isGreaterEqual property="page.startIndex"
+					compareValue="0">
+					#page.startIndex#,#page.pageSize#
+				</isGreaterEqual>
+			</isGreaterThan>
+		</dynamic>
+	</select>
+	
+	<select id="countSubscribeForMycrByCondition" parameterClass="subscribeForMyrcDTO" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM subscribe s 
+			LEFT JOIN price_category pc1 ON pc1.id=s.price_type_id
+			LEFT JOIN price_category pc2 ON pc2.id=pc1.parent_id
+			LEFT JOIN price_category pc3 ON pc3.id=s.price_assist_type_id
+		WHERE s.company_id=#companyId# 
+			AND s.subscribe_type=#subscribeType#
+	</select>
+
+	<select id="queryKeywordsByAccount" parameterClass="string" resultClass="subscribe">
+		select 
+		id,keywords 
+		from subscribe
+		where account=#account#
+		and is_must_see='1'
+	</select>
+	
+	
+	<select id="querySubscribeById" resultMap="subscribeResult" >
+		select
+	    <include refid="fullColumn" />
+		from subscribe
+		where id=#value#
+	</select>
+</sqlMap>

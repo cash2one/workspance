@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+        <meta charset="UTF-8" />
+		<title>$!{seoTitle}</title>
+		<meta name="keywords" content="$!{seoKeywords}" />
+		<meta name="description" content="$!{seoDescription}" />
+		
+        <link rel="stylesheet" href="$!{address.img}/zz91/css/zz91.common.css" />
+        <link rel="stylesheet" href="$!{address.img}/zz91/sb/css/zz91.sb.css" />
+        <script src="$!{address.img}/lib/jquery/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="$!{address.img}/lib/asto/asto-all-1.0.0.js"></script>
+		#parse("/common/contextS.vm")
+		#parse("/seo/analysis_head.vm")
+    </head>
+    <body>
+        <div id="fl_ltop" style="right:0;top:400;position:absolute;display:none;">
+            <a href="#" onClick="showAd();return false;">
+                <img src="$!{address.images}/root/replay.jpg" />
+            </a>
+        </div>
+		#cacheFragment("$!{address.fragment}/china/topbar.htm","","","")
+            <div id="topBar">
+                <div id="topBarInfo">
+                    <div id="topBarLogin">
+                        ##<iframe src="$!{address.front}/status.htm" frameborder="0" width="450" height="28" allowTransparency="true" scrolling="no"></iframe>
+                        <script src="$!{address.front}/webst.htm?$date" type="text/javascript" ></script>
+                    </div>
+                    $!{fragmentContext}
+                </div>
+            </div>
+		#end
+        <div class="header wrapper clearfix">
+            <div class="logo">
+                <a href="$!{address.www}" target="_blank">
+                    <img src="$!{address.img}/zz91/images/logo.png" alt="ZZ91再生网" width="115" height="45" />
+                </a>
+                <a href="http://sb.zz91.com" target="_blank">
+                    <img src="$!{address.img}/zz91/sb/images/logo.png" alt="行业信息网" />
+                </a>
+            </div>
+            <div class="zz91-search zz91-searchWeb">
+                <form id="searchForm" action="#" method="get" onsubmit="return topSearch();">
+                    <fieldset>
+                        <legend style="display:none">ZZ91搜索</legend>
+                        <div class="searchList">
+                            <ul id="search_tab">
+                                <li class="searchSelected">
+                                    <a href="javascript:void(0)">供应</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0)">求购</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="searchArea">
+							##<label id="search_label" for="search" class="search_label">输入你感兴趣的产品</label>
+							<input name="search" id="search" type="text" value="请输入您感兴趣的产品" class="ZZ91Search" />
+							<input type="submit" value="" class="ZZ91SearchSub" name="TopSeaSubmit" id="TopSeaSubmit" onmouseover="this.className='ZZ91SearchSubOver'" onmouseout="this.className='ZZ91SearchSub'" />
+							<input type="hidden" value="1" name="TopSeaType" id="TopSeaType" />
+						</div>
+					</fieldset>
+				</form>
+				<p class="hotwords">
+					<b>热门搜索词：</b>
+					#foreach($obj in $hotTags.keySet())
+						<a href="http://tags.zz91.com/s/$!hotTags.get($!{obj})/" target="_blank">
+							$obj
+						</a>
+					#end
+                </p>
+            </div>
+        </div>
+		
+        $screen_content
+		
+		#cacheFragment("$!{address.fragment}/china/footer.htm","","","")
+			$!{fragmentContext}
+		#end
+		#parse("/seo/analysis_body.vm")
+		<script type="text/javascript">
+            $(document).ready(function(){
+            	new zz91SearchSlide("#zz91-searchWeb","TopSeaType","search");
+            })
+            
+            //以下为搜索相关
+            function topSearch() {
+                var keyWord = document.getElementById("search").value;
+                var type = document.getElementById("TopSeaType");
+                if (keyWord == "" || keyWord.substring(0, "请输入您感兴趣的".length) == "请输入您感兴趣的") {
+                    alert("请您输入关键字！");
+                    return false;
+                }
+				keyWord = encodeURI(keyWord);
+				window.open("#springUrl('search-a')"+type.value+"-"+keyWord+".htm");
+            	return false;
+            }
+			
+			// 供求 切换
+			jQuery("#search_tab").find("li").click(function(e) {
+				jQuery("#search_tab").find("li").removeClass("searchSelected");
+        		$(this).addClass("searchSelected");
+        		jQuery("#search").focus();
+        		var getLiIndex=$(this).index()+1;
+				jQuery("#TopSeaType").val(getLiIndex)
+            });
+			
+			// 输入
+			jQuery("#search").click(function(){
+				var str = jQuery("#search").val();
+				if(str=="请输入您感兴趣的产品"){
+					jQuery("#search").val("");
+				}
+			});
+			
+        </script>
+    </body>
+</html>
+#parse("/seo/analysis_foot.vm")

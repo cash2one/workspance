@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	<!-- for include js code -->
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/dataIndex/index.js" ></script>
+	<script type="text/javascript" >
+		Ext.onReady(function() {
+			
+			
+			var grid=new ast.ast1949.admin.dataIndex.ResultGrid({
+				id:DATAINDEX.grid,
+				region:"center"
+			});
+			
+			var categoryTree=new ast.ast1949.admin.dataIndex.CategoryTree({
+				id:DATAINDEX.categorytree,
+				region:"west",
+				width:300,
+				treeclick:function(node,e){
+					var B=grid.getStore().baseParams||{};
+					B["categoryCode"]=node.attributes["data"];
+					grid.getStore().baseParams=B;
+					grid.getStore().reload({params:{"startIndex":0,"pageSize":Context.PAGE_SIZE}});
+				}
+			});
+			
+        	var viewport=new Ext.Viewport({
+        		layout:"border",
+        		items:[categoryTree,grid]
+        	})
+        });
+	</script>
+	
+</head>
+<body>
+	
+</body>
+</html>

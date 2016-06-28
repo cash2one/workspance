@@ -1,0 +1,215 @@
+<div id="right">
+    <div class="rightpart1">
+        <div class="rightpart1top"></div>
+        <div class="rightpart1middle">
+            ## 这里是登录框所在位置
+            <div class="loginbox">
+                ##登录前
+                #if(!${sessionUser})
+                    <!--登录前样式star-->
+                    <div class="loginago" >
+                        <div class="loginaction margin-style04 padding-style01" id="loginaction">
+                            <a href="$!{address.front}/login.htm?url=$!{address.score}" title="登录ZZ91再生网">
+							</a>
+                        </div>
+                        <div id="clear"></div>
+                        <div class="tipinfo padding-style04">登录后，您可以：</div>
+                    </div>
+                    <!--登录前样式end-->
+                #end
+                #if(${sessionUser})
+                    <!--登录后样式start-->
+                    <div class="loginimg padding-style01 padding-style04">
+						#if($!{bbsUserProfiler.picturePath})
+							<img src="$!{address.resource}/$!{bbsUserProfiler.picturePath}" alt="" width="79" height="79" class="borderstyle01" />
+            			#else
+							<img src="$!{address.images}/150_no_avatar.gif" alt="" width="79" height="79" class="borderstyle01" />
+        				#end
+                    </div>
+                    <div class="logininfo padding-style04">
+                        <div class="loginname">
+                            欢迎您!$!{sessionUser.contact}
+                        </div>
+                        ##判断今天有没有打过卡
+                        <div class="loginpunch" id="checkbutton">
+                            <img src="$!{address.images}/score/integralSys_but01.gif" style="cursor:pointer;" onclick="punch();" />
+                        </div>
+                        <iframe src="" name="jiafen" scrolling="no" frameborder="0" width="0" height="0"></iframe>
+                        <div class="loginpionts">
+                            <span class="pionts">
+                                <span id="objcheckcard">$!{scoreSummary.score}</span>分 
+							</span>
+                            |
+							<span class="link-style01">
+                                <a href="#springUrl('/goods.htm')">兑换</a>
+                            </span>
+                        </div>
+                    </div>
+                    <!--登录后样式end-->
+                #end
+                ##登录后
+                <div id="clear"></div>
+                <div class="findinfo">
+                    <ul>
+                        <li>
+                            <a href="$!{address.myrc}/myscore/changeDetails.htm">查询积分变更记录</a>
+                        </li>
+                        <li>
+                            <a href="$!{address.myrc}/myscore/conversionHistory.htm" target="_blank">查询积分兑换记录</a>
+                        </li>
+						<!--
+                        <li>
+                            <a href="$!{address.server}/myrc/mycompany/updateCompany.htm" target="_blank">修改个人资料</a>
+                        </li>
+						-->
+                    </ul>
+                </div>
+            </div>
+            <div class="linkfast">
+                <ul>
+                    <li class="tipbac01">
+                        <a href="$!{address.huzhu}" target="_blank">互助社区</a>
+                    </li>
+                    <li class="tipbac02">
+                        <a href="$!{address.myrc}" target="_blank">生意管家</a>
+                    </li>
+                    <!--<li class="tipbac03">
+                    <a href="#">实战社区</a>
+                    </li>
+                    <li class="tipbac04">
+                    <a href="#">积分达人</a>
+                    </li>
+                    -->
+                    <li class="tipbac05">
+                        <a href="#springUrl('/goods.htm')">积分兑换</a>
+                    </li>
+                    <!--
+                    <li class="tipbac06">
+                    <a href="http://bbs.zz91.com/#say" target="_blank">快速发帖</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </div>
+        <div class="rightpart1bottom"></div>
+    </div>
+    <div id="clear"></div>
+    <div class="banner02 margin-style01" style="_margin-top:0">
+        <a href="#springUrl('/annotated.htm#_feedback')">
+            <img src="$!{address.images}/score/integralSys_banner02.gif" />
+        </a>
+    </div>
+    <div id="clear"></div>
+    <div class="rightpart2 margin-style01 borderstyle01">
+        <div class="tit">
+            <img src="$!{address.images}/score/integralSys_tit01.gif" />
+        </div>
+        <div id="clear"></div>
+        <div class="cont padding-style01 padding-style03">
+            <ul>
+                #foreach($scoreMost in $!{mostOfUserScoreList})
+                    <li>
+                        <div class="servtip">
+                            <img src="$!{address.images}/score/integralSys_num0${velocityCount}.gif" />
+                        </div>
+                        <div class="servpic borderstyle01">
+                            <a href="$!{address.company}/compinfo$!{scoreMost.summary.companyId}.htm" target="_blank" >
+                                ##如果BBS有头像，则显示BBS头像，否则显示系统显示的头像
+								#if($!{bbsUserProfiler.picturePath})
+									<img src="$!{address.resource}/$!{bbsUserProfiler.picturePath}" />
+								#else
+									<img src="$!{address.images}/bbs/noimage.gif" />
+								#end
+                            </a>
+                        </div>
+                        <div class="servinfo padding-style04">
+                            <div class="username link-style02">
+                                <a href="$!{address.company}/compinfo$!{scoreMost.summary.companyId}.htm" target="_blank">$!{scoreMost.contact.contact}</a>
+                            </div>
+                            <div class="redeempiont link-style03">积分（$!{scoreMost.summary.score}）</div>
+                        </div>
+                    </li>
+					#if($velocityCount==3)
+                        <li class="insideUpDown"></li>
+                    #end
+                #end
+            </ul>
+        </div>
+    </div>
+    <div id="clear"></div>
+    <div class="rightpart3 margin-style01 borderstyle01">
+        <div class="tit">
+            <img src="$!{address.images}/score/integralSys_tit02.gif" />
+        </div>
+        <div id="clear"></div>
+        <div class="cont padding-style01 padding-style03" id="accordion">
+            <ul>
+                #foreach($goods in $!{mostConversionGoods})
+                    <li onmouseover="accrodionInter(this)">
+                        <div class="servinfosample">
+                            <div class="servtip">
+                                <img src="$!{address.images}/score/integralSys_num0$!{velocityCount}.gif" />
+                            </div>
+                            <div class="exchtype">
+                                <a href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class="thickbox">$!{goods.name}</a>
+                            </div>
+                            <div class="needpoint" > $!{goods.scoreBuy}积分</div>
+                        </div>
+                        <div class="servinfodetails" id="jason0${velocityCount}" style="display:none">
+                            <div class="redeempic">
+                                <a  href="#springUrl('/goodsdetail.htm?height=368&width=486&id=')$!{goods.id}" class="thickbox">
+                                    <img src="$!{address.resource}/$!{goods.showPicture}" width="58" height="58"/>
+                                </a>
+                            </div>
+                            <div class="redeempoints">
+                                $!{goods.scoreBuy}积分#if($!{goods.scoreDay} && $!{goods.scoreDay}>0)/$!{goods.scoreDay}天#end
+                            </div>
+                        </div>
+                    </li>
+                #end
+            </ul>
+        </div>
+    </div>
+		
+    <div id="clear"></div>
+    <div class="banner02 margin-style01" style="_margin-top:0">
+        <a href="#" target="_blank">
+            <img src="$!{address.images}/score/integralSys_banner03.gif"  alt=""/>
+        </a>
+    </div>
+</div>
+<script type="text/javascript" >
+function punch(){
+	jQuery.ajax({
+    	url:'#springUrl('/score/punch.htm')',
+    	data:jQuery("#form2").serialize(),
+    	cache:false,
+    	dataType:"json",
+    	type:"post",
+    	success:function(req){
+    		if(req.success){
+    			alert("报到成功！积分 +10 分！")
+    		}else{
+				alert("积分没有增加，您今天已经打过卡了！");
+    			if(req.data="sessionTimeOut"){
+    				window.open("$!{address.front}/login.htm");
+    			}
+    		}
+    	},
+    	failure:function(){
+    		msg.show("commonError");
+    	}
+    });
+}
+
+$(function(){
+ 	$("#accordion li .servinfodetails").eq(0).slideDown(1000);
+});
+function accrodionInter(obj){
+ if($(obj).find(".servinfodetails").css("display")=="none"){
+ 	$(obj).parent().find(".servinfodetails").slideUp(500);
+	$(obj).find(".servinfodetails").slideDown(500);
+ }
+}
+
+</script>

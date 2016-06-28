@@ -1,0 +1,123 @@
+<form action="#" id="transForm" onsubmit="return false;">
+<article class="d_right">
+	<hgroup class="phead"><h2>$!{dto.spotAuction.title}</h2></hgroup>
+	<section class="pinfo">
+		<dl class="pinfo_item">
+			<dt>现货存量：</dt>
+			<dd><b class="highlight">$!{dto.spotAuction.quantity}</b>$!{dto.spotAuction.quantityUnit}</dd>
+		</dl>
+		<dl class="pinfo_item highlight">
+			#if($!{isExpired})
+				<dt>活动已结束</dt>
+			#else
+				<dt>距结束还有：</dt>
+				<dd class="J_timer" data-timer="#printFragmentDate('yyyy/MM/dd/HH/mm/ss' $!{dto.spotAuction.expiredTime})">
+					<span class="h"></span>小时<span class="m"></span>分<span class="s"></span>秒
+				</dd>
+			#end
+		</dl>
+		<dl class="pinfo_item">
+			<dt>当前价格：</dt>
+			<dd><b class="highlight">$!{dto.spotAuction.price}</b>$!{dto.spotAuction.priceUnit}/$!{dto.spotAuction.quantityUnit}  $!{dto.product.location}</dd>
+		</dl>
+	</section>
+	<section class="quote-wrap">
+		<div class="group">
+			<label for="" class="label">竞拍价格：</label>
+			<div class="controls">
+				<input type="text" class="price_field validate[required,custom[number],min[$!{dto.spotAuction.startPrice}]]" id="auctionPrice" value="$!{dto.spotAuction.startPrice}">
+				<a class="add">+</a>
+				<a class="minus">-</a>
+##				<span class="increase">+</span>
+##				<span class="decrease">-</span>
+			</div>
+		</div>
+		<div class="group">
+			<div class="controls">
+				<input type="button" value="出 价" id="auctionLogBtn" class="bid" />
+			</div>
+		</div>
+		<div class="group dim">起拍价 $!{dto.spotAuction.startPrice}$!{dto.spotAuction.priceUnit}/$!{dto.spotAuction.quantityUnit} | 加价幅度 $!{dto.spotAuction.upPrice}$!{dto.spotAuction.priceUnit}/$!{dto.spotAuction.quantityUnit} |</div>
+	</section>
+	<section class="price_result">
+		<h3 class="label">出价记录（$!{auctionLogCount}）</h3>
+		<table>
+			<thead>
+				<tr>
+					<th width="19%"></th>
+					<th width="27%">竞拍人</th>
+					<th width="27%">价格</th>
+					<th width="27%">时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($obj in $auctionLogList)
+					<tr #if($velocityCount==1) class="first"#end>
+						<td class="h"><em>#if($velocityCount==1)领先#else 出局 #end</em></td>
+						<td>$!{obj.contact}</td>
+						<td>$!{obj.spotAuctionLog.price}元</td>
+						<td>#printFragmentDate('HH:mm:ss MM/dd' $!{obj.spotAuctionLog.gmtCreated})</td> ##10:49:42 01/23
+					</tr>
+				#end
+			</tbody>
+		</table>
+	</section>
+</article>
+</form>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		jQuery(".add").click(function(){
+			var price = new Number(jQuery("#auctionPrice").val());
+			price = price + $!{dto.spotAuction.upPrice};
+			jQuery("#auctionPrice").val(price);
+		});
+		
+		jQuery(".minus").click(function(){
+			var startPrice = new Number(jQuery("#auctionPrice").val());
+			var cprice = new Number(startPrice - $!{dto.spotAuction.upPrice});
+			if(cprice>0){
+				jQuery("#auctionPrice").val(cprice);
+			}else{
+				jQuery("#auctionPrice").val(startPrice);
+			}
+		});
+		
+		## 登录弹出框
+    	var loginBox=new Asto.util.PopupBox({
+    		url:"$!{address.front}/miniLogin.htm?regfrom=10031027",
+    		destUrl:"#springUrl('/submitCallback.htm')",
+    		modal:true,
+    		height:450,
+    		width:631
+    	});
+    	
+		jQuery("#auctionLogBtn").click(function(){
+			if(!$("#transForm").validationEngine("validate")){
+    			return false;
+    		}
+			#if(!$!{sessionUser})
+        		Asto.util.Callback.setSubmitCallback(function(success, data){
+        			loginBox.close();
+        			window.parent.location.reload();
+        		});
+        		loginBox.show();
+    		#else
+    			jQuery.ajax({
+    				url:"#springUrl('/transaction/doAuctionLog.htm')",
+    				dataType:"json",
+    				data:{
+    					spotAuctionId:$!{dto.spotAuction.id},
+    					price:new Number(jQuery("#auctionPrice").val())
+    				},
+					success:function(data){
+						if(data.success){
+							window.location.reload();
+						}else{
+							alert("竞拍失败，活动已暂停或者您已经参加过该商品的竞拍")
+						}
+					}
+    			});
+    		#end
+		});
+	});
+</script>

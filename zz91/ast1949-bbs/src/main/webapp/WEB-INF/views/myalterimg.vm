@@ -1,0 +1,56 @@
+#set( $layout = "/layout/mypostLayout.vm" )
+<script type="text/javascript">
+    function onAjaxUpLoad(data) {
+    var obj = eval(data);
+    jQuery("#imgidupfile").val(obj.path+obj.uploadedFilename);
+    jQuery.ajax({
+    url:"#springUrl('/myupdateimg.htm')",
+    data:"path="+jQuery("#imgidupfile").val(),
+    type:"GET",
+    dataType:"json",
+    cache:false,
+    success:function(response){
+    if(response.success){
+    window.location.reload();
+    }
+    },
+    error:function(){
+    window.location.reload();
+    }
+    });
+    }
+</script>
+<div class="report_content2">
+    <!--report_content2_1 start-->
+    <div class="alter_img">
+        <div class="alter_img1">
+            <div class="alter_img1_1">
+                ##<a href="#springUrl('/myalterimg.htm')">更换头像</a>
+				更换头像
+            </div>
+            <div class="alter_img1_2">
+                <a href="#springUrl('/myalterinfo.htm')">修改资料</a>
+            </div>
+        </div>
+		<div style="padding:12px 24px;">
+        <div class="alter_img2_1">
+			<span>当前头像：</span>
+            <input id="imgidupfile" name="imgidupfile" type="hidden" id="imgidupfile" value="$!{bbsUserProfilerDO.picturePath}">
+        </div>
+        <div class="alter_img2_2">
+                #if($!{bbsUserProfilerDO.picturePath})
+                    <img src="$!{address.resource}/$!{bbsUserProfilerDO.picturePath}"/>
+                    #else
+                    <img src="$!{address.img}/bbs/images/150_no_avatar.gif"/>
+                #end
+        </div>
+        <div class="alter_img3_1"><span>更换新头像：</span></div>
+		<div>
+			<iframe src="#springUrl('/ajaxUpload.htm')?&filetype=img&model=bbs" id="upfile" frameborder="no" scrolling="no" style="width:360px; height:28px;"></iframe>
+			<span class="alter_img_tip">提示：图片不要大于2M;只能上传格式为.jpg的图片</span>
+		</div>
+		</div>
+    </div>
+    <!--report_content2_1 end-->
+</div>
+<!--conten2 end-->

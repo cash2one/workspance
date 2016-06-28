@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="priceTemplate">
+	<typeAlias alias="priceTemplateDO" type="com.ast.ast1949.domain.price.PriceTemplate" />
+
+	<resultMap class="priceTemplateDO" id="priceTemplateResult">
+		<result property="id" column="id" />
+		<result property="priceId" column="price_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,price_id,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="priceTemplateResult">
+		select
+		<include refid="defaultColumn" />
+		from price_template
+		where id = #id#
+	</select>
+
+	<select id="queryByPriceId" parameterClass="java.lang.Integer"
+		resultMap="priceTemplateResult">
+		select
+		<include refid="defaultColumn" />
+		from price_template
+		where price_id = #priceId#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="priceTemplateDO">
+		INSERT INTO ast.price_template
+		(
+		price_id,
+		gmt_created,gmt_modified
+		)
+		VALUES
+		(
+		#priceId#,
+		now(),now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+</sqlMap>

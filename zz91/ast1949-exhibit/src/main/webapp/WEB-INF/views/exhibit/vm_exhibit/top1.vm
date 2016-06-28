@@ -1,0 +1,129 @@
+<link href="$!{address.img}/front/css/calendar/jquery-ui-1.8.9.custom.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{address.img}/front/js/calendar/jquery.ui.core.js"></script>
+<script type="text/javascript" src="$!{address.img}/front/js/calendar/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="$!{address.img}/front/js/calendar/jquery.ui.datepicker.js"></script>
+<script type="text/javascript" src="$!{address.img}/front/js/calendar/jquery.ui.datepicker-zh-CN.js"></script>
+<div style="clear:both"></div>
+<div class="main_box" id="top1">
+    <div class="left">
+		<div class="container" id="zz91slide">
+            <div class="toggleImg">
+				<script type="text/javascript" src="http://gg.zz91.com/show?p=69"></script>
+			</div>
+			<div class="toggleBtn">
+                #* turn btn area*#
+            </div>
+		</div>
+	
+        <script type="text/javascript"> 
+           $(document).ready(function(){
+				new zz91slide(
+					config={
+						conter:"#zz91slide",
+						spd:500,
+						intval:3000
+					}
+				);
+			});
+        </script>
+    </div>
+	
+    <div class="right">
+        <div class="subLeft">
+            <div class="title">
+                <h3>会展资讯</h3>
+            </div>
+			
+            <div class="content">
+                <ul> 
+                    #foreach($news in $!newsExhibitList)
+                        <li>
+							<a href="#springUrl('/details')$!{news.id}.htm" target="_blank" title="$!{news.name}">$!{news.name}</a>
+                        </li>
+                    #end
+                </ul>
+            </div>
+        </div>
+		
+        <div class="subRight">
+            <form name="form1" id="searchForm" method="post" target="_blank" action="#" onsubmit="return false;" >
+                <div class="title"><h3>展会查找</h3></div>
+                <div class="content formContent"> 
+					
+                    <p> 
+                        <label for="exhibitCategoryCode">行业：</label>
+						<select name="exhibitCategoryCode" id="exhibitCategoryCode">
+							<option value="">=请选择行业=</option>
+							#foreach($category in $!categoryList)
+								<option value="$!{category.code}">${category.label}</option>
+							#end
+                        </select>
+                    </p>
+					
+                    <p class="forProvince" style="clear:both">
+                        <label for="province">地区：</label>
+							<select id="province1" name="province1">
+                                <option value=''>请选择省份</option>
+							</select>
+							<select id="areaCode1" name="areaCode1">
+								<option value=''>请选择城市</option>
+							</select>
+							<div style="clear:both"></div>
+                    </p>
+                    <p>
+                        <label for="mystartTime">开始：</label>
+						<input name="mystartTime" type="text" id="mystartTime" class="txt1"/>
+					</p>
+                    <p>
+						<label for="myendTime">结束：</label>
+						<input name="myendTime" type="text" id="myendTime" class="txt1"/>
+                    </p>
+                    <p> 
+                        <label for="name">关键字：</label>
+						<input name="keywords" type="text" id="keywords"/>
+                    </p>
+                    <p class="searchExhibit">
+                        <a class="submitBtn" href="#" onclick="gosearch();" title="点击查找展会">查找展会</a>
+                    </p>
+				</div>
+			</form>
+         </div>
+     </div>
+</div>
+<script>
+	jQuery(document).ready(function(){
+		var areaSelector = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')"
+    	});
+	
+		areaSelector.init({
+    		rootCode:"10011000",
+    		initCode:"$!{exhibit.areaCode}",
+    		selects:["#province1","#areaCode1"]
+    	});
+		
+		jQuery("#mystartTime").datepicker();
+		jQuery("#myendTime").datepicker();
+		
+	});
+	
+	function gosearch(){
+		var exhibitCategoryCode = jQuery("#exhibitCategoryCode").val();
+		var areaCode=jQuery("#province1").val();
+		if(jQuery("#areaCode1").val()!=""){
+			areaCode=jQuery("#areaCode1").val();
+		}
+		var start=jQuery("#mystartTime").val();
+		var end=jQuery("#myendTime").val();
+		var k=jQuery("#keywords").val();
+		
+		var targetUrl="#springUrl('/searchExhibit')";
+		targetUrl=targetUrl+"--a"+exhibitCategoryCode;
+		targetUrl=targetUrl+"--b"+areaCode;
+		targetUrl=targetUrl+"--c"+start;
+		targetUrl=targetUrl+"--d"+end;
+		targetUrl=targetUrl+"--k"+encodeURI(k);
+		targetUrl=targetUrl+"--s0--l20.htm";
+		window.open(targetUrl);
+	}
+</script>

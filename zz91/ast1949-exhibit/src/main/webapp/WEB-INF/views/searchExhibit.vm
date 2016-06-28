@@ -1,0 +1,28 @@
+#set($layout="layout/defaultS.vm")
+<div class="wrapper">
+	<div class="site">当前位置: <a href="$!{address.front}">$!{siteInfo.site_name}</a> &gt; 
+		<a href="#springUrl('/')">展会频道</a> &gt; 搜索：<front color="red" >$!{exhibit.name}</front></div>
+	<div class="clearfix">
+		<div class="col5">
+			<div class="borderc9">
+				<h6 class="over"><em>$!{categoryName}</em></h6>
+				<div class="zhtjlistnews">
+                    <ul>
+                    #foreach($exhibit in $!{page.records})
+                        <li><a href="#springUrl('/details')$!{exhibit.exhibitDO.id}.htm" target="_blank" title="$!{exhibit.exhibitDO.name}">$!{exhibit.exhibitDO.name}</a>
+                			<em>$!date.format('yyyy-MM-dd',$!{exhibit.exhibitDO.startTime})</em></li>
+					#end
+					#if(${page.totalRecords}==0)<li>
+						<li>对不起，没有您要搜索的关于<font color="red">"${exhibit.name}"</font>展会！</li>
+					#end
+                    </ul>
+					#staticPageNav($page "#springUrl('/searchExhibit')" "--a$!{exhibit.exhibitCategoryCode}--b$!{exhibit.areaCode}--c$!{mystartTime}--d$!{myendTime}--k$!{k}" "")
+				</div>
+			</div>
+            #parse("/exhibit/vm_list/left.vm")
+		</div>
+		<div class="col6">
+			#parse("/exhibit/vm_list/right.vm")
+		</div>
+	</div>
+</div>

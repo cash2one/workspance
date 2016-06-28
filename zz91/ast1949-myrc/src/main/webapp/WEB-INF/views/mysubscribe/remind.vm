@@ -1,0 +1,63 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/smsList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">接收方式提醒</li>
+        </ul>
+      	<div class="alert alert-info" >
+      		<strong>邮件地址提醒:</strong> 
+      		当前用于接收的电子邮箱为：<em>$!{currentEmail} </em> 
+      		<a href="#springUrl('/mycompany/updateCompany.htm')" title="点击修改接收电子邮箱">修改</a>
+      	</div>
+        <p>
+			<input type="checkbox"  name="isSendByEmail" value="20041000" class="function_add" #if($list.size()==0) checked #end>发送电子邮件通知我</br>
+##			<input type="checkbox"  name="isSendByEmail" class="function_add" #if($!{subscribe.isSendByEmail}) checked #end>发送短信通知我
+	</p>
+    </div>
+</div>
+<script>
+jQuery(function(){
+	jQuery(".function_add").click(function(){
+			if (jQuery(this).attr("checked")) {
+				var value= jQuery(this).attr("value");
+    			jQuery.ajax({
+    				url:"#springUrl('/mysubscribe/sendEmail.htm')",
+    				type:"POST",
+        			cache:false,
+        			dataType:"json",
+					data:{"status":0,"notifyCode":value},
+    				success:function(response){
+        				if(response.success){
+        					//提示订制成功
+        					//跳转到报价订制管理页面
+        					alert("您刚刚订阅了邮件接收报价信息!");
+        				}
+        			}
+    			});
+			}else{
+				var value= jQuery(this).attr("value");
+				if(confirm('确定要取消订阅吗?')==false){
+					return false;
+				}
+    			jQuery.ajax({
+    				url:"#springUrl('/mysubscribe/noSendEmail.htm')",
+    				type:"POST",
+        			cache:false,
+        			dataType:"json",
+					data:{"status":1,"notifyCode":value},
+    				success:function(response){
+        				if(response.success){
+        					alert("您刚刚取消了邮件接收信息!");
+        				}
+        			}
+    			});
+			}
+	});
+})
+jQuery(function(){
+    myrc.menu(1, 5);
+})
+</script>	

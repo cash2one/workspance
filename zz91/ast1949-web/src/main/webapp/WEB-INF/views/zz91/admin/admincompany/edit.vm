@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+		#parse("/zz91/common/import.vm")
+		#parse("/zz91/common/context.vm")
+
+
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<!--
+	<script type="text/javascript" src="$!{address.js}/admin/lib/StandardGridPanelViewport.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/CategoryCombo.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/StandardGridPanel.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/StandardEditorGridPanel.js" ></script>
+    <script type="text/javascript" src="$!{address.js}/admin/lib/RowExpander.js" ></script>
+	-->
+	<script type="text/javascript" src="$!{address.js}/admin/products/productsList.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/adminCompany/edit.js" ></script>
+ <script type="text/javascript"  >
+    var _C = new function(){
+    	this.INFO_FORM="INFO_FORM";
+    }
+
+    Ext.onReady(function(){
+		var form = new ast.ast1949.admin.admincompany.companyForm({
+			title:"公司信息",
+			id:'INFO_FORM',
+			region:"center"
+		});
+		
+		if(Ext.get("companyId").dom.value=="0"){
+			var viewport = new Ext.Viewport({
+				layout:'border',
+				items:[form]
+			}); 
+		}else{
+		
+			var grid = new ast.ast1949.admin.products.resultGrid({
+				title:"该公司供求",
+				layout:"fit",
+				toolbar:null
+			});
+			
+			var viewport = new Ext.Viewport({
+				layout : "border",
+				items : [{
+					xtype:"tabpanel",
+					region:'center',
+					activeTab: 0,
+					items:[form,grid,{
+					title:"该公司询盘",
+					html:"这家公司发布的所有询盘信息"
+					}]
+				}]
+			});
+			
+			grid.searchByCompany("$!{companyId}");
+        	var id=$!{companyId};
+        	var account="$!{account}";
+        	if(id>0){
+        		form.loadOneRecord(id,account)
+        	}
+			
+		}
+			
+    });
+	</script>
+</head>	 
+<body>
+
+	<input type="hidden" id="companyId" name="companyId" value="$!{companyId}" /> 
+	<input type="hidden" id="account" name="account" value="$!{account}" />
+
+</body>
+
+</html>

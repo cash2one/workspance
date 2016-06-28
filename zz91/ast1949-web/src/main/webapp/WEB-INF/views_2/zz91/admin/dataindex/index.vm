@@ -1,0 +1,45 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/util.js')"></script>
+<script type="text/javascript" src="#springUrl('/app/admin/dataIndex.js')"></script>
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		var mainGrid=Ext.create("ast.ast1949.admin.dataIndex.MainGrid",{
+			id:DATAINDEX.GRID,
+			region:"center"
+		});
+		
+		var contextMenu=Ext.create("ast.ast1949.admin.dataIndex.CategoryAction",{
+		});
+		
+		var tree=Ext.create("ast.ast1949.util.Tree",{
+			id: DATAINDEX.TREE,
+			title:"模块类别",
+			queryUrl:Context.ROOT+"/zz91/admin/dataindex/categoryChild.htm",
+			width:320,
+			split:true,
+			region:"west",
+			listeners:{
+				"itemclick":function(view,model){
+					mainGrid.getStore().setExtraParam("categoryCode",model.getId());
+					mainGrid.getStore().load();
+				},
+				"itemcontextmenu":function(view,model,item,idx,e,eopts){
+					view.select(model);
+					e.stopEvent();
+					contextMenu.showAt(e.getXY());
+					contextMenu.setTreeNode(model);
+					return false;
+				}
+			}
+		});
+		
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[tree,mainGrid]
+		});
+		
+		tree.getRootNode().expand();
+		
+	});
+</script>

@@ -1,0 +1,223 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1101","20","10")
+
+<div class="myrcNormalFrame">
+	<div class="commTip">
+		<span style="commTipLeft">
+				<a onclick="javascript:window.history.back(1)" href="javascript:void(0)" class="commBack">返回列表</a>
+        </span>
+		<span class="commTipRight">
+				#if(${inquiry.senderAccount}!=$!{sessionUser.account})
+					<a href="#back" class="commBackFeed">回复留言</a>
+					#if($!{inquiry.isRubbish}=="0")
+						<a onclick="setRubbish('$!{inquiryDTO.inquiry.id}',1)" href="javascript:void(0)" class="commTrashFeed">垃圾留言</a>
+					#else
+						<a onclick="setRubbish('$!{inquiryDTO.inquiry.id}',0)" href="javascript:void(0)" class="commTrashFeed">放回收件箱</a>
+					#end
+				#end
+        </span>
+        <div style="clear:both"></div>
+    </div>
+	<div class="officetitle">留言信息</div>
+	<div class="productskuang">
+			<div class="publishFormItems">
+                <div class="products_title">&nbsp;</div>
+                <div class="products_fill"><b>$!{inquiry.title}</b></div>
+            </div>
+			<div class="publishFormItems">
+                <div class="products_title">时间：</div>
+                <div class="products_fill">$!date.format('yyyy-MM-dd HH:mm:ss ',$!{inquiry.sendTime})</div>
+            </div>
+			<div class="publishFormItems">
+                <div class="products_title">留言内容：</div>
+                <div class="products_fill">
+                    <span style="line-height:18px;">$!{inquiry.content}</span>
+                    <div style="clear:both"></div>
+                    <span class="shangqi">
+					顺祝商祺!
+					<hr align="left" width="300" size="1" color="#CCC"/>
+					$!{sender.contact}
+        			(#if($!{sender.sex}==0) 
+						先生
+					#else
+						女士
+					#end)&nbsp;&nbsp;谨上
+					</span>
+				</div>
+            </div>
+			#if($!{sender})
+			<div class="publishFormItems">
+                <div class="products_title">留言者：</div>
+                <div class="products_fill"><a href="$!{address.server}/company/compinfo$!{senderCompany.id}.htm" target="_blank" >$!{senderCompany.name}</a></div>
+            </div>
+        	<div class="publishFormItems">
+                <div class="products_title">地址：</div>
+        		<div class="products_fill">$!{senderCompany.address}</div>
+            </div>	  
+        	<div class="publishFormItems">
+                <div class="products_title">电话：</div>
+				<div class="products_fill">$!{sender.telCountryCode}-$!{sender.telAreaCode}-$!{sender.tel}</div>
+            </div>
+			<div class="publishFormItems">
+				<div class="products_title">传真：</div>
+        		<div class="products_fill">$!{sender.faxCountryCode}-$!{sender.faxAreaCode}-$!{sender.fax}</div>
+            </div>
+			<div class="publishFormItems">
+				<div class="products_title">手机：</div>
+        		<div class="products_fill">$!{sender.mobile}</div>
+            </div>
+			#end
+		</div>		
+		
+		#if(${inquiry.senderAccount}!=$!{sessionUser.account})
+                <div style="clear:both"></div>
+    			<div class="officetitle"><a name="back"></a>回复留言</div>
+				<form id="form1" name="form1" onsubmit="return false;">
+					<input name="beInquiredId" type="hidden" value="$!{inquiry.id}"/>
+					<input name="conversationGroup" type="hidden" value="$!{inquiry.conversationGroup}"/>
+					<input name="receiverAccount" type="hidden" value="$!{inquiry.senderAccount}"/>
+					<div class="productskuang">
+						<div class="publishFormItems">
+							<div class="products_title"><label>发送给：</label> </div>
+							<div class="products_fill">
+									#if($!{sender.contact}!="")
+										$!{sender.contact}
+									#else
+										$!{sender.account}
+									#end
+									#if($!{sender.sex}==0) 
+										先生 
+									#else 
+										女士 
+									#end
+                            </div>
+                        </div>
+                        <div class="publishFormItems">
+							<div class="products_title">
+								<label for="title"><font color="#ff0000">*</font>主题：</label>
+							</div>
+							<div class="products_fill">
+										<input name="title" type="text" id="title" value="回复：$!{inquiry.title}" size="50" style="width:280px;"/>
+                                        <br>
+										<span class="gray">建议您修改主题，吸引对方注意,得到优先回复!</span>
+							</div>
+                        </div>
+						<div class="publishFormItems">
+							<div class="products_title">
+								<label for="content"><font color="#ff0000">*</font>主要内容：<br/>
+									<span class="gray">( 限1500字 )</span>
+								</label>
+							</div>
+							<div class="products_fill">
+								<textarea name="content" cols="60" rows="10" id="content"  style="width:550px;"></textarea>
+							</div>
+                        </div>
+                        <div style="clear:both"></div>
+						<div class="publishFormItems publishFormSub">
+								<input name="Submit" type="submit" id="buttonNormal" value=" 回复留言 "/>
+                                <span><a href="#springUrl('/mycompany/updateCompany.htm')" target="_blank" style="color:#999;" title="点击修改联系信息">检查我的联系信息是否有误</a></span>
+						</div>
+					</div>
+                </form>
+		#end
+        <div style="clear:both"></div>
+		<div class="officetitle">会话历史</div>
+		<div class="feedbackRecod">
+			<ul>
+			#foreach($rs in $conversation)
+				<li>
+                    <span class="feedbackRecodTit">
+                        <b>#if($!{rs.senderContact}!="")
+								$!{rs.senderContact}
+							#else
+								$!{rs.inquiry.senderAccount}
+							#end
+						</b>
+						<br>
+                        <font style="font-size:12px;color:#999">
+							$!date.format('yyyy-MM-dd HH:mm:ss ',$!{rs.inquiry.sendTime})
+						</font>
+					</span>
+					<span class="feedbackRecodCont">
+						<b>$!{rs.inquiry.title}</b>
+						<br />
+						$!{rs.inquiry.content}
+					</span>
+				</li>
+			#end
+            <div style="clear:both"></div>
+			</ul>
+			
+            <div style="clear:both"></div>
+			##<div class="pageNav" style="margin:10px 0;">
+				##myrcPageNav($!{page} "$!{address.server}/myrc/mymessage/showmessage.htm" $!{suffixUrl} "")
+            ##</div>
+        </div>
+</div>
+<script type="text/javascript">
+	function setRubbish(id,rubbish){
+		//提交
+    	if (confirm("确定要将这条留言转为垃圾留言?")){
+			jQuery.ajax({
+    			url:Context.ROOT+"/myrc/mymessage/spamInquiry.htm",
+    			type:"POST",
+    			cache:false,
+    			dataType:"json",
+    			data:{ids:$!{inquiry.id}, isRubbish:rubbish},
+    			success:function(msg){
+    				if(msg!=null&&msg.success==true){
+    					window.location.href="#springUrl('/mymessage/inbox.htm')";
+    				} else {
+    					zz91Util.showmsg("default");
+    				}
+    			},
+    			error:function(e){
+    				alert('设置失败！');
+    			}
+    		});
+		}
+	}
+
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".feedbackRecod","#EFF6EF","#FFF")
+		//绑定提交事件
+		jQuery("#form1").submit(function(){
+    		if(!chkfrm()){
+    			return false;
+    		}
+    		
+    		jQuery.ajax({
+    			url:'#springUrl('/mymessage/replyInquiry.htm')',
+    			data:jQuery("#form1").serialize(),
+    			cache:false,
+    			dataType:"json",
+    			type:"post",
+    			success:function(req){
+    				if(req.success){
+    					//保存成功后给出提示 或 跳转到提示页面
+    					window.location.href="#springUrl('/mymessage/inbox.htm')";
+    				}else{
+    					zz91Util.showmsg("");
+    				}
+    			},
+    			failure:function(){
+    				msg.show("commonError");
+    			}
+    		});
+    	});
+	});
+	
+	function chkfrm(){
+		if(jQuery("#title").val().length<=0){
+    		alert("请输入留言标题!");
+    		jQuery("#title").focus();
+    		return false;
+    	}
+		if(jQuery("#content").val().length<=0){
+    		alert("请输入回复内容!");
+    		jQuery("#content").focus();
+    		return false;
+    	}
+		return true;
+	}
+</script>		

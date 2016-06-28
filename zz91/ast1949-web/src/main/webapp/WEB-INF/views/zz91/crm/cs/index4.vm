@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" >
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>核心客户管理：昨天客户处理情况</title>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/cs.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/svr.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/crm/open.js" ></script>
+
+<script type="text/javascript">
+	Ext.onReady(function() {
+	
+		#if($!{csMap})
+			ast.ast1949.crm.cs.CSMAP=$!{csMap};
+		#end
+
+		var svrGrid= new ast.ast1949.crm.svr.Grid({
+			title:"服务"
+		});
+		
+		var grid=new ast.ast1949.crm.cs.Grid({
+			id:"csgrid",
+			region:"center",
+			layout:"fit",
+			contextmenu:new Ext.menu.Menu({
+				items:[
+				#if($!{asignFlag}=="1")
+				{
+					text: '分配给',
+					menu:[
+					#foreach($cs in $!{allcs.keySet()})
+					#if($velocityCount > 1),#end
+					{
+						text:"${allcs.get($!{cs})}",
+						handler:function(){
+							var rows=grid.getSelectionModel().getSelections();
+							var oldassignArr=new Array();
+							for(var i=0;i<rows.length;i++){
+								oldassignArr.push({
+									csAccount:rows[i].get("csAccount"),
+									companyId:rows[i].get("company_id")
+								})
+							}
+							ast.ast1949.crm.cs.reassign(grid, oldassignArr, "${cs}", "$!{allcs.get($!{cs})}");
+						}
+					}
+					#end
+					]
+				},'-',
+				#end
+				{
+					text:"丢公海",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var ids=new Array();
+						for(var i=0;i<rows.length;i++){
+							ids.push(rows[i].get("company_id"));
+						}
+						if(ids.length<=0){
+							return false;
+						}
+						ast.ast1949.crm.cs.dropUser(grid, ids)
+					}
+				},{
+					text:"客户信息",
+					handler:function(){
+						//打开所有选中客户的客户信息
+						var rows=grid.getSelectionModel().getSelections();
+						ast.ast1949.crm.cs.showInfo(rows);
+					}
+				},{
+					text:"捞给自己",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var oldassignArr=new Array();
+						for(var i=0;i<rows.length;i++){
+							oldassignArr.push({
+								csAccount:rows[i].get("csAccount"),
+								companyId:rows[i].get("company_id")
+							})
+						}
+						ast.ast1949.crm.cs.reassignByHighSea(grid, oldassignArr, "${cs}", "$!{allcs.get(${cs})}");
+					}
+				},{
+					text:"号码为空",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var companyId = "";
+						for(var i=0;i<rows.length;i++){
+							companyId = rows[i].get("company_id");
+						}
+						ast.ast1949.crm.cs.updateOutbusiness(grid, companyId,"2");
+					}
+				},{
+					text:"生意不做",
+					handler:function(){
+						var rows=grid.getSelectionModel().getSelections();
+						var companyId = "";
+						for(var i=0;i<rows.length;i++){
+							companyId = rows[i].get("company_id");
+						}
+						ast.ast1949.crm.cs.updateOutbusiness(grid, companyId,"1");
+					}
+				}]
+			}),
+			loadDefault:function(){
+				var B=grid.getStore().baseParams;
+				B["logDayFromStr"]="$!{logDayFrom}";
+				B["logDayToStr"]="$!{logDayTo}";
+				B["csAccount"]="$!{cs}";
+				grid.getStore().baseParames=B;
+				grid.getStore().reload();
+			}
+		});
+		
+		## 开通服务的 Grid
+		var companySvrGrid = new ast.ast1949.crm.open.Step1CompanySvrGrid({
+			region:"south",
+			title:"开通的服务",
+			height:150,
+			split:true
+			//collapsible:true
+		});
+		
+		grid.loadDefault();
+		
+		svrGrid.on("rowclick",function(g,rowIndex,e){
+			
+			var row = g.getSelectionModel().getSelected();
+			var svrcode = null;
+			if(row!=null){
+				svrcode=row.get("code");
+			}
+
+			var B=grid.getStore().baseParams;
+			B["svrCode"]=svrcode;
+			grid.getStore().baseParames=B;
+			grid.getStore().reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+		});
+		
+		##点击公司,弹出公司所有服务情况##
+		
+		grid.on("rowclick",function(g,rowIndex,e){
+			var B=companySvrGrid.getStore().baseParams;
+			B=B||{};
+    		B["companyId"]=g.getStore().getAt(rowIndex).get("company_id");
+    		companySvrGrid.getStore().baseParams=B;
+    		companySvrGrid.getStore().reload({});
+		});
+		
+		var searchOpt=new ast.ast1949.crm.cs.SearchForm({
+			title:"高级搜索",
+			targetGrid:"csgrid",
+			initForm:function(){
+				this.findById("nextVisitPhoneFromStr").setValue("$!{nextVisitPhoneFromStr}");
+				this.findById("nextVisitPhoneToStr").setValue("$!{nextVisitPhoneToStr}");
+			}
+		});
+		
+		searchOpt.initForm();
+		
+		var viewport=new Ext.Viewport({
+			layout:"border",
+			items:[{
+				split:true,
+				region:"west",
+				layout:"accordion",
+				width:300,
+				items:[svrGrid,searchOpt]
+			},{
+				split:true,
+				region:"center",
+				layout:"border",
+				items:[grid,companySvrGrid]
+			}]
+		});
+		
+		Ext.get("csAccount").dom.value="$!{cs}";
+		Ext.get("cs").dom.value="$!{csName}";
+		//Ext.getCmp("cs").setText("$!{csName}", true);
+	});
+</script>
+</head>
+
+<body>
+
+</body>
+</html>

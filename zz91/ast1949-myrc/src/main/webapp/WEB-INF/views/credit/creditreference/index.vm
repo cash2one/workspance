@@ -1,0 +1,69 @@
+#set( $layout = "/layout/default.vm")
+#set($remainReference = ${maxReference} - ${numReference})
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/credit/creditfile/index.htm')">诚信档案</a> <span class="divider">/</span>
+            </li>
+            <li class="active">管理资信参考人</li>
+        </ul>
+        <div class="alert alert-info">
+		   您总共可以添加<span class="red">$!{maxReference}</span>个资信参考人， 已经添加了 <span class="red">${numReference}</span>个，您还可以添加 <span class="red">$remainReference</span> 个。
+		</div>
+		#if($!{referenceList.size()}<10)
+		<p><button id="Js_add" class="btn btn-mini">新增</button></p>
+		#end
+		<table class="table table-condensed table-bordered">
+			<thead>
+				<tr>
+					<th width="35%">参考人姓名</th>
+					<th width="35%">所在公司</th>
+					<th width="10%">联系方式</th>
+					<th width="10%" class="tac">审核情况</th>
+					<th width="10%" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($!{creditCompanyList} in $!{referenceList})
+				<tr>
+					<td>$!{creditCompanyList.name}</td>
+					<td>$!{creditCompanyList.companyName}</td>
+					<td>$!{creditCompanyList.tel}</td>
+					<td class="tac">
+						#if($!{creditCompanyList.checkStatus}==0)
+							<span class="grey">未审核</span>
+						#elseif($!{creditCompanyList.checkStatus}==1)
+							<span class="green">已审核</span>
+						#else
+							<span class="red">未通过</span>
+						#end
+					</td>
+					<td class="tac">
+						<a href="#springUrl('/credit/creditreference/edit.htm?id=')$!{creditCompanyList.id}">修改</a>
+						<a href="#springUrl('/credit/creditreference/deleteReference.htm?id=')$!{creditCompanyList.id}">删除</a>
+					</td>
+				</tr>
+				#end
+			</tbody>
+		</table>
+		#if($!{referenceList.size()} ==0)
+		<div class="alert alert-error">没有参考人信息！</div>
+		#end
+		<div class="alert alert-info mt">
+			<p><strong>常见问题提醒:</strong></p>
+			<p><strong>添加资信参考人有何用处？</strong></p>
+			<p>他们可以证明贵公司的公司实力、产品质量、诚信经营、服务态度、金融资信，帮您把线下的信用和人气延伸到网上！</p>
+			<p><strong>谁可以成为您的资信参考人？</strong></p>
+			<p>银行相关联系人、黄金客户、优秀供应商、兄弟公司、子公司、代理公司、政府机关等等。</p>
+		</div>
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(7, 3);
+	jQuery("#Js_add").click(function(){
+		location.href="#springUrl('/credit/creditreference/create.htm')";
+	});
+});
+</script> 

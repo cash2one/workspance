@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="crmCsLogAdd">
+	<typeAlias alias="added" type="com.ast.ast1949.domain.company.CrmCsLogAdded"/>
+	<insert id="createAdded" parameterClass="added">
+		insert into `crm_cs_log_added`
+		(
+		`crm_cs_log_id`,
+		`cs_account`,
+		`content`,
+		`gmt_created`,
+		`gmt_modified`)
+		values
+		(
+		#crmCsLogId#,
+		#csAccount#,
+		#content#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+				select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<sql id="fullColumn">
+		id,crm_cs_log_id,cs_account,content,gmt_created,gmt_modified
+	</sql>
+	
+	<resultMap id="addedResult" class="added">
+		<result property="id" column="id"/>
+		<result property="crmCsLogId" column="crm_cs_log_id"/>
+		<result property="csAccount" column="cs_account"/>
+		<result property="content" column="content"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<select id="queryAddedByLog" parameterClass="java.lang.Integer" resultMap="addedResult">
+		select 
+			<include refid="crmCsLogAdd.fullColumn" />
+		from crm_cs_log_added
+		where crm_cs_log_id=#value#
+	</select>
+	
+</sqlMap>

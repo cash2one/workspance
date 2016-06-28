@@ -1,0 +1,237 @@
+<div class="top_bar">
+    <div class="container">
+        <h1 class="grid_2 brand"><a href="#springUrl('/index.htm')">生意管家</a></h1>
+        <ul class="grid_6 top_nav">
+            <li class="divider"></li>
+            <li><a href="$!{address.front}" target="_blank">ZZ91首页</a></li>
+            <li><a href="http://renzheng.recyclechina.com/" target="_blank">海外优质供应商</a></li>
+            <li><a href="$!{address.trade}" target="_blank">废料交易中心</a></li>
+            <li><a href="$!{address.price}" target="_blank">报价资讯中心</a></li>
+            <li><a href="$!{address.huzhu}" target="_blank">再生互助</a></li>
+            <li><a href="http://sms.zz91.com" target="_blank">短信报价</a></li>
+        </ul>
+        <form name="topSearch" action="#" method="post" id="topSearch" class="grid_4">
+            <dl class="select" id="Js_select">
+                <dt><em>供求</em><span>&#9660;</span></dt>
+                <dd>
+                    <p data-option="0">供求</p>
+                    <p data-option="1">报价</p>
+                    <p data-option="2">咨询</p>
+                    <p data-option="3">商铺</p>
+                </dd>
+            </dl>
+            <input type="text" class="field search_field" placeholder="搜索..">
+            <input type="submit" class="btn search_btn" value="搜索">
+        </form>
+    </div>
+</div>
+<header class="container mt">
+    <h2 class="logo grid_2">
+        <a href="#springUrl('/index.htm')" title="回到生意管家首页">ZZ91 生意管家</a>
+    </h2>
+    <div class="grid_3 prefix_7 account">
+        <i class="icon"></i>欢迎您，$!{sessionUser.account}！<a href="#springUrl('/mymessage/inbox.htm?isViewed=0')" class="red">(<script src="#springUrl('/unViewedMessage.htm')"></script>)</a>
+        <a href="#springUrl('/dologout.htm')">退出</a>
+    </div>
+</header>
+<script>
+	jQuery(document).ready(function(){
+		jQuery("#searchType").chosen();
+		jQuery("#searchType").chosen({allow_single_deselect:true});
+		
+		jQuery("#topSearchForm").submit(function(){
+			
+			var keyWord=jQuery("#searchKeyword").val();
+			if(keyWord==""){
+				return false;
+			}
+			alert(keyWord)
+			if(jQuery("#searchType").val()==0){
+				zz91Search.products({
+                    contextpath:"${address.trade}",
+                    target:"_blank",
+                    searchOptions:{
+                        keywords:keyWord
+                    }
+                });
+				return false;
+			}
+			
+			if(jQuery("#searchType").val()==1){
+				zz91Search.price({
+                    contextpath:"$!{address.price}",
+                    target:"_blank",
+                    searchOptions:{
+                        keywords:keyWord
+                    }
+                });
+				return false;
+			}
+			
+			if(jQuery("#searchType").val()==2){
+				window.open("$!{address.huzhu}/search.htm?keywords=" + encodeURIComponent(keyWord));
+    			return false;
+			}
+			
+			if(jQuery("#searchType").val()==3){
+				window.open("$!{address.company}/index.htm?keywords=" + encodeURIComponent(keyWord));
+				return false;
+			}
+			
+			return false;
+		});
+	});
+	
+	var zz91Search=new function(){
+    	var search=this;
+    	this.products=function(config){
+    		config=config||{};	
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";	
+    		var searchOpt=config.searchOptions||[];
+    		var debug=config.debug||false;
+    		
+    		var ptype=searchOpt["ptype"]||"";  
+    		var province=searchOpt["province"]||""; 
+    		var posttime=searchOpt["posttime"]||"";
+    		var priceflag=searchOpt["priceflag"]||""; 
+    		var nopiclist=searchOpt["nopiclist"]||""; 
+    		var havepic=searchOpt["havepic"]||"";
+    		var page=searchOpt["page"]||"";
+    		var keywords=searchOpt["keywords"]||"";  //关键字
+    		
+    		if(keywords.length<=0){
+    			return false;
+    		}
+    		
+    		keywords=keywords.replace(/\//gm,"astoxg");
+    		keywords=keywords.replace(/\\/gm,"asto5c");
+    		keywords=keywords.replace(/-/gm,"astohg");
+    		keywords=keywords.replace(/\(/gm,"astokhl");
+    		keywords=keywords.replace(/\)/gm,"astokhr");
+    		
+    //		window.open("http://www.zz91.com/offer/?ptype="+ptype+"&keywords="+encodeURI(keywords));
+    		
+    		var targetUrl="/offerlist";
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--a",ptype);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--b",province);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--c",posttime);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--d",priceflag);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--e",nopiclist);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--f",havepic);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--p",page);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--",encodeURIComponent(keywords));
+    		
+    		targetUrl=targetUrl+".htm";
+    		if(debug){
+    			alert("the target url is: "+targetUrl);
+    		}else{
+    			if(target=="_self"){
+    				location.href=contextpath+targetUrl;
+    			}else{
+    				window.open(contextpath+targetUrl);
+    			}
+    		}
+    		
+    	};
+    	
+    	this.price=function(config){
+    		config=config||{};
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";
+    		var searchOpt=config.searchOptions||[];
+    		var k=searchOpt["keywords"]||"";
+    		
+    		if(k.length<=0){
+    			return false;
+    		}
+    		
+    		var targetUrl="/priceSearch.htm?title="+encodeURI(k);
+    		
+    		if(target=="_self"){
+    			location.href=contextpath+targetUrl;
+    		}else{
+    			window.open(contextpath+targetUrl);
+    		}
+    	};
+    	
+    	this.company=function(config){
+    	};
+    	
+    	this.companyPrice=function(config){
+    		config=config||{};
+    		var contextpath=config.contextpath||"";
+    		var target=config.target||"_blank";
+    		var searchOpt=config.searchOptions||[];
+    		var k=searchOpt["keywords"]||"";  //关键字
+    		var pc=searchOpt["categoryCompanyPriceCode"]||"";  //企业报价类别
+    		var area=searchOpt["area"]||"";  //地区
+    		var interval=searchOpt["interval"]||"";  //产品刷新时间期限  距离现在，单位：天
+    		var priceRange=searchOpt["priceRange"]||"";  //报价区间
+    		var targetUrl="/companyprice/index--"+encodeURIComponent(k);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--pc",pc);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--area",area);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--int",interval);
+    		targetUrl=search.buildProductSearchUrl(targetUrl,"--pr",priceRange);
+    		targetUrl=targetUrl+".htm";
+    		if(target=="_self"){
+    			location.href=contextpath+targetUrl;
+    		}else{
+    			window.open(contextpath+targetUrl);
+    		}
+    	};
+    
+    	this.buildProductSearchUrl=function(targetUrl,prefix,v){
+    		if(v.length>0){
+    			return targetUrl+prefix+v;
+    		}else{
+    			return targetUrl+prefix;
+    		}
+    	};
+    	
+    	//initialization  search  effects
+    	this.initSearchSlide=function(slideObj,noSearchSelectClass,SearchSelectClass,getSearchType,searchFocus,searchLabel){
+    		var operateObj = zz91Util.getElem(slideObj).getElementsByTagName("li");
+    		getSearchType = zz91Util.getElem(getSearchType);
+    		searchLabel=zz91Util.getElem(searchLabel);
+    		searchFocus = zz91Util.getElem(searchFocus);
+    		//获取当前节点索引
+    		var getIndex = function(self, obj){
+    			for(var i=0;i<obj.length;i++){
+    				if(obj[i]== self){
+    					return i;
+    				}
+    			}
+    		}
+    		for (var i = 0; i < operateObj.length; i++) {
+    			iNum = i
+    			
+    			operateObj[i].onmouseover = function(){
+    				//alert(i);
+    				//i = parseInt(i);
+    				for (var j = 0; j < operateObj.length; j++) {
+    					operateObj[j].className = noSearchSelectClass;
+    				}
+    				this.className = SearchSelectClass;
+    				//确定搜索类型，并且设置搜索焦点
+    				//alert(getSearchType.value+"_" +getIndex(this,operateObj));
+    				getSearchType.value = parseInt(getIndex(this,operateObj)+1);
+    				searchLabel.style.display="none";
+    				searchFocus.focus();	
+    			}
+    			operateObj[i].onmouseout=function(){
+    				if (searchFocus.value == "" || searchFocus.value == null) {
+    					setInterval(function(){
+    						searchFocus.blur();
+    						searchLabel.style.display = "";
+    					}, 1000)
+    				}
+    			}
+    		}
+    		searchLabel.onclick=function(){
+    			searchLabel.style.display="none";
+    			searchFocus.focus();
+    		}
+    	};
+    };
+</script>

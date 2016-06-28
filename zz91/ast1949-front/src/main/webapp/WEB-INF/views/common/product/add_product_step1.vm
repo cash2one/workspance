@@ -1,0 +1,353 @@
+<link href="$!{address.img}/front/css/trade/offerdetail.css" rel="stylesheet" type="text/css" />
+##新增供求信息第一步页面
+<div class="offer_kuan">
+    <form name="form1" id="form1" method="post" action="$!{address.server}/trade/postoffer_step2.htm" style="width:100%" >
+        <div class="tishiTitleTop">重要提醒：
+            <div class="txt">请您务必确认您所发布的信息真实、合法、准确、及时，未侵犯他人合法权利，以免引致不必要的纠纷! </div>
+        </div>
+        <div style="height:22px">提示：带<font color="#FF0000"> * </font>为必填项</div>
+        <div class="officetitle">您要发布的信息&nbsp;&nbsp;</div>
+        <table border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td width="210" align="right">
+                    <font color="RED">*</font>
+                    &nbsp;信息类型：
+                </td>
+                <td bgcolor="#FCFCFC">
+                    #foreach(${productType} in $!{productTypeMap.entrySet()})
+                        <label>
+                            <input name="productsTypeCode" type="radio" value="$!{productType.getKey()}"/>
+                            $!{productType.getValue()}## 10331000 供应信息 10331001 求购信息 10331002 合作信息
+                        </label>
+                    #end
+                </td>
+            </tr>
+            <tr>
+                <td align="right" valign="top" style="padding-top:6px;">
+                    <font color="RED">*</font>
+                    &nbsp;产品分类：
+                </td>
+                <td>
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>
+                                <span id="cbselectspan"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span id="subidselectspan"></span>
+                                <span id="subidsselectspan"></span>
+                                <span id="subids_hidden_selectspan"></span>
+                                <span id="subids_hidden_s_selectspan"></span>
+                                <input id="categoryProductsAssistCode" type="hidden" name="categoryProductsAssistCode"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td >
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td width="120" height="20" align="center">
+                                            <span id="mustSelect" style="display:none">
+                                                <font color="#FF0000">必选</font>
+                                            </span>
+                                        </td>
+                                        <td width="120" align="center">
+                                            <span id="cannotSelect1" style="display:none">
+                                                <font >非必选</font>
+                                            </span>
+                                        </td>
+                                        <td width="120" align="center">
+                                            <span id="cannotSelect2" style="display:none">非必选</span>
+                                        </td>
+                                        <td width="120" align="center">
+                                            <span id="fuzhuSelect" style="display:none">辅助类别</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="selectSortText"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <font color="RED">*</font>
+                    &nbsp;信息主题：</td>
+                    <td>
+                        <input name="title" type="text" id="title" size="48" maxlength="96"/>
+                        <input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode"/>
+                    </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <font color="RED">*</font>
+                    <font class=chinese>&nbsp;信息描述：</font>
+                </td>
+                <td>
+                    <textarea name="details" cols="70" rows="6" id="details"></textarea>
+                    <input name="pimage" type="hidden" id="pimage"/>
+                    <input name="idprod" type="hidden" id="idprod" value=""/>
+                    <input name="cunreg" type="hidden" id="cunreg" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    <font color="RED">*</font>
+                    &nbsp;电子邮箱：
+                </td>
+                <td>
+                    #if($!{myaccount})
+                        <input name="email" type="text" id="email" value="$!{myaccount.email}" size="30" maxlength="48" disabled='true' style='color:red;'/>
+                    #else
+                        <input name="email" type="text" id="email" value="" size="30" maxlength="48" />
+                    #end
+                    <span id="lb_email" ></span>
+                </td>
+            </tr>
+            <tr id="pwdtr" style="display:none;">
+                <td align="right">
+                    <font color="RED">*</font>
+                    &nbsp;密码：
+                </td>
+                <td>
+                    <input name="pwd" type="password" id="pwd" value="" size="30" maxlength="48" onMouseDown="ontishi()" onBlur="outtishi()"/>
+                </td>
+            </tr>
+            #if(!$!{myaccount})
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <div class="emailtishi_fload" id="tishi">
+                            <SPAN style=" color:#FF0000">非常重要！</SPAN>
+                            <br />
+                            <SPAN >这是客户与您联系的首选方式，如果您是本站会员，请输入您的注册Email</span>
+                            <br/>
+                            <span>如果您还未注册，请务必填写真实并且最常用的Email</span>
+                            <br/>
+                            <span>没有电子邮件？推荐使用免费的<a href="http://reg.163.com/register/Register.jsp?url=http://mscan.163.com/QuickCreateMail.jsp" target="_blank" class="NOL">网易邮箱</a>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            #end
+            <tr>
+                <td colspan="2" align="center">
+                    <div id="registerDiv" style="width:100%;display:none;">
+                        #parse("/common/register.vm")
+                    </div>
+                </td>
+            </tr>
+            <tr align="center">
+                <td align="center" colspan="2" height="80">
+                    <input type="hidden" name="registertag" id="registertag" value="" />
+                    <input type="submit" name="submitBtn" id="submitBtn"  class="submitBtn"  value=" 确认提交 "/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<script language="javascript">
+<!--
+	//表单验证（供求信息部分）
+    function chkform(){
+        if(jQuery("#productsTypeCode").val()==""){
+        	alert("请选择信息类型!");
+            jQuery("#productsTypeCode").focus();
+            return false;
+        }
+        if(jQuery("#first").val()==""||jQuery("#first").val()==0){
+            alert("请选择产品大类!");
+            jQuery("#first").focus();
+            return false;
+        }
+        if(jQuery("#second").val()==""){
+            alert("请选择第二类!");
+            jQuery("#second").focus();
+            return false;
+        }
+        if(jQuery("#title").val()==""){
+            alert("请输入信息主题!");
+            jQuery("#title").focus();
+            return false;
+        }
+        if(jQuery("#details").val()==""){
+            alert("请输入信息描述!");
+           	jQuery("#details").focus();
+            return false;
+        }
+        if(jQuery("#email").val()==""){
+    		alert("请输入电子邮件!");
+    		jQuery("#email").focus();
+    		return false;
+		}
+		if(!/^(.+)@(.+)(\.\w+)+$/ig.test(jQuery("#email").val())){
+    		alert("电子邮箱格式错误");
+    		jQuery("#email").focus();
+    		return false;
+		}
+		return true;
+	}
+	
+	function ontishi(){
+		document.getElementById("tishi").className="emailtishi_floadon"
+	}
+	function outtishi(){
+		document.getElementById("tishi").className="emailtishi_fload"
+	}
+
+    function showhidefun(obj){
+    	if(eval(document.getElementById(obj))){
+    		if(document.getElementById(obj).style.display!=""){
+				document.getElementById(obj).style.display=""
+			}else{
+				document.getElementById(obj).style.display="none";
+			}
+    	}
+    }
+	
+	function toggleSubmitBtn(){
+		if(jQuery("#submitBtn").attr("disabled")){
+    		jQuery("#submitBtn").val("确认提交");
+			jQuery("#submitBtn").attr("disabled",false);
+		}else{
+			jQuery("#submitBtn").val("正在保存...");
+			jQuery("#submitBtn").attr("disabled",true);
+		}
+	}
+	
+	function postAccess(successFn){
+		jQuery.ajax({
+			url:'$!{address.server}/trade/postAccess.htm',
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:successFn
+		});
+	}
+
+	jQuery(document).ready(function(){
+		
+		//表单提交的时候要做的事
+		jQuery("#form1").submit(function(){
+			//检查供求基本信息是否填写正确
+			if(!chkform()){
+				return false;
+			}
+			
+			if(jQuery("#registertag").val()==""){
+				if(jQuery("#email").attr("disabled")){
+					//保存供求信息 step1 成功后跳转到step2
+					myform.submit();
+				}
+				return false;
+			}
+			var myform = this;
+			//toggleSubmitBtn();
+			if(jQuery("#registertag").val()=="0"){
+				//改变按钮文字，并置为不可用
+				//登录并提交信息
+				checklogin(jQuery("#email").val(),jQuery("#pwd").val(),"","","","","$!{address.server}",function(response){
+					if(!response.success){
+						alert(response.data);
+						return ;
+					}
+    				postAccess(function(req){
+						if(req.success){
+        					//保存供求信息数据 或 提交表单
+    						myform.submit();
+        					//toggleSubmitBtn();
+        				}else{
+        					window.location.href=window.location.href;
+        				}
+    					//改回按钮文字，置为可用状态
+					});
+    			});
+				
+			}else{
+				//改变按钮文字，并置为不可用
+				//注册并提交信息
+				preregister("form1",function(req){
+					//保存供求信息数据 或 提交表单
+					if(req.success){
+						//给出提示，告之刚刚已经注册了一个zz91账号
+						alert("您刚刚注册了zz91的会员账号，以后您可以通过这个账号或email继续发布供求信息。\n请牢记您的账号和密码。");
+						myform.submit();
+					}else{
+						alert(req.data);
+					}
+					//改回按钮文字，置为可用状态
+					//toggleSubmitBtn();
+				});
+			}
+			
+			return false;
+		});
+	
+		//email填写完后检测是否已经有注册过
+		jQuery("#email").blur(function(){
+			if(this.value==""){
+				jQuery("#pwdtr").css("display","none");
+				jQuery("#registerDiv").css("display","none");
+				return false;
+    		}
+    		if(!isEmail(this.value)){
+				jQuery("#pwdtr").css("display","none");
+				jQuery("#registerDiv").css("display","none");
+				jQuery("#lb_email").html("电子邮箱格式不正确");
+				jQuery("#lb_email").css("color","red");
+        		return false;
+    		}
+			jQuery("#lb_email").html("");
+			jQuery.ajax({
+				url:'$!{address.server}/user/isemailregist.htm',
+				data:{email:jQuery("#email").val()},
+				cache:false,
+				dataType:"json",
+				type:"post",
+				success:function(data){
+					if(data.success){
+						jQuery("#pwdtr").css("display","");
+						jQuery("#registerDiv").css("display","none");
+						jQuery("#registertag").val("0");
+					}else{
+						jQuery("#pwdtr").css("display","none");
+						jQuery("#registerDiv").css("display","");
+						jQuery("#registertag").val("1");
+					}
+				}
+			});
+		});
+		
+		//密码填写完后自动登录
+		/*
+		jQuery("#pwd").change(function(){
+			if(this.value==""){
+				return false;
+			}
+			checklogin(jQuery("#email").val(),jQuery("#pwd").val(),"","","","","$!{address.server}",function(response){
+				if(response.success){
+					jQuery("#email").attr("disabled",true);
+					jQuery("#email").css("color","red");
+					jQuery("#pwdtr").css("display","none");
+				}else{
+					alert(response.data);
+				}
+			});
+		});
+		*/
+	});
+	
+	
+	function isEmail(s){
+    	var patrn = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i
+    //	if (!patrn.exec(s)) return false;
+    	return patrn.test(s);
+    }
+	-->
+</script>

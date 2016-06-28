@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotTrust">
+	<typeAlias alias="spotTrustDO" type="com.ast.ast1949.domain.spot.SpotTrust" />
+
+	<resultMap class="spotTrustDO" id="spotTrustResult">
+		<result property="id" column="id" />
+		<result property="mobile" column="mobile" />
+		<result property="title" column="title" />
+		<result property="useful" column="useful" />
+		<result property="contact" column="contact" />
+		<result property="quantity" column="quantity" />
+		<result property="area" column="area" />
+		<result property="isChecked" column="is_checked" />
+		<result property="isDelete" column="is_delete" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		mobile,
+		title,
+		useful,
+		contact,
+		quantity,
+		area,
+		is_checked,
+		is_delete,
+		gmt_created,
+		gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="spotTrustResult">
+		select
+		<include refid="defaultColumn" />
+		from spot_trust
+		where id = #id#
+	</select>
+
+	<insert id="insert" parameterClass="spotTrustDO">
+		INSERT INTO ast.spot_trust
+		(
+		mobile,
+		title,
+		useful,
+		contact,
+		quantity,
+		area,
+		is_checked,
+		is_delete,
+		gmt_created,
+		gmt_modified
+		)
+		VALUES
+		(
+		#mobile#,
+		#title#,
+		#useful#,
+		#contact#,
+		#quantity#,
+		#area#,
+		#isChecked#,
+		#isDelete#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="spotTrustDO">
+		UPDATE ast.spot_trust
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="mobile">
+			mobile = #mobile#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="useful">
+			useful = #useful#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="contact">
+			contact = #contact#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="area">
+			area = #area#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isChecked">
+			is_checked = #isChecked#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="isDelete">
+			is_delete = #isDelete#
+		</isNotEmpty>
+		WHERE id = #id#
+	</update>
+	
+	<select id="queryListForFront" parameterClass="java.util.Map" resultMap="spotTrustResult">
+		select 
+		<include refid="defaultColumn"/>
+		from spot_trust
+		where is_checked = '1' and is_delete = '0'
+		order by id desc
+		limit #start#,#size#
+	</select>
+	
+	<sql id="dtoWhere">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="spotTrust.mobile">
+				mobile = #spotTrust.mobile#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="spotTrust.isChecked">
+				is_checked = #spotTrust.isChecked#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryList" parameterClass="java.util.Map" resultMap="spotTrustResult">
+		select 
+		<include refid="defaultColumn"/>
+		from spot_trust
+		<include refid="dtoWhere"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryListCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_trust
+		<include refid="dtoWhere"/>
+	</select>
+	
+	<update id="updateForChecked" parameterClass="java.util.Map" >
+		update spot_trust set 
+		gmt_modified =now(),
+		is_checked = #isChecked#
+		where id = #id#
+	</update>
+	
+	<update id="updateForDelete" parameterClass="java.util.Map" >
+		update spot_trust set 
+		gmt_modified =now(),
+		is_delete = #isDelete#
+		where id = #id#
+	</update>
+
+</sqlMap>

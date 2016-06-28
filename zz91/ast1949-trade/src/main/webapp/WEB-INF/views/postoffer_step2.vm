@@ -1,0 +1,497 @@
+#set( $layout = "/layout/defaultS.vm" )
+#parse("/common/importValidator.vm")
+<link type="text/css" rel="stylesheet" href="$!{address.css}/zz91.trade.css">
+<script type="text/javascript">
+
+	
+	//保存已上传的图片的信息
+	//var uploadedPic={};
+	
+	jQuery(document).ready(function(){
+		//changeImg();
+		
+		jQuery("#form1").validationEngine("attach");
+		
+		jQuery("#submitBtn").button();
+		
+		jQuery("#submitBtn").click(function(){
+			if(!jQuery("#form1").validationEngine("validate")){
+				return false;
+			}
+			prepareTags();
+			jQuery.ajax({
+				url:'#springUrl("/publishProducts.htm")',
+				data:jQuery("#form1").serialize(),
+				cache:false,
+				dataType:"json",
+				type:"post",
+				success:function(req){
+					if(req.success){
+						//保存成功后给出提示 或 跳转到提示页面
+						window.location.href="#springUrl('/postProductSuccess.htm?productId=')"+req.data.id;
+					}else{
+						//msg.show(req.data);
+						if(req.data=="sessionTimeOut"){
+							window.open("$!{address.front}/login.htm");
+						}else{
+							alert(req.data);
+						}
+						jQuery("#codeImg").attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date()); 
+					}
+				},
+				failure:function(){
+					//请求提交失败，可能是网络或登录超时问题
+				}
+			});
+		});
+		
+		jQuery("#codeImg").attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date()); 
+		
+		jQuery("#codeImg").click(function(){
+    		jQuery(this).attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date());
+		});
+	});
+	
+	
+	//准备标签
+	function prepareTags(){
+		var tagsArr = new Array();
+		jQuery.each(jQuery("[name=tags]"),function(index,o){
+			if(o.value!=""){
+    			tagsArr.push(o.value);
+			}
+		});
+		//alert(jQuery.unique(tagsArr.sort()));
+		jQuery("#tagsArr").val(jQuery.unique(tagsArr.sort()));
+	}
+	
+	
+	
+	function ortherInput(id,value){
+		jQuery("#"+id).val(value);
+	}
+	
+	function showNotice(showId){
+		$("#"+showId).fadeIn(200);
+	}
+	
+	function closeNotice(closeId){
+		$("#"+closeId).fadeOut(500);
+	}
+	
+##   function changeImg(){
+##		var ts=new Date().getTime();
+##  		document.getElementById('codeImg').src='$!{address.front}/validationcode/mathcode.htm?ts='+ts ;
+##   		jQuery("#verifyCodeKey").val(ts);
+##	}
+</script>
+
+<div class="main_box">
+  <div class="zz91leader">当前位置：
+	<a href="$!{address.front}">$!{siteInfo.site_name}</a>
+	&gt;
+	<a href="#springUrl('/')">交易中心</a>
+	&gt;
+	发布供求信息 第二步
+  </div>
+  <div style="clear:both"></div>
+</div>
+
+<div class="main_box">
+    <div class="offertitle">
+        <h3>填写您要发布的供求信息</h3>
+		<div class="offerTitR"></div>
+		<div style="clear:both"></div>
+    </div>
+	
+    <div class="offer_kuang">
+        <form name="form1" id="form1" method="post" action="#springUrl('/publishProducts.htm')" onsubmit="return false;"> ##$!{address.server}/trade/addProductsDetails.htm 
+			<input name="categoryProductsMainCode" type="hidden" id="categoryProductsMainCode" value="$!{productsDO.categoryProductsMainCode}"/>
+            <input name="categoryProductsAssistCode" id="categoryProductsAssistCode" type="hidden" value="$!{productsDO.categoryProductsAssistCode}"/>
+			<input id="productsTypeCode" type="hidden" name="productsTypeCode" value="$!{productsDO.productsTypeCode}"/>
+            <input id="isShowInPrice" type="hidden" name="isShowInPrice" value="0"/>
+			<input id="picIds" type="hidden" name="picIds" value="" />
+			<input id="tagsArr" type="hidden" name="tagsArr" value="" />
+
+        	<div class="addRigsterInfo">产品信息</div>
+			 
+			<div class="postItems">
+    			<div class="postItemsTit">
+                    <label for="title"><font color="RED">*</font>信息主题：</label>
+    			</div>
+    			<div class="postItemsFill">
+					<input name="title" type="text" id="title" style="width:310px" value="$!{productsDO.title}" maxlength="100" class="validate[required,maxSize[50]]">
+    			</div>
+                <div style="clear:both"></div>
+    		</div>
+			<div class="postItems  postItemsRela" style="margin-bottom:8px">
+    			<div class="postItemsTit">
+                    <label for="details"><font color="red">*</font>信息描述：</label>
+    			</div>
+    			<div class="postItemsFill">
+					<textarea name="details" style="width:480px; height:120px;" id="details"  onfocus="showNotice('tishiInfo')" class="validate[required,maxSize[2000]]">$!{productsDO.details}</textarea>
+    			</div>
+				<div id="tishiInfo" class="tishiInfo">
+					<span onclick="closeNotice('tishiInfo')" class="tishi1Close"><img src="$!{address.images}/trade/close1.gif" alt="关闭提示"/></span>
+    				1、建议您参考以下方面描述您的货品：<br />性能及优点、产品用途、售后服务、包装等。<br />
+    				2、为避免不必要的纠纷，请使用本企业图片，勿盗用他人图片。
+				</div>
+				<div style="clear:both"></div>
+    		</div>
+			<div class="postItems">
+    			<div class="postItemsTit">
+                    <label><font color="RED">*</font>电子邮箱：</label>
+    			</div>
+    			<div class="postItemsFill">
+					<input name="email" type="text" id="email" value="$!{email}" style="background-color:#CCCCCC" size="30" readonly maxlength="48"  />
+    			</div>
+				<div style="clear:both"></div>
+    		</div>
+			
+			<div class="postItems postItemsRela" style="position:relative">
+    			<div class="postItemsTit">
+                    <label>标签：</label>
+    			</div>
+			
+    			<div class="postItemsFill" >
+						<div style="width:350px;" onclick="showNotice('tishiTags')">
+							<input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <br />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <div style="clear:both"></div>
+						</div>
+					
+						<div onclick="$('#moretags').slideToggle(200)" class="moreValue">
+							填写更多标签  <img src="$!{address.images}/trade/icon_4x7_arrow3.gif" width="12" height="12" />
+						</div>
+						<div id="moretags" style="display:none;width:350px;" onclick="showNotice('tishiTags')">
+							<input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <br />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+                            <input name="tags" type="text" id="tags" size="10" style="width:70px " />
+						</div>
+    			</div>
+				
+				<div id="tishiTags" class="tishiTags">
+							<span onclick="closeNotice('tishiTags')" class="tishi1Close" style="left:320px">
+								<img src="$!{address.images}/trade/close1.gif" alt="关闭提示"/>
+                            </span>
+							<p>
+								<img src="$!{address.images}/trade/no_alert.gif"/> 每空限填<b>１个标签</b>,建议10个字以下,如：ABS <br/>
+								<img src="$!{address.images}/trade/no_alert.gif"/> 小窍门：给你的供求信息贴上标签，让客户更快更准找到你！<br/>
+								<img src="$!{address.images}/trade/offerfaq.gif"/>
+								<a href="http://www.zz91.com/cn/helpcenter/show51.html" class="linktags" target="_blank" id="linktags">怎样填标签？</a>
+							</p>
+                </div>
+				<div style="clear:both"></div>
+    		</div>
+			
+			
+			<div class="postItems">
+    			<div class="postItemsTit">
+                    <label>产品图片：</label>
+    			</div>
+    			<div class="postItemsFill">
+					#foreach($pic in [1..$uploadPicNum])
+						<div class="upLoadImgBlcok">
+    						<img id="previewImg$pic" src="$!{address.images}/global/noimage.gif" name="imag" width="75" height="75" border="1">
+							<br />
+							<input type="button" value="上传" class="uploadBtn" id="uploadBtn_$pic" />
+							<input type="hidden" value="" name="picIds" id="previewId$pic"/>
+						</div>
+					#end
+    			</div>
+				<div style="clear:both"></div>
+    		</div>
+			<script  type="text/javascript" >
+				jQuery(document).ready(function(){
+					var upload=new Asto.util.PopupBox({
+            			url:"$!{address.myrc}/sys/upload/product.htm",
+						destUrl:Asto.DEST_URL,
+            			title:"上传产品图片",
+            			width:450,
+            			height:230,
+            			modal:true
+            		});
+					
+					jQuery(".uploadBtn").button();
+					jQuery(".uploadBtn").click(function(obj){
+						var id=jQuery(this).attr("id").replace("uploadBtn_","");
+						var btn=jQuery(this);
+						if(btn.val()=="上传"){
+							Asto.util.Callback.setSubmitCallback(function(success, data){
+								jQuery("#previewImg"+id).attr("src","$!{address.resource}/"+data.picAddress);
+								//jQuery("#previewTxt"+id).html(data.name);
+								jQuery("#previewId"+id).val(data.id);
+								btn.val("删除");
+                				upload.close();
+                     		});
+							upload.show(upload.buildUrl());
+						}else{
+							deletePic(btn, id);
+						}
+					});
+					
+					var previewImg=new Asto.util.PopupBox({
+            			url:"#",
+            			width:850,
+            			height:450,
+            			modal:true,
+            			title:"大图预览"
+            		});
+            		
+            		jQuery(".upLoadImgBlcok img").click(function(e){
+            			previewImg.show(jQuery(this).attr("src"));
+            		});
+				});
+				
+				function deletePic(btn, id){
+					jQuery.ajax({
+            			type:"post",
+            			url:"#springUrl('/productpic/deleteOnlyPic.htm')",
+            			data:{"id":jQuery("#previewId"+id).val()},
+            			dataType:"json",
+            			success:function(req){
+            				jQuery("#previewImg"+id).attr("src","$!{address.img}/front/images/global/noimage.gif");
+							//jQuery("#previewTxt"+id).html("");
+							jQuery("#previewId"+id).val("");
+							btn.val("上传");
+            			},
+            			failure:function(){
+            				Asto.util.Message.show({
+								msg:"发生错误，图片没有被删除，请过一会再试一下！",
+								msgType:Asto.util.Message.ERROR,
+								autoClose:5000
+							});
+            			}
+            		});
+				}
+            </script>
+			
+            <div class="addRigsterInfo">产品属性<font style="font-size:12px; font-weight:normal; color:#900">（系详细填写产品属性，吸引更多客户，增加成交机会。）</font></div>
+			
+			<div class="postItems">
+    			<div class="postItemsTit">
+                    <label for="source">货源地：</label>
+    			</div>
+    			<div class="postItemsFill">
+					<input name="source" type="text" id="source" >
+					<span class="gray">（此货物来源地，如：国外、美国、国产...）</span>	
+    			</div>
+				<div style="clear:both"></div>
+    		</div>
+			
+			<div class="postItems">
+    			<div class="postItemsTit">
+                    <label for="source"><font color="RED">*</font>加工说明：</label>
+    			</div>
+    			<div class="postItemsFill">
+					#foreach($list in $!{manufactureMap})
+						<input type="radio" name="manufacture" value="$!{list.code}"  #if($velocityCount==1) checked="true" #end class="radioPositionFix" style="border:none"/>
+						$!{list.label}
+					#end
+    			</div>
+				<div style="clear:both"></div>
+    		</div>
+			<div class="postItems">
+    			<div class="postItemsTit">&nbsp;</div>
+    			<div class="postItemsFill">
+					<div class="moreValue" onclick="jQuery('#attr').slideToggle(200);return false;">填写更多属性填写更多标签  <img src="$!{address.images}/trade/icon_4x7_arrow3.gif" width="12" height="12" /></div>	
+    			</div>
+				<div style="clear:both"></div>
+    		</div>
+			
+			<div id="attr" style="display:none;">
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="origin">此废料/再生料来源产品：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="origin" type="text" id="origin" />
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				
+    			<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="color">颜色：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					 <input name="color" type="text" id="color" />
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+    			<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="appearance">外观：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="appearance" type="text" id="appearance" />
+                        <span class="gray">（如：光滑、干净...）</span>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+    			<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="specification">产品规格：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="specification" type="text" id="specification" />
+                        <span class="gray">（如：产品大小30cm*50cm、厚度20mm...）</span>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+    			<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="impurity">杂质（杂物）含量：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="impurity" type="text" id="impurity" />
+                        <span class="gray">（请写明具体杂质及其含量，如：含镍3%）</span>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="useful">此废料可用于：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="useful" type="text" id="useful" />
+                        <span class="gray">（此货品加工后的用途，如：造粒、注塑...）</span>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+            </div>	
+			
+             <div class="addRigsterInfo">交易条件</div>
+				#if($!{productsDO.productsTypeCode}!="10331001")
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="location"><font color="RED">*</font> 现货物所在地：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="location" type="text" id="location" class="validate[required]"/>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				#end
+				 <div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="quantity"><font color="RED">*</font>供货数量：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<input name="quantity" type="text" id="quantity" class="validate[required,custom[number]]" />
+                        <span id="lb_quantity" ></span>
+        			</div>
+					<div style="clear:both"></div>
+				 </div>
+				
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="quantityUnit">计量单位：</label>
+        			</div>
+        			<div class="postItemsFill">
+    					<label><input type="radio" name="quantityUnit" value='吨'  checked class="radioPositionFix" style="border:none"/>吨</label>
+    					<label><input type="radio" name="quantityUnit" value='千克' class="radioPositionFix" style="border:none"/>千克</label>
+    					<label><input type="radio" name="quantityUnit" value='斤' class="radioPositionFix" style="border:none"/>斤</label>
+    					<label><input type="radio" name="quantityUnit" value='' id="myQuantityUnit" class="radioPositionFix" style="border:none"/>其他：
+    					<input type="text" value="" onblur="ortherInput('myQuantityUnit',this.value);" />
+						</label>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="provideStatus"><font color="RED">*</font>供货情况：</label>
+        			</div>
+        			<div class="postItemsFill">
+                        <input type="radio" name="provideStatus" id="provideStatus" checked="checked" value="0" onclick="document.getElementById('supplyTr').style.display='';" class="radioPositionFix" style="border:none"/>长期供货
+						<input type="radio" name="provideStatus" id="provideStatus" value="1" onclick="document.getElementById('supplyTr').style.display='none';" class="radioPositionFix" style="border:none"/>不定期供应
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				
+				<div class="postItems" id="supplyTr">
+        			<div class="postItemsTit">
+                        <label for="totalQuantity">供货总量：</label>
+        			</div>
+        			<div class="postItemsFill">
+                         <input name="totalQuantity" type="text" id="totalQuantity"  class="validate[custom[number]]"/>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				
+				<div class="postItems">
+					<div class="postItemsTit">
+						<label for="minPrice">报价：</label>
+					</div>
+					<div class="postItemsFill">
+						<input name="minPrice" type="text" id="minPrice" class="validate[custom[number],min[1]]"/>
+						<span style="display:none;" id="priceFlag">至 <input name="maxPrice" type="text" id="maxPrice" class="validate[custom[number],min[1]]"/></span>
+						<span class="gray">（请用英文数字写明价格，如：5000）</span>
+						<br />
+						<input type="checkbox" id="togglePrice" name="togglePrice" value="1" onclick="if(this.checked){jQuery('#priceFlag').show();}else{jQuery('#priceFlag').hide();}"/> 支持价格范围
+					</div>
+					<div style="clear:both"></div>
+        		</div>
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="priceUnit"> 价格单位：</label>
+        			</div>
+        			<div class="postItemsFill">
+						<label><input type="radio" name="priceUnit" value='元'  checked class="radioPositionFix" style="border:none"/>元</label>
+						<label><input type="radio" name="priceUnit" value='美元' class="radioPositionFix" style="border:none"/>美元</label>
+						<label><input type="radio" name="priceUnit" value='' id="myPriceUnit" class="radioPositionFix" style="border:none"/>其他：
+						<input type="text" value="" onblur="ortherInput('myPriceUnit',this.value);" /></label>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="postlimittime"><font color="RED">*</font>信息有效期：</label>
+        			</div>
+        			<div class="postItemsFill">
+						<input type="radio" name="postlimittime" value='-1' class="radioPositionFix" style="border:none" />长期有效
+						<input type="radio" name="postlimittime" value='90' class="radioPositionFix" style="border:none"/>3个月
+						<input type="radio" name="postlimittime" value='30' class="radioPositionFix" style="border:none"/>1个月
+						<input type="radio" name="postlimittime" value='20' class="radioPositionFix" style="border:none" checked='checked'/>20天
+						<input type="radio" name="postlimittime" value='10' class="radioPositionFix" style="border:none"/>10天
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				<div class="postItems">
+        			<div class="postItemsTit">
+                        <label for="priceUnit"> 验证码：</label>
+        			</div>
+        			<div class="postItemsFill">
+						 <input name="verifyCodeKey" id="verifyCodeKey" type="hidden" />
+                         <img id='codeImg'  src='$!{address.img}/front/images/global/loading.gif' class="image3" width="120" title="看不清楚?点击图刷新验证码！" style="cursor:pointer" />
+                         <input name="verifyCode" id="verifyCode"  class="item-input-long"  style="width:50px;"  type="text" size="10" />
+##                		 <span class="textcolor2"><a href="javascript:changeImg();" class="a1" >看不清楚?换一张。</a></span>
+##						 <span id="lb_verifycode" class="lb_verifycode" style="font-weight:bold;"><font color="RED">请将左边图片里的计算结果填入框中。</font></span>
+        			</div>
+					<div style="clear:both"></div>
+        		</div>
+				
+				
+				<div class="postItemsSub">
+                    <input name="submitBtn" type="submit" id="submitBtn"  value=" 确认提交 "/> ##class="buttonMax"
+                </div>
+          <div style="clear:both"></div>
+   		</form>
+	</div>
+</div>
+

@@ -1,0 +1,561 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("100102","00","20")
+    
+<div class="myrcNormalFrame">
+	<form name="form1" method="post" onSubmit="return chkfrm(this)" action="#springUrl('/myproducts/editProducts.htm')">
+		<input type="hidden" name="id" id="id" value="$!{productsDO.id}"/>
+		<input id="categoryProductsMainCode" type="hidden" name="categoryProductsMainCode" value="$!{productsDO.categoryProductsMainCode}"/>
+		<input id="tagsArr" type="hidden" name="tagsArr" value="" />
+		
+		<div class="officetitle" style="margin-top:0;"> 
+			供求信息(提示：带<font color="#FF0000"> * </font>为必填项)
+    	</div>
+		<div class="productskuang">
+			<div class="publishFormItems">
+                <div class="products_title">
+                    <label for="title"><font color="RED">*</font>供求名称：</label>
+				</div> 
+				<div class="products_fill">
+						<input name="title" type="text" id="title" size="48" maxlength="96" value="$!{productsDO.title}"/> 
+				</div>
+            </div> 
+			<div class="publishFormItems">
+                <div class="products_title">
+                    <label><font color="RED">*</font>信息类型：</label>
+				</div> 
+				<div class="products_fill">
+						#foreach($!products in $!productsTypeList)
+							<label >
+								<input name="productsTypeCode" type="radio"  value="$!{products.code}" #if($!{productsDO.productsTypeCode}==$!{products.code}) checked #end  class="radioPositionFix" style="border:none"/>$!{products.label}
+							</label>
+						#end	
+				</div>
+			</div> 
+			<div class="publishFormItems">
+                <div class="products_title">
+					<font color="RED">*</font>供求所属类别：
+				</div> 
+				<div class="products_selectSorts">
+					<select id='c1' name='c1' class="c1">
+                        <option value="">--请选择主类别--</option>
+                    </select>
+                    <select id='c2' name='c2' size='10' class="c2">
+                        <option value="">--二级分类--</option>
+                    </select>
+					<span class="mustfillA">*二级分类</span>
+                    <select id='c3' name='c3' size='10' class="c3">
+                        <option value="">--三级分类--</option>
+                    </select>
+                    <select id='c4' name='c4' size='10' class="c4">
+                        <option value="">--四级分类--</option>
+                    </select>
+            		<select id='ac' name='categoryProductsAssistCode' size='10' class="ac">
+                        <option value="">--请选择辅助类别--</option>
+                    </select>
+				</div>
+			</div> 
+			<div class="publishFormItems"> 
+				<div class="products_title">
+                    <label for="details"<font color="RED">*</font>信息描述：</label>
+				</div> 
+				<div class="products_fill">
+						<textarea name="details" style="width:90%" rows="5" id="details">$!{productsDO.details}</textarea> 
+				</div> 
+			</div>
+            <div style="clear:both"></div>
+		</div>
+		
+		<div class="officetitle">产品属性</div>
+		<div class="productskuang">
+			<div class="publishFormItems">
+                <div class="products_title">
+                    <label for="source">货源地：</label> 
+                </div>
+				<div class="products_fill">
+					<input name="source" type="text" id="source" value="$!{productsDO.source}"/> 
+					<span class="gray">（此货物来源地，如：国外、美国、国产...）</span>
+				</div> 
+			</div> 
+			<div class="publishFormItems">
+                <div class="products_title">
+                    <label for="origin">此废料/再生料来源产品：</label>
+				</div> 
+				<div class="products_fill">
+						<input name="origin" type="text" id="origin" value="$!{productsDO.origin}"/> 
+				</div>
+			</div> 
+			<div class="publishFormItems">
+                <div class="products_title">
+					<label for="color">颜色：</label> 
+                </div>
+				<div class="products_fill">
+					<input name="color" type="text" id="color" value="$!{productsDO.color}"/> 
+				</div> 
+			</div>
+			<div class="publishFormItems">
+                <div class="products_title">
+					<label for="appearance">外观：</label> 
+                </div>
+				<div class="products_fill">
+					<input name="appearance" type="text" id="appearance" value="$!{productsDO.appearance}"/> 
+					<span class="gray">（如：光滑、干净...）</span>
+				</div> 
+			</div>
+			<div class="publishFormItems">
+                <div class="products_title">
+					<label for="specification">产品规格：</label>
+                </div>
+				<div class="products_fill">
+					<input name="specification" type="text" id="specification" value="$!{productsDO.specification}"/>
+					<span class="gray">（如：产品大小30cm*50cm、厚度20mm...）</span>
+				</div>
+			</div>
+			<div class="publishFormItems">
+                <div class="products_title">
+                    <label for="impurity">杂质（杂物）含量：</label>
+				</div> 
+				<div class="products_fill">
+					<input name="impurity" type="text" id="impurity" value="$!{productsDO.impurity}"/> 
+					<span class="gray">（请写明具体杂质及其含量，如：含镍3%）</span>
+				</div> 
+			</div>
+			<div class="publishFormItems">
+                <div class="products_title">
+					<label for="useful">此废料可用于：</label>
+                </div>
+				<div class="products_fill">
+					<input name="useful" type="text" id="useful" value="$!{productsDO.useful}"/> 
+					<span class="gray">（此货品加工后的用途，如：造粒、注塑...）</span>
+				</div> 
+			</div> 
+			<div class="publishFormItems">
+                <div class="products_title">
+					<label>加工说明：</label>
+                </div>
+				<div class="products_fill" style="_padding-top:8px">
+					#foreach($manu in $!manufactureList)
+						<input type="radio" name="manufacture" value="$!{manu.code}" #if($!{productsDO.manufacture}==$!{manu.code})checked='true'#end class="radioPositionFix" style="border:none"/> $!{manu.label}
+					#end
+				</div>
+			</div>
+            <div style="clear:both"></div>
+		</div>
+		
+		<div class="officetitle">标签设置</div>
+		<div class="productskuang">
+			<div class="officePostTishi">
+                <span class="officePostTishiLeft"><b>小窍门：</b>给你的供求信息贴上标签，让客户更快更准找到你！</span>
+				<span class="officePostTishiRight"> 
+    				<a href="http://www.zz91.com/cn/helpcenter/news.asp?id=392" class="commHowDo" target="_blank" id="linktags" title="点击查看在线帮助，教你如何填写标签">
+						怎样填标签
+    				</a>
+                </span>
+				<span class="closesbtishi" onclick="jQuery(this).parent().slideUp(1000)"></span>
+                <div style="clear:both"></div>
+			</div>
+		
+    		<div class="publishFormItems">
+                    <div class="products_title">
+    					<label for="tags">标签：</label>
+                    </div>
+    				<div class="products_fill">
+    					#foreach($tag in $!{tagsInfoList})
+    						#if(8>=$velocityCount)
+        						<input name="tags" type="text" id="tags" style="width:80px " size="10" maxlength="20" value="$!{tag.name}">
+        						#if($velocityCount==4)
+        							<br />
+        						#end
+    						#end
+    					#end
+    					
+    					#set($start=$!{tagsInfoList.size()})
+    					#if(7>=$start)
+        					#foreach($tag in [$start .. 7])
+        						<input name="tags" type="text" id="tags" style="width:80px " size="10" maxlength="20" value="">
+            					#if($tag==3)
+            						<br />
+            					#end
+    						#end
+						#end
+						<br>
+						<span class=note>
+									<font color="#CC0000">(每空限填<B>１个标签</B>名称,建议10个字以下,如：ABS)</font>
+								</span>
+    					<div>
+                            <span onClick="jQuery('#moretags').slideToggle(500)" class="fillInfoMoreOpen">
+    							点击填写更多标签 <img src="$!{address.images}/global/icon/vertical-arrow.gif" >
+    						</span>
+    					</div>
+                		<div id="moretags" style="display:none ">
+                					#foreach($tag in $!{tagsInfoList})
+                						#if($velocityCount > 8)
+                    						<input name="tags" type="text" style="width:80px " size="10" maxlength="20" value="$!{tag.name}">
+                    						#if($velocityCount==12)
+                    							<br />
+                    						#end
+                						#end
+                					#end
+                					
+                					#set($start=$!{tagsInfoList.size()})
+                					#if(8>$start)
+                						#set($start=8)
+                					#end
+                					
+                					#foreach($tag in [$start .. 15])
+                						<input name="tags" type="text" style="width:80px " size="10" maxlength="20" value="">
+                    					#if($tag==11)
+                    						<br />
+                    					#end
+                					#end
+                        </div>
+    				</div> 
+    		</div>
+            <div style="clear:both"></div>
+		</div>
+		
+		
+		<div class="officetitle"> 交易条件</div>
+		<div class="productskuang"> 
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label for="quantity">供货数量：</label>
+                </div>
+    			<div class="products_fill">
+    				<input name="quantity" type="text" id="quantity" value="$!{productsDO.quantity}"/> 
+    			</div> 
+				<div style="clear:both"></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+                    <label for="priceUnit"> 价格单位：</label>
+                </div>
+				<div class="products_fill">
+					<input name="priceUnit" type="text" id="priceUnit" value="$!{productsDO.priceUnit}" onblur="validateValueout(this,'text')" maxlength="4"/> (如:元,美元)
+					<span class="errinbox" id="priceUnitErr" style="display:none"></span>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label for="price">报价：</label>
+                </div>
+				<div class="products_fill">
+					<span id="Scope1" >
+						<input name="price" type="text" id="price" value="$!{productsDO.price}"  maxlength="20"/>
+					</span>
+					<span id="Scope2" style='display:none'>
+						<input name="minPrice" type="text" id="minPrice"  value="$!{productsDO.minPrice}" size="10" style="width:80px"/>
+						到
+						<input name="maxPrice" type="text" id="maxPrice"   value="$!{productsDO.maxPrice}" size="10" style="width:80px"/>
+					</span>
+					<span class="gray" style="color:#F00"><br />（请写明价格，如：50000，如果是一个价格范围，请选中以下&ldquo;支持价格范围&rdquo;）</span><br/>
+					<input name="unitscope" type="checkbox" id="unitscope" value="1" onclick="changeScope(this)"/>支持价格范围
+				</div>
+				<div style="clear:both"></div>
+            </div> 
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label><font color="RED">*</font>信息有效期：</label> 
+				</div> 
+				<div class="products_fill">
+					<input type='radio' name='postlimittime' value='-1' checked/>长期有效
+					<input type='radio' name='postlimittime' value='90' #if($!day==90)checked#end	/>3个月
+					<input type='radio' name='postlimittime' value='30' #if($!day==30)checked#end	/>1个月
+					<input type='radio' name='postlimittime' value='20' #if($!day==20)checked#end	/>20天
+					<input type='radio' name='postlimittime' value='10' #if($!day==10)checked#end	/>10天
+				</div>
+                <div style="clear:both"></div>
+			</div> 
+			<div class="publishFormItems">
+				<div class="products_title">
+					<label for="location">现货物所在地：</label>
+                </div>
+				<div class="products_fill">
+					<input name="location" type="text" id="location" value="$!{productsDO.location}"/> 
+				</div> 
+                <div style="clear:both"></div>
+            </div>
+			<div class="publishFormItems">
+				<div class="products_title">
+                    <label><font color="RED">*</font>供货情况：</label>
+				</div>
+				<div class="products_fill">
+                    <input type="radio" name="provideStatus" id="provideStatus" #if($!{productsDO.provideStatus}==0) checked #end value="0" onclick="document.getElementById('supplyTr').style.display='';" class="input_redio" />长期供货
+					<input type="radio" name="provideStatus" id="provideStatus" #if($!{productsDO.provideStatus}==1) checked #end value="1" onclick="document.getElementById('supplyTr').style.display='none';" class="input_redio"/>不定期供应
+				</div>
+                <div style="clear:both"></div>
+			</div>
+            <div class="publishFormItems" id="supplyTr">
+				<div class="products_title">
+					<label for="totalQuantity">供货总量：</label> 
+				</div>
+				<div class="products_fill">
+					<input name="totalQuantity" type="text" id="totalQuantity" value="$!{productsDO.totalQuantity}"/> 
+				</div> 
+				<div style="clear:both"></div>
+            </div> 
+			<div class="publishFormItems" id="supplyTr">
+				<div class="products_title">
+					<label>期货现货：</label> 
+                </div>
+				<div class="products_fill">
+						#foreach($goods in $!goodsTypeList)
+								<input type="radio" name="goodsTypeCode" value="$!{goods.code}" #if($!{productsDO.goodsTypeCode}==$!{goods.code})checked#end/>$!{goods.label}
+						#end
+				</div>
+				<div style="clear:both"></div>
+			</div> 
+		</div> 
+		
+		<div class="officetitle"> 联系方式的确认与修改</div> 
+		<div class="productskuang"> 
+			<div class="officePostTishi">
+                <span class="officePostTishiLeft"><b>小提示：</b>若有误，您发布的信息将无法通过审核！</span>
+					<span class="officePostTishiRight">
+    					<a href="#zz91" onClick="jQuery('#compinfoxixi').slideToggle(500)" class="commArrowVertical">点此查看详细资料</a>
+    					<a href="#springUrl('/mycompany/updateCompany.htm')" target="_blank" class="commBackFeed">点此修改</a>
+					</span>
+			</div>
+			<div id="compinfoxixi" style="display:none">
+				<div class="publishFormItems">
+                    <div class="products_title">公司名称：</div>
+					<div class="products_fill">$!{companyDO.name}</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><font color="RED">*</font> 联系人：</div>
+                    <div class="products_fill">$!{companyContactsDO.contact}</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><font color="RED">*</font> 电话：</div>
+					<div class="products_fill">86-$!{companyContactsDO.telAreaCode}-$!{companyContactsDO.tel}</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title">手机：</div>
+					<div class="products_fill">$!{companyContactsDO.mobile}</div>
+				</div>
+        		<div class="publishFormItems">
+					<div class="products_title">传真：</div>
+					<div class="products_fill">$!{companyContactsDO.fax}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title"><font color="RED">*</font> 电子邮箱：</div>
+                    <div class="products_fill">$!{companyContactsDO.email}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title"><font color="RED">* </font>地址：</div>
+                    <div class="products_fill">$!{companyContactsDO.address}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title">邮编：</div>
+					<div class="products_fill">$!{companyContactsDO.zip}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title"><font color="RED">*</font> 国家/地区：</div>
+                    <div class="products_fill">$!{country}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title"><font color="RED">* </font>省市：</div>
+					<div class="products_fill">$!{productsDO.location}</div>
+				</div>
+				<div class="publishFormItems">
+					<div class="products_title">公司类型：</div>
+					<div class="products_fill">$!{category}</div>
+				</div>
+				<div class="publishFormItems" style="display:none">
+					<div class="products_title">公司简介：</div>
+					<div class="products_fill">$!{companyContactsDO.introduction}</div>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+            <div style="clear:both"></div>
+		</div>
+		
+		<div>
+			<div class="publishFormSub">
+					<input name="submitsave" type="submit" class="buttonMax" id="buttonSub" value="保存修改"/>
+			</div>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript" >
+
+	jQuery(document).ready(function(){
+		var category=new zz91Selector({
+			url:"#springUrl('/category/productChild.htm')",
+			assistUrl:"#springUrl('/category/productAssist.htm')"
+		});
+		
+		category.init({
+			selects:["#c1","#c2","#c3","#c4"],
+			assistSelects:["#ac"],
+			initAssistCode:"$!{productsDO.categoryProductsAssistCode}",
+			initCode:"$!{productsDO.categoryProductsMainCode}",
+			rootCode:""
+		});
+	});
+    function GetValueChoose(elementname){
+        var sValue = "";
+        var tmpels = elementname;
+        	for(var i=0;i<tmpels.length;i++)
+        	{
+        		if(tmpels[i].checked)
+        		{
+        			sValue += "0";
+        		}
+        	}
+        return sValue;
+    }
+     function chknum(NUM) { 
+    	var i,j,strTemp; 
+    	strTemp=".0123456789"; 
+    	if ( NUM.length== 0) 
+    	return 0 
+    	for (i=0;i<NUM.length;i++) 
+    	{ 
+    		j=strTemp.indexOf(NUM.charAt(i)); 
+    		if (j==-1) 
+    		{ 
+    			//说明有字符不是数字 
+    			return 0; 
+    		} 
+    	} 
+    	//说明是数字 
+    	return 1; 
+	}
+    function chkfrm(frm){
+	
+		if(frm.c1.value==""||frm.c1.value==0){
+    		alert("请选择产品大类!");
+    		frm.c1.focus();
+    		return false;
+		}
+    	if(frm.c2.value==""){
+    		alert("请选择第二类!");
+    		frm.c2.focus();
+    		return false;
+    	}
+    	if(frm.title.value.length<=0){
+    		alert("请输入供求名称!");
+    		frm.title.focus();
+    		return false;
+    	}
+    	if(GetValueChoose(document.getElementsByName("productsTypeCode"))==""){
+        	alert("请选择信息类型!");
+        	document.getElementById("productsTypeCode").focus();
+        	return false;
+    	}
+			
+		  noPriceFlag=0
+		  if (document.getElementById("unitscope").checked==true){
+        	if (frm.minPrice.value!=""){
+        		if (chknum(frm.minPrice.value)==0){
+        			alert("你输入报价支持价格范围必须是数字");
+        			frm.minPrice.focus();
+        			return false;
+        		}
+        	}
+		
+        	if (frm.maxPrice.value!=""){
+        		if (chknum(frm.maxPrice.value)==0){
+        			alert("你输入报价支持价格范围必须是数字");
+        			frm.maxPrice.focus();
+        			return false;
+        		}
+        	}
+		
+        	if (frm.minPrice.value!="" && frm.maxPrice.value!="" 
+        		&& chknum(frm.maxPrice.value)!=0 && chknum(frm.minPrice.value)!=0){
+					var min=jQuery("#minPrice").val();
+					var max=jQuery('#maxPrice').val();
+					 //返回X,Y 的平均值
+					jQuery('#price').val((min&max)+((min^max)>>1));
+						
+        			if(parseInt(frm.minPrice.value)>parseInt(frm.maxPrice.value)){
+        				alert("报价范围最大值不能小于最小值");
+        				frm.maxPrice.focus();
+        				return false;
+        			}
+        	}
+		}
+    	if (frm.minPrice.value=="" && frm.maxPrice.value==""){
+    		noPriceFlag=1
+    	}
+    	if (frm.price.value!=""){
+    		if(chknum(frm.price.value)==0)
+    		{
+    			alert("报价必须是数值!");
+    			frm.price.focus();
+    			return false;
+    		}
+    	}else{
+    		noPriceFlag=1
+    	}
+    	if(frm.details.value.length<=0){
+    		alert("请输入信息描述!");
+    		frm.details.focus();
+    		return false;
+    	}
+    	if(GetValueChoose(document.getElementsByName("postlimittime"))==""){
+        	alert("请选择信息有效期!");
+        	return false;
+    	}
+    	//return false
+    	eleTags=document.getElementsByName("tags");
+    	for( i=0;i<eleTags.length;i++){
+    		if(eleTags[i].value.indexOf(",")>0){
+    			alert('标签内不能含有逗号!');
+    			return false;
+    		}
+    	}
+     
+   		document.getElementById("submitsave").disabled=true;
+		
+		var maincode=jQuery("#c2").val();
+		if(jQuery("#c3").val()!="" && jQuery("#c3").val()!=null){
+			maincode=jQuery("#c3").val();
+		}
+		if(jQuery("#c4").val()!="" && jQuery("#c4").val()!=null){
+			maincode=jQuery("#c4").val();
+		}
+		jQuery("#categoryProductsMainCode").val(maincode);
+		
+		prepareTags();
+		
+    	return true;
+    }
+    function showmoretags(){
+    	var tagsinfo= document.getElementById("moretags");
+    	if (tagsinfo.style.display=="none")
+    	{
+    		tagsinfo.style.display=""
+    	}else
+    	{
+    		tagsinfo.style.display="none"
+    	}
+    }
+	function changeScope(obj){
+    	if (obj.checked==true)
+    	{
+    		document.getElementById("Scope1").style.display="none";
+    		document.getElementById("Scope2").style.display="";
+    	
+    	}else
+    	{
+    		document.getElementById("Scope1").style.display="";
+    		document.getElementById("Scope2").style.display="none";
+
+    	}
+	}
+	
+	function prepareTags(){
+    	var tagsArr = new Array();
+    	jQuery.each(jQuery("[name=tags]"),function(index,o){
+    		if(o.value!=""){
+    			tagsArr.push(o.value);
+    		}
+    	});
+    	//alert(jQuery.unique(tagsArr.sort()));
+    	jQuery("#tagsArr").val(jQuery.unique(tagsArr.sort()));
+    }
+</script>

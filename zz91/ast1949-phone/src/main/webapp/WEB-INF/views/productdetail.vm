@@ -1,0 +1,120 @@
+<div class="main">
+	#parse("/common/top.vm")
+	
+	#parse("/common/nav.vm")
+    
+	#parse("/common/banner.vm")
+	
+    <div class="mainblock3">
+    	<div class="left">
+			#parse("/common/compinfo.vm")
+			
+			<div style="clear:both"></div>
+			
+			#parse("/common/tags.vm")
+			
+			#parse("/common/interest.vm")
+			
+        </div>
+		
+        <div class="right">
+        	<div class="title"></div>
+            <!--end title-->
+            <div class="content">
+            	<div class="column1">
+                	<span class="zi23">
+                    	#printProductType($!{products.productsTypeCode} "" "")$!{products.title}
+                    </span>
+                    <span class="zi24">
+                    	#set($details = ${products.details.replaceAll("\n", "<br />")})
+						$!{details}
+                    </span>
+                    <span class="zi25">
+                    	联 系 人： $!{company.account.contact}&nbsp; #if($!{company.account.sex}==0)&nbsp;先生#elseif($!{company.account.sex}==1)&nbsp;女士#end<br />
+						电    <span class="zi27">话</span>： <span class="red1">$!{phone.tel}</span>
+                    </span>
+                    <span class="zi26">
+                    	总量： $!{products.quantity} $!{products.quantityUnit}<br />
+						#printProductType($!{products.productsTypeCide} "" "")情况： #if($!{productDetails.products.provideStatus}==0)长期#else 不定期#end 供货<br />
+						公司所在地： 湖南省郴州市人民西路金湘楼1栋101#<br />
+						发布日期：#printFragmentDate("yyyy-MM-dd" $!{products.refrechTime})    <span class="zi27"></span>
+						信息有效期：
+						#if($!{expiredFlag}=="1")
+                            信息已过期
+                        #else
+                            #if($date.format("yyyy-MM-dd",$!{products.expireTime}).substring(0,4) != "9999")
+                                截止 $!date.format("yyyy-MM-dd",$!{products.expireTime})
+                            #else
+                                长期有效
+                            #end
+						#end
+						<br />
+						标签： 
+						#foreach($!{tag} in $!{tagsInfoList.keySet()})
+							#set($keytag=$!{tag})
+							<a href="$!{address.tags}/s/${tagsInfoList.get($!{tag})}/" target="_blank" title="$!{tag}">$!{tag}</a>
+						#end
+                    </span>
+                </div>
+                <div class="column2">
+					#if($picList.size()>0)
+						#foreach($obj in $picList)
+							<img class="img1" src="$!{address.thumb}$!{address.resource}/$!{obj.picAddress}&width=139" width="139" height="106" />
+						#end
+					#else
+						<img class="img1" src="http://img0.zz91.com/front/images/global/noimage.gif" width="139" height="106" />
+					#end
+                </div>
+                <div style="clear:both"></div>
+                <div class="column3">
+                	<div class="title">
+                    	<span class="zi28">相关供求</span>
+                		<a href="$!{address.trade}/" class="zi8" target="_blank" >更多</a>
+                    </div>
+                    <ul class="u3">
+						#foreach($obj in $similarPicList)
+							<li>
+								<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+									<img src="$!{address.thumb}$!{address.resource}/$!{obj.coverPicUrl}&width=96" width="96" height="74" />
+								</a>
+								<br />
+								<a class="zi13" href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+									#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 6 "")
+								</a>
+							</li>
+						#end
+                    </ul>
+                    <div style="clear:both"></div>
+                    <ul class="u4">
+						#foreach($obj in $similarList)
+							#if(6>=$velocityCount)
+							<li>
+								<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+									#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 8 "") #printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})
+								</a>
+							</li>
+							#end
+						#end
+                    </ul>
+                    <ul class="u4">
+						#foreach($obj in $similarList)
+							#if($velocityCount>6)
+							<li>
+								<a href="$!{address.trade}/productdetails$!{obj.products.id}.htm" target="_blank">
+									#printProductType($!{obj.products.productsTypeCode} "" "")#printTitle($!{obj.products.title} 8 "") #printFragmentDate("yyyy-MM-dd" $!{obj.products.refreshTime})
+								</a>
+							</li>
+							#end
+						#end
+                    </ul>
+
+                </div>
+            </div>
+            <!--end content-->
+        </div>
+        <!--end right-->
+        <div class="cl"></div>
+    </div>
+    <!--end mainblock1-->
+</div>
+<!--end main-->

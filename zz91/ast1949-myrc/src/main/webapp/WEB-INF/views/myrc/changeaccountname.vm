@@ -1,0 +1,101 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1204","","00")
+<script type="text/javascript" src="$!{address.js}/validate/jquery.validate.js"></script>
+<script type="text/javascript" >
+    jQuery(document).ready(function(){
+    jQuery("#form1").submit(function(){
+    var newUserNameVal=jQuery("#newUserName").val();
+    jQuery.ajax({
+    url:"#springUrl('/changeaccountname.htm')",
+    type:"POST",
+    cache:false,
+    async:false,
+    data:{newUserName:newUserNameVal},
+    dataType:"json",
+    success:function(msg){
+    if(msg!=null&&msg.success==true){
+    alert('帐号名称已经成功修改！重新登录后显示生效');
+    window.location.reload();
+    } else {
+    alert('帐号名称修改失败！');
+    }
+    }
+    });
+    return false;
+    });
+    });
+    function check_account(){
+    var obj=jQuery("#lb_user_name");
+    var newUserName=jQuery("#newUserName").val();
+    var chk=true;
+    chk = isUserNameEnabled(newUserName);
+    if (newUserName.length<6 || newUserName.length>32) {
+        chk=false;
+        }
+        if (chk){
+        jQuery.ajax({
+        url:"#springUrl('/checkUsername.htm')",
+        type:"POST",
+        cache:false,
+        async:false,
+        dataType:"json",
+        data:{"account":newUserName},
+        success:function(msg){
+        if(msg!=null&&msg==true){
+        chk=true;
+        obj.html("恭喜，该帐号可以使用。");
+        } else {
+        chk=false;
+        obj.html("对不起，该帐号已被使用，请换个用户名！");
+        }
+        },
+        error:function(e){
+        chk=false;
+        obj.html("帐号检测失败,请再试一次,如果仍然出现错误,请联系我们！");
+        }
+        });
+        } else {
+        chk=false;
+        obj.html("请输入6-32位以字母或下划线开头的，英文字母、数字和下划线的组合！");
+        }
+        return chk;
+        }
+        //是否包含中文
+        function isChineseUserName(s){
+        var rag=/.*[\u4e00-\u9fa5]+.*$/
+        return (rag.test(s));
+        }
+        //是否以字母，＿开头，只有数字，字母，＿组成
+        function isUserNameEnabled(str){
+        var rag=/^[a-z|A-Z|_]+[a-z|A-Z|0-9|_]+$/
+        return rag.test(str);
+        }
+</script>
+<div class="myrcNormalFrame">
+    <div class="tishiWarn" style="margin-top:0px;">
+			您的姓名是：$!{request.getAttribute("myaccount").realName}<br />
+			您的会员登录名是：$!{currentUserName}
+	</div>
+    <div class="officetitle">修改帐号名称</div>
+    <div class="productskuang">
+        #if($!{isEmptyAccount}||($!{isEmailUserName}&&$!{isEmptyAccount})||$!{isChineseUserName})
+            <form id="form1" name="form1" method="post" action="#springUrl('/changeaccountname.htm')" onsubmit="return false;">
+                <div class="publishFormItems">
+                    <div class="products_title">
+                        <label for="newUserName">新的帐号名称：</label>
+                    </div>
+                    <div class="products_fill">
+                        <input name="newUserName" type="text" id="newUserName" onBlur="check_account()" maxLength="32" style="width:280px;"/>
+                        <div style="claer:both"></div>
+                        <span style="color:#AAA">帐号名称为6-32 个字符（包含英文字母、数字和下划线），以英文字母开头，有大小写区分。</span>
+                    </div>
+                </div>
+                <div class="publishFormSub">
+                    <input type="submit" class="buttonMax"   value=" 确 定 修 改 "/>
+                </div>
+            </form>
+           #else
+                <div class="tishiError">只有帐号名称为Email地址或包含中文名时才允许修改！</div>
+           #end
+    </div>
+</div>

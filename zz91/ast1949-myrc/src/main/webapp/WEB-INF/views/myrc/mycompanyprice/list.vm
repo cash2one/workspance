@@ -1,0 +1,145 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("100202","","00")
+<script >
+	var Const = new function(){
+		this.Address = {images:"$!{address.images}"};
+	}
+</script>
+<div class="myrcNormalFrame" id="full-content">
+	<div class="quoteList">
+		
+    	<form name="sForm" id="sForm" method="post" action="#">
+		<div class="quoteListTit">
+            <span class="quoteListSelect"><input onClick="javascript:CheckAll('sForm')" type=checkbox name="chktoggle" id="chktoggle" class="radioPositionFix" /></span>
+			<span class="quoteListSorts">类别</span>
+			<span class="quoteListName">产品名称</span>
+			<span class="quoteListPrice">产品价格</span>
+			<span class="quoteListArea">地区</span>
+			<span class="quoteListPeriod">信息有效期</span>
+			<span class="qutoeListAudit">审核状态</span>
+            <span class="qutoeListEdit">编辑</span>
+            <div style="clear:both"></div>
+		</div>
+		<div style="clear:both"></div>
+    		<ul>
+    			#foreach(${companyPrice} in $!{companyPriceList})
+    			<li id="$!{companyPrice.id}">
+    				<span class="quoteListSelect">
+    					<input id="id$!{companyPrice.id}" type="checkbox" value="$!{companyPrice.id}" name="cbb" class="radioPositionFix">
+    				</span>
+    				<span class="quoteListSorts">$!{companyPrice.companyPriceCategory}</span>
+    				<span class="quoteListName">
+    					#if($!{companyPrice.isChecked}=="1")
+    						<a href='$!{address.server}/companyprice/priceDetails$!{companyPrice.id}.htm' target="_blank">
+    							$!{companyPrice.title}
+    						</a>
+    					#else
+    						<a href='saveCompanyPrice.htm?id=$!{companyPrice.id}'>
+    							$!{companyPrice.title}
+    						</a>
+    					#end
+    				</span>
+    				<span class="quoteListPrice">$!{companyPrice.price}$!{companyPrice.priceUnit}</span>
+    				<span class="quoteListArea">$!{companyPrice.province}|$!{companyPrice.city}</span>
+    				<span class="quoteListPeriod">
+    					#if($!{companyPrice.validTime}>0 && 30>$!{companyPrice.validTime})
+    						$!{companyPrice.validTime}天
+    					#elseif($!{companyPrice.validTime}>=28 && 32>$!{companyPrice.validTime})
+    						一个月
+    					#elseif($!{companyPrice.validTime}>88 && 92>$!{companyPrice.validTime})
+    						三个月
+    					#elseif($!{companyPrice.validTime}>=175 && 185>$!{companyPrice.validTime})
+    						六个月
+    					#elseif($!{companyPrice.validTime}>=185)
+    						长期有效
+    					#else
+    						$!{companyPrice.validTime}天
+    					#end
+    				</span>
+    				<span class="qutoeListAudit">
+						#if($!{companyPrice.isChecked}=='0') 
+                            <font style="color:#AAA"> 未审核  </font>
+						#else 
+							<font style="color:#68B924"> 已审核  </font>
+                            </a>
+						#end 
+					</span>
+    				<span class="qutoeListEdit">
+    					<a href="javascript:void()" onClick="location.href='saveCompanyPrice.htm?id=$!{companyPrice.id}'" class="commBackFeed">修改</a>
+    				</span>
+    			</li>
+    			#end
+    			<div style="clear:both"></div>
+    		</ul>
+    		<div class="listApplicationBtn" style="_margin-top:8px;">
+    			<input type="button" onClick="buttoncheckAll('sForm')" class="buttonMinGray" value="全选" />
+                <input type="button" onClick="chkfrm('sForm')" class="buttonMinGray"  value="永久删除"/>
+					<div style="clear:both"></div>
+    		</div>
+    		<div style="clear:both"></div>
+    		<div class="pageNav">
+				
+    				#myrcPageNav($!{page} "#springUrl('/mycompanyprice/list.htm')" "" "")
+    		</div>
+    	</form>
+	</div>
+</div>
+<script>
+	function buttoncheckAll(form){
+		document.getElementById("chktoggle").checked=true;
+		CheckAll(form)
+	}
+
+	function CheckAll(form){
+		form = document.getElementById(form)
+		for (var i=0;i<form.length;i++){
+			var e = form.elements[i];
+			if (e.name.substr(0,3)=='cbb'){
+				if (form.chktoggle.checked==true) {
+					var objid=e.id.substr(2)
+					if (e.checked==false){
+						//onselectpdt(objid)
+					}
+					e.checked = form.chktoggle.checked;
+				}else{
+					var objid=e.id.substr(2)
+					if (e.checked==true){
+						//onselectpdt(objid)
+					}
+					e.checked = form.chktoggle.checked;
+				}
+			}
+		}
+	}
+	
+	function chkfrm(form){
+		form = document.getElementById(form)
+		selectcb="0";
+		ii=0;
+		alert(form.elements.length)
+		for (var i=0;i<form.length;i++) {
+			var e = form.elements[i];
+			if (e.name=='cbb'){
+				if (e.checked==true){
+					ii=ii+1
+					var selectcb=selectcb+","+e.value
+				}
+			}
+		}
+		//alert(form[1]+selectcb);
+		if (selectcb=="0"){
+			alert ("选择你要删除的信息！")
+			return false
+		}else{
+			if (confirm("删除这些信息?")){
+				form.action="delete.htm?ids="+selectcb
+				form.submit()
+			}
+		}
+	}
+
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".quoteList","#EFF6EF","#FFF")
+	});
+
+</script>

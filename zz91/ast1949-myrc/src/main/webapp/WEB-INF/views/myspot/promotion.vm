@@ -1,0 +1,73 @@
+#set( $layout = "/layout/default.vm")
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                我的促销 <span class="divider">/</span>
+            </li>
+            <li class="active">促销列表</li>
+        </ul>
+    	<div class="alert alert-info">
+    		申明：成功进入促销区的现货将不会通过竞拍区的审核。
+    	</div>
+		## 促销
+		<div class="alert mt">
+			<strong>我的促销</strong>
+			(注意:成功为现货申请进入促销区需要等待审核通过后，才会在现货商城中显示！)
+		</div>
+		<div class="table-select mt">
+			<div class="btn-group">
+				<a href="#springUrl('/myspot/promotion.htm')"  #if(!$!{spotPromotions.checkStatus}) class="btn btn-small btn_active" #else class="btn btn-small" #end >全部</a>
+				<a href="#springUrl('/myspot/promotion.htm?checkStatus=1')"  #if($!{spotPromotions.checkStatus}=="1") class="btn btn-small btn_active" #else class="btn btn-small" #end >通过</a>
+	    		<a href="#springUrl('/myspot/promotion.htm?checkStatus=0')"  #if($!{spotPromotions.checkStatus}=="0") class="btn btn-small btn_active" #else class="btn btn-small" #end>审核中</a>
+	    		<a href="#springUrl('/myspot/promotion.htm?checkStatus=2')"  #if($!{spotPromotions.checkStatus}=="2") class="btn btn-small btn_active" #else class="btn btn-small" #end>退回</a>
+	    	</div>
+		</div>
+		<table class="table table-condensed table-bordered mt">
+			<thead>
+                <tr>
+                    <th width="35%">促销名称</th>
+                    <th width="35%">促销价</th>
+                    <th width="10%" class="tac">状态</th>
+                    <th width="10%" class="tac">过期时间</th>
+                    <th width="10%" class="tac">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            #foreach($obj in $!{page.records})
+                <tr>
+                    <td>
+                        <a href="$!{address.xianhuo}/detail$!{obj.spotPromotions.spotId}.htm" target="_blank" >
+                            $!{obj.spotPromotions.title}
+                        </a>
+                    </td>
+                    <td>$!{obj.spotPromotions.promotionsPrice}</td>
+                    <td class="tac">
+                        #if($!{obj.spotPromotions.checkStatus}=='0')
+                            <span class="grey">未审核</span>
+                        #elseif($!{obj.spotPromotions.checkStatus}=='1')
+                            <span class="green">已审核</span>
+                        #else 
+                            <span class="red">退回</span>
+                        #end
+                    </td>
+                    <td class="tac">$!date.format('yyyy-MM-dd',$!{obj.spotPromotions.expiredTime})</td>
+                    <td class="tac">
+                        <a href="#springUrl('/myspot/addToPromotions.htm?id=')$!{obj.spotPromotions.id}">修改</a>
+                        ##<a href="#springUrl('/credit/creditfile/deleteFile.htm?id=')$!{credit.id}" onClick="return confirm('确实要删除吗？')">删除</a>
+                    </td>
+                </tr>
+			#end
+            </tbody>
+    	</table>
+	</div>
+	#myrcPageNav($!{page} "#springUrl('/myspot/promotion.htm')" "checkStatus=$!{spotPromotions.checkStatus}" "")
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(10, 1);
+    jQuery(".Js_addFile").click(function(){
+        location.href = "#springUrl('/credit/creditfile/create.htm?code=')" + this.name;
+    });
+})
+</script> 

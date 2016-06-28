@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAdminOprationinfo">
+	<typeAlias alias="companyAdminOprationinfoDO" type="com.ast.ast1949.domain.company.CompanyAdminOprationinfoDO"/>
+	
+	<resultMap class="companyAdminOprationinfoDO" id="resultCompanyAdminOprationinfoDO">
+		<result property="id" column="id"/>
+		<result property="companyId" column="company_id"/>
+		<result property="exhibitCode" column="exhibit_code"/>
+		<result property="exhibitRemark" column="exhibit_remark"/>
+		<result property="highCompanyCode" column="high_company_code"/>
+		<result property="hignCompanyRemark" column="hign_company_remark"/>
+		<result property="relationCode" column="relation_code"/>
+		<result property="businessSizeCode" column="business_size_code"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<insert id="insertCompanyAdminOprationinfo" parameterClass="companyAdminOprationinfoDO">
+		insert into company_admin_oprationinfo
+	            (company_id,
+	             exhibit_code,
+	             exhibit_remark,
+	             high_company_code,
+	             hign_company_remark,
+	             relation_code,
+	             business_size_code,
+	             gmt_created,
+	             gmt_modified)
+		values (#companyId#,
+		        #exhibitCode#,
+		        #exhibitRemark#,
+		        #highCompanyCode#,
+		        #hignCompanyRemark#,
+		        #relationCode#,
+		        #businessSizeCode#,
+		        now(),
+		        now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<update id="updateSimplePropertyByCompanyId" parameterClass="companyAdminOprationinfoDO">
+		update company_admin_oprationinfo
+		set high_company_code = #highCompanyCode#,
+		  hign_company_remark = #hignCompanyRemark#,
+		  relation_code = #relationCode#,
+		  business_size_code = #businessSizeCode#,
+		  gmt_modified = #gmtModified#
+		where company_id = #companyId#
+	</update>
+	
+	<select id="queryCompanyAdminOprationinfoByCompanyId" parameterClass="java.lang.Integer" resultMap="resultCompanyAdminOprationinfoDO">
+		select
+		  co.id,
+		  co.company_id,
+		  co.exhibit_code,
+		  co.exhibit_remark,
+		  co.high_company_code,
+		  co.hign_company_remark,
+		  co.relation_code,
+		  co.business_size_code,
+		  co.gmt_created,
+		  co.gmt_modified
+		from company_admin_oprationinfo co
+		where co.company_id=#value#
+	</select>
+	
+	<select id="countByCompanyId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select
+		  count(co.id)
+		from company_admin_oprationinfo co
+		where co.company_id=#value#
+	</select>
+</sqlMap>

@@ -1,0 +1,179 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript">
+	Ext.onReady(function(){
+		
+		Ext.create("Ext.form.FieldSet",{
+			title:"选项",
+			layout:"hbox",
+			defaults: {
+				labelWidth: 60, 
+				align: 'stretch'
+            },
+			renderTo :"toolbar",
+			items:[
+        		Ext.create("Ext.form.field.Date",{
+        			name:"start",
+        			format:"Y-m-01 H:i:s",
+        			emptyText:"请选择开始时间",
+        			value:"$!date.format('yyyy-MM-01 HH:mm:ss',$!{start})"
+        		}),
+				Ext.create("Ext.form.field.Date",{
+        			name:"end",
+					format:"Y-m-01 H:i:s",
+        			emptyText:"请选择结束时间",
+        			value:"$!date.format('yyyy-MM-01 HH:mm:ss',$!{end})",
+					style:{"margin-left":"5px"}
+        		}),
+				Ext.create("Ext.button.Button",{
+        			name:"btn",
+        			text:"提交",
+					style:{"margin-left":"5px"},
+					handler:function(btn){
+						Ext.getDom("form1").submit();
+					}
+        		})
+			]
+		});
+		
+	});
+</script>
+<form action="#springUrl('/zz91/analysis/analysiscsrenewal/index.htm')" method="post" id="form1">
+<div style="margin:10px 50px;font-size:15px;" id="toolbar">
+</div>
+</form>
+#foreach($month in $!{monthList})
+	
+	#if($!{renewalMap.get($!month)})
+<div style="margin:10px 50px;font-size:15px;">
+    <b>时间： $!{month}</b>
+    <table border="1" style="width:800px;background-color:#333333;"> ## align="center"  bgcolor="#333333" cellspacing="1" cellpadding="2" 
+    <tbody>
+        <tr>
+            <td align="middle" bgcolor="#f2f2f2">&nbsp;</td>
+            <td align="middle" bgcolor="#f2f2f2">&nbsp;</td>
+            <td align="middle" bgcolor="#f2f2f2" colspan="3">过期客户当月<span class="il">续</span><span class="il">签</span>数</td>
+            <td align="middle" bgcolor="#f2f2f2" colspan="4">当月到期客户数</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2" colspan="3">未到期客户当月<span class="il">续</span><span class="il">签</span>数</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">当月<span class="il">续</span><span class="il">签</span></td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2" colspan="2"><span class="il">续</span><span class="il">签</span>率核算</td>
+        </tr>
+        <tr>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">&nbsp;</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">&nbsp;</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">过期180天内</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">过期180天外</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">小计1</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">月前<span class="il">续</span><span class="il">签</span></td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">当月<span class="il">续</span><span class="il">签</span></td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">未<span class="il">续</span><span class="il">签</span></td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">客户总数</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">提前180天内</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">提前180天外</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">小计2</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2"><span class="il">续</span><span class="il">签</span>总数</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2">有效客户数</td>
+            <td nowrap="" align="middle" bgcolor="#f2f2f2"><span class="il">续</span><span class="il">签</span>率</td>
+        </tr>
+        <tr>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">姓名</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb" width="90px">统计时间</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">A</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">B</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">1=A+B</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">C</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">D</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">E</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">F</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">G</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">H</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">2=G+H</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">I</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">J</td>
+            <td nowrap="" align="middle" bgcolor="#ebebeb">K=J/F</td>
+        </tr>
+        #foreach($!{list} in $!{renewalMap.get($!month)})
+        <tr>
+            <td nowrap="" bgcolor="#ffffff">
+				#if($!{list.csAccount}!="zzzzzzzz")
+					#if($!{csDept.get($!{list.csAccount})})
+    					$!{csDept.get($!{list.csAccount})}
+    				#else
+						$!{list.csAccount}
+    				#end
+				#else
+					合计
+				#end
+			</td>
+            <td align="middle" bgcolor="#ffffff" width="90px">$!date.format("yyyy-MM",$!{list.gmtTarget})</td>
+            <td align="right" bgcolor="#ffffff">$!{list.a}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.b}</td>
+            #set($cal1=$!{list.a}+$!{list.b})
+            <td align="right" bgcolor="#ffffff">$!{cal1}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.c}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.d}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.e}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.f}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.g}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.h}</td>
+            #set($cal2=$!{list.g}+$!{list.h})
+            <td align="right" bgcolor="#ffffff">$!{cal2}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.i}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.j}</td>
+            <td align="right" bgcolor="#ffffff">$!{list.k}%</td>
+        </tr>
+        #end
+    </tbody>
+    </table>
+</div>
+	#end
+#end
+
+<hr />
+<div style="margin:10px 50px;font-size:15px;">
+<table cellspacing="0" cellpadding="3" width="800" style="font-size:15px">
+<tbody>
+<tr>
+<td align="left">1</td>
+<td>当月<span class="il">续</span><span class="il">签</span>率=有效客户数÷当月到期客户总数</td></tr>
+<tr>
+<td align="left">2</td>
+<td>五个关键概念</td></tr>
+<tr>
+<td align="left">2.1</td>
+<td>有效客户数=当月到期客户的月前<span class="il">续</span><span class="il">签</span>数+<wbr>当月到期客户的当月<span class="il">续</span><span class="il">签</span>数+过期客户（过期180天内）<wbr>的当月<span class="il">续</span><span class="il">签</span>客户数</td></tr>
+<tr>
+<td align="left"></td>
+<td>当月到单的有效客户数，不包含当月未到期但提前<span class="il">续</span><span class="il">签</span>的客户数，<wbr>含当月到期但月前<span class="il">续</span><span class="il">签</span>的客户数。</td></tr>
+<tr>
+<td align="left">2.2</td>
+<td>当月到期的客户数：到期时间为当月的任何一个自然日的客户数。（<wbr>含当月到期但已在之前月份提前<span class="il">续</span><span class="il">签</span>的客户数)</td></tr>
+<tr>
+<td align="left"></td>
+<td>当月到期的客户总数=当月到期客户之月前<span class="il">续</span><span class="il">签</span>数+当月<span class="il">续</span><span class="il">签</span>数+<wbr>当月未<span class="il">续</span><span class="il">签</span>数</td></tr>
+<tr>
+<td align="left">2.3</td>
+<td>过期客户当月<span class="il">续</span><span class="il">签</span>数，即过期客户中在当月<span class="il">续</span><span class="il">签</span>的客户数；<wbr>根据管理及分析需要，分为过期180天内和180天之外。</td></tr>
+<tr>
+<td align="left">2.4</td>
+<td>未到期客户当月<span class="il">续</span><span class="il">签</span>数，<wbr>即当月未到期客户中在当月提前<span class="il">续</span><span class="il">签</span>的客户数；<wbr>根据管理及分析需要，分为提前180天内和180天之外。</td></tr>
+<tr>
+<td align="left">2.5</td>
+<td>当月<span class="il">续</span><span class="il">签</span>客户总数：所有客户中当月<span class="il">续</span><span class="il">签</span>的客户数，</td></tr>
+<tr>
+<td align="left"></td>
+<td>当月<span class="il">续</span><span class="il">签</span>客户总数=过期客户的当月<span class="il">续</span><span class="il">签</span>数（1）+<wbr>当月到期客户的当月<span class="il">续</span><span class="il">签</span>数（D）+未到期客户的当月提前<span class="il">续</span><span class="il">签</span>数（<wbr>2）</td></tr>
+<tr>
+<td align="left">3</td>
+<td>三个特殊的时间节点</td></tr>
+<tr>
+<td align="left">3.1</td>
+<td>过期客户当月<span class="il">续</span><span class="il">签</span>客户数A：指以财务当帐日为计算点，<wbr>过期180天内的客户。</td></tr>
+<tr>
+<td align="left">3.2</td>
+<td>未到期客户当月提前<span class="il">续</span><span class="il">签</span>G：指以财务到帐日为计算点，<wbr>提前180天内的客户。</td></tr>
+<tr>
+<td align="left">3.3</td>
+<td>必杀期客户：以进行数据统计的当天为计算点，过期60天内的客户和到期时间90天内的客户。（是个不断变化的数据）</td></tr>
+</tbody>
+</table>
+</div>

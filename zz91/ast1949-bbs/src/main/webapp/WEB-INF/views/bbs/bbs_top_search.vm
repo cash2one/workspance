@@ -1,0 +1,59 @@
+<div class="zz91bbsSearch">
+    <h3 class="hotWordsLead">
+        <span class="spanLetterW">热点</span>
+        <span class="spanLetterN">风向标</span>
+    </h3>
+    <div class="HotWordSearch">
+        #foreach($tags in $!{tagsList.keySet()})
+            <span>
+                <a href="#springUrl('/search.htm?keywords=')${tagsList.get($!{tags})}" title="$!{tags}" target="_blank">#printTitle($!{tags} 4 "")</a>
+            </span>
+        #end
+    </div>
+    <div class="searchIfram" id="searchIfram">
+        <form method="post" action="" name="search" id="search" onsubmit="return false;">
+            <fieldset style="border: medium none;">
+                <legend style="display: none;">互助搜索</legend>
+				<label for="searchTit" class="labelForSearchTit" id="labelForSearchTit">输入你想查找的内容...</label>
+                <input name="searchTit" id="searchTit" class="searchTit" type="text" value=""/>
+                <select name="searchSorts" id="searchSorts" class="searchSorts">
+                    <option value="0">帖子</option>
+                    ##<option value="1">社区</option>
+                    <option value="2">会员</option>
+                </select>
+                <input class="submitSearch" id="submitSearch" value=" " type="submit"/>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    //select  design  contral
+    //loadSelect(document.search.searchSorts);
+	jQuery(document).ready(function(){
+		
+		jQuery("#search").submit(function(){
+			var k=jQuery("#searchTit").val();
+			if(k==""){
+				jQuery("#labelForSearchTit").html("<font style='color:#3B6823'>请先输入要搜索的关键词</font>");
+				return false;
+			}
+			var ek=encodeURI(k);
+			if(jQuery("#searchSorts").val()==2){
+				window.open("$!{address.company}/index.htm?keywords="+ek);
+				return false;
+			}
+			
+			searchBbs(ek)
+			return false;
+		});
+
+		var prettSelect = jQuery("#searchIfram select")
+		
+		$("#searchSorts").selectbox();
+		new srcLab("#searchTit");
+	});
+	
+	function searchBbs(encodeKeywords){
+		window.open("#springUrl('/search.htm?keywords=')"+encodeKeywords);
+	}
+</script>

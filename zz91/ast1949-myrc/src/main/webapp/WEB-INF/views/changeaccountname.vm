@@ -1,0 +1,104 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mycompany/companyList.htm')">会员资料</a> <span class="divider">/</span>
+            </li>
+            <li class="active">修改帐号名称</li>
+        </ul>
+        <div class="alert alert-info">
+            <p>您的邮箱名：<b>$!{sessionUser.email}</b></p>
+            <p>您的会员登录名是：<b>$!{companyAccount.account}</b></p>
+        </div>
+        <h3 class="divide">修改帐号名称</h3>
+	    #if($!{enableModified}==1)
+        <form id="form1" name="form1" method="post" action="#springUrl('/saveaccountname.htm')" onsubmit="return false;">
+			<div class="control-group">
+                <label for="newUserName" class="control-label">新的帐号名称：</label>
+				<div class="controls">
+					<input name="newUserName" type="text" id="newUserName" onblur="check_account()" maxLength="32" class="field">
+                    <span class="grey">帐号名称为6-32 个字符（包含英文字母、数字和下划线），以英文字母开头，有大小写区分。</span>
+				</div>
+			</div>
+            <div class="form-actions">
+                <input name="Submit1" type="submit" class="btn btn-primary" value="确认修改">
+            </div>
+        </form>
+    	#else
+            <div class="alert">只有帐号名称为Email地址或包含中文名时才允许修改！</div>
+        #end
+    </div>
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(9, 4);
+    jQuery("#form1").submit(function(){
+        var newUserNameVal = jQuery("#newUserName").val();
+        jQuery.ajax({
+            url:"#springUrl('/saveaccountname.htm')",
+            type:"POST",
+            cache:false,
+            async:false,
+            data:{newUserName:newUserNameVal},
+            dataType:"json",
+            success:function(msg){
+                if(msg!=null&&msg.success==true) {
+                    alert('帐号名称已经成功修改！重新登录后显示生效');
+                    window.location.reload();
+                } else {
+                    alert('帐号名称修改失败！');
+                }
+            }
+        });
+        return false;
+    });
+});
+function check_account(){
+    var obj = jQuery("#lb_user_name");
+    var newUserName = jQuery("#newUserName").val();
+    var chk = true;
+    chk = isUserNameEnabled(newUserName);
+    if (newUserName.length<6 || newUserName.length>32) {
+        chk=false;
+    }
+    if (chk){
+        jQuery.ajax({
+            url:"#springUrl('/checkUsername.htm')",
+            type:"POST",
+            cache:false,
+            async:false,
+            dataType:"json",
+            data:{"account":newUserName},
+            success:function(msg){
+                if(msg != null && msg == true) {
+                    chk=true;
+                    obj.html("恭喜，该帐号可以使用。");
+                } else {
+                    chk=false;
+                    obj.html("对不起，该帐号已被使用，请换个用户名！");
+                }
+            },
+            error:function(e){
+                chk=false;
+                obj.html("帐号检测失败,请再试一次,如果仍然出现错误,请联系我们！");
+            }
+        });
+    }
+    else {
+        chk=false;
+        obj.html("请输入6-32位以字母或下划线开头的，英文字母、数字和下划线的组合！");
+    }
+    return chk;
+}
+//是否包含中文
+function isChineseUserName(s){
+    var rag=/.*[\u4e00-\u9fa5]+.*$/;
+    return (rag.test(s));
+}
+//是否以字母，＿开头，只有数字，字母，＿组成
+function isUserNameEnabled(str){
+    var rag=/^[a-z|A-Z|_]+[a-z|A-Z|0-9|_]+$/;
+    return rag.test(str);
+ }
+</script>

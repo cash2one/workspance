@@ -1,0 +1,80 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+	<div class="grid_12">
+		<ul class="breadcrumb">
+			<li>
+				<a href="#springUrl('/myscore/changeDetails.htm')">商机和行情</a><span class="divider">/</span>
+			</li>
+			<li class="active">积分兑换历史</li>
+		</ul>
+		<div class="alert alert-info">
+			<p>您现在拥有的积分为：$!{scoreSummary.score}</p>
+			<p><a href="#springUrl('/myscore/conversionHistory.htm')" target="_blank">点击这里查看您的积分兑换历史</a> <a href="$!{address.score}" target="_blank">什么是积分？获得积分的途径？</a></p>
+		</div>
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+				<tr>
+					<th width="40%">兑换服务</th>
+					<th width="15%" class="tac">兑换方式</th>
+					<th width="15%" class="tac">支付情况</th>
+					<th width="15%" class="tac">兑换状态</th>
+					<th width="15%" class="tac">兑换日期</th>
+				</tr>
+			</thead>
+			<tbody>
+			#if(${pageContext.records.size()}==0)
+				<tr><td colspan="5">暂时没有变更!</td></tr>
+			#else
+				#foreach($!{details} in $!{pageContext.records})
+        		<tr>
+					#set($category="积分兑换")
+    				#set($conversionScore = true)
+    				#if($!{details.history.conversionCategory}=="1")
+    					#set($category="原价兑换")
+    					#set($conversionScore = false)
+    				#end
+    				#set($statusStr="申请中")
+    				#if($!{details.history.status}=="1")
+    					#set($statusStr="成功")
+    				#end
+    				#if($!{details.history.status}=="2")
+    					#set($statusStr="失败")
+    				#end
+        			<td>
+						$!{details.goods.name}
+					</td>
+        			<td>
+						${category}
+					</td>
+        			<td>
+						#if($conversionScore)
+							$!{details.goods.scoreBuy} 积分
+						#else
+							$!{details.goods.priceBuy} RMB(￥)
+						#end
+					</td>
+        			<td>
+						#if($!{details.history.status}=="1")
+                            <span class="green">成功</span>
+    					#elseif($!{details.history.status}=="2")
+    						<span class="red">失败</span>
+    					#else
+    						<span class="grey">申请中</span>
+    					#end
+					</td>
+        			<td>
+						$!date.format('yyyy-MM-dd',$!{details.history.gmtCreated})
+					</td>
+        		</tr>
+				#end
+			#end
+			</tbody>
+		</table>
+		#myrcPageNav($!{pageContext} "#springUrl('/myscore/conversionHistory.htm')" "" "")
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(8, 3);
+})
+</script>

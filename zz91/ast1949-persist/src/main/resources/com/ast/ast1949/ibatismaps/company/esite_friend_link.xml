@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="esiteFriendLink">
+	<typeAlias alias="esiteFriendLinkDo"
+		type="com.ast.ast1949.domain.company.EsiteFriendLinkDo" />
+	<resultMap class="esiteFriendLinkDo" id="esiteFriendLinkResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="linkName" column="link_name" />
+		<result property="logoUrl" column="logo_url" />
+		<result property="linkAddress" column="link_address" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,company_id,account,link_name,logo_url,link_address,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryFriendLinkByCompany" parameterClass="java.util.HashMap"
+		resultMap="esiteFriendLinkResult">
+		select
+		<include refid="fullColumn" />
+		from esite_friend_link
+		where company_id=#companyId#
+		limit 0,#limit#
+	</select>
+
+	<select id="countFriendLinkNumByCompany" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		select
+		count(*) from esite_friend_link
+		where
+		company_id=#value#
+	</select>
+
+	<select id="queryOneFriendLinkById" parameterClass="java.lang.Integer"
+		resultMap="esiteFriendLinkResult">
+		select 
+		<include refid="fullColumn" />
+		from esite_friend_link
+		where id=#value#
+	</select>
+
+	<delete id="deleteFriendLinkByCompany" parameterClass="java.util.HashMap">
+		delete
+		from esite_friend_link
+		where id=#id# and company_id=#companyId#
+	</delete>
+
+	<insert id="insertFriendLink" parameterClass="esiteFriendLinkDo">
+		insert into esite_friend_link (company_id, account, link_name,
+		logo_url, link_address, gmt_created, gmt_modified)
+		values(#companyId#,
+		#account#, #linkName#, #logoUrl#, #linkAddress#, now(), now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+
+	<update id="updateFriendLinkByCompany" parameterClass="esiteFriendLinkDo">
+		update
+		esite_friend_link set
+		link_name=#linkName#,
+		logo_url=#logoUrl#,
+		link_address=#linkAddress#,
+		gmt_modified=now()
+		where id=#id# and
+		company_id=#companyId#
+	</update>
+
+</sqlMap>	

@@ -1,0 +1,130 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1304","","00")
+<div class="myrcNormalFrame">
+	<div class="commTip">
+        <span class="subscribManageSub" >
+            <a href="#springUrl('/esite/esitefriendlink/createFriendLink.htm')" class="commArrowNews">添加友情链接</a>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+    <form name="sForm" id="sForm" method="post" action="#">
+         <div class="commList">
+			#if($!{esiteFriendLinkList.size()}==0)
+                <div class="tishiWarn">没有信息！</div>
+			#else		
+				<div class="commListTit">
+                    <span class="commListEsitenewsSelect">&nbsp;</span>
+    				<span class="commListEsiteFriendTit">链接标题</span>
+    				<span class="commListEsiteFriendUrl">链接地址</span>
+                    <span class="commListEsiteFriendOperate">操作</span>
+                    <div style="clear:both"></div>
+                </div>
+				<ul>
+                    #foreach($!{esiteFriendLinkList} in $!{esiteFriendLinkList})
+                        <li id="$!{esiteFriendLinkList.id}">
+                           <span class="commListEsitenewsSelect">
+                                <INPUT id="id$!{esiteFriendLinkList.id}" type="checkbox" value="$!{esiteFriendLinkList.id}" name="cbb" class="radioPositionFix"/>
+                            </span>
+                            <span class="commListEsiteFriendTit">
+                                <a href="#springUrl('/esite/esitefriendlink/initFriendLink.htm?id=')$!{esiteFriendLinkList.id}">$!{esiteFriendLinkList.linkName}</a>
+                            </span>
+							<span class="commListEsiteFriendUrl">
+								<a href="$!{esiteFriendLinkList.linkAddress}" target="_blank">$!{esiteFriendLinkList.linkAddress}</a>
+                            </span>
+							<span class="commListEsiteFriendEdit">
+								<a href="#springUrl('/esite/esitefriendlink/initFriendLink.htm?id=')$!{esiteFriendLinkList.id}" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">
+									编辑
+                                </a>
+                            </span>
+							<span class="commListEsiteFriendDel">
+								<a href="#springUrl('/esite/esitefriendlink/deleteFriendLink.htm?id=')$!{esiteFriendLinkList.id}" style="padding-left:16px;background-position:left 2px;" class="commTrashFeed">
+									删除
+                                </a>
+                            </span>
+                        </li>
+					#end
+                    <div style="clear:both"></div>
+                </ul>
+			#end
+         </div>
+		 ##<div class="listApplicationBtn">
+	##	<a onclick="javascript:checkBoxAllToggle(true)"  href="javascript:void(0)" class="btnA">全选</a>
+	##	<a onclick="javascript:checkBoxAllToggle(false)" href="javascript:void(0)" class="btnA">取消全选</a>
+	##	<a onclick="delatefrm('sForm','cbb','deleteNews.htm','id')"  href="javascript:void(0)" class="btnA"/> 删 除 </a>
+	##</div>
+    </form>
+	<div class="pageNav">
+		#pageBar($totalPages $currentPage "")
+	</div>
+</div>
+<script> 
+    function buttoncheckAll(form)
+    {
+    form.chktoggle.checked=true
+    CheckAll(form)
+    }
+    function CheckAll(form)
+    {
+    for (var i=0;i<form.elements.length;i++)
+        {
+        var e = form.elements[i];
+        if (e.name.substr(0,3)=='cbb')
+        {
+        if (form.chktoggle.checked==true)
+        {
+        var objid=e.id.substr(2)
+        if (e.checked==false)
+        {
+        //onselectpdt(objid)
+        }
+        e.checked = form.chktoggle.checked;
+        }else{
+        var objid=e.id.substr(2)
+        if (e.checked==true)
+        {
+        //onselectpdt(objid)
+        }
+        e.checked = form.chktoggle.checked;
+        }
+        }
+        }
+        }
+        function chkfrm(form)
+        {
+        selectcb="0"
+        ii=0
+        for (var i=0;i<form.elements.length;i++)
+            {
+            var e = form.elements[i];
+            if (e.name=='cbb')
+            {
+            if (e.checked==true)
+            {
+            ii=ii+1
+            if(selectcb=="0"){
+            selectcb=e.value;
+            }else{
+            selectcb=selectcb+","+e.value;
+            }
+            }
+            }
+            }
+            if (selectcb=="0")
+            {
+            alert ("选择你要删除的信息！")
+            return false
+            }
+            else
+            {
+            if (confirm("你选中"+ii+"条友情链接,确实要删除这些信息?"))
+            {
+            form.action="#springUrl('/esite/deleteEsiteLink.htm?ids=')"+selectcb;
+            form.submit()
+            }
+            }
+            }
+
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	})
+</script>

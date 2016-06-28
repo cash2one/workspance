@@ -1,0 +1,141 @@
+<link rel="stylesheet" href="$!{address.img}/lib/jquery-ui/1.8.16/south-street/jquery-ui-1.8.16.custom.css" />
+<form action="#" id="transForm" onsubmit="return false;">
+<article class="d_right">
+	<hgroup class="phead">
+		<h2>
+			##printProductType($!{dto.products.productsTypeCode} "" "")#printTitle($!{dto.products.title} 20 "")
+			#printTitle($!{dto.spotPromotions.title} 22 "")
+		</h2>
+	</hgroup>
+	<section class="pinfo">
+		<dl class="pinfo_item highlight">
+			#if($!{isExpired})
+				<dt>活动已结束</dt>
+			#else
+				<dt>距结束还有：</dt>
+				<dd class="J_timer" data-timer="#printFragmentDate('yyyy/MM/dd/HH/mm/ss' $!{dto.spotPromotions.expiredTime})">
+					<span class="h"></span>小时<span class="m"></span>分<span class="s"></span>秒
+				</dd>
+			#end
+		</dl>
+		<dl class="pinfo_item">
+			<dt>促销价格：</dt>
+			<dd><b class="highlight">$!{dto.spotPromotions.promotionsPrice}</b> $!{dto.spotPromotions.priceUnit}/$!{dto.spotPromotions.quantityUnit}</dd>
+			<dd class="dim"><del>价     格：$!{dto.spotPromotions.price}$!{dto.spotPromotions.priceUnit}/$!{dto.spotPromotions.quantityUnit}</del></dd>
+		</dl>
+		<dl class="pinfo_item">
+			<dt>现货存量：</dt>
+			<dd><b class="highlight">$!{dto.spotPromotions.quantity}</b>$!{dto.spotPromotions.quantityUnit}</dd>
+		</dl>
+		<dl class="pinfo_item">
+			<dt>现货所在地：</dt>
+			<dd>$!{dto.product.location}</dd>
+		</dl>
+		#if(!$!{isExpired})
+		<dl class="pinfo_item">
+			<dt>我要订购：</dt>
+			<dd class="amount">
+				<span id="J_amount" class="amount_widget">
+					<input type="text" class="field validate[required,custom[number],min[1]]" id="subQuantity" value="1"  >
+					<span class="increase">+</span>
+					<span class="decrease">-</span>
+				</span>
+				$!{dto.spotPromotions.quantityUnit}
+			</dd>
+		</dl>
+		#end
+		<dl class="pinfo_item">
+			<dt>交易要求：</dt>
+			<dd>$!{dto.spotInfo.transaction}</dd>
+		</dl>
+	</section>
+	<section class="btns">
+		## 过期隐藏按钮
+		#if(!$!{isExpired})
+			<input type="button" id="trans" class="button red_btn" value="立即订购" >
+			<input type="button" id="cart" class="button blue_btn" value="加入购物车">
+		#end
+		<input type="button" class="button blue_btn" id="Js_collectBtn" value="收藏该商品">
+	</section>
+	<section class="pinfo">
+		<dl class="pinfo_item">
+			<dt>&nbsp;</dt>
+			<!-- todo:rate-->
+			<dd>
+				<p>如果您对该产品感兴趣请在线联系我们<a href="http://wpa.qq.com/msgrd?v=3&amp;uin=1270407913&amp;site=www.zz91.com&amp;menu=yes" class="icon a2" target="_blank"></a></p>
+				<p>或拨打现货商城服务电话0571-56633100</p>
+			</dd>
+		</dl>
+		<dl class="pinfo_item">
+			<dt>采购会员可举报：</dt>
+			<dd>
+				<a href=""><i class="icon a7"></i>此价格不真实</a>
+				<a href=""><i class="icon a7"></i>此资源无货</a>
+			</dd>
+		</dl>
+	</section>
+</article>
+
+</form>
+<script type="text/javascript">
+	// 加入购物车
+	jQuery("#cart").click(function(){
+		clickConfirm(0);
+	});
+	
+	// 确定购买
+	jQuery("#trans").click(function(){
+		clickConfirm(1);
+	});
+	
+	## 登录弹出框
+	var loginBox=new Asto.util.PopupBox({
+		url:"$!{address.front}/miniLogin.htm?regfrom=10031027",
+		destUrl:"#springUrl('/submitCallback.htm')",
+		modal:true,
+		height:450,
+		width:631
+	});
+	
+	function clickConfirm(i){
+		if(!$("#transForm").validationEngine("validate")){
+			return false;
+		}
+		#if(!$!{sessionUser})
+    		Asto.util.Callback.setSubmitCallback(function(success, data){
+    			loginBox.close();
+    			window.parent.location.reload();
+    		});
+    		loginBox.show();
+		#else
+    		var title = encodeURI("$!{dto.spotPromotions.title}")
+    		var quantity = jQuery("#subQuantity").val();
+    		jQuery.ajax({
+    			url:"#springUrl('/transaction/addToTrans.htm')",
+				dataType:"json",
+    			data:{
+					spotId:$!{dto.spotPromotions.spotId},
+    				orderProductTitle:title,
+    				price:$!{dto.spotPromotions.promotionsPrice},
+    				quantity:quantity,
+					orderStatus:i,
+    				priceUnit:encodeURI("$!{dto.spotPromotions.priceUnit}"),
+    				quantityUnit:encodeURI("$!{dto.spotPromotions.quantityUnit}")
+    			},
+				success:function(data){
+					if(data.success){
+						alert("提交成功，正在转至页面等待确认。")
+					}else{
+						alert("提交失败，您可能已经提交过该订单。")
+					}
+					if(i==0){
+						window.location = "#springUrl('/cart.htm')";
+					}else{
+						window.location = "#springUrl('/confirm.htm')";
+					}
+				}
+			});
+		#end
+	}
+	
+</script>

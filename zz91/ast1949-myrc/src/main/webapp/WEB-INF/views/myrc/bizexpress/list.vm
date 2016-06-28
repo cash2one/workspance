@@ -1,0 +1,61 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+<div class="myrcNormalFrame">
+		<div class="tishiWarn" style="margin-top:0px;">
+				#if($!{myaccount.contact} && $!{myaccount.contact.length()}>4 )$!{myaccount.contact.substring(0,4)}#else$!{myaccount.contact}#end 	
+    			#if($!{myaccount.sex} == 1)
+    				女士
+    			#else
+    				先生
+    			#end: 您好！
+				<br/>以下是您中国再生资源交易网订阅的最新商机，快去看看有没有合适的客户吧！
+				<br/>如果预览中出现的商机数过少，建议您调整&quot;行业&quot;或&quot;关键字&quot;。
+				<a href="$!{address.server}/subscribe/subscribe.htm?id=$!{subscribeId}">点此修改</a> 
+		</div>
+			#if($!{keywords})
+				<div class="feedbackList" style="margin-top:8px;">
+					<div class="feedbackSortsType">
+						<a href="javascript:void(0)" title="$!{keywords}" onclick="logiing()" class="feedbackSortsTypeOn">pp</a>
+						<input id="sql" type="hidden" value="WHERE pdt_check=1  and (  pdt_name like '%pp%'  ) "/>
+						<span class="feedbackSortsSet" style="float:right">共 <b>$!{totalPage}</b>条信息</span>
+                        <div style="clear:both"></div>
+                    </div>
+					
+    				<div class="feedbackSortsTop">
+						<span class="subsPublishFix">最新匹配信息</span>
+						<span class="subsPublishComp">公司名称</span>
+						<span class="subsPublishArea">所在地区</span>
+						<span class="subsPublishTime">发布时间</span>
+                        <div style="clear:both"></div>
+					</div>
+					
+					<ul>
+					#foreach(${product} in $!{results})
+						<li>
+							<span class="subsPublishFix">
+								<font class="buy">$!{product.buyOrSale}</font>&nbsp;
+								<a target="_blank" href="$!{address.server}/trade/productdetails$!{product.productId}.htm" class="a1">
+									$!{product.productsTitle}
+								</a>
+                            </span>
+							<span class="subsPublishComp">
+    							<a href="$!{address.server}/myesite/index.htm?cd=$!{product.companyId}" target="_blank">$!{product.companyName}</a>
+							</span>
+							<span class="subsPublishArea">($!{product.province}|$!{product.area})</span>
+							<span class="subsPublishTime">$!{product.displayRefreshTime}</span>
+						</li>
+					#end
+                    <div style="clear:both"></div>
+					</ul>
+					<div class="pageNav">
+						#myrcPageNav($!{page} "#springUrl('/bizexpress/list.htm')" $!{suffixUrl} "")
+					</div>
+			</div>
+			#else
+				<div class="tishiError">没有设置买家必看的信息。</div>
+			#end
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".feedbackList","#EFF6EF","#FFF")
+	})
+</script>

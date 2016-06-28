@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>来电宝-询盘群发</title>
+		<script src="http://img0.zz91.com/lib/jquery/jquery-1.6.2.min.js"></script>
+    </head>
+    <body>
+		<form action="batchInquiry.htm" method="post" id = "form1" onsubmit="return false">
+			关键词<input type="text" id="title" name="title" value="$!{keyword}" />
+			供求类型
+			<select name="productsTypeCode" id = "productsTypeCode">
+				<option value="10331000">供应</option>
+				<option value="10331001">求购</option>
+			</select>
+			<input type="submit" value="搜索" />
+			<input type="button" id="sendToTask" value="将选择的公司添加至任务(暂不支持制定日期发送)" />
+			<input type="button" id="sendAllToTask" value="将所有公司添加至任务(暂不支持制定日期发送)" />
+			<br/>
+			询盘标题<input type="text" id="inquiryTitle" />
+            询盘内容<textarea id="inquiryContent"></textarea>
+			<table border="1px">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id = "checkAll" /></th>
+						<th>发送公司ID</th>
+						<th>供求标题</th>
+						<th>供求类型</th>
+					</tr>
+                </thead>
+				<tbody>
+					#foreach($obj in $page.records)
+						<tr>
+							<td><input type="checkbox" value="$!{obj.products.companyId}" name="companyId" class="companyId" /></td>
+							<td>$!{obj.products.companyId}</td>
+							<td>$!{obj.products.title}</td>
+							<td>#if($!{obj.products.productsTypeCode}=="10331000")供应#elseif($!{obj.products.productsTypeCode}=="10331001")求购#end</td>
+						</tr>
+					#end
+                </tbody>
+			</table>
+			<input type="hidden" name="companyId" value="$!{product.companyId}" />
+			#webPageNav($page "batchInquiry.htm" "title=$!{product.title}&productsTypeCode=$!{product.productsTypeCode}&companyId=$!{product.companyId}" "")
+			共 检索到 $page.totalRecords 条供求
+		</form>
+    </body>
+</html>
+<script >
+	jQuery(document).ready(function(){
+		jQuery("#form1").submit(function(){
+			var title = jQuery("#title").val();
+			if(title!=null&&title!=""){
+				title = encodeURI(title);
+			}
+			var productsTypeCode = jQuery("#productsTypeCode").val();
+			var url = "batchInquiry.htm?title="+title+"&productsTypeCode="+productsTypeCode +"&companyId=$!{product.companyId}";
+			window.location=url;
+		});
+		
+		jQuery("#checkAll").click(function(){
+			jQuery("input[name=companyId]").click();
+		});
+		
+		jQuery("#sendToTask").click(function(){
+			var ids = "";
+			jQuery("input[name=companyId]").each(function(){
+				if(jQuery(this).attr("checked")){
+					ids = ids + jQuery(this).val()+",";
+				}
+			});
+			var content = encodeURI(jQuery("#inquiryContent").val());
+			content = content.replace(new RegExp("&","gm"),"astoand");
+			alert(content);
+			var url = "doSendToTask.htm?id=" + ids + "&companyId="+$!{product.companyId}+"&title="+encodeURI(jQuery("#inquiryTitle").val())+"&content="+content;
+			window.open(url);
+		});
+		
+		jQuery("#sendAllToTask").click(function(){
+			var ids = "";
+			jQuery("input[name=companyId]").each(function(){
+				if(jQuery(this).attr("checked")){
+					ids = ids + jQuery(this).val()+",";
+				}
+			});
+			var content = encodeURI(jQuery("#inquiryContent").val());
+			content = content.replace("&","astoand");
+			var url = "doAllSendToTask.htm?keyword=" + encodeURI("$!{product.title}") + "&companyId="+$!{product.companyId}+"&title="+encodeURI(jQuery("#inquiryTitle").val())+"&content="+content;
+			window.open(url);
+		});
+	});
+</script>

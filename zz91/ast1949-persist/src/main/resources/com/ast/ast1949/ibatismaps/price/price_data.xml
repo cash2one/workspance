@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="priceData">
+	<typeAlias alias="priceDataDO" type="com.ast.ast1949.domain.price.PriceDataDO" />
+	<resultMap class="priceDataDO" id="resultPriceDataDO">
+		<result property="id" column="id" />
+		<result property="priceId" column="price_id" />
+		<result property="companyPriceId" column="company_price_id" />
+		<result property="productName" column="product_name" />
+		<result property="quote" column="quote" />
+		<result property="area" column="area" />
+		<result property="companyName" column="company_name" />
+		<result property="companyId" column="company_id" />
+		<result property="showIndex" column="show_index" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<insert id="insertPriceData" parameterClass="priceDataDO">
+		INSERT INTO `price_data`
+		(
+			`price_id`,
+			`company_price_id`,
+			`product_name`,
+			`quote`,
+			`area`,
+			`company_name`,
+			`company_id`,
+			`show_index`,
+			`gmt_created`,
+			`gmt_modified`)
+		VALUES
+		(
+			#priceId#,
+			#companyPriceId#,
+			#productName#,
+			#quote#,
+			#area#,
+			#companyName#,
+			#companyId#,
+			#showIndex#,
+			NOW(),
+			NOW()
+		)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<delete id="deletePriceDataById" parameterClass="java.lang.Integer">
+		DELETE FROM price_data
+		WHERE id=#value#
+	</delete>
+	
+	<delete id="deletePriceDataByPriceId" parameterClass="java.lang.Integer">
+		DELETE FROM price_data
+		WHERE price_id=#value#
+	</delete>
+
+	<select id="countPriceDataByPriceId" parameterClass="java.lang.Integer"
+		resultClass="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM price_data
+		WHERE price_id=#value#
+	</select>
+	
+	<select id="queryPriceDataById" parameterClass="java.lang.Integer" resultMap="resultPriceDataDO">
+		SELECT
+			pd.id,
+			pd.price_id,
+			pd.company_price_id,
+			pd.product_name,
+			pd.quote,
+			pd.area,
+			pd.company_name,
+			pd.company_id,
+			pd.show_index,
+			pd.gmt_created,
+			pd.gmt_modified
+		FROM price_data pd
+		WHERE pd.id=#value#
+	</select>
+	
+	<select id="queryPriceDataByPriceId" parameterClass="java.util.Map" resultMap="resultPriceDataDO">
+		SELECT
+			pd.id,
+			pd.price_id,
+			pd.company_price_id,
+			pd.product_name,
+			pd.quote,
+			pd.area,
+			pd.company_name,
+			pd.company_id,
+			pd.show_index,
+			pd.gmt_created,
+			pd.gmt_modified
+		FROM price_data pd
+		WHERE pd.price_id=#id#
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryPriceDataByPriceIdAndCompanyPriceId" parameterClass="java.util.Map" resultMap="resultPriceDataDO">
+		SELECT
+			pd.id,
+			pd.price_id,
+			pd.company_price_id,
+			pd.product_name,
+			pd.quote,
+			pd.area,
+			pd.company_name,
+			pd.company_id,
+			pd.show_index,
+			pd.gmt_created,
+			pd.gmt_modified
+		FROM price_data pd
+		WHERE pd.price_id=#priceId# 
+			AND pd.company_price_id=#companyPriceId#
+	</select>
+	
+	<update id="updatePriceDataById" parameterClass="priceDataDO">
+		UPDATE price_data
+		SET
+			product_name = #productName#,
+			quote = #quote#,
+			area = #area#,
+			company_name = #companyName#,
+			gmt_modified = NOW()
+		WHERE id = #id#
+	</update>
+</sqlMap>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAccountContact">
+
+	<typeAlias alias="companyAccountContact" type="com.ast.ast1949.domain.company.CompanyAccountContact"/>
+	
+	<sql id="fullColumn">
+		cac.id,
+		cac.account,
+		cac.name,
+		cac.sex,
+		cac.tel,
+		cac.mobile,
+		cac.is_hidden,
+		cac.qq,
+		cac.email,
+		cac.gmt_created,
+		cac.gmt_modified
+	</sql>
+	
+	<resultMap class="companyAccountContact" id="companyAccountContactResult">
+		<result property="id" column="id"/>
+		<result property="account" column="account"/>
+		<result property="name" column="name"/>
+		<result property="sex" column="sex"/>
+		<result property="tel" column="tel"/>
+		<result property="mobile" column="mobile"/>
+		<result property="isHidden" column="is_hidden"/>
+		<result property="qq" column="qq"/>
+		<result property="email" column="email"/>
+		<result property="gmtCreated" column="gmt_created"/>
+		<result property="gmtModified" column="gmt_modified"/>
+	</resultMap>
+	
+	<select id="queryContactOfAccount" parameterClass="java.lang.String" resultMap="companyAccountContactResult" >
+		select 
+		<include refid="companyAccountContact.fullColumn" />
+		from company_account_contact cac
+		where cac.account=#value#
+	</select>
+	
+	<delete id="deleteContactByAccount" parameterClass="java.util.HashMap">
+		delete from
+		company_account_contact
+		where id=#id# and account=#account# 
+	</delete>
+	
+	<insert id="insertContact" parameterClass="companyAccountContact">
+		insert into
+		company_account_contact(
+		account,
+		name,
+		sex,
+		tel,
+		mobile,
+		is_hidden,
+		qq,
+		email,
+		gmt_created,
+		gmt_modified
+		)
+		values(
+		#account#,
+		#name#,
+		#sex#,
+		#tel#,
+		#mobile#,
+		#isHidden#,
+		#qq#,
+		#email#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="queryContactByAccount" parameterClass="java.util.HashMap" resultMap="companyAccountContactResult">
+		select
+		<include refid="fullColumn" />
+		from company_account_contact cac	
+		where cac.account=#account#
+		<dynamic>
+			<isNotEmpty property="isHadden">
+			 	and cac.is_hidden='0'			
+			</isNotEmpty>
+		</dynamic>	
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />		
+	</select>
+	
+	<select id="queryContactByAccountCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from company_account_contact cac
+		where cac.account=#account#
+		<dynamic>
+			<isNotEmpty property="isHadden">
+			 	and cac.is_hidden='0'			
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryOneContactById" parameterClass="java.lang.Integer" resultMap="companyAccountContactResult">
+		select
+		<include refid="fullColumn" />
+		from company_account_contact cac
+		where cac.id=#value#
+	</select>
+	
+	<update id="updateContactById" parameterClass="companyAccountContact">
+		update company_account_contact cac set
+		cac.name=#name#,
+		cac.sex=#sex#,
+		cac.tel=#tel#,
+		cac.mobile=#mobile#,
+		cac.is_hidden=#isHidden#,
+		cac.qq=#qq#,
+		cac.email=#email#,
+		cac.gmt_modified=now()
+		where cac.id=#id# and cac.account=#account#
+	</update>
+</sqlMap>

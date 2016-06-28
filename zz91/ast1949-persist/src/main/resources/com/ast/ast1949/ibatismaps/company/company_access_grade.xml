@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="companyAccessgrade">
+
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="CompanyAccessGradeDO" type="com.ast.ast1949.domain.company.CompanyAccessGradeDO" />
+	<!--查询黑名单信息  
+	<select id="selectcompanyAccessGradeById" parameterClass="java.lang.Integer" 
+		resultClass="CompanyAccessGradeDO">
+		SELECT 	id, company_id AS companyId, account AS account, reason, 
+			gmt_created AS gmtCreated, gmt_modified AS gmtModified,
+			access_grade_code AS accessGradCode
+		FROM company_access_grade
+		where company_id=#id#
+	</select>
+	-->
+	<!-- 修改黑名单信息 
+	<update id="updateCompanyAccessGradeById" parameterClass="CompanyAccessGradeDO">
+		UPDATE
+			company_access_grade
+		SET
+			account = #account#, 
+			reason = #reason#, 
+			gmt_created = #gmtCreated#, 
+			gmt_modified = #gmtModified#, 
+			access_grade_code = #accessGradCode#
+		where company_id=#companyId#
+	</update>
+	-->
+	
+	<!-- 插入黑名单信息 
+	<insert id="insertCompanyAccessGrade" parameterClass="CompanyAccessGradeDO">
+		INSERT INTO company_access_grade
+			(company_id,account,reason, 
+			gmt_created,gmt_modified,access_grade_code
+			)
+		VALUES (#companyId#,#account#,#reason#,
+			now(),now(),#accessGradCode#
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	-->
+	
+	<select id="queryCountByCompanyId" parameterClass="java.lang.Integer" 
+		resultClass="java.lang.Integer">
+		select count(id)
+		from company_access_grade
+		where company_id =#value#
+	</select>
+	
+	<!-- 
+	<update id="chengeAccessGradeCode" parameterClass="java.util.Map">
+		update company_access_grade
+		set gmt_modified = now(),
+		  access_grade_code = #accessGradeCode#
+		where company_id = #companyId#
+	</update>
+	 -->
+	
+	<delete id="deleteByCompanyId" parameterClass="java.lang.Integer">
+		DELETE
+		FROM company_access_grade
+		WHERE company_id = #value#
+	</delete>
+</sqlMap>

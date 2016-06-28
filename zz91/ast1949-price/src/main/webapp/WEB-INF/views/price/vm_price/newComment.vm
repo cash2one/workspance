@@ -1,0 +1,51 @@
+
+#if($code=="metal")
+	#set($codeLabel="废金属")
+#elseif($code=="plastic")
+	#set($codeLabel="废塑料")
+#else
+	#set($codeLabel="综合废料")
+#end
+<div class="relative">
+    <div class="title">
+		<div class="nav3_l"></div>
+        <h3>最新$!{codeLabel}报价</h3>
+        <span class="more">
+            <a target="_blank" href="$!{address.price}" title="更多最新报价资讯">更多&gt;&gt;</a>
+        </span>
+		
+        <ul class="otherCate">
+            <li>
+                <a id="tab1" class="actived"  onmouseover="changeShow(1)" href="javascript:void(0)">最新报价</a>
+            </li>
+            <li>
+                <a id="tab2" onmouseover="changeShow(2)" href="javascript:void(0)">最新资讯</a>
+            </li>
+        </ul>
+    </div>
+	
+    <div class="content">
+		#cacheFragment("$!{address.fragment}/price/onlinePrice.htm?typeId=$!{typeId}&321", "", "", "")
+        <ul id="relativeArt1" class="relativeArt">
+            #foreach($price in $onlinePrice)		
+                <li>
+					<a title="$!{price.title}" target="_blank" href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm">$!{price.title}</a>
+                </li>
+			#end
+            <div style="clear:both"></div>
+        </ul>
+	#end	
+		#cacheFragment("$!{address.fragment}/huzhu/newestPost.htm?categoryId=1&size=8" "" "" "")
+        <ul style="display:none;" id="relativeArt2" class="relativeArt">
+            #foreach($b in $!{newsList})
+				<li>
+					<a href='$!{address.huzhu}/viewReply$!{b.id}.htm' target='_blank' title='$!{b.title}'>
+                    #printTitle($!{b.title} 18 "")</a>
+                </li>
+            #end 
+			<div style="clear:both"></div>
+        </ul>
+		#end
+    </div>
+</div>
+

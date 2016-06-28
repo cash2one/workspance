@@ -1,0 +1,54 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/bizList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">最新在线行情</li>
+        </ul>
+		<div class="alert alert-info">
+			<strong>$!{companyAccount.contact}</strong> #if($!{companyAccount.sex} == 1) 女士 #else 先生 #end，您好！
+			以下是您在中国再生资源交易网订阅的最新行情，快去看看有没有合适的客户吧！
+		</div>
+	#if($!{totalRecords}>0)
+		#foreach($rs in $records)
+		<div class="well mt">
+			<div class="well-head"> 
+				#if($rs.firstTypeName)
+					$!{rs.firstTypeName}
+				#end
+				#if($rs.secondTypeName)
+					| $!{rs.secondTypeName}
+				#end
+				#if($rs.thirdTypeName)
+					| $!{rs.thirdTypeName}
+				#end
+			</div>
+		#if($!{rs.priceId}>0)
+			<div class="well-content">
+				<h3>$!{rs.priceTitle}</h3>
+				<div>$!{rs.priceContent}</div>
+			</div>
+		#else
+			<div class="well-content">提示：暂无任何信息...</div>	
+		#end
+		</div>
+		#end
+		#myrcPageNav($!{page} "#springUrl('/mysubscribe/priceList.htm')" "" "")
+		<div class="alert alert-info mt">
+			<span class="fr"><a href="$!{address.price}" target="_blank">查看更多报价信息</a></span>
+			咨询热线：$!{zst_phone}
+	    </div>
+	#else
+		<div class="alert mt">
+			您还没有订阅实时报价信息！<a href="#springUrl('/subscribe/subscribe.htm?subscribeType=1')" target="_blank">点此订阅</a>
+		</div>
+	#end
+	</div>
+</div>
+<script>
+jQuery(function(){
+	myrc.menu(5, 2);
+})
+</script>

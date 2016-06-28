@@ -1,0 +1,47 @@
+#set($layout="/layout/innerPageLayout.vm")
+#parse("/common/importJqueryUi.vm")
+#parse("/common/importValidator.vm")
+<div class="favBox">
+	#if($isExist=='false')
+<form action="#springUrl('/favorite/doMyFavorite.htm')"  name="form1" id="form1" method="post">
+	<h3>收藏到我的收藏夹</h3>
+	<div class="control-group">
+		<label for="" class="control-label"><em>*</em>标题:</label>
+		<div class="controls">
+			<textarea name="contentTitle" class="validate[required]" cols="40" rows="6">$!{title}</textarea>
+		</div>
+	</div>
+	<div class="submit-group">
+		<input type="submit" class="clickBtn" value='确定' />
+		<input type="button" class="clickBtn" id="cancelBtn" value='取消' />
+		<input type="hidden" value="$!{destUrl}" name="destUrl"/>
+		<input type="hidden" value="$!{contentId}" name="contentId"/>
+		<input type="hidden" value="$!{title}" name="title"/>
+		<input type="hidden" value="$!{favoriteTypeCode}" name="favoriteTypeCode"/>
+	</div>
+</form>
+	#else
+		<h3><s class="alert"></s>你已收藏过这条信息</h3>
+		<div class="content">标题：$!{title}</div>
+	#end
+</div>
+<script type="text/javascript" >
+jQuery(document).ready(function(){
+	## 验证
+	jQuery("#form1").validationEngine("attach");
+	## 点击取消
+	jQuery("#cancelBtn").click(function(){
+		godesturl();
+	});
+});
+
+## 取消事件
+function godesturl(){
+	var param='?success=$!{success}&data=$!{data}';
+	#if($!{destUrl}!="")
+		window.location="$!{destUrl}"+param;
+	#else
+		window.location="#springUrl('/submitCallback.htm')"+param;
+	#end
+}
+</script>

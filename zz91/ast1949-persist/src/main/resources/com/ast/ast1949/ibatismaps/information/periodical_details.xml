@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="periodicalDetails">
+	<typeAlias alias="periodicalDetails" type="com.ast.ast1949.domain.information.PeriodicalDetails"/>
+
+	<resultMap id="periodicalDetailsResult" class="periodicalDetails">
+		<result property="id" column="id" />
+		<result property="periodicalId" column="periodical_id" />
+		<result property="name" column="name" />
+		<result property="imageName" column="image_name" />
+		<result property="previewUrl" column="preview_url" />
+		<result property="orders" column="orders" />
+		<result property="pageType" column="page_type" />
+		<result property="gmtCreated" column="gmt_created" />
+	</resultMap>
+
+
+	<sql id="selectSimplePeriodicalDetailsColumns" >
+  			pd.id,pd.periodical_id,pd.name,pd.image_name,pd.preview_url,
+  			pd.orders,pd.page_type,pd.gmt_modified,pd.gmt_created
+	</sql>
+
+	<insert id="insertPeriodicalDetails" parameterClass="periodicalDetails">
+  		insert into periodical_details(periodical_id,name,image_name,preview_url,orders,page_type,gmt_created)
+  		values(#periodicalId#,#name#,#imageName#,#previewUrl#,#orders#,#pageType#,now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+		  SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<delete id="deleteDetailsById" parameterClass="java.lang.Integer" >
+  		delete from periodical_details where id=#value#
+	</delete>
+
+	<delete id="deleteDetailsByPeriodicalId" parameterClass="java.lang.Integer" >
+  		delete from periodical_details where periodical_id=#value#
+	</delete>
+
+	<select id="listPreviewDetailsByPeriodicalId" parameterClass="java.lang.Integer" resultMap="periodicalDetailsResult">
+  		select
+		<include refid="periodicalDetails.selectSimplePeriodicalDetailsColumns"/>
+  			from periodical_details pd
+  		where pd.periodical_id=#value#
+	</select>
+
+	<update id="updateBaseDetails" parameterClass="periodicalDetails" >
+  		update periodical_details
+  			set name=#name#,
+  				orders=#orders#,
+  				gmt_modified=now()
+  		where id = #id#
+	</update>
+
+	<update id="updatePageType" parameterClass="java.util.HashMap" >
+  		update periodical_details
+  			set page_type=#pageType#
+  		where id = #id#
+	</update>
+
+	<select id="countPageDetailsByPeriodicalId" resultClass="java.lang.Integer">
+  		select count(*) from periodical_details where periodical_id=#value#
+	</select>
+
+	<select id="pageDetailsByPeriodicalId" parameterClass="java.util.HashMap" resultMap="periodicalDetailsResult">
+  		select
+		<include refid="periodicalDetails.selectSimplePeriodicalDetailsColumns"/>
+  		from
+  			periodical_details pd
+  			where periodical_id=#periodicalId#
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	<select id="selectDetailsById" parameterClass="java.lang.Integer" resultMap="periodicalDetailsResult">
+    	SELECT 	
+    	<include refid="periodicalDetails.selectSimplePeriodicalDetailsColumns"/> 
+	    FROM periodical_details pd
+	    where pd.id=#id#
+	</select> 
+	<select id="pageDetailsByPeriodicalIdAndType" parameterClass="java.util.HashMap" resultMap="periodicalDetailsResult">
+		SELECT 
+		<include refid="periodicalDetails.selectSimplePeriodicalDetailsColumns"/> 
+		FROM periodical_details pd
+        WHERE pd.periodical_id=#periodicalId#
+        and pd.page_type=#type#
+        order by pd.orders
+	</select>
+</sqlMap>

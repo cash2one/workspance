@@ -1,0 +1,114 @@
+<html>
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>插入图片</title>
+		<style type="text/css">
+			body, td, span, div, input {
+				font-size: 12px;
+				font-family: "宋体", "Courier New", Courier, monospace;
+				margin: 0px;
+			}
+		</style>
+		<script language="JavaScript" type="text/javascript">
+		<!--
+		window.isIE = (navigator.appName == "Microsoft Internet Explorer");
+		if(window.isIE) {
+			if(navigator.userAgent.indexOf("Opera")>-1) window.isIE = null;
+		}
+		else {
+			if(navigator.userAgent.indexOf("Gecko")==-1) window.isIE = null;
+		}
+		function $(sID) {
+			return document.getElementById(sID);
+		}
+		function adjustDialog(){
+			var w = $("tabDialogSize").offsetWidth + 6;
+			var h = $("tabDialogSize").offsetHeight + 25;
+			window.dialogLeft = (screen.availWidth - w) / 2;
+			window.dialogTop = (screen.availHeight - h) / 2;
+		}
+		window.onload = init;
+		function init () {
+			adjustDialog();
+			$("imgpath").select();
+		}
+		//从本地上传图片后的操作
+		function ajaxUpImgPath(FileName){
+			var path="http://image.zz91.net/imgs/admin/";
+			window.parent.document.getElementById('imgpath').value=path+FileName;
+			window.parent.chk_imgpath();
+		}
+		function chk_imgpath () {
+			var editor = window.dialogArguments.EDiaryEditor;
+			var oRTE = editor.iframe.contentWindow;
+			if($("imgpath").value == "http://" || $("imgpath").value == "") {
+				window.close();
+				return;
+			}
+			var html = "<img src='" + $("imgpath").value + "'>";
+			if(window.isIE) {
+				try{
+					oRTE.focus();
+					var oRng = oRTE.document.selection.createRange();
+					oRng.pasteHTML(html);
+					oRng.collapse(false);
+					oRng.select();
+				}
+				catch(e){}
+			}
+			else {
+				editor.runCMD('insertHTML', html);
+			}
+			window.close();
+		}
+		document.onkeydown = function (el) {
+			var event = window.event || el;
+			if(event.keyCode == 13) {
+				chk_imgpath();
+			}
+		}
+		//-->
+		</script>
+	</head>
+	<body>
+	<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" id="tabDialogSize" SUMMARY="Tables used on this page are for upfile">
+    <tr>
+      <td height="24" bgcolor="#DDE7EE" style="padding-left: 10px;">插入图片</td>
+    </tr>
+    <tr>
+      <td height="50">&nbsp;图片地址:
+      <input type="text" value="http://" style="border: 1px solid #cccccc; width: 235px;" id="imgpath" name="imgpath">
+      <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:Red">输入图片地址后，按回车键即可。</span>
+      </td>
+    </tr>
+    <tr height="30"> 
+      <td align="left" id="upid" width="100%">&nbsp;上传图片: 
+       	<iframe src="http://localhost:8080/web/zz91/admin/simpleAjaxUpload.htm?id=upfile&uploadModel=admin&uploadProject=imgs" id="upfile" frameborder="no" scrolling="no" style="height:20px;">
+		</iframe>
+		<!-- 
+		<iframe src="http://asto1949javaweb.zz91.net/web/zz91/admin/simpleAjaxUpload.htm?id=upfile&uploadModel=admin&uploadProject=imgs" id="upfile" frameborder="no" scrolling="no" style="height:20px;">
+		</iframe>
+		 -->
+		<input type="hidden" id="filepath" name="filepath" value="">
+  		<!-- 
+        <input type="file" name="file1" style="width:300px; border:#cccccc 1px solid" value="">
+        <input type="hidden" name="filepath" value="/uploadfiles/">
+        <input type="hidden" name="FormName" value="form1">
+        <input type="hidden" name="act" value="uploadfile">
+         -->
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 10px;">&nbsp;</td>
+    </tr>
+    <tr>
+      <td height="40" align="center" style="padding-bottom: 10px;">
+      <!-- <a href="#" onClick="form1.submit()"><img border="0" src="../images/dilog_bt_ok.gif" alt="确定" style="margin-right: 10px;"/></a> -->
+      <a href="#" onClick="window.location.reload();"><img border="0" src="../images/dilog_bt_refresh.gif" alt="重置"/></a>
+      <a href="#" onClick="window.close();"><img border="0" src="../images/dilog_bt_cancel.gif" alt="取消"/></a>
+      </td>
+    </tr><tr><td bgcolor="#DDE7EE" height="5"></td>
+    </tr>
+	</table>
+	</body>
+</html>

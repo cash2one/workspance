@@ -1,0 +1,70 @@
+<script>
+jQuery(document).ready(function() {
+	Asto.MINI_LOGIN_URL = "$!{address.front}/miniLogin.htm')";
+	Asto.DEST_URL = "$!{address.trade}/submitCallback.htm";
+	Asto.util.EventMonitor();
+});
+
+function timestamp() {
+	var timestamp = Date.parse(new Date());
+	return timestamp;
+}
+
+function zz91SearchSlide(searchFrame, typeValue, searchInputFill) {
+	var searchInput = $(searchFrame + " " + "input[id=" + searchInputFill + "]");
+	var typeValueInput = $(searchFrame + " " + "input[id=" + typeValue + "]");
+	var searchLabel = $(searchFrame + " " + "label[id=search_label]");
+	var searchTab = $(searchFrame + " " + "ul[id=search_tab]");
+	//alert(typeValueInput.val());
+	searchTab.find("li").click(function(e) {
+		searchTab.find("li").removeClass("searchSelected");
+		$(this).addClass("searchSelected");
+		searchInput.focus();
+		var getLiIndex = $(this).index()
+		typeValueInput.attr({
+			value: function() {
+				return getLiIndex + 1;
+			}
+		});
+	})
+	if(searchInput.val() != "") {
+		searchLabel.fadeOut(50);
+	}
+	searchInput.focus(function() {
+		searchLabel.css({
+			"color": "#DDDDDD"
+		});
+		searchInput.keydown(function() {
+			var t = setTimeout(function() {
+				if(searchInput.val() != "") {
+					searchLabel.fadeOut(1);
+				} else {
+					searchLabel.fadeIn();
+				}
+			}, 100);
+		});
+	});
+	searchInput.blur(function() {
+		//clearTimeout(t);
+		if($(this).val() == "") {
+			searchLabel.fadeIn(500).css({
+				"color": "#999999"
+			});
+		}
+	});
+};
+
+
+$(document).ready(function() {
+	$('li.tradAssi').mousemove(function() {
+		$(this).find('ul').slideDown("fast"); //you can give it a speed
+		$(this).find('a').first().addClass('ishover');
+		$(this).find('a').first().removeClass('nohover');
+	});
+	$('li.tradAssi').mouseleave(function() {
+		$(this).find('ul').slideUp("fast");
+		$(this).find('a').first().removeClass('ishover');
+		$(this).find('a').first().addClass('nohover');
+	});
+});
+</script>

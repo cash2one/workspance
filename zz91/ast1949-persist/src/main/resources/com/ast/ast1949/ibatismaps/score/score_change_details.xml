@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+ PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+ "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="scoreChangeDetails">
+	<typeAlias alias="scoreChangeDetailsDo" type="com.ast.ast1949.domain.score.ScoreChangeDetailsDo"/>
+	
+	<resultMap id="fullResult" class="scoreChangeDetailsDo">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="name" column="name" />
+		<result property="rulesCode" column="rules_code" />
+		<result property="score" column="score" />
+		<result property="relatedId" column="related_id" />
+		<result property="remark" column="remark" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="fullColumn">
+		id,company_id,name,rules_code,score,related_id,remark,gmt_created,gmt_modified
+	</sql>
+	
+	<select id ="queryScoreByCycle" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT SUM(score) FROM score_change_details 
+		WHERE company_id=#companyId# 
+		<isNotEmpty property="ruleCode" prepend="and">
+			rules_code=#ruleCode#
+		</isNotEmpty>
+		<isNotEmpty property="startTime" prepend="and">
+			TO_DAYS(gmt_created) >=TO_DAYS(#startTime#)
+		</isNotEmpty>
+	</select>
+	
+	<insert id="insertScoreDetails" parameterClass="scoreChangeDetailsDo">
+		INSERT INTO score_change_details (
+			company_id,
+			name,
+			rules_code,
+			score,
+			related_id,
+			remark,
+			gmt_created,
+			gmt_modified
+		)
+		VALUES (
+			#companyId#,
+			#name#,
+			#rulesCode#,
+			#score#,
+			#relatedId#,
+			#remark#,
+			NOW(),
+			NOW()
+		)
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	<select id ="queryChangeDetails" parameterClass="java.util.HashMap" resultMap="fullResult">
+		SELECT 
+		<include refid="fullColumn" />
+		FROM score_change_details
+		<dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+				company_id =#companyId#
+			</isNotEmpty>
+			<isNotEmpty property="isPlus">
+				<isEqual property="isPlus" compareValue="true" prepend="and">
+					score >0
+				</isEqual>
+				<isEqual property="isPlus" compareValue="flase" prepend="and">
+					0>score
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id ="queryChangeDetailsCount" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM score_change_details
+		<dynamic prepend="where">
+			<isNotEmpty property="companyId" prepend="and">
+				company_id =#companyId#
+			</isNotEmpty>
+			<isNotEmpty property="isPlus">
+				<isEqual property="isPlus" compareValue="true" prepend="and">
+					score >0
+				</isEqual>
+				<isEqual property="isPlus" compareValue="flase" prepend="and">
+					0>score
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<delete id="deleteChangeDetailsByRelatedId" parameterClass="java.util.HashMap">
+		DELETE FROM score_change_details 
+		WHERE company_id=#companyId#
+		<isNotEmpty property="ruleCode" prepend="and">
+			rules_code =#ruleCode#
+		</isNotEmpty>
+		<isNotEmpty property="relatedId" prepend="and">
+			related_id =#relatedId#
+		</isNotEmpty>
+	</delete>
+</sqlMap>

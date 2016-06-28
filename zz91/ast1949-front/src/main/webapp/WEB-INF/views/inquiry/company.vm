@@ -1,0 +1,74 @@
+#set($layout="/layout/innerPageLayout.vm")
+#parse("/common/importJqueryUi.vm")
+#parse("/common/importValidator.vm")
+<div class='lvmsgcontainer'>
+    <form action="#springUrl('/inquiry/doCompany.htm')"  name="form1" id="form1" method="post">
+     <h3 class='lvmsgtitle'>留言板</h3>
+     <div class='lvmsgcontent'>
+		#if($!{error}=="1")
+		<div class="ui-state-error ui-corner-all" style="margin-top: 5px;padding: 5px;"> 
+    		<span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+    		<strong>提示:</strong> 发生错误，留言没有成功，请检查您的信息或验证码是否填写正确！
+    	</div>
+    	#end
+         <div class='lvgmsgstrip'><label for="title" class="lvgmsglarea"><em>*</em>公司名称:</label><input type="text" id="title" style="width:350px" name="title" class="validate[required] lvgrightipt" value="$!{inquiry.title}"/></div>
+		 <div class='lvgmsgstrip'>
+			<div class="lvgselect ftl">
+				<select id="msgContent1" name="msgContent1">
+					<option value="">请选择常用问题</option>
+					<option value="我对贵公司的产品非常感兴趣，能否发一份公司详细资料给我参考！">我对贵公司的产品非常感兴趣，能否发一份公司详细资料给我参考！</option>
+					<option value="请问贵公司产片是否可以代理？代理条件是什么？">请问贵公司产品是否可以代理？代理条件是什么？</option>
+					<option value="我公司有意购买此产品，可否提供此产品的报价单和最小起订量？">我公司有意购买贵公司产品，可否提供贵公司不同产品的报价单和最小起订量？</option>
+				</select>
+			  </div>
+              <div class='lvgselright ftl'>懒得打字？ “快速提问”帮你忙！补充信息：可在此补充</div>
+              <div class="clear"></div>
+         </div>
+         <div class='lvgtarea'>
+             <textarea id="msgContent2" name="content" class="validate[required]">$!{inquiry.content}</textarea>
+         </div>
+         <div class='lvgmsgstrip'>
+             <div class='lvgvcode ftl'>
+				<label class="item required" for="verifyCode">验证码<span class="textcolor1">*</span></label>
+				<span class="item-input">
+					<input name="verifyCodeKey" id="verifyCodeKey" type="hidden" />
+          ##<img id='codeImg' onclick="javascript:changeImg();" src='#springUrl("/validationcode/code.htm")?ts=' + new Date().getTime() class="image3" title="看不清楚?点击图刷新验证码！" style="cursor:pointer" />
+    			<img src='$!{address.img}/front/images/global/loading.gif' align="absmiddle" id='codeImg' style="cursor:pointer" height="36" title="看不清楚?点击图刷新验证码！"/>  ##class="image3"
+    			<input name="verifyCode" id="verifyCode"  class="validate[required] item-input-long"  style="width:50px;"  type="text" size="10" />
+    			<span class="textcolor2"><a href="#" class="a1" id="chgvcode" >看不清楚?换一张。</a></span>
+				</span>
+				##<span id="lb_verifycode" class="lb_verifycode" style="font-weight:bold; color:#F00">请将左边图片里的计算结果填入框中。</span>
+			</div>
+            <div class='lvgsubmit ftr'><input type="submit" value='发送' /></div>
+            <div class="clear"></div>
+			<input type="hidden" value="$!{destUrl}" name="destUrl"/>
+##		<input type="hidden" value="$!{title}" name="title"/>
+			<input type="hidden" value="$!{id}" name="id"/>
+			<input type="hidden" value="$!{mainCode}" name="mainCode"/>
+         </div>
+     </div>
+	 </form>
+</div>
+	<script type="text/javascript" >
+	jQuery(document).ready(function(){
+		
+		jQuery("#form1").validationEngine("attach");
+		
+		jQuery("#codeImg").attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date()); 
+		
+		jQuery("#codeImg").click(function(){
+    		jQuery(this).attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date());
+		});
+		
+		jQuery("#chgvcode").click(function(){
+			jQuery("#codeImg").attr("src", "$!{address.front}/validationcode/vcode.htm?"+new Date()); 
+		});
+		
+	});
+	jQuery("#msgContent1").change(function(){
+		var content = jQuery("#msgContent1").attr("value");
+		if(content.length>0){
+			jQuery("#msgContent2").val(jQuery("#msgContent2").val()+content+"：\n");
+		}
+	});
+</script>

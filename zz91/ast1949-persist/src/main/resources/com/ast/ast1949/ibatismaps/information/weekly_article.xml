@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="weeklyArticle">
+	<typeAlias alias="weeklyArticleDO"
+		type="com.ast.ast1949.domain.information.WeeklyArticleDO" />
+	<typeAlias alias="weeklyDTO" type="com.ast.ast1949.dto.information.WeeklyDTO" />
+	<resultMap id="weeklyArticleResult" class="weeklyArticleDO">
+		<result property="id" column="id" />
+		<result property="bbsPostId" column="bbs_post_id" />
+		<result property="pageId" column="page_id" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	<resultMap class="weeklyDTO" id="weeklyDTOResult">
+		<result property="title" column="title" />
+		<result property="url" column="url" />
+		<result property="weeklyArticleDO" resultMap="weeklyArticle.weeklyArticleResult" />
+	</resultMap>
+	<select id="ListWeeklyArticleByPageId" parameterClass="java.lang.Integer"
+		resultMap="weeklyDTOResult">
+		SELECT w.id,w.bbs_post_id,w.page_id,
+		w.gmt_created,w.gmt_modified,
+		b.title,b.url
+		FROM
+		weekly_article w
+		INNER
+		JOIN bbs_post b
+		ON w.bbs_post_id=b.id
+		WHERE
+		w.page_id=#pageId#
+	</select>
+	<!-- 上一篇文章 -->
+	<select id="listOnArticle" parameterClass="java.util.HashMap"
+		resultMap="weeklyArticleResult">
+		SELECT 
+		w.id,w.bbs_post_id,w.page_id,
+		w.gmt_created,w.gmt_modified
+		FROM
+		weekly_article w
+		INNER
+		JOIN bbs_post b
+		ON
+		w.bbs_post_id=b.id
+		WHERE
+		w.page_id=#pageId#
+		<![CDATA[and b.id<#bbsPostId#]]>
+		ORDER BY b.id desc
+		LIMIT 0,1
+	</select>
+	<!-- 下一篇文章 -->
+	<select id="listDownArticle" parameterClass="java.util.HashMap"
+		resultMap="weeklyArticleResult">
+		SELECT 
+		w.id,w.bbs_post_id,w.page_id,
+		w.gmt_created,w.gmt_modified
+		FROM
+		weekly_article w
+		INNER
+		JOIN bbs_post b
+		ON w.bbs_post_id=b.id
+		WHERE
+		w.page_id=#pageId#
+		and
+		b.id>#bbsPostId#
+		ORDER BY b.id ASC
+		LIMIT 0,1
+	</select>
+	<select id="listBbsAndWeeklyArticle" resultMap="weeklyDTOResult">
+		SELECT
+		w.id,w.bbs_post_id,w.page_id,
+		w.gmt_created,w.gmt_modified,
+		b.title,b.url
+		FROM weekly_article w
+		INNER JOIN weekly_page wp
+		ON wp.id=w.page_id
+		INNER JOIN
+		bbs_post b
+		ON w.bbs_post_id=b.id
+		WHERE wp.periodical_id=#periodicalId#
+	</select>
+	<insert id="insertWeeklyArticle" parameterClass="weeklyArticleDO">
+		insert into weekly_article(
+		bbs_post_id,
+		page_id,
+		gmt_created,
+		gmt_modified
+		)
+		values(
+		#bbsPostId#,
+		#pageId#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			last_insert_id()
+		</selectKey>
+	</insert>
+	<delete id="deleteWeeklyArticle" parameterClass="java.lang.Integer">
+		delete from
+		weekly_article
+		where id=#id#
+	</delete>
+</sqlMap>

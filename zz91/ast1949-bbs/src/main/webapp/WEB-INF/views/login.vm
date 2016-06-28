@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>
+	再生互助_废料生意人的交流平台_中国再生资源交易网
+</title>
+<meta name="keywords" content="再生互助,互助,交流,技术,问题" />
+<meta name="description" content="中国再生资源交易网的再生互助,旨在为广大用户提供一个再生废料领域内的商务交流平台和技术沟通的展台，再生互助促使会员进行积极的沟通交流,共同解决日常生产、贸易过程中碰到的各类技术性和商务性问题。" />
+#parse("/common/import.vm")
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	//var urlValue = jQuery('#url').val();
+	jQuery.validator.setDefaults({
+		submitHandler: function(form){
+			checklogin(jQuery("#username").val(),jQuery("#password").val(),"0",jQuery("#url").val(),"","","#springUrl('/user')",function(response){
+				if(response.success){
+					window.location.href=response.data;
+				}else{
+					alert(response.data);
+				}
+			});
+		}
+
+	});
+
+	//开始验证
+	jQuery('#loginForm').validate({
+		rules:{
+			username:{
+				required:true
+			},
+			password:{
+				required:true
+			}
+		},
+		messages:{
+			username:{
+				required:"请输入您的用户名！"
+			},
+			password:{
+				required:"请输入您的密码！"
+			}
+		},
+		focusInvalid: false,
+		onkeyup: false,
+		errorPlacement: function(error, element) {
+			error.appendTo(element.parent());
+		}
+	});
+
+});
+
+</script>
+</head>
+
+<body>
+	#parse("/bbs/bbs_top_login.vm")
+    <div class="remind">
+    	 <div class="remind1">
+         	  社区用户登录
+         </div>
+         <div class="remind2">
+             <p class="remind2_textcolor1">
+             	请登录后再进行操作！
+             </p>
+			 <div class="remind2_1">
+				<form id="loginForm" name="loginForm" action="$!{address.front}/doLogin.htm" method="post">
+                 	  <p class="remind2_1_items"><label class="remind2_text" for="username">用户名:</label>
+    				  <input type="text" name="username" id="username" class="remind2_input1"/> 
+					  </p>
+                      <p class="remind2_1_items">
+					  <label class="remind2_text" for="password">密码:</label>
+    				  <input type="password" name="password" id="password" class="remind2_input1"/>
+					  </p>
+                      <p class="remind2_1_items">
+					  <input type="checkbox" class="remind2_input2" /> 下次自动登陆 
+					  </p>
+                      <p class="remind2_1_items">
+						<input type="submit" class="remind2_input3" value=""  onmouseover="this.className='remind2_input3over'"  onmouseout="this.className='remind2_input3'"/>
+						#if($!{url})
+					  <input type="hidden" id="url" value="$!{url}">
+						#end
+					  </p>
+				</form>
+             </div>
+             <div class="remind3">
+             <span class="remind3_textcolor1">
+				<a href="$!{address.front}/register/register.htm">赶紧注册去</a>
+				|
+				<a href="$!{address.front}/user/passwordReminder.htm">找回登陆密码</a></span>
+			 </div>
+         </div>
+    </div>
+</body>
+</html>

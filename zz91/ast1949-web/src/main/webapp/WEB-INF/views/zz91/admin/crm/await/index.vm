@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+	<!-- for include js code -->
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<script>
+		var PAGE_CONST = new function() {
+			this.AWAIT_GRID="AWAIT_GRID";
+		}
+		
+		Ext.onReady(function(){
+        	var grid = new ast.ast1949.admin.crm.await.ResultGrid({
+        		id:PAGE_CONST.AWAIT_GRID,
+        		listUrl:Context.ROOT + Context.PATH + "/admin/crm/await/query.htm"
+        	});
+			
+			grid.on("rowdblclick",function(grid,rowindex,e){
+        		var value=grid.getStore().getAt(rowindex).get("companyId");
+				var account=grid.getStore().getAt(rowindex).get("account");
+        		if(value>0){
+        			window.open(Context.ROOT + Context.PATH + "/admin/crm/showDetail.htm?id=" + value +"&account="+account+"&st="+timestamp());
+        		} else {
+					ast.ast1949.utils.Msg("","公司有误编号，请联系系统管理员！");
+				}
+        	});
+			
+			var _store = grid.getStore();
+			
+			_store.baseParams = {};
+			_store.baseParams = {"status":"0"}
+			_store.reload({params:{"startIndex":0, "pageSize":Context.PAGE_SIZE}});
+        	
+        	var viewport = new Ext.Viewport({
+        		layout:"fit",
+        		items:[grid]
+        	});
+        })
+	</script>
+	
+	<script type="text/javascript" src="$!{address.js}/admin/lib/AdminUserCombo.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/crm/await/list.js" ></script>
+	
+	
+</head>
+<body>
+	
+</body>
+</html>

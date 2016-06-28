@@ -1,0 +1,82 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1803","","00")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+    <div class="commTip">
+		<span class="commTipLeft">
+			您现在拥有的积分：<b>$!{scoreSummary.score}</b>
+		</span>
+        <span class="commTipRight">
+			<a href="#springUrl('/myscore/changeDetails.htm')" class="commHowDo" >查看您的积分变更历史</a>
+			<a href="$!{address.server}/score/" class="commHowDo" target="_blank" >什么是积分？获得积分的途径？</a>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+	
+	<div class="commList">
+		<div class="commListTit">
+			<span class="myscroeExcSevr">兑换服务</span>
+			<span class="myscroeExcType">兑换方式</span>
+			<span class="myscroeExcPay">支付情况</span>
+			<span class="myscroeExcStatus">兑换状态</span>
+			<span class="myscroeExcDate">兑换日期</span>
+            <div style="clear:both"></div>
+		</div>
+			#if(${pageContext.records.size()}==0)
+				<div class="tishiError">
+					您还没有兑换过商品，请到<a href="${address.server}/score/" target="_blank" >积分商城</a>兑换
+				</div>
+			#else
+				<ul>
+    			#foreach($!{details} in $!{pageContext.records})
+    				#set($category="积分兑换")
+    				#set($conversionScore = true)
+    				#if($!{details.history.conversionCategory}=="1")
+    					#set($category="原价兑换")
+    					#set($conversionScore = false)
+    				#end
+    				#set($statusStr="申请中")
+    				#if($!{details.history.status}=="1")
+    					#set($statusStr="成功")
+    				#end
+    				#if($!{details.history.status}=="2")
+    					#set($statusStr="失败")
+    				#end
+    				<li>
+    					<span class="myscroeExcSevr">$!{details.goods.name}</span>
+    					<span class="myscroeExcType">${category}</span>
+    					<span class="myscroeExcPay">
+    						#if($conversionScore)
+    							$!{details.goods.scoreBuy} 积分
+    						#else
+    							$!{details.goods.priceBuy} RMB(￥)
+    						#end
+    					</span>
+    					<span class="myscroeExcStatus">
+							##$statusStr#if($!{details.history.remark})：$!{details.history.remark}#end
+								#if($!{details.history.status}=="1")
+                                    <font style="color:#76C133">成功</font>
+								#elseif($!{details.history.status}=="2")
+									<font style="color:red">失败</font>
+								#else
+									<font style="color:#AAA">申请中</font>
+								#end
+						</span>
+    					<span class="myscroeExcDate">$!date.format('yyyy-MM-dd',$!{details.history.gmtCreated})</span>
+    				</li>
+				#end
+                <div style="clear:both"></div>
+                </ul>
+			#end
+            <div style="clear:both"></div>
+		</div>
+		<div class="pageNav">
+			#myrcPageNav($!{pageContext} "#springUrl('/myscore/conversionHistory.htm')" "" "")
+		</div>
+</div>
+</div>
+	<script type="text/javascript">
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	});
+</script> 

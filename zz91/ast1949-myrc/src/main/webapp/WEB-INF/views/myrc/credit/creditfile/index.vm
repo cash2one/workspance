@@ -1,0 +1,87 @@
+#set( $layout = "/layout/myrcLayout.vm")
+#leftMenu("1602","","00")
+<div class="myrcNormalFrame"> 
+	<div class="commTip">
+		<span class="commTipLeft" >
+			您一共发布了<b> $!{fileList.size()} </b>张证书，共获得了 <b>#if($!{integral})$!{integral} #else 0 #end</b>分
+		</span>
+		<span class="commTipRight">
+			<a href="#springUrl('/credit/creditfile/create.htm')" class="commArrowNews">发布新证书</a>
+            ##<font style="color:#AAA">展示证书，彰显公司实力，为信用级别加分！</font>
+		</span>
+        <div style="clear:both"></div>
+    </div>
+	
+	<div class="commList">
+	#foreach($category in ${categoryMap.entrySet()})
+		<div class="categoryTit">${category.value}</div>
+		<div class="commListTit">
+            <span class="creditFileName">证书名称</span>
+            <span class="creditFileOffic">发证机构</span>
+            <span class="creditFileStatus">状态</span>
+            <span class="creditFileDate">有效期限</span>
+            <span class="creditFileOperat">操作</span>
+            <div style="clear:both"></div>
+        </div>
+		<ul style="margin-bottom:8px;">
+		#set($listCount=0)
+        #foreach($credit in $!fileList)
+			#if(${credit.categoryCode} == ${category.key})
+            <li>
+				<span class="creditFileName">
+					<a href="javascript:void(0)" onClick="window.open('$!{address.resource}/$!{credit.picName}','_blank','width=800,height=450')">
+						$!{credit.fileName}
+					</a>
+				</span>
+				<span class="creditFileOffic">$!{credit.organization}</span>
+				<span class="creditFileStatus">
+					#if($!{credit.checkStatus}=='0')
+						<font style="color:#AAA">未审核</font>
+					#elseif($!{credit.checkStatus}=='1')
+						<font style="color:#65B720">已审核</font>
+					#else 
+						<font style="color:#E77817;">未通过</font> 
+					#end
+				</span>
+				<span class="creditFileDate">$!date.format('yyyy-MM-dd',$!{credit.endTime})</span>
+				<span class="creditFileOperatMod">
+					<a href="#springUrl('/credit/creditfile/edit.htm?id=')$!{credit.id}" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">修改</a>
+				</span>
+				<span class="creditFileOperatDel">
+					<a href="#springUrl('/credit/creditfile/deleteFile.htm?id=')$!{credit.id}" onClick="return confirm('确实要删除吗？')" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">删除</a>
+                </span>
+            </li>
+			#set($listCount=$listCount+1)
+			#end
+            <div style="clear:both"></div>
+		#end
+		</ul>
+		#if($listCount==0)
+		<div class="tishiError" style="margin-bottom:8px;">
+			暂无${category.value}
+			<a href="#springUrl('/credit/creditfile/create.htm?code=')${category.key}">立即上传</a>
+        </div>
+		#end
+		
+		#if($velocityCount == 1)
+            <div style="clear:both"></div>
+			<div class="tishiSW">
+                <b>注意</b>
+				<hr style="color:#CCC;height:1px">
+			税务登记证是买家非常关注的证书，请务必上传，经审核可立即获得信用积分<b>10分</b>！
+            </div>
+		#end
+        <div style="clear:both"></div>
+	#end
+	</div>
+	<div class="tishiSW">
+        <b>提醒</b>
+		<hr style="color:#CCC;height:1px">
+		证书方面问题需要帮助，请<a href="/cn/contactus.asp" target="_blank">点此告诉我们</a>！ 有意见和建议，也请告诉我们！
+	</div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	});
+</script> 

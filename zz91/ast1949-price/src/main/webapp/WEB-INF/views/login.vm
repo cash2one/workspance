@@ -1,0 +1,81 @@
+<script language="javascript">
+function Login(frm) {
+    var openStatus = "$!{openStatus}";
+    if (openStatus != "all") {
+        alert('本站为测试版，新的生意管家后期将开放。请您在老站点登录！');
+        parent.location.href = "http://www.zz91.com/cn/login.asp";
+        return false;
+    }
+    var email = jQuery("#email").val();
+    if (email.length <= 0) {
+        alert("请输入用户名或者email！");
+        jQuery("#email").focus();
+        return false;
+    }
+    if (jQuery("#pwd").val() == "") {
+        alert("请输入密码！");
+        jQuery("#pwd").focus();
+        return false;
+    } else {
+		zz91Util.login({
+			username:jQuery("#email").val(),
+			password:jQuery("#pwd").val(),
+			contextpath:"#springUrl('/user')",
+			success:function(response){
+				window.location.href=window.location.href;
+			}
+		});
+        /*
+		checklogin(jQuery("#email").val(), jQuery("#pwd").val(), "", "", "", "", "#springUrl('')",
+        function(response) {
+            if (response.success) {
+                parent.location.reload()
+            } else {
+                alert(response.data);
+            }
+        });
+		*/
+		
+    }
+    return false;
+}
+</script>
+<div style="clear:both"></div>
+<div class="loginPrice">
+    <form action="" method="post" name="form2" target="_top" id="form2"  onsubmit="return Login(this); return false;">
+        <div class="helpAlert">本站所有信息免费向所有用户开放，但您需登录后查看此条信息！</div>
+            <div id="mod">
+                <fieldset style="border:1px solid #7EC389;padding:12px 0;">
+                    <legend style="color:#1E7362;margin-left:24px; padding:12px 0;">已经是本站会员请登录</legend>
+                    <div class="priceLoginItems">
+                        <label for="email">用户名：</label>
+                        <input name="email" type="text" class="inputTxt_green" id="email" value="" />
+                    </div>
+                    <div class="priceLoginItems">
+                        <label for="password">密　码：</label>
+                        <input name="pwd" type="password" class="inputTxt_green" id="pwd" />
+                    </div>
+                    <div class="priceLoginItems">
+                        <input type="submit" name="button2" id="button2" value="登 录" class="buttonbg1" />
+                    </div>
+                </fieldset>
+            </div>
+			
+            <div id="mod">
+                <fieldset style="border:1px solid #7EC389;padding:12px 0;">
+                    <legend style="color:#1E7362; margin-left:24px;">还没有用户名和密码？</legend>
+                    <div class="helpTipInfo">
+						<p>
+							花一分钟时间注册会员并登录查看最新信息&nbsp;
+                            <a href="$!{address.server}/register/register.htm" target="_blank" title="免费注册成为$!{siteInfo.site_name}">
+								注册$!{siteInfo.site_name}会员
+                            </a>
+                        </p>
+						<p>
+							<img src="$!{address.img}/front/images/myrc/face62.gif" />注册www.zz91.com会员是<span class="STYLE1">完全免费</span>的!
+                        </p>
+					</div>
+                </fieldset>
+            </div>
+    </form>
+</div>

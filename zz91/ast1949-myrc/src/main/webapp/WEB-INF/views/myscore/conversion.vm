@@ -1,0 +1,153 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1802","","00")
+<div class="myrcNormalFrame">
+    <div class="commTip">
+		<span class="commTipLeft">
+			您现在拥有的积分：<b>$!{scoreSummary.score}</b>
+		</span>
+        <span class="commTipRight">
+			<a href="#springUrl('/myscore/conversionHistory.htm')" class="commHowDo" >查看您的积分兑换历史</a>
+			<a href="$!{address.score}" class="commHowDo" target="_blank" >什么是积分？获得积分的途径？</a>
+		</span>
+        <div style="clear:both"></div>
+	</div>
+	
+	<div class="officetitle">兑换的商品</div>
+	<div class="productskuang">
+			<div class="publishFormItems">
+				<div class="products_title">兑换的商品：</div>
+				<div class="products_fill">$!{goods.name}</div>
+			</div>
+			#if($!{conversionCategory}=="0")
+    			<div class="publishFormItems">
+    				<div class="products_title">所需积分：</div>
+    				<div class="products_fill">$!{goods.scoreBuy} 分#if($!{goods.scoreDay})/$!{goods.scoreDay}天#end</div>
+    			</div>
+			#else
+				<div class="publishFormItems">
+    				<div class="products_title">购买价格：</div>
+    				<div class="products_fill"> $!{goods.priceBuy} RMB(￥)#if($!{goods.priceDay})/$!{goods.priceDay}天#end</div>
+    			</div>
+			#end
+	
+			#if($!{goods.keywords}!="")
+				<div class="publishFormItems">
+					<div class="products_title">关键字：</div>
+					<div class="products_fill"> $!{goods.keywords}</div>
+				</div>
+			#end
+	</div>
+	
+	<div class="officetitle">填写兑换申请单</div>
+	#if( $!{conversionCategory}=="0" && $!{goods.scoreBuy} > $!{scoreSummary.score} )
+		<div class="tishiError">
+			对不起，您的积分不足以兑换这个商品！
+			<br />
+			<a href="$!{address.score}/rule.htm" target="_blank" color="color:#AAA">如何快速赚取积分？</a>
+        </div>
+	#else
+		<form id="form1" name="form1" action="#" onsubmit="return false;" >
+			<input type="hidden" id="scoreGoodsId" name="scoreGoodsId" value="$!{goods.id}" />
+			<input type="hidden" id="conversionCategory" name="conversionCategory" value="$!{conversionCategory}" />
+			<div class="productskuang">
+    			#if($!{goods.category}==0)
+    				<div class="publishFormItems">
+    					<div class="products_title"><label for="keywords"><font style="color:red;">*</font>关键字：</label></div>
+    					<div class="products_fill"><input name="keywords" type="text" id="keywords" size="40" value="$!{goods.keywords}" /></div>
+    				</div>
+    			#end
+    			<div class="publishFormItems">
+    				<div class="products_title"><label for="companyName"><font style="color:red;">*</font>企业名称：</label></div>
+    				<div class="products_fill"><input name="companyName" type="text" id="companyName" size="60" value="$!{mycompany.name}" /></div>
+    			</div>
+    			<div class="publishFormItems">
+    				<div class="products_title"><label for="contactName"><font style="color:red;">*</font>联系人：</label></div>
+    				<div class="products_fill"><input name="contactName" type="text" id="contactName" size="60" value="$!{myaccount.contact}" /></div>
+    			</div>
+    			<div class="publishFormItems">
+    				<div class="products_title"><label for="phone"><font style="color:red;">*</font>手机：</label></div>
+    				<div class="products_fill"><input name="phone" type="text" id="phone" size="60" value="$!{myaccount.phone}" /></div>
+    			</div>
+    			<div class="publishFormItems">
+    				<div class="products_title"><label for="tel"><font style="color:red;">*</font>固定电话：</label></div>
+    				<div class="products_fill">
+    					#set($tel=$!{myaccount.telCountryCode}+"-"+$!{myaccount.telAreaCode}+"-"+$!{myaccount.tel})
+    					<input name="tel" type="text" id="tel" size="60" value="$!{tel}" />
+    				</div>
+    			</div>
+    			<div class="publishFormSub">
+    					<input type="submit"  class="buttonMax"/>
+				</div>
+			</div>
+		</form>
+		#end
+</div>
+
+
+
+<script language="javascript">
+jQuery(document).ready(function(){
+	jQuery("#form1").submit(function(){
+		if(!chkfrm()){
+			return false;
+		}
+		
+		jQuery.ajax({
+			url:'#springUrl('/myscore/createConversion.htm')',
+			data:jQuery("#form1").serialize(),
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					//保存成功后给出提示 或 跳转到提示页面
+					window.location.href="#springUrl('/myscore/conversionHistory.htm')";
+				}else{
+					msg.show(req.data);
+					if(req.data="sessionTimeOut"){
+						window.open("#springUrl('/login.htm')");
+					}
+				}
+			},
+			failure:function(){
+				msg.show("commonError");
+			}
+		});
+		
+		return false;
+	});
+});
+
+function chkfrm(){
+	#if($!{goods.category}==0)
+	if(isEmpty(jQuery("#keywords").val())){
+		alert("关键字不能为空");
+		jQuery("#keywords").focus();
+		return false;
+	}
+	#end
+	if(isEmpty(jQuery("#companyName").val())){
+		alert("企业名称不能为空");
+		jQuery("#companyName").focus();
+		return false;
+	}
+	if(isEmpty(jQuery("#contactName").val())){
+		alert("联系人不能为空");
+		jQuery("#contactName").focus();
+		return false;
+	}
+	if(isEmpty(jQuery("#phone").val())){
+		alert("手机号码不能为空");
+		jQuery("#phone").focus();
+		return false;
+	}
+	return true;
+}
+
+function isEmpty(v){
+	if(typeof(v)!="undefined" && v.length>0){
+		return false;
+	}
+	return true;
+}
+</script>

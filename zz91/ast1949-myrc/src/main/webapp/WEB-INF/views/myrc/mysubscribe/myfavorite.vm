@@ -1,0 +1,52 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1504","","30")
+<div class="myrcNormalFrame">
+	<form name="sForm" id="sForm" method="post" action="deleteMyfavorite.htm">
+	<div class="feedbackList">
+		<div class="feedbackSortsType">
+			<a #if(!${favoriteTypeCode}) class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end href="?" >全部信息</a></a> 
+			<a #if($!{favoriteTypeCode}=='10091001') class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end  href="?favoriteTypeCode=10091001">求购信息</a>
+			<a #if($!{favoriteTypeCode}=='10091000') class="feedbackSortsTypeOn" #else class="feedbackSortsTypeOff" #end  href="?favoriteTypeCode=10091000">供应信息</a>
+            <div style="clear:both"></div>
+		</div>
+	</div>
+    <div class="commList" style="margin-top:0">
+         <div class="commListTit">
+            <span class="subscriFavtSlect">&nbsp;</span>
+    		<span class="subscriFavtTit">标题</span> 
+    		<span class="subscriFavtUpTime">信息更新时间</span> 
+    		<span class="subscriFavtAddTime">加入篮子时间</span> 
+            <div style="clear:both"></div>
+         </div>
+    	<ul>
+    		#foreach($m in $mList)
+    		<li id=$!{m.id}> 		
+    			<span class="subscriFavtSlect">
+    				<input id="idprod$!{m.id}" type="checkbox" value="$!{m.id}" name="idprod" class="radioPositionFix">
+    			</span> 
+                <span class="subscriFavtTit">
+                    <font style="color:#5F9410">$!{m.favoriteType}</font>
+    				<a target="_blank" href="$!{address.server}/trade/productdetails.htm?productsId=$!{m.contentId}" class="a1">$!{m.title}</a>
+    			</span> 
+    			<span class="subscriFavtUpTime">$!date.format("yyyy-MM-dd",$!{m.updateTime})</span> 
+    			<span class="subscriFavtAddTime">$!date.format("yyyy-MM-dd",$!{m.addTime})</span> 
+    		</li> 
+    		#end
+            <div style="clear:both"></div>  
+    	</ul>
+    	<div class="listApplicationBtn" style="_margin-top:8px;">
+    		<input onclick="javascript:checkBoxAllToggle(true)" type="button" class="buttonMinGray" value="全选" />
+    		<input onclick="javascript:checkBoxAllToggle(false)" type="button" class="buttonMinGray" value="取消全选" />
+			<input onclick="delatefrm('sForm','idprod','deleteMyfavorite.htm','ids')" type="button" class="buttonMinGray" value="删除" />
+        </div>
+    </div>
+    </form>
+	<div class="pageNav" style="margin:10px 0;">
+		#myrcPageNav($!{page} "#springUrl('/mysubscribe/myfavorite.htm')" "$!{suffixUrl}" "")
+    </div>
+</div>
+<script type="text/javascript"> 
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	})
+</script> 

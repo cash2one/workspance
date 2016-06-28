@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysisXiaZaiKeywords">
+	<typeAlias alias="xiazaiKeywords" type="com.ast.ast1949.domain.analysis.AnalysisXiaZaiKeywords"/>
+	
+	<resultMap class="xiazaiKeywords" id="analysisXiaZaiKeywordsResult">
+		<result property="id" column="id" />
+		<result property="kw" column="kw"/>
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	
+	<sql id="where_clause_time">
+		<isNotNull prepend="and" property="start">
+			gmt_target &gt;= #start#
+		</isNotNull>
+		<isNotNull prepend="and" property="end">
+			gmt_target &lt;= #end#
+		</isNotNull>
+	</sql>
+	<sql id="where_causes_keywords" >
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="gmtTarget">
+				gmt_target = #gmtTarget#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<select id="queryKeywords" parameterClass="java.util.Map" resultMap="analysisXiaZaiKeywordsResult">
+		select id, kw, num, gmt_target
+		from analysis_xiazai_keywords
+		<include refid="where_causes_keywords"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryKeywordsRang" parameterClass="java.util.Map" resultMap="analysisXiaZaiKeywordsResult">
+		select id, kw, num, gmt_target
+		from analysis_xiazai_keywords
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kw">
+				kw = #kw#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+		order by gmt_target
+	</select>
+	<select id="queryListByFromTo" parameterClass="java.util.Map" resultMap="analysisXiaZaiKeywordsResult">
+		select
+		id, kw, num, gmt_target
+		FROM analysis_xiazai_keywords 
+		where gmt_target = #gmtTarget#
+	</select>
+	<select id="queryKeywordsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from analysis_xiazai_keywords
+		<include refid="where_causes_keywords"/>
+	</select>
+	<select id="summaryKeywords" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(num) as s
+		from analysis_xiazai_keywords
+		<include refid="where_causes_keywords"/>
+	</select>
+	
+	<insert id="insertKeyword" parameterClass="xiazaiKeywords">
+		INSERT INTO analysis_xiazai_keywords(kw,num,gmt_target,gmt_created,gmt_modified)
+		VALUES (#kw#,#num#,#gmtTarget#,now(),now())
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<update id = "updateKeywordOfNum" parameterClass="xiazaiKeywords">
+		UPDATE analysis_xiazai_keywords
+		SET num=#num#,gmt_created=now(),gmt_modified=now()
+		WHERE
+		id=#id#
+	</update>
+</sqlMap>

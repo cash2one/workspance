@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotInfo">
+	<typeAlias alias="spotInfoDO" type="com.ast.ast1949.domain.spot.SpotInfo" />
+	<resultMap class="spotInfoDO" id="spotInfoResult">
+		<result property="id" column="id" />
+		<result property="spotId" column="spot_id" />
+		<result property="shape" column="shape"/>
+		<result property="transaction" column="transaction" />
+		<result property="level" column="level" />
+		<result property="address" column="address" />
+		<result property="addressCode" column="address_code" />
+		<result property="zip" column="zip" />
+		<result property="tel" column="tel" />
+		<result property="mobile" column="mobile" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,spot_id,shape,transaction,level,address,address_code,zip,tel,mobile,gmt_created,gmt_modified
+	</sql>
+
+	<select id="queryOne" parameterClass="java.lang.Integer"
+		resultMap="spotInfoResult">
+		select
+		<include refid="spotInfo.defaultColumn" />
+		from spot_info
+		where spot_id=#id#
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="spotInfoDO">
+		INSERT INTO spot_info
+		(
+		spot_id,
+		transaction,
+		shape,
+		level,
+		address,
+		address_code,
+		zip,
+		tel,
+		mobile,
+		gmt_created,
+		gmt_modified)
+		VALUES
+		(
+		#spotId#,
+		#transaction#,
+		#shape#,
+		#level#,
+		#address#,
+		#addressCode#,
+		#zip#,
+		#tel#,
+		#mobile#,
+		now(),
+		now()
+		)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="spotInfoDO">
+		UPDATE spot_info
+		SET
+		gmt_modified = now()
+		<isNotEmpty prepend="," property="shape">
+			shape = #shape#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="transaction">
+			transaction = #transaction#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="level">
+			level = #level#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="address">
+			address = #address#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="addressCode">
+			address_code =
+			#addressCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="zip">
+			zip = #zip#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="tel">
+			tel = #tel#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="mobile">
+			mobile = #mobile#
+		</isNotEmpty>
+		WHERE id =#id#
+	</update>
+
+</sqlMap>

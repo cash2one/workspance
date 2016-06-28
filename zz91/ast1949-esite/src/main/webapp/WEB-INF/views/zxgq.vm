@@ -1,0 +1,102 @@
+#set( $layout = "/layout/myesiteLayout.vm" )
+<div id="content2" class="bodyRight filterDom">
+	#foreach($!{obj} in $!{navColumnConfig})
+		#if($!{obj.id}==$!{myposition.code})
+			#set($label=$!{obj.t})
+		#end
+	#end
+    <div id="company_index" class="bodyCont moveChild mb">
+        <div class="bodyContTitle"> 
+            <span class="titleLinkColor titleName t">
+				##最新供求
+				您所在的位置： <a href="#springUrl('index.htm')" target="_blank" class="titleLinkColor">首页</a> &gt; 
+				<a href="#springUrl('zxgq.htm')" target="_blank" class="titleLinkColor">$label</a>
+				#if($!{productCategory})
+					&gt; $!{productCategory.name}
+				#end
+			</span>
+        </div>
+        <div class="bodyContContent rightConteWidth">
+			<div class="seriesList">
+				#cacheFragment("$!{address.fragment}/esite/productCategory.htm?cid=$!{cid}&1","","1","")
+				<ul class="clearfix">
+					#foreach($!{mostseriesList} in $!{list})
+						<li title="$!{mostseriesList.name}">
+							<a href="#springUrl('/zxgq-sid')$!{mostseriesList.id}.htm" class="topicLink draft_no_link">$!{mostseriesList.name}</a>
+						</li>
+					#end
+					<li>
+						<a href="#springUrl('/zxgq.htm')" class="topicLink draft_no_link">未分类类别</a>
+					</li>
+				</ul>
+				#end
+			</div>
+			## 搜索
+			<div class="seriesSearch">
+				<input type="text" class="field" name="keywords_text_1" id="keywords_text_1" onFocus="javascript:funcFocus(this)" placeholder="请输入产品名称"  />
+				<input class="submit" type="button" value="搜索" onclick="javascript:funcSearch($!{companyDO.id})" />
+			</div>
+            <div class="bodyContContentRightCont mainTextColor"> 
+            	<div class="product-wrap">
+			    #foreach($!{picList} in $!{page.records})
+				    <div class="product-item clearfix">
+				    	<div class="image">
+				    		<a href="/products$!{picList.products.id}.htm" target="_blank">
+							#if(${picList.coverPicUrl})
+								<img src="$!{address.thumb}$!{address.resource}/$!{picList.coverPicUrl}&width=104&height=93" width="104" height="93" alt="#if($!{picList.products.productsTypeCode}=="10331001")求购#else供应#end$!{picList.products.title}" />
+							#else
+								<img src="$!{address.images}/global/noimage.gif" width="104" height="93" />
+							#end
+							</a>
+				    	</div>
+				    	<div class="cont">
+				    		<a class="topicLink" href="/products$!{picList.products.id}.htm" target="_blank" >
+	                            #if($!{picList.products.productsTypeCode}=="10331001")求购#else 供应#end$!{picList.products.title}
+	                        </a>
+	                        <p>#printTitle($!{picList.products.details} 60 "")</p>
+				    	</div>
+				    	<div class="date">
+				    		$!date.format("yyyy-MM-dd",$!{picList.products.refreshTime})
+				    	</div>
+				    	<div class="do">
+					    	<a href="$!{address.front}/inquiry/inquiryApi.htm?productId=$!{picList.products.id}" target="_blank" >在线询价</a>
+				    	</div>
+				    </div>
+			    #end
+			    </div>
+            </div>
+			#myrcPageNav($page "#springUrl('/zxgq.htm')" "kw=$!{kw}&sid=$!{sid}" "")
+			#if($!{cid}=="760523")
+		   <div style='text-align:center'><iframe border="0" name="aaaa"  marginWidth="0" frameSpacing="0" marginHeight="0" src='http://ajlong.zz91.com/vedio/flash1.html'   frameBorder="0" noResize width="320" scrolling="no"  height="240" vspale="0"></iframe><p>安晶龙色选机选料视频</p></div>
+		   #end
+        </div>
+    </div>
+</div>
+
+<script>
+function funcSearch(cd) {
+    var keywords = document.getElementById("keywords_text_1").value;
+    if (keywords == null || Trim(keywords) == "" || keywords == "输入产品关键字") {
+        alert("请输入要查找信息的关键字！");
+        document.getElementById("keywords_text_1").focus();
+        return false;
+    } else {
+        parent.window.location.href="#springUrl('/zxgq.htm?kw=')"+keywords;
+    }
+}
+
+function funcFocus(text) {
+    if (text.value=="输入产品关键字" || Trim(text.value)=="") {
+        text.value="";
+    }
+}
+
+function Trim(str) {
+    if(str.charAt(0) == " "){
+        str = str.slice(1);
+        str = Trim(str);
+    }
+    return str;
+}
+
+</script>

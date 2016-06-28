@@ -1,0 +1,64 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/esite/esitenews/index.htm')">商铺管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">修改公司动态</li>
+        </ul>
+	    <p><a href="#springUrl('/esite/esitenews/index.htm')">返回列表</a></p>
+    	<div class="well">
+            <div class="well-head">公司动态信息</div>
+            <div class="well-content">
+    		<form id="form2" name="form2" method="post" action="#springUrl('/esite/esitenews/updateNews.htm')">
+    			<input type="hidden" id="id" name="id" value="$!{news.id}" >
+                    <div class="control-group">
+                	   <label for="title" class="control-label">
+                    		<span class="red">*</span>文章标题：
+                    	</label>
+                    	<div class="controls">
+    						<input name="title" type="text" id="title" class='field validate[required]' value="$!{news.title}" >
+                    	</div>
+                	</div>
+                	<div class="control-group">
+                        <label for="content" class="control-label">
+                            <span class="red">*</span>文章内容：
+                    	</label>
+                        <div class="controls">
+                    		<textarea name="content" cols="60" rows="5" id="content">$!{news.content}</textarea>
+                    	</div>
+                    </div>
+                    <div class="control-group">
+                        <label for="postTimeStr" class="control-label">
+                            <span class="red">*</span>发布时间：
+                    	</label>
+                        <div class="controls">
+                			<input type="text" name="postTimeStr" id="postTimeStr" value="$!{date.format('yyyy-MM-dd HH:mm:ss',$!{currentTime})}" class='field validate[required,custom[dateTime]]'>
+    						<span class="grey">格式：yyyy-MM-dd hh:mm:ss，如：2011-01-01 12:19:00</span>
+                    	</div>
+                	</div>
+                	<div class="form-actions">
+                		<input name="submitsave" type="submit" id="submitsave" class="btn btn-primary" value="确认信息无误，提交">
+                	</div>
+            </form>
+    	</div>
+    </div>
+</div>
+#parse("/common/importValidate.vm")
+#parse("/common/importCkeditor.vm")
+<script>
+jQuery(function(){
+    myrc.menu(6, 3);	
+	CKEDITOR.replace( 'content',{
+        language: 'zh-cn',
+        toolbar:'Full',
+        height:300,
+		enterMode:CKEDITOR.ENTER_BR,
+		shiftEnterMode:CKEDITOR.ENTER_P
+    });
+						
+	jQuery("#form2").validationEngine("attach");
+	
+});
+</script>

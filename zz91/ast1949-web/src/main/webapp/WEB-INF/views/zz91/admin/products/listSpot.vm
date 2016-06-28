@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>zz91.admin.products.list</title>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/jquery.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/ext/adapter/jquery/ext-jquery-adapter.js" ></script>
+	#parse("/zz91/common/import.vm")
+	#parse("/zz91/common/context.vm")
+	<!--new import S-->
+	<script type="text/javascript" src="$!{address.js}/admin/categoryProducts/tree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/ComboTree.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/lib/RowExpander.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/products/productsListSpot.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/admin/dataIndex/index.js" ></script>
+	<script type="text/javascript" src="$!{address.js}/spot/spot-common.js" ></script>
+	<!--new import E-->
+	<script type="text/javascript">
+		Ext.onReady(function() {
+
+    	//供求类别树
+    	var tree = new ast.ast1949.admin.categoryproducts.treePanel({
+    		region : "west",
+    		layout:"fit",
+    		split : true,
+    		width : 180,
+    		rootData:"",
+    		isAssist:'0'
+    	});
+    
+    	var grid = new ast.ast1949.admin.products.resultGrid({
+    		region:"center",
+    		layout:"fit"
+    	});
+    
+    	var viewport = new Ext.Viewport({
+    		layout : "border",
+    		border : true,
+    		items : [tree, grid]
+    	});
+    
+    	grid.searchByCheckStatus();
+    
+		/*
+    	var form = new ast.ast1949.admin.products.searchForm({
+    		title:"搜索供求信息",
+    		collapsible: true,
+            animCollapse: false,
+            frame:true,
+            titleCollapse:true,
+            style: 'position:absolute;right:6;bottom:30;z-index:101',  //left:0;
+            height:330,
+            width:300,
+            targetGrid:grid
+    	});
+    
+    	form.render(Ext.getBody());
+    
+    	form.resizer = new Ext.Resizable(form.el, {
+            minHeight:50,
+            minWidth:100,
+            handles: "n",
+            pinned: true,
+            transparent:true,
+            resizeElement : function(){
+                var box = this.proxy.getBox();
+                this.proxy.hide();
+                form.setHeight(box.height);
+                return box;
+            }
+        });
+    	*/
+    	tree.on("click", function(node, event) {
+    		var B=grid.getStore().baseParams;
+    		B = B||{};
+    		B["categoryProductsMainCode"] = node.attributes["data"];
+    		grid.getStore().baseParams = B ;
+    		grid.getStore().reload({
+    			params : {
+    				"startIndex" : 0,
+    				"pageSize" : Context.PAGE_SIZE
+    			}
+    		});
+    	});
+		
+		#if($!{account})
+			var B=grid.getStore().baseParams;
+    		B = B||{};
+			B["checkPerson"] = "$!{account}";
+    		B["statusArray"] = "$!{status}";
+			B["from"] = "$!{from}";
+			B["to"] = "$!{to}";
+    		grid.getStore().baseParams = B ;
+    		grid.getStore().reload({
+    			params : {
+    				"startIndex" : 0,
+    				"pageSize" : Context.PAGE_SIZE
+    			}
+    		});
+		#end
+    });
+	</script>
+</head>
+
+<body>
+
+</body>
+</html>

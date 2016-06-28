@@ -1,0 +1,642 @@
+#parse("/bbs/bbs_top.vm")
+<!--main start-->
+<div class="main">
+	<!--banneer start-->
+	<div class="banner">
+		<script src="http://pyapp.zz91.com/showppctxtadscript/?keywords=&amp;showborder=1&amp;showposition=1&amp;m=5&amp;padding=10&amp;w=986&amp;num=5"></script>
+	</div>
+	<!--end-->
+		<!--left start-->
+		<div class="left">
+			<div class="left1">
+				<div class="newsimg">				
+					<div class="slidecontainer" id="zz91slide">
+						<div class="toggleImg">
+							<script type="text/javascript" src="http://gg.zz91.com/show?p=72&keywords=1"></script>					
+							<script type="text/javascript" src="http://gg.zz91.com/show?p=72&keywords=2"></script>				
+							<script type="text/javascript" src="http://gg.zz91.com/show?p=72&keywords=3"></script>				
+							<script type="text/javascript" src="http://gg.zz91.com/show?p=72&keywords=4"></script>					
+							<script type="text/javascript" src="http://gg.zz91.com/show?p=72&keywords=5"></script>
+						</div>
+						<div class="toggleBtn">
+							#* turn btn area*#
+						</div>
+					</div>
+					<script type="text/javascript" src="$!{address.img}/bbs/js/zz91.bbs.slide.js"></script>
+					<script type="text/javascript"> 
+                       $(document).ready(function(){
+            				new zz91slide(
+            					config={
+            						conter:"#zz91slide",
+            						spd:500,
+            						intval:3000
+            					}
+            				);
+            			});
+                    </script>
+				</div>
+				<div class="notice">
+					<div class="notice1">
+						<div id="notice1_1" onmouseover="shownews(1)" class="notice1_1" >24小时热帖</div>
+						<div id="notice1_2" onmouseover="shownews(2)" class="notice2_1" >历史牛贴</div>
+					</div>
+					<!--24小时热帖 start-->
+					#cacheFragment("$!{address.fragment}/huzhu/hotReply.htm?size=10&1" "" "" "")
+					<div id="noticeshow1" >
+						<ul class="noticeul1">
+							#foreach($postlist in $!{postDailylist})
+								#set($countVal = $velocityCount+1)
+								#if(4>$velocityCount)
+									<li class="noticeli1" style="background:url($!{address.img}/bbs/images/bbs/icon$!{countVal}.jpg) no-repeat; background-position:center left;">
+										<a href="#springUrl('/viewReply')$!{postlist.id}.htm" target="_blank" title="$!{postlist.title}">
+											$!{postlist.title}
+										</a>
+									</li>
+								#end
+							#end
+						</ul>
+						<ul class="noticeul2">
+							#foreach($post in $!{postDailylist})
+								#set($countVal = $velocityCount+1)
+								#if($velocityCount>=4)
+									<li class="noticeli3">
+										<a href="#springUrl('/viewReply')$!{post.id}.htm" target="_blank" title="$!{post.title}">
+											$!{post.title}
+										</a>
+									</li>
+								#end
+							#end
+						</ul>
+					</div>
+					#end
+					<!--24小时热帖 end-->
+					<!--历史牛贴 start -->
+					#cacheFragment("$!{address.fragment}/huzhu/mostPost.htm?size=10&1" "" "" "")
+					<div id="noticeshow2" style="display:none;">
+						<ul class="noticeul1">
+							#foreach($allBbs in $!{allBbsPostList})
+								#set($countVal = $velocityCount+1)
+								#if(4>$velocityCount)
+									<li class="noticeli1" style="background:url($!{address.img}/bbs/images/bbs/icon$!{countVal}.jpg) no-repeat; background-position:center left;">
+										<a href="#springUrl('/viewReply')$!{allBbs.id}.htm" target="_blank" title="$!{allBbs.title}">
+											#printTitle($!{allBbs.title} 23 "")
+										</a>
+									</li>
+								#end
+							#end
+						</ul>
+						<ul class="noticeul2">
+							#foreach($all in $!{allBbsPostList})
+								#set($countVal = $velocityCount+1)
+								#if($velocityCount>=4)
+									<li class="noticeli3">
+										<a href="#springUrl('/viewReply')$!{all.id}.htm" target="_blank" title="$!{all.title}">
+											#printTitle($!{all.title} 23 "")
+										</a>
+									</li>
+								#end
+							#end
+						</ul>
+					</div>
+					#end
+					<!--end-->
+				</div>
+			</div>
+			<!--left2 start-->
+			<div class="left2">
+				<div class="left2_topnews_leader">
+					<h3 id="hotTipTit">今日头条</h3>
+					<span class="dateTimer" id="localtime">
+						<script type="text/javascript" src="$!{address.img}/bbs/js/zz91.bbs.clock.js"></script>
+						<span id='nowDateIs'></span><span id='nowTimeIs'></span> <span id='nowCnYearIs'></span><span id='nowCnDateIs'></span>
+					</span>
+					<span id="hotTipToday" onclick="showHot(1)" class="hotnews">&gt;&gt; 昨日头条</span>
+					<span id="hotTipYesterday" onclick="showHot(2)" style="display:none" class="hotnews">&gt;&gt; 今日头条</span>
+				</div>
+				
+				
+				<!--today hot news-->
+				<div id="hotContentToday">
+					#foreach($plist3 in $!{postByType3})
+    					#if(2>=$velocityCount)
+    						<h4 class="left2_topnews_title">
+    							<a href="#springUrl('/viewReply')$!{plist3.id}.htm" target="_blank">
+    								$!{plist3.title}
+    							</a>
+    						</h4>
+    						<div class="left2_topnews_content">
+    							$!{plist3.content}<a href="#springUrl('/viewReply')$!{plist3.id}.htm" target="_blank">&gt;&gt;点击进入</a>
+    						</div>
+    					#end
+					#end
+				</div>
+				<!--today hot news-->
+				
+				<!--yesterday hot news-->
+				<div id="hotContentYesterday" style="display:none">
+					#foreach($plist2 in $!{postByType3})
+						#if($velocityCount>2)
+							<h4 class="left2_topnews_title">
+								<a href="#springUrl('/viewReply')$!{plist2.id}.htm" target="_blank">
+									$!{plist2.title}
+								</a>
+							</h4>
+							<div class="left2_topnews_content">
+								$!{plist2.content}<a href="#springUrl('/viewReply')$!{plist2.id}.htm" target="_blank">&gt;&gt;点击进入</a>
+							</div>
+						#end
+					#end
+				</div>
+				<!--yesterday hot news-->
+				
+				<div class="border">
+				</div>
+				<!--行业动态news start-->
+				#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=4&size=11" "" "1" "")
+					<div class="trade_news">
+						<ul>
+							#foreach($plist4 in $!{list})
+								#if($!velocityCount>0 && 8>=$!velocityCount)
+									<li class="trade_news_li1">
+										<a href="#springUrl('/bbsCategory')$!{plist4.post.bbsPostCategoryId}.htm" target="_blank">
+											[$!categoryMap.get($!{plist4.post.bbsPostCategoryId})]
+										</a>
+									</li>
+									<li class="trade_news_li2">
+										<a href="#springUrl('/viewReply')$!{plist4.post.id}.htm" target="_blank" title="$!{plist4.post.title}">
+											#printTitle($!{plist4.post.title} 18 "")
+										</a>
+									</li>
+									<li class="trade_news_li3">
+										#if($!{plist4.post.companyId} && $!{plist4.post.companyId}==0)
+											互助管理员
+										#else
+											#if($!{plist4.profiler.id} && $!{plist4.profiler.id}>0)
+												<a href="#springUrl('/othersposted')$!{plist4.profiler.id}.htm" target="_blank">
+												#if($!{plist4.profiler.nickname}=="")
+													$!{plist4.post.account} 
+												#else 
+													$!{plist4.profiler.nickname}
+												#end
+												</a>
+											#end
+										#end
+									</li>
+								#end
+							#end
+						</ul>
+					</div>
+					<!--行业动态news end-->
+					<!-- add fangun   start -->
+					<div class="scroll_tit" >
+						<ul id="info_1" >
+						#foreach($!{postTypeList4} in $!{list})
+							#if($!velocityCount>8)
+								<li>
+									<span class="scroll_tit_left">
+										<a title="$!{postTypeList4.post.title}" href="#springUrl('/viewReply')$!{postTypeList4.post.id}.htm" target="_blank">
+											$!{postTypeList4.post.title}
+										</a>
+									</span>
+									<span class="scroll_tit_right">
+										<a href="#springUrl('/search.htm?keywords=%E6%9C%80%E6%96%B0%E5%8A%A8%E6%80%81')" target="_blank">更多>></a>
+									</span>
+								</li>
+							#end
+						#end
+						</ul>
+					</div>
+				#end
+				<script type="text/javascript">
+					try{
+        				slideLine('info_1', 3000, 20, 20);
+        				}
+        			catch(e){}
+				</script>
+				<!-- add fangun end -->
+			</div>
+			<!--left2 end-->
+			<div style="clear:both"></div>
+			<!--left3 热门话题 start-->
+			<div class="left3">
+				<div class="left3_1">
+					<ul>
+						<li class="left3_1_li4"></li>
+						<li class="left3_1_li1">网商</li>
+						<li class="left3_1_li2">访问/回复</li>
+						<li class="left3_1_li3">最后发表</li>
+					</ul>
+				</div>
+				### 百度分享
+				#parse("/common/baiduShare.vm")
+				#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=5&size=33" "" "1" "")
+				<div class="left3_2" id="left3_2">
+					<ul>
+						#foreach($postlist in $!{list})
+							#if(28>=$!velocityCount)
+								#set($iconnum=8)
+    							#if($velocityCount%6==0)
+    								#set($iconnum=3)
+    							#elseif($velocityCount%6==1)
+    								#set($iconnum=4)
+    							#elseif($velocityCount%6==2)
+    								#set($iconnum=5)
+    							#elseif($velocityCount%6==3)
+    								#set($iconnum=6)
+    							#elseif($velocityCount%6==4)
+    								#set($iconnum=7)
+    							#else 
+    								#set($iconnum=8)
+    							#end
+    							<li>
+    								<div class="left3_2_1">
+    									<img src="$!{address.img}/bbs/images/bbs/news_icon$!{iconnum}.jpg" />
+    									<span class="news_text1">
+    										<span id="news_text2">
+    											<a href="#springUrl('/bbsCategory')$!{postlist.post.bbsPostCategoryId}.htm" target="_blank" >
+    												[$!categoryMap.get($!{postlist.post.bbsPostCategoryId})]
+    											</a>
+    										</span>
+    										<a href="#springUrl('/viewReply')$!{postlist.post.id}.htm" target="_blank" title="$!{postlist.post.title}">
+    											#printTitle($!{postlist.post.title} 25 "")
+    										</a>
+    									</span>
+    								</div>
+    								<!--	<DIV class=left3_2_5><SPAN class=text_color7></SPAN></DIV>-->
+    								<div class="left3_2_2">
+    									<span>
+    										#if($!{postlist.post.companyId} && $!{postlist.post.companyId}==0)
+    											互助管理员
+    										#else
+    											#if($!{postlist.profiler.id} && $!{postlist.profiler.id}>0)
+    												<a href="#springUrl('/othersposted')$!{postlist.profiler.id}.htm" target="_blank">
+    												#if($!{postlist.profiler.nickname}=="")
+    													$!{postlist.post.account}
+    												#else
+    													$!{postlist.profiler.nickname}
+    												#end
+    												</a>
+    											#end
+    										#end
+    									</span>
+    									<br />
+    									<span class="text_color7">#printFragmentDate("yyyy-MM-dd",$!{postlist.post.postTime})</span>
+    								</div>
+    								<div class="left3_2_3">
+    									<span class="text_color7">
+    										#if($!{postlist.post.visitedCount})$!{postlist.post.visitedCount}#else 0#end/
+    										#if($!{postlist.post.replyCount})$!{postlist.post.replyCount}#else 0#end
+    									</span>
+    								</div>
+    								<div class="left3_2_4">
+    									<span class="text_color7" title="#printFragmentDate("yyyy-MM-dd",$!{postlist.post.postTime})">#printFragmentDate("yyyy-MM-dd",$!{postlist.post.postTime})</span>
+    								</div>
+    							</li>
+							#end
+						#end
+						<!-- add fangun 2-->
+						<li>
+							<div class="scroll_tit2" >
+								<ul id="info_2">
+									#foreach($plist in $!{list})
+										#if($!velocityCount>28)
+											<li>
+												<span class="scroll_tit2_left">
+													<a title="$!{plist.post.title}" href="#springUrl('/viewReply')$!{plist.post.id}.htm" target="_blank">
+														$!{plist.post.title}
+													</a>
+												</span>
+												<span class="scroll_tit2_right">
+													<a href="#springUrl('/search.htm?keywords=%E7%83%AD%E9%97%A8%E8%AF%9D%E9%A2%98')" target="_blank">更多热门信息>></a>
+												</span>
+											</li>
+										#end
+									#end
+								</ul>
+							</div>
+							<script type="text/javascript">
+                		    try{
+                				 slideLine('info_2', 3000, 30, 30);
+                				 }
+                			catch(e){}
+							</script></li>
+							<!-- add fangun 2-->
+							<div style="clear:both"></div>
+						</ul>
+					</div>
+				#end
+			</div>
+			<!--left3 end-->
+			
+			
+			<!--6.28新增加内容-->
+			<div class="paperbot">
+				<!--二手设备资讯中心-->
+				<div class="botleft">
+					<div class="left2 bottitle"><a href="http://price.zz91.com/news/" target="_blank">二手设备资讯中心</a></div>
+					<div class="botleft_con">
+						<h4>二手设备资讯类别</h4>
+						<ul>
+							<li><a href="http://price.zz91.com/news/zixun/list10001000--t0.htm" target="_blank">机床设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001001--t0.htm" target="_blank">化工设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001002--t0.htm" target="_blank">冶炼设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001003--t0.htm" target="_blank">农业机械</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001004--t0.htm" target="_blank">纺织设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001005--t0.htm" target="_blank">造纸设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001006--t0.htm" target="_blank">印刷机械</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001007--t0.htm" target="_blank">电子数码</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001008--t0.htm" target="_blank">电力设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001009--t0.htm" target="_blank">食品机械</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001010--t0.htm" target="_blank">发电机</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001011--t0.htm" target="_blank">二手矿业</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001012--t0.htm" target="_blank">工程机械</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001013--t0.htm" target="_blank">石油设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001014--t0.htm" target="_blank">二手木业</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001015--t0.htm" target="_blank">废旧物资</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001016--t0.htm" target="_blank">工业锅炉</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001017--t0.htm" target="_blank">二手包装</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001018--t0.htm" target="_blank">仪器仪表</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001019--t0.htm" target="_blank">塑料设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001020--t0.htm" target="_blank">电动机</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001021--t0.htm" target="_blank">备品备件</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001022--t0.htm" target="_blank">压缩机</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001023--t0.htm" target="_blank">服装设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001024--t0.htm" target="_blank">变速箱</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001025--t0.htm" target="_blank">水泥设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001026--t0.htm" target="_blank">变压器</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001027--t0.htm" target="_blank">运输设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001028--t0.htm" target="_blank">橡胶</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001029--t0.htm" target="_blank">二手行车</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001030--t0.htm" target="_blank">风机设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001031--t0.htm" target="_blank">陶瓷机械</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001032--t0.htm" target="_blank">建材设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001033--t0.htm" target="_blank">炼油设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001034--t0.htm" target="_blank">二手电梯</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001035--t0.htm" target="_blank">洗涤设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001036--t0.htm" target="_blank">空调制冷</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001037--t0.htm" target="_blank">注塑机</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001038--t0.htm" target="_blank">船舶设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001039--t0.htm" target="_blank">二手设备</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001040--t0.htm" target="_blank">其他行业</a></li>
+							<li><a href="http://price.zz91.com/news/zixun/list10001041--t0.htm" target="_blank">行业百科</a></li>
+						</ul>
+					</div>
+				</div>
+        		<!--结束二手设备资讯中心-->
+        		<!--废料产品导航-->
+				<div class="botright">
+                    <div class="left2 bottitle"><a href="http://daohang.zz91.com/" target="_blank">废料产品导航</a></div>
+					<div class="botright_con">
+                        <h4>废料产品类别</h4>
+                        <ul>
+							<li><a href="http://daohang.zz91.com/jinshu/" target="_blank">金属产品</a></li>
+							<li><a href="http://daohang.zz91.com/suliao/" target="_blank">废塑料产品</a></li>
+							<li><a href="http://daohang.zz91.com/feizhi/" target="_blank">废纸产品</a></li>
+							<li><a href="http://daohang.zz91.com/xiangjiao/" target="_blank">废橡胶产品</a></li>
+							<li><a href="http://daohang.zz91.com/dianzhi/" target="_blank">电子电器</a></li>
+							<li><a href="http://daohang.zz91.com/shebei/" target="_blank">二手设备</a></li>
+							<li><a href="http://daohang.zz91.com/feifangzhi/" target="_blank">纺织产品</a></li>
+							<li><a href="http://daohang.zz91.com/feiliaofuwu/" target="_blank">废料服务</a></li>
+							<li><a href="http://daohang.zz91.com/feitie/" target="_blank">废铁价格</a></li>
+							<li><a href="http://daohang.zz91.com/feitong/" target="_blank">废铜价格</a></li>
+							<li><a href="http://daohang.zz91.com/feiluntai/" target="_blank">废旧轮胎</a></li>
+							<li><a href="http://daohang.zz91.com/feidianping/" target="_blank">废电瓶</a></li>
+							<li><a href="http://daohang.zz91.com/guijinshu/" target="_blank">贵金属</a></li>
+							<li><a href="http://daohang.zz91.com/shengtie/" target="_blank">生铁</a></li>
+							<li><a href="http://daohang.zz91.com/feilv/" target="_blank">废铝</a></li>
+							<li><a href="http://daohang.zz91.com/feixin/" target="_blank">废锌</a></li>
+							<li><a href="http://daohang.zz91.com/feixi/" target="_blank">废锡网</a></li>
+							<li><a href="http://daohang.zz91.com/gongchengsuliao/" target="_blank">工程塑料</a></li>
+							<li><a href="http://daohang.zz91.com/suliaokeli/" target="_blank">塑料颗粒</a></li>
+							<li><a href="http://daohang.zz91.com/feisuliaowang/" target="_blank">废塑料</a></li>
+							<li><a href="http://daohang.zz91.com/ershouyifu/" target="_blank">二手衣服</a></li>
+							<li><a href="http://daohang.zz91.com/jiuyifu/" target="_blank">旧衣服</a></li>
+						</ul>
+					</div>
+				</div>
+				<!--结束废料产品导航-->
+    		</div>
+			<!--结束6.28新增加内容-->
+			
+			
+        </div>
+        <!--left end-->
+         <!--right start-->
+         	<div class="rightR">
+            	<div class="right1">
+                    <h3 class="bbsload">社区导航</h3>
+                	<ul class="loadList">
+                    	<li class="right1_li1"><a href="#springUrl('/bbsCategory1.htm')">废料动态</a></li>
+                        <li class="right1_li2"><a href="#springUrl('/bbsCategory2.htm')">行业知识</a></li>
+                        <li class="right1_li3"><a href="#springUrl('/bbsCategory3.htm')">江湖风云</a></li>
+                        <li class="right1_li4"><a href="#springUrl('/bbsCategory4.htm')">ZZ91动态</a></li>
+                        <div style="clear:both"></div>
+                    </ul>
+                </div>
+                <!--right2社区牛版 start-->
+				<div class="right2">
+                  	<div class="right2_1">
+                    	<span class="text_color3">本周牛贴</span>
+					</div>
+					#cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=post&size=5" "" "" "")
+                    <div class="right2_2">
+                    	<ul>
+							#foreach($plist in $!{postOneWeeklist})
+                            	<li>
+    								<span #if($!{velocityCount}<4) class="text_color1"	#end>$!{velocityCount}.</span>
+        								<a href="#springUrl('/viewReply')$!{plist.targetId}.htm" target="_blank" #if($!{velocityCount}<4) title="$!{plist.title}" class="text_color6" #end>
+												#printTitle($!{plist.title} 11 "")
+        								</a>
+    							</li>
+                            #end
+                        </ul>
+                    </div>
+					#end
+                    <div class="right2_3">
+                       	 <span class="text_color4">本周牛人</span>
+					</div>
+					#cacheFragment("$!{address.fragment}/huzhu/bbsTop.htm?category=profile&size=6" "" "" "")
+                    <div class="right2_4">
+                  		<ul>
+							#foreach($ulist in $!{postOneWeeklist})
+								<li>
+									<span #if($!{velocityCount}<4) class="text_color1" #end>$!{velocityCount}.</span>
+										<a href="#springUrl('/othersposted')$!{ulist.targetId}.htm" target="_blank"
+    										#if($!{velocityCount}<4) class="text_color8" #end >
+												#if($!{ulist.title}) $!{ulist.title} #else 匿名 #end
+										</a>
+								</li>
+                            #end
+                        </ul>
+					</div>
+					#end
+                     <div class="right2_5">
+                  		<span class="text_color5">最牛网商</span>
+					</div>
+					#cacheFragment("$!{address.fragment}/huzhu/topByPostNum.htm?size=6" "" "" "")
+                    <div class="right2_6">
+                    	<ul>
+							#foreach($alist in $!{allIntegralList})
+                        	<li>
+								<span #if($!{velocityCount}<4) class="text_color1"#end>$!{velocityCount}.</span>
+								<a href="#springUrl('/othersposted')$!{alist.id}.htm" target="_blank"#if($!{velocityCount}<4) class="text_color6"#end>
+								 #if($!{alist.nickname}&&$!{alist.nickname}!="") $!{alist.nickname} #else $!{alist.account} #end
+								</a>
+							</li>
+                            #end
+                        </ul>
+					</div>
+					#end
+       </div>
+
+                <!--right3 最新话题-->
+                <div class="right3">
+               	  <a href="#springUrl('/search.htm?keywords=%E6%9C%80%E6%96%B0%E8%AF%9D%E9%A2%98')" target="_blank">
+					<img src="$!{address.img}/bbs/images/bbs/more1.jpg" class="more1"  />
+				  </a>
+				#cacheFragment("$!{address.fragment}/huzhu/newPost.htm?size=13" "" "" "")
+                 	<ul>
+						#foreach($flist in $!{frontBbsPostList})
+							<li><a href="#springUrl('/viewReply')$!{flist.id}.htm" title="$!{flist.title}" target="_blank">
+									#printTitle($!{flist.title} 15 "")
+							</a></li>
+						#end
+                  </ul>
+				#end
+              </div>
+                <!--right3 end-->
+                <!--right5 互助周刊-->
+                <div class="right5">
+               	  <a href="#springUrl('/list.htm?postType=7')" target="_blank">
+					<img src="$!{address.img}/bbs/images/bbs/more2.jpg" class="more2"/></a>
+					#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=7&size=5" "" "" "")
+						<ul>
+							#foreach($tags in $!{list})
+								<li>
+									<a href="#springUrl('/viewReply')$!{tags.post.id}.htm" target="_blank" title="$!{tags.post.title}">
+										#printTitle($!{tags.post.title} 14 "")
+									</a>
+								</li>
+							#end
+						</ul>
+					#end
+              </div>
+                <!--right5 end-->
+
+                <!--right6 互助月刊-->
+                <div class="right6">
+					<a href="#springUrl('/list.htm?postType=6')" target="_blank">
+						<img src="$!{address.img}/bbs/images/bbs/more3.jpg" class="more3" /></a>
+				#cacheFragment("$!{address.fragment}/huzhu/postByType.htm?postType=6&size=5" "" "" "")
+                	 <ul>
+						#foreach($tags2 in $!{list})
+						<li> <a href="#springUrl('/viewReply')$!{tags2.post.id}.htm" target="_blank" title="$!{tags.post.title}">
+							#printTitle($!{tags2.post.title} 14 "")
+						</a></li>
+						#end
+					</ul>
+				#end
+              </div>
+                <!--right6 end-->
+				<!-- 最新的供应信息-->
+                <div class="right4">
+					<div class="right4_title"><span><a href="http://trade.zz91.com/offerlist--a1--p1--%E5%BA%9F%E9%87%91%E5%B1%9E.htm" target="_blank">查看更多>></a>
+					</span><b>最新废金属供求信息</b></div>
+					<div class="right4_info">
+    					<ul>
+						#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=1000&typeCode=10331001&size=3&priced001", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>供应</font>#printTitle($!{products.title} 11 "")
+								</a>
+							</li>
+						#end
+    					#end
+
+						#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=1000&typeCode=10331000&size=3&priced0015", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>求购</font>#printTitle($!{products.title} 11 "")
+								</a>
+							</li>
+						#end
+    					#end
+    					</ul>
+					</div>
+                </div>
+				<!-- >最新求购信息-->
+                <div class="right4">
+					<div class="right4_title"><span><a href="http://trade.zz91.com/offerlist--a2--p1--%E5%BA%9F%E5%A1%91%E6%96%99.htm" target="_blank">查看更多>></a>
+					</span><b>最新废塑料供求信息</b></div>
+					<div class="right4_info">
+    					<ul>
+    					#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=1002&typeCode=10331000&size=3&priced0060", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>供应</font>#printTitle($!{products.title} 11 "")
+								</a>
+							</li>
+						#end
+    					#end
+
+						
+						#cacheFragment("$!{address.fragment}/trade/newestTrade.htm?mainCode=1002&typeCode=10331000&size=3&priced00150", "", "", "")
+						#foreach($products in $productsList)
+							<li>
+								<span>#printFragmentDate('MM-dd' $!{products.refreshTime})</span>
+								<a target="_blank" href="$!{address.trade}/productdetails$!{products.id}.htm"  title="$!{products.title}">
+										<font color='#CC6600'>求购</font>#printTitle($!{products.title} 11 "")
+								</a>
+							</li>
+						#end
+    					#end
+
+     					</ul>
+					</div>
+                </div>
+                <div class="right4">
+					<div class="right4_title"><span><a href="http://price.zz91.com/" target="_blank">查看更多>></a>
+					</span><b>最新行情报价</b></div>
+					<div class="right4_info">
+    					<ul>
+	                      #cacheFragment("$!{address.fragment}/price/newHotPrice.htm?code=metal_price_new&size=6&1010", "", "", "")
+						  #foreach($a in $list)
+							<li>
+								<a href="$!{address.price}/priceDetails_$!{a.id}_metal.htm" target="_blank" title=" $!{a.title} "> #printTitle($!{a.title} 17 "")</a>
+							</li>
+						  #end
+		  				#end
+
+    					</ul>
+					</div>
+                </div>
+      </div>
+         <!--right end-->
+    </div>
+    <!--main end-->
+	<div class="clears"></div>
+	<div class="main hzlinkstopbe">
+		<div class="hzlinkstitle">友情链接</div>
+##		<div class="hzlinksinfo">
+##				#foreach($!link in $!friendLinkList)
+##					<a href="$!{link.friendLinkDO.link}" target="_blank">$!{link.friendLinkDO.linkName}</a> |
+##				#end
+##			<div class="clears"></div>
+##		</div>
+ #cacheFragment("$!{address.fragment}/china/indexByCode.htm?code=10041001&size=&id", "", "", "")
+	#foreach($!index in $!list)
+			<a href="$!{index.link}" target="_blank" title="$!{index.title}" style="$!{index.style}">
+			$!{index.title}
+			</a>|
+	#end
+#end
+</div>
+	<script type="text/javascript" src="http://gg.zz91.com/show?p=198"></script>
+	
+

@@ -1,0 +1,302 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1701","","00")
+<div class="myrcNormalFrame">
+	<form id="form2" name="form2" method="post" action="save.htm">
+			<div class="officetitle" style="margin-top:0">联系人信息</div>
+			<div class="productskuang">
+				<div class="publishFormItems">
+					<div class="products_title"> <label for="name"><font color="RED">* </font>联系人姓名：</label></div>
+					<div class="products_fill">
+						<input name="name" type="text" id="name" value="$!{companyCustomers.name}" size="15" />
+                    </div>
+                </div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label for="position">职务：</label></div>
+					<div class="products_fill">
+							<input name="position" type="text" id="position"  value="$!{companyCustomers.position}" size="15" />
+					</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label for="sex">性别：</label></div>
+					<div class="products_fill">
+						<input type="radio" name="sex"  value="0" #if($!{companyCustomers.sex}==0) checked="checked" #end class="radioPositionFix" style="border:none">先生
+						<input type="radio" name="sex" value="1" #if($!{companyCustomers.sex}==1) checked="checked" #end class="radioPositionFix" style="border:none">女士
+					</div>
+ 				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label>电话：</label></div>
+					<div class="products_fill" style="position:relative">
+                            <label for="telCountryCode"  class="fixPositionA" id="telCountryCodeFor">国家区号</label>
+							<label for="telAreaCode" class="fixPositionB" id="telAreaCodeFor">地区区号</label>
+							<label for="tel" class="fixPositionC" id="telFor">电话号码</label>
+							<input name="telCountryCode" type="text" id="telCountryCode" value="$!{companyCustomers.telCountryCode}" style="width:62px" onfocus="jQuery('#telCountryCodeFor').fadeOut(500)"/>
+                            <input name="telAreaCode" type="text" id="telAreaCode" value="$!{companyCustomers.telAreaCode}"  style="width:62px;" onfocus="jQuery('#telAreaCodeFor').fadeOut(500)"/>
+                            <input name="tel" type="text" id="tel" value="$!{companyCustomers.tel}" maxlength="96" style="width:120px;" onfocus="jQuery('#telFor').fadeOut(500)"/>
+                    </div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label>传真：</label></div>
+                    <div class="products_fill" style="position:relative">
+							<label for="faxCountryCode" class="fixPositionA" id="faxCountryCodeFor">国家区号</label>
+							<label for="faxAreaCode" class="fixPositionB" id="faxAreaCodeFor">地区区号</label>
+							<label for="fax" class="fixPositionC" id="faxFor">传真号码</label>
+							<input name="faxCountryCode" type="text" id="faxCountryCode" value="$!{companyCustomers.faxCountryCode}"  value="86" style="width:62px" onfocus="jQuery('#faxCountryCodeFor').fadeOut(500)"/>
+							<input name="faxAreaCode" type="text" id="faxAreaCode" value="$!{companyCustomers.faxAreaCode}"  style="width:62px" onfocus="jQuery('#faxAreaCodeFor').fadeOut(500)"/>
+							<input name="fax" type="text" id="fax" value="$!{companyCustomers.fax}"  maxlength="96" style="width:120px" onfocus="jQuery('#faxFor').fadeOut(500)" />
+					</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label for="mobile"><font color="RED">* </font>手机：</label></div>
+					<div class="products_fill"><input name="mobile" type="text" id="mobile" value="$!{companyCustomers.mobile}" /></div>
+                </div>
+                <div class="publishFormItems">
+                    <div class="products_title"><label for="email">邮箱：</label></div>
+					<div class="products_fill"><input name="email" type="text" id="email" value="$!{companyCustomers.email}"/></div>
+				</div>
+                <div style="clear:both"></div>
+        </div>
+		
+		
+		<div class="officetitle">公司信息</div>
+		<div class="productskuang">
+				<div class="publishFormItems">
+					<div class="products_title">
+                        <label for="company"><font color="RED">* </font>公司名称：</label>
+					</div>
+					<div class="products_fill">
+						<input name="company" type="text" id="company" value="$!{companyCustomers.company}" size="40" style="width:238px"/>
+					</div>
+				</div>
+				<div class="publishFormItems">
+                    <div class="products_title"><label><font color="RED">* </font>国家/地区：</label></div> 
+                    <script type="text/javascript"> 
+                        function selectcountry(id){
+                        	if (id=="1"){
+                        		document.getElementById("othercountrys").style.display="none"
+                        		document.getElementById("othercountrys1").style.display="none"
+                        		document.getElementById("mycountry").style.display=""
+								document.getElementById("fAreaCode").value="";
+								document.getElementById("foreignCity").value="";
+                        	}else{
+                        		document.getElementById("othercountrys").style.display=""
+                        		document.getElementById("othercountrys1").style.display=""
+                        		document.getElementById("mycountry").style.display="none"
+								document.getElementById("province").value="";
+								document.getElementById("areaCode").value="";
+                        		}
+                        	}
+                    </script> 
+					<div class="products_fill">
+						<select name="countryCode" id="countryCode" onChange="selectcountry(this.value)" style="width:120px;"> 
+							<option value="1" #if($!{companyCustomers.countryCode}=='1') selected #end>中国</option> 
+							<option value="0" #if($!{companyCustomers.countryCode}=='0') selected #end) >其他国家/地区</option> 
+						</select>
+                    </div>
+				</div> 
+				<div class="publishFormItems" id="othercountrys" style="display:none">
+					<div class="products_title"><label>其他国家/地区：</label></div> 
+					<div class="products_fill">
+                   	 	<select name="fAreaCode" id="fAreaCode"  style="width:120px;">
+							<option value="" >请选择</option>
+							#foreach($nation in $!nationList)
+							#if($!{nation.code}!="10011000")<option value="$!{nation.code}" #if($!{companyCustomers.areaCode}==$!{nation.code})selected#end>$!{nation.label}</option>#end 
+							#end		
+						</select>
+					</div> 
+				</div> 
+				<div class="publishFormItems" id="othercountrys1" style="display:none"> 
+					<div class="products_title">城市：</div> 
+					<div class="products_fill">
+						<input name="foreignCity" type="text" id="foreignCity" size="30" value="$!{companyCustomers.foreignCity}"/>
+					</div> 
+				</div> 
+				<div class="publishFormItems"  id="mycountry" > 
+					<div class="products_title"><label><font color="RED">* </font>省份/城市：</label></div> 
+					<div class="products_fill">
+							<select id="province" name="province" style="width:120px;">
+								<option value=''>请选择省份</option>
+							</select>
+							<select id="areaCode" name="areaCode"  style="width:120px;">
+								<option value=''>请选择城市</option>
+							</select>
+					</div>
+				</div>
+				
+                <script >
+                    if (jQuery('#countryCode').val()=="0"){
+                    	document.getElementById("othercountrys").style.display=""
+                    	document.getElementById("othercountrys1").style.display=""
+                    	document.getElementById("mycountry").style.display="none"
+                    }else{
+                    	document.getElementById("othercountrys").style.display="none"
+                    	document.getElementById("othercountrys1").style.display="none"
+                    	document.getElementById("mycountry").style.display=""
+                    }
+                </script>
+				
+				<div class="publishFormItems">
+                   <div class="products_title"><label for="address">地址：</label></div>
+				   <div class="products_fill"><input name="address" type="text" id="address" size="40" value="$!{companyCustomers.address}" style="width:238px"/></div>
+                </div>
+				<div class="publishFormItems">
+                   <div class="products_title"><label for="postCode">邮编：</label></div>
+				   <div class="products_fill"><input name="postCode" type="text" id="postCode" value="$!{companyCustomers.postCode}" size="15" maxlength="6" style="width:114px;"/></div>
+				</div>
+				<div class="publishFormItems">
+                   <div class="products_title"><font color="RED">* </font>客户分组归入：</div>
+				   <div class="products_fill">
+						<input name="companyCustomersGroupId" id="companyCustomersGroupId" type="hidden" value="$!{companyCustomers.companyCustomersGroupId}" />
+						<input name="id" id="id" type="hidden" value="$!{companyCustomers.id}" />
+						<select name="groupId" id="groupId" onChange="parent.document.getElementById('companyCustomersGroupId').value=this.value" style="width:120px;">
+							<option value="" >请选择分组</option>
+							<option value="1" #if($!{name}=='我的供应商') selected #end>我的供应商</option>
+							<option value="2" #if($!{name}=='我的采购商') selected #end>我的采购商</option>
+							<option value="3" #if($!{name}=='商界好友') selected #end>商界好友</option>
+							#foreach($group in $groupList)
+								<option value="$!{group.id}" #if($!{name}==$!{group.name}) selected #end>$!{group.name}</option>
+							#end
+						</select>
+                        <span><a href="javascript:void(0)" onClick="hiddentisi(1)">分组管理</a></span>
+				   </div>
+				</div>
+				#if($!companyCustomers.companyContactsId)
+				<div class="publishFormItems">
+					<a class="btnA" href="javascript:void(0)" onclick="window.open('$!{address.server}/company/compinfo.htm?ccid=$!{companyCustomer.companyContactsId}','_blank','')">详细信息</a>
+					<a class="btnA" href="javascript:void(0)" onclick="window.location='#springUrl('/mymessage/contactHistory.htm?cid=')$!{companyCustomer.companyContactsId}'">联系记录</a>
+					<a class="btnA" href="javascript:void(0)" onclick="window.location='#springUrl('/mymessage/customerMessage.htm?id=')$!{companyCustomer.companyContactsId}'">发留言</a>
+                </div>
+				#end
+                <div style="clear:both"></div>
+	</div>
+	<div class="officetitle">客户设置</div>
+	<div class="productskuang">
+		<div class="publishFormItems">
+			<div class="products_title">客户等级：</div>
+			<div class="products_fill">
+				<input id="degree5" type="radio" value="5" #if($!{companyCustomers.rank}==5) checked="checked" #end name="rank" style="float:left"  class="radioPositionFix" style="border:none"/>
+				<span onclick="javascript:document.all('degree5').checked='true';" for="degree5" class="starCustem">&nbsp;</span>
+				<input id="degree4" type="radio" value="4" #if($!{companyCustomers.rank}==4) checked="checked" #end name="rank"  style="float:left" class="radioPositionFix" style="border:none"/>
+				<span onclick="javascript:document.all('degree4').checked='true';" for="degree4" class="starCustem" style="width:52px;">&nbsp;</span>
+				<input id="degree3" type="radio" value="3"  #if($!{companyCustomers.rank}==3||!${companyCustomers.rank}) checked="checked" #end name="rank" style="float:left" class="radioPositionFix" style="border:none"/>
+				<span onclick="javascript:document.all('degree3').checked='true';" for="degree3" class="starCustem" style="width:39px;">&nbsp;</span>
+				<input id="degree2" type="radio" value="2" #if($!{companyCustomers.rank}==2) checked="checked" #end name="rank" style="float:left" class="radioPositionFix" style="border:none"/>
+				<span onclick="javascript:document.all('degree2').checked='true';" for="degree2" class="starCustem" style="width:26px;">&nbsp;</span>
+				<input name="rank" type="radio" id="degree1" value="1" #if($!{companyCustomers.rank}==1) checked="checked" #end style="float:left" class="radioPositionFix" style="border:none"/>
+				<span onclick="javascript:document.all('degree1').checked='true';" for="degree1" class="starCustem" style=" width:13px;">&nbsp;</span>
+			</div>
+		</div>
+	
+		<div class="publishFormItems">
+			<div class="products_title">公司状态：</div>
+			<div class="products_fill">
+				<input name="status" id="status1" type="radio" value="1" #if($!{companyCustomers.status}==1) checked="checked"  #end class="radioPositionFix" style="border:none"/>
+				潜在
+				<input name="status" id="status2" type="radio" value="0"  #if($!{companyCustomers.status}==0||!${companyCustomers.status}) checked="checked" #end class="radioPositionFix" style="border:none"/>
+				有意向	
+				<input name="status" id="status3" type="radio" value="2"  #if($!{companyCustomers.status}==2) checked="checked" #end class="radioPositionFix" style="border:none"/>
+				已成交
+			</div>
+		</div>
+		<div class="publishFormItems">
+			<div class="products_title">备注：</div>
+			<div class="products_fill">
+				<textarea name="remark" id="textarea" cols="45" style="width:550px; height:120px;" rows="5">$!{companyCustomers.remark}</textarea>
+			</div>
+		</div>
+        <div style="clear:both"></div>
+	</div>
+	
+	<div class="publishFormItems publishFormSub">
+		<input name="submitsave" type="button" class="buttonMax" id="buttonMax" value="确认信息无误，提交" onclick="chkfrm(this.form)"/></td>
+	</div>
+	</form>
+</div>
+<input name="pcode" id="pcode" type="hidden" value="$!{pcode}" />
+<input name="ccode" id="ccode" type="hidden" value="$!{ccode}" />
+<script src="$!{address.js}/zz91.myrc.dialog.js" type="text/javascript"></script>
+<script language="javascript">
+	var Const = new function(){
+		this.Address = {images:"$!{address.images}"};
+	}
+	function timestamp(){
+  		  var timestamp = Date.parse(new Date());
+  		  return timestamp;
+	}
+    function chkfrm(frm){
+      if(jQuery('#name').val()==""){
+    		alert("请输入联系人姓名")
+    		jQuery('#name').focus()
+    		return false;
+    	}
+    	if(jQuery('#mobile').val()==""){
+    		alert("请输入手机号")
+    		jQuery('#mobile').focus()
+    		return false;
+    	}
+    	if(jQuery('#company').val()==""){
+    		alert("请输入公司名称")
+    		jQuery('#company').focus()
+    		return false;
+    	}
+    	if(jQuery('#countryCode').val()=="1"){
+    		if(jQuery('#province').val()==""){
+    		alert("请选择省份")
+    		jQuery('#province').focus()
+    		return false;
+         }
+    	if(jQuery('#areaCode').val()==""){
+    		alert("请选择城市")
+    		jQuery('#areaCode').focus()
+    		return false;
+    	  }
+    	}
+
+       if(jQuery('#companyCustomersGroupId').val()==""){
+        	alert("请选择客户分组 ")
+    	 	 window.frames["fenzu"].jQuery('#groupId').focus();
+    		return false;
+       }
+    	frm.submitsave.disabled=true
+        frm.submit();
+    }
+	
+function groupclose() {
+	  document.getElementById("regform").style.display='none';
+	  document.getElementById("page_cover").style.display='none';
+	 window.parent.frames["fenzu"].location.reload(); 
+ }
+ 
+function hiddentisi(n){
+	if (n==1){
+		dialog("管理我的客户分组", "iframe:groupList.htm?ts="+timestamp(), "450", "350", "iframe");
+	}else{
+		var objname=document.getElementsByName("cbb")
+		selectcb="0"
+		for(var i=0;i<objname.length;i++){
+			if(objname[i].checked==true){
+				var objtrp=objname[i].id.substr(2);
+				var selectcb=selectcb+","+objtrp;
+			}
+		}
+		if (selectcb=="0"){
+			alert ("选择您要归入组的客户!");
+			return false;
+		}
+	dialog("归入客户组组", "iframe:groupList.htm?cbb="+selectcb.substr(2), "450", "350", "iframe");
+	}
+}
+
+
+jQuery(document).ready(function(){
+	var areaSelector = new zz91Selector({
+		url:Context.ROOT+"/category/areaChild.htm"
+	});
+
+	areaSelector.init({
+		rootCode:"10011000",
+		initCode:"$!{CompanyCustomers.areaCode}",
+		selects:["#province","#areaCode"]
+	});
+});
+
+</script>

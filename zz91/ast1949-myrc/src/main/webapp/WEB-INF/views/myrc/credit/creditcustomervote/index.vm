@@ -1,0 +1,143 @@
+#set( $layout = "/layout/myrcLayout.vm")
+#leftMenu("1601","","00")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+		#set($vote_total = $!{vote_0}+$!{vote_1}+$!{vote_2})
+		<div class="creditTipLeft">
+            <span class="creditResverCount">您目前共收到评价 <b>${vote_total}</b> 条</span>
+            <div style="clear:both"></div>
+			<span class="creditResverType">
+                <span class="creditResverTypeTit" >
+					<img height=16 src="$!{address.images}/global/icon/smile.gif" align="absmiddle"/> 好评：
+				</span>
+				<span class="creditResverTypeCount"><b>$!{vote_0}</b> 条</span>
+				<div style="clear:both"></div>
+				<span class="creditResverTypeTit">
+					<img height=16 src="$!{address.images}/global/icon/laugh.gif" align="absmiddle"/> 中评：
+				</span>
+                <span class="creditResverTypeCount"> <b>$!{vote_1} </b> 条</span>
+				<div style="clear:both"></div>
+                <span class="creditResverTypeTit">
+						<img height=16 src="$!{address.images}/global/icon/sad.gif" align="absmiddle"/> 差评：
+				</span>
+				<span class="creditResverTypeCount"> <b>$!{vote_2} </b> 条 </span>
+            </span>
+        </div>
+		<div class="creditTipRight">
+			<h5><img height=16 src="$!{address.images}/global/icon/caution2.gif" align="absMiddle" /> 重要提醒：<h5>
+            <p>您收到的“好评”会在通过本网审核后即时上网，“中评”“差评”会在通过本网审核<b>15天</b>后上网，在此期间您可与对方协调，对方有权删除（但不能修改）。</p>
+			<p>对于收到的评价，您可在对方作出评价后<b>30天</b>内作出解释。</p>
+			<p>以下评价由会员自行提供，并负责内容的真实性，zz91再生网作为信息平台提供者不介入评价细节，请双方自行协调。</p>
+		</div>
+        <div style="clear:both"></div>
+		<div class="creditSortsType">
+			<a href="javascript:void(0)" class="creditTypeOn">收到的评价</a>
+			<a href="#springUrl('/credit/creditcustomervote/replyIndex.htm')" class="creditTypeOff">作出的评价</a>
+			<div style="clear:both"></div>
+        </div>
+        <div class="creditSortsTypeSub">
+			#if(!$!{status})
+				所有客户评价
+			#else
+				#if(${status}==0) 所有好评 #end
+				#if(${status}==1) 所有中评 #end
+				#if(${status}==2) 所有差评 #end
+			#end
+        </div>
+					
+       <div class="creditList" style="margin-top:0px;">
+			<div class="commListTit">
+				<span class="creditFilter">
+                    <select onChange="window.location='#springUrl('/credit/creditcustomervote/index.htm?status=')'+this.value;" name="type" class="radioPositionFix" style="top:2px;">
+    					<option value="" selected>筛选</option>
+    					<option #if($!{status}=='0') selected #end value=0>好评</option>
+    					<option #if($!{status}=='1') selected #end value=1>中评</option>
+    					<option #if($!{status}=='2') selected #end value=2>差评</option>
+                    </select>
+				</span>
+				<span class="creditCont">评价内容</span>
+				<span class="creditInfo">回复评价内容 </span>
+				<span class="creditReplay">回复评价 </span>
+                <span class="creditEvolustionBody">评价者</span>
+                <div style="clear:both"></div>
+			</div>
+			<ul>
+                #foreach($customerVote in $!page.records)
+					<li>
+						<span class="creditEvalutionStatus">
+                            #if($!{customerVote.vote.status}=='0')
+                                <img src="$!{address.images}/global/icon/smile.gif" class="radioPositionFix" title="好评"/>
+                            #elseif($!{customerVote.vote.status}=='1')
+                                <img src="$!{address.images}/global/icon/laugh.gif" class="radioPositionFix" title="中评"/>
+                            #else 
+                                <img src="$!{address.images}/global/icon/sad.gif" class="radioPositionFix" title="差评"/> 
+							#end
+                        </span>
+						<span class="creditIsReplay">
+							#if($!{customerVote.vote.replyContent} && ${customerVote.vote.replyContent}!="")
+								<img height=16 src="$!{address.images}/global/icon/mailopen2.gif" class="radioPositionFix" title="已回复" />
+							#else
+								<img height=16 src="$!{address.images}/global/icon/mail2.gif" class="radioPositionFix" title="未回复"/>
+							#end
+                        </span>
+                        <span class="creditCont">
+							$!{customerVote.vote.content}
+                            <font style="color:#AAA;font-size:12px;">$!date.format('yyyy-MM-dd hh:mm',$!{customerVote.vote.gmtCreated})</font>
+						</span>
+                        <span class="creditInfo">
+							$!{customerVote.vote.replyContent}
+						</span>
+						<span class="creditReplay">
+							#if($!{customerVote.vote.replyContent} && ${customerVote.vote.replyContent}!="")
+                                <font style="color:#AAA">已回复</font>
+							#elseif(30 >= $!{customerVote.dateDiff})
+								<span id="replyDiv_$!{customerVote.vote.id}">
+									<textarea id="replyContent_$!{customerVote.vote.id}" rows="4" cols="60" maxlength="250"></textarea>
+									<br />
+									<input type="button" class="buttonMinGray" value="回复评价" onclick="replyToVote($!{customerVote.vote.id});" />
+								</span>
+							#end
+                        </span>
+                        <span class="creditEvolustionBody">
+							<a href="$!{address.server}/company/compinfo$!{customerVote.vote.fromCompanyId}.htm" target="_blank">$!{customerVote.company.name}</a>
+                        </span>
+					</li>
+				#end
+                <div style="clear:both"></div>
+				</ul>
+        </div>
+		<div class="pageNav">
+					 #myrcPageNav($!{page} "#springUrl('/credit/creditcustomervote/index.htm')" "s=$!{status}" "")
+        </div>
+</div>
+
+<script type="text/javascript" >
+	function replyToVote(voteid){
+		jQuery.ajax({
+			url:'#springUrl('/credit/creditcustomervote/replyToVote.htm')',
+			data:{"voteId":voteid,"replyContent":jQuery("#replyContent_"+voteid).val()},
+			cache:false,
+			dataType:"json",
+			type:"post",
+			success:function(req){
+				if(req.success){
+					jQuery("#replyDiv_"+voteid).hide();
+					jQuery("#reply_"+voteid).text(jQuery("#replyContent_"+voteid).val());
+				}else{
+					msg.show(req.data);
+					if(req.data="sessionTimeOut"){
+						window.open("#springUrl('/login.htm')");
+					}
+				}
+			},
+			failure:function(){
+				msg.show("commonError");
+			}
+		});
+	}
+	
+	jQuery(document).ready(function(){
+	new turnLiBgcolor(".creditList","#EFF6EF","#FFF")
+	});
+</script> 
+

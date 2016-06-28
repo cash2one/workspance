@@ -1,0 +1,266 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1702","00","00")
+
+<div class="myrcNormalFrame">
+	<div class="sbtishi tishiTitleTop" style="margin-top:0px;">普通会员只能看到您收到询盘的客户信息，
+			添加至此的商友客户可以通过分组、设置状态进行管理，方便查找。 <br />
+			<a onClick="importCustomerFromInquiry()" href="javascript:void(0)">
+				<img src="$!{address.images}/global/icon/fastforward2.gif" align="absmiddle"> 点此导入询盘客户信息
+			</a>
+	</div>
+	<form name="sForm" id="sForm" method="post" action="list.htm">
+		<div class="feedbackList" style="margin-top:8px;">
+			<div class="feedbackSortsType">
+					<a href="list.htm?group=all" #if(!${customer.companyCustomersGroupId}&&$!{group}=='all') class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">全部</a>
+                    <a href="list.htm?companyCustomersGroupId=0" #if($!{customer.companyCustomersGroupId}==0) class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">未分组</a>
+					<a href="list.htm?companyCustomersGroupId=1" #if($!{customer.companyCustomersGroupId}==1) class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">我的供应商</a>
+                    <a href="list.htm?companyCustomersGroupId=2" #if($!{customer.companyCustomersGroupId}==2) class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">我的采购商</a>
+					<a href="list.htm?companyCustomersGroupId=3" #if($!{customer.companyCustomersGroupId}==3) class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">商界好友</a>
+					<a href="list.htm?group=other" #if($!{group}=='other') class="feedbackSortsTypeOn" #else  class="feedbackSortsTypeOff" #end onclick="logiing()">其他自定义组</a>
+					<a href="javascript:void(0)" onClick="hiddentisi(1)" class="buttonMinGray feedbackSortsSet"/>分组管理</a>
+                <div style="clear:both"></div>
+            </div>
+			<div class="feedbackSortsTypeOther">
+					#foreach($customersGroup in $customersGroupList)
+							<a href="list.htm?companyCustomersGroupId=$!{customersGroup.id}&group=other" #if($!{customer.companyCustomersGroupId}==$!{customersGroup.id}) class="feedbackSortsTypeOtherOn" #else  class="feedbackSortsTypeOtherOff" #end onclick="logiing()">$!{customersGroup.name}</a>
+					#end
+			</div>
+		
+			<div class="searchCustomer">
+                    <label for="name">联系人：</label>
+					<input name="name" type="text" class="inputTxt" id="name" value="$!{customer.name}" size="10" />
+                    <label for="company">公司名称：</label>
+					<input name="company" type="text" class="inputTxt" id="company" value="$!{customer.company}" size="10" />
+                    <label for="tel">电话：</label>
+					<input name="tel" type="text" class="inputTxt" id="tel" value="$!{customer.tel}" size="10" />
+                    <label for="mobile">手机：</label>
+					<input name="mobile" type="text" class="inputTxt" id="mobile" value="$!{customer.mobile}" size="10" />
+					<input name="Submit2" type="button" class="btnA" id="buttonMinGray" value="搜  索" onClick="this.form.submit()" />
+			</div>
+			<div style="clear:both"></div>
+			
+			<div class="commList">
+    			<div class="commListTit" style="margin-top:8px;">
+                    <span class="feedbackSelect">&nbsp;</span>
+                    <span class="customerListBody">联系人</span>
+                    <span class="customerListComp">公司名称</span>
+                    <span class="customerListTel">公司电话</span>
+                    <span class="customerListMobile">手机</span>
+                    <span class="customerListArea">地区</span>
+                    <span class="customerListGroup">分组</span>
+                    <span class="customerListRecod">询盘记录</span>
+    				<span class="customerListEdit">编辑</span>
+    				<div style="clear:both"></div>
+    			</div>
+    			<ul>	
+    				#foreach($companyCustomer in $companyCustomersList)
+    					<li id="customer-$!{companyCustomer.companyCustomersDO.id}" bgcolor="#f9f9f9" name="gui" >
+    						<span class="feedbackSelect">
+    							<input id="id$!{companyCustomer.companyCustomersDO.id}" type="checkbox" value="$!{companyCustomer.companyCustomersDO.id}" name="cbb" class="radioPositionFix"/>
+    						</span>
+    						<span class="customerListBody">
+    							<a href="saveCompanyCustomers.htm?companyCustomersGroupId=$!{companyCustomer.companyCustomersDO.id}">$!{companyCustomer.companyCustomersDO.name}</a>
+    						</span>
+    						<span class="customerListComp">
+    							<a href="saveCompanyCustomers.htm?companyCustomersGroupId=$!{companyCustomer.companyCustomersDO.id}">$!{companyCustomer.companyCustomersDO.company}</a>
+    						</span>
+    						<span class="customerListTel">
+    							#if($!{companyCustomer.companyCustomersDO.telCountryCode}==""&&$!{companyCustomer.companyCustomersDO.telAreaCode}==""&&$!{companyCustomer.companyCustomersDO.tel}=="")
+                                    <font style="color:#999">无电话号码</font>
+    							#else
+        							<a href="saveCompanyCustomers.htm?companyCustomersGroupId=$!{companyCustomer.companyCustomersDO.id}">
+        								$!{companyCustomer.companyCustomersDO.telCountryCode}$!{companyCustomer.companyCustomersDO.telAreaCode}$!{companyCustomer.companyCustomersDO.tel}
+        							</a>
+    							#end
+    						</span>
+    						<span class="customerListMobile"><a href="saveCompanyCustomers.htm?companyCustomersGroupId=$!{companyCustomer.companyCustomersDO.id}">$!{companyCustomer.companyCustomersDO.mobile}</a></span>
+    						<span class="customerListArea"><a href="saveCompanyCustomers.htm?companyCustomersGroupId=$!{companyCustomer.companyCustomersDO.id}">
+    							#if($!{companyCustomer.provinceName}=="国家")$!{companyCustomer.cityName} $!{companyCustomer.companyCustomersDO.foreignCity}
+    							#elseif($!{companyCustomer.provinceName})$!{companyCustomer.provinceName} $!{companyCustomer.cityName}
+    							#end
+    						</a>
+    						</span>
+    						<span class="customerListGroup">
+    							#if($!{companyCustomer.groupName})
+                                    $!{companyCustomer.groupName}
+    							#else
+    								<font style="color:#999">无分组</font>
+    							#end
+    						</span>
+    						<!--	<input type="hidden" id="companyCustomersGroupId" name="companyCustomersGroupId" value=""/>-->
+    						<span class="customerListRecod">
+    							#if($!companyCustomer.companyContactsId)
+    							<a href="#springUrl('/mymessage/contactHistory.htm?cid=')$!{companyCustomer.companyContactsId}">
+    								<img src="$!{address.images}/global/icon/zoom-in2.gif"/>查看</a>
+    							#else
+                                    <font style="color:#999;">无询盘</font>
+    							#end
+    						</span>
+    						<span class="customerListEdit"><a href="saveCompanyCustomers.htm?id=$!{companyCustomer.companyCustomersDO.id}" class="commTrashFeed" style="padding-left:16px; background-position:left 2px;">修改</a></span>
+    					</li>
+    				#end 
+                    <div style="clear:both"></div>
+                </ul>
+            </div>
+			<div class="listApplicationBtn" style="margin-top:8px;">
+						<input onClick="javascript:CheckAll(this.form)" type=checkbox name="chktoggle" id="chktoggle" />
+						<input name="Submit" type="button" class="buttonMinGray" onClick="javascript:buttoncheckAll(this.form)" value="全选" />
+						<input name="Submit4" type="button" class="buttonMinGray" value="归入客户组" onClick="hiddentisi(2)" />
+						<input name="Submit5" type="button" class="buttonMinGray" value="删除" onClick="chkfrm(this.form)" />
+						<input name="selcbb" type="hidden" id="selcbb" />
+			</div>
+		
+			<div class="pageNav">
+					#set(${suffixUrl}="&companyCustomersGroupId=$!{customer.companyCustomersGroupId}&company=$!{customer.company}&name=$!{customer.name}&tel=$!{customer.tel}&mobile=$!{customer.mobile}&group=$!{group}")
+					#myrcPageNav($!{page} "#springUrl('/mycompanycustomers/list.htm')" $!{suffixUrl} "")
+			</div>
+    	</div>
+	</form>
+</div>
+<script src="$!{address.js}/zz91.myrc.dialog.js" type="text/javascript"></script>
+<script>
+	var Const = new function(){
+		this.Address = {images:"$!{address.images}"};
+	}
+	
+    function groupclose(){
+    	document.getElementById("regform").style.display='none';
+      	document.getElementById("page_cover").style.display='none';
+     }
+	  
+    function hiddentisi(n){
+    	var objname=document.getElementsByName("cbb")
+    	if (n==1){
+			dialog("管理我的客户分组", "iframe:groupList.htm", "450", "350", "iframe");
+    	}else{
+    		var objname=document.getElementsByName("cbb")
+    		selectcb="0"
+    		for(var i=0;i<objname.length;i++){
+    			if(objname[i].checked==true){
+    				var objtrp=objname[i].id.substr(2);
+    				var selectcb=selectcb+","+objtrp;
+    			}
+    		}
+    		if (selectcb=="0"){
+    			alert ("选择您要归入组的客户!");
+    			return false;
+    		}
+			dialog("归入客户组", "iframe:groupList.htm?ids="+selectcb.substr(2), "450", "350", "iframe");
+    	}
+    }
+
+    function Dofenpeicustom(){
+    	var objname=document.getElementsByName("cbb")
+    	selectcb="0"
+    	for(var i=0;i<objname.length;i++){
+    		if(objname[i].checked==true){
+    			var objtrp=objname[i].id.substr(2);
+    			var selectcb=selectcb+","+objtrp;
+    		}
+    	}
+    	
+    	if (selectcb=="0"){
+    		alert ("选择您要分配的客户!");
+    		return false;
+    	}
+    	window.open ("fenpei.htm?cbb="+selectcb.substr(2),"d_click_text","")
+    	document.getElementById("alerttile").innerHTML="客户分配设置"
+    	openPageCover()
+    }
+
+    function CheckAll(form){
+        for (var i=0;i<form.elements.length;i++)
+        {
+        var e = form.elements[i];
+        if (e.name.substr(0,3)=='cbb')
+    	   {
+    		   if (form.chktoggle.checked==true)
+    		   {
+    		      var objid=e.id.substr(2)
+    			  if (e.checked==false)
+    			  {
+    			  //onselectpdt(objid)
+    			  }
+    		   	  e.checked = form.chktoggle.checked;
+    		   }else{
+    		      var objid=e.id.substr(2)
+    			  if (e.checked==true)
+    			  {
+    			  //onselectpdt(objid)
+    			  }
+    		   	  e.checked = form.chktoggle.checked;
+    		   }
+    	   }
+         }
+      }
+  
+    function buttoncheckAll(form){
+        form.chktoggle.checked=true
+        CheckAll(form)
+    }
+    function chkfrm(form){
+  	  
+       selectcb="0"
+        for (var i=0;i<form.elements.length;i++)
+        {
+       		 var e = form.elements[i];
+    		if (e.name.substr(0,3)=='cbb')
+    		{
+    		   if (e.checked==true)
+    		   {
+    		   var selectcb=selectcb+","+e.value
+    		   }
+    	    }
+        }
+    	
+    	if (selectcb=="0")
+    	{
+        	alert ("选择你要删除的信息！")
+        	return false;
+    	}
+    	else
+    	{
+    	  if (confirm("删除这些信息?"))
+    	  {
+    	//  	form.selcbb.value=selectcb.substr(2)
+    		form.action="delete.htm?ids="+selectcb
+    	  	form.submit()
+    	  }
+    	}
+    }
+    function onselectpdt(pdtid){
+    
+    	var obj=document.getElementById("id"+pdtid)
+    
+        var objtr=document.getElementById(pdtid)
+        if (obj.checked==true)
+        {
+        obj.checked=false
+        objtr.style.background = "#ffffff";
+        }else{
+        obj.checked=true
+        objtr.style.background = "#D1FAB4";
+        }
+    }
+
+	function importCustomerFromInquiry(){
+		var customersSelected=new Array();
+		//alert('开始准备数据。');
+		//询盘的目标是本公司，不在客户列表中的
+ 		jQuery.ajax({
+			url:"#springUrl('/mycompanycustomers/importCustomerFromInquiry.htm')",
+			type:"POST",
+			data:{},
+			dataType:"json",
+			success:function(req){
+				alert('成功导入数据：'+req.data.length+'条');
+				//jQuery(req.data).each(function(index,value){
+				// 	alert(value.name);
+				//});
+			}
+		});
+    }
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".feedbackList","#EFF6EF","#FFF")
+	})
+</script>

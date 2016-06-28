@@ -1,0 +1,227 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importJqueryui.vm")
+
+## inquiry import
+#parse("/common/importInquiry.vm")
+
+<div class="wrapper mt clearfix">
+    <div class="zz91leader">当前位置:
+		<a href="$!{address.www}">$!{siteInfo.site_name}</a> 
+		&gt; 
+		<a href="#springUrl('/')">公司黄页</a>
+        &gt; 
+		${companyinfo.name}#if($!{defaultContact.contact})(${defaultContact.contact})#end
+    </div>
+	##parse("/company/vm_company/searchBar.vm")
+    <div class="cpyCont mt">
+    #parse("/company/vm_compinfo/Content.vm")
+	<script type="text/javascript">
+/*公司简介 普会 中部 640*60，创建于2013-3-30*/
+var cpro_id = "u1248132";
+</script>
+<script src="http://cpro.baidustatic.com/cpro/ui/c.js" type="text/javascript"></script>
+    </div>
+	<div class="cpyCtt mt">
+	  <div class="cpy_box">
+		<h5 class="t">联系方式</h5>
+			#if($!{viewFlag})
+			<dl id="info">
+				<dt class="viewContactBtn">
+					<a href="javascript:void(0);">点击查看联系方式</a>
+				</dt>
+				<dd>
+					<ul>
+						<li>联系人：<span id="showcontact"></span></li>
+						<li>电话：<span id="showtel"></span></li>
+						<li id="ldbMobile">移动电话：<span id="showmobile"></span></li>
+						<li>MSN：<span id="showmsn"></span></li>
+						<li>QQ：<span id="showqq"></span></li>
+						<li>电子邮箱：<span id="showemail"></span></li>
+						<li>地址：<span id="showaddress"></span></li>
+						<li>邮编：<span id="showzip"></span></li>
+##						<li><p style="text-align:center;"><input type="button" id="messageBtn2" value="点击给我留言"></p></li>
+						##<li>公司商铺：<span id="showcontact"></span></li>
+					</ul>
+				</dd>
+			</dl>
+			<script type="text/javascript">
+			jQuery(document).ready(function(){
+				var dl = jQuery("#info"),dt = dl.find("dt"),dd = dl.find("dd");
+					
+				dt.click(function(){
+				
+					## 来电宝
+					#if($!{ldbFlag}=="1")
+					if(confirm("查看客户联系方式，将会扣除“来电宝”信息点击费（金额为 1元），确定要查看吗？")){
+						jQuery.ajax({
+							url:'#springUrl("/markToClick.htm")',
+							data:{"targetId":$!{companyinfo.id}}
+						});
+					}else{
+						return false;
+					}
+					#elseif($!{ldbFlag}=="0")
+						alert("“来电宝”信息费余额不足！请您充值后再试。");
+						return false;
+					#end
+				
+        			jQuery.ajax({
+        				url:"#springUrl('/createImageContactInfo.htm')",
+        				data:{"cid":"$!{companyinfo.id}"},
+        				cache:false,
+        				dataType:"json",
+        				type:"post",
+        				success:function(req){
+        					if(req.success){
+        						dt.hide();
+        						dd.show();
+        						jQuery("#showmsn").html(req.data.account.msn);
+        						jQuery("#showqq").html(req.data.account.qq);
+        						jQuery("#showaddress").html(req.data.company.address);
+        						jQuery("#showzip").html(req.data.company.addressZip);
+        						jQuery("#showcontact").html(req.data.account.contact);
+        						//if(req.data.account.contact!=null && req.data.account.contact!=""){
+        						//	jQuery("#showcontact").html("<img src='#springUrl('/viewContactInfo.htm')?key="+req.data.account.contact+"' />");
+        						//}
+        						if(req.data.account.tel!=null){
+        							var affix = "";
+        							if(req.data.isLDB){
+        								affix = "red";
+										jQuery("#ldbMobile").hide();
+        							}
+        							jQuery("#showtel").html("<img src='#springUrl("/company")/viewContactInfo.htm?key="+req.data.account.tel+"&color="+affix+"' />");
+        						}
+        						if(req.data.account.mobile!=null){
+        							jQuery("#showmobile").html("<img src='#springUrl('/viewContactInfo.htm')?key="+req.data.account.mobile+"' />");
+        						}
+        						if(req.data.account.email!=null){
+        							jQuery("#showemail").html("<img src='#springUrl('/viewContactInfo.htm')?key="+req.data.account.email+"' />");
+        						}
+        					} else{
+								Asto.util.Message.show({
+									msg:req.data,
+									msgType:Asto.util.Message.ERROR,
+									autoClose:10000
+								});
+        					}
+        					//恢复按钮可用状态
+        				},
+        				failure:function(){
+        					//请求提交失败，可能是网络或登录超时问题
+        					//恢复按钮可用状态
+							Asto.util.Message.show({
+								msg:"服务器发生错误",
+								msgType:Asto.util.Message.ERROR,
+								autoClose:10000
+							});
+        				}
+        			});
+        		});
+			});
+            </script>
+			#else
+			<div class="zst_service_img">
+				<a href="$!{address.www}/service/zst/" target="_blank"><img src="$!{address.images}/company/look.gif" width="220"></a>
+			</div>
+			#end
+			<div style="text-align:center; margin:8px 0 16px;">
+
+				#if($!{sessionUser})
+					<a id="inquiryBtn" href="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{defaultContact.companyId}&destUrl=$!{address.company}','在线询价',800,500,0);">在线询价</a>
+				#else
+					<a id="inquiryBtn" href="javascript:openoverlay('$!{address.front}/inquiry/questionCompany.htm?companyId=$!{defaultContact.companyId}&destUrl=$!{address.company}','询价/注册/登录',800,500,0);">在线询价</a>
+				#end
+				##<input type="button" id="inquiryBtn" value="点击给我留言">
+            </div>
+      </div>
+      <div class="infobox">
+            	<div class="title">
+					<h3>省物流、看货近一键寻找最匹配商机</h3>
+				</div>
+            	<div class="content">
+                	<ul class="inf_ul">
+                		<li><a href="http://map.zz91.com/guangdong.htm" target="_blank" title="广东废料网">广东废料网</a></li>
+                		<li><a href="http://map.zz91.com/zhejiang.htm" target="_blank" title="浙江废料网">浙江废料网</a></li>
+                		<li><a href="http://map.zz91.com/shandong.htm" target="_blank" title="山东废料网">山东废料网</a></li>
+                		<li><a href="http://map.zz91.com/jiangsu.htm" target="_blank" title="江苏废料网">江苏废料网</a></li>
+                		<li><a href="http://map.zz91.com/beijing.htm" target="_blank" title="北京废料网">北京废料网</a></li>
+                		<li><a href="http://map.zz91.com/shanghai.htm" target="_blank" title="上海废料网">上海废料网</a></li>
+                		<li><a href="http://map.zz91.com/tianjin.htm" target="_blank" title="天津废料网">天津废料网</a></li>
+                		<li><a href="http://map.zz91.com/hebei.htm" target="_blank" title="河北废料网">河北废料网</a></li>
+                		<li><a href="http://map.zz91.com/henan.htm" target="_blank" title="河南废料网">河南废料网</a></li>
+                		<li><a href="http://map.zz91.com/hunan.htm" target="_blank" title="湖南废料网">湖南废料网</a></li>
+                	</ul>
+            	</div>
+            </div>
+	</div>
+</div>
+<!--百度商桥-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fd1852f2b391e52cbd020e4b788713ba1' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<div class="wrapper mt clearfix">
+    <!-- S-->
+        #parse("/company/vm_compinfo/SupplyList.vm")
+    <!-- E-->
+</div>
+<!--在线留言  S-->
+	<div class="wrapper mt" id="message">
+##	#if($!{sessionUser})
+##        <input type="hidden" id="loginFlag" value="1" />
+##    #else
+##        <input type="hidden" id="loginFlag" value="0" />
+##    #end
+	##parse("/common/inquiry.vm")
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+	
+		jQuery("#inquiryBtn").button();
+		
+		#if($!{sessionUser})
+			var loginStatus=true;
+		#else
+			var loginStatus=false;
+		#end
+		
+##		jQuery("#inquiryBtn").click(function(){
+##
+##			if(loginStatus){
+##        		var inquiryBox= new Asto.util.PopupBox({
+##					title:"给对方留言",
+##        			url:"$!{address.front}/inquiry/company.htm?id=$!{companyinfo.id}&mainCode=$!{compinfo.companys.categoryCompanysMainCode}",
+##        			destUrl:"$!{address.company}/submitCallback.htm",
+##        			modal:true,
+##        			height:370,
+##        			width:660,
+##					callbackFn:function(){
+##        				inquiryBox.close();
+##					}
+##        		});
+##    			inquiryBox.show(); 
+##			}else{
+##				var loginBox=new Asto.util.PopupBox({
+##					title:"登录/注册",
+##        			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+##        			destUrl:"$!{address.company}/submitCallback.htm",
+##        			modal:true,
+##        			height:450,
+##        			width:631,
+##    				callbackFn:function(success,data){
+##    					loginBox.close();
+##						Asto.util.Message.show({
+##							msg:"您已登录成功，正在载入页面！"
+##						});
+##    					window.location.href=window.location.href;
+##    				}
+##        		});
+##				
+##				loginBox.show();
+##    		}
+##		});
+		
+	});
+	
+</script>

@@ -1,0 +1,58 @@
+#set( $layout = "/layout/myrcLayout.vm" )
+#leftMenu("1303","","00")
+#pageNavStyle()
+<div class="myrcNormalFrame">
+	<div class="commTip">
+        <span class="subscribManageSub" ><a href="#springUrl('/esite/esitenews/createNews.htm')" class="commArrowNews">添加公司动态</a></span>
+        <div style="clear:both"></div>
+    </div>
+    <form name="sForm" id="sForm" method="post" action="#">
+        <div class="commList">
+			<div class="commListTit">
+                <span class="commListEsitenewsSelect">&nbsp;</span>
+				<span class="commListEsitenewsTit">文章标题</span>
+                <span class="commListEsitenewsTime">发布时间</span>
+                <span class="commListEsitenewsOperat">操作</span>
+                <div style="clear:both"></div>
+            </div>
+			<ul>
+                #foreach($!{esiteNewsList} in $!{esiteNewsList})
+                    <li id="$!{esiteNewsList.id}">
+                        <span class="commListEsitenewsSelect">
+                            <input id="id$!{esiteNewsList.id}" type="checkbox" value="$!{esiteNewsList.id}" name="cbb" class="radioPositionFix"/>
+                        </span>
+                        <span class="commListEsitenewsTit">
+                            <a href="#springUrl('/esite/esitenews/initNews.htm?id=')$!{esiteNewsList.id}">$!{esiteNewsList.title}</a>
+                        </span>
+                        <span class="commListEsitenewsTime">
+                                <font class="grayed"> $!date.format('yyyy-MM-dd',$!{esiteNewsList.postTime})</font>
+                        </span>
+						<span class="commListEsitenewsOperatEdit">
+							<a href="#springUrl('/esite/esitenews/initNews.htm?id=')$!{esiteNewsList.id}" class="commBackFeed" style="padding-left:16px;background-position:left 2px;">编辑</a>
+                        </span>
+						<span class="commListEsitenewsOperatDel">
+							<a href="#springUrl('/esite/esitenews/deleteNews.htm?id=')$!{esiteNewsList.id}" style="padding-left:16px;background-position:left 2px;" class="commTrashFeed">
+								删除
+                            </a>
+                        </span>
+                 	</li>
+				#end
+                <div style="clear:both"></div>
+			</ul>
+	</div>
+	##<div class="listApplicationBtn">
+	##	<a onclick="javascript:checkBoxAllToggle(true)"  href="javascript:void(0)" class="btnA">全选</a>
+	##	<a onclick="javascript:checkBoxAllToggle(false)" href="javascript:void(0)" class="btnA">取消全选</a>
+	##	<a onclick="delatefrm('sForm','cbb','deleteNews.htm','id')"  href="javascript:void(0)" class="btnA"/> 删 除 </a>
+	##</div>
+	<div class="pageNav">	
+		#myrcPageNav($!{page} "#springUrl('/esite/esitenews/index.htm')" "" "")
+    </div>
+    </form>
+    <div style="clear:both"></div>
+</div>
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		new turnLiBgcolor(".commList","#EFF6EF","#FFF")
+	})
+</script>

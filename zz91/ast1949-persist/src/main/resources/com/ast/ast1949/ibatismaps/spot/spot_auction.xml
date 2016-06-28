@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.// EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotAuction">
+	<typeAlias alias="spotAuctionDO" type="com.ast.ast1949.domain.spot.SpotAuction" />
+	<resultMap class="spotAuctionDO" id="spotAuctionResult">
+		<result property="id" column="id" />
+		<result property="spotId" column="spot_id" />
+		<result property="productId" column="product_id" />
+		<result property="companyId" column="company_id"/>
+		<result property="checkStatus" column="check_status"/>
+		<result property="price" column="price" />
+		<result property="startPrice" column="start_price" />
+		<result property="upPrice" column="up_price" />
+		<result property="quantity" column="quantity" />
+		<result property="title" column="title" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<sql id="defaultColumn">
+		id,
+		spot_id,
+		product_id,
+		company_id,
+		check_status,
+		price,
+		start_price,
+		up_price,
+		quantity,
+		title,
+		quantity_unit,
+		price_unit,
+		expired_time,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="spotAuctionResult">
+		SELECT
+		<include refid="spotAuction.defaultColumn" />
+		FROM spot_auction
+		where id = #id#
+		limit 1
+	</select>
+
+	<select id="queryBySpotId" parameterClass="java.lang.Integer"
+		resultMap="spotAuctionResult">
+		SELECT
+		<include refid="spotAuction.defaultColumn" />
+		FROM spot_auction
+		where spot_id = #spotId# and check_status = 1 and expired_time >now()
+		limit 1
+	</select>
+
+	<insert id="insert" parameterClass="spotAuctionDO">
+		INSERT INTO ast.spot_auction
+		(
+		spot_id, product_id,company_id, price,check_status,
+		start_price,
+		up_price, quantity,
+		title,quantity_unit, price_unit,
+		expired_time,gmt_created,gmt_modified)
+		VALUES
+		(
+		#spotId#, #productId#,#companyId#, #price#,#checkStatus#,
+		#startPrice#,#upPrice#, #quantity#,
+		#title#, #quantityUnit#,
+		#priceUnit#
+		<isNotNull prepend="," property="expiredTime">
+			#expiredTime#
+		</isNotNull>
+		<isNull prepend="," property="expiredTime">
+			now()
+		</isNull>
+		,now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="spotAuctionDO">
+		UPDATE spot_auction
+		SET
+		gmt_modified = now()
+		<isNotNull prepend="," property="price">
+			price = #price#
+		</isNotNull>
+		<isNotEmpty prepend="," property="checkStatus">
+			check_status = #checkStatus#
+		</isNotEmpty>
+		<isNotNull prepend="," property="startPrice">
+			start_price = #startPrice#
+		</isNotNull>
+		<isNotNull prepend="," property="upPrice">
+			up_price = #upPrice#
+		</isNotNull>
+		<isNotNull prepend="," property="quantity">
+			quantity = #quantity#
+		</isNotNull>
+		<isNotEmpty prepend="," property="title">
+			title = #title#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="quantityUnit">
+			quantity_unit = #quantityUnit#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="priceUnit">
+			price_unit = #priceUnit#
+		</isNotEmpty>
+		<isNotNull prepend="," property="expiredTime">
+			expired_time =#expiredTime#
+		</isNotNull>
+		WHERE id = #id#
+	</update>
+	
+	<sql id="dynamicByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="spotAuction.checkStatus">
+				check_status = #spotAuction.checkStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="spotAuction.companyId">
+				company_id = #spotAuction.companyId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryByCondition" parameterClass="java.util.Map" resultMap="spotAuctionResult">
+		select 
+		<include refid="spotAuction.defaultColumn"/>
+		from spot_auction
+		<include refid="dynamicByCondition"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryCountByCondition" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_auction
+		<include refid="dynamicByCondition"/>
+	</select>
+
+	<update id="updateStatusById" parameterClass="java.util.Map">
+		UPDATE spot_auction
+		SET
+		gmt_modified = now(),check_status = #checkStatus#
+		where id = #id#
+	</update>
+	
+	<select id="queryAuctionBySize" parameterClass="java.lang.Integer" resultMap="spotAuctionResult">
+		select 
+		<include refid="spotAuction.defaultColumn"/>
+		from spot_auction
+		where expired_time >now() and check_status = 1
+		order by id desc
+		limit #size#
+	</select>
+	
+	<select id="queryExpiredAuctionBySize" parameterClass="java.lang.Integer" resultMap="spotAuctionResult">
+		select 
+		<include refid="spotAuction.defaultColumn"/>
+		from spot_auction
+		where now() > expired_time and check_status = 1
+		order by id desc
+		limit #size#
+	</select>
+
+</sqlMap>

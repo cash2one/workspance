@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="creditReference">
+	<!-- Use type aliases to avoid typing the full classname every time. -->
+	<typeAlias alias="creditReferenceDO"
+		type="com.ast.ast1949.domain.credit.CreditReferenceDo" />
+	
+	<typeAlias alias="creditReferenceDTO"
+		type="com.ast.ast1949.dto.credit.CreditReferenceDTO" />
+
+	<resultMap id="creditReferenceResult" class="creditReferenceDO">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="account" column="account" />
+		<result property="name" column="name" />
+		<result property="companyName" column="company_name" />
+		<result property="address" column="address" />
+		<result property="tel" column="tel" />
+		<result property="fax" column="fax" />
+		<result property="email" column="email" />
+		<result property="details" column="details" />
+		<result property="checkStatus" column="check_status" />
+		<result property="checkPerson" column="check_person" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+	
+	<resultMap id="creditReferenceDTOResult" class="creditReferenceDTO">
+		<result property="creditReference" resultMap="creditReference.creditReferenceResult"/>
+		<result property="creditCompanyName" column="credit_company_name" />
+	</resultMap>
+
+	<sql id="fullColumn">
+		id,company_id,account,name,company_name,address,tel,fax,email,
+		details,check_status,check_person,gmt_modified,gmt_created
+	</sql>
+
+	<select id="countReferenceByCompany"
+		parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		select count(*) from credit_reference
+		where company_id=#companyId#
+		<dynamic>
+			<isNotEmpty property="checkStatus" prepend="and">
+				check_status = #checkStatus#
+        	</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<delete id="deleteReferenceByCompany" parameterClass="java.util.HashMap">
+		delete from
+		credit_reference where id=#id# and company_id=#companyId#
+	</delete>
+
+	<insert id="insertReferenceByCompany" parameterClass="creditReferenceDO">
+		INSERT INTO credit_reference
+		(company_id,account,name,company_name,address,tel,fax,email,
+		details,check_status,check_person,gmt_created,gmt_modified)
+		values(#companyId#,#account#,#name#,#companyName#,
+		#address#,#tel#,#fax#,#email#,#details#,#checkStatus#,
+		#checkPerson#,now(),now())
+		<selectKey keyProperty="id" resultClass="int">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="queryReferenceByCompany" parameterClass="java.lang.Integer" 
+		resultMap="creditReferenceResult">
+		select
+		<include refid="fullColumn" />
+		from credit_reference
+		where company_id=#value#
+		order by id desc
+	</select>
+	
+	<select id="queryReferenceById" parameterClass="java.lang.Integer" 
+		resultMap="creditReferenceResult">
+		select
+		<include refid="fullColumn" />
+		from credit_reference
+		where id=#value#
+		limit 1
+	</select>
+
+	<!--修改资信参考人-->
+	<update id="updateReferenceByCompany" parameterClass="creditReferenceDO">
+		UPDATE
+		credit_reference
+		SET
+		name = #name#,
+		company_name = #companyName#,
+		address = #address#,
+		tel = #tel#,
+		fax = #fax#,
+		email = #email#,
+		details = #details#,
+		check_status=#checkStatus#,
+		gmt_modified = now()
+		WHERE
+		id = #id# and
+		company_id=#companyId#
+	</update>
+	
+	<sql id="dynamicByCondition">
+		<dynamic prepend="where">
+			<isNotEmpty property="dto.creditReference.checkStatus" prepend="and">
+				cr.check_status in ($dto.creditReference.checkStatus$)
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditReference.email" prepend="and">
+				cr.email LIKE CONCAT(#dto.creditReference.email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditReference.companyName" prepend="and">
+				cr.company_name LIKE CONCAT(#dto.creditReference.companyName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dto.creditCompanyName" prepend="and">
+				c.name LIKE CONCAT(#dto.creditCompanyName#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryReferenceByConditions" parameterClass="java.util.HashMap" resultMap="creditReferenceDTOResult">
+		SELECT 
+			cr.id,
+			cr.company_id,
+			cr.account,
+			cr.name,
+			cr.company_name,
+			cr.address,
+			cr.tel,
+			cr.fax,
+			cr.email,
+			cr.details,
+			cr.check_status,
+			cr.check_person,
+			cr.gmt_created,
+			cr.gmt_modified,
+			c.name AS credit_company_name
+		FROM credit_reference cr 
+		LEFT JOIN company c ON c.id=cr.company_id
+		<include refid="creditReference.dynamicByCondition"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="countReferenceByConditions" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 
+			COUNT(0)
+		FROM credit_reference cr 
+		LEFT JOIN company c ON c.id=cr.company_id
+		<include refid="creditReference.dynamicByCondition"/>
+	</select>
+	
+	<delete id="deleteReferenceById" parameterClass="java.lang.Integer">
+		DELETE FROM credit_reference 
+		WHERE id=#id#
+	</delete>
+	
+	<update id="updateReferenceCheckStatusById" parameterClass="java.util.Map">
+		UPDATE credit_reference
+		SET
+			check_status=#checkStatus#,
+			check_person=#checkPerson#,
+			gmt_modified = now()
+		WHERE id = #id#
+	</update>
+</sqlMap>

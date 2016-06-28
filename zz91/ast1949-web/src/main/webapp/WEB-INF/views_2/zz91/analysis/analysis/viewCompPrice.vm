@@ -1,0 +1,120 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/analysis/analysis.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		##viewCompPrice
+		var categoryCodeMap=[
+			{value:'1000',name:'废塑料'},
+			{value:'1001',name:'废金属'},
+			{value:'1002',name:'废纸'},
+			{value:'1003',name:'综合废料'}
+		]
+		
+		var chart=Ext.create("ast.ast1949.analysis.analysis.ChartView",{
+			region:"south",
+			height:400,
+			split:true,
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryCompPrice.htm",
+			storeModel:"CompPriceModel"
+		});
+		
+		var mainGrid=Ext.create("ast.ast1949.analysis.analysis.MainGrid",{
+			region:"center",
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryCompPrice.htm",
+			storeModel:"CompPriceModel",
+			cm:[
+				{text:"编号",dataIndex:"id",width:30,hidden:true},
+				{header:"供求类型",dataIndex:"categoryCode",renderer:function(v,m,record,ridx,cidx,store,view){
+    					var n="";
+    					Ext.Array.each(categoryCodeMap,function(obj,idx){
+    						if(obj.value==v){
+    							n = obj.name;
+    							return false;
+    						}
+    					});
+    					return n;
+					},
+					summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return "总计";
+					}
+				},
+				{text:"数量",dataIndex:"num",summaryType:"sum",summaryRenderer:function(value, summaryData, dataIndex) {
+					return value;
+				}},
+				{text:"百分比",dataIndex:"num",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						var sum=0;
+    					Ext.Array.each(store.getGroups(),function(obj,idx){
+							//sum+=obj.get("num");
+							if(obj.name==record.get("targetDate")){
+								Ext.Array.each(obj.children,function(oj,ix){
+									sum+=oj.get("num");
+								})
+							}
+						});
+						return (Math.round(v / sum * 10000) / 100.00)+"%";
+    				},
+					summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return "";
+					}
+				},
+				{text:"统计日期",dataIndex:"gmtTarget",renderer:function(v,m,record,ridx,cidx,store,view){
+						return Ext.Date.format(new Date(v.time),"Y-m-d");
+    				},
+    				summaryType:"count",
+					summaryRenderer:function(value, summaryData, dataIndex) {
+						return Ext.String.format("共：{0}",value);
+					}
+				}
+			],
+			tbar:["->"
+##			,{
+##				xtype:"combo",
+##				name:"categoryCode",
+##				emptyText:"供求类型",
+##				formItemCls:"x-form-item required",
+##				displayField:'name',
+##				valueField:'value',
+##				store:Ext.create('Ext.data.Store', {
+##					fields: ['name', 'value'],
+##					data : categoryCodeMap
+##				}),
+##				listeners:{
+##					"change":function(field, nv, ov, e){
+##						mainGrid.getStore().setExtraParam("categoryCode",field.getSubmitValue());
+##						mainGrid.getStore().load();
+##					}
+##				}
+##			}
+			,{
+				xtype:"datefield",
+				format:"Y-m-d",
+				submitFormat:"Y-m-d H:i:s",
+				emptyText:"统计日期",
+				name : 'gmtTarget',
+				id : 'gmtTarget',
+				listeners:{
+					"change":function(field, nv, ov, e){
+						mainGrid.getStore().setExtraParam("from",field.getSubmitValue());
+						mainGrid.getStore().setExtraParam("to",field.getSubmitValue());
+						mainGrid.getStore().load();
+					}
+				}
+			}],
+			listeners:{
+				"itemclick":function(_this,record,item,idx){
+					chart.getChartStore().setExtraParam("typeCode",record.get("typeCode"));
+					chart.getChartStore().setExtraParam("categoryCode",record.get("categoryCode"));
+					chart.getChartStore().load();
+				}
+			}
+		});
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[mainGrid,chart]
+		});
+	});
+</script>

@@ -1,0 +1,70 @@
+<div class="subDiv">
+    <div class="title">
+        <div class="nav3_l"></div>
+        <h3>$!{priceCategory.name}#if($!{assistTypeId})废金属#end价格</h3>
+        <div class="nav3_r"></div>
+    </div>
+    <div class="subDiv_left1">
+		#foreach($category in $categoryList)
+			#if($priceMap.get($!{category.id}).size()>0)
+		<div class="licontcomm">
+			<ul>
+				#set($assistTypeId=0)
+				#set($typeId=0)
+				#foreach($price in $priceMap.get($!{category.id}))
+					<li>
+							#set($typeId=$!{price.typeId})
+							#set($assistTypeId=$!{price.assistTypeId})
+						#if(${parentId}==3)
+							<a href="#springUrl('priceList_')t$!{price.typeId}_a$!{price.assistTypeId}_metal.htm" target="_blank" >
+								[$!{category.name}]
+							</a>
+						#elseif($!{parentId}==17)
+							<a href="#springUrl('moreList_')p3_t$!{category.id}_metal.htm" target="_blank" >
+								[$!{category.name}]
+							</a>
+						#elseif($!{parentId}==18 && $typeId!=66)
+							<a href="#springUrl('moreList_')p$!{category.id}_metal.htm" target="_blank" >
+								[$!{category.name}]
+							</a>
+						#else
+							<a href="#springUrl('priceList_')t$!{price.typeId}_metal.htm" target="_blank" >
+								[$!{category.name}]
+							</a>
+						#end
+						<a href="#springUrl('/priceDetails_')$!{price.id}_$!{code}.htm" target='_blank' title="$!{price.title}">$!{price.title}</a>
+						<span>$!date.format('yyyy-MM-dd',$!{price.gmtCreated})</span>
+						##TODO 判断是否最新，加new
+					</li>
+				#end
+			</ul>
+			#if(${parentId}==3)
+					<div class="more">
+						<a href="#springUrl('priceList_')t$!{typeId}_a${assistTypeId}_${code}.htm" target="_blank" >
+							更多$!{category.name}$!{priceCategory.name}价格&gt;&gt;
+						</a>
+					</div>
+				#elseif($!{parentId}==17)
+					<div class="more">
+						<a href="#springUrl('moreList_')p3_t$!{category.id}_${code}.htm"  target="_blank" >
+							更多$!{category.name}价格&gt;&gt;
+						</a>
+					</div>
+				#elseif($!{parentId}==18 && $!{typeId}!=66)
+					<div class="more">
+						<a href="#springUrl('moreList_')p$!{category.id}_${code}.htm"  target="_blank" >
+							更多$!{category.name}价格&gt;&gt;
+						</a>
+					</div>
+				#else
+					<div class="more">
+						<a href="#springUrl('priceList_')t$!{category.id}_${code}.htm" target="_blank" >
+							更多$!{category.name}价格&gt;&gt;
+						</a>
+					</div>
+			#end
+		</div>
+		#end
+		#end
+    </div>
+</div>

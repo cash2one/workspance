@@ -1,0 +1,80 @@
+#set($layout="/layout/defaultS.vm")
+<script type="text/javascript" src="#springUrl('/app/analysis/analysis.js')" ></script>
+<script type="text/javascript" >
+	Ext.onReady(function(){
+		var chart=Ext.create("ast.ast1949.analysis.analysis.ChartView",{
+			region:"south",
+			height:400,
+			split:true,
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/queryXiaZaiKw.htm",
+			storeModel:"XiaZaiKeywordsModel"
+		});
+		
+		var mainGrid=Ext.create("ast.ast1949.analysis.analysis.MainPageGrid",{
+			region:"center",
+			queryUrl:Context.ROOT+"/zz91/analysis/analysis/pageXiaZaiKw.htm",
+			storeModel:"XiaZaiKeywordsModel",
+			cm:[
+				{text:"编号",dataIndex:"id",width:30,hidden:true},
+    			{header:"关键字",dataIndex:"kw"},
+				{text:"数量",dataIndex:"num"},
+				{text:"百分比",dataIndex:"num",
+					renderer:function(v,m,record,ridx,cidx,store,view){
+						var sum=store.getAt(store.getCount()-1);
+						return (Math.round(v / sum.get("num") * 10000) / 100.00)+"%";
+    				}
+				},
+				{text:"统计日期",dataIndex:"gmtTarget",renderer:function(v,m,record,ridx,cidx,store,view){
+    					if(v!=null){
+							return Ext.Date.format(new Date(v.time),"Y-m-d");
+						}
+    				}
+				}
+			],
+			tbar:["->",
+						{
+        				xtype:"datefield",
+        				format:"Y-m-d",
+        				submitFormat:"Y-m-d H:i:s",
+        				emptyText:"统计日期",
+        				name : 'gmtTarget',
+        				id : 'gmtTarget',
+        				listeners:{
+        					"change":function(field, nv, ov, e){
+        						mainGrid.getStore().setExtraParam("gmtTarget",field.getSubmitValue());
+        						mainGrid.getStore().load();
+        					}
+        				}
+				},"-", {
+                		text:"导出excel",
+						listeners:{
+                				"click":function(){
+									var gmtTarget=Ext.getCmp("gmtTarget").getRawValue();
+                					Ext.MessageBox.confirm("导出excel表","确定导出数据?",function(btn){
+                        			if(btn!="yes"){
+                        				return ;
+                        			}else{
+                        				Ext.Ajax.request({
+                        					url: window.open(Context.ROOT+"/zz91/analysis/analysis/exportData.htm?gmtTarget=" + gmtTarget),
+                        				});
+                        			}
+                        		});
+								mainGrid.getStore().load();
+                				}
+                			}
+                		}],
+			listeners:{
+				"itemclick":function(_this,record,item,idx){
+					chart.getChartStore().setExtraParam("kw",record.get("kw"));
+					chart.getChartStore().load();
+				}
+			}
+		});
+
+		Ext.create("Ext.container.Viewport",{
+			layout:"border",
+			items:[mainGrid,chart]
+		});
+		
+	});
+</script>

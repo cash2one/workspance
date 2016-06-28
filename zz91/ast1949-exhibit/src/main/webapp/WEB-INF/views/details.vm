@@ -1,0 +1,91 @@
+#set($layout="/layout/defaultS.vm")
+#parse("/common/importSlider.vm")
+<form name="form1" method="post" action="exhibit.aspx?id=195" id="form1">
+<div class="wrapper">
+	<div class="site">当前位置: <a href="$!{address.www}" target="_blank">$!{siteInfo.site_name}</a> &gt; 
+		<a href="#springUrl('/')">展会频道</a> &gt; 
+		<a id="hlNav" href="#springUrl('list')$!{categoryDO.code}.htm">$!{categoryDO.label}</a> &gt; 详细内容</div>
+	<div class="clearfix">
+		<div class="col5">
+			<div class="wrap st3 new">
+                <h6>$!{exhibitDO.name}</h6>
+                <span class="newdir">开展时间:$!date.format('yyyy-MM-dd',$!{exhibitDO.startTime}) | 
+					<a href="$!{address.www}" target="_blank" title="$!{siteInfo.site_name}">$!{siteInfo.site_name}</a></span>
+                <p>$!{exhibitDO.content}</p>
+                <span class="newbut">
+					<a href="$!{address.front}" title="$!{siteInfo.site_name}">&lt; 返回首页 &gt;</a> 
+					<a href="javascript:void(0)" onclick="window.close();return false;" title="关闭当前窗口">&lt; 关闭窗口 &gt;</a>
+					<a href="javascript:void(0)" id="js_collectBtn">&lt; 收藏 &gt;</a></span>
+			</div>
+			#parse("/exhibit/vm_list/left.vm")
+		</div>
+		<div class="col6">
+			#parse("/exhibit/vm_list/right.vm")
+		</div>
+    </div>
+	</div>
+</form>
+	
+
+#if($!{sessionUser})
+    <input type="hidden" id="loginFlag" value="1" />
+ #else
+    <input type="hidden" id="loginFlag" value="0" />
+ #end
+<script type="text/javascript">
+	jQuery(document).ready(function(){
+		## 登录弹出框
+		var loginBox=new Asto.util.PopupBox({
+			url:"$!{address.front}/miniLogin.htm?regfrom=10031003",
+			destUrl:"$!{address.exhibit}/submitCallback.htm",
+			modal:true,
+			height:450,
+			width:631
+		});
+			
+		
+		jQuery("#loginBtn").click(function(){
+			Asto.util.Callback.setSubmitCallback(function(success, data){
+				loginBox.close();
+				window.parent.location.reload();
+			});
+			loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.exhibit}/submitCallback.htm");
+		});
+		
+		## 收藏按钮 点击弹出 收藏页面
+		var collectBox= new Asto.util.PopupBox({
+			url:"$!{address.front}/favorite/myFavorite.htm?contentId=$!{exhibitDO.id}&favoriteTypeCode=10091008&title=$!{exhibitDO.name}",
+			destUrl:"$!{address.exhibit}/submitCallback.htm",
+			modal:true,
+			height:370,
+			width:660
+		});
+		
+		
+		jQuery("#js_collectBtn").click(function(){
+			var id = ${exhibitDO.id};
+			var title = "$!{exhibitDO.name}";
+			title = encodeURI(title);
+			if(jQuery("#loginFlag").val()==0){
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					jQuery("#loginFlag").val(1);
+					Asto.util.Callback.setSubmitCallback(function(success, data){
+						collectBox.close();
+					});
+					loginBox.close();
+					collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091008&title="+title+"&destUrl=$!{address.exhibit}/submitCallback.htm");
+				});
+				
+				loginBox.show("$!{address.front}/miniLogin.htm?regfrom=10031003&destUrl=$!{address.exhibit}/submitCallback.htm");
+			}else{
+				Asto.util.Callback.setSubmitCallback(function(success, data){
+					collectBox.close();
+					if(success=="false"){
+						jQuery("#loginFlag").val(0);
+					}
+				});
+				collectBox.show("$!{address.front}/favorite/myFavorite.htm?contentId="+id+"&favoriteTypeCode=10091008&title="+title+"&destUrl=$!{address.exhibit}/submitCallback.htm");
+			}
+		});
+	});
+</script>

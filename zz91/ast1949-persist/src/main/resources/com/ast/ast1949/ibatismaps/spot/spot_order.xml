@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="spotOrder">
+	<typeAlias alias="spotOrderDO" type="com.ast.ast1949.domain.spot.SpotOrder" />
+	<resultMap class="spotOrderDO" id="spotOrderResult">
+		<result property="id" column="id" />
+		<result property="companyId" column="company_id" />
+		<result property="spotId" column="spot_id" />
+		<result property="orderProductTitle" column="order_product_title" />
+		<result property="orderCompanyName" column="order_company_name" />
+		<result property="detail" column="detail" />
+		<result property="orderStatus" column="order_status" />
+		<result property="isDel" column="is_del" />
+		<result property="price" column="price" />
+		<result property="quantity" column="quantity" />
+		<result property="total" column="total" />
+		<result property="priceUnit" column="price_unit" />
+		<result property="quantityUnit" column="quantity_unit" />
+		<result property="buyMessage" column="buy_message" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="gmtCreated" column="gmt_created" />
+		<result property="gmtModified" column="gmt_modified" />
+	</resultMap>
+
+	<sql id="defaultColumn">
+		id,
+		company_id,
+		spot_id,
+		order_product_title,
+		order_company_name,
+		detail,
+		order_status,
+		is_del,
+		price,
+		quantity,
+		total,
+		price_unit,
+		quantity_unit,
+		buy_message,
+		expired_time,
+		gmt_created,
+		gmt_modified
+	</sql>
+	
+	<sql id="defaultAsColumn">
+		so.id,
+		so.company_id,
+		so.spot_id,
+		so.order_product_title,
+		so.order_company_name,
+		so.detail,
+		so.order_status,
+		so.is_del,
+		so.price,
+		so.quantity,
+		so.total,
+		so.price_unit,
+		so.quantity_unit,
+		so.buy_message,
+		so.expired_time,
+		so.gmt_created,
+		so.gmt_modified
+	</sql>
+
+	<select id="queryById" parameterClass="java.lang.Integer"
+		resultMap="spotOrderResult">
+		select
+		<include refid="defaultColumn" />
+		from spot_order
+	</select>
+
+	<sql id="dynamicWhere">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="spotOrder.orderStatus">
+				order_status =
+				#spotOrder.orderStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="spotOrder.isDel">
+				is_del =
+				#spotOrder.isDel#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="spotOrder.companyId">
+				company_id = #spotOrder.companyId#
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<select id="queryByCondition" parameterClass="java.util.Map"
+		resultMap="spotOrderResult">
+		select
+		<include refid="defaultColumn" />
+		from spot_order
+		<include refid="dynamicWhere" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+
+	<select id="queryCountByCondition" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		select count(0)
+		from spot_order
+		<include refid="dynamicWhere" />
+	</select>
+	
+	<select id="validateCart" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_order
+		where company_id = #companyId# and spot_id = #spotId# and is_del = '0'
+	</select>
+
+	<insert id="insert" parameterClass="spotOrderDO">
+		INSERT INTO spot_order
+		(company_id,spot_id,order_product_title,
+		order_company_name,detail,
+		order_status,is_del,price,quantity,total,
+		price_unit,quantity_unit,buy_message,expired_time,gmt_created,
+		gmt_modified)
+		VALUES
+		(#companyId#,#spotId#,#orderProductTitle#,#orderCompanyName#,
+		#detail#,#orderStatus#,#isDel#,#price#,#quantity#,#total#,
+		#priceUnit#,#quantityUnit#,#buyMessage#,
+		now(),now(),now())
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			select
+			LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<update id="updateByStatusAndId" parameterClass="java.util.Map">
+		UPDATE spot_order
+		SET
+		gmt_modified = now(),
+		order_status = #orderStatus#
+		WHERE id = #id# and company_id = #companyId#
+	</update>
+	
+	<update id="deleteOrderById" parameterClass="java.util.Map">
+		UPDATE spot_order
+		SET
+		gmt_modified = now(),
+		is_del = 1
+		WHERE id = #id# and company_id = #companyId#
+	</update>
+	
+	<select id="countBySpotId" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(0)
+		from spot_order
+		where spot_id = #spotId#
+	</select>
+	
+	<select id="queryOrder" resultMap="spotOrderResult" parameterClass="java.lang.Integer">
+		select
+		<include refid="defaultAsColumn" />
+		from spot_order so
+		where exists(select id from products_spot where id = so.spot_id)
+		order by id desc
+		limit #size#
+	</select>
+	
+</sqlMap>

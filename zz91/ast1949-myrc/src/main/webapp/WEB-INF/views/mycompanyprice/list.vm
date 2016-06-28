@@ -1,0 +1,137 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/myproducts/office_post_list.htm?checkStatus=1&isExpired=0&isPause=0')">商机管理</a> <span class="divider">/</span>
+            </li>
+            <li class="active">企业报价</li>
+        </ul>
+	#if($!{error}==0)
+		<div class="alert alert-success"><strong>提示：</strong>您刚刚的操作成功了！</div>
+	#end
+	#if($!{error}==1)
+		<div class="alert alert-error"><strong>提示：</strong>发生错误，您的报价没有被更新！</div>
+	#end
+		<div class="table-select mt">
+			<input type="checkbox" class="checkAllToggle">
+			<a href="javascript:void(0)" class="btn btn-small Choicebutton">永久删除</a>
+			<a href="javascript:void(0)" id="createBtn" class="btn btn-small">新增</a>
+		</div>
+		<table class="table table-bordered table-condensed mt">
+			<thead>
+		        <tr>
+		            <th width="4%" class="tac"><input type="checkbox" class="checkAllToggle"></th>
+		            <th width="9%" class="tac">类别</th>
+		            <th width="41%">产品名称</th>
+		            <th width="10%" class="tac">报价</th>
+		            <th width="10%" class="tac">地区</th>
+		            <th width="8%" class="tac">信息有效期</th>
+		            <th width="8%" class="tac">审核状态</th>
+					<th width="10%" class="tac">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				#foreach($companyPrice in ${page.records})
+			<tr>
+	            <td class="tac"><input type="checkbox" name="cbb" value="$!{companyPrice.id}"/></td>
+	            <td class="tac">$!{companyPrice.companyPriceCategory}</td>
+	            <td>
+				#if($!{companyPrice.isChecked}=="1")
+					<a href='$!{address.price}/companyprice/priceDetails$!{companyPrice.id}.htm' target="_blank">$!{companyPrice.title}</a>
+				#else
+					<p class="nomargin"><a href='#springUrl("/mycompanyprice/updatePrice.htm")?id=$!{companyPrice.id}'>$!{companyPrice.title}</a></p>
+				#end
+	            </td>
+	            <td class="tac">
+					#if($!{companyPrice.minPrice} && $!{companyPrice.minPrice}!="")
+						$!{companyPrice.minPrice}
+					#else
+						$!{companyPrice.price}
+					#end
+					#if($!{companyPrice.maxPrice} && $!{companyPrice.maxPrice}!="")
+						至
+						$!{companyPrice.maxPrice}
+					#end
+					$!{companyPrice.priceUnit}
+				</td>
+				<td class="tac">#if(${companyPrice.province}&&${companyPrice.province}!="")$!{companyPrice.province}|$!{companyPrice.city}#else$!{companyPrice.countryName}#end</td>
+				<td class="tac">
+					#if($!{companyPrice.validTime}>0 && 30>$!{companyPrice.validTime})
+						$!{companyPrice.validTime}天
+					#elseif($!{companyPrice.validTime}>=28 && 32>$!{companyPrice.validTime})
+						一个月
+					#elseif($!{companyPrice.validTime}>88 && 92>$!{companyPrice.validTime})
+						三个月
+					#elseif($!{companyPrice.validTime}>=175 && 185>$!{companyPrice.validTime})
+						六个月
+					#elseif($!{companyPrice.validTime}>=185)
+						长期有效
+					#else
+						$!{companyPrice.validTime}天
+					#end
+				</td>
+				<td class="tac">
+				#if($!{companyPrice.isChecked}=='0') 
+					<span class="grey">未审核</span>
+				#else 
+					<span class="green">已审核</span>
+				#end 
+				</td>
+				<td class="tac">
+					<a href="#springUrl('/mycompanyprice/updatePrice.htm')?id=$!{companyPrice.id}">修改</a>
+					<a href="#springUrl('/mycompanyprice/delete.htm')?ids=$!{companyPrice.id}" onclick="javascript:return confirm('删除后将无法恢复，您确定要删除这个报价信息吗?');">删除</a>
+				</td>
+			</tr>
+			#end
+			</tbody>
+		</table>
+	#if($!{page.records.size()}==0)
+		<div class="alert alert-error">您还没有发布任何报价信息！</div>
+	#end
+		<div class="table-select mt">
+			<input type="checkbox" class="checkAllToggle">
+			<a href="javascript:void(0)" class="btn btn-small Choicebutton">永久删除</a>
+		</div>
+		#myrcPageNav($!{page} "#springUrl('/mycompanyprice/list.htm')" "" "")
+	</div>
+</div>
+<script>
+	jQuery(function() {
+		myrc.menu(2, 5);
+		jQuery(".checkAllToggle").click(function(){
+    		var chk=jQuery(this).attr("checked");
+			jQuery("#checkAllToggle1").attr("checked",chk);
+    		jQuery("input[name=cbb]").each(function(index, obj){
+    			obj.checked=chk;
+    		});
+    	});
+		
+		jQuery(".Choicebutton").click(function(){
+			var ids=getAllInquiryIds();
+			if(ids.length==0){
+    			alert ("请先选择要删除的报价信息！");
+    			return false;
+    		}
+			
+			if (confirm("你选中了"+ids.length+"条报价信息,确实要删除这些信息吗?")){
+				//alert("#springUrl('/mycompanyprice/delete.htm')?ids="+ids.join(","))
+				window.location.href="#springUrl('/mycompanyprice/delete.htm')?ids="+ids.join(",");
+			}
+		});
+		
+		jQuery("#createBtn").click(function(){
+			window.location.href="#springUrl('/mycompanyprice/createPrice.htm')";
+		});
+	});
+	
+	function getAllInquiryIds(){
+		var inquiryIds = new Array();
+		jQuery.each(jQuery("[name=cbb]"),function(index,obj){
+			if(obj.checked){
+    			inquiryIds.push(obj.value);
+			}
+		});
+		return inquiryIds;
+	}
+</script>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap
+	PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="analysis">
+	<typeAlias alias="logDto" type="com.ast.ast1949.dto.analysis.AnalysisSpotDto"/>
+	<!-- analysis 企业报价 result -->
+	<typeAlias alias="compPrice" type="com.ast.ast1949.domain.analysis.AnalysisCompPrice"/>
+	<resultMap class="compPrice" id="analysisCompPriceResult">
+		<result property="id" column="id" />
+		<result property="categoryCode" column="category_code"/>
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<!-- analysis 询盘 result -->
+	<typeAlias alias="analysisInquiry" type="com.ast.ast1949.domain.analysis.AnalysisInquiry"/>
+	<resultMap class="analysisInquiry" id="analysisInquiryResult">
+		<result property="id" column="id" />
+		<result property="inquiryType" column="inquiry_type"/>
+		<result property="inquiryTarget" column="inquiry_target" />
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<!-- analysis 供求 result -->
+	<typeAlias alias="product" type="com.ast.ast1949.domain.analysis.AnalysisProduct"/>
+	<resultMap class="product" id="analysisProductResult">
+		<result property="id" column="id" />
+		<result property="typeCode" column="type_code" />
+		<result property="categoryCode" column="category_code"/>
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<!-- analysis 注册 result -->
+	<typeAlias alias="register" type="com.ast.ast1949.domain.analysis.AnalysisRegister"/>
+	<resultMap class="register" id="analysisRegisterResult">
+		<result property="id" column="id" />
+		<result property="regfromCode" column="regfrom_code"/>
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<!-- analysis 关键字 result -->
+	<typeAlias alias="tradeKeywords" type="com.ast.ast1949.domain.analysis.AnalysisTradeKeywords"/>
+	<resultMap class="tradeKeywords" id="analysisTradeKeywordsResult">
+		<result property="id" column="id" />
+		<result property="kw" column="kw"/>
+		<result property="num" column="num" />
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+
+	<select id="queryEsiteVisit" parameterClass="java.lang.Integer" resultClass="java.lang.Integer" >
+		select visit_count from analysis_esite_visit
+		where company_id=#value#
+	</select>
+	
+	<sql id="where_clause_time">
+		<isNotNull prepend="and" property="start">
+			gmt_target &gt;= #start#
+		</isNotNull>
+		<isNotNull prepend="and" property="end">
+			gmt_target &lt;= #end#
+		</isNotNull>
+	</sql>
+	
+	<sql id="where_clause_inquiry">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="inquiryType">
+				inquiry_type = #inquiryType#
+			</isNotEmpty>
+			<isNotNull prepend="and" property="gmtTarget">
+				gmt_target  = #gmtTarget#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<select id="queryInquiryRang" parameterClass="java.util.Map" resultMap="analysisInquiryResult">
+		select id,inquiry_type,inquiry_target,num,gmt_target
+		from analysis_inquiry
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="inquiryTarget">
+				inquiry_target = #inquiryTarget#
+			</isNotNull>
+			<include refid="where_clause_time"/>
+		</dynamic>
+		order by gmt_target
+	</select>
+	
+	<select id="queryInquiry" parameterClass="java.util.Map" resultMap="analysisInquiryResult">
+		select id,inquiry_type,inquiry_target,num,gmt_target
+		from analysis_inquiry 
+		<include refid="where_clause_inquiry" />
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	
+	<select id="queryInquiryCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from analysis_inquiry
+		<include refid="where_clause_inquiry" />
+	</select>
+	
+	<sql id="where_causes_keywords" >
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="gmtTarget">
+				gmt_target = #gmtTarget#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<sql id="where_causes_spot" >
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="gmtTarget">
+				gmt_target = #gmtTarget#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryKeywordsRang" parameterClass="java.util.Map" resultMap="analysisTradeKeywordsResult">
+		select id, kw, num, gmt_target
+		from analysis_trade_keywords
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kw">
+				kw = #kw#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+		order by gmt_target
+	</select>
+	
+	<select id="queryKeywords" parameterClass="java.util.Map" resultMap="analysisTradeKeywordsResult">
+		select id, kw, num, gmt_target
+		from analysis_trade_keywords
+		<include refid="where_causes_keywords"/>
+		<include refid="common.pageOrderBy"/>
+		<include refid="common.pageLimit"/>
+	</select>
+	
+	<select id="queryKeywordsCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from analysis_trade_keywords
+		<include refid="where_causes_keywords"/>
+	</select>
+	
+	<sql id="where_causes_compprice">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="categoryCode">
+				category_code = #categoryCode#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+	</sql>
+	
+	<select id="queryCompPrice" parameterClass="java.util.Map" resultMap="analysisCompPriceResult">
+		select id,category_code,num,gmt_target
+		from analysis_comp_price
+		<include refid="where_causes_compprice"/>
+		order by gmt_target
+	</select>
+	
+	<sql id="where_clause_product">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="typeCode">
+				type_code = #typeCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="categoryCode">
+				category_code = #categoryCode#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+	</sql>
+	
+	<select id="queryProduct" parameterClass="java.util.Map" resultMap="analysisProductResult">
+		select id, type_code, category_code, num, gmt_target
+		from analysis_product
+		<include refid="where_clause_product"/>
+		order by gmt_target
+	</select>
+	
+	<sql id="where_clause_register">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="regfromCode">
+				regfrom_code = #regfromCode#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+	</sql>
+	
+	<select id="queryRegister" parameterClass="java.util.Map" resultMap="analysisRegisterResult">
+		select id, regfrom_code, num, gmt_target
+		from analysis_register
+		<include refid="where_clause_register"/>
+		order by gmt_target
+	</select>
+	
+	<select id="summaryKeywords" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(num) as s
+		from analysis_trade_keywords
+		<include refid="where_causes_keywords"/>
+	</select>
+	
+	<select id="summaryInquiry" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(num) as s
+		from analysis_inquiry 
+		<include refid="where_clause_inquiry" />
+	</select>
+
+	<!-- analysis_log result 用于QQ登录统计 Start -->
+	<typeAlias alias="log" type="com.ast.ast1949.domain.analysis.AnalysisLog"/>
+	<resultMap class="log" id="analysisLogResult">
+		<result property="id" column="id" />
+		<result property="operator" column="operator"/>
+		<result property="operation" column="operation"/>
+		<result property="num" column="log_total"/>
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<sql id="where_clause_log">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="operator">
+				operator = #operator# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="operation">
+				operation = #operation#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+	</sql>
+	
+	<select id="queryAnalysisLog" parameterClass="java.util.Map" resultMap="analysisLogResult">
+		select id,operator,operation,log_total,gmt_target
+		from analysis_log
+		<include refid="where_clause_log"/>
+		order by gmt_target
+	</select>
+	<!-- analysis_log result 用于QQ登录统计 End -->
+	
+	<typeAlias alias="logDto" type="com.ast.ast1949.dto.analysis.AnalysisSpotDto"/>
+	<resultMap class="logDto" id="AnalysisSpotDtoResult">
+		<result property="id" column="id" />
+		<result property="operator" column="operator"/>
+		<result property="operation" column="operation"/>
+		<result property="num" column="log_total"/>
+		<result property="gmtTarget" column="gmt_target" />
+	</resultMap>
+	<select id="queryAnalysisLogForSpot" parameterClass="java.util.Map" resultMap="AnalysisSpotDtoResult">
+		select id,operator,operation,log_total,gmt_target
+		from analysis_log
+		<include refid="where_clause_log"/>
+		<include refid="common.pageOrderBy" />
+		<include refid="common.pageLimit" />
+	</select>
+	<select id="countQueryAnalysisLogForSpot" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select count(0) from analysis_log
+		<include refid="where_clause_log"/>
+	</select>
+	
+	<select id="querySpot" parameterClass="java.util.Map" resultMap="analysisLogResult">
+		select id,operator,operation,log_total,gmt_target
+		from analysis_log
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="operator">
+				operator = #operator#
+			</isNotEmpty>
+			<include refid="where_clause_time"/>
+		</dynamic>
+		order by gmt_target
+	</select>
+	
+	<select id="summarySpot" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+		select sum(log_total) as s
+		from analysis_log
+		<include refid="where_clause_log"/>
+	</select>
+</sqlMap>

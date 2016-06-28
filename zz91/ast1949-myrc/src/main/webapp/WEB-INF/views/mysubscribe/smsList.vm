@@ -1,0 +1,69 @@
+#set( $layout = "/layout/default.vm" )
+<div class="container mt clearfix">
+    <div class="grid_12">
+        <ul class="breadcrumb">
+            <li>
+                <a href="#springUrl('/mysubscribe/smsList.htm')">商机和行情</a> <span class="divider">/</span>
+            </li>
+            <li class="active">最新市场报价</li>
+        </ul>
+    	<div class="alert alert-info">
+    		<strong>$!{companyAccount.contact}</strong> #if($!{companyAccount.sex} == 1) 女士 #else 先生 #end，您好！
+    		<p>以下是您在中国再生资源交易网订阅的最新报价信息，快去看看有没有合适的价格吧！</p>
+    	</div>
+    	#if(0>=$listsms.size())
+    		<div class="alert mt"> 
+        		您还没有订阅在线报价信息，<a href="#springUrl('/mysubscribe/subscribesms.htm')" target="_blank">点此订阅</a>
+        	</div>
+    	#end
+		<ul class="orderlist mt">
+            <li>您定制的报价类别：</li>
+			#foreach($sms in $listsms)
+##				#if(8>$velocityCount)
+					<a href="#springUrl('/mysubscribe/smsList.htm?categoryCode=')$!{sms.categoryCode}&areaNodeId=$!{sms.areaNodeId}" #if($!{sms.areaNodeId})#if($!{categoryCode}==$!{sms.categoryCode} && $!{areaNodeId}==$!{sms.areaNodeId}) class="label label-success" #else class="label" #end #else #if($!{categoryCode}==$!{sms.categoryCode}) class="label label-success" #else class="label" #end #end>$!{sms.areaName}$!{sms.name}</a>
+##				#end
+			#end
+		</ul>
+    	<div class="list mt">
+			#cacheFragment("$!{address.exadmin}/reborn-admin/sms/main/getPriceForZZ91Myrc.htm?categoryCode=$!{categoryCode}&areaNodeId=$!{areaNodeId}&startIndex=$!{start}&size=200&003210" "" "" "000")
+				
+				#if(0>=$list.size())
+    				<div class="alert alert-error mt"> 暂时没有该关键词信息，请点击其他关键词查看相关信息！</div>
+				#end
+				#if($!{i}==0)
+					<div class="alert alert-error mt">您定制的 $!{categoryName} 报价已不再更新！您可以看看其它类别报价，谢谢！</div>
+				#else
+				#foreach($obj in $!{list})
+        			<div class="list-item">
+						<div class="item-detail">
+        					<p style="color:#090"><strong>
+								#if($!{obj.areaNodeId}==1)江浙沪#end
+								#if($!{obj.areaNodeId}==2)广东南海#end
+								#if($!{obj.areaNodeId}==3)天津#end
+								#if($!{obj.areaNodeId}==4)山东临沂#end
+								#if($!{obj.areaNodeId}==5)湖南汨罗#end
+								#if($!{obj.areaNodeId}==11)广东#end
+								#if($!{obj.areaNodeId}==12)浙江#end
+								#if($!{obj.areaNodeId}==13)江苏#end
+								#if($!{obj.areaNodeId}==14)山东#end
+								${obj.categoryName} 最新报价：最小价格$!{obj.minPrice}-最大价格$!{obj.maxPrice}</strong></p>
+        				</div>
+        				<div class="item-contact">
+							<p style="color:#090">#printFragmentDate('yyyy年MM月dd日',$!{obj.gmtModified})
+            				</p>
+						</div>
+        			</div>
+				#end
+				#end
+			#end
+    	</div>
+		#cacheFragment("$!{address.exadmin}/reborn-admin/sms/main/getPriceForZZ91MyrcCount.htm?categoryCode=$!{categoryCode}&areaNodeId=$!{areaNodeId}&$date.getSystemTime()" "" "" "000")
+			#myrcSMSPageNav($!{total} $!{start} "#springUrl('/mysubscribe/smsList.htm')" "categoryCode=$!{categoryCode}&areaNodeId=$!{areaNodeId}" "")
+		#end
+ </div>
+</div>
+<script>
+jQuery(function(){
+    myrc.menu(5, 3);
+})
+</script>

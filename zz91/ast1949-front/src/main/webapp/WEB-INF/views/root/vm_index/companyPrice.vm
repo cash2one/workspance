@@ -1,0 +1,120 @@
+<script type="text/javascript" >
+function slideLine(ul, delay, speed, lh) {
+	var slideBox = (typeof ul == 'string')?document.getElementById(ul):ul;
+	var delay = delay||1000, speed=speed||20, lh = lh||20;
+	var tid = null, pause = false;
+	var start = function() {
+		tid=setInterval(slide, speed);
+	}
+	var slide = function() {
+		if (pause) return;
+		slideBox.scrollTop += 2;	
+		if (slideBox.scrollTop % lh == 0) {
+			clearInterval(tid);
+			slideBox.appendChild(slideBox.getElementsByTagName('li')[0]);
+			if(lh/speed == 2){
+				slideBox.appendChild(slideBox.getElementsByTagName('li')[0]);//滚两行
+			}
+			slideBox.scrollTop = 0;
+			setTimeout(start, delay);
+		}
+	}
+	slideBox.onmouseover=function(){pause=true;}
+	slideBox.onmouseout=function(){pause=false;}
+	setTimeout(start, delay);
+}
+</script>
+<div id="qybj">
+<div class="title">
+<h3><a href="$!{address.server}/companyprice/index.htm" target="_blank">企业报价</a></h3>
+<div class="keywords"></div>
+<div class="more"><a href="$!{address.server}/companyprice/index.htm" target="_blank">&gt;&gt;更多</a></div>
+</div>
+<div class=cb></div>
+<div class="contentDiv">
+<ul>
+
+<li style="background-color:#F0CAC1;width:100%">
+<div class="w1">产品</div>
+<div class="w2">价格</div>
+<div class="w3">日期</div>
+</li>
+</ul>
+<div class=cb>
+<ul id="cusPrice1"> 
+	#foreach($companyPrice in $companyPriceList)
+		
+	<li #if($velocityCount%2!=0) class='stripe'  #else class="" #end>
+
+	<div class="w1"><a href="$!{address.server}/companyprice/priceDetails$!{companyPrice.id}.htm" target="_blank"> $!{companyPrice.title}</a></div>
+	<div class="w2">$stringUtils.IsIndexOf($!{companyPrice.price},$!{companyPrice.price})</div>
+	<div class="w3">$!date.format('MM-dd ',$!companyPrice.refreshTime)</div>
+    </li>
+	  
+	#end
+  </ul>
+</div>
+<div class=cb></div>
+<div class="baojiaListItemUp">
+
+<div style="line-height:22px">
+<div style="float:left">
+	<strong>
+		<a href="$!{address.server}/companyprice/index.htm?categoryCompanyPriceCode=10001000" target="_blank">废塑料：</a>
+	</strong>
+</div>  
+#foreach($plastic in $plasticList)
+<dl1><a href="$!{address.server}/companyprice/index.htm?keywords=$!{plastic.label}" target="_blank">$!{plastic.label}</a></dl1>
+#end
+<dl1><a href="$!{address.server}/price/priceList_20_plastic.htm" target="_blank">网上报价</a></dl1>
+</div>
+
+<div class=cb></div>
+<div class="baojiaListItem">
+<div style="float:left">
+	<strong><a href="$!{address.server}/companyprice/index.htm?categoryCompanyPriceCode=1001" target="_blank">废金属：</a></strong>
+</div>
+#foreach($metal in $metalList)
+<dl><a href="$!{address.server}/companyprice/index.htm?keywords=$!{metal.label}" target="_blank">$!{metal.label}</a></dl>
+#end
+<dl1><a href="$!{address.server}/price/moreList_p17_metal.htm" target="_blank">网上报价</a></dl1>
+</div>
+</div>
+<div class=cb></div>
+<div class=cb>
+<ul id="cusPrice2">
+	#foreach($companyPrice in $companyPriceList)
+		#if($velocityCount%2==0)
+	<li class='stripe'>
+    <div class="w1"><a href="$!{address.server}/companyprice/priceDetails$!{companyPrice.id}.htm" target="_blank">$!{companyPrice.title}</a></div>
+	<div class="w2">$!{companyPrice.price}$!{companyPrice.priceUnit}</div>
+	<div class="w3">$!date.format('MM-dd ',$!companyPrice.refreshTime)</div>
+    </li>
+	   #else
+	<li >
+    <div class="w1"><a href="$!{address.server}/companyprice/priceDetails$!{companyPrice.id}.htm" target="_blank">$!{companyPrice.title}</a></div>
+	<div class="w2">$!{companyPrice.price}$!{companyPrice.priceUnit}</div>
+	<div class="w3">$!date.format('MM-dd ',$!companyPrice.refreshTime)</div>
+    </li>
+	   #end
+	#end
+</li>
+
+
+
+</ul>
+</div>
+<div class=cb></div>
+</div>
+</div>
+<div class=cb></div>
+<script type="text/javascript">
+try{
+slideLine('cusPrice1', 2500, 22, 22);
+}catch(e) {}
+</script>
+<script type="text/javascript">
+try{
+slideLine('cusPrice2', 2500, 22, 22);
+}catch(e) {}
+</script>

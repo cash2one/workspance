@@ -1,0 +1,134 @@
+<form id="form1" name="form1" method="post" #if($!{subscribe.id}) action="#springUrl('/subscribe/updateSubscribe.htm')" #else action="#springUrl('/subscribe/saveSubscribe.htm')" #end>
+    <div class="control-group">
+        <label for="keywords" class="control-label">关键字：</label>
+		<div class="controls">
+	        <input maxLength="40" size="24" id="keywords" name="keywords" value="$!{subscribe.keywords}" class="field validate[required]"/>
+	        <input name="id" type="hidden" id="id" value="$!{subscribe.id}"/>
+			<input name="areaCode" type="hidden" id="areaCode" value="$!{subscribe.areaCode}"/>
+			<input name="subscribeType" type="hidden" id="subscribeType" value="$!{subscribeType}"/>
+		</div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">是否按地区筛选：</label>
+        <div class="controls">
+        	<label class="radio">
+	        	<input onClick="document.getElementById('tmd').style.display='none'" type="radio" #if(!$!{subscribe.isSearchByArea}) checked #end value="false" name="isSearchByArea" class="input_redio">否
+	        </label>
+	        <label class="radio">
+	        	<input onClick="document.getElementById('tmd').style.display='block'" type="radio"  #if($!{subscribe.isSearchByArea})checked #end value="true" name="isSearchByArea" class="input_redio">是
+	        </label>
+		</div>
+	</div>
+    <div id="tmd" #if(!$!{subscribe.isSearchByArea}) class="control-group hidden" #else class="control-group" #end>
+        <label class="control-label">请选择：</label>
+        <div class="controls">
+	        <select id='country' name='country'>
+	            <option value="">请选择国家</option>
+	        </select>
+	        <select id='province' name='province'>
+	            <option value="">请选择省份</option>
+	        </select>
+	        <select id='city' name='city'>
+	            <option value="">请选择城市</option>
+	        </select>
+	        <select id='county' name='county'>
+	            <option value="">请选择区县</option>
+	        </select>
+    	</div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">商机类型：</label>
+        <div class="controls">
+        	<label class="radio">
+	        	<input type="radio" value="10331000" name="productsTypeCode" #if($!{subscribe.productsTypeCode}=='10331000') checked #end>供应
+	        </label>
+	        <label class="radio">
+				<input type="radio" value="10331001" name="productsTypeCode" #if($!{subscribe.productsTypeCode}=='10331001') checked #end>求购
+			</label>
+			<label class="radio">
+	        	<input type="radio" value="" name="productsTypeCode" #if(!$!{subscribe.productsTypeCode}||$!{subscribe.productsTypeCode}=='') checked #end>两者都选
+	        </label>
+        </div>	
+    </div>
+    <div class="control-group">
+        <label class="control-label">提醒方式：</label>
+        <div class="controls">
+        	<label class="checkbox">
+        		<input type="checkbox"  name="isSendByEmail" #if($!{subscribe.isSendByEmail}) checked #end>发送电子邮件通知我
+        	</label>
+        </div>					
+    </div>
+    <div class="control-group">
+        <label class="control-label">您的Email：</label>
+        <div class="controls">
+			<input type="text" id="email" name="email" value="$!{currentEmail}" class="field" disabled>
+		</div>
+    </div>
+	
+    #if($regFlag && $regFlag=="1")
+        <div class="control-group subscribeItemPosit">
+            <label for="password" class="control-label">密码：</label>
+            <div class="controls">
+	            <input name="password" type="password" class="texttype" id="password" />
+	            <p><b>您是本站的会员 ,请输入您的密码</b></p>
+	            <p>
+					如果你忘记密码或不知道密码请进行<a href="#springUrl('/user/passwordReminder.htm')" target="_blank" title="找回密码">找回密码</a>操作，待操作完成后我们将会把密码发到您的邮箱。
+				</p>
+	            <p> 如有疑问请拨打客服热线：<span class="grey">$!{server_phone}</span></p>
+        	</div>
+        </div>
+	#end
+    <div class="form-actions">
+        <input type="submit" name="imageField" id="buttonSub" class="btn btn-primary" value="确认定制"/>
+    </div>
+</form>
+#parse("/common/importValidate.vm")
+<script src="$!{address.img}/zz91/js/zz91.common.js"></script>
+<script>
+	jQuery(function(){
+      	var areaSelector = new zz91Selector({
+    		url:"#springUrl('/category/areaChild.htm')"
+    	});
+    	
+    	areaSelector.init({
+    		rootCode:"1001",
+    		initCode:"$!{subscribe.areaCode}",
+    		selects:["#country","#province","#city","#county"]
+    	});
+
+    	jQuery("#form1").validationEngine("attach", {
+    		onValidationComplete: function(){
+    			subscribe();
+    		} 
+    	});
+	});
+	
+	function subscribe(){
+		var _url="#springUrl('/subscribe/saveSubscribe.htm')";
+		#if($!{subscribe.id})
+			_url="#springUrl('/subscribe/updateSubscribe.htm')";
+		#end
+		
+		jQuery.ajax({
+    		url:_url,
+    		type:"POST",
+    		cache:false,
+    		dataType:"json",
+    		data:jQuery("#form1").serialize(),
+    		success:function(response){
+				if(response.success){
+					//提示订制成功
+					//跳转到供求订制管理页面
+					alert("您刚刚订阅了供求信息!");
+					window.location.href="#springUrl('/mysubscribe/manageSubscribeBiz.htm')";
+				}else{
+					if(response.data=="outofSubscribeLimit"){
+    					alert("对不起，您订阅的信息已经超出了限制！")
+    				}
+				}
+			},
+    		error:function(e){
+    		}
+    	});
+	}	
+</script>
